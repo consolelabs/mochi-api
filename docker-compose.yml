@@ -1,0 +1,14 @@
+version: "3"
+services:
+  mochi_local:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: mochi_local
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    container_name: mochi_local
+    ports:
+      - 5434:5432
+    expose:
+      - 5434

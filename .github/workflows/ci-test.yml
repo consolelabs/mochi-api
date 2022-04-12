@@ -1,0 +1,17 @@
+on: [pull_request]
+
+jobs:
+  ci-test:
+    runs-on: ubuntu-latest
+    name: CI testing
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "^1.18"
+
+      - name: Init Test DB
+        run: make init-test-db
+
+      - name: Run Test cases
+        run: make test

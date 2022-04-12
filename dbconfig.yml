@@ -1,0 +1,11 @@
+local:
+  dialect: postgres
+  datasource: host=localhost port=5434 user=postgres password=postgres dbname=mochi_local sslmode=disable
+  dir: migrations/schemas
+  table: migrations
+
+prod:
+  dialect: postgres
+  datasource: host=${DB_HOST} port=${DB_PORT} user=${DB_USER} password=${DB_PASS} dbname=${DB_NAME} sslmode=${DB_SSL_MODE}
+  dir: migrations/schemas
+  table: migrations
