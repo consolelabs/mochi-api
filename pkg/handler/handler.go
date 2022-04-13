@@ -11,6 +11,7 @@ import (
 	processor "github.com/defipod/mochi/pkg/processor"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	responseConverter "github.com/defipod/mochi/pkg/util/response_converter"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,4 +53,14 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.
 func (h *Handler) Healthz(c *gin.Context) {
 	c.Header("Content-Type", "text/plain")
 	c.String(http.StatusOK, "OK")
+}
+
+func (h *Handler) Guilds(c *gin.Context) {
+	guilds, err := h.repo.DiscordGuilds.Gets()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, responseConverter.ConvertGetGuildsResponse(guilds))
 }

@@ -14,7 +14,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 
 	guildGroup := v1.Group("/guilds")
 	{
-		guildGroup.GET("")
+		guildGroup.GET("", h.Guilds)
 	}
 
 	profleGroup := v1.Group("/profiles")
