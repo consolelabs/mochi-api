@@ -17,7 +17,6 @@ import (
 
 // Handler for app
 type Handler struct {
-	log       handlerLog
 	cfg       config.Config
 	repo      *repo.Repo
 	dcwallet  discordwallet.IDiscordWallet
@@ -37,7 +36,6 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.
 	}
 
 	handler := &Handler{
-		log:       newHandlerLog(l, cfg.DiscordLogWebhook),
 		cfg:       cfg,
 		repo:      r,
 		dcwallet:  dcwallet,
