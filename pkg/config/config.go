@@ -26,20 +26,8 @@ type Config struct {
 	DBPass         string
 	DBSSLMode      string
 
-	CovalentAPIKey string
-
-	TwitterConsumerKey       string
-	TwitterConsumerSecret    string
-	TwitterAccessToken       string
-	TwitterAccessTokenSecret string
-
-	DiscordLogWebhook       string
-	DiscordVaultLogWebhook  string
-	DiscordActionLogWebhook string
+	DiscordLogWebhook string
 	InDiscordWalletMnemonic string
-
-	GoogleServiceAccount  string
-	GoogleCloudBucketName string
 
 	JWTSecret              []byte
 	JWTAccessTokenLifeSpan time.Duration
@@ -92,21 +80,6 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		DBName:    v.GetString("DB_NAME"),
 		DBPass:    v.GetString("DB_PASS"),
 		DBSSLMode: v.GetString("DB_SSL_MODE"),
-
-		CovalentAPIKey: v.GetString("COVALENT_API_KEY"),
-
-		TwitterConsumerKey:       v.GetString("TWITTER_CONSUMER_KEY"),
-		TwitterConsumerSecret:    v.GetString("TWITTER_CONSUMER_SECRET"),
-		TwitterAccessToken:       v.GetString("TWITTER_ACCESS_TOKEN"),
-		TwitterAccessTokenSecret: v.GetString("TWITTER_ACCESS_TOKEN_SECRET"),
-
-		DiscordLogWebhook:       v.GetString("DISCORD_LOG_WEBHOOK"),
-		DiscordVaultLogWebhook:  v.GetString("DISCORD_VAULT_LOG_WEBHOOK"),
-		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
-
-		GoogleServiceAccount:    v.GetString("GOOGLE_SERVICE_ACCOUNT"),
-		GoogleCloudBucketName:   v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
-		DiscordActionLogWebhook: v.GetString("DISCORD_ACTION_LOG_WEBHOOK"),
 
 		JWTSecret:              []byte(v.GetString("JWT_SECRET")),
 		JWTAccessTokenLifeSpan: time.Hour * 24 * time.Duration(tokenTTLInDay), // 7 days
