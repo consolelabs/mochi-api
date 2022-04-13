@@ -1,0 +1,78 @@
+# This workflow will build a docker container, publish it to Google Container Registry, and deploy it to GKE when a release is created
+#
+# To configure this workflow:
+#
+# 1. Ensure that your repository contains the necessary configuration for your Google Kubernetes Engine cluster, including deployment.yml, kustomization.yml, service.yml, etc.
+#
+# 2. Set up secrets in your workspace: GKE_PROJECT with the name of the project, GKE_EMAIL with the service account email, GKE_KEY with the Base64 encoded JSON service account key (https://github.com/GoogleCloudPlatform/github-actions/tree/docs/service-account-key/setup-gcloud#inputs).
+#
+# 3. Change the values for the GKE_ZONE, GKE_CLUSTER, IMAGE, REGISTRY_HOSTNAME and DEPLOYMENT_NAME environment variables (below).
+
+name: Build and Deploy to GKE Dev
+
+on:
+  push:
+    branches:
+      - cicd
+      - develop
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
+  GITHUB_SHA: ${{ github.sha }}
+  REGISTRY_HOSTNAME: gcr.io
+  GKE_PROJECT: defipod
+  IMAGE: defipod/mochi-api
+  K8S_ENVIRONMENT: dev
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    # if: github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        # if: github.event.pull_request.merged
+        uses: actions/checkout@v2
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+      # Setup gcloud CLI
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v0
+
+      # Configure docker to use the gcloud command-line tool as a credential helper
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker
+
+      # Build & Push the Docker image
+      - name: Build & Push
+        run: |
+          docker build -t $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA} .   
+          docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA}
+      # Setup kustomize
+      # - name: Setup kustomize
+      #   run: |
+      #     curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+      #     chmod u+x ./kustomize
+      #     mv kustomize /tmp
+      # - name: Checkout defipod/infrastructure
+      #   uses: actions/checkout@master
+      #   with:
+      #     repository: defipod/infrastructure
+      #     token: ${{ secrets.GH_PAT }}
+      #     path: ./infrastructure
+      #     ref: master
+      # - name: Update api version
+      #   run: |
+      #     cd ./infrastructure/services/api/$K8S_ENVIRONMENT
+      #     git config user.name lmquang
+      #     git config user.email quanglm.ops@gmail.com
+      #     /tmp/kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA}
+      #     git commit -am "[skip ci] api ${K8S_ENVIRONMENT} image update"
+      #     git push origin master
