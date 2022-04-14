@@ -15,6 +15,7 @@ type Guilds struct {
 	Name            string   `json:"name"`
 	BotScopes       []string `json:"bot_scopes"`
 	VerifyChannelId string   `json:"verify_channel_id"`
+	LogChannelId    string   `json:"log_channel_id"`
 }
 
 func ConvertGetGuildsResponse(discordGuilds []*model.DiscordGuild) *GetGuildsResponse {
@@ -25,6 +26,7 @@ func ConvertGetGuildsResponse(discordGuilds []*model.DiscordGuild) *GetGuildsRes
 			Name:            g.Name,
 			BotScopes:       g.BotScopes,
 			VerifyChannelId: "0",
+			LogChannelId:    strconv.FormatInt(g.LogChannel.ChannelID, 10),
 		})
 	}
 	return &GetGuildsResponse{

@@ -17,6 +17,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 		guildGroup.GET("", h.Guilds)
 	}
 
+	userGroup := v1.Group("/users")
+	{
+		userGroup.POST("", h.IndexUsers)
+	}
+
+	inviteHistoriesGroup := v1.Group("/invite-histories")
+	{
+		inviteHistoriesGroup.POST("", h.IndexInviteHistory)
+		inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+	}
+
 	profleGroup := v1.Group("/profiles")
 	{
 		profleGroup.GET("")

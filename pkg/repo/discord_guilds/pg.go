@@ -15,9 +15,5 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) Gets() ([]*model.DiscordGuild, error) {
 	var guilds []*model.DiscordGuild
-	err := pg.db.Find(&guilds).Error
-	if err != nil {
-		return nil, err
-	}
-	return guilds, nil
+	return guilds, pg.db.Preload("LogChannel").Find(&guilds).Error
 }
