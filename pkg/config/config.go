@@ -26,7 +26,7 @@ type Config struct {
 	DBPass         string
 	DBSSLMode      string
 
-	DiscordLogWebhook string
+	DiscordLogWebhook       string
 	InDiscordWalletMnemonic string
 
 	JWTSecret              []byte
@@ -91,6 +91,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
 
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
+
+		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 	}
 }
 
