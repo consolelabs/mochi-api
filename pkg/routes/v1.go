@@ -41,6 +41,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	defiGroup := v1.Group("/defi")
 	{
 		defiGroup.GET("")
+		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 	}
 
 	communitiesGroup := v1.Group("/communities")
