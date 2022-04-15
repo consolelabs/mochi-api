@@ -44,8 +44,10 @@ docker-build:
 	-t ${APP_NAME}:latest .
 
 seed-db:
-	@docker cp migrations/seed/seed.sql  mochi_local:/seed.sql
-	@docker exec -t mochi_local sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed.sql"
+	@docker exec -t mochi_local sh -c "mkdir -p /seed"
+	@docker exec -t mochi_local sh -c "rm -rf /seed/*"
+	@docker cp migrations/seed mochi_local:/
+	@docker exec -t mochi_local sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed/seed.sql"
 
 reset-db:
 	make init

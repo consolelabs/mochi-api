@@ -14,7 +14,20 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 
 	guildGroup := v1.Group("/guilds")
 	{
-		guildGroup.GET("")
+		guildGroup.POST("", h.CreateGuild)
+		guildGroup.GET("", h.GetGuilds)
+		guildGroup.GET("/:id", h.GetGuild)
+	}
+
+	userGroup := v1.Group("/users")
+	{
+		userGroup.POST("", h.IndexUsers)
+	}
+
+	inviteHistoriesGroup := v1.Group("/invite-histories")
+	{
+		inviteHistoriesGroup.POST("", h.IndexInviteHistory)
+		inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
 	}
 
 	profleGroup := v1.Group("/profiles")
@@ -30,6 +43,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	defiGroup := v1.Group("/defi")
 	{
 		defiGroup.GET("")
+		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 	}
 
 	communitiesGroup := v1.Group("/communities")

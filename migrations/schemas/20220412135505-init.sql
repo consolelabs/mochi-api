@@ -3,28 +3,27 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE "discord_guilds" (
-  "id" bigint PRIMARY KEY,
+  "id" text PRIMARY KEY,
   "name" text,
   "bot_scopes" JSONB NOT NULL DEFAULT '[]'::JSONB,
-  "alias" text
+  "alias" text,
+  "created_at" timestamptz NOT NULL DEFAULT now()
 );
 
 
 CREATE TABLE "guild_roles" (
-  "id" bigint PRIMARY KEY,
-  "guild_id" bigint NOT NULL REFERENCES "discord_guilds"("id"),
+  "id" text PRIMARY KEY,
+  "guild_id" text NOT NULL REFERENCES "discord_guilds"("id"),
   "name" text NOT NULL
 );
 
 CREATE TABLE "users" (
-    "id" bigint PRIMARY KEY,
+    "id" text PRIMARY KEY,
     "referral_code" text NOT NULL DEFAULT "substring"(md5((random())::text), 0, 9),
-    "invited_by" bigint,
+    "invited_by" text,
     "username" text,
-    "nickname" text,
     "in_discord_wallet_address" text,
-    "in_discord_wallet_number" int8,
-    "join_date" timestamptz
+    "in_discord_wallet_number" int8
 );
 
 -- +migrate Down

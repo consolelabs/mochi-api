@@ -11,9 +11,9 @@ ALTER TABLE "guild_users"
 CREATE TABLE "invite_histories" (
   "id" uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   "created_at" timestamptz DEFAULT now(),
-  "guild_id" bigint NOT NULL REFERENCES "discord_guilds" ("id"),
-  "user_id" bigint NOT NULL REFERENCES "users" ("id"),
-  "invited_by" bigint NOT NULL REFERENCES "users" ("id"),
+  "guild_id" text NOT NULL REFERENCES "discord_guilds" ("id"),
+  "user_id" text NOT NULL REFERENCES "users" ("id"),
+  "invited_by" text NOT NULL REFERENCES "users" ("id"),
   "metadata" JSONB NOT NULL DEFAULT '{}'::JSONB
 );
 
