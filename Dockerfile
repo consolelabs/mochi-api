@@ -11,7 +11,7 @@ FROM alpine:3.15.0
 RUN apk --no-cache add ca-certificates
 WORKDIR /
 
-COPY --from=0 /go/bin/* /usr/bin/
+COPY --from=0 /go/bin/* /usr/local/bin/
 COPY migrations /migrations
 COPY dbconfig.yml /
 
