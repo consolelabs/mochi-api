@@ -1,6 +1,8 @@
 package repo
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 // FinallyFunc function to finish a transaction
 type FinallyFunc = func(error) error
