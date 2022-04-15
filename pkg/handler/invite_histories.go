@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/gin-gonic/gin"
@@ -20,26 +19,10 @@ func (h *Handler) IndexInviteHistory(c *gin.Context) {
 		return
 	}
 
-	guildID, err := strconv.ParseInt(body.GuildID, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	inviter, err := strconv.ParseInt(body.Inviter, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	Invitee, err := strconv.ParseInt(body.Invitee, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	inviteHistory := &model.InviteHistory{
-		GuildID:   guildID,
-		UserID:    Invitee,
-		InvitedBy: inviter,
+		GuildID:   body.GuildID,
+		UserID:    body.Invitee,
+		InvitedBy: body.Inviter,
 	}
 
 	if err := h.repo.InviteHistories.Create(inviteHistory); err != nil {
@@ -47,7 +30,7 @@ func (h *Handler) IndexInviteHistory(c *gin.Context) {
 		return
 	}
 
-	if err := h.repo.GuildUsers.Update(guildID, Invitee, "invited_by", inviter); err != nil {
+	if err := h.repo.GuildUsers.Update(body.GuildID, body.Invitee, "invited_by", body.Inviter); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -59,20 +42,9 @@ func (h *Handler) IndexInviteHistory(c *gin.Context) {
 
 func (h *Handler) CountByGuildUser(c *gin.Context) {
 	guildIDstr, _ := c.GetQuery("guild_id")
-	guildID, err := strconv.ParseInt(guildIDstr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	inviterStr, _ := c.GetQuery("inviter")
-	inviter, err := strconv.ParseInt(inviterStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 
-	count, err := h.repo.GuildUsers.CountByGuildUser(guildID, inviter)
+	count, err := h.repo.GuildUsers.CountByGuildUser(guildIDstr, inviterStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

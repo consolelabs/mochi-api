@@ -14,7 +14,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 
 	guildGroup := v1.Group("/guilds")
 	{
-		guildGroup.GET("", h.Guilds)
+		guildGroup.POST("", h.CreateGuild)
+		guildGroup.GET("", h.GetGuilds)
+		guildGroup.GET("/:id", h.GetGuild)
 	}
 
 	userGroup := v1.Group("/users")

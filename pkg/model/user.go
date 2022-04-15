@@ -1,17 +1,13 @@
 package model
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 type User struct {
-	ID                     int64          `json:"id" gorm:"primary_key"`
+	ID                     string         `json:"id" gorm:"primary_key"`
 	Username               string         `json:"username"`
-	Nickname               JSONNullString `json:"nickname"`
-	JoinDate               *time.Time     `json:"join_date"`
 	InDiscordWalletAddress JSONNullString `json:"in_discord_wallet_address"`
 	InDiscordWalletNumber  JSONNullInt64  `json:"in_discord_wallet_number"`
 

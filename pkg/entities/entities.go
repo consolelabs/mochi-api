@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"errors"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/defipod/mochi/pkg/config"
@@ -30,3 +32,7 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet discordwallet.I
 		discord:   discord,
 	}
 }
+
+var (
+	ErrRecordNotFound = errors.New("not found")
+)

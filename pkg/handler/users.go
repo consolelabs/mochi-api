@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -23,26 +22,13 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 		return
 	}
 
-	userID, err := strconv.ParseInt(body.ID, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	guildID, err := strconv.ParseInt(body.GuildID, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	user := &model.User{
-		ID:       userID,
+		ID:       body.ID,
 		Username: body.Username,
-		Nickname: body.Nickname,
-		JoinDate: body.JoinDate,
 		GuildUsers: []*model.GuildUser{
 			{
-				GuildID:  guildID,
-				UserID:   userID,
+				GuildID:  body.GuildID,
+				UserID:   body.ID,
 				Nickname: body.Nickname,
 			},
 		},
@@ -56,5 +42,4 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": user,
 	})
-
 }
