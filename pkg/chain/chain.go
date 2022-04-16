@@ -8,6 +8,6 @@ import (
 
 type Chain interface {
 	Balance(address string) (float64, error)
-	Transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int) (*types.Transaction, error)
+	Transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, error)
 	Balances(address string, tokens []model.Token) (map[string]float64, error)
 }

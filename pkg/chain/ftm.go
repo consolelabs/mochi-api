@@ -64,7 +64,7 @@ func (ch *FTM) Balance(address string) (float64, error) {
 	return v, nil
 }
 
-func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int) (*types.Transaction, error) {
+func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, error) {
 	var (
 		t   *types.Transaction
 		err error
@@ -72,7 +72,7 @@ func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 
 	switch strings.ToUpper(token.Symbol) {
 	case "FTM":
-		t, err = ch.transfer(fromAcc, toAcc, amount, nonce)
+		t, err = ch.transfer(fromAcc, toAcc, amount, nonce, all)
 	default:
 		t, err = ch.transferToken(fromAcc, toAcc, amount, token, nonce)
 	}
@@ -80,12 +80,12 @@ func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 	return t, err
 }
 
-func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int) (*types.Transaction, error) {
+func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, error) {
 	balance, err := ch.Balance(fromAcc.Address.Hex())
 	if err != nil {
 		return nil, err
 	}
-	if balance < amount {
+	if !all && balance < amount {
 		return nil, errors.New("balance is not enough")
 	}
 
@@ -110,14 +110,24 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 		}
 	}
 
-	value := new(big.Int)
-	value.SetString(strconv.FormatFloat(float64(math.Pow10(18))*amount, 'f', 6, 64), 10)
-
 	gasLimit := uint64(21000) // in units
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
 		return nil, err
 	}
+
+	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
+	if all {
+		if balance <= maxTxFee {
+			return nil, errors.New("insufficient funds for gas")
+		}
+		amount = balance - maxTxFee
+	} else {
+		amount = amount - maxTxFee
+	}
+
+	value := new(big.Int)
+	value.SetString(strconv.FormatFloat(float64(math.Pow10(18))*amount, 'f', 6, 64), 10)
 
 	toAddress := common.HexToAddress(toAcc.Address.Hex())
 	var data []byte

@@ -44,6 +44,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	{
 		defiGroup.GET("")
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
+		defiGroup.POST("/transfer", h.InDiscordWalletTransfer)
+		defiGroup.POST("/withdraw", h.InDiscordWalletWithdraw)
+		defiGroup.GET("/balances", h.InDiscordWalletBalances)
+		defiGroup.GET("/tokens", h.GetSupportedTokens)
 	}
 
 	communitiesGroup := v1.Group("/communities")
