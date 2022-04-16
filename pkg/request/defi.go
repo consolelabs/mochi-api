@@ -13,6 +13,27 @@ type GetMarketChartRequest struct {
 	Days     int    `json:"days"`
 }
 
+type TransferRequest struct {
+	FromDiscordID  string   `json:"fromDiscordId"`
+	ToDiscordIDs   []string `json:"toDiscordIds"`
+	GuildID        string   `json:"guildId"`
+	ChannelID      string   `json:"channelId"`
+	Amount         float64  `json:"amount"`
+	Cryptocurrency string   `json:"cryptocurrency"`
+	Each           bool     `json:"each"`
+	All            bool     `json:"all"`
+}
+
+type WithdrawRequest struct {
+	FromDiscordID  string  `json:"fromDiscordId"`
+	ToAddress      string  `json:"toAddress"`
+	GuildID        string  `json:"guildId"`
+	ChannelID      string  `json:"channelId"`
+	Amount         float64 `json:"amount"`
+	Cryptocurrency string  `json:"cryptocurrency"`
+	All            bool    `json:"all"`
+}
+
 func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {
 	params := c.Request.URL.Query()
 
@@ -34,4 +55,22 @@ func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {
 	}
 
 	return req, nil
+}
+
+func (input *TransferRequest) Bind(c *gin.Context) (err error) {
+	err = c.BindJSON(input)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func (input *WithdrawRequest) Bind(c *gin.Context) (err error) {
+	err = c.BindJSON(input)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
