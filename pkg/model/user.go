@@ -11,7 +11,7 @@ type User struct {
 	InDiscordWalletAddress JSONNullString `json:"in_discord_wallet_address"`
 	InDiscordWalletNumber  JSONNullInt64  `json:"in_discord_wallet_number"`
 
-	GuildUsers []*GuildUser `json:"-" gorm:"-"`
+	GuildUsers []*GuildUser `json:"guild_users"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
