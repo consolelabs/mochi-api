@@ -8,7 +8,6 @@ import (
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	processor "github.com/defipod/mochi/pkg/processor"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
 
@@ -17,18 +16,16 @@ import (
 
 // Handler for app
 type Handler struct {
-	cfg       config.Config
-	repo      *repo.Repo
-	dcwallet  discordwallet.IDiscordWallet
-	processor processor.Processor
-	entities  *entities.Entity
-	discord   *discordgo.Session
+	cfg      config.Config
+	repo     *repo.Repo
+	dcwallet discordwallet.IDiscordWallet
+	entities *entities.Entity
+	discord  *discordgo.Session
 }
 
 // New will return an instance of Auth struct
 func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet) (*Handler, error) {
 	r := pg.NewRepo(s.DB())
-	processor := processor.NewProcessor(cfg)
 
 	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
 	if err != nil {
@@ -36,12 +33,11 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.
 	}
 
 	handler := &Handler{
-		cfg:       cfg,
-		repo:      r,
-		dcwallet:  dcwallet,
-		processor: processor,
-		entities:  entities.New(cfg, l, s, dcwallet, discord),
-		discord:   discord,
+		cfg:      cfg,
+		repo:     r,
+		dcwallet: dcwallet,
+		entities: entities.New(cfg, l, s, dcwallet, discord),
+		discord:  discord,
 	}
 
 	return handler, nil
