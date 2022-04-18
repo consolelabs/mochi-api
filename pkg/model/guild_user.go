@@ -40,7 +40,9 @@ func (u *GuildUser) BeforeCreate(tx *gorm.DB) (err error) {
 			{Name: "guild_id"},
 			{Name: "user_id"},
 		},
-		DoNothing: true,
+		DoUpdates: []clause.Assignment{
+			{Column: clause.Column{Name: "invited_by"}, Value: u.InvitedBy},
+		},
 	})
 
 	return nil
