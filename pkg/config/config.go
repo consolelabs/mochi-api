@@ -39,6 +39,8 @@ type Config struct {
 	ProcessorServerHost string
 
 	DiscordToken string
+
+	RedisURL string
 }
 
 // GetCORS in config
@@ -93,6 +95,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
+		RedisURL:                v.GetString("REDIS_URL"),
 	}
 }
 

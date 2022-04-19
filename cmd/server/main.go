@@ -3,15 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
+	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
@@ -20,30 +22,54 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func main() {
 	cls := config.DefaultConfigLoaders()
 	cfg := config.LoadConfig(cls)
 
-	l := initLog(cfg)
+	log := initLog(cfg)
 
 	s, close := pg.NewPostgresStore(&cfg)
 	defer func() {
 		err := close()
 		if err != nil {
-			l.Fatalf("Error closing postgres store:", err)
+			log.Fatalf("Error closing postgres store:", err)
 		}
 	}()
 
-	// init communities
+	repo := pg.NewRepo(s.DB())
 
-	dcwallet, err := discordwallet.New(cfg, l, s)
+	dcwallet, err := discordwallet.New(cfg, log, s)
 	if err != nil {
-		l.Fatalf("failed to init discord wallet: %v", err)
+		log.Fatalf("failed to init discord wallet: %v", err)
 	}
 
-	router := setupRouter(cfg, l, s, dcwallet)
+	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
+	if err != nil {
+		log.Fatalf("failed to init discord: %v", err)
+	}
+
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		log.Fatalf("failed to init redis: %v", err)
+	}
+
+	redisCache, err := cache.NewRedisCache(redisOpt)
+	if err != nil {
+		log.Fatalf("failed to init redis cache: %v", err)
+	}
+
+	entities := entities.New(
+		log,
+		repo,
+		dcwallet,
+		discord,
+		redisCache,
+	)
+
+	router := setupRouter(cfg, log, s, dcwallet, entities)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.Port),
@@ -61,7 +87,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 
 	<-quit
-	shutdownServer(srv, cfg.GetShutdownTimeout(), l)
+	shutdownServer(srv, cfg.GetShutdownTimeout(), log)
 
 }
 
@@ -82,7 +108,7 @@ func initLog(cfg config.Config) logger.Log {
 	)
 }
 
-func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet) *gin.Engine {
+func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity) *gin.Engine {
 	r := gin.New()
 	pprof.Register(r)
 	r.Use(
@@ -90,9 +116,9 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 		gin.Recovery(),
 	)
 
-	h, err := handler.New(cfg, l, s, dcwallet)
+	h, err := handler.New(cfg, l, s, dcwallet, entities)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
 
 	corsOrigins := cfg.GetCORS()
