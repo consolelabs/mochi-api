@@ -24,7 +24,7 @@ type Handler struct {
 }
 
 // New will return an instance of Auth struct
-func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet) (*Handler, error) {
+func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity) (*Handler, error) {
 	r := pg.NewRepo(s.DB())
 
 	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
@@ -36,7 +36,7 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.
 		cfg:      cfg,
 		repo:     r,
 		dcwallet: dcwallet,
-		entities: entities.New(cfg, l, s, dcwallet, discord),
+		entities: entities,
 		discord:  discord,
 	}
 

@@ -54,9 +54,4 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 		defiGroup.GET("/coins/:id", h.GetCoin)
 	}
 
-	communitiesGroup := v1.Group("/communities")
-	{
-		communitiesGroup.GET("")
-	}
-
 }
