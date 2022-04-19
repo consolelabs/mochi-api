@@ -27,3 +27,49 @@ type UserBalancesResponse struct {
 	Balances      map[string]float64 `json:"balances"`
 	BalancesInUSD map[string]float64 `json:"balances_in_usd"`
 }
+
+type HistoricalMarketChartResponse struct {
+	Prices [][]float64 `json:"prices"`
+}
+
+type SearchedCoinsListResponse struct {
+	Coins []SearchedCoin `json:"coins"`
+}
+
+type SearchedCoin struct {
+	ID            string `json:"id"`
+	Name          string `json:"name"`
+	Symbol        string `json:"symbol"`
+	MarketCapRank int    `json:"market_cap_rank"`
+	Thumb         string `json:"thumb"`
+	Large         string `json:"large"`
+}
+type CoinPriceHistoryResponse struct {
+	Timestamps []string  `json:"timestamps"`
+	Prices     []float64 `json:"prices"`
+	From       string    `json:"from"`
+	To         string    `json:"to"`
+}
+
+type GetCoinResponse struct {
+	ID            string     `json:"id"`
+	Name          string     `json:"name"`
+	Symbol        string     `json:"symbol"`
+	MarketCapRank int        `json:"market_cap_rank"`
+	Image         CoinImage  `json:"image"`
+	MarketData    MarketData `json:"market_data"`
+}
+
+type MarketData struct {
+	CurrentPrice                       map[string]float64 `json:"current_price"`
+	MarketCap                          map[string]float64 `json:"market_cap"`
+	PriceChangePercentage1hInCurrency  map[string]float64 `json:"price_change_percentage_1h_in_currency"`
+	PriceChangePercentage24hInCurrency map[string]float64 `json:"price_change_percentage_24h_in_currency"`
+	PriceChangePercentage7dInCurrency  map[string]float64 `json:"price_change_percentage_7d_in_currency"`
+}
+
+type CoinImage struct {
+	Thumb  string `json:"thumb"`
+	Small  string `json:"small"`
+	Larget string `json:"large"`
+}

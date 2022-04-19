@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -42,4 +43,19 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": user,
 	})
+}
+
+func (h *Handler) GetUser(c *gin.Context) {
+	discordID := c.Param("id")
+	if discordID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("id is required")})
+		return
+	}
+	user, err := h.repo.Users.GetOne(discordID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": user})
 }

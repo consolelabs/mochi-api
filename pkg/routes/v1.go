@@ -22,6 +22,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	userGroup := v1.Group("/users")
 	{
 		userGroup.POST("", h.IndexUsers)
+		userGroup.GET("/:id", h.GetUser)
 	}
 
 	inviteHistoriesGroup := v1.Group("/invite-histories")
@@ -43,11 +44,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	defiGroup := v1.Group("/defi")
 	{
 		defiGroup.GET("")
-		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.POST("/transfer", h.InDiscordWalletTransfer)
 		defiGroup.POST("/withdraw", h.InDiscordWalletWithdraw)
 		defiGroup.GET("/balances", h.InDiscordWalletBalances)
 		defiGroup.GET("/tokens", h.GetSupportedTokens)
+
+		// Data from CoinGecko
+		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
+		defiGroup.GET("/coins/:id", h.GetCoin)
 	}
 
 	communitiesGroup := v1.Group("/communities")

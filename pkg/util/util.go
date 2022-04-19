@@ -502,23 +502,20 @@ func Uint8ToIntPointer(u uint8) *int {
 	return &i
 }
 
-func FetchData(url string, parseForm interface{}) error {
-	client := &http.Client{Timeout: time.Second * 10}
+func FetchData(url string, parseForm interface{}) (int, error) {
+	client := &http.Client{Timeout: time.Second * 30}
 
 	resp, err := client.Get(url)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err
 	}
-
 	defer resp.Body.Close()
+
+	statusCode := resp.StatusCode
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return statusCode, err
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf(string(b))
-	}
-
-	return json.Unmarshal(b, parseForm)
+	return statusCode, json.Unmarshal(b, parseForm)
 }

@@ -44,7 +44,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 }
 
 func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
-	var req request.WithdrawRequest
+	var req request.TransferRequest
 	if err := req.Bind(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -60,8 +60,11 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 }
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
-	discordID := c.Request.URL.Query().Get("discord_id")
-	response, err := h.entities.InDiscordWalletBalances(discordID)
+	query := c.Request.URL.Query()
+	discordID := query.Get("discord_id")
+	username := query.Get("username")
+
+	response, err := h.entities.InDiscordWalletBalances(discordID, username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -79,4 +82,14 @@ func (h *Handler) GetSupportedTokens(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": tokens,
 	})
+}
+
+func (h *Handler) GetCoin(c *gin.Context) {
+	data, err, statusCode := h.entities.GetCoinData(c)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }

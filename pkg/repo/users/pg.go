@@ -25,14 +25,14 @@ func (pg *pg) GetLatestWalletNumber() int {
 	return result
 }
 
-func (pg *pg) UpsertOne(user model.User) error {
+func (pg *pg) UpsertOne(user *model.User) error {
 	tx := pg.db.Begin()
-	cols := []clause.Column{{Name: "id"}}
 
 	err := tx.Omit(clause.Associations).Clauses(clause.OnConflict{
-		Columns:   cols,
+		Columns:   []clause.Column{{Name: "id"}},
 		UpdateAll: true,
-	}).Create(&user).Error
+	}).Create(user).Error
+
 	if err != nil {
 		tx.Rollback()
 		return err
