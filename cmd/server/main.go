@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/routes"
+	"github.com/defipod/mochi/pkg/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -69,7 +70,9 @@ func main() {
 		redisCache,
 	)
 
-	router := setupRouter(cfg, log, s, dcwallet, entities)
+	service := service.NewService()
+
+	router := setupRouter(cfg, log, s, dcwallet, entities, service)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.Port),
@@ -108,7 +111,7 @@ func initLog(cfg config.Config) logger.Log {
 	)
 }
 
-func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity) *gin.Engine {
+func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity, service *service.Service) *gin.Engine {
 	r := gin.New()
 	pprof.Register(r)
 	r.Use(
@@ -116,7 +119,7 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 		gin.Recovery(),
 	)
 
-	h, err := handler.New(cfg, l, s, dcwallet, entities)
+	h, err := handler.New(cfg, l, s, dcwallet, entities, service)
 	if err != nil {
 		l.Fatal(err)
 	}

@@ -8,7 +8,6 @@ import (
 	"math/big"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -41,42 +40,14 @@ func searchForCorrectCoinID(query string) (string, error, int) {
 }
 
 func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
-	req, err := request.ValidateRequest(c)
-	if err != nil {
-		return nil, err, http.StatusBadRequest
-	}
+	// req, err := request.ValidateRequest(c)
+	// if err != nil {
+	// 	return nil, err, http.StatusBadRequest
+	// }
 
-	resp := &response.HistoricalMarketChartResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)
-	if err != nil || statusCode != http.StatusOK {
-		if statusCode != http.StatusNotFound {
-			return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", req.CoinID, err), statusCode
-		}
+	// data, err := e.svc.CoinGecko.DoSomething()
 
-		req.CoinID, err, statusCode = searchForCorrectCoinID(req.CoinID)
-		if err != nil || statusCode != http.StatusOK {
-			return nil, err, statusCode
-		}
-
-		statusCode, err := util.FetchData(fmt.Sprintf(getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)
-		if err != nil || statusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to fetch historical market data 2 - coin %s: %v", req.CoinID, err), statusCode
-		}
-	}
-
-	data := response.CoinPriceHistoryResponse{}
-	for _, p := range resp.Prices {
-		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
-		data.Timestamps = append(data.Timestamps, timestamp)
-		data.Prices = append(data.Prices, p[1])
-	}
-
-	from := time.UnixMilli(int64(resp.Prices[0][0])).Format("January 02, 2006")
-	data.From = from
-	to := time.UnixMilli(int64(resp.Prices[len(resp.Prices)-1][0])).Format("January 02, 2006")
-	data.To = to
-
-	return &data, nil, http.StatusOK
+	return nil, nil, 200
 }
 
 func (e *Entity) generateInDiscordWallet(user *model.User) error {

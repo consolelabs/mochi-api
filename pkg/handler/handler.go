@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,10 +22,11 @@ type Handler struct {
 	dcwallet discordwallet.IDiscordWallet
 	entities *entities.Entity
 	discord  *discordgo.Session
+	svc      *service.Service
 }
 
 // New will return an instance of Auth struct
-func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity) (*Handler, error) {
+func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity, svc *service.Service) (*Handler, error) {
 	r := pg.NewRepo(s.DB())
 
 	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
@@ -38,6 +40,7 @@ func New(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.
 		dcwallet: dcwallet,
 		entities: entities,
 		discord:  discord,
+		svc:      svc,
 	}
 
 	return handler, nil

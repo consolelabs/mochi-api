@@ -32,7 +32,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 		}
 	}
 
-	if res == nil || len(res) == 0 {
+	if len(res) == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{"errors": errs})
 		return
 	}

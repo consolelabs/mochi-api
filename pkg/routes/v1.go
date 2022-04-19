@@ -25,10 +25,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 		userGroup.GET("/:id", h.GetUser)
 	}
 
-	inviteHistoriesGroup := v1.Group("/invite-histories")
+	communityGroup := v1.Group("/community")
 	{
-		inviteHistoriesGroup.POST("", h.IndexInviteHistory)
-		inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+		inviteHistoriesGroup := communityGroup.Group("/invite-histories")
+		{
+			inviteHistoriesGroup.POST("", h.IndexInviteHistory)
+			inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+		}
+
 	}
 
 	profleGroup := v1.Group("/profiles")
@@ -52,6 +56,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)
+	}
+
+	webhook := v1.Group("/webhook")
+	{
+		webhook.Group("/discord", h.HandleDiscordWebhook)
 	}
 
 }
