@@ -2,10 +2,8 @@ package entities
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"math/big"
 	"net/http"
@@ -24,94 +22,49 @@ import (
 )
 
 const (
-	getBeefyLPPriceURL    = `https://api.beefy.finance/lps`
-	getBeefyTokenPriceURL = `https://api.beefy.finance/prices`
+	getBeefyLPPriceURL    = "https://api.beefy.finance/lps"
+	getBeefyTokenPriceURL = "https://api.beefy.finance/prices"
+
+	getMarketChartURL = "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d"
+	searchCoinURL     = "https://api.coingecko.com/api/v3/search?query=%s"
+	getCoinURL        = "https://api.coingecko.com/api/v3/coins/%s"
 )
 
-type HistoricalMarketChartResponse struct {
-	Prices [][]float64 `json:"prices"`
-}
-
-type SearchCoinsResponse struct {
-	Coins []CoinDataResponse `json:"coins"`
-}
-
-type CoinDataResponse struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
-	Symbol        string `json:"symbol"`
-	MarketCapRank int    `json:"market_cap_rank"`
-	Thumb         string `json:"thumb"`
-	Large         string `json:"large"`
-}
-
-type CoinPriceHistoryResponse struct {
-	Timestamps []string  `json:"timestamps"`
-	Prices     []float64 `json:"prices"`
-	From       string    `json:"from"`
-	To         string    `json:"to"`
-}
-
-func fetchHistoricalMarketData(req *request.GetMarketChartRequest, result interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 60}
-	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d", req.CoinID, req.Currency, req.Days)
-	resp, err := client.Get(url)
-	if err != nil {
-		return resp.StatusCode, err
-	}
-	defer resp.Body.Close()
-
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return resp.StatusCode, err
+func searchForCorrectCoinID(query string) (string, error, int) {
+	searchResp := &response.SearchedCoinsListResponse{}
+	statusCode, err := util.FetchData(fmt.Sprintf(searchCoinURL, query), searchResp)
+	if err != nil || searchResp == nil || len(searchResp.Coins) == 0 {
+		return "", fmt.Errorf("failed to search for coins by query %s: %v", query, err), statusCode
 	}
 
-	return resp.StatusCode, json.Unmarshal(bytes, result)
+	return searchResp.Coins[0].ID, nil, http.StatusOK
 }
 
-func searchForCoins(query, result interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 60}
-	url := fmt.Sprintf("https://api.coingecko.com/api/v3/search?query=%s", query)
-	resp, err := client.Get(url)
-	if err != nil {
-		return resp.StatusCode, err
-	}
-	defer resp.Body.Close()
-
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return resp.StatusCode, err
-	}
-
-	return resp.StatusCode, json.Unmarshal(bytes, result)
-}
-
-func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*CoinPriceHistoryResponse, error, int) {
+func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
 	req, err := request.ValidateRequest(c)
 	if err != nil {
 		return nil, err, http.StatusBadRequest
 	}
 
-	var resp *HistoricalMarketChartResponse
-	statusCode, err := fetchHistoricalMarketData(req, &resp)
-	if err != nil || statusCode != 200 {
-		if statusCode != 404 {
+	resp := &response.HistoricalMarketChartResponse{}
+	statusCode, err := util.FetchData(fmt.Sprintf(getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)
+	if err != nil || statusCode != http.StatusOK {
+		if statusCode != http.StatusNotFound {
 			return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", req.CoinID, err), statusCode
 		}
 
-		var searchResp *SearchCoinsResponse
-		_, err := searchForCoins(req.CoinID, &searchResp)
-		if err != nil || searchResp == nil || len(searchResp.Coins) == 0 {
-			return nil, fmt.Errorf("failed to search for coins by query %s: %v", req.CoinID, err), http.StatusNotFound
+		req.CoinID, err, statusCode = searchForCorrectCoinID(req.CoinID)
+		if err != nil || statusCode != http.StatusOK {
+			return nil, err, statusCode
 		}
-		req.CoinID = searchResp.Coins[0].ID
-		statusCode, err := fetchHistoricalMarketData(req, &resp)
-		if err != nil || statusCode != 200 {
+
+		statusCode, err := util.FetchData(fmt.Sprintf(getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)
+		if err != nil || statusCode != http.StatusOK {
 			return nil, fmt.Errorf("failed to fetch historical market data 2 - coin %s: %v", req.CoinID, err), statusCode
 		}
 	}
 
-	data := CoinPriceHistoryResponse{}
+	data := response.CoinPriceHistoryResponse{}
 	for _, p := range resp.Prices {
 		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
 		data.Timestamps = append(data.Timestamps, timestamp)
@@ -127,7 +80,7 @@ func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*CoinPriceHistoryResp
 }
 
 func (e *Entity) generateInDiscordWallet(user *model.User) error {
-	if !user.InDiscordWalletAddress.Valid {
+	if !user.InDiscordWalletAddress.Valid || user.InDiscordWalletAddress.String == "" {
 		inDiscordWalletNumber := e.repo.Users.GetLatestWalletNumber() + 1
 		inDiscordAddress, err := e.dcwallet.GetAccountByWalletNumber(inDiscordWalletNumber)
 		if err != nil {
@@ -138,7 +91,7 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 		user.InDiscordWalletNumber = model.JSONNullInt64{NullInt64: sql.NullInt64{Int64: int64(inDiscordWalletNumber), Valid: true}}
 		user.InDiscordWalletAddress = model.JSONNullString{NullString: sql.NullString{String: inDiscordAddress.Address.Hex(), Valid: true}}
 
-		if err = e.repo.Users.UpsertOne(*user); err != nil {
+		if err := e.repo.Users.UpsertOne(user); err != nil {
 			err = fmt.Errorf("error upsert user: %v", err)
 			return err
 		}
@@ -148,10 +101,11 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 }
 
 func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]response.InDiscordWalletTransferResponse, []string) {
+	fmt.Println("req:", req)
 	res := []response.InDiscordWalletTransferResponse{}
 	errs := []string{}
 
-	fromUser, err := e.repo.Users.GetOne(req.FromDiscordID)
+	fromUser, err := e.repo.Users.GetOne(req.Sender)
 	if err != nil {
 		errs = append(errs, fmt.Sprintf("user not found: %v", err))
 		return nil, errs
@@ -161,7 +115,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		return nil, errs
 	}
 
-	toUsers, err := e.repo.Users.GetByDiscordIDs(req.ToDiscordIDs)
+	toUsers, err := e.repo.Users.GetByDiscordIDs(req.Recipients)
 	if err != nil || len(toUsers) == 0 {
 		errs = append(errs, fmt.Sprintf("recipients not found: %v", err))
 		return nil, errs
@@ -207,7 +161,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 
 		_, err = e.repo.DiscordBotTransaction.Create(model.DiscordBotTransaction{
 			TxHash:        signedTx.Hash().Hex(),
-			FromDiscordID: req.FromDiscordID,
+			FromDiscordID: req.Sender,
 			ToDiscordID:   toUser.ID,
 			GuildID:       req.GuildID,
 			ChannelID:     req.ChannelID,
@@ -221,7 +175,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		}
 
 		res = append(res, response.InDiscordWalletTransferResponse{
-			FromDiscordID:  req.FromDiscordID,
+			FromDiscordID:  req.Sender,
 			ToDiscordID:    toUser.ID,
 			Amount:         transferredAmount,
 			Cryptocurrency: req.Cryptocurrency,
@@ -237,8 +191,8 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 	return res, errs
 }
 
-func (e *Entity) InDiscordWalletWithdraw(req request.WithdrawRequest) (res response.InDiscordWalletWithdrawResponse, err error) {
-	fromUser, err := e.repo.Users.GetOne(req.FromDiscordID)
+func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res response.InDiscordWalletWithdrawResponse, err error) {
+	fromUser, err := e.repo.Users.GetOne(req.Sender)
 	if err != nil {
 		err = fmt.Errorf("user not found: %v", err)
 		return
@@ -261,7 +215,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.WithdrawRequest) (res respo
 	}
 
 	signedTx, txBaseURL, err := e.transfer(fromAccount,
-		accounts.Account{Address: common.HexToAddress(req.ToAddress)},
+		accounts.Account{Address: common.HexToAddress(req.Recipients[0])},
 		req.Amount,
 		token, -1, req.All)
 	if err != nil {
@@ -271,8 +225,8 @@ func (e *Entity) InDiscordWalletWithdraw(req request.WithdrawRequest) (res respo
 
 	_, err = e.repo.DiscordBotTransaction.Create(model.DiscordBotTransaction{
 		TxHash:        signedTx.Hash().Hex(),
-		FromDiscordID: req.FromDiscordID,
-		ToAddress:     req.ToAddress,
+		FromDiscordID: req.Sender,
+		ToAddress:     req.Recipients[0],
 		GuildID:       req.GuildID,
 		ChannelID:     req.ChannelID,
 		Amount:        req.Amount,
@@ -288,8 +242,8 @@ func (e *Entity) InDiscordWalletWithdraw(req request.WithdrawRequest) (res respo
 	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
 	res = response.InDiscordWalletWithdrawResponse{
-		FromDiscordId:    req.FromDiscordID,
-		ToAddress:        req.ToAddress,
+		FromDiscordId:    req.Sender,
+		ToAddress:        req.Recipients[0],
 		Amount:           req.Amount,
 		Cryptocurrency:   req.Cryptocurrency,
 		TxHash:           signedTx.Hash().Hex(),
@@ -334,12 +288,12 @@ func (e *Entity) GetBeefyTokenPrices() (map[string]float64, error) {
 	tokenPrices := make(map[string]float64)
 
 	// get token prices
-	if err := util.FetchData(getBeefyTokenPriceURL, &tokenPrices); err != nil {
+	if _, err := util.FetchData(getBeefyTokenPriceURL, &tokenPrices); err != nil {
 		return nil, err
 	}
 
 	// get lp prices
-	if err := util.FetchData(getBeefyLPPriceURL, &tokenPrices); err != nil {
+	if _, err := util.FetchData(getBeefyLPPriceURL, &tokenPrices); err != nil {
 		return nil, err
 	}
 
@@ -352,22 +306,21 @@ func (e *Entity) GetBeefyTokenPrices() (map[string]float64, error) {
 	return res, nil
 }
 
-func (e *Entity) InDiscordWalletBalances(discordID string) (response response.UserBalancesResponse, err error) {
-	var ua *model.User
+func (e *Entity) InDiscordWalletBalances(discordID, username string) (*response.UserBalancesResponse, error) {
+	response := &response.UserBalancesResponse{}
+	user := &model.User{}
+	var err error
+
 	switch {
 	case discordID != "":
-		ua, err = e.repo.Users.GetOne(discordID)
-	default:
-		err = fmt.Errorf("discord_id is required")
-		return
-	}
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			err = fmt.Errorf("unverified user")
-			return
+		user, err = e.repo.Users.GetOne(discordID)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			err = fmt.Errorf("failed to get user address, err: %v", err)
+			return nil, err
 		}
-		err = fmt.Errorf("failed to get user address, err: %v", err)
-		return
+	default:
+		err := fmt.Errorf("discord_id is required")
+		return nil, err
 	}
 
 	tokens, err := e.repo.Token.GetAllSupported()
@@ -375,25 +328,26 @@ func (e *Entity) InDiscordWalletBalances(discordID string) (response response.Us
 		err = fmt.Errorf("failed to get supported tokens - err: %v", err)
 	}
 
-	if ua.InDiscordWalletAddress.String == "" {
-		if err = e.generateInDiscordWallet(ua); err != nil {
+	user.ID = discordID
+	user.Username = username
+	if user.InDiscordWalletAddress.String == "" {
+		if err = e.generateInDiscordWallet(user); err != nil {
 			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
-			return
+			return nil, err
 		}
-		return e.InDiscordWalletBalances(discordID)
 	}
 
-	balances, err := e.dcwallet.FTM().Balances(ua.InDiscordWalletAddress.String, tokens)
+	balances, err := e.dcwallet.FTM().Balances(user.InDiscordWalletAddress.String, tokens)
 	if err != nil {
 		err = fmt.Errorf("cannot get user balances: %v", err)
-		return
+		return nil, err
 	}
 	response.Balances = balances
 
 	tokenPrices, err := e.GetBeefyTokenPrices()
 	if err != nil {
 		err = fmt.Errorf("cannot get user balances: %v", err)
-		return
+		return nil, err
 	}
 
 	response.BalancesInUSD = make(map[string]float64)
@@ -410,7 +364,7 @@ func (e *Entity) InDiscordWalletBalances(discordID string) (response response.Us
 		response.BalancesInUSD[tokenSymbol] = balance * tokenPriceInUSD
 	}
 
-	return
+	return response, nil
 }
 
 func (e *Entity) GetSupportedTokens() (tokens []model.Token, err error) {
@@ -420,4 +374,30 @@ func (e *Entity) GetSupportedTokens() (tokens []model.Token, err error) {
 		return
 	}
 	return
+}
+
+func (e *Entity) GetCoinData(c *gin.Context) (*response.GetCoinResponse, error, int) {
+	coinID := c.Param("id")
+	if coinID == "" {
+		return nil, fmt.Errorf("id is required"), http.StatusBadRequest
+	}
+
+	resp := &response.GetCoinResponse{}
+	statusCode, err := util.FetchData(fmt.Sprintf(getCoinURL, coinID), resp)
+	if err != nil || statusCode != http.StatusOK {
+		if statusCode != http.StatusNotFound {
+			return nil, fmt.Errorf("failed to fetch coin data of %s: %v", coinID, err), statusCode
+		}
+
+		coinID, err, statusCode := searchForCorrectCoinID(coinID)
+		if err != nil || statusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to search for coins by query %s: %v", coinID, err), statusCode
+		}
+
+		statusCode, err = util.FetchData(fmt.Sprintf(getCoinURL, coinID), resp)
+		if err != nil || statusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to fetch coin data 2 of %s: %v", coinID, err), statusCode
+		}
+	}
+	return resp, nil, http.StatusOK
 }
