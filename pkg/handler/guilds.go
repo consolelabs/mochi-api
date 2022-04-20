@@ -19,7 +19,7 @@ func (h *Handler) GetGuilds(c *gin.Context) {
 }
 
 func (h *Handler) GetGuild(c *gin.Context) {
-	guildID := c.Param("id")
+	guildID := c.Param("guild_id")
 
 	guild, err := h.entities.GetGuild(guildID)
 	if err != nil {
