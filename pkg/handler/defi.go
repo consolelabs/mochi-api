@@ -60,11 +60,13 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 }
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
-	query := c.Request.URL.Query()
-	discordID := query.Get("discord_id")
-	username := query.Get("username")
+	discordID := c.Query("discord_id")
+	if discordID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "discord_id is required"})
+		return
+	}
 
-	response, err := h.entities.InDiscordWalletBalances(discordID, username)
+	response, err := h.entities.InDiscordWalletBalances(discordID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

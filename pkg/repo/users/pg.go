@@ -3,7 +3,6 @@ package users
 import (
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type pg struct {
@@ -23,22 +22,6 @@ func (pg *pg) GetLatestWalletNumber() int {
 	row := pg.db.Table("users").Select("max(in_discord_wallet_number)").Row()
 	row.Scan(&result)
 	return result
-}
-
-func (pg *pg) UpsertOne(user *model.User) error {
-	tx := pg.db.Begin()
-
-	err := tx.Omit(clause.Associations).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "id"}},
-		UpdateAll: true,
-	}).Create(user).Error
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit().Error
 }
 
 func (pg *pg) GetOne(discordID string) (*model.User, error) {

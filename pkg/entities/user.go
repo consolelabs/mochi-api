@@ -50,6 +50,13 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 		})
 	}
 
+	if user.InDiscordWalletAddress.String == "" {
+		if err = e.generateInDiscordWallet(user); err != nil {
+			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
+			return nil, err
+		}
+	}
+
 	res := &response.GetUserResponse{
 		ID:                     user.ID,
 		Username:               user.Username,
