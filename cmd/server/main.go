@@ -16,7 +16,6 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/routes"
 	"github.com/defipod/mochi/pkg/service"
@@ -27,11 +26,12 @@ import (
 )
 
 func main() {
+	// *** config ***
 	cls := config.DefaultConfigLoaders()
 	cfg := config.LoadConfig(cls)
-
 	log := initLog(cfg)
 
+	// *** db ***
 	s, close := pg.NewPostgresStore(&cfg)
 	defer func() {
 		err := close()
@@ -42,16 +42,19 @@ func main() {
 
 	repo := pg.NewRepo(s.DB())
 
+	// *** dcwallet ***
 	dcwallet, err := discordwallet.New(cfg, log, s)
 	if err != nil {
 		log.Fatalf("failed to init discord wallet: %v", err)
 	}
 
+	// *** discord **
 	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
 	if err != nil {
 		log.Fatalf("failed to init discord: %v", err)
 	}
 
+	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
 		log.Fatalf("failed to init redis: %v", err)
@@ -64,6 +67,7 @@ func main() {
 
 	service := service.NewService()
 
+	// *** entities ***
 	entities := entities.New(
 		log,
 		repo,
@@ -73,7 +77,7 @@ func main() {
 		service,
 	)
 
-	router := setupRouter(cfg, log, s, dcwallet, entities, service)
+	router := setupRouter(cfg, log, entities)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.Port),
@@ -112,7 +116,7 @@ func initLog(cfg config.Config) logger.Log {
 	)
 }
 
-func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet, entities *entities.Entity, service *service.Service) *gin.Engine {
+func setupRouter(cfg config.Config, l logger.Log, entities *entities.Entity) *gin.Engine {
 	r := gin.New()
 	pprof.Register(r)
 	r.Use(
@@ -120,7 +124,7 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 		gin.Recovery(),
 	)
 
-	h, err := handler.New(cfg, l, s, dcwallet, entities, service)
+	h, err := handler.New(cfg, l, entities)
 	if err != nil {
 		l.Fatal(err)
 	}
@@ -160,7 +164,7 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 	// handlers
 	r.GET("/healthz", h.Healthz)
 
-	routes.NewRoutes(r, h, cfg, s)
+	routes.NewRoutes(r, h, cfg)
 
 	return r
 }

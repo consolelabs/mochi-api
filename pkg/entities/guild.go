@@ -4,27 +4,12 @@ import (
 	"errors"
 
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 )
 
-type GetGuildsResponse struct {
-	Data []*GetGuildResponse `json:"data"`
-}
-
-type GetGuildResponse struct {
-	ID           string   `json:"id"`
-	Name         string   `json:"name"`
-	BotScopes    []string `json:"bot_scopes"`
-	Alias        string   `json:"alias"`
-	LogChannelID string   `json:"log_channel_id"`
-}
-
-type CreateGuildRequest struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
-func (e *Entity) CreateGuild(guild CreateGuildRequest) error {
+func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
 	return e.repo.DiscordGuilds.CreateIfNotExists(model.DiscordGuild{
 		ID:   guild.ID,
 		Name: guild.Name,
@@ -34,16 +19,16 @@ func (e *Entity) CreateGuild(guild CreateGuildRequest) error {
 	})
 }
 
-func (e *Entity) GetGuilds() (*GetGuildsResponse, error) {
+func (e *Entity) GetGuilds() (*response.GetGuildsResponse, error) {
 	guilds, err := e.repo.DiscordGuilds.Gets()
 	if err != nil {
 		return nil, err
 	}
 
-	var response GetGuildsResponse
-	response.Data = make([]*GetGuildResponse, 0)
+	var res response.GetGuildsResponse
+	res.Data = make([]*response.GetGuildResponse, 0)
 	for _, g := range guilds {
-		response.Data = append(response.Data, &GetGuildResponse{
+		res.Data = append(res.Data, &response.GetGuildResponse{
 			ID:           g.ID,
 			Name:         g.Name,
 			BotScopes:    g.BotScopes,
@@ -52,10 +37,10 @@ func (e *Entity) GetGuilds() (*GetGuildsResponse, error) {
 		})
 	}
 
-	return &response, nil
+	return &res, nil
 }
 
-func (e *Entity) GetGuild(guildID string) (*GetGuildResponse, error) {
+func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 	guild, err := e.repo.DiscordGuilds.GetByID(guildID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -64,7 +49,7 @@ func (e *Entity) GetGuild(guildID string) (*GetGuildResponse, error) {
 		return nil, err
 	}
 
-	return &GetGuildResponse{
+	return &response.GetGuildResponse{
 		ID:           guild.ID,
 		Name:         guild.Name,
 		BotScopes:    guild.BotScopes,
