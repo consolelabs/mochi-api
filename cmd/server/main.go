@@ -62,15 +62,16 @@ func main() {
 		log.Fatalf("failed to init redis cache: %v", err)
 	}
 
+	service := service.NewService()
+
 	entities := entities.New(
 		log,
 		repo,
 		dcwallet,
 		discord,
 		redisCache,
+		service,
 	)
-
-	service := service.NewService()
 
 	router := setupRouter(cfg, log, s, dcwallet, entities, service)
 
