@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
+	"github.com/defipod/mochi/pkg/service"
 )
 
 type Entity struct {
@@ -16,6 +17,7 @@ type Entity struct {
 	dcwallet discordwallet.IDiscordWallet
 	discord  *discordgo.Session
 	cache    cache.Cache
+	svc      *service.Service
 }
 
 func New(
@@ -24,12 +26,14 @@ func New(
 	dcwallet discordwallet.IDiscordWallet,
 	discord *discordgo.Session,
 	cache cache.Cache,
+	service *service.Service,
 ) *Entity {
 	entities := &Entity{
 		repo:     repo,
 		dcwallet: dcwallet,
 		discord:  discord,
 		cache:    cache,
+		svc:      service,
 	}
 
 	return entities

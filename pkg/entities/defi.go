@@ -23,31 +23,20 @@ import (
 const (
 	getBeefyLPPriceURL    = "https://api.beefy.finance/lps"
 	getBeefyTokenPriceURL = "https://api.beefy.finance/prices"
-
-	getMarketChartURL = "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d"
-	searchCoinURL     = "https://api.coingecko.com/api/v3/search?query=%s"
-	getCoinURL        = "https://api.coingecko.com/api/v3/coins/%s"
 )
 
-func searchForCorrectCoinID(query string) (string, error, int) {
-	searchResp := &response.SearchedCoinsListResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(searchCoinURL, query), searchResp)
-	if err != nil || searchResp == nil || len(searchResp.Coins) == 0 {
-		return "", fmt.Errorf("failed to search for coins by query %s: %v", query, err), statusCode
+func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
+	req, err := request.ValidateRequest(c)
+	if err != nil {
+		return nil, err, http.StatusBadRequest
 	}
 
-	return searchResp.Coins[0].ID, nil, http.StatusOK
-}
+	data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req)
+	if err != nil {
+		return nil, err, statusCode
+	}
 
-func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
-	// req, err := request.ValidateRequest(c)
-	// if err != nil {
-	// 	return nil, err, http.StatusBadRequest
-	// }
-
-	// data, err := e.svc.CoinGecko.DoSomething()
-
-	return nil, nil, 200
+	return data, nil, http.StatusOK
 }
 
 func (e *Entity) generateInDiscordWallet(user *model.User) error {
@@ -353,22 +342,10 @@ func (e *Entity) GetCoinData(c *gin.Context) (*response.GetCoinResponse, error, 
 		return nil, fmt.Errorf("id is required"), http.StatusBadRequest
 	}
 
-	resp := &response.GetCoinResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(getCoinURL, coinID), resp)
-	if err != nil || statusCode != http.StatusOK {
-		if statusCode != http.StatusNotFound {
-			return nil, fmt.Errorf("failed to fetch coin data of %s: %v", coinID, err), statusCode
-		}
-
-		coinID, err, statusCode := searchForCorrectCoinID(coinID)
-		if err != nil || statusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to search for coins by query %s: %v", coinID, err), statusCode
-		}
-
-		statusCode, err = util.FetchData(fmt.Sprintf(getCoinURL, coinID), resp)
-		if err != nil || statusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to fetch coin data 2 of %s: %v", coinID, err), statusCode
-		}
+	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
+	if err != nil {
+		return nil, err, statusCode
 	}
-	return resp, nil, http.StatusOK
+
+	return data, nil, http.StatusOK
 }

@@ -1,13 +1,15 @@
 package service
 
+import "github.com/defipod/mochi/pkg/service/coingecko"
+
 // import "github.com/defipod/api/pkg/service/binance"
 
 type Service struct {
-	// CoinGecko *coingecko.Service
+	CoinGecko coingecko.Service
 }
 
 func NewService() *Service {
 	return &Service{
-		// CoinGecko: coingecko.NewService(),
+		CoinGecko: coingecko.NewService(),
 	}
 }
