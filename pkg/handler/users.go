@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/entities"
@@ -28,7 +27,7 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 func (h *Handler) GetUser(c *gin.Context) {
 	discordID := c.Param("id")
 	if discordID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("id is required")})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
 		return
 	}
 

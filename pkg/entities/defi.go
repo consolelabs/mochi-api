@@ -17,7 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 const (
@@ -51,7 +50,7 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 		user.InDiscordWalletNumber = model.JSONNullInt64{NullInt64: sql.NullInt64{Int64: int64(inDiscordWalletNumber), Valid: true}}
 		user.InDiscordWalletAddress = model.JSONNullString{NullString: sql.NullString{String: inDiscordAddress.Address.Hex(), Valid: true}}
 
-		if err := e.repo.Users.UpsertOne(user); err != nil {
+		if err := e.repo.Users.Create(user); err != nil {
 			err = fmt.Errorf("error upsert user: %v", err)
 			return err
 		}
@@ -266,20 +265,12 @@ func (e *Entity) GetBeefyTokenPrices() (map[string]float64, error) {
 	return res, nil
 }
 
-func (e *Entity) InDiscordWalletBalances(discordID, username string) (*response.UserBalancesResponse, error) {
+func (e *Entity) InDiscordWalletBalances(discordID string) (*response.UserBalancesResponse, error) {
 	response := &response.UserBalancesResponse{}
-	user := &model.User{}
-	var err error
 
-	switch {
-	case discordID != "":
-		user, err = e.repo.Users.GetOne(discordID)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			err = fmt.Errorf("failed to get user address, err: %v", err)
-			return nil, err
-		}
-	default:
-		err := fmt.Errorf("discord_id is required")
+	user, err := e.repo.Users.GetOne(discordID)
+	if err != nil {
+		err = fmt.Errorf("failed to get user %s: %v", discordID, err)
 		return nil, err
 	}
 
@@ -288,8 +279,6 @@ func (e *Entity) InDiscordWalletBalances(discordID, username string) (*response.
 		err = fmt.Errorf("failed to get supported tokens - err: %v", err)
 	}
 
-	user.ID = discordID
-	user.Username = username
 	if user.InDiscordWalletAddress.String == "" {
 		if err = e.generateInDiscordWallet(user); err != nil {
 			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
