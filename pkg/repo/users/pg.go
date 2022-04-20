@@ -43,7 +43,7 @@ func (pg *pg) UpsertOne(user *model.User) error {
 
 func (pg *pg) GetOne(discordID string) (*model.User, error) {
 	u := &model.User{}
-	return u, pg.db.Where("id = ?", discordID).First(u).Error
+	return u, pg.db.Where("id = ?", discordID).Preload("GuildUsers").First(u).Error
 }
 
 func (pg *pg) GetByDiscordIDs(discordIDs []string) ([]model.User, error) {

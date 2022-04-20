@@ -39,8 +39,6 @@ func TestHandler_Healthz(t *testing.T) {
 	)
 
 	h := Handler{
-		repo:     pg.NewRepo(s.DB().Debug()),
-		dcwallet: &discordWallet,
 		entities: entities.New(l, repo, &discordWallet, nil, nil, nil),
 	}
 
