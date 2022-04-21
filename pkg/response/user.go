@@ -9,8 +9,8 @@ type GetUserResponse struct {
 }
 
 type GetGuildUserResponse struct {
-	GuildID   string  `json:"guild_id"`
-	UserID    string  `json:"user_id"`
-	Nickname  *string `json:"nickname"`
-	InvitedBy *string `json:"invited_by"`
+	GuildID   string `json:"guild_id"`
+	UserID    string `json:"user_id"`
+	Nickname  string `json:"nickname"`
+	InvitedBy string `json:"invited_by"`
 }

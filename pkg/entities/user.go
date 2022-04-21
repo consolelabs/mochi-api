@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -17,9 +16,10 @@ func (e *Entity) CreateUser(req request.CreateUserRequest) error {
 		Username: req.Username,
 		GuildUsers: []*model.GuildUser{
 			{
-				GuildID:  req.GuildID,
-				UserID:   req.ID,
-				Nickname: model.JSONNullString{NullString: sql.NullString{String: *req.Nickname, Valid: *req.Nickname != ""}},
+				GuildID:   req.GuildID,
+				UserID:    req.ID,
+				Nickname:  req.Nickname,
+				InvitedBy: req.InvitedBy,
 			},
 		},
 	}
@@ -45,8 +45,8 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 		guildUsers = append(guildUsers, &response.GetGuildUserResponse{
 			GuildID:   guildUser.GuildID,
 			UserID:    guildUser.UserID,
-			Nickname:  &guildUser.Nickname.String,
-			InvitedBy: &guildUser.InvitedBy.String,
+			Nickname:  guildUser.Nickname,
+			InvitedBy: guildUser.InvitedBy,
 		})
 	}
 

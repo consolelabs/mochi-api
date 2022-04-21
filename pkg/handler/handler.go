@@ -18,7 +18,6 @@ type Handler struct {
 
 // New will return an instance of Auth struct
 func New(cfg config.Config, l logger.Log, entities *entities.Entity) (*Handler, error) {
-
 	handler := &Handler{
 		cfg:      cfg,
 		entities: entities,
