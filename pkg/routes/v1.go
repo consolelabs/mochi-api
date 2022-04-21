@@ -59,7 +59,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	webhook := v1.Group("/webhook")
 	{
-		webhook.Group("/discord", h.HandleDiscordWebhook)
+		webhook.POST("/discord", h.HandleDiscordWebhook)
 	}
 
 }

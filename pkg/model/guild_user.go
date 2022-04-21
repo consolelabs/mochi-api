@@ -7,12 +7,12 @@ import (
 )
 
 type GuildUser struct {
-	ID        uuid.NullUUID  `json:"id" gorm:"default:uuid_generate_v4()"`
-	GuildID   string         `json:"guild_id" gorm:"unique_index:idx_guild_user_guild_id_user_id"`
-	UserID    string         `json:"user_id" gorm:"uique_index:idx_guild_user_guild_id_user_id"`
-	Nickname  JSONNullString `json:"nickname"`
-	InvitedBy JSONNullString `json:"invited_by"`
-	Roles     []GuildRole    `json:"roles" gorm:"many2many:guild_user_role;foreignKey:UserID;joinForeignKey:UserID;References:ID;joinReferences:RoleID"`
+	ID        uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	GuildID   string        `json:"guild_id" gorm:"unique_index:idx_guild_user_guild_id_user_id"`
+	UserID    string        `json:"user_id" gorm:"uique_index:idx_guild_user_guild_id_user_id"`
+	Nickname  string        `json:"nickname"`
+	InvitedBy string        `json:"invited_by"`
+	Roles     []GuildRole   `json:"roles" gorm:"many2many:guild_user_role;foreignKey:UserID;joinForeignKey:UserID;References:ID;joinReferences:RoleID"`
 }
 
 type GuildUserRole struct {

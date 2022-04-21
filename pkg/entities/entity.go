@@ -36,6 +36,12 @@ func New(
 		svc:      service,
 	}
 
+	if entities.discord != nil && entities.cache != nil {
+		if err := entities.InitInviteTrackerCache(); err != nil {
+			return nil
+		}
+	}
+
 	return entities
 }
 

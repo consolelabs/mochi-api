@@ -12,6 +12,7 @@ func (e *Entity) CreateInviteHistory(req request.CreateInviteHistoryRequest) err
 		GuildID:   req.GuildID,
 		UserID:    req.Invitee,
 		InvitedBy: req.Inviter,
+		Type:      req.Type,
 	}
 
 	if err := e.repo.InviteHistories.Create(inviteHistory); err != nil {
