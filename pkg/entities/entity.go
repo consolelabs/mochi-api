@@ -27,7 +27,7 @@ func New(
 	discord *discordgo.Session,
 	cache cache.Cache,
 	service *service.Service,
-) *Entity {
+) (*Entity, error) {
 	entities := &Entity{
 		repo:     repo,
 		dcwallet: dcwallet,
@@ -38,11 +38,11 @@ func New(
 
 	if entities.discord != nil && entities.cache != nil {
 		if err := entities.InitInviteTrackerCache(); err != nil {
-			return nil
+			l.Error("failed to init invite tracker cache:", err)
 		}
 	}
 
-	return entities
+	return entities, nil
 }
 
 var (

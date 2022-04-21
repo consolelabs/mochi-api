@@ -68,7 +68,7 @@ func main() {
 	service := service.NewService()
 
 	// *** entities ***
-	entities := entities.New(
+	entities, err := entities.New(
 		log,
 		repo,
 		dcwallet,
@@ -76,6 +76,9 @@ func main() {
 		redisCache,
 		service,
 	)
+	if err != nil {
+		log.Fatalf("failed to init entities: %v", err)
+	}
 
 	router := setupRouter(cfg, log, entities)
 
