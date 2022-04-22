@@ -15,7 +15,16 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		guildGroup.POST("", h.CreateGuild)
 		guildGroup.GET("", h.GetGuilds)
-		guildGroup.GET("/:id", h.GetGuild)
+		guildGroup.GET("/:guild_id", h.GetGuild)
+
+		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
+		{
+			customCommandGroup.POST("", h.CreateCustomCommand)
+			customCommandGroup.GET("", h.ListCustomCommands)
+			customCommandGroup.GET("/:command_id", h.GetCustomCommand)
+			customCommandGroup.PUT("/:command_id", h.UpdateCustomCommand)
+			customCommandGroup.DELETE("/:command_id", h.DeleteCustomCommand)
+		}
 	}
 
 	userGroup := v1.Group("/users")
@@ -61,5 +70,4 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
 	}
-
 }
