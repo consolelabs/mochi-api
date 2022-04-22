@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
@@ -50,6 +51,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 
 	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
 	if err != nil {
+		logrus.WithError(err).Error("failed to find inviter")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -63,6 +65,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			JoinDate: inviter.JoinedAt,
 			GuildID:  inviter.GuildID,
 		}); err != nil {
+			logrus.WithError(err).Error("failed to index iviter")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -80,6 +83,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			GuildID:   invitee.GuildID,
 			InvitedBy: invitee.User.ID,
 		}); err != nil {
+			logrus.WithError(err).Error("failed to index invitee")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		response.InviteeID = invitee.User.ID
@@ -101,12 +105,14 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 		Invitee: invitee.User.ID,
 		Type:    inviteType,
 	}); err != nil {
+		logrus.WithError(err).Error("failed to create invite history")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	totalInvites, err := h.entities.CountInviteHistoriesByGuildUser(inviter.GuildID, inviter.User.ID)
 	if err != nil {
+		logrus.WithError(err).Error("failed to count inviter invites")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
