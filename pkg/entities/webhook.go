@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 func (e *Entity) InitInviteTrackerCache() error {
@@ -26,6 +27,8 @@ func (e *Entity) InitInviteTrackerCache() error {
 		if err := e.cache.HashSet(guild.ID, invitesUses, 0); err != nil {
 			return err
 		}
+
+		log.Debug("Cache guild invites", "guild", guild.ID, "invites", invitesUses)
 	}
 
 	return nil
