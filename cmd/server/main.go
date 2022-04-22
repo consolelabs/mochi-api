@@ -53,6 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to init discord: %v", err)
 	}
+	setDiscordIntents(discord)
 
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
@@ -117,6 +118,15 @@ func initLog(cfg config.Config) logger.Log {
 		logger.WithServiceName(cfg.ServiceName),
 		logger.WithHostName(cfg.BaseURL),
 	)
+}
+
+func setDiscordIntents(discord *discordgo.Session) {
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuilds)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMessages)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMessageReactions)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMembers)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentDirectMessages)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildInvites)
 }
 
 func setupRouter(cfg config.Config, l logger.Log, entities *entities.Entity) *gin.Engine {
