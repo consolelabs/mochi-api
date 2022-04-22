@@ -38,7 +38,7 @@ func New(
 
 	if entities.discord != nil && entities.cache != nil {
 		if err := entities.InitInviteTrackerCache(); err != nil {
-			l.Error("failed to init invite tracker cache:", err)
+			l.Error("failed to init invite tracker cache: ", err)
 		}
 	}
 

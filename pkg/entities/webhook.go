@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -10,13 +11,13 @@ import (
 func (e *Entity) InitInviteTrackerCache() error {
 	guilds, err := e.GetGuilds()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get guilds: %w", err)
 	}
 
 	for _, guild := range guilds.Data {
 		invites, err := e.discord.GuildInvites(guild.ID)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get invites for guild %s: %w", guild.ID, err)
 		}
 
 		invitesUses := make(map[string]string)
@@ -24,8 +25,10 @@ func (e *Entity) InitInviteTrackerCache() error {
 			invitesUses[invite.Code] = strconv.Itoa(invite.Uses)
 		}
 
-		if err := e.cache.HashSet(guild.ID, invitesUses, 0); err != nil {
-			return err
+		if len(invitesUses) > 0 {
+			if err := e.cache.HashSet(guild.ID, invitesUses, 0); err != nil {
+				return fmt.Errorf("failed to cache invites for guild %s: %w", guild.ID, err)
+			}
 		}
 
 		log.Debug("Cache guild invites", "guild", guild.ID, "invites", invitesUses)

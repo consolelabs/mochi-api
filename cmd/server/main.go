@@ -56,6 +56,13 @@ func main() {
 	setDiscordIntents(discord)
 	log.Info("discord intents:", discord.Identify.Intents)
 
+	u, err := discord.User("@me")
+	if err != nil {
+		log.Fatalf("failed to get discord bot user: %v", err)
+	}
+	log.Infof("Connected to discord: %s", u.Username)
+
+
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
