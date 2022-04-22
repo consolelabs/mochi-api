@@ -31,6 +31,7 @@ func TestHandler_Healthz(t *testing.T) {
 	}
 
 	s, _ := pg.NewPostgresStore(&cfg)
+	repo := pg.NewRepo(s.DB())
 
 	l := logger.NewJSONLogger(
 		logger.WithServiceName("test"),
@@ -38,9 +39,7 @@ func TestHandler_Healthz(t *testing.T) {
 	)
 
 	h := Handler{
-		repo:     pg.NewRepo(s.DB().Debug()),
-		dcwallet: &discordWallet,
-		entities: entities.New(cfg, l, s, &discordWallet, nil),
+		entities: entities.New(l, repo, &discordWallet, nil, nil, nil),
 	}
 
 	type args struct {

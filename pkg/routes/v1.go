@@ -3,12 +3,11 @@ package routes
 import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/handler"
-	"github.com/defipod/mochi/pkg/repo"
 	"github.com/gin-gonic/gin"
 )
 
 // NewRoutes ...
-func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Store) {
+func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	v1 := r.Group("/api/v1")
 
@@ -22,12 +21,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	userGroup := v1.Group("/users")
 	{
 		userGroup.POST("", h.IndexUsers)
+		userGroup.GET("/:id", h.GetUser)
 	}
 
-	inviteHistoriesGroup := v1.Group("/invite-histories")
+	communityGroup := v1.Group("/community")
 	{
-		inviteHistoriesGroup.POST("", h.IndexInviteHistory)
-		inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+		inviteHistoriesGroup := communityGroup.Group("/invite-histories")
+		{
+			inviteHistoriesGroup.POST("", h.IndexInviteHistory)
+			inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+		}
+
 	}
 
 	profleGroup := v1.Group("/profiles")
@@ -43,12 +47,19 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config, s repo.Stor
 	defiGroup := v1.Group("/defi")
 	{
 		defiGroup.GET("")
+		defiGroup.POST("/transfer", h.InDiscordWalletTransfer)
+		defiGroup.POST("/withdraw", h.InDiscordWalletWithdraw)
+		defiGroup.GET("/balances", h.InDiscordWalletBalances)
+		defiGroup.GET("/tokens", h.GetSupportedTokens)
+
+		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
+		defiGroup.GET("/coins/:id", h.GetCoin)
 	}
 
-	communitiesGroup := v1.Group("/communities")
+	webhook := v1.Group("/webhook")
 	{
-		communitiesGroup.GET("")
+		webhook.POST("/discord", h.HandleDiscordWebhook)
 	}
 
 }

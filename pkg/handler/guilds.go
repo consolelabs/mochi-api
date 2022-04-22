@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,7 +35,7 @@ func (h *Handler) GetGuild(c *gin.Context) {
 }
 
 func (h *Handler) CreateGuild(c *gin.Context) {
-	body := entities.CreateGuildRequest{}
+	body := request.CreateGuildRequest{}
 
 	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

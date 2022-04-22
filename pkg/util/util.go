@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"image"
 	_ "image/color"
@@ -16,6 +17,7 @@ import (
 	"image/jpeg"
 	_ "image/png"
 	"io"
+	"io/ioutil"
 	"math"
 	"math/big"
 	"math/rand"
@@ -498,4 +500,22 @@ func GetSenderByTxHash(rpcEndpoint string, txHash common.Hash) (common.Address, 
 func Uint8ToIntPointer(u uint8) *int {
 	i := int(u)
 	return &i
+}
+
+func FetchData(url string, parseForm interface{}) (int, error) {
+	client := &http.Client{Timeout: time.Second * 30}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	defer resp.Body.Close()
+
+	statusCode := resp.StatusCode
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return statusCode, err
+	}
+
+	return statusCode, json.Unmarshal(b, parseForm)
 }

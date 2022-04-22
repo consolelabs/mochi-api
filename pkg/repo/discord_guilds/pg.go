@@ -1,6 +1,8 @@
 package discord_guilds
 
 import (
+	"fmt"
+
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,9 +16,14 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Gets() ([]*model.DiscordGuild, error) {
-	var guilds []*model.DiscordGuild
-	return guilds, pg.db.Preload("GuildConfigInviteTracker").Find(&guilds).Error
+func (pg *pg) Gets() ([]model.DiscordGuild, error) {
+	guilds := []model.DiscordGuild{}
+	err := pg.db.Preload("GuildConfigInviteTracker").Find(&guilds).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to get guilds: %w", err)
+	}
+
+	return guilds, nil
 }
 
 func (pg *pg) CreateIfNotExists(guild model.DiscordGuild) error {

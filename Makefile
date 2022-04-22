@@ -13,12 +13,14 @@ init:
 	make remove-infras
 	docker-compose up -d
 	@echo "Waiting for database connection..."
-	@while ! docker exec mochi_local pg_isready > /dev/null; do \
+	@while ! docker exec mochi-postgres pg_isready > /dev/null; do \
 		sleep 1; \
 	done
+	make migrate-up
+	make seed-db
 
 remove-infras:
-	docker-compose stop; docker-compose rm -f
+	docker-compose down --remove-orphans
 
 build:
 	env GOOS=darwin GOARCH=amd64 go build -o bin ./...
@@ -44,10 +46,10 @@ docker-build:
 	-t ${APP_NAME}:latest .
 
 seed-db:
-	@docker exec -t mochi_local sh -c "mkdir -p /seed"
-	@docker exec -t mochi_local sh -c "rm -rf /seed/*"
-	@docker cp migrations/seed mochi_local:/
-	@docker exec -t mochi_local sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed/seed.sql"
+	@docker exec -t mochi-postgres sh -c "mkdir -p /seed"
+	@docker exec -t mochi-postgres sh -c "rm -rf /seed/*"
+	@docker cp migrations/seed mochi-postgres:/
+	@docker exec -t mochi-postgres sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed/seed.sql"
 
 reset-db:
 	make init

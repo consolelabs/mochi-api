@@ -3,47 +3,93 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
+	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/routes"
+	"github.com/defipod/mochi/pkg/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 func main() {
+	// *** config ***
 	cls := config.DefaultConfigLoaders()
 	cfg := config.LoadConfig(cls)
+	log := initLog(cfg)
 
-	l := initLog(cfg)
-
+	// *** db ***
 	s, close := pg.NewPostgresStore(&cfg)
 	defer func() {
 		err := close()
 		if err != nil {
-			l.Fatalf("Error closing postgres store:", err)
+			log.Fatalf("Error closing postgres store:", err)
 		}
 	}()
 
-	// init communities
+	repo := pg.NewRepo(s.DB())
 
-	dcwallet, err := discordwallet.New(cfg, l, s)
+	// *** dcwallet ***
+	dcwallet, err := discordwallet.New(cfg, log, s)
 	if err != nil {
-		l.Fatalf("failed to init discord wallet: %v", err)
+		log.Fatalf("failed to init discord wallet: %v", err)
 	}
 
-	router := setupRouter(cfg, l, s, dcwallet)
+	// *** discord **
+	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
+	if err != nil {
+		log.Fatalf("failed to init discord: %v", err)
+	}
+	setDiscordIntents(discord)
+	log.Info("discord intents:", discord.Identify.Intents)
+
+	u, err := discord.User("@me")
+	if err != nil {
+		log.Fatalf("failed to get discord bot user: %v", err)
+	}
+	log.Infof("Connected to discord: %s", u.Username)
+
+
+	// *** cache ***
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		log.Fatalf("failed to init redis: %v", err)
+	}
+
+	redisCache, err := cache.NewRedisCache(redisOpt)
+	if err != nil {
+		log.Fatalf("failed to init redis cache: %v", err)
+	}
+
+	service := service.NewService()
+
+	// *** entities ***
+	entities, err := entities.New(
+		log,
+		repo,
+		dcwallet,
+		discord,
+		redisCache,
+		service,
+	)
+	if err != nil {
+		log.Fatalf("failed to init entities: %v", err)
+	}
+
+	router := setupRouter(cfg, log, entities)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.Port),
@@ -61,7 +107,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt)
 
 	<-quit
-	shutdownServer(srv, cfg.GetShutdownTimeout(), l)
+	shutdownServer(srv, cfg.GetShutdownTimeout(), log)
 
 }
 
@@ -82,7 +128,16 @@ func initLog(cfg config.Config) logger.Log {
 	)
 }
 
-func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discordwallet.DiscordWallet) *gin.Engine {
+func setDiscordIntents(discord *discordgo.Session) {
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuilds)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMessages)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMessageReactions)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMembers)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentDirectMessages)
+	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildInvites)
+}
+
+func setupRouter(cfg config.Config, l logger.Log, entities *entities.Entity) *gin.Engine {
 	r := gin.New()
 	pprof.Register(r)
 	r.Use(
@@ -90,9 +145,9 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 		gin.Recovery(),
 	)
 
-	h, err := handler.New(cfg, l, s, dcwallet)
+	h, err := handler.New(cfg, l, entities)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
 
 	corsOrigins := cfg.GetCORS()
@@ -130,7 +185,7 @@ func setupRouter(cfg config.Config, l logger.Log, s repo.Store, dcwallet *discor
 	// handlers
 	r.GET("/healthz", h.Healthz)
 
-	routes.NewRoutes(r, h, cfg, s)
+	routes.NewRoutes(r, h, cfg)
 
 	return r
 }

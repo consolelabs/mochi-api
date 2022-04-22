@@ -11,19 +11,17 @@ type User struct {
 	InDiscordWalletAddress JSONNullString `json:"in_discord_wallet_address"`
 	InDiscordWalletNumber  JSONNullInt64  `json:"in_discord_wallet_number"`
 
-	GuildUsers []*GuildUser `json:"-"`
+	GuildUsers []*GuildUser `json:"guild_users"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	cols := []clause.Column{}
-	colsNames := []string{}
 	for _, field := range tx.Statement.Schema.PrimaryFields {
 		cols = append(cols, clause.Column{Name: field.DBName})
-		colsNames = append(colsNames, field.DBName)
 	}
 	tx.Statement.AddClause(clause.OnConflict{
 		Columns:   cols,
-		DoNothing: true,
+		DoUpdates: clause.AssignmentColumns([]string{"in_discord_wallet_number", "in_discord_wallet_address"}),
 	})
 	return nil
 }
