@@ -54,6 +54,7 @@ func main() {
 		log.Fatalf("failed to init discord: %v", err)
 	}
 	setDiscordIntents(discord)
+	log.Info("discord intents:", discord.Identify.Intents)
 
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
