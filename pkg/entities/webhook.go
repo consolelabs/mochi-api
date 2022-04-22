@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/ethereum/go-ethereum/log"
 )
 
@@ -26,7 +27,7 @@ func (e *Entity) InitInviteTrackerCache() error {
 		}
 
 		if len(invitesUses) > 0 {
-			if err := e.cache.HashSet(guild.ID, invitesUses, 0); err != nil {
+			if err := e.cache.HashSet(consts.CachePrefixInviteTracker+guild.ID, invitesUses, 0); err != nil {
 				return fmt.Errorf("failed to cache invites for guild %s: %w", guild.ID, err)
 			}
 		}
@@ -47,7 +48,7 @@ func (e *Entity) GuildLatestInvites(guildID string) ([]*discordgo.Invite, error)
 }
 
 func (e *Entity) GuildCachedInvites(guildID string) (invites map[string]string, err error) {
-	return e.cache.HashGet(guildID)
+	return e.cache.HashGet(consts.CachePrefixInviteTracker + guildID)
 }
 
 func (e *Entity) GuildLatestVanityUses(guildID string, invites []*discordgo.Invite) (int, error) {
@@ -79,7 +80,7 @@ func (e *Entity) GuildCachedVanityUses(guildID string, invites map[string]string
 }
 
 func (e *Entity) SetGuildCacheInvites(guildID string, invites map[string]string) error {
-	return e.cache.HashSet(guildID, invites, 0)
+	return e.cache.HashSet(consts.CachePrefixInviteTracker+guildID, invites, 0)
 }
 
 func (e *Entity) FindInviter(guildID string) (inviter *discordgo.Member, isVanity bool, err error) {
