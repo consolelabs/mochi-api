@@ -51,7 +51,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 
 	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
 	if err != nil {
-		logrus.WithError(err).Error("failed to find inviter")
+		logrus.WithError(err).Errorf("Guild %s: failed to find inviter", invitee.GuildID)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -65,7 +65,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			JoinDate: inviter.JoinedAt,
 			GuildID:  inviter.GuildID,
 		}); err != nil {
-			logrus.WithError(err).Error("failed to index iviter")
+			logrus.WithError(err).Errorf("Guild %s: failed to index iviter", invitee.GuildID)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -83,7 +83,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			GuildID:   invitee.GuildID,
 			InvitedBy: invitee.User.ID,
 		}); err != nil {
-			logrus.WithError(err).Error("failed to index invitee")
+			logrus.WithError(err).Errorf("Guild %s: failed to index invitee", invitee.GuildID)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		response.InviteeID = invitee.User.ID
@@ -105,14 +105,14 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 		Invitee: invitee.User.ID,
 		Type:    inviteType,
 	}); err != nil {
-		logrus.WithError(err).Error("failed to create invite history")
+		logrus.WithError(err).Errorf("Guild %s: failed to create invite history", invitee.GuildID)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	totalInvites, err := h.entities.CountInviteHistoriesByGuildUser(inviter.GuildID, inviter.User.ID)
 	if err != nil {
-		logrus.WithError(err).Error("failed to count inviter invites")
+		logrus.WithError(err).Errorf("Guild %s: failed to count inviter invites", invitee.GuildID)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
