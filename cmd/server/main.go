@@ -54,6 +54,13 @@ func main() {
 		log.Fatalf("failed to init discord: %v", err)
 	}
 
+	u, err := discord.User("@me")
+	if err != nil {
+		log.Fatalf("failed to get discord bot user: %v", err)
+	}
+	log.Infof("Connected to discord: %s", u.Username)
+
+
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
