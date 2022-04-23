@@ -6,6 +6,7 @@ import (
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	reactionroleconfig "github.com/defipod/mochi/pkg/repo/reaction_role_configs"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	users "github.com/defipod/mochi/pkg/repo/users"
 )
@@ -18,4 +19,5 @@ type Repo struct {
 	GuildCustomCommand    guildcustomcommand.Store
 	Token                 token.Store
 	DiscordBotTransaction discordbottransaction.Store
+	ReactionRoleConfig    reactionroleconfig.Store
 }

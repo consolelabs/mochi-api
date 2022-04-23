@@ -51,6 +51,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	configGroup := v1.Group("/configs")
 	{
 		configGroup.GET("")
+
+		roleReactionGroup := configGroup.Group("/reaction_roles")
+		{
+			roleReactionGroup.GET("", h.GetAllReactionRolesByGuildID)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
