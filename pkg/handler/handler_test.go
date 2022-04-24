@@ -38,7 +38,7 @@ func TestHandler_Healthz(t *testing.T) {
 		logger.WithHostName(""),
 	)
 
-	entities, _ := entities.New(l, repo, &discordWallet, nil, nil, nil)
+	entities, _ := entities.New(l, repo, &discordWallet, nil, nil, nil, nil)
 
 	h := Handler{
 		entities: entities,

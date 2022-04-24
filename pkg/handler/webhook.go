@@ -27,6 +27,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 	switch req.Event {
 	case request.GUILD_MEMBER_ADD:
 		h.handleGuildMemberAdd(c, req.Data)
+	case request.MESSAGE_CREATE:
+		h.handleMessageCreate(c, req.Data)
 	}
 }
 
@@ -121,4 +123,25 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 	c.JSON(http.StatusOK, gin.H{
 		"data": response,
 	})
+}
+
+func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
+	message := &discordgo.Message{}
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &message); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.entities.HandleDiscordMessage(message); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
