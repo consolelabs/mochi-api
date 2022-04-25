@@ -24,7 +24,16 @@ import (
 
 // store is implimentation of repository
 type store struct {
-	database *gorm.DB
+	database     *gorm.DB
+	shutdownFunc func() error
+}
+
+// Shutdown close database connection
+func (s *store) Shutdown() error {
+	if s.shutdownFunc != nil {
+		return s.shutdownFunc()
+	}
+	return nil
 }
 
 // DB database connection
@@ -56,7 +65,7 @@ func (s *store) NewTransaction() (newRepo repo.Store, finallyFn repo.FinallyFunc
 }
 
 // NewPostgresStore postgres init by gorm
-func NewPostgresStore(cfg *config.Config) (repo.Store, func() error) {
+func NewPostgresStore(cfg *config.Config) repo.Store {
 	ds := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.DBUser, cfg.DBPass,
@@ -75,7 +84,10 @@ func NewPostgresStore(cfg *config.Config) (repo.Store, func() error) {
 		panic(err)
 	}
 
-	return &store{database: db}, conn.Close
+	return &store{
+		database:     db,
+		shutdownFunc: conn.Close,
+	}
 }
 
 // NewStore postgres init by gorm

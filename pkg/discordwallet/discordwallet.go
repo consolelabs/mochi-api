@@ -20,7 +20,7 @@ type IDiscordWallet interface {
 }
 
 type DiscordWallet struct {
-	log      logger.Log
+	log      logger.Logger
 	cfg      config.Config
 	repo     *repo.Repo
 	hdwallet *hdwallet.Wallet
@@ -28,7 +28,7 @@ type DiscordWallet struct {
 }
 
 // New will return an instance of DiscordWallet struct
-func New(cfg config.Config, l logger.Log, s repo.Store) (*DiscordWallet, error) {
+func New(cfg config.Config, l logger.Logger, s repo.Store) (*DiscordWallet, error) {
 	r := pg.NewRepo(s.DB())
 
 	wallet, err := hdwallet.NewFromMnemonic(cfg.InDiscordWalletMnemonic)

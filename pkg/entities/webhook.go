@@ -8,38 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/ethereum/go-ethereum/log"
 	"gorm.io/gorm"
 )
-
-func (e *Entity) InitInviteTrackerCache() error {
-	guilds, err := e.GetGuilds()
-	if err != nil {
-		return fmt.Errorf("failed to get guilds: %w", err)
-	}
-
-	for _, guild := range guilds.Data {
-		invites, err := e.discord.GuildInvites(guild.ID)
-		if err != nil {
-			return fmt.Errorf("failed to get invites for guild %s: %w", guild.ID, err)
-		}
-
-		invitesUses := make(map[string]string)
-		for _, invite := range invites {
-			invitesUses[invite.Code] = strconv.Itoa(invite.Uses)
-		}
-
-		if len(invitesUses) > 0 {
-			if err := e.cache.HashSet(consts.CachePrefixInviteTracker+guild.ID, invitesUses, 0); err != nil {
-				return fmt.Errorf("failed to cache invites for guild %s: %w", guild.ID, err)
-			}
-		}
-
-		log.Debug("Cache guild invites", "guild", guild.ID, "invites", invitesUses)
-	}
-
-	return nil
-}
 
 func (e *Entity) GuildLatestInvites(guildID string) ([]*discordgo.Invite, error) {
 	invites, err := e.discord.GuildInvites(guildID)

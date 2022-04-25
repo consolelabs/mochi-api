@@ -1,13 +1,12 @@
 package routes
 
 import (
-	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/gin-gonic/gin"
 )
 
 // NewRoutes ...
-func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
+func NewRoutes(r *gin.Engine, h *handler.Handler) {
 
 	v1 := r.Group("/api/v1")
 

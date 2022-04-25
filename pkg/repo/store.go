@@ -11,4 +11,5 @@ type FinallyFunc = func(error) error
 type Store interface {
 	DB() *gorm.DB
 	NewTransaction() (Store, FinallyFunc)
+	Shutdown() error
 }
