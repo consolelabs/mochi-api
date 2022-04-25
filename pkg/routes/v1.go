@@ -55,7 +55,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	configGroup := v1.Group("/configs")
 	{
-		configGroup.GET("")
+		configGroup.POST("/gm", h.CreateGmConfig)
 	}
 
 	defiGroup := v1.Group("/defi")

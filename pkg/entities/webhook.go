@@ -3,10 +3,13 @@ package entities
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/ethereum/go-ethereum/log"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) InitInviteTrackerCache() error {
@@ -152,4 +155,92 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 	}
 
 	return resp, nil
+}
+
+func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
+	var (
+		discordID = message.Author.ID
+		guildID   = message.GuildID
+		sentAt    = message.Timestamp
+		channelID = message.ChannelID
+	)
+
+	fmt.Printf("[messageCreate] from %s - guild %s: %s\n", discordID, guildID, message.Content)
+	isGmMessage := message.Content == "gm" || message.Content == "gn"
+
+	switch {
+	case isGmMessage:
+		guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
+		if err != nil {
+			return err
+		}
+		if guildConfigGm.ChannelID != channelID {
+			// do nothing if not gm channel
+			return nil
+		}
+		return e.newUserGM(discordID, guildID, channelID, sentAt)
+	}
+	return nil
+}
+
+func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) error {
+	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
+	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to get user's gm streak: %v", err)
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		newStreak := model.DiscordUserGMStreak{
+			DiscordID:      discordID,
+			GuildID:        guildID,
+			StreakCount:    1,
+			TotalCount:     1,
+			LastStreakDate: chatDate,
+		}
+		err = e.repo.DiscordUserGMStreak.UpsertOne(newStreak)
+		if err != nil {
+			return fmt.Errorf("failed to create new user gm streak: %v", err)
+		}
+		return nil
+	}
+
+	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
+
+	switch {
+	case chatDate.Before(nextStreakDate):
+		durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
+		return e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
+	case chatDate.Equal(nextStreakDate):
+		streak.StreakCount++
+	case chatDate.After(nextStreakDate):
+		streak.StreakCount = 1
+	}
+	streak.LastStreakDate = chatDate
+	streak.TotalCount++
+
+	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
+		return fmt.Errorf("failed to update user gm streak: %v", err)
+	}
+	return e.replyGmGn(streak, channelID, discordID, "", true)
+}
+
+func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, durationTilNextGoal string, newStreakRecorded bool) error {
+	if newStreakRecorded && streak.StreakCount >= 3 {
+		_, err := e.dcsession.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
+			Title:       "GM / GN",
+			Description: fmt.Sprintf("<@%s>, you've said gm-gn %d days in a row :fire: and %d days in total.", discordID, streak.StreakCount, streak.TotalCount),
+		})
+		return err
+	}
+
+	if !newStreakRecorded && durationTilNextGoal != "" {
+		_, err := e.dcsession.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
+			Title:       "GM / GN",
+			Description: fmt.Sprintf("<@%s>, you've already said gm-gn today. You need to wait `%s` :alarm_clock: to reach your next streak goal :dart:.", discordID, durationTilNextGoal),
+		})
+		return err
+	}
+
+	return nil
 }
