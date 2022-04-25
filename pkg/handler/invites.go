@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,5 +43,33 @@ func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": leaderboard,
+	})
+}
+
+func (h *Handler) ConfigureInvites(c *gin.Context) {
+	var req request.ConfigureInviteRequest
+	if err := req.Bind(c); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	if err := h.entities.CreateOrUpdateInviteTrackerLogChannel(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": "ok",
 	})
 }
