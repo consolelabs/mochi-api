@@ -39,8 +39,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			inviteHistoriesGroup.POST("", h.IndexInviteHistory)
 			inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
+			inviteHistoriesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
 		}
 
+		invitesGroup := communityGroup.Group("/invites")
+		{
+			invitesGroup.GET("/", h.GetInvites)
+		}
 	}
 
 	profleGroup := v1.Group("/profiles")
@@ -51,10 +56,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	configGroup := v1.Group("/configs")
 	{
 		configGroup.GET("")
-
+    configGroup.POST("/gm", h.CreateGmConfig)
 		roleReactionGroup := configGroup.Group("/reaction_roles")
 		{
-			roleReactionGroup.GET("", h.GetAllReactionRolesByGuildID)
+			roleReactionGroup.POST("", h.GetAllReactionRolesByGuildID)
 		}
 	}
 

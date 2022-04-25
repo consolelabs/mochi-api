@@ -62,7 +62,6 @@ func main() {
 	}
 	log.Infof("Connected to discord: %s", u.Username)
 
-
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
@@ -76,6 +75,12 @@ func main() {
 
 	service := service.NewService()
 
+	// *** discord session ***
+	dcsession, err := discordgo.New("Bot " + cfg.DiscordToken)
+	if err != nil {
+		log.Fatalf("failed to init discord session: %v", err)
+	}
+
 	// *** entities ***
 	entities, err := entities.New(
 		log,
@@ -84,6 +89,7 @@ func main() {
 		discord,
 		redisCache,
 		service,
+		dcsession,
 	)
 	if err != nil {
 		log.Fatalf("failed to init entities: %v", err)
