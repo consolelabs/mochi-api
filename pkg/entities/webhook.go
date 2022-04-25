@@ -134,3 +134,22 @@ func (e *Entity) FindInviter(guildID string) (inviter *discordgo.Member, isVanit
 
 	return member, false, nil
 }
+
+func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, error) {
+	resp := make([]string, 0)
+	invites, err := e.discord.GuildInvites(guildID)
+	if err != nil {
+		return resp, err
+	}
+
+	for _, invite := range invites {
+		if invite.Inviter.ID == userID &&
+			invite.TargetUser == nil &&
+			!invite.Revoked &&
+			(invite.MaxUses == 0 || invite.Uses < invite.MaxUses) {
+			resp = append(resp, invite.Code)
+		}
+	}
+
+	return resp, nil
+}
