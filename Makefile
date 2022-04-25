@@ -16,8 +16,6 @@ init:
 	@while ! docker exec mochi-postgres pg_isready > /dev/null; do \
 		sleep 1; \
 	done
-	make migrate-up
-	make seed-db
 
 remove-infras:
 	docker-compose down --remove-orphans

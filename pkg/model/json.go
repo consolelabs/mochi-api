@@ -1,6 +1,7 @@
 package model
 
 import (
+	"bytes"
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
@@ -70,6 +71,22 @@ func (j JSON) MarshalJSON() ([]byte, error) {
 	default:
 		return []byte(j), nil
 	}
+}
+
+func (j *JSON) UnmarshalJSON(raw []byte) error {
+	if string(raw) == "null" {
+		j = nil
+		return nil
+	}
+
+	var out bytes.Buffer
+	err := json.Compact(&out, raw)
+	if err == nil {
+		*j = JSON(out.Bytes())
+		return nil
+	}
+	*j = JSON(raw)
+	return nil
 }
 
 type JSONNullString struct {

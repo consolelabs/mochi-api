@@ -13,11 +13,12 @@ import (
 )
 
 type Entity struct {
-	repo     *repo.Repo
-	dcwallet discordwallet.IDiscordWallet
-	discord  *discordgo.Session
-	cache    cache.Cache
-	svc      *service.Service
+	repo      *repo.Repo
+	dcwallet  discordwallet.IDiscordWallet
+	discord   *discordgo.Session
+	cache     cache.Cache
+	svc       *service.Service
+	dcsession *discordgo.Session
 }
 
 func New(
@@ -27,13 +28,15 @@ func New(
 	discord *discordgo.Session,
 	cache cache.Cache,
 	service *service.Service,
+	dcsession *discordgo.Session,
 ) (*Entity, error) {
 	entities := &Entity{
-		repo:     repo,
-		dcwallet: dcwallet,
-		discord:  discord,
-		cache:    cache,
-		svc:      service,
+		repo:      repo,
+		dcwallet:  dcwallet,
+		discord:   discord,
+		cache:     cache,
+		svc:       service,
+		dcsession: dcsession,
 	}
 
 	if entities.discord != nil && entities.cache != nil {
