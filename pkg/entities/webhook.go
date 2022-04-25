@@ -165,7 +165,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
 		channelID = message.ChannelID
 	)
 
-	fmt.Printf("[messageCreate] from %s - guild %s: %s\n", discordID, guildID, message.Content)
+	fmt.Printf("[messageCreate][guild %s][author %s]: %s\n", guildID, discordID, message.Content)
 	isGmMessage := message.Content == "gm" || message.Content == "gn"
 
 	switch {
@@ -227,7 +227,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 
 func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, durationTilNextGoal string, newStreakRecorded bool) error {
 	if newStreakRecorded && streak.StreakCount >= 3 {
-		_, err := e.dcsession.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
+		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 			Title:       "GM / GN",
 			Description: fmt.Sprintf("<@%s>, you've said gm-gn %d days in a row :fire: and %d days in total.", discordID, streak.StreakCount, streak.TotalCount),
 		})
@@ -235,7 +235,7 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 	}
 
 	if !newStreakRecorded && durationTilNextGoal != "" {
-		_, err := e.dcsession.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
+		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 			Title:       "GM / GN",
 			Description: fmt.Sprintf("<@%s>, you've already said gm-gn today. You need to wait `%s` :alarm_clock: to reach your next streak goal :dart:.", discordID, durationTilNextGoal),
 		})
