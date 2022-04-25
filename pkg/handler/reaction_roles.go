@@ -1,23 +1,24 @@
 package handler
 
 import (
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (h *Handler) GetAllReactionRolesByGuildID(c *gin.Context) {
+func (h *Handler) ProcessReactionEventByMessageID(c *gin.Context) {
+	var req request.RoleReactionRequest
 
-	guildID, guildIDExist := c.GetQuery("guild_id")
-	if !guildIDExist {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	configs, err := h.entities.GetReactionRoles(guildID)
+	config, err := h.entities.GetReactionRoleByMessageID(req.GuildID, req.MessageID, req.Reaction)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, configs)
+	c.JSON(http.StatusOK, config)
 }

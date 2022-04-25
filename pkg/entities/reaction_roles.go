@@ -1,31 +1,34 @@
 package entities
 
 import (
+	"encoding/json"
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetReactionRoles(guildID string) (*response.RoleReactionsResponse, error) {
-	guilds, err := e.repo.ReactionRoleConfig.Gets(guildID)
+func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string) (*response.RoleReactionResponse, error) {
+	config, err := e.repo.ReactionRoleConfig.GetByMessageID(guildID, messageID)
 	if err != nil {
 		return nil, err
 	}
 
-	var res response.RoleReactionsResponse
-	res.Data = make([]*response.RoleReactionResponse, 0)
-	for _, g := range guilds {
-		res.Data = append(res.Data, &response.RoleReactionResponse{
-			GuildID:       g.GuildID,
-			ChannelID:     g.ChannelID,
-			Title:         g.Title,
-			TitleUrl:      g.TitleUrl,
-			ThumbnailUrl:  g.ThumbnailUrl,
-			Description:   g.Description,
-			FooterImage:   g.FooterImage,
-			FooterMessage: g.FooterMessage,
-			MessageID:     g.MessageID,
-			ReactionRoles: g.ReactionRoles,
-		})
+	var roles []response.Role
+	err = json.Unmarshal([]byte(config.ReactionRoles), &roles)
+	if err != nil {
+		return nil, err
 	}
 
+	var filteredRole response.Role
+	for _, r := range roles {
+		if r.Reaction == reaction {
+			filteredRole = r
+		}
+	}
+
+	var res = response.RoleReactionResponse{
+		GuildID:   config.GuildID,
+		ChannelID: config.ChannelID,
+		MessageID: config.MessageID,
+		Role:      filteredRole,
+	}
 	return &res, nil
 }

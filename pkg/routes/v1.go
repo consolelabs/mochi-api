@@ -54,7 +54,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		roleReactionGroup := configGroup.Group("/reaction_roles")
 		{
-			roleReactionGroup.GET("", h.GetAllReactionRolesByGuildID)
+			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
 		}
 	}
 
