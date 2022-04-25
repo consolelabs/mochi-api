@@ -9,10 +9,10 @@ type HandleInviteHistoryResponse struct {
 }
 
 type GetInvitesLeaderboardResponse struct {
-	Data []LeaderboardRecord `json:"data"`
+	Data []UserInvitesAggregation `json:"data"`
 }
 
-type LeaderboardRecord struct {
+type UserInvitesAggregation struct {
 	InviterID string `json:"inviter_id"`
 	Regular   int    `json:"regular"`
 	Fake      int    `json:"fake"`

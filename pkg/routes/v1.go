@@ -40,6 +40,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			invitesGroup.GET("/", h.GetInvites)
 			invitesGroup.POST("/config", h.ConfigureInvites)
 			invitesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
+			invitesGroup.GET("/aggregation", h.InvitesAggregation)
 		}
 	}
 
