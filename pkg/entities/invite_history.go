@@ -5,6 +5,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 func (e *Entity) CreateInviteHistory(req request.CreateInviteHistoryRequest) error {
@@ -33,4 +34,13 @@ func (e *Entity) CountInviteHistoriesByGuildUser(guildID, userID string) (int64,
 	}
 
 	return count, nil
+}
+
+func (e *Entity) GetInvitesLeaderboard(guildID string) ([]response.LeaderboardRecord, error) {
+	resp, err := e.repo.InviteHistories.GetInvitesLeaderboard(guildID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get invites leaderboard: %w", err)
+	}
+
+	return resp, err
 }

@@ -1,7 +1,11 @@
 package invite_histories
 
 import (
+	"encoding/json"
+	"sort"
+
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 )
 
@@ -24,4 +28,98 @@ func (pg *pg) CountByInviter(inviterID int64) (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (pg *pg) GetInvitesLeaderboard(guildID string) (resp []response.LeaderboardRecord, err error) {
+	rows, err := pg.db.Raw(`
+		select
+		aggr.invited_by, 
+		jsonb_object_agg(
+			aggr.type,
+			aggr.amount
+		) as invite_aggr,
+		aggr.guild_id
+		from(
+			select 
+				count("type") as amount,
+				invited_by,
+				"type",
+				guild_id
+			from
+			(	
+				with aggr_max as 
+				(
+					select 
+						max(created_at) as created_at,
+						user_id,
+						invited_by,
+						guild_id
+					from invite_histories
+					group by (
+						user_id,
+						invited_by,
+						guild_id
+					)
+				)
+				select 
+					i.guild_id,
+					i.user_id,
+					i.invited_by,
+					i.created_at,
+					i.type
+				from invite_histories as i
+				inner join aggr_max as a
+				on (
+					i.created_at = a.created_at and
+					i.guild_id = a.guild_id and
+					i.user_id = a.user_id and 
+					i.invited_by = a.invited_by
+				)
+			) as full_aggr_max
+			group by
+			(
+				invited_by,
+				"type",
+				guild_id
+			) 
+		) as aggr
+		where aggr.guild_id = ?
+		group by (aggr.invited_by, aggr.guild_id)
+	`, guildID).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var invitedBy string
+		var guildID string
+		var inviteAggr []byte
+		if err := rows.Scan(&invitedBy, &inviteAggr, &guildID); err != nil {
+			return nil, err
+		}
+
+		var inviteAggrMap map[string]int
+		if err := json.Unmarshal(inviteAggr, &inviteAggrMap); err != nil {
+			return nil, err
+		}
+
+		regular := inviteAggrMap["normal"] + inviteAggrMap["fake"] + inviteAggrMap["left"]
+		resp = append(resp, response.LeaderboardRecord{
+			InviterID: invitedBy,
+			Regular:   regular,
+			Fake:      inviteAggrMap["fake"],
+			Left:      inviteAggrMap["left"],
+		})
+	}
+
+	sort.Slice(resp, func(i, j int) bool {
+		return resp[i].Regular > resp[j].Regular
+	})
+
+	// Top 10
+	if len(resp) > 10 {
+		resp = resp[:10]
+	}
+
+	return resp, nil
 }
