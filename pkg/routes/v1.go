@@ -35,16 +35,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	communityGroup := v1.Group("/community")
 	{
-		inviteHistoriesGroup := communityGroup.Group("/invite-histories")
-		{
-			inviteHistoriesGroup.POST("", h.IndexInviteHistory)
-			inviteHistoriesGroup.GET("/count", h.CountByGuildUser)
-			inviteHistoriesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
-		}
-
 		invitesGroup := communityGroup.Group("/invites")
 		{
 			invitesGroup.GET("/", h.GetInvites)
+			invitesGroup.POST("/config", h.ConfigureInvites)
+			invitesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
 		}
 	}
 

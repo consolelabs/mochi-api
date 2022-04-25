@@ -75,12 +75,6 @@ func main() {
 
 	service := service.NewService()
 
-	// *** discord session ***
-	dcsession, err := discordgo.New("Bot " + cfg.DiscordToken)
-	if err != nil {
-		log.Fatalf("failed to init discord session: %v", err)
-	}
-
 	// *** entities ***
 	entities, err := entities.New(
 		log,
@@ -89,7 +83,6 @@ func main() {
 		discord,
 		redisCache,
 		service,
-		dcsession,
 	)
 	if err != nil {
 		log.Fatalf("failed to init entities: %v", err)
