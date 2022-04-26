@@ -73,3 +73,32 @@ func (h *Handler) ConfigureInvites(c *gin.Context) {
 		"data": "ok",
 	})
 }
+
+func (h *Handler) InvitesAggregation(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "guild_id is required",
+		})
+		return
+	}
+	inviterID := c.Query("inviter_id")
+	if inviterID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "inviter_id is required",
+		})
+		return
+	}
+
+	aggregation, err := h.entities.GetUserInvitesAggregation(guildID, inviterID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": aggregation,
+	})
+}

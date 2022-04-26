@@ -8,5 +8,6 @@ import (
 type Store interface {
 	Create(invite *model.InviteHistory) error
 	CountByInviter(inviterID int64) (int64, error)
-	GetInvitesLeaderboard(guildID string) ([]response.LeaderboardRecord, error)
+	GetInvitesLeaderboard(guildID string) ([]response.UserInvitesAggregation, error)
+	GetUserInvitesAggregation(guildID, inviterID string) (*response.UserInvitesAggregation, error)
 }

@@ -1,6 +1,7 @@
 package invite_histories
 
 import (
+	"database/sql"
 	"encoding/json"
 	"sort"
 
@@ -30,7 +31,7 @@ func (pg *pg) CountByInviter(inviterID int64) (int64, error) {
 	return count, nil
 }
 
-func (pg *pg) GetInvitesLeaderboard(guildID string) (resp []response.LeaderboardRecord, err error) {
+func (pg *pg) GetInvitesLeaderboard(guildID string) (resp []response.UserInvitesAggregation, err error) {
 	rows, err := pg.db.Raw(`
 		select
 		aggr.invited_by, 
@@ -104,7 +105,7 @@ func (pg *pg) GetInvitesLeaderboard(guildID string) (resp []response.Leaderboard
 		}
 
 		regular := inviteAggrMap["normal"] + inviteAggrMap["fake"] + inviteAggrMap["left"]
-		resp = append(resp, response.LeaderboardRecord{
+		resp = append(resp, response.UserInvitesAggregation{
 			InviterID: invitedBy,
 			Regular:   regular,
 			Fake:      inviteAggrMap["fake"],
@@ -122,4 +123,87 @@ func (pg *pg) GetInvitesLeaderboard(guildID string) (resp []response.Leaderboard
 	}
 
 	return resp, nil
+}
+
+func (pg *pg) GetUserInvitesAggregation(guildID, inviterID string) (*response.UserInvitesAggregation, error) {
+	var invitedBy string
+	var inviteGuildID string
+	var inviteAggr []byte
+
+	err := pg.db.Raw(`
+	select
+	aggr.invited_by, 
+	jsonb_object_agg(
+		aggr.type,
+		aggr.amount
+	) as invite_aggr,
+	aggr.guild_id
+	from(
+		select 
+			count("type") as amount,
+			invited_by,
+			"type",
+			guild_id
+		from
+		(	
+			with aggr_max as 
+			(
+				select 
+					max(created_at) as created_at,
+					user_id,
+					invited_by,
+					guild_id
+				from invite_histories
+				group by (
+					user_id,
+					invited_by,
+					guild_id
+				)
+			)
+			select 
+				i.guild_id,
+				i.user_id,
+				i.invited_by,
+				i.created_at,
+				i.type
+			from invite_histories as i
+			inner join aggr_max as a
+			on (
+				i.created_at = a.created_at and
+				i.guild_id = a.guild_id and
+				i.user_id = a.user_id and 
+				i.invited_by = a.invited_by
+			)
+		) as full_aggr_max
+		group by
+		(
+			invited_by,
+			"type",
+			guild_id
+		) 
+	) as aggr
+	where aggr.guild_id = ? and aggr.invited_by = ?
+	group by (aggr.invited_by, aggr.guild_id)
+`, guildID, inviterID).Row().Scan(&invitedBy, &inviteAggr, &inviteGuildID)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+	if err == sql.ErrNoRows {
+		return &response.UserInvitesAggregation{
+			InviterID: inviterID,
+		}, nil
+	}
+
+	var inviteAggrMap map[string]int
+	if err := json.Unmarshal(inviteAggr, &inviteAggrMap); err != nil {
+		return nil, err
+	}
+	regular := inviteAggrMap["normal"] + inviteAggrMap["fake"] + inviteAggrMap["left"]
+
+	return &response.UserInvitesAggregation{
+		InviterID: invitedBy,
+		Regular:   regular,
+		Fake:      inviteAggrMap["fake"],
+		Left:      inviteAggrMap["left"],
+	}, nil
 }
