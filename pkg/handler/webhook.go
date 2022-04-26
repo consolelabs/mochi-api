@@ -64,7 +64,6 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			ID:       inviter.User.ID,
 			Username: inviter.User.Username,
 			Nickname: inviter.Nick,
-			JoinDate: inviter.JoinedAt,
 			GuildID:  inviter.GuildID,
 		}); err != nil {
 			logrus.WithError(err).Errorf("Guild %s: failed to index iviter", invitee.GuildID)
@@ -81,7 +80,6 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			ID:        invitee.User.ID,
 			Username:  invitee.User.Username,
 			Nickname:  invitee.Nick,
-			JoinDate:  invitee.JoinedAt,
 			GuildID:   invitee.GuildID,
 			InvitedBy: invitee.User.ID,
 		}); err != nil {
