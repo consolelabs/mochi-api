@@ -33,7 +33,7 @@ func (j *fetchDiscordUsers) Run() error {
 		guildUsers, err := j.entity.GetGuildUsersFromDiscord(guild.ID)
 		if err != nil {
 			j.log.Error(err, "failed to get guild users")
-			return err
+			continue
 		}
 
 		j.log.Fields(logger.Fields{"guild": guild.ID, "users": len(guildUsers)}).Infof("fetched guild users")
@@ -54,12 +54,12 @@ func (j *fetchDiscordUsers) Run() error {
 	for _, req := range createUserRequests {
 		if err := j.entity.CreateUserIfNotExists(req.ID, req.Username); err != nil {
 			j.log.Fields(logger.Fields{"user": req}).Error(err, "failed to create user")
-			return err
+			continue
 		}
 
 		if err := j.entity.CreateGuildUserIfNotExists(req.GuildID, req.ID, req.Nickname); err != nil {
 			j.log.Fields(logger.Fields{"user": req}).Error(err, "failed to create guild user")
-			return err
+			continue
 		}
 	}
 	return nil
