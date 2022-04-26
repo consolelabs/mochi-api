@@ -17,6 +17,10 @@ func (pg *pg) Create(user *model.User) error {
 	return pg.db.Create(user).Error
 }
 
+func (pg *pg) FirstOrCreate(user *model.User) error {
+	return pg.db.Where("id = ?", user.ID).FirstOrCreate(user).Error
+}
+
 func (pg *pg) GetLatestWalletNumber() int {
 	var result int
 	row := pg.db.Table("users").Select("max(in_discord_wallet_number)").Row()

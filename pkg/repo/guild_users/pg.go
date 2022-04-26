@@ -22,3 +22,7 @@ func (pq *pg) CountByGuildUser(guildId, userId string) (int64, error) {
 	err := pq.db.Model(&model.GuildUser{}).Where("guild_id = ? AND invited_by = ?", guildId, userId).Count(&count).Error
 	return count, err
 }
+
+func (pg *pg) FirstOrCreate(guildUser *model.GuildUser) error {
+	return pg.db.Where("guild_id = ? AND user_id = ?", guildUser.GuildID, guildUser.UserID).FirstOrCreate(guildUser).Error
+}
