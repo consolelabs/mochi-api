@@ -7,6 +7,7 @@ import (
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
@@ -31,5 +32,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigGmGn:          guildconfiggmgn.NewPG(db),
 		GuildConfigInviteTracker: guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:  guildconfigreactionrole.NewPG(db),
+		GuildConfigDefaultRole:   guildconfigdefaultrole.NewPG(db),
 	}
 }
