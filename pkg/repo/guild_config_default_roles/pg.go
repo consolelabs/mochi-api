@@ -14,9 +14,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetAll() ([]model.GuildConfigDefaultRole, error) {
+func (pg *pg) GetAllByGuildID(guildID string) ([]model.GuildConfigDefaultRole, error) {
 	var roles []model.GuildConfigDefaultRole
-	err := pg.db.Model(&model.GuildConfigDefaultRole{}).Scan(&roles).Error
+	err := pg.db.Model(&model.GuildConfigDefaultRole{}).Where("guild_id = ?", guildID).Scan(&roles).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to query default roles: %w", err)
 	}

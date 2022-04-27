@@ -5,9 +5,8 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetAllDefaultRoles() (*response.DefaultRoleGetAllResponse, error) {
-
-	roles, err := e.repo.GuildConfigDefaultRole.GetAll()
+func (e *Entity) GetAllDefaultRoles(guildID string) (*response.DefaultRoleGetAllResponse, error) {
+	roles, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +25,6 @@ func (e *Entity) GetAllDefaultRoles() (*response.DefaultRoleGetAllResponse, erro
 }
 
 func (e *Entity) CreateDefaultRoleConfig(GuildID, RoleID string) error {
-
 	return e.repo.GuildConfigDefaultRole.CreateDefaultRoleIfNotExist(model.GuildConfigDefaultRole{
 		RoleID:  RoleID,
 		GuildID: GuildID,

@@ -59,7 +59,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		}
 		defaultRoleGroup := configGroup.Group("/default-roles")
 		{
-			defaultRoleGroup.GET("", h.GetAllDefaultRoles)
+			defaultRoleGroup.GET("", h.GetDefaultRolesByGuildID)
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
 		}
 	}

@@ -5,6 +5,6 @@ import (
 )
 
 type Store interface {
-	GetAll() ([]model.GuildConfigDefaultRole, error)
+	GetAllByGuildID(guildID string) ([]model.GuildConfigDefaultRole, error)
 	CreateDefaultRoleIfNotExist(config model.GuildConfigDefaultRole) error
 }
