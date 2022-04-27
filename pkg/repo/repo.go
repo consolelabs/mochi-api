@@ -6,10 +6,10 @@ import (
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
+	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
-	reactionroleconfig "github.com/defipod/mochi/pkg/repo/reaction_role_configs"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	users "github.com/defipod/mochi/pkg/repo/users"
 )
@@ -25,5 +25,5 @@ type Repo struct {
 	Token                    token.Store
 	DiscordBotTransaction    discordbottransaction.Store
 	GuildConfigInviteTracker guildconfiginvitetracker.Store
-  ReactionRoleConfig    reactionroleconfig.Store
+	GuildConfigReactionRole  guildconfigreactionrole.Store
 }

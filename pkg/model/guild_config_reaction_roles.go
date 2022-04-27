@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type ReactionRoleConfig struct {
+type GuildConfigReactionRole struct {
 	ID            uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
 	MessageID     string        `json:"message_id"`
 	GuildID       string        `json:"guild_id"`
