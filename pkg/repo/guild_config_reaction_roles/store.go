@@ -1,4 +1,4 @@
-package reaction_role_configs
+package guild_config_reaction_roles
 
 import (
 	"github.com/defipod/mochi/pkg/model"
@@ -6,7 +6,7 @@ import (
 )
 
 type Store interface {
-	GetByMessageID(guildId, mesageId string) (model.ReactionRoleConfig, error)
+	GetByMessageID(guildId, mesageId string) (model.GuildConfigReactionRole, error)
 	UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 	CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 }

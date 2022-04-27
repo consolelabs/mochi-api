@@ -9,15 +9,15 @@ import (
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
+	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
-	reactionroleconfigs "github.com/defipod/mochi/pkg/repo/reaction_role_configs"
 	"github.com/defipod/mochi/pkg/repo/token"
 	"github.com/defipod/mochi/pkg/repo/users"
 )
 
-// NewRepo new pg repo implimentation
+// NewRepo new pg repo implementation
 func NewRepo(db *gorm.DB) *repo.Repo {
 	return &repo.Repo{
 		DiscordGuilds:            discordguilds.NewPG(db),
@@ -30,6 +30,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DiscordUserGMStreak:      discordusergmstreak.NewPG(db),
 		GuildConfigGmGn:          guildconfiggmgn.NewPG(db),
 		GuildConfigInviteTracker: guildconfiginvitetracker.NewPG(db),
-    ReactionRoleConfig:    reactionroleconfigs.NewPG(db),
+		GuildConfigReactionRole:  guildconfigreactionrole.NewPG(db),
 	}
 }

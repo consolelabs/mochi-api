@@ -9,7 +9,7 @@ import (
 )
 
 func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string) (*response.RoleReactionResponse, error) {
-	config, err := e.repo.ReactionRoleConfig.GetByMessageID(guildID, messageID)
+	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(guildID, messageID)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string)
 func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) (*response.RoleReactionConfigResponse, error) {
 	var roles []response.Role
 
-	config, err := e.repo.ReactionRoleConfig.GetByMessageID(req.GuildID, req.MessageID)
+	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(req.GuildID, req.MessageID)
 
 	// Create new config if not exists
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -51,7 +51,7 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 			return nil, err
 		}
 
-		err = e.repo.ReactionRoleConfig.CreateRoleConfig(req, string(data))
+		err = e.repo.GuildConfigReactionRole.CreateRoleConfig(req, string(data))
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 		return nil, err
 	}
 
-	err = e.repo.ReactionRoleConfig.UpdateRoleConfig(req, string(data))
+	err = e.repo.GuildConfigReactionRole.UpdateRoleConfig(req, string(data))
 	if err != nil {
 		return nil, err
 	}
