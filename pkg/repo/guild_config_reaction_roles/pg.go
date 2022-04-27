@@ -1,4 +1,4 @@
-package reaction_role_configs
+package guild_config_reaction_roles
 
 import (
 	"fmt"
@@ -15,9 +15,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetByMessageID(guildId, messageID string) (model.ReactionRoleConfig, error) {
-	var config model.ReactionRoleConfig
-	err := pg.db.Model(&model.ReactionRoleConfig{}).Where("guild_id = ? AND message_id = ?", guildId, messageID).First(&config).Error
+func (pg *pg) GetByMessageID(guildId, messageID string) (model.GuildConfigReactionRole, error) {
+	var config model.GuildConfigReactionRole
+	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", guildId, messageID).First(&config).Error
 	if err != nil {
 		return config, fmt.Errorf("failed to get role configs: %w", err)
 	}
@@ -26,16 +26,16 @@ func (pg *pg) GetByMessageID(guildId, messageID string) (model.ReactionRoleConfi
 }
 
 func (pg *pg) UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
-	err := pg.db.Model(&model.ReactionRoleConfig{}).Where("guild_id = ? AND message_id = ?", req.GuildID, req.MessageID).Update("reaction_roles", updateJson).Error
+	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", req.GuildID, req.MessageID).Update("reaction_roles", updateJson).Error
 	if err != nil {
-		fmt.Errorf("failed to update role configs: %w", err)
+		return fmt.Errorf("failed to update role configs: %w", err)
 	}
 
 	return nil
 }
 
 func (pg *pg) CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
-	config := model.ReactionRoleConfig{
+	config := model.GuildConfigReactionRole{
 		MessageID:     req.MessageID,
 		GuildID:       req.GuildID,
 		ReactionRoles: updateJson,
