@@ -1,13 +1,12 @@
 package routes
 
 import (
-	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/gin-gonic/gin"
 )
 
 // NewRoutes ...
-func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
+func NewRoutes(r *gin.Engine, h *handler.Handler) {
 
 	v1 := r.Group("/api/v1")
 
@@ -40,6 +39,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			invitesGroup.GET("/", h.GetInvites)
 			invitesGroup.POST("/config", h.ConfigureInvites)
 			invitesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
+			invitesGroup.GET("/aggregation", h.InvitesAggregation)
 		}
 	}
 

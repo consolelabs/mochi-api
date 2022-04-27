@@ -3,23 +3,19 @@ package handler
 import (
 	"net/http"
 
-	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
-	"github.com/defipod/mochi/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Handler for app
 type Handler struct {
-	cfg      config.Config
 	entities *entities.Entity
 }
 
 // New will return an instance of Auth struct
-func New(cfg config.Config, l logger.Log, entities *entities.Entity) (*Handler, error) {
+func New(entities *entities.Entity) (*Handler, error) {
 	handler := &Handler{
-		cfg:      cfg,
 		entities: entities,
 	}
 

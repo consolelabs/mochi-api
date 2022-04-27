@@ -36,10 +36,19 @@ func (e *Entity) CountInviteHistoriesByGuildUser(guildID, userID string) (int64,
 	return count, nil
 }
 
-func (e *Entity) GetInvitesLeaderboard(guildID string) ([]response.LeaderboardRecord, error) {
+func (e *Entity) GetInvitesLeaderboard(guildID string) ([]response.UserInvitesAggregation, error) {
 	resp, err := e.repo.InviteHistories.GetInvitesLeaderboard(guildID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get invites leaderboard: %w", err)
+	}
+
+	return resp, err
+}
+
+func (e *Entity) GetUserInvitesAggregation(guildID, userID string) (*response.UserInvitesAggregation, error) {
+	resp, err := e.repo.InviteHistories.GetUserInvitesAggregation(guildID, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user invites aggregation: %w", err)
 	}
 
 	return resp, err

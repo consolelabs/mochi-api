@@ -31,6 +31,19 @@ func (e *Entity) CreateUser(req request.CreateUserRequest) error {
 	return nil
 }
 
+func (e *Entity) CreateUserIfNotExists(id, username string) error {
+	user := &model.User{
+		ID:       id,
+		Username: username,
+	}
+
+	if err := e.repo.Users.FirstOrCreate(user); err != nil {
+		return fmt.Errorf("failed to create if not exists user: %w", err)
+	}
+
+	return nil
+}
+
 func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 	user, err := e.repo.Users.GetOne(discordID)
 	if err != nil {
