@@ -13,7 +13,7 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
-	data, err := h.entities.GetAllDefaultRoles(guildID)
+	data, err := h.entities.GetDefaultRoleByGuildID(guildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -5,7 +5,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetAllDefaultRoles(guildID string) (*response.DefaultRoleGetAllResponse, error) {
+func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleGetAllResponse, error) {
 	roles, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
 	if err != nil {
 		return nil, err
