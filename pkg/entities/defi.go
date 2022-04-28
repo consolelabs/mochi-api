@@ -60,7 +60,6 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 }
 
 func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]response.InDiscordWalletTransferResponse, []string) {
-	fmt.Println("req:", req)
 	res := []response.InDiscordWalletTransferResponse{}
 	errs := []string{}
 
