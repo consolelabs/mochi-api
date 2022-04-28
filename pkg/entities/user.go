@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -78,4 +79,17 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 		GuildUsers:             guildUsers,
 	}
 	return res, nil
+}
+
+func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.DiscordUserGMStreak, int, error) {
+	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's gm streak: %v", err)
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		return nil, http.StatusBadRequest, fmt.Errorf("user has no gm streak")
+	}
+
+	return streak, http.StatusOK, nil
 }
