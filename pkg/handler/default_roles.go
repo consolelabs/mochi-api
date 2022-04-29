@@ -40,8 +40,27 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 		GuildID: body.RoleID,
 	}
 
-	c.JSON(http.StatusOK, response.DefaultRoleCreationResponse{
+	c.JSON(http.StatusOK, response.DefaultRoleResponse{
 		Data:    defaultRole,
+		Success: true,
+	})
+}
+
+func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
+	type DeleteResponse struct {
+		Success bool `json:"success"`
+	}
+	guildID, isExist := c.GetQuery("guild_id")
+	if !isExist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+	err := h.entities.DeleteDefaultRoleConfig(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &DeleteResponse{
 		Success: true,
 	})
 }
