@@ -122,8 +122,6 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 			return nil, errors.New("insufficient funds for gas")
 		}
 		amount = balance - maxTxFee
-	} else {
-		amount = amount - maxTxFee
 	}
 
 	value := new(big.Int)

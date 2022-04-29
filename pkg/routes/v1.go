@@ -30,6 +30,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 	{
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
+		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
 	}
 
 	communityGroup := v1.Group("/community")
@@ -56,6 +57,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		{
 			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
 			roleReactionGroup.POST("/update-config", h.UpdateConfig)
+		}
+		defaultRoleGroup := configGroup.Group("/default-roles")
+		{
+			defaultRoleGroup.GET("", h.GetDefaultRolesByGuildID)
+			defaultRoleGroup.POST("", h.CreateDefaultRole)
 		}
 	}
 
