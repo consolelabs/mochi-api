@@ -41,6 +41,8 @@ type Config struct {
 	DiscordToken string
 
 	RedisURL string
+
+	MochiLogChannelID string
 }
 
 // GetCORS in config
@@ -96,6 +98,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 		RedisURL:                v.GetString("REDIS_URL"),
+
+		MochiLogChannelID: v.GetString("MOCHI_LOG_CHANNEL_ID"),
 	}
 }
 
