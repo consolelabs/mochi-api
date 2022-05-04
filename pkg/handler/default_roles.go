@@ -36,8 +36,8 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	}
 
 	defaultRole := response.DefaultRole{
-		RoleID:  body.GuildID,
-		GuildID: body.RoleID,
+		RoleID:  body.RoleID,
+		GuildID: body.GuildID,
 	}
 
 	c.JSON(http.StatusOK, response.DefaultRoleResponse{
