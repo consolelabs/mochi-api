@@ -1,21 +1,20 @@
 package discord
 
 import (
-	"os"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func TestDiscord_NotifyNewGuild(t *testing.T) {
-	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
-	if err != nil {
-		t.Fatal(err)
-	}
+	// discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
 
-	mochiLogChannelID := os.Getenv("MOCHI_LOG_CHANNEL_ID")
+	// mochiLogChannelID := os.Getenv("MOCHI_LOG_CHANNEL_ID")
 
-	hnhGuild := "895659000996200508"
+	// hnhGuild := "895659000996200508"
 
 	type fields struct {
 		session           *discordgo.Session
@@ -31,17 +30,17 @@ func TestDiscord_NotifyNewGuild(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
-		{
-			name: "test",
-			fields: fields{
-				session:           discord,
-				mochiLogChannelID: mochiLogChannelID,
-			},
-			args: args{
-				guildID: hnhGuild,
-			},
-			wantErr: false,
-		},
+		// {
+		// 	name: "test",
+		// 	fields: fields{
+		// 		session:           discord,
+		// 		mochiLogChannelID: mochiLogChannelID,
+		// 	},
+		// 	args: args{
+		// 		guildID: hnhGuild,
+		// 	},
+		// 	wantErr: false,
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

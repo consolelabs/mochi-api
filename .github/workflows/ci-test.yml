@@ -11,7 +11,7 @@ jobs:
           go-version: "^1.18"
 
       - name: Init Test DB
-        run: make init-test-db
+        run: make init
 
       - name: Run Test cases
         run: make test
