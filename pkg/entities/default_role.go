@@ -5,20 +5,17 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleGetAllResponse, error) {
-	roles, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
+func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleResponse, error) {
+	role, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
 	if err != nil {
 		return nil, err
 	}
 
-	var res response.DefaultRoleGetAllResponse
+	var res response.DefaultRoleResponse
 	res.Success = true
-	res.Data = make([]*response.DefaultRole, 0)
-	for _, r := range roles {
-		res.Data = append(res.Data, &response.DefaultRole{
-			RoleID:  r.RoleID,
-			GuildID: r.GuildID,
-		})
+	res.Data = response.DefaultRole{
+		RoleID:  role.RoleID,
+		GuildID: role.GuildID,
 	}
 
 	return &res, nil
@@ -29,4 +26,8 @@ func (e *Entity) CreateDefaultRoleConfig(GuildID, RoleID string) error {
 		RoleID:  RoleID,
 		GuildID: GuildID,
 	})
+}
+
+func (e *Entity) DeleteDefaultRoleConfig(GuildID string) error {
+	return e.repo.GuildConfigDefaultRole.DeleteByGuildID(GuildID)
 }

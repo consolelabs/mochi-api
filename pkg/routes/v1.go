@@ -62,6 +62,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		{
 			defaultRoleGroup.GET("", h.GetDefaultRolesByGuildID)
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
+			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
 		}
 	}
 
