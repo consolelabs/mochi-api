@@ -10,13 +10,24 @@ import (
 )
 
 func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
-	return e.repo.DiscordGuilds.CreateIfNotExists(model.DiscordGuild{
+	err := e.repo.DiscordGuilds.CreateIfNotExists(model.DiscordGuild{
 		ID:   guild.ID,
 		Name: guild.Name,
 		BotScopes: model.JSONArrayString{
 			"*",
 		},
 	})
+	if err != nil {
+		return err
+	}
+
+	// notifiy new guild to discord
+	err = e.svc.Discord.NotifyNewGuild(guild.ID)
+	if err != nil {
+		e.log.Errorf(err, "failed to notify new guild %s to discord", guild.ID)
+	}
+
+	return nil
 }
 
 func (e *Entity) GetGuilds() (*response.GetGuildsResponse, error) {
