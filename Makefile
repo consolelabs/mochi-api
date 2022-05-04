@@ -10,12 +10,15 @@ setup:
 	make init
 
 init: 
+	go install github.com/rubenv/sql-migrate/...@latest	
 	make remove-infras
 	docker-compose up -d
 	@echo "Waiting for database connection..."
 	@while ! docker exec mochi-postgres pg_isready > /dev/null; do \
 		sleep 1; \
 	done
+	make migrate-up
+	make seed-db
 
 remove-infras:
 	docker-compose down --remove-orphans
@@ -48,15 +51,3 @@ seed-db:
 	@docker exec -t mochi-postgres sh -c "rm -rf /seed/*"
 	@docker cp migrations/seed mochi-postgres:/
 	@docker exec -t mochi-postgres sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed/seed.sql"
-
-reset-db:
-	make init
-	make migrate-up
-	make seed-db
-
-init-test-db:
-	go install github.com/rubenv/sql-migrate/...@latest
-	make init
-	make migrate-up
-	make seed-db
-
