@@ -24,6 +24,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 			customCommandGroup.PUT("/:command_id", h.UpdateCustomCommand)
 			customCommandGroup.DELETE("/:command_id", h.DeleteCustomCommand)
 		}
+
+		countStatsGroup := guildGroup.Group("/:guild_id/stats")
+		{
+			countStatsGroup.GET("", h.GetGuildStatsHandler)
+		}
 	}
 
 	userGroup := v1.Group("/users")
