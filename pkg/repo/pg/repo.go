@@ -12,7 +12,7 @@ import (
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
-	guildconfigverification "github.com/defipod/mochi/pkg/repo/guild_config_verification"
+	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
@@ -24,20 +24,20 @@ import (
 // NewRepo new pg repo implementation
 func NewRepo(db *gorm.DB) *repo.Repo {
 	return &repo.Repo{
-		DiscordGuilds:             discordguilds.NewPG(db),
-		DiscordWalletVerification: discordwalletverification.NewPG(db),
-		InviteHistories:           invitehistories.NewPG(db),
-		Users:                     users.NewPG(db),
-		UserWallet:                userwallet.NewPG(db),
-		GuildUsers:                guildusers.NewPG(db),
-		GuildCustomCommand:        guildcustomcommand.NewPG(db),
-		Token:                     token.NewPG(db),
-		DiscordBotTransaction:     discordbottransaction.NewPG(db),
-		DiscordUserGMStreak:       discordusergmstreak.NewPG(db),
-		GuildConfigGmGn:           guildconfiggmgn.NewPG(db),
-		GuildConfigInviteTracker:  guildconfiginvitetracker.NewPG(db),
-		GuildConfigReactionRole:   guildconfigreactionrole.NewPG(db),
-		GuildConfigDefaultRole:    guildconfigdefaultrole.NewPG(db),
-		GuildConfigVerification:   guildconfigverification.NewPG(db),
+		DiscordGuilds:                        discordguilds.NewPG(db),
+		DiscordWalletVerification:            discordwalletverification.NewPG(db),
+		InviteHistories:                      invitehistories.NewPG(db),
+		Users:                                users.NewPG(db),
+		UserWallet:                           userwallet.NewPG(db),
+		GuildUsers:                           guildusers.NewPG(db),
+		GuildCustomCommand:                   guildcustomcommand.NewPG(db),
+		Token:                                token.NewPG(db),
+		DiscordBotTransaction:                discordbottransaction.NewPG(db),
+		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
+		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
+		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
+		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
+		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
+		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 	}
 }

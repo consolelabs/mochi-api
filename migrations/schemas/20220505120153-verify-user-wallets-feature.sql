@@ -1,9 +1,8 @@
 
 -- +migrate Up
-create table guild_config_verifications (
+create table guild_config_wallet_verification_messages (
 	guild_id text primary key,
 	verify_channel_id text not null,
-	verified_role_id text not null,
 	content text,
 	embedded_message json,
 	created_at timestamp default now()
@@ -31,4 +30,4 @@ create table user_wallets (
 -- +migrate Down
 drop table user_wallets;
 drop table discord_wallet_verifications;
-drop table guild_config_verifications;
+drop table guild_config_wallet_verification_messages;

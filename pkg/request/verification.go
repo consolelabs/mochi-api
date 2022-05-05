@@ -8,19 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type NewGuildConfigVerificationRequest struct {
-	model.GuildConfigVerification
+type NewGuildConfigWalletVerificationMessageRequest struct {
+	model.GuildConfigWalletVerificationMessage
 	CreatedAt time.Time `json:"-"`
 }
 
-func (input *NewGuildConfigVerificationRequest) Validate() error {
+func (input *NewGuildConfigWalletVerificationMessageRequest) Validate() error {
 	switch true {
 	case input.GuildID == "":
 		return fmt.Errorf("missing guild_id")
 	case input.VerifyChannelID == "":
 		return fmt.Errorf("missing verify_channel_id")
-	case input.VerifiedRoleID == "":
-		return fmt.Errorf("missing verified_role_id")
 	case input.Content == "" && input.EmbeddedMessage == nil:
 		return fmt.Errorf("content or embedded_message is required")
 	}
@@ -28,7 +26,7 @@ func (input *NewGuildConfigVerificationRequest) Validate() error {
 	return nil
 }
 
-func (input *NewGuildConfigVerificationRequest) Bind(c *gin.Context) (err error) {
+func (input *NewGuildConfigWalletVerificationMessageRequest) Bind(c *gin.Context) (err error) {
 	err = c.BindJSON(input)
 	if err != nil {
 		return err

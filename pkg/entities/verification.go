@@ -14,14 +14,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func (e *Entity) NewGuildConfigVerification(req model.GuildConfigVerification) error {
+func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWalletVerificationMessage) error {
 
 	_, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
 	if err != nil {
 		return fmt.Errorf("failed to get discord guild: %v", err.Error())
 	}
 
-	_, err = e.repo.GuildConfigVerification.GetOne(req.GuildID)
+	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	switch err {
 	case nil:
 		return fmt.Errorf("this guild already have a verification config")
@@ -30,7 +30,7 @@ func (e *Entity) NewGuildConfigVerification(req model.GuildConfigVerification) e
 		return fmt.Errorf("failed to get guild config verification: %v", err.Error())
 	}
 
-	if err := e.repo.GuildConfigVerification.UpsertOne(req); err != nil {
+	if err := e.repo.GuildConfigWalletVerificationMessage.UpsertOne(req); err != nil {
 		return fmt.Errorf("failed to upsert guild config verification: %v", err.Error())
 	}
 
@@ -65,7 +65,7 @@ func (e *Entity) NewGuildConfigVerification(req model.GuildConfigVerification) e
 
 func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (data string, statusCode int, err error) {
 
-	_, err = e.repo.GuildConfigVerification.GetOne(req.GuildID)
+	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return "", http.StatusBadRequest, fmt.Errorf("this guild has not set verification config")
@@ -109,13 +109,8 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 		return http.StatusBadRequest, fmt.Errorf("invalid code")
 	}
 
-	gcv, err := e.repo.GuildConfigVerification.GetOne(verification.GuildID)
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to get guild config verification: %v", err.Error())
-	}
-
 	if err := util.VerifySig(req.WalletAddress, req.Signature, fmt.Sprintf(
-		"This will help us connect your discord account to the wallet address.\n\nMochiBotCode=%s", req.Code)); err != nil {
+		"This will help us connect your discord account to the wallet address.\n\nNekoBotCode=%s", req.Code)); err != nil {
 		return http.StatusBadRequest, err
 	}
 
@@ -162,10 +157,6 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 
 	if err := e.repo.DiscordWalletVerification.DeleteByCode(verification.Code); err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("failed to delete verification: %v", err.Error())
-	}
-
-	if err := e.discord.GuildMemberRoleAdd(verification.GuildID, verification.UserDiscordID, gcv.VerifiedRoleID); err != nil {
-		e.log.Errorf(err, "failed to add role %s to discord member %s", gcv.VerifiedRoleID, verification.UserDiscordID)
 	}
 
 	return http.StatusOK, nil

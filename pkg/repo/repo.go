@@ -9,7 +9,7 @@ import (
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
-	guildconfigverification "github.com/defipod/mochi/pkg/repo/guild_config_verification"
+	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
@@ -19,19 +19,19 @@ import (
 )
 
 type Repo struct {
-	DiscordUserGMStreak       discordusergmstreak.Store
-	GuildConfigGmGn           guildconfiggmgn.Store
-	GuildConfigVerification   guildconfigverification.Store
-	DiscordGuilds             discordguilds.Store
-	DiscordWalletVerification discordwalletverification.Store
-	InviteHistories           invitehistories.Store
-	Users                     users.Store
-	UserWallet                userwallet.Store
-	GuildUsers                guildusers.Store
-	GuildCustomCommand        guildcustomcommand.Store
-	Token                     token.Store
-	DiscordBotTransaction     discordbottransaction.Store
-	GuildConfigInviteTracker  guildconfiginvitetracker.Store
-	GuildConfigReactionRole   guildconfigreactionrole.Store
-	GuildConfigDefaultRole    guildconfigdefaultrole.Store
+	DiscordUserGMStreak                  discordusergmstreak.Store
+	GuildConfigGmGn                      guildconfiggmgn.Store
+	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
+	DiscordGuilds                        discordguilds.Store
+	DiscordWalletVerification            discordwalletverification.Store
+	InviteHistories                      invitehistories.Store
+	Users                                users.Store
+	UserWallet                           userwallet.Store
+	GuildUsers                           guildusers.Store
+	GuildCustomCommand                   guildcustomcommand.Store
+	Token                                token.Store
+	DiscordBotTransaction                discordbottransaction.Store
+	GuildConfigInviteTracker             guildconfiginvitetracker.Store
+	GuildConfigReactionRole              guildconfigreactionrole.Store
+	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 }

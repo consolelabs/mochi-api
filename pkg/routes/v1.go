@@ -86,7 +86,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 
 	verifyGroup := v1.Group("/verify")
 	{
-		verifyGroup.POST("/config", h.NewGuildConfigVerification)
+		verifyGroup.POST("/config", h.NewGuildConfigWalletVerificationMessage)
 		verifyGroup.POST("/generate", h.GenerateVerification)
 		verifyGroup.POST("", h.VerifyWalletAddress)
 	}

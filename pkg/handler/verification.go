@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) NewGuildConfigVerification(c *gin.Context) {
+func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
 
-	var req request.NewGuildConfigVerificationRequest
+	var req request.NewGuildConfigWalletVerificationMessageRequest
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -21,7 +21,7 @@ func (h *Handler) NewGuildConfigVerification(c *gin.Context) {
 		return
 	}
 
-	if err := h.entities.NewGuildConfigVerification(req.GuildConfigVerification); err != nil {
+	if err := h.entities.NewGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

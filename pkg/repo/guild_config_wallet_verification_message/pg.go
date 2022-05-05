@@ -1,4 +1,4 @@
-package guildconfigverification
+package guildconfigwalletverificationmessage
 
 import (
 	"github.com/defipod/mochi/pkg/model"
@@ -16,12 +16,12 @@ func NewPG(db *gorm.DB) Store {
 	}
 }
 
-func (pg *pg) GetOne(guildID string) (*model.GuildConfigVerification, error) {
-	var gcv model.GuildConfigVerification
+func (pg *pg) GetOne(guildID string) (*model.GuildConfigWalletVerificationMessage, error) {
+	var gcv model.GuildConfigWalletVerificationMessage
 	return &gcv, pg.db.Where("guild_id = ?", guildID).First(&gcv).Error
 }
 
-func (pg *pg) UpsertOne(gcv model.GuildConfigVerification) error {
+func (pg *pg) UpsertOne(gcv model.GuildConfigWalletVerificationMessage) error {
 
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
