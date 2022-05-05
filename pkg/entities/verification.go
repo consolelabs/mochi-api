@@ -110,7 +110,7 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 	}
 
 	if err := util.VerifySig(req.WalletAddress, req.Signature, fmt.Sprintf(
-		"This will help us connect your discord account to the wallet address.\n\nNekoBotCode=%s", req.Code)); err != nil {
+		"This will help us connect your discord account to the wallet address.\n\nMochiBotCode=%s", req.Code)); err != nil {
 		return http.StatusBadRequest, err
 	}
 
