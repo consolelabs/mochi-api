@@ -83,4 +83,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
 	}
+
+	verifyGroup := v1.Group("/verify")
+	{
+		verifyGroup.POST("/config", h.NewGuildConfigWalletVerificationMessage)
+		verifyGroup.POST("/generate", h.GenerateVerification)
+		verifyGroup.POST("", h.VerifyWalletAddress)
+	}
 }
