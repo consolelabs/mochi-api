@@ -2,6 +2,7 @@ package repo
 
 import (
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
+	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
@@ -34,4 +35,5 @@ type Repo struct {
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
+	DiscordGuildStats                    discordguildstats.Store
 }

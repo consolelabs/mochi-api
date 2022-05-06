@@ -42,6 +42,7 @@ func main() {
 		}
 	}()
 
+	// implement fetch discord stats
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 
