@@ -77,7 +77,7 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 	switch err {
 	case nil:
 		if !req.IsReverify {
-			return uw.Address, http.StatusBadRequest, fmt.Errorf("already have a pod identity")
+			return uw.Address, http.StatusBadRequest, fmt.Errorf("already have a verified wallet")
 		}
 	case gorm.ErrRecordNotFound:
 		if req.IsReverify {

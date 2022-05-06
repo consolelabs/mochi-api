@@ -46,7 +46,7 @@ func (h *Handler) GenerateVerification(c *gin.Context) {
 	data, statusCode, err := h.entities.GenerateVerification(req)
 	if err != nil {
 		respData := gin.H{"error": err.Error()}
-		if err.Error() == "already have a pod identity" {
+		if err.Error() == "already have a verified wallet" {
 			respData["address"] = data
 		}
 		c.JSON(statusCode, respData)
