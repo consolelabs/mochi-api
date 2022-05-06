@@ -17,6 +17,8 @@ type IDiscordWallet interface {
 	GetAccountByWalletNumber(i int) (accounts.Account, error)
 	GetHDWallet() *hdwallet.Wallet
 	FTM() chain.Chain
+	Ethereum() chain.Chain
+	BSC() chain.Chain
 }
 
 type DiscordWallet struct {
@@ -25,6 +27,8 @@ type DiscordWallet struct {
 	repo     *repo.Repo
 	hdwallet *hdwallet.Wallet
 	ftm      chain.Chain
+	ethereum chain.Chain
+	bsc      chain.Chain
 }
 
 // New will return an instance of DiscordWallet struct
@@ -41,11 +45,23 @@ func New(cfg config.Config, l logger.Logger, s repo.Store) (*DiscordWallet, erro
 		return nil, err
 	}
 
+	ethereum, err := chain.NewEthereumClient(cfg, wallet)
+	if err != nil {
+		return nil, err
+	}
+
+	bsc, err := chain.NewBSCClient(cfg, wallet)
+	if err != nil {
+		return nil, err
+	}
+
 	return &DiscordWallet{
 		log:      l,
 		cfg:      cfg,
 		repo:     r,
 		ftm:      ftm,
+		ethereum: ethereum,
+		bsc:      bsc,
 		hdwallet: wallet,
 	}, nil
 }
@@ -61,4 +77,12 @@ func (d *DiscordWallet) GetHDWallet() *hdwallet.Wallet {
 
 func (d *DiscordWallet) FTM() chain.Chain {
 	return d.ftm
+}
+
+func (d *DiscordWallet) Ethereum() chain.Chain {
+	return d.ethereum
+}
+
+func (d *DiscordWallet) BSC() chain.Chain {
+	return d.bsc
 }

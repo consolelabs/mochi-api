@@ -36,6 +36,14 @@ type Config struct {
 	FantomScan       string
 	FantomScanAPIKey string
 
+	EthereumRPC        string
+	EthereumScan       string
+	EthereumScanAPIKey string
+
+	BscRPC        string
+	BscScan       string
+	BscScanAPIKey string
+
 	ProcessorServerHost string
 
 	DiscordToken string
@@ -91,6 +99,14 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		FantomRPC:        v.GetString("FANTOM_RPC"),
 		FantomScan:       v.GetString("FANTOM_SCAN"),
 		FantomScanAPIKey: v.GetString("FANTOM_SCAN_API_KEY"),
+
+		EthereumRPC:        v.GetString("ETHEREUM_RPC"),
+		EthereumScan:       v.GetString("ETHEREUM_SCAN"),
+		EthereumScanAPIKey: v.GetString("ETHEREUM_SCAN_API_KEY"),
+
+		BscRPC:        v.GetString("BSC_RPC"),
+		BscScan:       v.GetString("BSC_SCAN"),
+		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
 
 		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
 

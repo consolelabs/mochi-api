@@ -11,6 +11,7 @@ import (
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
+	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -38,4 +39,5 @@ type Repo struct {
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
+	GuildConfigToken                     guildconfigtoken.Store
 }

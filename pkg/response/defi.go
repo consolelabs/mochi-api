@@ -73,3 +73,5 @@ type CoinImage struct {
 	Small  string `json:"small"`
 	Larget string `json:"large"`
 }
+
+type CoinPriceResponse map[string]map[string]float64

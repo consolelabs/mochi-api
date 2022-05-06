@@ -25,33 +25,33 @@ import (
 	// "github.com/ethereum/go-ethereum/crypto/sha3"
 )
 
-type FTM struct {
+type Ethereum struct {
 	client   *ethclient.Client
 	scan     *etherscan.Client
 	hdwallet *hdwallet.Wallet
 }
 
-func NewFTMClient(cfg config.Config, hdwallet *hdwallet.Wallet) (Chain, error) {
-	client, err := ethclient.Dial(cfg.FantomRPC)
+func NewEthereumClient(cfg config.Config, hdwallet *hdwallet.Wallet) (Chain, error) {
+	client, err := ethclient.Dial(cfg.EthereumRPC)
 	if err != nil {
 		return nil, err
 	}
 
 	scan := etherscan.NewCustomized(etherscan.Customization{
 		Timeout: 15 * time.Second,
-		Key:     cfg.FantomScanAPIKey,
-		BaseURL: cfg.FantomScan,
+		Key:     cfg.EthereumScanAPIKey,
+		BaseURL: cfg.EthereumScan,
 		Verbose: true,
 	})
 
-	return &FTM{
+	return &Ethereum{
 		client:   client,
 		hdwallet: hdwallet,
 		scan:     scan,
 	}, nil
 }
 
-func (ch *FTM) Balance(address string) (float64, error) {
+func (ch *Ethereum) Balance(address string) (float64, error) {
 	account := common.HexToAddress(address)
 	balanceAt, err := ch.client.BalanceAt(context.Background(), account, nil)
 	if err != nil {
@@ -66,14 +66,14 @@ func (ch *FTM) Balance(address string) (float64, error) {
 	return v, nil
 }
 
-func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Ethereum) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	var (
 		t   *types.Transaction
 		err error
 	)
 
 	switch strings.ToUpper(token.Symbol) {
-	case "FTM":
+	case "ETH":
 		t, amount, err = ch.transfer(fromAcc, toAcc, amount, nonce, all)
 	default:
 		t, amount, err = ch.transferToken(fromAcc, toAcc, amount, token, nonce, all)
@@ -82,7 +82,7 @@ func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 	return t, amount, err
 }
 
-func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Ethereum) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	balance, err := ch.Balance(fromAcc.Address.Hex())
 	if err != nil {
 		return nil, 0, err
@@ -151,7 +151,7 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 	return signedTx, amount, nil
 }
 
-func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Ethereum) transferToken(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
 	privateKey, err := crypto.HexToECDSA(priv)
 	if err != nil {
@@ -198,7 +198,7 @@ func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, a
 	}
 
 	amt := new(big.Int)
-	amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
+	amt.SetString(strconv.FormatFloat(float64(math.Pow10(token.Decimals))*amount, 'f', 6, 64), 10)
 
 	if !all && tokenBalance.Int().Cmp(amt) == -1 {
 		return nil, 0, errors.New("balance is not enough")
@@ -240,7 +240,7 @@ func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, a
 	return signedTx, amount, nil
 }
 
-func (ch *FTM) erc20TokenBalance(address string, token model.Token) (float64, error) {
+func (ch *Ethereum) erc20TokenBalance(address string, token model.Token) (float64, error) {
 	tokenBalance, err := ch.scan.TokenBalance(token.Address, address)
 	if err != nil {
 		return 0, err
@@ -253,17 +253,17 @@ func (ch *FTM) erc20TokenBalance(address string, token model.Token) (float64, er
 	return v, nil
 }
 
-func (ch *FTM) Balances(address string, tokens []model.Token) (map[string]float64, error) {
+func (ch *Ethereum) Balances(address string, tokens []model.Token) (map[string]float64, error) {
 	balances := make(map[string]float64, 0)
 	for _, token := range tokens {
 		key := strings.ToUpper(token.Symbol)
 		switch key {
-		case "FTM":
-			ftmBalance, err := ch.Balance(address)
+		case "ETH":
+			ethBalance, err := ch.Balance(address)
 			if err != nil {
 				return nil, err
 			}
-			balances[key] = ftmBalance
+			balances[key] = ethBalance
 		default:
 			tokenBalance, err := ch.erc20TokenBalance(address, token)
 			if err != nil {

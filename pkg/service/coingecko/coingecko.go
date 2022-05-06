@@ -3,6 +3,7 @@ package coingecko
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/request"
@@ -14,6 +15,7 @@ type CoinGecko struct {
 	getMarketChartURL string
 	searchCoinURL     string
 	getCoinURL        string
+	getPriceURL       string
 }
 
 func NewService() Service {
@@ -21,6 +23,7 @@ func NewService() Service {
 		getMarketChartURL: "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d",
 		searchCoinURL:     "https://api.coingecko.com/api/v3/search?query=%s",
 		getCoinURL:        "https://api.coingecko.com/api/v3/coins/%s",
+		getPriceURL:       "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
 	}
 }
 
@@ -82,4 +85,20 @@ func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, in
 	}
 
 	return resp, nil, http.StatusOK
+}
+
+func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]float64, error) {
+	resp := &response.CoinPriceResponse{}
+	coinIDsArg := strings.Join(coinIDs, ",")
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getPriceURL, coinIDsArg, currency), resp)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
+	}
+
+	prices := make(map[string]float64)
+	for k, v := range *resp {
+		prices[k] = v[currency]
+	}
+
+	return prices, nil
 }
