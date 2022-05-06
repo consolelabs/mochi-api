@@ -29,6 +29,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		{
 			countStatsGroup.GET("", h.GetGuildStatsHandler)
 		}
+
+		// api to contact with discord
+		guildGroup.POST("/:guild_id/channels", h.CreateGuildChannel)
 	}
 
 	userGroup := v1.Group("/users")

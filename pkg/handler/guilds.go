@@ -64,3 +64,14 @@ func (h *Handler) GetGuildStatsHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, guildStat)
 }
+
+func (h *Handler) CreateGuildChannel(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	countType := c.Query("count_type")
+	err := h.entities.CreateGuildChannel(guildID, countType)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, "ok")
+}

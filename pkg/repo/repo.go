@@ -2,6 +2,7 @@ package repo
 
 import (
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
+	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
@@ -36,4 +37,5 @@ type Repo struct {
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	DiscordGuildStats                    discordguildstats.Store
+	DiscordGuildStatChannels             discordguildstatchannels.Store
 }

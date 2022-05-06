@@ -5,6 +5,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/repo"
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
+	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
@@ -41,5 +42,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
+		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 	}
 }
