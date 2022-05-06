@@ -8,7 +8,9 @@ import (
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) GetGuildUsersFromDiscord(guildID string) ([]response.DiscordGuildUser, error) {
@@ -202,4 +204,106 @@ func (e *Entity) CountGuildMembers(guildID string) (int, int, int, error) {
 	}
 	nr_of_members = len(members)
 	return nr_of_members, nr_of_user, nr_of_bots, nil
+}
+
+func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
+	log := logger.NewLogrusLogger()
+	err := e.UpdateOneGuildStats(guildID)
+	if err != nil {
+		log.Error(err, "failed to get guild stats from discord")
+		return err
+	}
+	guildStat, err := e.GetByGuildID(guildID)
+	if err != nil {
+		log.Error(err, "failed to get guild stats from database")
+		return err
+	}
+
+	// create channel count stat
+	channelName := util.CreateChannelName(guildStat, countType)
+	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 0)
+	if err != nil {
+		log.Error(err, "failed to create discord channel")
+		return err
+	}
+
+	// store channel_id to db
+	err = e.CreateDiscordGuildStatChannel(model.DiscordGuildStatChannel{
+		GuildID:   guildID,
+		ChannelID: createdChannel.ID,
+		CountType: countType,
+	})
+	if err != nil {
+		log.Error(err, "failed to store channel id")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) UpdateOneGuildStats(guildID string) error {
+	nr_of_members, nr_of_user, nr_of_bots, err := e.CountGuildMembers(guildID)
+	if err != nil {
+		return err
+	}
+	nr_of_channels, nr_of_text_channels, nr_of_voice_channels, nr_of_stage_channels, nr_of_categories, nr_of_announcement_channels, err := e.CountGuildChannels(guildID)
+	if err != nil {
+		return err
+	}
+	nr_of_emojis, nr_of_static_emojis, nr_of_animated_emojis, err := e.CountGuildEmojis(guildID)
+	if err != nil {
+		return err
+	}
+	nr_of_stickers, nr_of_standard_stickers, nr_of_guild_stickers, err := e.CountGuildStickers(guildID)
+	if err != nil {
+		return err
+	}
+	nr_of_roles, err := e.CountGuildRoles(guildID)
+	if err != nil {
+		return err
+	}
+
+	// update stats to database
+	err = e.UpdateGuildStats(model.DiscordGuildStat{
+		GuildID:     guildID,
+		NrOfMembers: nr_of_members,
+		NrOfUsers:   nr_of_user,
+		NrOfBots:    nr_of_bots,
+
+		NrOfChannels:             nr_of_channels,
+		NrOfTextChannels:         nr_of_text_channels,
+		NrOfVoiceChannels:        nr_of_voice_channels,
+		NrOfStageChannels:        nr_of_stage_channels,
+		NrOfCategories:           nr_of_categories,
+		NrOfAnnouncementChannels: nr_of_announcement_channels,
+
+		NrOfEmojis:         nr_of_emojis,
+		NrOfStaticEmojis:   nr_of_static_emojis,
+		NrOfAnimatedEmojis: nr_of_animated_emojis,
+
+		NrOfStickers:         nr_of_stickers,
+		NrOfStandardStickers: nr_of_standard_stickers,
+		NrOfGuildStickers:    nr_of_guild_stickers,
+		NrOfRoles:            nr_of_roles,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuildStatChannel) error {
+	log := logger.NewLogrusLogger()
+	guildStat, err := e.GetByGuildID(guildID)
+	if err != nil {
+		log.Error(err, "failed to get guild stats from database")
+		return err
+	}
+
+	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType)
+	_, err = e.discord.ChannelEdit(statChannel.ChannelID, newChannelName)
+	if err != nil {
+		log.Error(err, "failed to edit channel name")
+		return err
+	}
+	return nil
 }
