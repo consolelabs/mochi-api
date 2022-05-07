@@ -60,13 +60,19 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 }
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
 	discordID := c.Query("discord_id")
 	if discordID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "discord_id is required"})
 		return
 	}
 
-	response, err := h.entities.InDiscordWalletBalances(discordID)
+	response, err := h.entities.InDiscordWalletBalances(guildID, discordID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
