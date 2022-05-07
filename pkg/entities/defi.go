@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -17,11 +17,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
-)
-
-const (
-	getBeefyLPPriceURL    = "https://api.beefy.finance/lps"
-	getBeefyTokenPriceURL = "https://api.beefy.finance/prices"
 )
 
 func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
@@ -89,7 +84,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		return nil, errs
 	}
 
-	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency))
+	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
 	if err != nil {
 		errs = append(errs, fmt.Sprintf("error getting token info: %v", err))
 		return nil, errs
@@ -108,14 +103,13 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 			continue
 		}
 
-		signedTx, txBaseURL, err := e.transfer(fromAcc, toAcc, amountEach, token, nonce, req.All)
+		signedTx, transferredAmount, txBaseURL, err := e.transfer(fromAcc, toAcc, amountEach, token, nonce, req.All)
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("error transfer: %v", err))
 			continue
 		}
 		nonce = int(signedTx.Nonce()) + 1
 		transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-		transferredAmount := float64(signedTx.Value().Int64()) / float64(math.Pow10(18))
 
 		_, err = e.repo.DiscordBotTransaction.Create(model.DiscordBotTransaction{
 			TxHash:        signedTx.Hash().Hex(),
@@ -166,13 +160,13 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		return
 	}
 
-	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency))
+	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
 	if err != nil {
 		err = fmt.Errorf("error getting token info: %v", err)
 		return
 	}
 
-	signedTx, txBaseURL, err := e.transfer(fromAccount,
+	signedTx, transferredAmount, txBaseURL, err := e.transfer(fromAccount,
 		accounts.Account{Address: common.HexToAddress(req.Recipients[0])},
 		req.Amount,
 		token, -1, req.All)
@@ -187,7 +181,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		ToAddress:     req.Recipients[0],
 		GuildID:       req.GuildID,
 		ChannelID:     req.ChannelID,
-		Amount:        req.Amount,
+		Amount:        transferredAmount,
 		TokenID:       token.ID,
 		Type:          "WITHDRAW",
 	})
@@ -202,7 +196,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 	res = response.InDiscordWalletWithdrawResponse{
 		FromDiscordId:    req.Sender,
 		ToAddress:        req.Recipients[0],
-		Amount:           req.Amount,
+		Amount:           transferredAmount,
 		Cryptocurrency:   req.Cryptocurrency,
 		TxHash:           signedTx.Hash().Hex(),
 		TxURL:            fmt.Sprintf("%s/%s", txBaseURL, signedTx.Hash().Hex()),
@@ -212,7 +206,37 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 	return
 }
 
-func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, string, error) {
+func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
+	balances := make(map[string]float64, 0)
+	for _, token := range tokens {
+		var chain chain.Chain
+		switch token.ChainID {
+		case 250: // ftm
+			chain = e.dcwallet.FTM()
+		case 1: // ethereum
+			chain = e.dcwallet.Ethereum()
+		case 56: // BSC
+			chain = e.dcwallet.BSC()
+		default:
+			return nil, errors.New("cryptocurrency not supported")
+		}
+
+		bals, err := chain.Balances(
+			address, []model.Token{token},
+		)
+		if err != nil {
+			err = fmt.Errorf("error getting balances: %v", err)
+			return nil, err
+		}
+		for k, v := range bals {
+			balances[k] = v
+		}
+	}
+
+	return balances, nil
+}
+
+func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, string, error) {
 	var (
 		signedTx  *types.Transaction
 		txBaseURL string
@@ -220,8 +244,8 @@ func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Accou
 	)
 
 	switch token.ChainID {
-	case 250: // ftm
-		signedTx, err = e.dcwallet.FTM().Transfer(
+	case 1: // ethereum
+		signedTx, amount, err = e.dcwallet.Ethereum().Transfer(
 			fromAccount,
 			toAccount,
 			amount,
@@ -231,40 +255,45 @@ func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Accou
 		)
 		if err != nil {
 			err = fmt.Errorf("error transfer: %v", err)
-			return nil, "", err
+			return nil, 0, "", err
+		}
+		txBaseURL = "https://etherscan.io/tx"
+	case 56: // BSC
+		signedTx, amount, err = e.dcwallet.BSC().Transfer(
+			fromAccount,
+			toAccount,
+			amount,
+			token,
+			nonce,
+			all,
+		)
+		if err != nil {
+			err = fmt.Errorf("error transfer: %v", err)
+			return nil, 0, "", err
+		}
+		txBaseURL = "https://bscscan.com/tx"
+	case 250: // ftm
+		signedTx, amount, err = e.dcwallet.FTM().Transfer(
+			fromAccount,
+			toAccount,
+			amount,
+			token,
+			nonce,
+			all,
+		)
+		if err != nil {
+			err = fmt.Errorf("error transfer: %v", err)
+			return nil, 0, "", err
 		}
 		txBaseURL = "https://ftmscan.com/tx"
 	default:
-		return nil, "", errors.New("cryptocurrency not supported")
+		return nil, 0, "", errors.New("cryptocurrency not supported")
 	}
 
-	return signedTx, txBaseURL, nil
+	return signedTx, amount, txBaseURL, nil
 }
 
-func (e *Entity) GetBeefyTokenPrices() (map[string]float64, error) {
-
-	tokenPrices := make(map[string]float64)
-
-	// get token prices
-	if _, err := util.FetchData(getBeefyTokenPriceURL, &tokenPrices); err != nil {
-		return nil, err
-	}
-
-	// get lp prices
-	if _, err := util.FetchData(getBeefyLPPriceURL, &tokenPrices); err != nil {
-		return nil, err
-	}
-
-	res := make(map[string]float64)
-
-	for k, v := range tokenPrices {
-		res[k] = float64(v)
-	}
-
-	return res, nil
-}
-
-func (e *Entity) InDiscordWalletBalances(discordID string) (*response.UserBalancesResponse, error) {
+func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.UserBalancesResponse, error) {
 	response := &response.UserBalancesResponse{}
 
 	user, err := e.repo.Users.GetOne(discordID)
@@ -273,9 +302,14 @@ func (e *Entity) InDiscordWalletBalances(discordID string) (*response.UserBalanc
 		return nil, err
 	}
 
-	tokens, err := e.repo.Token.GetAllSupported()
+	gTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
 	if err != nil {
-		err = fmt.Errorf("failed to get supported tokens - err: %v", err)
+		err = fmt.Errorf("failed to get guild %s tokens - err: %v", guildID, err)
+	}
+
+	var tokens []model.Token
+	for _, gToken := range gTokens {
+		tokens = append(tokens, *gToken.Token)
 	}
 
 	if user.InDiscordWalletAddress.String == "" {
@@ -285,31 +319,27 @@ func (e *Entity) InDiscordWalletBalances(discordID string) (*response.UserBalanc
 		}
 	}
 
-	balances, err := e.dcwallet.FTM().Balances(user.InDiscordWalletAddress.String, tokens)
+	balances, err := e.balances(user.InDiscordWalletAddress.String, tokens)
 	if err != nil {
 		err = fmt.Errorf("cannot get user balances: %v", err)
 		return nil, err
 	}
 	response.Balances = balances
 
-	tokenPrices, err := e.GetBeefyTokenPrices()
+	var coinIDs []string
+	for _, token := range tokens {
+		coinIDs = append(coinIDs, token.CoinGeckoID)
+	}
+
+	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(coinIDs, "usd")
 	if err != nil {
 		err = fmt.Errorf("cannot get user balances: %v", err)
 		return nil, err
 	}
 
 	response.BalancesInUSD = make(map[string]float64)
-	for tokenSymbol, balance := range balances {
-		tokenPriceInUSD, ok := tokenPrices[strings.ToUpper(tokenSymbol)]
-		if !ok {
-			// get wrap version
-			tokenPriceInUSD, ok = tokenPrices[strings.ToUpper("w"+tokenSymbol)]
-		}
-		if !ok {
-			err = fmt.Errorf("failed to get token prices: %v", err)
-			continue
-		}
-		response.BalancesInUSD[tokenSymbol] = balance * tokenPriceInUSD
+	for _, token := range tokens {
+		response.BalancesInUSD[token.Symbol] = response.Balances[token.Symbol] * tokenPrices[token.CoinGeckoID]
 	}
 
 	return response, nil

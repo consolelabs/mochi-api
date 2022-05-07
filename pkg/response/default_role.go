@@ -5,12 +5,7 @@ type DefaultRole struct {
 	GuildID string `json:"guild_id"`
 }
 
-type DefaultRoleCreationResponse struct {
-	Data    DefaultRole `json:"role"`
+type DefaultRoleResponse struct {
+	Data    DefaultRole `json:"data"`
 	Success bool        `json:"success"`
-}
-
-type DefaultRoleGetAllResponse struct {
-	Data    []*DefaultRole `json:"data"`
-	Success bool           `json:"success"`
 }

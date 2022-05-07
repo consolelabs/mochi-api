@@ -20,7 +20,9 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"github.com/nanmu42/etherscan-api"
+
 	"golang.org/x/crypto/sha3"
+	// "github.com/ethereum/go-ethereum/crypto/sha3"
 )
 
 type FTM struct {
@@ -64,7 +66,7 @@ func (ch *FTM) Balance(address string) (float64, error) {
 	return v, nil
 }
 
-func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, error) {
+func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	var (
 		t   *types.Transaction
 		err error
@@ -72,33 +74,33 @@ func (ch *FTM) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 
 	switch strings.ToUpper(token.Symbol) {
 	case "FTM":
-		t, err = ch.transfer(fromAcc, toAcc, amount, nonce, all)
+		t, amount, err = ch.transfer(fromAcc, toAcc, amount, nonce, all)
 	default:
-		t, err = ch.transferToken(fromAcc, toAcc, amount, token, nonce)
+		t, amount, err = ch.transferToken(fromAcc, toAcc, amount, token, nonce, all)
 	}
 
-	return t, err
+	return t, amount, err
 }
 
-func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, error) {
+func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	balance, err := ch.Balance(fromAcc.Address.Hex())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	if !all && balance < amount {
-		return nil, errors.New("balance is not enough")
+		return nil, 0, errors.New("balance is not enough")
 	}
 
 	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
 	privateKey, err := crypto.HexToECDSA(priv)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return nil, errors.New("error casting public key to ECDSA")
+		return nil, 0, errors.New("error casting public key to ECDSA")
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -106,20 +108,20 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 	if prevTxNonce < 0 {
 		nonce, err = ch.client.PendingNonceAt(context.Background(), fromAddress)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 	}
 
-	gasLimit := uint64(21000) // in units
+	gasLimit := uint64(21000)
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
 	if all {
 		if balance <= maxTxFee {
-			return nil, errors.New("insufficient funds for gas")
+			return nil, 0, errors.New("insufficient funds for gas")
 		}
 		amount = balance - maxTxFee
 	}
@@ -133,33 +135,33 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 
 	chainID, err := ch.client.NetworkID(context.Background())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	err = ch.client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return signedTx, nil
+	return signedTx, amount, nil
 }
 
-func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int) (*types.Transaction, error) {
+func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
 	privateKey, err := crypto.HexToECDSA(priv)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return nil, errors.New("error casting public key to ECDSA")
+		return nil, 0, errors.New("error casting public key to ECDSA")
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -167,14 +169,14 @@ func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, a
 	if prevTxNonce < 0 {
 		nonce, err = ch.client.PendingNonceAt(context.Background(), fromAddress)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 	}
 
 	value := big.NewInt(0) // in wei (0 eth)
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	toAddress := common.HexToAddress(toAcc.Address.Hex())
@@ -187,15 +189,19 @@ func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, a
 
 	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
 
-	amt := new(big.Int)
-	amt.SetString(strconv.FormatFloat(float64(math.Pow10(token.Decimals))*amount, 'f', 6, 64), 10)
-
 	tokenBalance, err := ch.scan.TokenBalance(token.Address, fromAcc.Address.Hex())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	if tokenBalance.Int().Cmp(amt) == -1 {
-		return nil, errors.New("balance is not enough")
+	if all {
+		amount, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(tokenBalance.Int()), big.NewFloat(math.Pow10(18))).Float64()
+	}
+
+	amt := new(big.Int)
+	amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
+
+	if !all && tokenBalance.Int().Cmp(amt) == -1 {
+		return nil, 0, errors.New("balance is not enough")
 	}
 
 	paddedAmount := common.LeftPadBytes(amt.Bytes(), 32)
@@ -210,28 +216,28 @@ func (ch *FTM) transferToken(fromAcc accounts.Account, toAcc accounts.Account, a
 		Data: data,
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	gasLimit *= 2
+	gasLimit *= 3
 
 	tx := types.NewTransaction(nonce, tokenAddress, value, gasLimit, gasPrice, data)
 
 	chainID, err := ch.client.NetworkID(context.Background())
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	err = ch.client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return signedTx, nil
+	return signedTx, amount, nil
 }
 
 func (ch *FTM) erc20TokenBalance(address string, token model.Token) (float64, error) {

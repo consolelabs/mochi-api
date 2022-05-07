@@ -24,6 +24,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 			customCommandGroup.PUT("/:command_id", h.UpdateCustomCommand)
 			customCommandGroup.DELETE("/:command_id", h.DeleteCustomCommand)
 		}
+
+		countStatsGroup := guildGroup.Group("/:guild_id/stats")
+		{
+			countStatsGroup.GET("", h.GetGuildStatsHandler)
+		}
+
+		// api to contact with discord
+		guildGroup.POST("/:guild_id/channels", h.CreateGuildChannel)
 	}
 
 	userGroup := v1.Group("/users")
@@ -52,7 +60,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 	configGroup := v1.Group("/configs")
 	{
 		configGroup.GET("")
-		configGroup.POST("/gm", h.CreateGmConfig)
+		configGroup.POST("/gm", h.UpsertGmConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
 			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
@@ -62,6 +70,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		{
 			defaultRoleGroup.GET("", h.GetDefaultRolesByGuildID)
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
+			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
+		}
+		tokenGroup := configGroup.Group("/tokens")
+		{
+			tokenGroup.GET("", h.GetGuildTokens)
+			tokenGroup.POST("", h.UpsertGuildTokenConfig)
 		}
 	}
 
@@ -81,5 +95,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 	webhook := v1.Group("/webhook")
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
+	}
+
+	verifyGroup := v1.Group("/verify")
+	{
+		verifyGroup.POST("/config", h.NewGuildConfigWalletVerificationMessage)
+		verifyGroup.POST("/generate", h.GenerateVerification)
+		verifyGroup.POST("", h.VerifyWalletAddress)
 	}
 }
