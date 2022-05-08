@@ -101,3 +101,13 @@ func (h *Handler) GetCoin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
+
+func (h *Handler) SearchCoins(c *gin.Context) {
+	data, err, statusCode := h.entities.SearchCoins(c)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
