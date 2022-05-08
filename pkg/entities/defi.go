@@ -367,3 +367,17 @@ func (e *Entity) GetCoinData(c *gin.Context) (*response.GetCoinResponse, error, 
 
 	return data, nil, http.StatusOK
 }
+
+func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, int) {
+	query := c.Query("query")
+	if query == "" {
+		return nil, fmt.Errorf("query is required"), http.StatusBadRequest
+	}
+
+	data, err, statusCode := e.svc.CoinGecko.SearchCoins(query)
+	if err != nil {
+		return nil, err, statusCode
+	}
+
+	return data, nil, http.StatusOK
+}
