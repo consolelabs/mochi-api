@@ -90,6 +90,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)
+		defiGroup.GET("/coins", h.SearchCoins)
 	}
 
 	webhook := v1.Group("/webhook")
