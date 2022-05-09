@@ -3,6 +3,7 @@ package job
 import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type countDiscordStats struct {
@@ -32,7 +33,19 @@ func (c *countDiscordStats) Run() error {
 		if err != nil {
 			return err
 		}
+
+		// check if channels is deleted, then not update and delete from db
+		existChannels := make([]model.DiscordGuildStatChannel, 0)
 		for _, statChannel := range statChannels {
+			channel, _ := c.entity.GetGuildChannel(statChannel.ChannelID)
+			if channel != nil {
+				existChannels = append(existChannels, statChannel)
+			} else {
+				_ = c.entity.DeleteStatChannelByChannelID(statChannel.ChannelID)
+			}
+		}
+		// update channels exist
+		for _, statChannel := range existChannels {
 			err = c.entity.EditGuildChannel(guild.ID, statChannel)
 			if err != nil {
 				return err
