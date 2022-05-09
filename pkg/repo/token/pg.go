@@ -15,7 +15,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetBySymbol(symbol string, botSupported bool) (model.Token, error) {
 	var token model.Token
-	return token, pg.db.First(&token, "lower(symbol) = ? AND discord_bot_supported = ?", symbol, botSupported).Error
+	return token, pg.db.First(&token, "lower(symbol) = lower(?) AND discord_bot_supported = ?", symbol, botSupported).Error
 }
 
 func (pg *pg) GetAllSupported() ([]model.Token, error) {
