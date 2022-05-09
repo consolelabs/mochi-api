@@ -8,6 +8,33 @@ import (
 	"gorm.io/gorm"
 )
 
+func (e *Entity) ListAllReactionRoles(guildID string) (*response.ListRoleReactionResponse, error) {
+	configs, err := e.repo.GuildConfigReactionRole.ListAllByGuildID(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	var roleConfigs = make([]response.RoleReactionByMessage, 0)
+	for _, c := range configs {
+		var roles []response.Role
+		err = json.Unmarshal([]byte(c.ReactionRoles), &roles)
+		if err != nil {
+			return nil, err
+		}
+		roleConfigs = append(roleConfigs, response.RoleReactionByMessage{
+			MessageID: c.MessageID,
+			Roles:     roles,
+		})
+	}
+
+	var res = response.ListRoleReactionResponse{
+		GuildID: guildID,
+		Configs: roleConfigs,
+		Success: true,
+	}
+	return &res, nil
+}
+
 func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string) (*response.RoleReactionResponse, error) {
 	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(guildID, messageID)
 	if err != nil {

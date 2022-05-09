@@ -63,6 +63,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		configGroup.POST("/gm", h.UpsertGmConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
+			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)
 			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
 			roleReactionGroup.POST("/update-config", h.UpdateConfig)
 		}

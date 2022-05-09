@@ -17,3 +17,14 @@ type RoleReactionConfigResponse struct {
 	Roles     []Role `json:"roles"`
 	Success   bool   `json:"success"`
 }
+
+type RoleReactionByMessage struct {
+	MessageID string `json:"message_id"`
+	Roles     []Role `json:"roles"`
+}
+
+type ListRoleReactionResponse struct {
+	GuildID string                  `json:"guild_id"`
+	Configs []RoleReactionByMessage `json:"configs"`
+	Success bool                    `json:"success"`
+}

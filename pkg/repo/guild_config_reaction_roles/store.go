@@ -6,7 +6,8 @@ import (
 )
 
 type Store interface {
-	GetByMessageID(guildId, mesageId string) (model.GuildConfigReactionRole, error)
+	ListAllByGuildID(guildID string) ([]model.GuildConfigReactionRole, error)
+	GetByMessageID(guildId, messageID string) (model.GuildConfigReactionRole, error)
 	UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 	CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 }
