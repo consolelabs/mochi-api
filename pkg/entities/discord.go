@@ -222,9 +222,24 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
 
 	// create channel count stat
 	channelName := util.CreateChannelName(guildStat, countType)
-	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 0)
+	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
 		log.Error(err, "failed to create discord channel")
+		return err
+	}
+
+	_, err = e.discord.ChannelEditComplex(createdChannel.ID, &discordgo.ChannelEdit{
+		PermissionOverwrites: []*discordgo.PermissionOverwrite{
+			{
+				ID:    guildID,
+				Type:  0,
+				Allow: 0,
+				Deny:  1048576,
+			},
+		},
+	})
+	if err != nil {
+		log.Error(err, "failed to update discord channel permission")
 		return err
 	}
 
