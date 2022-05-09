@@ -135,7 +135,6 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
 		channelID = message.ChannelID
 	)
 
-	fmt.Printf("[messageCreate][guild %s][author %s]: %s\n", guildID, discordID, message.Content)
 	isGmMessage := message.Content == "gm" || message.Content == "gn"
 
 	switch {
