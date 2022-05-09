@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -221,9 +222,24 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
 
 	// create channel count stat
 	channelName := util.CreateChannelName(guildStat, countType)
-	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 0)
+	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
 		log.Error(err, "failed to create discord channel")
+		return err
+	}
+
+	_, err = e.discord.ChannelEditComplex(createdChannel.ID, &discordgo.ChannelEdit{
+		PermissionOverwrites: []*discordgo.PermissionOverwrite{
+			{
+				ID:    guildID,
+				Type:  0,
+				Allow: 0,
+				Deny:  1048576,
+			},
+		},
+	})
+	if err != nil {
+		log.Error(err, "failed to update discord channel permission")
 		return err
 	}
 
@@ -306,4 +322,9 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 		return err
 	}
 	return nil
+}
+
+func (e *Entity) GetGuildChannel(channelID string) (*discordgo.Channel, error) {
+	channel, err := e.discord.Channel(channelID)
+	return channel, err
 }

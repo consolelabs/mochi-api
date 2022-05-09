@@ -30,3 +30,12 @@ func (pg *pg) GetStatChannelsByGuildID(guildID string) ([]model.DiscordGuildStat
 
 	return statChannels, nil
 }
+
+func (pg *pg) DeleteStatChannelByChannelID(channelID string) error {
+	statChannel := model.DiscordGuildStatChannel{}
+	err := pg.db.Where("channel_id = ?", channelID).Delete(statChannel).Error
+	if err != nil {
+		return fmt.Errorf("failed to delete stat channel: %w", err)
+	}
+	return nil
+}
