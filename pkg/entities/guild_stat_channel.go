@@ -21,3 +21,11 @@ func (e *Entity) GetStatChannelsByGuildID(guildID string) ([]model.DiscordGuildS
 
 	return statChannels, nil
 }
+
+func (e *Entity) DeleteStatChannelByChannelID(channelID string) error {
+	err := e.repo.DiscordGuildStatChannels.DeleteStatChannelByChannelID(channelID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

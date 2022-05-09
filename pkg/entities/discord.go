@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -306,4 +307,9 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 		return err
 	}
 	return nil
+}
+
+func (e *Entity) GetGuildChannel(channelID string) (*discordgo.Channel, error) {
+	channel, err := e.discord.Channel(channelID)
+	return channel, err
 }
