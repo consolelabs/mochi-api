@@ -3,13 +3,13 @@ package consts
 const (
 	Members = "all_members"
 	Users   = "user_members"
-	Bots    = "bots_members"
+	Bots    = "bot_members"
 
 	Channels             = "all_channels"
 	TextChannels         = "text_channels"
 	VoiceChannels        = "voice_channels"
 	StageChannels        = "stage_channels"
-	Categories           = "categories_channels"
+	Categories           = "category_channels"
 	AnnouncementChannels = "announcement_channels"
 
 	Emojis         = "all_emojis"
