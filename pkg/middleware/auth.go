@@ -1,10 +1,14 @@
 package middleware
 
 import (
+	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func getTokenStringFromContext(c *gin.Context) string {
@@ -22,4 +26,67 @@ func getTokenStringFromContext(c *gin.Context) string {
 
 	return cookieStr
 
+}
+
+func AuthGuard(cfg config.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		tokenStr := getTokenStringFromContext(ctx)
+
+		if tokenStr == "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"error": "please login to continue",
+			})
+			ctx.Abort()
+			return
+		}
+
+		// always allows mochi bot
+		if tokenStr == cfg.MochiBotSecret {
+			ctx.Next()
+			return
+		}
+
+		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+			return cfg.JWTSecret, nil
+		})
+
+		if err != nil || !token.Valid {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message": "invalid token or token expired",
+				"error":   err.Error(),
+			})
+			ctx.Abort()
+			return
+		}
+
+		ctx.Next()
+	}
+}
+
+func WithAuthContext(cfg config.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		tokenStr := getTokenStringFromContext(ctx)
+		ctx.Set("isMochiBot", tokenStr == cfg.MochiBotSecret)
+
+		// always allows mochi bot
+		if tokenStr == cfg.MochiBotSecret || tokenStr == "" {
+			ctx.Next()
+			return
+		}
+
+		var claims model.JWTData
+		token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
+			return cfg.JWTSecret, nil
+		})
+
+		if err != nil || !token.Valid {
+			ctx.Next()
+			return
+		}
+
+		ctx.Set("discord_access_token", claims.DiscordAccessToken)
+		ctx.Set("user_discord_id", claims.UserDiscordID)
+
+		ctx.Next()
+	}
 }

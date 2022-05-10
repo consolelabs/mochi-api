@@ -1,20 +1,30 @@
 package routes
 
 import (
+	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/handler"
+	"github.com/defipod/mochi/pkg/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 // NewRoutes ...
-func NewRoutes(r *gin.Engine, h *handler.Handler) {
+func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	v1 := r.Group("/api/v1")
+	v1.Use(middleware.WithAuthContext(cfg))
+
+	authGroup := v1.Group("/auth")
+	{
+		authGroup.POST("/login", h.Login)
+		authGroup.POST("/logout", h.Logout)
+	}
 
 	guildGroup := v1.Group("/guilds")
 	{
 		guildGroup.POST("", h.CreateGuild)
 		guildGroup.GET("", h.GetGuilds)
 		guildGroup.GET("/:guild_id", h.GetGuild)
+		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.ListMyGuilds)
 
 		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
 		{
@@ -36,6 +46,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 
 	userGroup := v1.Group("/users")
 	{
+		userGroup.GET("me", middleware.AuthGuard(cfg), h.GetMyInfo)
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
@@ -46,6 +57,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 		invitesGroup := communityGroup.Group("/invites")
 		{
 			invitesGroup.GET("/", h.GetInvites)
+			invitesGroup.GET("/config", h.GetInviteTrackerConfig)
 			invitesGroup.POST("/config", h.ConfigureInvites)
 			invitesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
 			invitesGroup.GET("/aggregation", h.InvitesAggregation)
@@ -60,9 +72,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler) {
 	configGroup := v1.Group("/configs")
 	{
 		configGroup.GET("")
+		configGroup.GET("/gm", h.GetGmConfig)
 		configGroup.POST("/gm", h.UpsertGmConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
+			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)
 			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
 			roleReactionGroup.POST("/update-config", h.UpdateConfig)
 		}

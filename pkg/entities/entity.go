@@ -30,6 +30,7 @@ type Entity struct {
 	discord  *discordgo.Session
 	cache    cache.Cache
 	svc      *service.Service
+	cfg      config.Config
 }
 
 var e *Entity
@@ -84,6 +85,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		discord:  discord,
 		cache:    cache,
 		svc:      service,
+		cfg:      cfg,
 	}
 
 	if e.discord != nil && e.cache != nil {
@@ -120,6 +122,12 @@ func (e *Entity) initInviteTrackerCache() error {
 	}
 
 	for _, guild := range guilds.Data {
+		// check if mochi bot has permission in guild
+		guild, _ := e.GetGuildById(guild.ID)
+		if guild == nil {
+			continue
+		}
+		// logic invite reacker cache
 		invites, err := e.discord.GuildInvites(guild.ID)
 		if err != nil {
 			return fmt.Errorf("failed to get invites for guild %s: %w", guild.ID, err)

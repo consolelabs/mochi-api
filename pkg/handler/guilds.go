@@ -75,3 +75,15 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "ok")
 }
+
+func (h *Handler) ListMyGuilds(c *gin.Context) {
+	accessToken := c.GetString("discord_access_token")
+
+	guilds, err := h.entities.ListMyDiscordGuilds(accessToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": guilds})
+}

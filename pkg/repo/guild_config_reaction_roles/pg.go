@@ -15,6 +15,16 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
+func (pg *pg) ListAllByGuildID(guildId string) ([]model.GuildConfigReactionRole, error) {
+	var configs []model.GuildConfigReactionRole
+	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ?", guildId).Scan(&configs).Error
+	if err != nil {
+		return configs, fmt.Errorf("failed to list role configs: %w", err)
+	}
+
+	return configs, nil
+}
+
 func (pg *pg) GetByMessageID(guildId, messageID string) (model.GuildConfigReactionRole, error) {
 	var config model.GuildConfigReactionRole
 	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", guildId, messageID).First(&config).Error
