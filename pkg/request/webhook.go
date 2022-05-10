@@ -15,11 +15,13 @@ type HandleDiscordWebhookRequest struct {
 const (
 	GUILD_MEMBER_ADD = "guildMemberAdd"
 	MESSAGE_CREATE   = "messageCreate"
+	GUILD_CREATE     = "guildCreate"
 )
 
 var acceptedEvents = map[string]bool{
 	GUILD_MEMBER_ADD: true,
 	MESSAGE_CREATE:   true,
+	GUILD_CREATE:     true,
 }
 
 func (input *HandleDiscordWebhookRequest) Bind(c *gin.Context) error {
