@@ -29,6 +29,8 @@ type Config struct {
 	DiscordLogWebhook       string
 	InDiscordWalletMnemonic string
 
+	MochiBotSecret string
+
 	JWTSecret              []byte
 	JWTAccessTokenLifeSpan time.Duration
 
@@ -92,6 +94,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		DBName:    v.GetString("DB_NAME"),
 		DBPass:    v.GetString("DB_PASS"),
 		DBSSLMode: v.GetString("DB_SSL_MODE"),
+
+		MochiBotSecret: v.GetString("MOCHI_BOT_SECRET"),
 
 		JWTSecret:              []byte(v.GetString("JWT_SECRET")),
 		JWTAccessTokenLifeSpan: time.Hour * 24 * time.Duration(tokenTTLInDay), // 7 days

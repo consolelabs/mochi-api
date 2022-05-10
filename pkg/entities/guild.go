@@ -2,7 +2,9 @@ package entities
 
 import (
 	"errors"
+	"fmt"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -67,4 +69,67 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		Alias:        guild.Alias,
 		LogChannelID: guild.GuildConfigInviteTracker.ChannelID,
 	}, nil
+}
+
+func listDiscordGuilds(s *discordgo.Session) ([]*discordgo.UserGuild, error) {
+
+	var (
+		guilds  []*discordgo.UserGuild
+		afterID string
+	)
+
+	for {
+		tmp, err := s.UserGuilds(100, "", afterID)
+		if err != nil {
+			return nil, err
+		}
+
+		afterID = tmp[len(tmp)-1].ID
+		guilds = append(guilds, tmp...)
+
+		if len(tmp) < 100 {
+			break
+		}
+	}
+
+	return guilds, nil
+}
+
+type DiscordGuildResponse struct {
+	discordgo.UserGuild
+	BotAddable bool `json:"bot_addable"`
+	BotArrived bool `json:"bot_arrived"`
+}
+
+func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]*DiscordGuildResponse, error) {
+	s, err := discordgo.New("Bearer " + accessToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open discord session: %v", err.Error())
+	}
+
+	userGuilds, err := listDiscordGuilds(s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list user's discord guilds: %v", err.Error())
+	}
+
+	mochiGuilds, err := listDiscordGuilds(e.discord)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list mochi's discord guilds: %v", err.Error())
+	}
+
+	mochiArrived := make(map[string]bool)
+
+	for _, g := range mochiGuilds {
+		mochiArrived[g.ID] = true
+	}
+
+	res := make([]*DiscordGuildResponse, 0)
+	for _, g := range userGuilds {
+		// Check for guilds that user has ADMINISTRATOR or MANAGE_GUILD permission
+		if (g.Permissions&0x8) == 0x8 || (g.Permissions&0x20) == 0x20 {
+			res = append(res, &DiscordGuildResponse{*g, true, mochiArrived[g.ID]})
+		}
+	}
+
+	return res, nil
 }

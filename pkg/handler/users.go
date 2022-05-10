@@ -66,3 +66,15 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 
 	c.JSON(code, gin.H{"data": res})
 }
+
+func (h *Handler) GetMyInfo(c *gin.Context) {
+	accessToken := c.GetString("discord_access_token")
+
+	du, err := h.entities.GetMyDiscordInfo(accessToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": du})
+}
