@@ -305,6 +305,13 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 	gTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
 	if err != nil {
 		err = fmt.Errorf("failed to get guild %s tokens - err: %v", guildID, err)
+		return nil, err
+	}
+	if len(gTokens) == 0 {
+		if err = e.initGuildDefaultTokenConfigs(guildID); err != nil {
+			return nil, err
+		}
+		return e.InDiscordWalletBalances(guildID, discordID)
 	}
 
 	var tokens []model.Token
@@ -380,4 +387,22 @@ func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, in
 	}
 
 	return data, nil, http.StatusOK
+}
+
+func (e *Entity) initGuildDefaultTokenConfigs(guildID string) error {
+	tokens, err := e.repo.Token.GetDefaultTokens()
+	if err != nil {
+		return err
+	}
+
+	var configs []model.GuildConfigToken
+	for _, token := range tokens {
+		configs = append(configs, model.GuildConfigToken{
+			TokenID: token.ID,
+			GuildID: guildID,
+			Active:  true,
+		})
+	}
+
+	return e.repo.GuildConfigToken.UpsertMany(configs)
 }
