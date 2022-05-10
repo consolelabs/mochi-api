@@ -25,6 +25,12 @@ func (c *countDiscordStats) Run() error {
 	}
 
 	for _, guild := range guilds.Data {
+		// check if mochi bot has permission in guild
+		guild, _ := c.entity.GetGuildById(guild.ID)
+		if guild == nil {
+			continue
+		}
+
 		// update data stats in database
 		err := c.entity.UpdateOneGuildStats(guild.ID)
 		if err != nil {

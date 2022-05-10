@@ -120,6 +120,12 @@ func (e *Entity) initInviteTrackerCache() error {
 	}
 
 	for _, guild := range guilds.Data {
+		// check if mochi bot has permission in guild
+		guild, _ := e.GetGuildById(guild.ID)
+		if guild == nil {
+			continue
+		}
+		// logic invite reacker cache
 		invites, err := e.discord.GuildInvites(guild.ID)
 		if err != nil {
 			return fmt.Errorf("failed to get invites for guild %s: %w", guild.ID, err)

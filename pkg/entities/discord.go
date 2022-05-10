@@ -328,3 +328,11 @@ func (e *Entity) GetGuildChannel(channelID string) (*discordgo.Channel, error) {
 	channel, err := e.discord.Channel(channelID)
 	return channel, err
 }
+
+func (e *Entity) GetGuildById(guildID string) (*discordgo.Guild, error) {
+	guild, err := e.discord.Guild(guildID)
+	if err != nil {
+		return nil, err
+	}
+	return guild, nil
+}
