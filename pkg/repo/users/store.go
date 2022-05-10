@@ -9,4 +9,5 @@ type Store interface {
 	GetLatestWalletNumber() int
 	GetOne(discordID string) (*model.User, error)
 	GetByDiscordIDs(discordIDs []string) ([]model.User, error)
+	Update(u *model.User) error
 }

@@ -30,6 +30,7 @@ type Entity struct {
 	discord  *discordgo.Session
 	cache    cache.Cache
 	svc      *service.Service
+	cfg      config.Config
 }
 
 var e *Entity
@@ -84,6 +85,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		discord:  discord,
 		cache:    cache,
 		svc:      service,
+		cfg:      cfg,
 	}
 
 	if e.discord != nil && e.cache != nil {
