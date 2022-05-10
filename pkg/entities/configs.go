@@ -5,6 +5,15 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 )
 
+func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
+	config, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
 func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 	if err := e.repo.GuildConfigGmGn.UpsertOne(&model.GuildConfigGmGn{
 		GuildID:   req.GuildID,
