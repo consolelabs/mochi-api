@@ -57,6 +57,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		invitesGroup := communityGroup.Group("/invites")
 		{
 			invitesGroup.GET("/", h.GetInvites)
+			invitesGroup.GET("/config", h.GetInviteTrackerConfig)
 			invitesGroup.POST("/config", h.ConfigureInvites)
 			invitesGroup.GET("/leaderboard/:id", h.GetInvitesLeaderboard)
 			invitesGroup.GET("/aggregation", h.InvitesAggregation)
@@ -71,9 +72,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	configGroup := v1.Group("/configs")
 	{
 		configGroup.GET("")
+		configGroup.GET("/gm", h.GetGmConfig)
 		configGroup.POST("/gm", h.UpsertGmConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
+			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)
 			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
 			roleReactionGroup.POST("/update-config", h.UpdateConfig)
 		}

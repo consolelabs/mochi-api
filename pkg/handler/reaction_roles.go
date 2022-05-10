@@ -6,6 +6,23 @@ import (
 	"net/http"
 )
 
+func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
+	guildID, guildIDExist := c.GetQuery("guild_id")
+	if !guildIDExist {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	resp, err := h.entities.ListAllReactionRoles(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+
+}
+
 func (h *Handler) UpdateConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 

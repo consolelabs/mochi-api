@@ -46,6 +46,29 @@ func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
 	})
 }
 
+func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
+	guildID, exist := c.GetQuery("guild_id")
+	if !exist {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "guild_id is required",
+		})
+		return
+	}
+
+	config, err := h.entities.GetInviteTrackerLogChannel(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":    config,
+		"message": "OK",
+	})
+}
+
 func (h *Handler) ConfigureInvites(c *gin.Context) {
 	var req request.ConfigureInviteRequest
 	if err := req.Bind(c); err != nil {

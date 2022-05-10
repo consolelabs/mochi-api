@@ -8,6 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (h *Handler) GetGmConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+
+	config, err := h.entities.GetGmConfig(guildID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+}
+
 func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	var req request.UpsertGmConfigRequest
 
