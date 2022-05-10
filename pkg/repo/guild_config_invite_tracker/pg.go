@@ -14,6 +14,11 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
+func (pg *pg) GetOne(guildID string) (*model.GuildConfigInviteTracker, error) {
+	config := &model.GuildConfigInviteTracker{}
+	return config, pg.db.Table("guild_config_invite_trackers").Where("guild_id = ?", guildID).First(config).Error
+}
+
 func (pg *pg) Upsert(config *model.GuildConfigInviteTracker) error {
 	tx := pg.db.Begin()
 
