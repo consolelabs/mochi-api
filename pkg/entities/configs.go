@@ -40,11 +40,11 @@ func (e *Entity) UpsertGuildTokenConfig(req request.UpsertGuildTokenConfigReques
 		return err
 	}
 
-	if err := e.repo.GuildConfigToken.UpsertOne(&model.GuildConfigToken{
+	if err := e.repo.GuildConfigToken.UpsertMany([]model.GuildConfigToken{{
 		GuildID: req.GuildID,
 		TokenID: token.ID,
 		Active:  req.Active,
-	}); err != nil {
+	}}); err != nil {
 		return err
 	}
 
