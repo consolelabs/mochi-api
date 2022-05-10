@@ -27,3 +27,8 @@ func (pg *pg) GetByAddress(address string, chainID int) (*model.Token, error) {
 	var token model.Token
 	return &token, pg.db.First(&token, "lower(address) = lower(?) and chain_id = ?", address, chainID).Error
 }
+
+func (pg *pg) GetDefaultTokens() ([]model.Token, error) {
+	var tokens []model.Token
+	return tokens, pg.db.Where("guild_default = TRUE").Find(&tokens).Error
+}
