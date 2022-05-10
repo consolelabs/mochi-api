@@ -113,7 +113,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 	// handlers
 	r.GET("/healthz", h.Healthz)
 
-	routes.NewRoutes(r, h)
+	routes.NewRoutes(r, h, cfg)
 
 	return r
 }
