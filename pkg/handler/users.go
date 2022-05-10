@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/request"
@@ -77,4 +78,47 @@ func (h *Handler) GetMyInfo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": du})
+}
+
+func (h *Handler) GetTopUsers(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	userID := c.Query("user_id")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		return
+	}
+
+	pageStr := c.Query("page")
+	if pageStr == "" {
+		pageStr = "0"
+	}
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "page must be an integer"})
+		return
+	}
+
+	limitStr := c.Query("limit")
+	if limitStr == "" {
+		limitStr = "10"
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "limit must be an integer"})
+		return
+	}
+
+	data, err := h.entities.GetTopUsers(guildID, userID, limit, page)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }

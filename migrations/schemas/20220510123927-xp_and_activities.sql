@@ -32,11 +32,13 @@ CREATE TABLE IF NOT EXISTS guild_user_activity_xps (
 	CONSTRAINT guild_user_activity_xps_activity_id_fkey FOREIGN KEY(activity_id) REFERENCES activities(id)
 );
 
-CREATE VIEW guild_users_xps AS WITH tmp(guild_id, user_id, total_xp) AS (
+CREATE VIEW guild_user_xps AS WITH tmp(guild_id, user_id, total_xp, nr_of_actions, guild_rank) AS (
 	SELECT
 		guax.guild_id,
 		guax.user_id,
-		SUM(a.xp)
+		SUM(a.xp),
+		COUNT(guax),
+		RANK() OVER (ORDER BY SUM(a.xp) DESC) guild_rank
 	FROM
 		guild_user_activity_xps guax
 		JOIN activities a ON guax.activity_id = a.id
@@ -48,6 +50,8 @@ SELECT
 	guild_id,
 	user_id,
 	total_xp,
+	nr_of_actions,
+	guild_rank,
 	(
 		SELECT
 			l.level
@@ -64,5 +68,5 @@ FROM
 	tmp;
 
 -- +migrate Down
-DROP VIEW IF EXISTS guild_users_xps;
+DROP VIEW IF EXISTS guild_user_xps;
 DROP TABLE IF EXISTS guild_config_activities, guild_user_activity_xps, activities, config_xp_levels;

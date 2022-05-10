@@ -4,12 +4,15 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/repo"
+	"github.com/defipod/mochi/pkg/repo/activity"
+	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
@@ -17,6 +20,8 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
+	guilduseractivityxp "github.com/defipod/mochi/pkg/repo/guild_user_activity_xp"
+	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
@@ -51,5 +56,10 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		WhitelistCampaigns:                   whitelistcampaigns.NewPG(db),
 		WhitelistCampaignUsers:               whitelistcampaignusers.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
+		Activity:                             activity.NewPG(db),
+		GuildConfigActivity:                  guildconfigactivity.NewPG(db),
+		ConfigXPLevel:                        configxplevel.NewPG(db),
+		GuildUserActivityXP:                  guilduseractivityxp.NewPG(db),
+		GuildUserXP:                          guilduserxp.NewPG(db),
 	}
 }
