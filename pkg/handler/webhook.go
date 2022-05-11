@@ -29,6 +29,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		h.handleGuildMemberAdd(c, req.Data)
 	case request.MESSAGE_CREATE:
 		h.handleMessageCreate(c, req.Data)
+	case request.GUILD_CREATE:
+		h.handleGuildCreate(c, req.Data)
 	}
 }
 
@@ -137,6 +139,30 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	}
 
 	if err = h.entities.HandleDiscordMessage(message); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+}
+
+func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
+	var req struct {
+		GuildID string `json:"guild_id"`
+	}
+
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

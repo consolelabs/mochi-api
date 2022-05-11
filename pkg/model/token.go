@@ -11,4 +11,5 @@ type Token struct {
 	DiscordBotSupported bool   `json:"discord_bot_supported"`
 	CoinGeckoID         string `json:"coin_gecko_id"`
 	Name                string `json:"name"`
+	GuildDefault        bool   `json:"guild_default"`
 }

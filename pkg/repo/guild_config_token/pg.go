@@ -19,16 +19,18 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigToken, error) {
 	return configs, pg.db.Where("guild_id = ? AND active = TRUE", guildID).Preload("Token").Find(&configs).Error
 }
 
-func (pg *pg) UpsertOne(config *model.GuildConfigToken) error {
+func (pg *pg) UpsertMany(configs []model.GuildConfigToken) error {
 	tx := pg.db.Begin()
 
-	err := tx.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "guild_id"}, {Name: "token_id"}},
-		UpdateAll: true,
-	}).Create(&config).Error
-	if err != nil {
-		tx.Rollback()
-		return err
+	for _, config := range configs {
+		err := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "guild_id"}, {Name: "token_id"}},
+			UpdateAll: true,
+		}).Create(&config).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	return tx.Commit().Error

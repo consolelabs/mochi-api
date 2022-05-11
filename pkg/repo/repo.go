@@ -16,9 +16,12 @@ import (
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	users "github.com/defipod/mochi/pkg/repo/users"
+	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
+	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
 )
 
 type Repo struct {
@@ -40,4 +43,7 @@ type Repo struct {
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	GuildConfigToken                     guildconfigtoken.Store
+	WhitelistCampaigns                   whitelistcampaigns.Store
+	WhitelistCampaignUsers               whitelistcampaignusers.Store
+	NFTCollection                        nftcollection.Store
 }
