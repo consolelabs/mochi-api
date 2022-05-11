@@ -118,4 +118,19 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.POST("/generate", h.GenerateVerification)
 		verifyGroup.POST("", h.VerifyWalletAddress)
 	}
+
+	whitelistCampaignGroup := v1.Group("/whitelist-campaigns")
+	{
+		whitelistCampaignGroup.POST("", h.CreateWhitelistCampaign)
+		whitelistCampaignGroup.GET("", h.GetWhitelistCampaigns)
+		whitelistCampaignGroup.GET("/:campaignId", h.GetWhitelistCampaign)
+		whitelistCampaignUserGroup := whitelistCampaignGroup.Group("/users")
+		{
+			whitelistCampaignUserGroup.POST("", h.AddWhitelistCampaignUsers)
+			whitelistCampaignUserGroup.GET("", h.GetWhitelistCampaignUsers)
+			whitelistCampaignUserGroup.GET("/:address", h.GetWhitelistCampaignUserByAddress)
+			whitelistCampaignUserGroup.GET("/csv", h.GetWhitelistCampaignUsersCSV)
+		}
+	}
+
 }
