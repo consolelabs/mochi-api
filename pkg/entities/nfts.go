@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"encoding/json"
-	"github.com/defipod/mochi/pkg/config"
 	"io/ioutil"
 	"strings"
 	"time"
+
+	"github.com/defipod/mochi/pkg/config"
 )
 
 const (
@@ -16,12 +17,40 @@ const (
 	fantomChainSymbol = "ftm"
 )
 
-func (e *Entity) GetNFTDetail(symbol, tokenId string) (nfts *NFTDetailData, err error) {
+type NFTDetailDataResponse struct {
+	TokenAddress string   `json:"token_address"`
+	TokenId      string   `json:"token_id"`
+	ContractType string   `json:"contract_type"`
+	TokenUri     string   `json:"token_uri"`
+	Metadata     Metadata `json:"metadata"`
+	SyncedAt     string   `json:"synced_at"`
+	Amount       string   `json:"amount"`
+	Name         string   `json:"name"`
+	Symbol       string   `json:"symbol"`
+}
+type Metadata struct {
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	TokenId     int         `json:"token_id"`
+	Attributes  []Attribute `json:"attributes"`
+	Image       string      `json:"image"`
+	Rarity      interface{} `json:"rarity"`
+}
+
+type Attribute struct {
+	TraitType string `json:"trait_type"`
+	Value     string `json:"value"`
+	Count     int    `json:"count"`
+	Rarity    string `json:"rarity"`
+	Frequency string `json:"frequency"`
+}
+
+func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDataResponse, err error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		err = fmt.Errorf("failed to get nft collection : %v", err)
-		return
+		return nil, err
 	}
 	chain := ""
 	switch collection.ChainID {
@@ -29,16 +58,33 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nfts *NFTDetailData, err 
 		chain = fantomChainSymbol
 	}
 
-	nfts, err = GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
+	nfts, err := GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
 	if err != nil {
 		err = fmt.Errorf("failed to get user NFTS: %v", err)
-		return
+		return nil, err
 	}
+
 	if nfts == nil {
 		err = fmt.Errorf("response from debank nil")
-		return
+		return nil, err
 	}
-	return
+
+	meta := nfts.Metadata
+	var metaParse Metadata
+	_ = json.Unmarshal([]byte(meta), &metaParse)
+	fmt.Println(metaParse)
+	nftResponse := NFTDetailDataResponse{
+		TokenAddress: nfts.TokenAddress,
+		TokenId:      nfts.TokenId,
+		ContractType: nfts.ContractType,
+		TokenUri:     nfts.TokenUri,
+		SyncedAt:     nfts.SyncedAt,
+		Amount:       nfts.Amount,
+		Name:         nfts.Name,
+		Symbol:       nfts.Symbol,
+		Metadata:     metaParse,
+	}
+	return &nftResponse, nil
 }
 
 type NFTDetailData struct {
