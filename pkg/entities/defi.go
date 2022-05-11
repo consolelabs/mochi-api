@@ -308,7 +308,7 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 		return nil, err
 	}
 	if len(gTokens) == 0 {
-		if err = e.initGuildDefaultTokenConfigs(guildID); err != nil {
+		if err = e.InitGuildDefaultTokenConfigs(guildID); err != nil {
 			return nil, err
 		}
 		return e.InDiscordWalletBalances(guildID, discordID)
@@ -389,7 +389,7 @@ func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, in
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) initGuildDefaultTokenConfigs(guildID string) error {
+func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 	tokens, err := e.repo.Token.GetDefaultTokens()
 	if err != nil {
 		return err
