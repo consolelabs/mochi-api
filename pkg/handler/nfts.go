@@ -3,10 +3,11 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func (h *Handler) GetNFTDetail(c *gin.Context) {
-	symbol := c.Param("symbol")
+	symbol := strings.ToLower(c.Param("symbol"))
 	tokenId := c.Param("id")
 
 	data, err := h.entities.GetNFTDetail(symbol, tokenId)
