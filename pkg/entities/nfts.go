@@ -72,7 +72,6 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 	meta := nfts.Metadata
 	var metaParse Metadata
 	_ = json.Unmarshal([]byte(meta), &metaParse)
-	fmt.Println(metaParse)
 	nftResponse := NFTDetailDataResponse{
 		TokenAddress: nfts.TokenAddress,
 		TokenId:      nfts.TokenId,

@@ -1,9 +1,9 @@
 package nftcollection
 
 import (
+	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"strings"
-	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {
@@ -27,7 +27,7 @@ func (pg *pg) GetByAddress(address string) (*model.NFTCollection, error) {
 
 func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
-	err := pg.db.Table("nft_collections").Where("symbol = ?", symbol).First(&collection).Error
+	err := pg.db.Table("nft_collections").Where("lower(symbol) = ?", strings.ToLower(symbol)).First(&collection).Error
 	if err != nil {
 		return nil, err
 	}
