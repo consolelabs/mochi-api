@@ -19,6 +19,7 @@ import (
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	"github.com/defipod/mochi/pkg/repo/token"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -49,5 +50,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		WhitelistCampaigns:                   whitelistcampaigns.NewPG(db),
 		WhitelistCampaignUsers:               whitelistcampaignusers.NewPG(db),
+		NFTCollection:                        nftcollection.NewPG(db),
 	}
 }

@@ -53,6 +53,8 @@ type Config struct {
 	RedisURL string
 
 	MochiLogChannelID string
+
+	MoralisXApiKey string
 }
 
 // GetCORS in config
@@ -120,6 +122,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		RedisURL:                v.GetString("REDIS_URL"),
 
 		MochiLogChannelID: v.GetString("MOCHI_LOG_CHANNEL_ID"),
+
+		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
 	}
 }
 
