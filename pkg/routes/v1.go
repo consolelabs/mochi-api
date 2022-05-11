@@ -132,5 +132,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			whitelistCampaignUserGroup.GET("/csv", h.GetWhitelistCampaignUsersCSV)
 		}
 	}
-
+	nftsGroup := v1.Group("/nfts")
+	{
+		nftsGroup.GET("/:symbol/:id", h.GetNFTDetail)
+	}
 }
