@@ -10,11 +10,30 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 )
 
-const (
-	fantomChainID     = 250
-	fantomChainSymbol = "ftm"
+var (
+	mapChainChainId = map[string]string{
+		"eth":    "1",
+		"heco":   "128",
+		"bsc":    "56",
+		"matic":  "137",
+		"op":     "10",
+		"btt":    "199",
+		"okt":    "66",
+		"movr":   "1285",
+		"celo":   "42220",
+		"metis":  "1088",
+		"cro":    "25",
+		"xdai":   "0x64",
+		"boba":   "288",
+		"ftm":    "250",
+		"avax":   "0xa86a",
+		"arb":    "42161",
+		"aurora": "1313161554",
+	}
 )
 
 type NFTDetailDataResponse struct {
@@ -53,9 +72,10 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 		return nil, err
 	}
 	chain := ""
-	switch collection.ChainID {
-	case fantomChainID:
-		chain = fantomChainSymbol
+	for k, v := range mapChainChainId {
+		if strings.ToLower(v) == strings.ToLower(collection.ChainID) {
+			chain = k
+		}
 	}
 
 	nfts, err := GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
@@ -130,4 +150,87 @@ func GetNFTDetailFromMoralis(address, tokenId, chain string, cfg config.Config) 
 	}
 
 	return nftsData, nil
+}
+
+type NFTCollectionData struct {
+	TokenAddress string    `json:"token_address"`
+	Name         string    `json:"name"`
+	Symbol       string    `json:"symbol"`
+	ContractType string    `json:"contract_type"`
+	SyncedAt     time.Time `json:"synced_at"`
+}
+
+type MoralisMessageFail struct {
+	Message string `json:"message"`
+}
+
+func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFTCollectionData, error) {
+	colData := &NFTCollectionData{}
+	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/metadata?chain=%s"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf(moralisApi, address, chain), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
+	q := req.URL.Query()
+
+	req.URL.RawQuery = q.Encode()
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		mesErr := &MoralisMessageFail{}
+		mes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(mes, &mesErr)
+		if err != nil {
+			return nil, err
+		}
+		err = fmt.Errorf("%v", mesErr.Message)
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &colData)
+	if err != nil {
+		return nil, err
+	}
+
+	return colData, nil
+}
+
+func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	collection, err := GetNFTCollectionFromMoralis(strings.ToLower(req.Address), req.Chain, e.cfg)
+	if err != nil {
+		err = fmt.Errorf("failed to get collection NFT from moralis: %v", err)
+		return
+	}
+	if collection == nil {
+		err = fmt.Errorf("response collection from moralis nil")
+		return
+	}
+
+	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
+		Address:   collection.TokenAddress,
+		Symbol:    collection.Symbol,
+		Name:      collection.Name,
+		ChainID:   req.ChainID,
+		ERCFormat: collection.ContractType,
+	})
+	if err != nil {
+		err = fmt.Errorf("failed to create collection NFTS: %v", err)
+		return
+	}
+	return
 }
