@@ -27,9 +27,13 @@ func (pg *pg) GetByAddress(address string) (*model.NFTCollection, error) {
 
 func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
-	err := pg.db.Table("nft_collections").Where("lower(symbol) = ?", strings.ToLower(symbol)).First(&collection).Error
+	err := pg.db.Table("nft_collections").Where("lower(symbol) = ?", strings.ToLower(symbol)).Where("is_verified = ?", true).First(&collection).Error
 	if err != nil {
 		return nil, err
 	}
 	return &collection, nil
+}
+
+func (pg *pg) Create(collection model.NFTCollection) (*model.NFTCollection, error) {
+	return &collection, pg.db.Table("nft_collections").Create(&collection).Error
 }
