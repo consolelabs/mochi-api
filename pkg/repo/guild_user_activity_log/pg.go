@@ -1,4 +1,4 @@
-package guild_user_activity_xp
+package guild_user_activity_log
 
 import (
 	"github.com/defipod/mochi/pkg/model"
@@ -13,6 +13,6 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) CreateOne(record model.GuildUserActivityXP) error {
+func (pg *pg) CreateOne(record model.GuildUserActivityLog) error {
 	return pg.db.Create(&record).Error
 }

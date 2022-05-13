@@ -20,7 +20,7 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
-	guilduseractivityxp "github.com/defipod/mochi/pkg/repo/guild_user_activity_xp"
+	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
@@ -59,7 +59,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Activity:                             activity.NewPG(db),
 		GuildConfigActivity:                  guildconfigactivity.NewPG(db),
 		ConfigXPLevel:                        configxplevel.NewPG(db),
-		GuildUserActivityXP:                  guilduseractivityxp.NewPG(db),
+		GuildUserActivityLog:                 guilduseractivitylog.NewPG(db),
 		GuildUserXP:                          guilduserxp.NewPG(db),
 	}
 }

@@ -111,11 +111,12 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return e.HandleUserActivities(req)
 	}
 
-	if err := e.repo.GuildUserActivityXP.CreateOne(model.GuildUserActivityXP{
-		GuildID:    req.GuildID,
-		UserID:     req.UserID,
-		ActivityID: gConfigActivity.Activity.ID,
-		CreatedAt:  req.Timestamp,
+	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+		GuildID:      req.GuildID,
+		UserID:       req.UserID,
+		ActivityName: gConfigActivity.Activity.Name,
+		EarnedXP:     gConfigActivity.Activity.XP,
+		CreatedAt:    req.Timestamp,
 	}); err != nil {
 		return nil, err
 	}
