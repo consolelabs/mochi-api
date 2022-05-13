@@ -96,7 +96,7 @@ func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.Disco
 
 func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {
 	userXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
