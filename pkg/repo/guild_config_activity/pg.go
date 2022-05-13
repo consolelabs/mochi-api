@@ -35,3 +35,17 @@ func (pg *pg) UpsertMany(configs []model.GuildConfigActivity) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) ForkDefaulActivityConfigs(guildID string) error {
+	tx := pg.db.Begin()
+
+	if err := tx.Exec(`
+	insert into guild_config_activities(guild_id, activity_id, active)
+	select ?, id, true from activities on conflict (guild_id, activity_id) do nothing
+	`, guildID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}

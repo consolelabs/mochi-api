@@ -105,10 +105,13 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		if err != gorm.ErrRecordNotFound {
 			return nil, err
 		}
-		if err := e.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
+		if err := e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
 			return nil, err
 		}
-		return e.HandleUserActivities(req)
+		gConfigActivity, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.Action)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
+		}
 	}
 
 	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
