@@ -1,12 +1,15 @@
 package repo
 
 import (
+	"github.com/defipod/mochi/pkg/repo/activity"
+	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
@@ -14,6 +17,8 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
+	guilduseractivityxp "github.com/defipod/mochi/pkg/repo/guild_user_activity_xp"
+	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
@@ -46,4 +51,9 @@ type Repo struct {
 	WhitelistCampaigns                   whitelistcampaigns.Store
 	WhitelistCampaignUsers               whitelistcampaignusers.Store
 	NFTCollection                        nftcollection.Store
+	Activity                             activity.Store
+	GuildConfigActivity                  guildconfigactivity.Store
+	ConfigXPLevel                        configxplevel.Store
+	GuildUserActivityXP                  guilduseractivityxp.Store
+	GuildUserXP                          guilduserxp.Store
 }
