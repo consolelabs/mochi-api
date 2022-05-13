@@ -124,12 +124,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		whitelistCampaignGroup.POST("", h.CreateWhitelistCampaign)
 		whitelistCampaignGroup.GET("", h.GetWhitelistCampaigns)
-		whitelistCampaignGroup.GET("/:campaignId", h.GetWhitelistCampaign)
+		whitelistCampaignGroup.GET("/:campaignId", h.GetWhitelistCampaignById)
 		whitelistCampaignUserGroup := whitelistCampaignGroup.Group("/users")
 		{
 			whitelistCampaignUserGroup.POST("", h.AddWhitelistCampaignUsers)
 			whitelistCampaignUserGroup.GET("", h.GetWhitelistCampaignUsers)
-			whitelistCampaignUserGroup.GET("/:address", h.GetWhitelistCampaignUserByAddress)
+			whitelistCampaignUserGroup.GET("/:discordId", h.GetWhitelistCampaignUserByDiscordId)
 			whitelistCampaignUserGroup.GET("/csv", h.GetWhitelistCampaignUsersCSV)
 		}
 	}

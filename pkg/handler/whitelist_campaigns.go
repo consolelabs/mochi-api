@@ -27,7 +27,13 @@ func (h *Handler) CreateWhitelistCampaign(c *gin.Context) {
 }
 
 func (h *Handler) GetWhitelistCampaigns(c *gin.Context) {
-	campaigns, err := h.entities.GetWhitelistCampaigns()
+	guildId := c.Query("guild_id")
+	if guildId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	campaigns, err := h.entities.GetWhitelistCampaignsByGuildId(guildId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -36,8 +42,12 @@ func (h *Handler) GetWhitelistCampaigns(c *gin.Context) {
 	c.JSON(http.StatusOK, campaigns)
 }
 
-func (h *Handler) GetWhitelistCampaign(c *gin.Context) {
+func (h *Handler) GetWhitelistCampaignById(c *gin.Context) {
 	campaignId := c.Param("campaignId")
+	if campaignId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "campaign_id is required"})
+		return
+	}
 
 	campaign, err := h.entities.GetWhitelistCampaign(campaignId)
 	if err != nil {
@@ -69,7 +79,13 @@ func (h *Handler) AddWhitelistCampaignUsers(c *gin.Context) {
 }
 
 func (h *Handler) GetWhitelistCampaignUsers(c *gin.Context) {
-	wlUsers, err := h.entities.GetWhitelistCampaignUsers()
+	campaignId := c.Query("campaign_id")
+	if campaignId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "campaign_id is required"})
+		return
+	}
+
+	wlUsers, err := h.entities.GetWhitelistCampaignUsers(campaignId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -78,10 +94,20 @@ func (h *Handler) GetWhitelistCampaignUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, wlUsers)
 }
 
-func (h *Handler) GetWhitelistCampaignUserByAddress(c *gin.Context) {
-	campaignId := c.Param("address")
-	address := c.Query("campaign_id")
-	wlUsers, err := h.entities.GetWhitelistCampaignUser(campaignId, address)
+func (h *Handler) GetWhitelistCampaignUserByDiscordId(c *gin.Context) {
+	discordId := c.Param("discordId")
+	if discordId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "discord_id is required"})
+		return
+	}
+
+	campaignId := c.Query("campaign_id")
+	if campaignId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "campaign_id is required"})
+		return
+	}
+
+	wlUsers, err := h.entities.GetWhitelistCampaignUser(discordId, campaignId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -91,7 +117,12 @@ func (h *Handler) GetWhitelistCampaignUserByAddress(c *gin.Context) {
 }
 
 func (h *Handler) GetWhitelistCampaignUsersCSV(c *gin.Context) {
-	wlUsers, err := h.entities.GetWhitelistCampaignUsers()
+	campaignId := c.Query("campaign_id")
+	if campaignId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "campaign_id is required"})
+		return
+	}
+	wlUsers, err := h.entities.GetWhitelistCampaignUsers(campaignId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

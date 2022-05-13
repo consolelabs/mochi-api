@@ -232,5 +232,42 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)
 		return
 	}
+	go PutSyncMoralisNFTCollection(strings.ToLower(req.Address), req.Chain, e.cfg)
+
 	return
+}
+
+func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err error) {
+	time.Sleep(1000)
+	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/sync?chain=%s"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf(moralisApi, address, chain), nil)
+	if err != nil {
+		return
+	}
+	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
+	q := req.URL.Query()
+
+	req.URL.RawQuery = q.Encode()
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	}
+
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		mesErr := &MoralisMessageFail{}
+		mes, _ := ioutil.ReadAll(resp.Body)
+		err = json.Unmarshal(mes, &mesErr)
+		if err != nil {
+			return
+		}
+		err = fmt.Errorf("%v", mesErr.Message)
+		return
+	}
+
+	return nil
 }
