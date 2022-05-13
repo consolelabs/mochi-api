@@ -50,6 +50,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
+		userGroup.GET("/top", h.GetTopUsers)
 	}
 
 	communityGroup := v1.Group("/community")

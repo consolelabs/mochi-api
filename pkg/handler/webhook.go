@@ -143,7 +143,20 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+	// TODO: use response data to send discord message to user
+	resp, err := h.entities.HandleUserActivities(&request.HandleUserActivityRequest{
+		GuildID:   message.GuildID,
+		ChannelID: message.ChannelID,
+		UserID:    message.Author.ID,
+		Action:    "chat",
+		Timestamp: message.Timestamp,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "OK", "type": "level_up", "data": resp})
 }
 
 func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
@@ -163,6 +176,11 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 	}
 
 	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

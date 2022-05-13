@@ -93,3 +93,82 @@ func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.Disco
 
 	return streak, http.StatusOK, nil
 }
+
+func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {
+	userXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	gConfigActivity, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.Action)
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+		if err := e.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
+			return nil, err
+		}
+		return e.HandleUserActivities(req)
+	}
+
+	if err := e.repo.GuildUserActivityXP.CreateOne(model.GuildUserActivityXP{
+		GuildID:    req.GuildID,
+		UserID:     req.UserID,
+		ActivityID: gConfigActivity.Activity.ID,
+		CreatedAt:  req.Timestamp,
+	}); err != nil {
+		return nil, err
+	}
+
+	latestUserXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response.HandleUserActivityResponse{
+		GuildID:      req.GuildID,
+		UserID:       req.UserID,
+		Action:       gConfigActivity.Activity.Name,
+		AddedXP:      gConfigActivity.Activity.XP,
+		CurrentXP:    latestUserXP.TotalXP,
+		CurrentLevel: latestUserXP.Level,
+		Timestamp:    req.Timestamp,
+		LevelUp:      latestUserXP.Level > userXP.Level,
+	}, nil
+}
+
+func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
+	activities, err := e.repo.Activity.GetDefaultActivities()
+	if err != nil {
+		return err
+	}
+
+	var configs []model.GuildConfigActivity
+	for _, a := range activities {
+		configs = append(configs, model.GuildConfigActivity{
+			GuildID:    guildID,
+			ActivityID: a.ID,
+			Active:     true,
+		})
+	}
+
+	return e.repo.GuildConfigActivity.UpsertMany(configs)
+}
+
+func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.GetTopUsersResponse, error) {
+	offset := page * limit
+	top, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	author, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return &response.GetTopUsersResponse{
+		Author:      author,
+		Leaderboard: top,
+	}, nil
+}
