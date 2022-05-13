@@ -22,8 +22,8 @@ func (e *Entity) CreateWhitelistCampaign(req request.CreateWhitelistCampaignRequ
 	return nil
 }
 
-func (e *Entity) GetWhitelistCampaigns() ([]model.WhitelistCampaign, error) {
-	data, err := e.repo.WhitelistCampaigns.Gets()
+func (e *Entity) GetWhitelistCampaignsByGuildId(guildId string) ([]model.WhitelistCampaign, error) {
+	data, err := e.repo.WhitelistCampaigns.GetByGuildId(guildId)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func (e *Entity) AddWhitelistCampaignUsers(req request.AddWhitelistCampaignUserR
 	return nil
 }
 
-func (e *Entity) GetWhitelistCampaignUsers() ([]model.WhitelistCampaignUser, error) {
-	data, err := e.repo.WhitelistCampaignUsers.Gets()
+func (e *Entity) GetWhitelistCampaignUsers(campaignId string) ([]model.WhitelistCampaignUser, error) {
+	data, err := e.repo.WhitelistCampaignUsers.GetByCampaignId(campaignId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrRecordNotFound
@@ -73,8 +73,8 @@ func (e *Entity) GetWhitelistCampaignUsers() ([]model.WhitelistCampaignUser, err
 	return data, nil
 }
 
-func (e *Entity) GetWhitelistCampaignUser(campaignId, address string) (*model.WhitelistCampaignUser, error) {
-	data, err := e.repo.WhitelistCampaignUsers.GetByCampaignIdAddress(campaignId, address)
+func (e *Entity) GetWhitelistCampaignUser(discordId, campaignId string) (*model.WhitelistCampaignUser, error) {
+	data, err := e.repo.WhitelistCampaignUsers.GetByDiscordIdCampaignId(discordId, campaignId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrRecordNotFound

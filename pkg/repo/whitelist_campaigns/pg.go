@@ -16,9 +16,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Gets() ([]model.WhitelistCampaign, error) {
-	campaigns := []model.WhitelistCampaign{}
-	err := pg.db.Find(&campaigns).Error
+func (pg *pg) GetByGuildId(guildId string) ([]model.WhitelistCampaign, error) {
+	var campaigns []model.WhitelistCampaign
+	err := pg.db.Where("guild_id = ?", guildId).Find(&campaigns).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get campaigns: %w", err)
 	}

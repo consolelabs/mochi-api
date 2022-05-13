@@ -16,9 +16,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Gets() ([]model.WhitelistCampaignUser, error) {
+func (pg *pg) GetByCampaignId(campaignId string) ([]model.WhitelistCampaignUser, error) {
 	var wlUsers []model.WhitelistCampaignUser
-	err := pg.db.Find(&wlUsers).Error
+	err := pg.db.Where("whitelist_campaign_id = ?", campaignId).Find(&wlUsers).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get campaigns: %w", err)
 	}
@@ -26,9 +26,9 @@ func (pg *pg) Gets() ([]model.WhitelistCampaignUser, error) {
 	return wlUsers, nil
 }
 
-func (pg *pg) GetByCampaignIdAddress(campaignId, address string) (*model.WhitelistCampaignUser, error) {
+func (pg *pg) GetByDiscordIdCampaignId(discordId, campaignId string) (*model.WhitelistCampaignUser, error) {
 	var wlUser model.WhitelistCampaignUser
-	return &wlUser, pg.db.First(&wlUser, "whitelist_campaign_id = ? and address =?", campaignId, address).Error
+	return &wlUser, pg.db.First(&wlUser, "discord_id = ? and whitelist_campaign_id = ?", discordId, campaignId).Error
 }
 
 func (pg *pg) UpsertOne(wlUser model.WhitelistCampaignUser) error {
