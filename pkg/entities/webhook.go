@@ -8,6 +8,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 )
 
@@ -212,4 +214,33 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 	}
 
 	return nil
+}
+
+func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	exists, err := e.cache.GetBool(message.Author.ID + "_chat_xp_cooldown")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chat xp cooldown: %v", err.Error())
+	}
+
+	var resp *response.HandleUserActivityResponse
+
+	if !exists {
+		resp, err = e.HandleUserActivities(&request.HandleUserActivityRequest{
+			GuildID:   message.GuildID,
+			ChannelID: message.ChannelID,
+			UserID:    message.Author.ID,
+			Action:    "chat",
+			Timestamp: message.Timestamp,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+		}
+	}
+
+	err = e.cache.Set(message.Author.ID+"_chat_xp_cooldown", true, time.Minute)
+	if err != nil {
+		return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+	}
+
+	return resp, nil
 }

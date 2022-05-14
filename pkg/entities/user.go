@@ -105,10 +105,13 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		if err != gorm.ErrRecordNotFound {
 			return nil, err
 		}
-		if err := e.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
+		if err := e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
 			return nil, err
 		}
-		return e.HandleUserActivities(req)
+		gConfigActivity, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.Action)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
+		}
 	}
 
 	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
@@ -158,7 +161,7 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 
 func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.GetTopUsersResponse, error) {
 	offset := page * limit
-	top, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
+	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +173,6 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 
 	return &response.GetTopUsersResponse{
 		Author:      author,
-		Leaderboard: top,
+		Leaderboard: leaderboard,
 	}, nil
 }
