@@ -161,7 +161,7 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 
 func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.GetTopUsersResponse, error) {
 	offset := page * limit
-	top, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
+	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -173,6 +173,6 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 
 	return &response.GetTopUsersResponse{
 		Author:      author,
-		Leaderboard: top,
+		Leaderboard: leaderboard,
 	}, nil
 }
