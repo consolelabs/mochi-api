@@ -90,6 +90,30 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 	}
 
 	meta := nfts.Metadata
+	if nfts.Metadata == "" && nfts.TokenUri != "" {
+		client := &http.Client{
+			Timeout: time.Second * 60,
+		}
+
+		req, err := http.NewRequest("GET", nfts.TokenUri, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		meta = string(body)
+	}
+
 	var metaParse Metadata
 	_ = json.Unmarshal([]byte(meta), &metaParse)
 	nftResponse := NFTDetailDataResponse{
