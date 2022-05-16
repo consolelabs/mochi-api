@@ -144,13 +144,7 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	}
 
 	// TODO: use response data to send discord message to user
-	resp, err := h.entities.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID:   message.GuildID,
-		ChannelID: message.ChannelID,
-		UserID:    message.Author.ID,
-		Action:    "chat",
-		Timestamp: message.Timestamp,
-	})
+	resp, err := h.entities.ChatXPIncrease(message)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
