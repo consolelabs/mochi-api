@@ -23,7 +23,7 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 
 }
 
-func (h *Handler) UpdateConfig(c *gin.Context) {
+func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -40,7 +40,33 @@ func (h *Handler) UpdateConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, config)
 }
 
-func (h *Handler) ProcessReactionEventByMessageID(c *gin.Context) {
+func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
+	var req request.RoleReactionUpdateRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var err error
+
+	if req.RoleID != "" && req.Reaction != "" {
+		err = h.entities.RemoveSpecificRoleReaction(req)
+	} else {
+		err = h.entities.ClearReactionMessageConfig(req)
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
+}
+
+func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 	var req request.RoleReactionRequest
 
 	if err := c.BindJSON(&req); err != nil {
