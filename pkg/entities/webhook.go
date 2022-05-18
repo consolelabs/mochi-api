@@ -235,11 +235,11 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 		if err != nil {
 			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 		}
-	}
 
-	err = e.cache.Set(message.Author.ID+"_chat_xp_cooldown", true, time.Minute)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+		err = e.cache.Set(message.Author.ID+"_chat_xp_cooldown", true, time.Minute)
+		if err != nil {
+			return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+		}
 	}
 
 	return resp, nil
