@@ -30,16 +30,7 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 		return nil, fmt.Errorf("failed to get guild config verification: %v", err.Error())
 	}
 
-	var embeddedMsg discordgo.MessageEmbed
-
-	err = json.Unmarshal([]byte(req.EmbeddedMessage), &embeddedMsg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal embedded message %v: %v", req.EmbeddedMessage, err.Error())
-	}
-
-	m, err := e.discord.ChannelMessageSendComplex(req.VerifyChannelID, &discordgo.MessageSend{
-		Content: req.Content,
-		Embed:   &embeddedMsg,
+	verificationMsg := &discordgo.MessageSend{
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{
@@ -51,7 +42,31 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 				},
 			},
 		},
-	})
+	}
+
+	switch {
+	case req.EmbeddedMessage != nil:
+		var embeddedMsg discordgo.MessageEmbed
+
+		err = json.Unmarshal([]byte(req.EmbeddedMessage), &embeddedMsg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal embedded message %v: %v", req.EmbeddedMessage, err.Error())
+		}
+
+		verificationMsg.Embed = &embeddedMsg
+
+	case req.Content != "":
+		verificationMsg.Content = req.Content
+
+	default:
+		verificationMsg.Embed = &discordgo.MessageEmbed{
+			Title:       ":robot: Verification required",
+			Description: "Verify your wallet. This is a read-only connection. Do not share your private keys. We will never ask for your seed phrase. We will never DM you.",
+			Color:       15240072,
+		}
+	}
+
+	m, err := e.discord.ChannelMessageSendComplex(req.VerifyChannelID, verificationMsg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send message: %v", err.Error())
 	}
@@ -79,9 +94,17 @@ func (e *Entity) UpdateGuildConfigWalletVerificationMessage(req model.GuildConfi
 
 	var embeddedMsg discordgo.MessageEmbed
 
-	err = json.Unmarshal([]byte(req.EmbeddedMessage), &embeddedMsg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal embedded message %v: %v", req.EmbeddedMessage, err.Error())
+	if req.EmbeddedMessage == nil && req.Content == "" {
+		embeddedMsg = discordgo.MessageEmbed{
+			Title:       ":robot: Verification required",
+			Description: "Verify your wallet. This is a read-only connection. Do not share your private keys. We will never ask for your seed phrase. We will never DM you.",
+			Color:       15240072,
+		}
+	} else {
+		err = json.Unmarshal([]byte(req.EmbeddedMessage), &embeddedMsg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal embedded message %v: %v", req.EmbeddedMessage, err.Error())
+		}
 	}
 
 	components := []discordgo.MessageComponent{
