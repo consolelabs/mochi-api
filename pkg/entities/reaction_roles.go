@@ -126,6 +126,42 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 	return &res, nil
 }
 
+func (e *Entity) ClearReactionMessageConfig(req request.RoleReactionUpdateRequest) error {
+	return e.repo.GuildConfigReactionRole.ClearMessageConfig(req.GuildID, req.MessageID)
+}
+
+func (e *Entity) RemoveSpecificRoleReaction(req request.RoleReactionUpdateRequest) error {
+	var roles []response.Role
+
+	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(req.GuildID, req.MessageID)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal([]byte(config.ReactionRoles), &roles)
+	if err != nil {
+		return err
+	}
+
+	var updatedRoles []response.Role
+	for _, r := range roles {
+		if r.ID != req.RoleID {
+			updatedRoles = append(updatedRoles, r)
+		}
+	}
+	data, err := json.Marshal(updatedRoles)
+	if err != nil {
+		return err
+	}
+
+	err = e.repo.GuildConfigReactionRole.UpdateRoleConfig(req, string(data))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func IsRoleAlreadyExist(roles []response.Role, roleID string) bool {
 	existed := false
 	for _, r := range roles {
