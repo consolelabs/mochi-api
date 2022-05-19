@@ -10,7 +10,8 @@ import (
 
 type NewGuildConfigWalletVerificationMessageRequest struct {
 	model.GuildConfigWalletVerificationMessage
-	CreatedAt time.Time `json:"-"`
+	CreatedAt        time.Time `json:"-"`
+	DiscordMessageID string    `json:"-"`
 }
 
 func (input *NewGuildConfigWalletVerificationMessageRequest) Validate() error {

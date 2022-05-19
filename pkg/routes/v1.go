@@ -116,6 +116,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	verifyGroup := v1.Group("/verify")
 	{
 		verifyGroup.POST("/config", h.NewGuildConfigWalletVerificationMessage)
+		verifyGroup.PUT("/config", h.UpdateGuildConfigWalletVerificationMessage)
+		verifyGroup.DELETE("/config", h.DeleteGuildConfigWalletVerificationMessage)
 		verifyGroup.POST("/generate", h.GenerateVerification)
 		verifyGroup.POST("", h.VerifyWalletAddress)
 	}
