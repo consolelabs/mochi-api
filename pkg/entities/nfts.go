@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"strconv"
 )
 
 var (
@@ -78,10 +79,23 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 		}
 	}
 
-	nfts, err := GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
-	if err != nil {
-		err = fmt.Errorf("failed to get user NFTS: %v", err)
-		return nil, err
+	nfts := &NFTDetailData{}
+	//support for nft rabby- get from backendapi
+	switch symbol {
+	case "rabby":
+		nftsResponse, err = GetNFTDetailFromPodtown(collection.Address, tokenId)
+		if err != nil {
+			err = fmt.Errorf("failed to get user NFTS: %v", err)
+			return nil, err
+		}
+		return
+
+	default:
+		nfts, err = GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
+		if err != nil {
+			err = fmt.Errorf("failed to get user NFTS: %v", err)
+			return nil, err
+		}
 	}
 
 	if nfts == nil {
@@ -294,4 +308,72 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 	}
 
 	return nil
+}
+
+type NFTTokenResponse struct {
+	TokenID           uint64          `json:"tokenId"`
+	CollectionAddress string          `json:"collection_address"`
+	Name              string          `json:"name"`
+	Description       string          `json:"description"`
+	Amount            uint64          `json:"amount"`
+	Image             string          `json:"image"`
+	ImageCDN          string          `json:"image_cdn"`
+	ThumbnailCDN      string          `json:"thumbnail_cdn"`
+	ImageContentType  string          `json:"image_content_type"`
+	Rarity            *NFTTokenRarity `json:"rarity"`
+	Attributes        []Attribute     `json:"attributes"`
+}
+
+type NFTTokenRarity struct {
+	Rank   uint64 `json:"rank"`
+	Score  string `json:"score"`
+	Total  uint64 `json:"total"`
+	Rarity string `json:"rarity,omitempty"`
+}
+
+func GetNFTDetailFromPodtown(address, tokenId string) (*NFTDetailDataResponse, error) {
+	nftsData := &NFTDetailDataResponse{}
+	var r NFTTokenResponse
+	podtown := "https://backend.pod.so/api/v1/nft/%s/items/%s"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf(podtown, address, tokenId), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &r)
+	if err != nil {
+		return nil, err
+	}
+	nftsData = &NFTDetailDataResponse{
+		TokenAddress: r.CollectionAddress,
+		TokenId:      strconv.FormatUint(r.TokenID, 10),
+		ContractType: "ERC721",
+		Amount:       strconv.FormatUint(r.Amount, 10),
+		Name:         r.Name,
+		Symbol:       "rabby",
+		Metadata: Metadata{
+			Name:        r.Name,
+			Description: r.Description,
+			TokenId:     int(r.TokenID),
+			Attributes:  r.Attributes,
+			Image:       r.Image,
+			Rarity:      r.Rarity,
+		},
+	}
+	return nftsData, nil
 }
