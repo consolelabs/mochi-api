@@ -44,6 +44,10 @@ func (pg *pg) UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson
 	return nil
 }
 
+func (pg *pg) ClearMessageConfig(guildID, messageID string) error {
+	return pg.db.Where("guild_id = ? AND message_id = ?", guildID, messageID).Delete(&model.GuildConfigReactionRole{}).Error
+}
+
 func (pg *pg) CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
 	config := model.GuildConfigReactionRole{
 		MessageID:     req.MessageID,

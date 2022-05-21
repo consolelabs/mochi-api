@@ -21,12 +21,59 @@ func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
 		return
 	}
 
-	if err := h.entities.NewGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage); err != nil {
+	res, err := h.entities.NewGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "ok"})
+	c.JSON(http.StatusCreated, gin.H{
+		"status": "ok",
+		"data":   res,
+	})
+}
+
+func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
+	var req request.NewGuildConfigWalletVerificationMessageRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := h.entities.UpdateGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   res,
+	})
+}
+
+func (h *Handler) DeleteGuildConfigWalletVerificationMessage(c *gin.Context) {
+
+	var guildID = c.Query("guild_id")
+
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	err := h.entities.DeleteGuildConfigWalletVerificationMessage(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
 func (h *Handler) GenerateVerification(c *gin.Context) {

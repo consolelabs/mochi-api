@@ -38,3 +38,7 @@ func (pg *pg) UpsertOne(gcv model.GuildConfigWalletVerificationMessage) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) DeleteOne(guildID string) error {
+	return pg.db.Where("guild_id = ?", guildID).Delete(&model.GuildConfigWalletVerificationMessage{}).Error
+}

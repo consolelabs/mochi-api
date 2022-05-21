@@ -217,7 +217,9 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 }
 
 func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
-	exists, err := e.cache.GetBool(message.Author.ID + "_chat_xp_cooldown")
+	xpID := fmt.Sprintf(`%s_%s_chat_xp_cooldown`, message.Author.ID, message.GuildID)
+
+	exists, err := e.cache.GetBool(xpID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chat xp cooldown: %v", err.Error())
 	}
@@ -235,11 +237,11 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 		if err != nil {
 			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 		}
-	}
 
-	err = e.cache.Set(message.Author.ID+"_chat_xp_cooldown", true, time.Minute)
-	if err != nil {
-		return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+		err = e.cache.Set(xpID, true, time.Minute)
+		if err != nil {
+			return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+		}
 	}
 
 	return resp, nil

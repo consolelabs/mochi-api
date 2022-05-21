@@ -10,7 +10,8 @@ import (
 
 type NewGuildConfigWalletVerificationMessageRequest struct {
 	model.GuildConfigWalletVerificationMessage
-	CreatedAt time.Time `json:"-"`
+	CreatedAt        time.Time `json:"-"`
+	DiscordMessageID string    `json:"-"`
 }
 
 func (input *NewGuildConfigWalletVerificationMessageRequest) Validate() error {
@@ -19,8 +20,6 @@ func (input *NewGuildConfigWalletVerificationMessageRequest) Validate() error {
 		return fmt.Errorf("missing guild_id")
 	case input.VerifyChannelID == "":
 		return fmt.Errorf("missing verify_channel_id")
-	case input.Content == "" && input.EmbeddedMessage == nil:
-		return fmt.Errorf("content or embedded_message is required")
 	}
 
 	return nil

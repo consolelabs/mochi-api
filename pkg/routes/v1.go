@@ -78,8 +78,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
 			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)
-			roleReactionGroup.POST("", h.ProcessReactionEventByMessageID)
-			roleReactionGroup.POST("/update-config", h.UpdateConfig)
+			roleReactionGroup.POST("", h.AddReactionRoleConfig)
+			roleReactionGroup.DELETE("", h.RemoveReactionRoleConfig)
+			roleReactionGroup.POST("/filter", h.FilterConfigByReaction)
+
 		}
 		defaultRoleGroup := configGroup.Group("/default-roles")
 		{
@@ -116,6 +118,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	verifyGroup := v1.Group("/verify")
 	{
 		verifyGroup.POST("/config", h.NewGuildConfigWalletVerificationMessage)
+		verifyGroup.PUT("/config", h.UpdateGuildConfigWalletVerificationMessage)
+		verifyGroup.DELETE("/config", h.DeleteGuildConfigWalletVerificationMessage)
 		verifyGroup.POST("/generate", h.GenerateVerification)
 		verifyGroup.POST("", h.VerifyWalletAddress)
 	}
