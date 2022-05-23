@@ -80,16 +80,15 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 	}
 
 	nfts := &NFTDetailData{}
-	//support for nft rabby- get from backendapi
+	//support for nft rabby // fukuro- get from backendapi
 	switch symbol {
-	case "rabby":
-		nftsResponse, err = GetNFTDetailFromPodtown(collection.Address, tokenId)
+	case "rabby", "fukuro":
+		nftsResponse, err = GetNFTDetailFromPodtown(collection.Address, tokenId, symbol)
 		if err != nil {
 			err = fmt.Errorf("failed to get user NFTS: %v", err)
 			return nil, err
 		}
 		return
-
 	default:
 		nfts, err = GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
 		if err != nil {
@@ -331,7 +330,7 @@ type NFTTokenRarity struct {
 	Rarity string `json:"rarity,omitempty"`
 }
 
-func GetNFTDetailFromPodtown(address, tokenId string) (*NFTDetailDataResponse, error) {
+func GetNFTDetailFromPodtown(address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
 	nftsData := &NFTDetailDataResponse{}
 	var r NFTTokenResponse
 	podtown := "https://backend.pod.so/api/v1/nft/%s/items/%s"
@@ -365,7 +364,7 @@ func GetNFTDetailFromPodtown(address, tokenId string) (*NFTDetailDataResponse, e
 		ContractType: "ERC721",
 		Amount:       strconv.FormatUint(r.Amount, 10),
 		Name:         r.Name,
-		Symbol:       "rabby",
+		Symbol:       symbol,
 		Metadata: Metadata{
 			Name:        r.Name,
 			Description: r.Description,
