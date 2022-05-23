@@ -16,6 +16,7 @@ import (
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
+	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
@@ -61,5 +62,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ConfigXPLevel:                        configxplevel.NewPG(db),
 		GuildUserActivityLog:                 guilduseractivitylog.NewPG(db),
 		GuildUserXP:                          guilduserxp.NewPG(db),
+		GuildConfigLevelRole:                 guildconfiglevelrole.NewPG(db),
 	}
 }
