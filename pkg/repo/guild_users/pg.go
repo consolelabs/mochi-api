@@ -26,3 +26,8 @@ func (pq *pg) CountByGuildUser(guildId, userId string) (int64, error) {
 func (pg *pg) FirstOrCreate(guildUser *model.GuildUser) error {
 	return pg.db.Where("guild_id = ? AND user_id = ?", guildUser.GuildID, guildUser.UserID).FirstOrCreate(guildUser).Error
 }
+
+func (pg *pg) GetGuildUsers(guildID string) ([]model.GuildUser, error) {
+	var result []model.GuildUser
+	return result, pg.db.Where("guild_id = ?", guildID).Find(&result).Error
+}

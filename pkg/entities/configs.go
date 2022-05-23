@@ -50,3 +50,44 @@ func (e *Entity) UpsertGuildTokenConfig(req request.UpsertGuildTokenConfigReques
 
 	return nil
 }
+
+func (e *Entity) ConfigLevelRole(req request.ConfigLevelRoleRequest) error {
+	return e.repo.GuildConfigLevelRole.UpsertOne(model.GuildConfigLevelRole{
+		GuildID: req.GuildID,
+		RoleID:  req.RoleID,
+		Level:   req.Level,
+	})
+}
+
+func (e *Entity) GetGuildLevelRoleConfigs(guildID string) ([]model.GuildConfigLevelRole, error) {
+	return e.repo.GuildConfigLevelRole.GetByGuildID(guildID)
+}
+
+func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
+	config, err := e.repo.GuildConfigLevelRole.GetOne(guildID, level)
+	if err != nil {
+		return "", err
+	}
+
+	return config.RoleID, nil
+}
+
+func (e *Entity) RemoveGuildMemberRoles(guildID string, rolesToRemove map[string]string) error {
+	for userID, roleID := range rolesToRemove {
+		if err := e.discord.GuildMemberRoleRemove(guildID, userID, roleID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (e *Entity) AddGuildMemberRoles(guildID string, rolesToAdd map[string]string) error {
+	for userID, roleID := range rolesToAdd {
+		if err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
