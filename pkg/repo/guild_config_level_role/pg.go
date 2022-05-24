@@ -23,7 +23,7 @@ func (pg *pg) GetOne(guildID string, level int) (*model.GuildConfigLevelRole, er
 
 func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigLevelRole, error) {
 	var configs []model.GuildConfigLevelRole
-	return configs, pg.db.Where("guild_id = ?", guildID).Find(&configs).Error
+	return configs, pg.db.Where("guild_id = ?", guildID).Preload("LevelConfig").Find(&configs).Error
 }
 
 func (pg *pg) UpsertOne(config model.GuildConfigLevelRole) error {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
@@ -10,7 +8,6 @@ import (
 )
 
 func main() {
-	fmt.Println("running updateUserRoles ...")
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 	log := logger.NewLogrusLogger()
 	err := entities.Init(cfg, log)
@@ -18,6 +15,7 @@ func main() {
 		log.Fatal(err, "failed to init entities")
 	}
 
+	log.Info("start job updateUserRoles ...")
 	if err := job.NewUpdateUserRolesJob(entities.Get(), log).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 	}
