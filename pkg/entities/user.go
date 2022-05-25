@@ -189,3 +189,28 @@ func (e *Entity) GetGuildMember(guildID, userID string) (*discordgo.Member, erro
 	}
 	return member, nil
 }
+
+func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfileResponse, error) {
+	gUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(gUserXP.TotalXP, false)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(gUserXP.TotalXP, true)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return &response.GetUserProfileResponse{
+		ID:           userID,
+		CurrentLevel: currentLevel,
+		NextLevel:    nextLevel,
+		GuildXP:      gUserXP.TotalXP,
+		NrOfActions:  gUserXP.NrOfActions,
+	}, nil
+}
