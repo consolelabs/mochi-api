@@ -67,7 +67,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	profleGroup := v1.Group("/profiles")
 	{
-		profleGroup.GET("")
+		profleGroup.GET("", h.GetUserProfile)
 	}
 
 	configGroup := v1.Group("/configs")
