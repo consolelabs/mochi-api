@@ -36,3 +36,12 @@ type GetTopUsersResponse struct {
 	Author      *model.GuildUserXP  `json:"author"`
 	Leaderboard []model.GuildUserXP `json:"leaderboard"`
 }
+
+type GetUserProfileResponse struct {
+	ID           string               `json:"id"`
+	AboutMe      string               `json:"about_me"`
+	CurrentLevel *model.ConfigXpLevel `json:"current_level"`
+	NextLevel    *model.ConfigXpLevel `json:"next_level"`
+	GuildXP      int                  `json:"guild_xp"`
+	NrOfActions  int                  `json:"nr_of_actions"`
+}
