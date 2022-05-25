@@ -64,7 +64,7 @@ func (e *Entity) GetGuildLevelRoleConfigs(guildID string) ([]model.GuildConfigLe
 }
 
 func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
-	config, err := e.repo.GuildConfigLevelRole.GetOne(guildID, level)
+	config, err := e.repo.GuildConfigLevelRole.GetHighest(guildID, level)
 	if err != nil {
 		return "", err
 	}

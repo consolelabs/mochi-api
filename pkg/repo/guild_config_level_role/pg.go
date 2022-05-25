@@ -16,9 +16,9 @@ func NewPG(db *gorm.DB) *pg {
 	}
 }
 
-func (pg *pg) GetOne(guildID string, level int) (*model.GuildConfigLevelRole, error) {
+func (pg *pg) GetHighest(guildID string, level int) (*model.GuildConfigLevelRole, error) {
 	config := &model.GuildConfigLevelRole{}
-	return config, pg.db.Where("guild_id = ? AND level = ?", guildID, level).First(config).Error
+	return config, pg.db.Where("guild_id = ? AND level <= ?", guildID, level).Order("level DESC").First(config).Error
 }
 
 func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigLevelRole, error) {
