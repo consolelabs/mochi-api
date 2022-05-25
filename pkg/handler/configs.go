@@ -75,9 +75,11 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 	}
 	if req.GuildID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
 	}
 	if req.Symbol == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
 	}
 
 	if err := h.entities.UpsertGuildTokenConfig(req); err != nil {
@@ -86,4 +88,48 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) ConfigLevelRole(c *gin.Context) {
+	var req request.ConfigLevelRoleRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.GuildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+	if req.RoleID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "role_id is required"})
+		return
+	}
+	if req.Level == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
+		return
+	}
+
+	if err := h.entities.ConfigLevelRole(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	data, err := h.entities.GetGuildLevelRoleConfigs(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }

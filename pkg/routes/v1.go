@@ -94,6 +94,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenGroup.GET("", h.GetGuildTokens)
 			tokenGroup.POST("", h.UpsertGuildTokenConfig)
 		}
+		levelRoleGroup := configGroup.Group("/level-roles")
+		{
+			levelRoleGroup.POST("", h.ConfigLevelRole)
+			levelRoleGroup.GET("/:guild_id", h.GetLevelRoleConfigs)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")

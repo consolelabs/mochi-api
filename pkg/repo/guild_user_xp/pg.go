@@ -18,6 +18,11 @@ func (pg *pg) GetOne(guildID, userID string) (*model.GuildUserXP, error) {
 	return userXP, pg.db.Where("guild_id = ? AND user_id = ?", guildID, userID).First(userXP).Error
 }
 
+func (pg *pg) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {
+	var result []model.GuildUserXP
+	return result, pg.db.Where("guild_id = ?", guildID).Find(&result).Error
+}
+
 func (pg *pg) GetTopUsers(guildID string, limit, offset int) ([]model.GuildUserXP, error) {
 	var userXPs []model.GuildUserXP
 	return userXPs, pg.db.Where("guild_id = ?", guildID).Preload("User").Offset(offset).Limit(limit).Order("guild_rank").Find(&userXPs).Error

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -175,4 +176,16 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 		Author:      author,
 		Leaderboard: leaderboard,
 	}, nil
+}
+
+func (e *Entity) GetGuildUserXPs(guildID string) ([]model.GuildUserXP, error) {
+	return e.repo.GuildUserXP.GetByGuildID(guildID)
+}
+
+func (e *Entity) GetGuildMember(guildID, userID string) (*discordgo.Member, error) {
+	member, err := e.discord.GuildMember(guildID, userID)
+	if err != nil {
+		return nil, err
+	}
+	return member, nil
 }
