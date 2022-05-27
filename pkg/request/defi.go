@@ -22,6 +22,7 @@ type TransferRequest struct {
 	Cryptocurrency string   `json:"cryptocurrency"`
 	Each           bool     `json:"each"`
 	All            bool     `json:"all"`
+	TransferType   string   `json:"transferType"`
 }
 
 func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {
