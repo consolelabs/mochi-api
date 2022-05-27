@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
@@ -167,6 +168,23 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 		return nil, err
 	}
 
+	for i := range leaderboard {
+		item := &leaderboard[i]
+		currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, false)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+
+		nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, true)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+		item.Progress = math.Min(float64(item.TotalXP-currentLevel.MinXP)/float64(nextLevel.MinXP-currentLevel.MinXP), 1)
+		if nextLevel.Level == 0 {
+			item.Progress = 1
+		}
+	}
+
 	author, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -206,11 +224,17 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		return nil, err
 	}
 
+	progress := math.Min(float64(gUserXP.TotalXP-currentLevel.MinXP)/float64(nextLevel.MinXP-currentLevel.MinXP), 1)
+	if nextLevel.Level == 0 {
+		progress = 1
+	}
+
 	return &response.GetUserProfileResponse{
 		ID:           userID,
 		CurrentLevel: currentLevel,
 		NextLevel:    nextLevel,
 		GuildXP:      gUserXP.TotalXP,
 		NrOfActions:  gUserXP.NrOfActions,
+		Progress:     progress,
 	}, nil
 }
