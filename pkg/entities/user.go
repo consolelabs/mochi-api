@@ -236,5 +236,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		GuildXP:      gUserXP.TotalXP,
 		NrOfActions:  gUserXP.NrOfActions,
 		Progress:     progress,
+		Guild:        gUserXP.Guild,
 	}, nil
 }
