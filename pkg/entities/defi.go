@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/model"
@@ -17,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
@@ -126,6 +128,33 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 			continue
 		}
 
+		gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
+		if err != nil {
+			if err != gorm.ErrRecordNotFound {
+				errs = append(errs, fmt.Sprintf("error get activity cfg: %v", err))
+				continue
+			}
+			if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
+				errs = append(errs, fmt.Sprintf("error init default activities: %v", err))
+				continue
+			}
+			if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
+				errs = append(errs, fmt.Sprintf("error get activity cfg 2: %v", err))
+				continue
+			}
+		}
+
+		if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+			GuildID:      req.GuildID,
+			UserID:       req.Sender,
+			ActivityName: gActivityConfig.Activity.Name,
+			EarnedXP:     gActivityConfig.Activity.XP,
+			CreatedAt:    time.Now(),
+		}); err != nil {
+			errs = append(errs, fmt.Sprintf("error create activity log: %v", err))
+			continue
+		}
+
 		res = append(res, response.InDiscordWalletTransferResponse{
 			FromDiscordID:  req.Sender,
 			ToDiscordID:    toUser.ID,
@@ -187,6 +216,31 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 	})
 	if err != nil {
 		err = fmt.Errorf("error create tx: %v", err)
+		return
+	}
+
+	gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			err = fmt.Errorf("error get activity cfg: %v", err)
+			return
+		}
+		if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
+			return
+		}
+		if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
+			return
+		}
+	}
+
+	if err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+		GuildID:      req.GuildID,
+		UserID:       req.Sender,
+		ActivityName: gActivityConfig.Activity.Name,
+		EarnedXP:     gActivityConfig.Activity.XP,
+		CreatedAt:    time.Now(),
+	}); err != nil {
+		err = fmt.Errorf("error create activity log: %v", err)
 		return
 	}
 
