@@ -15,7 +15,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetOne(guildID, userID string) (*model.GuildUserXP, error) {
 	userXP := &model.GuildUserXP{}
-	return userXP, pg.db.Where("guild_id = ? AND user_id = ?", guildID, userID).First(userXP).Error
+	return userXP, pg.db.Where("guild_id = ? AND user_id = ?", guildID, userID).Preload("Guild").First(userXP).Error
 }
 
 func (pg *pg) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {

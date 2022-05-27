@@ -10,4 +10,5 @@ type DiscordGuild struct {
 	Roles                    []GuildRole              `json:"roles" gorm:"foreignkey:GuildID"`
 	CreatedAt                time.Time                `json:"created_at"`
 	GuildConfigInviteTracker GuildConfigInviteTracker `json:"-" gorm:"foreignkey:GuildID"`
+	GlobalXP                 bool                     `json:"global_xp"`
 }

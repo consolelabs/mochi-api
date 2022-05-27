@@ -229,6 +229,12 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		progress = 1
 	}
 
+	if gUserXP.Guild == nil {
+		if gUserXP.Guild, err = e.repo.DiscordGuilds.GetByID(guildID); err != nil {
+			return nil, err
+		}
+	}
+
 	return &response.GetUserProfileResponse{
 		ID:           userID,
 		CurrentLevel: currentLevel,
@@ -236,5 +242,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		GuildXP:      gUserXP.TotalXP,
 		NrOfActions:  gUserXP.NrOfActions,
 		Progress:     progress,
+		Guild:        gUserXP.Guild,
 	}, nil
 }
