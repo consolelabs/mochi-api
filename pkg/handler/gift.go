@@ -23,7 +23,7 @@ func(h *Handler) GiftXpHandler(c *gin.Context) {
 	// }
 	
 	earnedXp, _ := strconv.Atoi(req.XpAmount)
-	err := h.entities.CreateGuildUserActivityLog(req.GuildId, req.UserDiscordId, earnedXp)
+	err := h.entities.CreateGuildUserActivityLog(req.GuildId, req.UserDiscordId, earnedXp, "gifted")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "cannot gift xp for user"})
 		return
