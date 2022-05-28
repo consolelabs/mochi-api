@@ -148,4 +148,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/supported-chains", h.GetSupportedChains)
 		nftsGroup.POST("/collection", h.CreateNFTCollection)
 	}
+	giftGroup := v1.Group("/gift") 
+	{
+		giftGroup.POST("/xp", h.GiftXpHandler)
+	}
 }
