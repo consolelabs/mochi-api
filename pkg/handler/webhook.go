@@ -31,6 +31,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		h.handleMessageCreate(c, req.Data)
 	case request.GUILD_CREATE:
 		h.handleGuildCreate(c, req.Data)
+	case request.GUILD_MEMBER_UPDATE:
+		h.handleGuildMemberUpdate(c, req.Data)
 	}
 }
 
@@ -145,6 +147,29 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 
 	// TODO: use response data to send discord message to user
 	resp, err := h.entities.ChatXPIncrease(message)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "OK", "type": "level_up", "data": resp})
+}
+
+func (h *Handler) handleGuildMemberUpdate(c *gin.Context, data json.RawMessage) {
+	member := &discordgo.Member{}
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &member); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// TODO: use response data to send discord message to user
+	resp, err := h.entities.BoostXPIncrease(member)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
