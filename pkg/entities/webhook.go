@@ -246,3 +246,18 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 
 	return resp, nil
 }
+
+func (e *Entity) BoostXPIncrease(member *discordgo.Member) (*response.HandleUserActivityResponse, error) {
+	var resp *response.HandleUserActivityResponse
+
+	resp, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+		GuildID: member.GuildID,
+		UserID:  member.User.ID,
+		Action:  "boost",
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+	}
+
+	return resp, nil
+}

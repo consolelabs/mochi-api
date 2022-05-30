@@ -87,3 +87,26 @@ func (h *Handler) ListMyGuilds(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": guilds})
 }
+
+func (h *Handler) ToggleGlobalXP(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	var req struct {
+		GlobalXP bool `json:"global_xp"`
+	}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "global_xp is required"})
+		return
+	}
+
+	if err := h.entities.ToggleGuildGlobalXP(guildID, req.GlobalXP); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
