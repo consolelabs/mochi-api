@@ -68,6 +68,7 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		BotScopes:    guild.BotScopes,
 		Alias:        guild.Alias,
 		LogChannelID: guild.GuildConfigInviteTracker.ChannelID,
+		GlobalXP:     guild.GlobalXP,
 	}, nil
 }
 
@@ -132,4 +133,12 @@ func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]*DiscordGuildRespons
 	}
 
 	return res, nil
+}
+
+func (e *Entity) ToggleGuildGlobalXP(guildID string, globalXP bool) error {
+	if err := e.repo.DiscordGuilds.ToggleGlobalXP(guildID, globalXP); err != nil {
+		e.log.Errorf(err, "failed to toggle global XP for guild %s", guildID)
+		return err
+	}
+	return nil
 }
