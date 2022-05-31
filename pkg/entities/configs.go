@@ -63,6 +63,10 @@ func (e *Entity) GetGuildLevelRoleConfigs(guildID string) ([]model.GuildConfigLe
 	return e.repo.GuildConfigLevelRole.GetByGuildID(guildID)
 }
 
+func (e *Entity) RemoveGuildLevelRoleConfig(guildID string, level int) error {
+	return e.repo.GuildConfigLevelRole.DeleteOne(guildID, level)
+}
+
 func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
 	config, err := e.repo.GuildConfigLevelRole.GetHighest(guildID, level)
 	if err != nil {
