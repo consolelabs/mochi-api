@@ -246,15 +246,35 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 	}, nil
 }
 
-func (e *Entity) CreateGuildUserActivityLog(guildID string, userID string, earnedXp int, activityName string) error {
-	err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activityName string) (*response.HandleUserActivityResponse, error) {
+	userXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	fmt.Println(userXP)
+	
+	err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID: guildID,
 		UserID: userID,
 		EarnedXP: earnedXp,
 		ActivityName: activityName,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	latestUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(latestUserXP)
+	
+	return &response.HandleUserActivityResponse{
+		GuildID:      guildID,
+		UserID:       userID,
+		Action:       activityName,
+		CurrentXP:    latestUserXP.TotalXP,
+		CurrentLevel: latestUserXP.Level,
+		LevelUp:      latestUserXP.Level > userXP.Level,
+	}, nil
 }
