@@ -141,14 +141,14 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
 
 	switch {
 	case isGmMessage:
-		guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
-		if err != nil {
-			return err
-		}
-		if guildConfigGm.ChannelID != channelID {
-			// do nothing if not gm channel
-			return nil
-		}
+		// guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
+		// if err != nil {
+		// 	return err
+		// }
+		// if guildConfigGm.ChannelID != channelID {
+		// 	// do nothing if not gm channel
+		// 	return nil
+		// }
 		return e.newUserGM(discordID, guildID, channelID, sentAt)
 	}
 	return nil
@@ -176,23 +176,32 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 		return nil
 	}
 
-	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
+	//nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
 
-	switch {
-	case chatDate.Before(nextStreakDate):
-		durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
-		return e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
-	case chatDate.Equal(nextStreakDate):
-		streak.StreakCount++
-	case chatDate.After(nextStreakDate):
-		streak.StreakCount = 1
-	}
+	// switch {
+	// case chatDate.Before(nextStreakDate):
+	// 	durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
+	// 	return e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
+	// case chatDate.Equal(nextStreakDate):
+	// 	streak.StreakCount++
+	// case chatDate.After(nextStreakDate):
+	// 	streak.StreakCount = 1
+	// }
+
+	// for test
+	streak.StreakCount++
+	////////
 	streak.LastStreakDate = chatDate
 	streak.TotalCount++
 
 	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
 		return fmt.Errorf("failed to update user gm streak: %v", err)
 	}
+
+	// streak.count > 1
+	// create activity log
+	// streack. streakcount = 4 point = 4 * 20
+
 	return e.replyGmGn(streak, channelID, discordID, "", true)
 }
 
@@ -219,14 +228,15 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	xpID := fmt.Sprintf(`%s_%s_chat_xp_cooldown`, message.Author.ID, message.GuildID)
 
-	exists, err := e.cache.GetBool(xpID)
+	//exists, err := e.cache.GetBool(xpID)
+	_, err := e.cache.GetBool(xpID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chat xp cooldown: %v", err.Error())
 	}
 
 	var resp *response.HandleUserActivityResponse
 
-	if !exists {
+	if true {
 		resp, err = e.HandleUserActivities(&request.HandleUserActivityRequest{
 			GuildID:   message.GuildID,
 			ChannelID: message.ChannelID,
@@ -247,16 +257,42 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 	return resp, nil
 }
 
-func (e *Entity) BoostXPIncrease(member *discordgo.Member) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) GmXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	isGmMessage := message.Content == "gm" || message.Content == "gn"
 	var resp *response.HandleUserActivityResponse
+	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(message.Author.ID, message.GuildID)
+	if !isGmMessage {
+		return resp, nil
+	}
 
-	resp, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID: member.GuildID,
-		UserID:  member.User.ID,
-		Action:  "boost",
-	})
+	if streak.StreakCount < 2 {
+		return resp, nil
+	}
+	xpID := fmt.Sprintf(`%s_%s_chat_xp_cooldown`, message.Author.ID, message.GuildID)
+
+	//exists, err := e.cache.GetBool(xpID)
+	_, err = e.cache.GetBool(xpID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+		return nil, fmt.Errorf("failed to get chat xp cooldown: %v", err.Error())
+	}
+
+	// if !exists {
+	if true {
+		resp, err = e.HandleUserActivities(&request.HandleUserActivityRequest{
+			GuildID:   message.GuildID,
+			ChannelID: message.ChannelID,
+			UserID:    message.Author.ID,
+			Action:    "gm_streak",
+			Timestamp: message.Timestamp,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+		}
+
+		err = e.cache.Set(xpID, true, time.Minute)
+		if err != nil {
+			return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
+		}
 	}
 
 	return resp, nil

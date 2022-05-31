@@ -45,7 +45,3 @@ func (pg *pg) GetByID(id string) (*model.DiscordGuild, error) {
 	var guild model.DiscordGuild
 	return &guild, pg.db.Preload("GuildConfigInviteTracker").First(&guild, "id = ?", id).Error
 }
-
-func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
-	return pg.db.Model(&model.DiscordGuild{}).Where("id = ?", guildID).Update("global_xp", globalXP).Error
-}
