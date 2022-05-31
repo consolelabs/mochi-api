@@ -8,6 +8,7 @@ import (
 )
 
 // NewRoutes ...
+// demo git
 func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	v1 := r.Group("/api/v1")
