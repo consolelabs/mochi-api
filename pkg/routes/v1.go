@@ -25,7 +25,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.GET("", h.GetGuilds)
 		guildGroup.GET("/:guild_id", h.GetGuild)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.ListMyGuilds)
-		guildGroup.PUT("/global-xp/:guild_id", h.ToggleGlobalXP)
 
 		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
 		{
@@ -149,7 +148,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/supported-chains", h.GetSupportedChains)
 		nftsGroup.POST("/collection", h.CreateNFTCollection)
 	}
-	giftGroup := v1.Group("/gift")
+	giftGroup := v1.Group("/gift") 
 	{
 		giftGroup.POST("/xp", h.GiftXpHandler)
 	}

@@ -246,12 +246,11 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 	}, nil
 }
 
-func (e *Entity) CreateGuildUserActivityLog(guildID string, userID string, earnedXp int, activityName string) error {
+func (e *Entity) CreateGuildUserActivityLog(guildID string, userID string, earnedXp int) error {
 	err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID: guildID,
 		UserID: userID,
 		EarnedXP: earnedXp,
-		ActivityName: activityName,
 	})
 	if err != nil {
 		return err

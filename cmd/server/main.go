@@ -84,7 +84,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 		allowOrigins := corsOrigins
 
 		// allow all localhosts and all GET method
-		if origin != "" && (strings.Contains(origin, "http://localhost") || c.Request.Method == "GET") {
+		if origin != "" && (strings.Contains(origin, "http://127.0.0.1") || c.Request.Method == "GET") {
 			allowOrigins = []string{origin}
 		} else {
 			// suport wildcard cors: https://*.domain.com
