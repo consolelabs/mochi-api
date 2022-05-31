@@ -195,6 +195,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	}
 
 	// add new feature : GmExIncrease
+	///////
 	if streak.StreakCount < 2 {
 		return e.replyGmGn(streak, channelID, discordID, "", true)
 	}
