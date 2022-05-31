@@ -146,13 +146,19 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	}
 
 	// TODO: use response data to send discord message to user
-	resp, err := h.entities.ChatXPIncrease(message)
+	_, err = h.entities.ChatXPIncrease(message)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "OK", "type": "level_up", "data": resp})
+	resp1, err1 := h.entities.GmXPIncrease(message)
+	if err1 != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "OK", "type": "level_up", "data": resp1})
 }
 
 func (h *Handler) handleGuildMemberUpdate(c *gin.Context, data json.RawMessage) {
