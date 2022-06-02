@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -247,12 +248,13 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 }
 
 func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activityName string) (*response.HandleUserActivityResponse, error) {
+	log := logger.NewLogrusLogger()	
 	userXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
+		log.Errorf(err, "Failed to get guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
 		return nil, err
 	}
-	fmt.Println(userXP)
-	
+
 	err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID: guildID,
 		UserID: userID,
@@ -260,15 +262,16 @@ func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activit
 		ActivityName: activityName,
 	})
 	if err != nil {
+		log.Errorf(err, "Failed to create user activity log. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
 		return nil, err
 	}
 
 	latestUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil {
+		log.Errorf(err, "Failed to get latest guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
 		return nil, err
 	}
-	fmt.Println(latestUserXP)
-	
+
 	return &response.HandleUserActivityResponse{
 		GuildID:      guildID,
 		UserID:       userID,
