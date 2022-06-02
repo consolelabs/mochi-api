@@ -9,7 +9,7 @@ import (
 
 // NewRoutes ...
 func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
-
+// asdsda
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
