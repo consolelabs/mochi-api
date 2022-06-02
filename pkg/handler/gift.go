@@ -15,12 +15,6 @@ func(h *Handler) GiftXpHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	//  TODO: validate this admin discord id, check if this id has role admin ?
-	// userGuild, err := h.entities.GetUserDiscord(req.GuildId, req.AdminDiscordId)
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "cannot get discord admin"})
-	// 	return
-	// }
 	
 	_, err := h.entities.GetUser(req.UserDiscordId)
 	if err != nil {
@@ -29,10 +23,10 @@ func(h *Handler) GiftXpHandler(c *gin.Context) {
 	}
 
 	earnedXp, _ := strconv.Atoi(req.XpAmount)
-	err = h.entities.CreateGuildUserActivityLog(req.GuildId, req.UserDiscordId, earnedXp, "gifted")
+	resp, err := h.entities.SendGiftXp(req.GuildId, req.UserDiscordId, earnedXp, "gifted")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "cannot create activity log"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+	c.JSON(http.StatusOK, gin.H{"data": resp})
 }
