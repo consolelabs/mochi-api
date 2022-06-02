@@ -16,9 +16,9 @@ const (
 	StaticEmojis   = "static_emojis"
 	AnimatedEmojis = "animated_emojis"
 
-	Stickers         = "all_stickers"
-	StandardStickers = "standard_stickers"
-	GuildStickers    = "guild_stickers"
+	Stickers       = "all_stickers"
+	CustomStickers = "custom_stickers"
+	ServerStickers = "server_stickers"
 
 	Roles = "all_roles"
 )

@@ -25,9 +25,9 @@ type DiscordGuildStat struct {
 	NrOfStaticEmojis   int `json:"nr_of_static_emojis"`
 	NrOfAnimatedEmojis int `json:"nr_of_animated_emojis"`
 
-	NrOfStickers         int `json:"nr_of_stickers"`
-	NrOfStandardStickers int `json:"nr_of_standard_stickers"`
-	NrOfGuildStickers    int `json:"nr_of_guild_stickers"`
+	NrOfStickers       int `json:"nr_of_stickers"`
+	NrOfCustomStickers int `json:"nr_of_custom_stickers"`
+	NrOfServerStickers int `json:"nr_of_server_stickers"`
 
 	NrOfRoles int `json:"nr_of_roles"`
 

@@ -115,7 +115,7 @@ func (e *Entity) CountGuildEmojis(guildID string) (int, int, int, error) {
 
 func (e *Entity) CountGuildStickers(guildID string) (int, int, int, error) {
 	log := logger.NewLogrusLogger()
-	nr_of_stickers, nr_of_standard_stickers, nr_of_guild_stickers := 0, 0, 0
+	nr_of_stickers, nr_of_custom_stickers, nr_of_server_stickers := 0, 0, 0
 	url := "https://discord.com/api/v9/guilds/" + guildID + "/stickers"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -144,19 +144,19 @@ func (e *Entity) CountGuildStickers(guildID string) (int, int, int, error) {
 		return 0, 0, 0, nil
 	}
 	// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
-	// Refer to discord doc: standard sticker is 1, guild sticker is 2
+	// Refer to discord doc: custom sticker is 1, server sticker is 2
 	for _, sticker := range guildStickers {
 		switch sticker.Type {
-		case consts.StandardSticker:
-			nr_of_standard_stickers = nr_of_standard_stickers + 1
-		case consts.GuildSticker:
-			nr_of_guild_stickers = nr_of_guild_stickers + 1
+		case consts.CustomSticker:
+			nr_of_custom_stickers = nr_of_custom_stickers + 1
+		case consts.ServerSticker:
+			nr_of_server_stickers = nr_of_server_stickers + 1
 		default:
-			nr_of_standard_stickers = nr_of_standard_stickers + 1
+			nr_of_custom_stickers = nr_of_custom_stickers + 1
 		}
 	}
 	nr_of_stickers = len(guildStickers)
-	return nr_of_stickers, nr_of_standard_stickers, nr_of_guild_stickers, nil
+	return nr_of_stickers, nr_of_custom_stickers, nr_of_server_stickers, nil
 }
 
 func (e *Entity) CountGuildRoles(guildID string) (int, error) {
@@ -269,7 +269,7 @@ func (e *Entity) UpdateOneGuildStats(guildID string) error {
 	if err != nil {
 		return err
 	}
-	nr_of_stickers, nr_of_standard_stickers, nr_of_guild_stickers, err := e.CountGuildStickers(guildID)
+	nr_of_stickers, nr_of_custom_stickers, nr_of_server_stickers, err := e.CountGuildStickers(guildID)
 	if err != nil {
 		return err
 	}
@@ -296,10 +296,10 @@ func (e *Entity) UpdateOneGuildStats(guildID string) error {
 		NrOfStaticEmojis:   nr_of_static_emojis,
 		NrOfAnimatedEmojis: nr_of_animated_emojis,
 
-		NrOfStickers:         nr_of_stickers,
-		NrOfStandardStickers: nr_of_standard_stickers,
-		NrOfGuildStickers:    nr_of_guild_stickers,
-		NrOfRoles:            nr_of_roles,
+		NrOfStickers:       nr_of_stickers,
+		NrOfCustomStickers: nr_of_custom_stickers,
+		NrOfServerStickers: nr_of_server_stickers,
+		NrOfRoles:          nr_of_roles,
 	})
 	if err != nil {
 		return err

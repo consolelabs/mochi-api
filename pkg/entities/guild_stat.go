@@ -42,10 +42,10 @@ func (e *Entity) GetByGuildID(guildID string) (*model.DiscordGuildStat, error) {
 		NrOfStaticEmojis:   guildStat.NrOfStaticEmojis,
 		NrOfAnimatedEmojis: guildStat.NrOfAnimatedEmojis,
 
-		NrOfStickers:         guildStat.NrOfStickers,
-		NrOfStandardStickers: guildStat.NrOfStandardStickers,
-		NrOfGuildStickers:    guildStat.NrOfGuildStickers,
-		NrOfRoles:            guildStat.NrOfRoles,
-		CreatedAt:            guildStat.CreatedAt,
+		NrOfStickers:       guildStat.NrOfStickers,
+		NrOfCustomStickers: guildStat.NrOfCustomStickers,
+		NrOfServerStickers: guildStat.NrOfServerStickers,
+		NrOfRoles:          guildStat.NrOfRoles,
+		CreatedAt:          guildStat.CreatedAt,
 	}, nil
 }
