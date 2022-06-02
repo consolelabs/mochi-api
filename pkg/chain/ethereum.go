@@ -88,10 +88,10 @@ func (ch *Ethereum) transfer(fromAcc accounts.Account, toAcc accounts.Account, a
 	if err != nil {
 		return nil, 0, err
 	}
+	fmt.Printf("[ETH | transfer][%s - %s]: amount %v | balance %v | all - %v\n", fromAcc.Address.Hex(), toAcc.Address.Hex(), amount, balance, all)
 	if !all && balance < amount {
 		return nil, 0, errors.New("balance is not enough")
 	}
-	fmt.Printf("[ETH | transfer][%s - %s]: amount %v | balance %v\n", fromAcc.Address.Hex(), toAcc.Address.Hex(), amount, balance)
 
 	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
 	privateKey, err := crypto.HexToECDSA(priv)
