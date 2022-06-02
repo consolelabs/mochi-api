@@ -193,6 +193,24 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
 		return fmt.Errorf("failed to update user gm streak: %v", err)
 	}
+
+	// add new feature : GmExIncrease
+	///////
+	if streak.StreakCount < 2 {
+		return e.replyGmGn(streak, channelID, discordID, "", true)
+	}
+
+	_, err = e.HandleUserActivities(&request.HandleUserActivityRequest{
+		GuildID:   guildID,
+		ChannelID: channelID,
+		UserID:    discordID,
+		Action:    "gm_streak",
+		Timestamp: chatDate,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to handle user activity: %v", err.Error())
+	}
+
 	return e.replyGmGn(streak, channelID, discordID, "", true)
 }
 

@@ -39,3 +39,7 @@ func (pg *pg) UpsertOne(config model.GuildConfigLevelRole) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) DeleteOne(guildID string, level int) error {
+	return pg.db.Where("guild_id = ? AND level = ?", guildID, level).Delete(&model.GuildConfigLevelRole{}).Error
+}

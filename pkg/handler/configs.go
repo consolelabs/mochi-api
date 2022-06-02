@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -132,4 +133,31 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	level := c.Query("level")
+	if level == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "level is required"})
+		return
+	}
+
+	levelNr, err := strconv.Atoi(level)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
+		return
+	}
+
+	if err := h.entities.RemoveGuildLevelRoleConfig(guildID, levelNr); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }

@@ -9,7 +9,7 @@ import (
 
 // NewRoutes ...
 func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
-
+// asdsda
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
@@ -99,6 +99,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			levelRoleGroup.POST("", h.ConfigLevelRole)
 			levelRoleGroup.GET("/:guild_id", h.GetLevelRoleConfigs)
+			levelRoleGroup.DELETE("/:guild_id", h.RemoveLevelRoleConfig)
 		}
 	}
 
