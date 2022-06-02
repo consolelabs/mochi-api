@@ -448,6 +448,9 @@ func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 	if err != nil {
 		return err
 	}
+	if len(tokens) == 0 {
+		return fmt.Errorf("No default tokens found")
+	}
 
 	var configs []model.GuildConfigToken
 	for _, token := range tokens {
