@@ -53,7 +53,7 @@ func CreateChannelName(guildStat *model.DiscordGuildStat, countType string) stri
 		return "Custom Stickers - " + nrOfCustomStickersStr
 	case consts.ServerStickers:
 		nrOfServerStickersStr := strconv.Itoa(guildStat.NrOfServerStickers)
-		return "Guild Stickers - " + nrOfServerStickersStr
+		return "Server Stickers - " + nrOfServerStickersStr
 	case consts.Roles:
 		nrOfRolesStr := strconv.Itoa(guildStat.NrOfRoles)
 		return "Roles - " + nrOfRolesStr
