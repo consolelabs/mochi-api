@@ -8,6 +8,6 @@ const (
 	AnnouncementChannel = 5
 	StageChannel        = 13
 	// stickers type
-	StandardSticker = 1
-	GuildSticker    = 2
+	CustomSticker = 1
+	ServerSticker = 2
 )
