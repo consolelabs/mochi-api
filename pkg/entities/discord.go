@@ -53,6 +53,7 @@ func (e *Entity) GetGuildUsersFromDiscord(guildID string) ([]response.DiscordGui
 
 func (e *Entity) CountGuildChannels(guildID string) (int, int, int, int, int, int, error) {
 	log := logger.NewLogrusLogger()
+	log.Infof("Counting guild channels. GuildId: %v", guildID)
 	nr_of_channels, nr_of_text_channels, nr_of_voice_channels, nr_of_stage_channels, nr_of_categories, nr_of_announcement_channels := 0, 0, 0, 0, 0, 0
 	guildChannels, err := e.discord.GuildChannels(guildID)
 	if err != nil {
@@ -87,6 +88,7 @@ func (e *Entity) CountGuildChannels(guildID string) (int, int, int, int, int, in
 
 func (e *Entity) CountGuildEmojis(guildID string) (int, int, int, error) {
 	log := logger.NewLogrusLogger()
+	log.Infof("Counting guild emojis. GuildId: %v", guildID)
 	nr_of_emojis, nr_of_static_emojis, nr_of_animated_emojis := 0, 0, 0
 	guildEmojis, err := e.discord.GuildEmojis(guildID)
 	if err != nil {
@@ -115,6 +117,7 @@ func (e *Entity) CountGuildEmojis(guildID string) (int, int, int, error) {
 
 func (e *Entity) CountGuildStickers(guildID string) (int, int, int, error) {
 	log := logger.NewLogrusLogger()
+	log.Infof("Counting guild stickers. GuildId: %v", guildID)
 	nr_of_stickers, nr_of_custom_stickers, nr_of_server_stickers := 0, 0, 0
 	url := "https://discord.com/api/v9/guilds/" + guildID + "/stickers"
 	request, err := http.NewRequest(http.MethodGet, url, nil)
@@ -161,6 +164,7 @@ func (e *Entity) CountGuildStickers(guildID string) (int, int, int, error) {
 
 func (e *Entity) CountGuildRoles(guildID string) (int, error) {
 	log := logger.NewLogrusLogger()
+	log.Infof("Counting guild roles. GuildId: %v", guildID)
 	guildRoles, err := e.discord.GuildRoles(guildID)
 	if err != nil {
 		log.Error(err, "failed to get guild roles")
@@ -172,6 +176,7 @@ func (e *Entity) CountGuildRoles(guildID string) (int, error) {
 
 func (e *Entity) CountGuildMembers(guildID string) (int, int, int, error) {
 	log := logger.NewLogrusLogger()
+	log.Infof("Counting guild members. GuildId: %v", guildID)
 	nr_of_members, nr_of_user, nr_of_bots := 0, 0, 0
 	members := make([]response.DiscordGuildUser, 0)
 	after := ""
@@ -257,6 +262,8 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
 }
 
 func (e *Entity) UpdateOneGuildStats(guildID string) error {
+	log := logger.NewLogrusLogger()
+	log.Infof("Starting count stats for . GuildId: %v", guildID)
 	nr_of_members, nr_of_user, nr_of_bots, err := e.CountGuildMembers(guildID)
 	if err != nil {
 		return err
@@ -309,6 +316,7 @@ func (e *Entity) UpdateOneGuildStats(guildID string) error {
 
 func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuildStatChannel) error {
 	log := logger.NewLogrusLogger()
+	log.Infof("Edit stats channel for guild. GuildId: %v", guildID)
 	guildStat, err := e.GetByGuildID(guildID)
 	if err != nil {
 		log.Error(err, "failed to get guild stats from database")
@@ -325,6 +333,8 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 }
 
 func (e *Entity) GetGuildChannel(channelID string) (*discordgo.Channel, error) {
+	log := logger.NewLogrusLogger()
+	log.Infof("Get channel info from discord for guild. ChannelId: %v", channelID)
 	channel, err := e.discord.Channel(channelID)
 	return channel, err
 }

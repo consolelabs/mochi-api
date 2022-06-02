@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
@@ -66,8 +67,10 @@ func (h *Handler) GetGuildStatsHandler(c *gin.Context) {
 }
 
 func (h *Handler) CreateGuildChannel(c *gin.Context) {
+	log := logger.NewLogrusLogger()
 	guildID := c.Param("guild_id")
 	countType := c.Query("count_type")
+	log.Infof("Creating stats channel for counting. GuildId: %v, CountType: %v", guildID, countType)
 	err := h.entities.CreateGuildChannel(guildID, countType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
