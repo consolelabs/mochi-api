@@ -20,8 +20,8 @@ CREATE TABLE "discord_guild_stats" (
     "nr_of_animated_emojis" INTEGER,
 
     "nr_of_stickers" INTEGER,
-    "nr_of_custom_stickers" INTEGER,
-    "nr_of_server_stickers" INTEGER,
+    "nr_of_standard_stickers" INTEGER,
+    "nr_of_guild_stickers" INTEGER,
 
     "nr_of_roles" INTEGER,
     "created_at" timestamp with time zone default now()
