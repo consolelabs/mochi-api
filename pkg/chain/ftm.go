@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -90,6 +91,7 @@ func (ch *FTM) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount
 	if !all && balance < amount {
 		return nil, 0, errors.New("balance is not enough")
 	}
+	fmt.Printf("[FTM | transfer][%s - %s]: amount %v | balance %v\n", fromAcc.Address.Hex(), toAcc.Address.Hex(), amount, balance)
 
 	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
 	privateKey, err := crypto.HexToECDSA(priv)
