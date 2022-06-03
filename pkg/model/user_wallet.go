@@ -9,3 +9,8 @@ type UserWallet struct {
 	ChainType     JSONNullString `json:"chain_type"`
 	CreatedAt     time.Time      `json:"created_at"`
 }
+
+type WalletAddress struct {
+	Address   string         `json:"address"`
+	ChainType JSONNullString `json:"chain_type"`
+}

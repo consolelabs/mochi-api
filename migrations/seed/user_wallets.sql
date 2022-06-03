@@ -1,0 +1,3 @@
+insert into user_wallets(user_discord_id, guild_id, address, chain_type) values
+('427354768654991370', '895659000996200508', '0x3a762D82d9ac91ec3e535769bBE1dAD01a717516', 'evm'),
+('567326528216760320', '895659000996200508', '0x8d565bd9596ac3d1e8662bd5661085b95a5d4f99', 'evm');
