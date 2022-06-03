@@ -209,6 +209,28 @@ func (e *Entity) GetGuildMember(guildID, userID string) (*discordgo.Member, erro
 	return member, nil
 }
 
+func (e *Entity) ListGuildMembers(guildID string) ([]*discordgo.Member, error) {
+
+	var afterID string
+
+	res := make([]*discordgo.Member, 0)
+	for {
+		members, err := e.discord.GuildMembers(guildID, afterID, 100)
+		if err != nil {
+			return nil, err
+		}
+
+		res = append(res, members...)
+
+		if len(members) < 100 {
+			break
+		}
+		afterID = members[len(members)-1].User.ID
+	}
+
+	return res, nil
+}
+
 func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfileResponse, error) {
 	gUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -248,7 +270,7 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 }
 
 func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activityName string) (*response.HandleUserActivityResponse, error) {
-	log := logger.NewLogrusLogger() 
+	log := logger.NewLogrusLogger()
 	userXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		log.Errorf(err, "Failed to get guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
@@ -256,9 +278,9 @@ func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activit
 	}
 
 	err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
-		GuildID: guildID,
-		UserID: userID,
-		EarnedXP: earnedXp,
+		GuildID:      guildID,
+		UserID:       userID,
+		EarnedXP:     earnedXp,
 		ActivityName: activityName,
 	})
 	if err != nil {
@@ -280,4 +302,12 @@ func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activit
 		CurrentLevel: latestUserXP.Level,
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}, nil
+}
+
+func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
+	was, err := e.repo.UserWallet.ListWalletAddresses("evm")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get wallet addresses: %v", err.Error())
+	}
+	return was, nil
 }
