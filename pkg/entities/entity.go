@@ -149,3 +149,16 @@ func (e *Entity) initInviteTrackerCache() error {
 
 	return nil
 }
+
+func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service) *Entity {
+	return &Entity{
+		repo:     repo,
+		store:    store,
+		log:      log,
+		dcwallet: dcwallet,
+		discord:  discord,
+		cache:    cache,
+		svc:      svc,
+		cfg:      cfg,
+	}
+}
