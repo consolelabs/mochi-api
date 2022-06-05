@@ -248,7 +248,7 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 }
 
 func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activityName string) (*response.HandleUserActivityResponse, error) {
-	log := logger.NewLogrusLogger()	
+	log := logger.NewLogrusLogger() 
 	userXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		log.Errorf(err, "Failed to get guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)

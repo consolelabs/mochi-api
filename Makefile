@@ -51,3 +51,13 @@ seed-db:
 	@docker exec -t mochi-postgres sh -c "rm -rf /seed/*"
 	@docker cp migrations/seed mochi-postgres:/
 	@docker exec -t mochi-postgres sh -c "PGPASSWORD=postgres psql -U postgres -d mochi_local -f /seed/seed.sql"
+
+gen-mock:
+	@mockgen -source=./pkg/repo/guild_user_xp/store.go -destination=./pkg/repo/guild_user_xp/mocks/store.go
+	@mockgen -source=./pkg/repo/guild_user_activity_log/store.go -destination=./pkg/repo/guild_user_activity_log/mocks/store.go
+
+setup-githook:
+	@echo Setting up softlink pre-commit hooks
+	@git config core.hooksPath .githooks/
+	@chmod +x .githooks/*
+	@echo - done -
