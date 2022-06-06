@@ -9,10 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"strconv"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"strconv"
 )
 
 var (
@@ -83,7 +84,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 	//support for nft rabby // fukuro- get from backendapi
 	switch symbol {
 	case "rabby", "fukuro":
-		nftsResponse, err = GetNFTDetailFromPodtown(collection.Address, tokenId, symbol)
+		nftsResponse, err = GetNFTDetailFromPodtown(*collection, collection.Address, tokenId, symbol)
 		if err != nil {
 			err = fmt.Errorf("failed to get user NFTS: %v", err)
 			return nil, err
@@ -321,6 +322,7 @@ type NFTTokenResponse struct {
 	ImageContentType  string          `json:"image_content_type"`
 	Rarity            *NFTTokenRarity `json:"rarity"`
 	Attributes        []Attribute     `json:"attributes"`
+	MetadataId        string          `json:"metadata_id"`
 }
 
 type NFTTokenRarity struct {
@@ -330,7 +332,7 @@ type NFTTokenRarity struct {
 	Rarity string `json:"rarity,omitempty"`
 }
 
-func GetNFTDetailFromPodtown(address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
+func GetNFTDetailFromPodtown(collection model.NFTCollection, address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
 	nftsData := &NFTDetailDataResponse{}
 	var r NFTTokenResponse
 	podtown := "https://backend.pod.so/api/v1/nft/%s/items/%s"
@@ -373,6 +375,7 @@ func GetNFTDetailFromPodtown(address, tokenId, symbol string) (*NFTDetailDataRes
 			Image:       r.Image,
 			Rarity:      r.Rarity,
 		},
+		TokenUri: fmt.Sprintf("https://backend.pod.so/api/v1/nft/%s/metadata/%s", strings.ToLower(collection.Symbol), r.MetadataId),
 	}
 	return nftsData, nil
 }
