@@ -55,6 +55,7 @@ seed-db:
 gen-mock:
 	@mockgen -source=./pkg/repo/guild_user_xp/store.go -destination=./pkg/repo/guild_user_xp/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_user_activity_log/store.go -destination=./pkg/repo/guild_user_activity_log/mocks/store.go
+	@mockgen -source=./pkg/repo/invite_histories/store.go -destination=./pkg/repo/invite_histories/mocks/store.go
 
 setup-githook:
 	@echo Setting up softlink pre-commit hooks
