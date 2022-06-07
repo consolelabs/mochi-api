@@ -12,6 +12,8 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
+	mock_config_xp_level "github.com/defipod/mochi/pkg/repo/config_xp_level/mocks"
+	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
 	mock_guild_user_activity_log "github.com/defipod/mochi/pkg/repo/guild_user_activity_log/mocks"
 	mock_guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
@@ -204,6 +206,20 @@ func TestEntity_GetUserProfile(t *testing.T) {
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
 	uXp := mock_guild_user_xp.NewMockStore(ctrl)
+	cXp := mock_config_xp_level.NewMockStore(ctrl)
+	dcG := mock_discord_guilds.NewMockStore(ctrl)
+
+	r.GuildUserXP = uXp
+	r.ConfigXPLevel = cXp
+	r.DiscordGuilds = dcG
+
+	cXpValue := model.ConfigXpLevel{}
+
+	cXp.EXPECT().GetNextLevel(gomock.Any(), gomock.Any()).Return(&cXpValue, nil).AnyTimes()
+
+	dcGValue := model.DiscordGuild{}
+
+	dcG.EXPECT().GetByID("981128899280908299").Return(&dcGValue, nil).AnyTimes()
 
 	userXP := model.GuildUserXP{
 		GuildID: "981128899280908299",
@@ -234,12 +250,12 @@ func TestEntity_GetUserProfile(t *testing.T) {
 			},
 			want: &response.GetUserProfileResponse{
 				ID:           "963641551416881183",
-				CurrentLevel: &model.ConfigXpLevel{},
-				NextLevel:    &model.ConfigXpLevel{},
+				CurrentLevel: &cXpValue,
+				NextLevel:    &cXpValue,
 				GuildXP:      0,
 				NrOfActions:  0,
 				Progress:     1,
-				Guild:        &model.DiscordGuild{},
+				Guild:        &dcGValue,
 			},
 			wantErr: false,
 		},
@@ -282,18 +298,13 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				cfg:      tt.fields.cfg,
 			}
 			got, err := e.GetUserProfile(tt.args.guildID, tt.args.userID)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetUserProfile() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if tt.want != nil {
-				if !reflect.DeepEqual(got.ID, tt.want.ID) {
-					t.Errorf("Entity.GetUserProfile() = %v, want %v", got, tt.want)
-				}
-			} else {
-				if !reflect.DeepEqual(got, tt.want) {
-					t.Errorf("Entity.GetUserProfile() = %v, want %v", got, tt.want)
-				}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetUserProfile() = %v, want %v", got, tt.want)
 			}
 		})
 	}
