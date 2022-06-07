@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -105,28 +104,13 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 			continue
 		}
 
-		signedTx, transferredAmount, txBaseURL, err := e.transfer(fromAcc, toAcc, amountEach, token, nonce, req.All)
+		signedTx, transferredAmount, err := e.transfer(fromAcc, toAcc, amountEach, token, nonce, req.All)
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("error transfer: %v", err))
 			continue
 		}
 		nonce = int(signedTx.Nonce()) + 1
 		transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-
-		_, err = e.repo.DiscordBotTransaction.Create(model.DiscordBotTransaction{
-			TxHash:        signedTx.Hash().Hex(),
-			FromDiscordID: req.Sender,
-			ToDiscordID:   toUser.ID,
-			GuildID:       req.GuildID,
-			ChannelID:     req.ChannelID,
-			Amount:        transferredAmount,
-			TokenID:       token.ID,
-			Type:          "TRANSFER",
-		})
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error create tx: %v", err))
-			continue
-		}
 
 		gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
 		if err != nil {
@@ -161,7 +145,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 			Amount:         transferredAmount,
 			Cryptocurrency: req.Cryptocurrency,
 			TxHash:         signedTx.Hash().Hex(),
-			TxUrl:          fmt.Sprintf("%s/%s", txBaseURL, signedTx.Hash().Hex()),
+			TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
 			TransactionFee: transactionFee,
 		})
 	}
@@ -195,27 +179,12 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		return
 	}
 
-	signedTx, transferredAmount, txBaseURL, err := e.transfer(fromAccount,
+	signedTx, transferredAmount, err := e.transfer(fromAccount,
 		accounts.Account{Address: common.HexToAddress(req.Recipients[0])},
 		req.Amount,
 		token, -1, req.All)
 	if err != nil {
 		err = fmt.Errorf("error transfer: %v", err)
-		return
-	}
-
-	_, err = e.repo.DiscordBotTransaction.Create(model.DiscordBotTransaction{
-		TxHash:        signedTx.Hash().Hex(),
-		FromDiscordID: req.Sender,
-		ToAddress:     req.Recipients[0],
-		GuildID:       req.GuildID,
-		ChannelID:     req.ChannelID,
-		Amount:        transferredAmount,
-		TokenID:       token.ID,
-		Type:          "WITHDRAW",
-	})
-	if err != nil {
-		err = fmt.Errorf("error create tx: %v", err)
 		return
 	}
 
@@ -253,7 +222,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		Amount:           transferredAmount,
 		Cryptocurrency:   req.Cryptocurrency,
 		TxHash:           signedTx.Hash().Hex(),
-		TxURL:            fmt.Sprintf("%s/%s", txBaseURL, signedTx.Hash().Hex()),
+		TxURL:            fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
 		WithdrawalAmount: withdrawalAmount,
 		TransactionFee:   transactionFee,
 	}
@@ -263,15 +232,8 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
 	balances := make(map[string]float64, 0)
 	for _, token := range tokens {
-		var chain chain.Chain
-		switch token.ChainID {
-		case 250: // ftm
-			chain = e.dcwallet.FTM()
-		case 1: // ethereum
-			chain = e.dcwallet.Ethereum()
-		case 56: // BSC
-			chain = e.dcwallet.BSC()
-		default:
+		chain := e.dcwallet.Chain(token.ChainID)
+		if chain == nil {
 			return nil, errors.New("cryptocurrency not supported")
 		}
 
@@ -290,61 +252,25 @@ func (e *Entity) balances(address string, tokens []model.Token) (map[string]floa
 	return balances, nil
 }
 
-func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, string, error) {
-	var (
-		signedTx  *types.Transaction
-		txBaseURL string
-		err       error
+func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+	chain := e.dcwallet.Chain(token.ChainID)
+	if chain == nil {
+		return nil, 0, errors.New("cryptocurrency not supported")
+	}
+	signedTx, amount, err := chain.Transfer(
+		fromAccount,
+		toAccount,
+		amount,
+		token,
+		nonce,
+		all,
 	)
-
-	switch token.ChainID {
-	case 1: // ethereum
-		signedTx, amount, err = e.dcwallet.Ethereum().Transfer(
-			fromAccount,
-			toAccount,
-			amount,
-			token,
-			nonce,
-			all,
-		)
-		if err != nil {
-			err = fmt.Errorf("error transfer: %v", err)
-			return nil, 0, "", err
-		}
-		txBaseURL = "https://etherscan.io/tx"
-	case 56: // BSC
-		signedTx, amount, err = e.dcwallet.BSC().Transfer(
-			fromAccount,
-			toAccount,
-			amount,
-			token,
-			nonce,
-			all,
-		)
-		if err != nil {
-			err = fmt.Errorf("error transfer: %v", err)
-			return nil, 0, "", err
-		}
-		txBaseURL = "https://bscscan.com/tx"
-	case 250: // ftm
-		signedTx, amount, err = e.dcwallet.FTM().Transfer(
-			fromAccount,
-			toAccount,
-			amount,
-			token,
-			nonce,
-			all,
-		)
-		if err != nil {
-			err = fmt.Errorf("error transfer: %v", err)
-			return nil, 0, "", err
-		}
-		txBaseURL = "https://ftmscan.com/tx"
-	default:
-		return nil, 0, "", errors.New("cryptocurrency not supported")
+	if err != nil {
+		err = fmt.Errorf("error transfer: %v", err)
+		return nil, 0, err
 	}
 
-	return signedTx, amount, txBaseURL, nil
+	return signedTx, amount, nil
 }
 
 func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.UserBalancesResponse, error) {

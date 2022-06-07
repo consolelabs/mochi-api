@@ -1,7 +1,5 @@
 package model
 
-type TokenType string
-
 type Token struct {
 	ID                  int    `json:"id"`
 	Address             string `json:"address"`
@@ -12,4 +10,6 @@ type Token struct {
 	CoinGeckoID         string `json:"coin_gecko_id"`
 	Name                string `json:"name"`
 	GuildDefault        bool   `json:"guild_default"`
+	IsNative            bool   `json:"is_native"`
+	Chain               *Chain `json:"chain" gorm:"foreignKey:ChainID"`
 }
