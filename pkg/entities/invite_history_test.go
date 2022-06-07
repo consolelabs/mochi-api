@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -89,6 +90,51 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "Case user inviter not exits in server",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				request.CreateInviteHistoryRequest{
+					GuildID: "980100825579917343",
+					Inviter: "abc",
+					Invitee: "959993808970461205",
+					Type:    "normal",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Case user invitee not exits in server",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				request.CreateInviteHistoryRequest{
+					GuildID: "980100825579917343",
+					Inviter: "959993808970461205",
+					Invitee: "abc",
+					Type:    "normal",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "Case guildID not exits in server",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				request.CreateInviteHistoryRequest{
+					GuildID: "abc",
+					Inviter: "959993808970461205",
+					Invitee: "382540937517334538",
+					Type:    "normal",
+				},
+			},
+			wantErr: true,
+		},
 	}
 
 	inviteHistoriesParam := model.InviteHistory{
@@ -98,8 +144,38 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 		Type:      "normal",
 	}
 
-	//case success
+	inviteHistoriesFail1Param := model.InviteHistory{
+		GuildID:   "980100825579917343",
+		UserID:    "959993808970461205",
+		InvitedBy: "abc",
+		Type:      "normal",
+	}
+
+	inviteHistoriesFail2Param := model.InviteHistory{
+		GuildID:   "980100825579917343",
+		UserID:    "abc",
+		InvitedBy: "959993808970461205",
+		Type:      "normal",
+	}
+
+	inviteHistoriesFail3Param := model.InviteHistory{
+		GuildID:   "abc",
+		UserID:    "382540937517334538",
+		InvitedBy: "959993808970461205",
+		Type:      "normal",
+	}
+
+	// case success
 	uInv.EXPECT().Create(&inviteHistoriesParam).Return(nil).AnyTimes()
+
+	// case cannot find user inviter
+	uInv.EXPECT().Create(&inviteHistoriesFail1Param).Return(errors.New("Error cannot find user in server")).AnyTimes()
+
+	// case cannot find user invitee
+	uInv.EXPECT().Create(&inviteHistoriesFail2Param).Return(errors.New("Error cannot find user in server")).AnyTimes()
+
+	// case cannot find discord
+	uInv.EXPECT().Create(&inviteHistoriesFail3Param).Return(errors.New("Error cannot find discord")).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
