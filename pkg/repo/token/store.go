@@ -7,4 +7,5 @@ type Store interface {
 	GetAllSupported() ([]model.Token, error)
 	GetByAddress(address string, chainID int) (*model.Token, error)
 	GetDefaultTokens() ([]model.Token, error)
+	UpsertOne(token model.Token) error
 }
