@@ -5,8 +5,8 @@ import (
 
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
+	"github.com/defipod/mochi/pkg/repo/chain"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
-	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -44,7 +44,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildUsers:                           guildusers.NewPG(db),
 		GuildCustomCommand:                   guildcustomcommand.NewPG(db),
 		Token:                                token.NewPG(db),
-		DiscordBotTransaction:                discordbottransaction.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
@@ -63,5 +62,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildUserActivityLog:                 guilduseractivitylog.NewPG(db),
 		GuildUserXP:                          guilduserxp.NewPG(db),
 		GuildConfigLevelRole:                 guildconfiglevelrole.NewPG(db),
+		Chain:                                chain.NewPG(db),
 	}
 }

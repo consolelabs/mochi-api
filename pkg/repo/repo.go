@@ -2,8 +2,8 @@ package repo
 
 import (
 	"github.com/defipod/mochi/pkg/repo/activity"
+	"github.com/defipod/mochi/pkg/repo/chain"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
-	discordbottransaction "github.com/defipod/mochi/pkg/repo/discord_bot_transaction"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -42,7 +42,6 @@ type Repo struct {
 	GuildUsers                           guildusers.Store
 	GuildCustomCommand                   guildcustomcommand.Store
 	Token                                token.Store
-	DiscordBotTransaction                discordbottransaction.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
@@ -58,4 +57,5 @@ type Repo struct {
 	GuildUserActivityLog                 guilduseractivitylog.Store
 	GuildUserXP                          guilduserxp.Store
 	GuildConfigLevelRole                 guildconfiglevelrole.Store
+	Chain                                chain.Store
 }
