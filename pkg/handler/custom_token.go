@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) UpsertGuildCustomTokenConfig(c *gin.Context) {
+func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	var req request.UpsertCustomTokenConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -23,6 +23,22 @@ func (h *Handler) UpsertGuildCustomTokenConfig(c *gin.Context) {
 		return
 	}
 
+	// add to token schemas
+	if err := h.entities.UpsertCustomToken(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get the Index of the row which has currently been added
+	token, err := h.entities.GetTokenBySymbol(req.Symbol, true)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	req.Id = token
+
+	// add to custom token config
 	if err := h.entities.UpsertGuildCustomTokenConfig(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

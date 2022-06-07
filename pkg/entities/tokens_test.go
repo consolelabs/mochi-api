@@ -19,6 +19,118 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
+func TestEntity_UpsertCustomToken(t *testing.T) {
+	type fields struct {
+		repo     *repo.Repo
+		store    repo.Store
+		log      logger.Logger
+		dcwallet discordwallet.IDiscordWallet
+		discord  *discordgo.Session
+		cache    cache.Cache
+		svc      *service.Service
+		cfg      config.Config
+	}
+
+	type args struct {
+		req request.UpsertCustomTokenConfigRequest
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "https://rpc.ftm.tools",
+		FantomScan:              "https://api.ftmscan.com/api?",
+		FantomScanAPIKey:        "XEKSVDF5VWQDY5VY6ZNT6AK9QPQRH483EF",
+
+		EthereumRPC:        "https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114",
+		EthereumScan:       "https://api.etherscan.io/api?",
+		EthereumScanAPIKey: "SM5BHYSNIRZ1HEWJ1JPHVTMJS95HRA6DQF",
+
+		BscRPC:        "https://bsc-dataseed.binance.org",
+		BscScan:       "https://api.bscscan.com/api?",
+		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
+
+		DiscordToken: "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	uToken := mock_token.NewMockStore(ctrl)
+
+	r.Token = uToken
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Create invite successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				request.UpsertCustomTokenConfigRequest{
+					Address:             "",
+					Symbol:              "1233454532n",
+					ChainID:             12354,
+					Decimals:            10,
+					DiscordBotSupported: true,
+					CoinGeckoID:         "1234125",
+					Name:                "nminhdai",
+					GuildDefault:        false,
+					GuildID:             "980100825579917343",
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	tokenParam := model.Token{
+		Address:             "",
+		Symbol:              "1233454532n",
+		ChainID:             12354,
+		Decimals:            10,
+		DiscordBotSupported: true,
+		CoinGeckoID:         "1234125",
+		Name:                "NMINHDAI",
+		GuildDefault:        false,
+	}
+
+	uToken.EXPECT().UpsertOne(tokenParam).Return(nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:     tt.fields.repo,
+				store:    tt.fields.store,
+				log:      tt.fields.log,
+				dcwallet: tt.fields.dcwallet,
+				discord:  tt.fields.discord,
+				cache:    tt.fields.cache,
+				svc:      tt.fields.svc,
+				cfg:      tt.fields.cfg,
+			}
+			if err := e.UpsertCustomToken(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.UpsertCustomToken() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 	type fields struct {
 		repo     *repo.Repo
@@ -68,7 +180,10 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 
 	uToken := mock_token.NewMockStore(ctrl)
 	uGuildConfigToken := mock_guild_config_token.NewMockStore(ctrl)
+
 	r.Token = uToken
+	r.GuildConfigToken = uGuildConfigToken
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -83,13 +198,12 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 			},
 			args: args{
 				request.UpsertCustomTokenConfigRequest{
-					Id:                  10,
 					Address:             "",
-					Symbol:              "12",
-					ChainID:             1234,
+					Symbol:              "1233454532n",
+					ChainID:             12354,
 					Decimals:            10,
 					DiscordBotSupported: true,
-					CoinGeckoID:         "1234",
+					CoinGeckoID:         "1234125",
 					Name:                "nminhdai",
 					GuildDefault:        false,
 					GuildID:             "980100825579917343",
@@ -100,25 +214,25 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 	}
 
 	tokenParam := model.Token{
-		ID:                  10,
+		ID:                  0,
 		Address:             "",
-		Symbol:              "12",
-		ChainID:             1234,
+		Symbol:              "1233454532n",
+		ChainID:             12354,
 		Decimals:            10,
 		DiscordBotSupported: true,
-		CoinGeckoID:         "1234",
+		CoinGeckoID:         "1234125",
 		Name:                "NMINHDAI",
 		GuildDefault:        false,
 	}
 
+	uToken.EXPECT().GetBySymbol("1233454532n", true).Return(tokenParam, nil).AnyTimes()
 	guildConfigTokenParam := model.GuildConfigToken{
 		GuildID: "980100825579917343",
-		TokenID: 10,
-		Active:  true,
+		TokenID: tokenParam.ID,
+		Active:  false,
 	}
 
-	uToken.EXPECT().UpsertOne(tokenParam).Return(nil).AnyTimes()
-	uGuildConfigToken.EXPECT().UpsertMany(guildConfigTokenParam).Return(nil).AnyTimes()
+	uGuildConfigToken.EXPECT().UpsertOne(guildConfigTokenParam).Return(nil).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
