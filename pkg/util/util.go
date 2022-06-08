@@ -519,3 +519,18 @@ func FetchData(url string, parseForm interface{}) (int, error) {
 
 	return statusCode, json.Unmarshal(b, parseForm)
 }
+func GetMaxFloat64(arr []float64) float64 {
+	max := arr[0]
+	for _, ele := range arr {
+		if ele > max {
+			max = ele
+		}
+	}
+
+	return RoundFloat(max, 2)
+}
+
+func RoundFloat(val float64, precision uint) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(val*ratio) / ratio
+}
