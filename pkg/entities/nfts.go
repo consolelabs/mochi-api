@@ -413,8 +413,8 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 	}
 
 	var balanceOf func(string) (int, error)
-	switch config.ERCFormat {
-	case "721":
+	switch strings.ToLower(config.ERCFormat) {
+	case "721", "erc721":
 		contract721, err := erc721.NewErc721(common.HexToAddress(config.Address), client)
 		if err != nil {
 			return nil, fmt.Errorf("failed to init erc721 contract: %v", err.Error())
@@ -428,7 +428,7 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 			return int(b.Int64()), nil
 		}
 
-	case "1155":
+	case "1155", "erc1155":
 		contract1155, err := erc1155.NewErc1155(common.HexToAddress(config.Address), client)
 		if err != nil {
 			return nil, fmt.Errorf("failed to init erc1155 contract: %v", err.Error())
