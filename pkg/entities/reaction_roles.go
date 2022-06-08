@@ -99,10 +99,14 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 		return nil, err
 	}
 
-	// Check if role exists
 	if IsRoleAlreadyExist(roles, req.RoleID) {
 		return nil, errors.New("role exists")
 	}
+
+	if IsEmojiAlreadyExist(roles, req.Reaction) {
+		return nil, errors.New("reaction exists")
+	}
+
 	roles = append(roles, response.Role{
 		ID:       req.RoleID,
 		Reaction: req.Reaction,
@@ -166,6 +170,16 @@ func IsRoleAlreadyExist(roles []response.Role, roleID string) bool {
 	existed := false
 	for _, r := range roles {
 		if r.ID == roleID {
+			existed = true
+		}
+	}
+	return existed
+}
+
+func IsEmojiAlreadyExist(roles []response.Role, reaction string) bool {
+	existed := false
+	for _, r := range roles {
+		if r.Reaction == reaction {
 			existed = true
 		}
 	}
