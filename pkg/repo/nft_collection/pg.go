@@ -1,9 +1,10 @@
 package nftcollection
 
 import (
+	"strings"
+
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type pg struct {
@@ -34,6 +35,35 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
+func (pg *pg) GetByID(id string) (*model.NFTCollection, error) {
+	var collection model.NFTCollection
+	return &collection, pg.db.Table("nft_collections").Where("id = ?", id).First(&collection).Error
+}
+
 func (pg *pg) Create(collection model.NFTCollection) (*model.NFTCollection, error) {
 	return &collection, pg.db.Table("nft_collections").Create(&collection).Error
+}
+
+func (pg *pg) ListAll() ([]model.NFTCollection, error) {
+	var collections []model.NFTCollection
+	return collections, pg.db.Table("nft_collections").Find(&collections).Error
+}
+
+func (pg *pg) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
+	var configs []model.NFTCollectionConfig
+	return configs, pg.db.
+		Table("nft_collections").
+		Select("nft_collections.*, token_id").
+		Joins("left join guild_config_nft_roles on guild_config_nft_roles.nft_collection_id = nft_collections.id").
+		Where("not (erc_format = '1155' and token_id is null)").
+		Group("nft_collections.id, token_id").
+		Find(&configs).Error
+}
+
+func (pg *pg) ListByGuildID(guildID string) ([]model.NFTCollection, error) {
+	var collections []model.NFTCollection
+	return collections, pg.db.Table("nft_collections").
+		Joins("left join guild_config_nft_roles on guild_config_nft_roles.nft_collection_id = nft_collections.id").
+		Where("guild_id = ?", guildID).
+		Find(&collections).Error
 }
