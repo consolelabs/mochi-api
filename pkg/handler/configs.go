@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) GetGmConfig(c *gin.Context) {
@@ -155,6 +156,89 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	}
 
 	if err := h.entities.RemoveGuildLevelRoleConfig(guildID, levelNr); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	roles, err := h.entities.ListGuildNFTRoles(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": roles})
+}
+
+func (h *Handler) NewGuildNFTRole(c *gin.Context) {
+	var req request.ConfigNFTRoleRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	newRole, err := h.entities.NewGuildNFTRoleConfig(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "OK", "data": newRole})
+}
+
+func (h *Handler) EditGuildNFTRole(c *gin.Context) {
+
+	var req request.ConfigNFTRoleRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("config_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid config_id"})
+		return
+	}
+
+	req.ID = uuid.NullUUID{UUID: id, Valid: true}
+
+	config, err := h.entities.EditGuildNFTRoleConfig(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+}
+
+func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
+
+	configID := c.Param("config_id")
+	if configID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "config_id is required"})
+		return
+	}
+
+	if err := h.entities.RemoveGuildNFTRoleConfig(configID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

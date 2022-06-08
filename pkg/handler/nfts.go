@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) GetNFTDetail(c *gin.Context) {
@@ -39,4 +40,14 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 
 func (h *Handler) GetSupportedChains(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": []string{"eth", "heco", "bsc", "matic", "op", "btt", "okt", "movr", "celo", "metis", "cro", "xdai", "boba", "ftm", "avax", "arb", "aurora"}})
+}
+
+func (h *Handler) ListAllNFTCollections(c *gin.Context) {
+	nfts, err := h.entities.ListAllNFTCollections()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }

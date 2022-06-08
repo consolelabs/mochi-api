@@ -101,6 +101,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			levelRoleGroup.GET("/:guild_id", h.GetLevelRoleConfigs)
 			levelRoleGroup.DELETE("/:guild_id", h.RemoveLevelRoleConfig)
 		}
+		nftRoleGroup := configGroup.Group("/nft-roles")
+		{
+			nftRoleGroup.GET("", h.ListGuildNFTRoles)
+			nftRoleGroup.POST("", h.NewGuildNFTRole)
+			nftRoleGroup.PUT("/:config_id", h.EditGuildNFTRole)
+			nftRoleGroup.DELETE("/:config_id", h.RemoveGuildNFTRole)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
@@ -146,6 +153,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	}
 	nftsGroup := v1.Group("/nfts")
 	{
+		nftsGroup.GET("", h.ListAllNFTCollections)
 		nftsGroup.GET("/:symbol/:id", h.GetNFTDetail)
 		nftsGroup.GET("/supported-chains", h.GetSupportedChains)
 		nftsGroup.POST("/collection", h.CreateNFTCollection)

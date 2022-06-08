@@ -12,17 +12,14 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
-	mock_config_xp_level "github.com/defipod/mochi/pkg/repo/config_xp_level/mocks"
 	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
-	mock_guild_user_activity_log "github.com/defipod/mochi/pkg/repo/guild_user_activity_log/mocks"
-	mock_guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/golang/mock/gomock"
 )
 
-func TestEntity_SendGiftXp(t *testing.T) {
+func TestEntity_GetGuild(t *testing.T) {
 	type fields struct {
 		repo     *repo.Repo
 		store    repo.Store
@@ -34,10 +31,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 		cfg      config.Config
 	}
 	type args struct {
-		guildID      string
-		userID       string
-		earnedXp     int
-		activityName string
+		guildID string
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -69,73 +63,54 @@ func TestEntity_SendGiftXp(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
-	uXp := mock_guild_user_xp.NewMockStore(ctrl)
-	uLog := mock_guild_user_activity_log.NewMockStore(ctrl)
+	dGuilds := mock_discord_guilds.NewMockStore(ctrl)
+	r.DiscordGuilds = dGuilds
 
-	r.GuildUserXP = uXp
-	r.GuildUserActivityLog = uLog
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    *response.HandleUserActivityResponse
+		want    *response.GetGuildResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
-			name: "test gift xp successfully",
+			name: "test get guils succesfully",
 			fields: fields{
 				repo: r,
 			},
 			args: args{
-				guildID:      "552427722551459840",
-				userID:       "973069332034752522",
-				earnedXp:     10,
-				activityName: "gifted",
+				guildID: "981128899280908299",
 			},
-			want: &response.HandleUserActivityResponse{
-				GuildID:      "552427722551459840",
-				UserID:       "973069332034752522",
-				Action:       "gifted",
-				CurrentXP:    20,
-				CurrentLevel: 0,
-				LevelUp:      false,
+			want: &response.GetGuildResponse{
+				ID:        "981128899280908299",
+				Name:      "a",
+				BotScopes: model.JSONArrayString{"*"},
+				GlobalXP:  false,
 			},
 			wantErr: false,
 		},
 		{
-			name: "case user not exist in server, cannot gift xp to this user",
+			name: "case guildId not exists, cannot find",
 			fields: fields{
 				repo: r,
 			},
 			args: args{
-				guildID:      "abc",
-				userID:       "abc",
-				earnedXp:     10,
-				activityName: "gifted",
+				guildID: "abc",
 			},
 			want:    nil,
 			wantErr: true,
 		},
 	}
-	guildUserXpParam := model.GuildUserXP{
-		GuildID: "552427722551459840",
-		UserID:  "973069332034752522",
-		TotalXP: 20,
-		Level:   0,
-	}
-	guildUserActivityLog := model.GuildUserActivityLog{
-		GuildID:      "552427722551459840",
-		UserID:       "973069332034752522",
-		EarnedXP:     10,
-		ActivityName: "gifted",
+
+	discordGuild := model.DiscordGuild{
+		ID:        "981128899280908299",
+		Name:      "a",
+		BotScopes: model.JSONArrayString{"*"},
+		GlobalXP:  false,
 	}
 
-	// case sucess send gift xp
-	uXp.EXPECT().GetOne("552427722551459840", "973069332034752522").Return(&guildUserXpParam, nil).AnyTimes()
-	uLog.EXPECT().CreateOne(guildUserActivityLog).Return(nil).AnyTimes()
-	// case cannot find user, user not exist in server discord
-	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("Error cannot find user in server")).AnyTimes()
+	dGuilds.EXPECT().GetByID("981128899280908299").Return(&discordGuild, nil).AnyTimes()
+	dGuilds.EXPECT().GetByID("abc").Return(nil, errors.New("cannot find guild id"))
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -149,19 +124,20 @@ func TestEntity_SendGiftXp(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.SendGiftXp(tt.args.guildID, tt.args.userID, tt.args.earnedXp, tt.args.activityName)
+			got, err := e.GetGuild(tt.args.guildID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Entity.SendGiftXp() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Entity.GetGuild() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Entity.SendGiftXp() = %v, want %v", got, tt.want)
+				t.Errorf("Entity.GetGuild() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+
 }
 
-func TestEntity_GetUserProfile(t *testing.T) {
+func TestEntity_GetGuilds(t *testing.T) {
 	type fields struct {
 		repo     *repo.Repo
 		store    repo.Store
@@ -171,10 +147,6 @@ func TestEntity_GetUserProfile(t *testing.T) {
 		cache    cache.Cache
 		svc      *service.Service
 		cfg      config.Config
-	}
-	type args struct {
-		guildID string
-		userID  string
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -198,92 +170,64 @@ func TestEntity_GetUserProfile(t *testing.T) {
 		BscRPC:        "https://bsc-dataseed.binance.org",
 		BscScan:       "https://api.bscscan.com/api?",
 		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
-		DiscordToken:  "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
+
+		DiscordToken: "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
 
 		RedisURL: "redis://localhost:6379/0",
 	}
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
-	uXp := mock_guild_user_xp.NewMockStore(ctrl)
-	cXp := mock_config_xp_level.NewMockStore(ctrl)
-	dcG := mock_discord_guilds.NewMockStore(ctrl)
-
-	r.GuildUserXP = uXp
-	r.ConfigXPLevel = cXp
-	r.DiscordGuilds = dcG
-
-	cXpValue := model.ConfigXpLevel{}
-
-	cXp.EXPECT().GetNextLevel(gomock.Any(), gomock.Any()).Return(&cXpValue, nil).AnyTimes()
-
-	dcGValue := model.DiscordGuild{}
-
-	dcG.EXPECT().GetByID("981128899280908299").Return(&dcGValue, nil).AnyTimes()
-
-	userXP := model.GuildUserXP{
-		GuildID: "981128899280908299",
-		UserID:  "963641551416881183",
-	}
-
-	uXp.EXPECT().GetOne("981128899280908299", "963641551416881183").Return(&userXP, nil).AnyTimes()
-
-	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("cannot find user")).AnyTimes()
-	uXp.EXPECT().GetOne("abc", "963641551416881183").Return(nil, errors.New("cannot find guild")).AnyTimes()
+	dGuilds := mock_discord_guilds.NewMockStore(ctrl)
+	r.DiscordGuilds = dGuilds
 
 	tests := []struct {
 		name    string
 		fields  fields
-		args    args
-		want    *response.GetUserProfileResponse
+		want    *response.GetGuildsResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{
-			name: "test get user profile successfully",
+			name: "test get guils succesfully",
 			fields: fields{
 				repo: r,
 			},
-			args: args{
-				guildID: "981128899280908299",
-				userID:  "963641551416881183",
-			},
-			want: &response.GetUserProfileResponse{
-				ID:           "963641551416881183",
-				CurrentLevel: &cXpValue,
-				NextLevel:    &cXpValue,
-				GuildXP:      0,
-				NrOfActions:  0,
-				Progress:     1,
-				Guild:        &dcGValue,
+			want: &response.GetGuildsResponse{
+				Data: []*response.GetGuildResponse{
+					{
+						ID:        "895659000996200508",
+						Name:      "hnh",
+						BotScopes: model.JSONArrayString{"*"},
+						GlobalXP:  false,
+					},
+					{
+						ID:        "981128899280908299",
+						Name:      "a",
+						BotScopes: model.JSONArrayString{"*"},
+						GlobalXP:  false,
+					},
+				},
 			},
 			wantErr: false,
 		},
+	}
+
+	discordGuildslst := []model.DiscordGuild{
 		{
-			name: "case user not exist in server, cannot gift xp to this user",
-			fields: fields{
-				repo: r,
-			},
-			args: args{
-				guildID: "abc",
-				userID:  "abc",
-			},
-			want:    nil,
-			wantErr: true,
+			ID:        "895659000996200508",
+			Name:      "hnh",
+			BotScopes: model.JSONArrayString{"*"},
+			GlobalXP:  false,
 		},
 		{
-			name: "case guild ID not exist",
-			fields: fields{
-				repo: r,
-			},
-			args: args{
-				guildID: "abc",
-				userID:  "963641551416881183",
-			},
-			want:    nil,
-			wantErr: true,
+			ID:        "981128899280908299",
+			Name:      "a",
+			BotScopes: model.JSONArrayString{"*"},
+			GlobalXP:  false,
 		},
 	}
+
+	dGuilds.EXPECT().Gets().Return(discordGuildslst, nil).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -297,16 +241,14 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.GetUserProfile(tt.args.guildID, tt.args.userID)
-
+			got, err := e.GetGuilds()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Entity.GetUserProfile() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Entity.GetGuilds() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Entity.GetUserProfile() = %v, want %v", got, tt.want)
+				t.Errorf("Entity.GetGuilds() = %v, want %v", got, tt.want)
 			}
 		})
 	}
-
 }
