@@ -212,7 +212,7 @@ func (e *Entity) CountGuildMembers(guildID string) (int, int, int, error) {
 	return nr_of_members, nr_of_user, nr_of_bots, nil
 }
 
-func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
+func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData ...string) error {
 	log := logger.NewLogrusLogger()
 	err := e.UpdateOneGuildStats(guildID)
 	if err != nil {
@@ -226,7 +226,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
 	}
 
 	// create channel count stat
-	channelName := util.CreateChannelName(guildStat, countType)
+	channelName := util.CreateChannelName(guildStat, countType, coinData...)
 	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
 		log.Error(err, "failed to create discord channel")

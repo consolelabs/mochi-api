@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/service/coingecko"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,8 +74,29 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	log := logger.NewLogrusLogger()
 	guildID := c.Param("guild_id")
 	countType := c.Query("count_type")
+	var coinData []string
+	var err error
+
 	log.Infof("Creating stats channel for counting. GuildId: %v, CountType: %v", guildID, countType)
-	err := h.entities.CreateGuildChannel(guildID, countType)
+	if countType == "highest_ticker" {
+		symbol := c.Query("symbol")
+		interval, _ := strconv.Atoi(c.Query("interval"))
+
+		coin := coingecko.NewService()
+		coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
+		data, err, status := coin.GetHistoricalMarketData(&coinRequest)
+
+		highestPrice := util.GetMaxFloat64(data.Prices)
+
+		coinData = append(coinData, symbol)
+		coinData = append(coinData, fmt.Sprintf("%v", interval))
+		coinData = append(coinData, fmt.Sprintf("%v", highestPrice))
+		if err != nil {
+			c.JSON(status, gin.H{"error": err.Error()})
+		}
+	}
+	err = h.entities.CreateGuildChannel(guildID, countType, coinData...)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

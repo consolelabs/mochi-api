@@ -7,7 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 )
 
-func CreateChannelName(guildStat *model.DiscordGuildStat, countType string) string {
+func CreateChannelName(guildStat *model.DiscordGuildStat, countType string, coinData ...string) string {
 	switch countType {
 	case consts.Members:
 		nrOfMembersStr := strconv.Itoa(guildStat.NrOfMembers)
@@ -57,6 +57,11 @@ func CreateChannelName(guildStat *model.DiscordGuildStat, countType string) stri
 	case consts.Roles:
 		nrOfRolesStr := strconv.Itoa(guildStat.NrOfRoles)
 		return "Roles - " + nrOfRolesStr
+	case consts.HighestTicker:
+		symbol := coinData[0]
+		interval := coinData[1]
+		highest := coinData[2]
+		return "Top ticker - " + symbol + " - " + interval + " day - " + highest
 	default:
 		nrOfMembersStr := strconv.Itoa(guildStat.NrOfMembers)
 		return "Members - " + nrOfMembersStr
