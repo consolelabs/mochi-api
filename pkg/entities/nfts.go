@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math/big"
 	"net/http"
 
 	"encoding/json"
@@ -9,10 +10,15 @@ import (
 	"strings"
 	"time"
 
+	"strconv"
+
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/contracts/erc1155"
+	"github.com/defipod/mochi/pkg/contracts/erc721"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"strconv"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 var (
@@ -83,7 +89,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDa
 	//support for nft rabby // fukuro- get from backendapi
 	switch symbol {
 	case "rabby", "fukuro":
-		nftsResponse, err = GetNFTDetailFromPodtown(collection.Address, tokenId, symbol)
+		nftsResponse, err = GetNFTDetailFromPodtown(*collection, collection.Address, tokenId, symbol)
 		if err != nil {
 			err = fmt.Errorf("failed to get user NFTS: %v", err)
 			return nil, err
@@ -321,6 +327,7 @@ type NFTTokenResponse struct {
 	ImageContentType  string          `json:"image_content_type"`
 	Rarity            *NFTTokenRarity `json:"rarity"`
 	Attributes        []Attribute     `json:"attributes"`
+	MetadataId        string          `json:"metadata_id"`
 }
 
 type NFTTokenRarity struct {
@@ -330,7 +337,7 @@ type NFTTokenRarity struct {
 	Rarity string `json:"rarity,omitempty"`
 }
 
-func GetNFTDetailFromPodtown(address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
+func GetNFTDetailFromPodtown(collection model.NFTCollection, address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
 	nftsData := &NFTDetailDataResponse{}
 	var r NFTTokenResponse
 	podtown := "https://backend.pod.so/api/v1/nft/%s/items/%s"
@@ -373,6 +380,82 @@ func GetNFTDetailFromPodtown(address, tokenId, symbol string) (*NFTDetailDataRes
 			Image:       r.Image,
 			Rarity:      r.Rarity,
 		},
+		TokenUri: fmt.Sprintf("https://backend.pod.so/api/v1/nft/%s/metadata/%s", strings.ToLower(collection.Symbol), r.MetadataId),
 	}
 	return nftsData, nil
+}
+
+func (e *Entity) ListAllNFTCollections() ([]model.NFTCollection, error) {
+	return e.repo.NFTCollection.ListAll()
+}
+
+func (e *Entity) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
+	return e.repo.NFTCollection.ListAllNFTCollectionConfigs()
+}
+
+func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(address string) (int, error), error) {
+
+	chainID, err := strconv.Atoi(config.ChainID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert chain id %s to int: %v", config.ChainID, err)
+	}
+
+	chain, err := e.repo.Chain.GetByID(chainID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chain by id %s: %v", config.ChainID, err)
+	}
+
+	client, err := ethclient.Dial(chain.RPC)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
+	}
+
+	var balanceOf func(string) (int, error)
+	switch strings.ToLower(config.ERCFormat) {
+	case "721", "erc721":
+		contract721, err := erc721.NewErc721(common.HexToAddress(config.Address), client)
+		if err != nil {
+			return nil, fmt.Errorf("failed to init erc721 contract: %v", err.Error())
+		}
+
+		balanceOf = func(address string) (int, error) {
+			b, err := contract721.BalanceOf(nil, common.HexToAddress(address))
+			if err != nil {
+				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+			}
+			return int(b.Int64()), nil
+		}
+
+	case "1155", "erc1155":
+		contract1155, err := erc1155.NewErc1155(common.HexToAddress(config.Address), client)
+		if err != nil {
+			return nil, fmt.Errorf("failed to init erc1155 contract: %v", err.Error())
+		}
+
+		tokenID, err := strconv.ParseInt(config.TokenID, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("token id is not valid")
+		}
+
+		balanceOf = func(address string) (int, error) {
+			b, err := contract1155.BalanceOf(nil, common.HexToAddress(address), big.NewInt(tokenID))
+			if err != nil {
+				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+			}
+			return int(b.Int64()), nil
+		}
+
+	default:
+		return nil, fmt.Errorf("erc format %s not supported", config.ERCFormat)
+	}
+
+	return balanceOf, nil
+}
+
+func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
+	err := e.repo.UserNFTBalance.Upsert(balance)
+	if err != nil {
+		return fmt.Errorf("failed to upsert user nft balance: %v", err.Error())
+	}
+	return nil
 }
