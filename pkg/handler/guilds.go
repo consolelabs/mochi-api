@@ -8,7 +8,6 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
 )
@@ -82,9 +81,8 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 		symbol := c.Query("symbol")
 		interval, _ := strconv.Atoi(c.Query("interval"))
 
-		coin := coingecko.NewService()
 		coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
-		data, err, status := coin.GetHistoricalMarketData(&coinRequest)
+		data, err, status := h.entities.GetSvc().CoinGecko.GetHistoricalMarketData(&coinRequest)
 		if err != nil {
 			c.JSON(status, gin.H{"error": err.Error()})
 		}

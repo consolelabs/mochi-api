@@ -101,6 +101,10 @@ func Get() *Entity {
 	return e
 }
 
+func (e *Entity) GetSvc() *service.Service {
+	return e.svc
+}
+
 func Shutdown() error {
 	e.store.Shutdown()
 	return nil
