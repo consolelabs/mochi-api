@@ -100,6 +100,9 @@ func Init(cfg config.Config, log logger.Logger) error {
 func Get() *Entity {
 	return e
 }
+func (e *Entity) GetSvc() *service.Service {
+	return e.svc
+}
 
 func Shutdown() error {
 	e.store.Shutdown()
