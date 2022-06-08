@@ -17,3 +17,8 @@ func (pg *pg) GetAll() ([]model.Chain, error) {
 	var chains []model.Chain
 	return chains, pg.db.Find(&chains).Error
 }
+
+func (pg *pg) GetByID(id int) (model.Chain, error) {
+	var chain model.Chain
+	return chain, pg.db.Where("id = ?", id).First(&chain).Error
+}
