@@ -85,15 +85,16 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 		coin := coingecko.NewService()
 		coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
 		data, err, status := coin.GetHistoricalMarketData(&coinRequest)
+		if err != nil {
+			c.JSON(status, gin.H{"error": err.Error()})
+		}
 
 		highestPrice := util.GetMaxFloat64(data.Prices)
 
 		coinData = append(coinData, symbol)
 		coinData = append(coinData, fmt.Sprintf("%v", interval))
 		coinData = append(coinData, fmt.Sprintf("%v", highestPrice))
-		if err != nil {
-			c.JSON(status, gin.H{"error": err.Error()})
-		}
+
 	}
 	err = h.entities.CreateGuildChannel(guildID, countType, coinData...)
 

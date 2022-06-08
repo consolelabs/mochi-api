@@ -61,7 +61,10 @@ func CreateChannelName(guildStat *model.DiscordGuildStat, countType string, coin
 		symbol := coinData[0]
 		interval := coinData[1]
 		highest := coinData[2]
-		return "Top ticker - " + symbol + " - " + interval + " day - " + highest
+		if i, _ := strconv.Atoi(interval); i == 1 {
+			return "Top ticker - " + symbol + " - " + interval + " day - " + highest
+		}
+		return "Top ticker - " + symbol + " - " + interval + " days - " + highest
 	default:
 		nrOfMembersStr := strconv.Itoa(guildStat.NrOfMembers)
 		return "Members - " + nrOfMembersStr

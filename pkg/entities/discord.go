@@ -225,7 +225,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData .
 		return err
 	}
 
-	// create channel count stat
+	// create channel count stat, coinData is for highest ticker feature
 	channelName := util.CreateChannelName(guildStat, countType, coinData...)
 	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {

@@ -529,6 +529,7 @@ func GetMaxFloat64(arr []float64) float64 {
 	}
 	return RoundFloat(max, 2)
 }
+
 func RoundFloat(val float64, precision uint) float64 {
 	ratio := math.Pow(10, float64(precision))
 	return math.Round(val*ratio) / ratio

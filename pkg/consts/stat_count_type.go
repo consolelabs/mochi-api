@@ -19,8 +19,7 @@ const (
 	Stickers       = "all_stickers"
 	CustomStickers = "custom_stickers"
 	ServerStickers = "server_stickers"
-
-	HighestTicker = "highest_ticker"
+	HighestTicker  = "highest_ticker"
 
 	Roles = "all_roles"
 )
