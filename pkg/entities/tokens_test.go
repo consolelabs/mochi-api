@@ -84,15 +84,20 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 			},
 			args: args{
 				request.UpsertCustomTokenConfigRequest{
-					Address:             "",
-					Symbol:              "1233454532n",
-					ChainID:             12354,
-					Decimals:            10,
+					Id: 0,
+
+					Address:             "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
+					Symbol:              "ftm",
+					ChainID:             250,
+					Decimals:            18,
 					DiscordBotSupported: true,
-					CoinGeckoID:         "1234125",
-					Name:                "nminhdai",
-					GuildDefault:        false,
-					GuildID:             "980100825579917343",
+					CoinGeckoID:         "fantom",
+					Name:                "Fantom",
+
+					GuildID: "980100825579917343",
+
+					GuildDefault: true,
+					Active:       false,
 				},
 			},
 			wantErr: false,
@@ -100,14 +105,14 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 	}
 
 	tokenParam := model.Token{
-		Address:             "",
-		Symbol:              "1233454532n",
-		ChainID:             12354,
-		Decimals:            10,
+		Address:             "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
+		Symbol:              "ftm",
+		ChainID:             250,
+		Decimals:            18,
 		DiscordBotSupported: true,
-		CoinGeckoID:         "1234125",
-		Name:                "NMINHDAI",
-		GuildDefault:        false,
+		CoinGeckoID:         "fantom",
+		Name:                "FANTOM",
+		GuildDefault:        true,
 	}
 
 	uToken.EXPECT().UpsertOne(tokenParam).Return(nil).AnyTimes()
@@ -198,15 +203,19 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 			},
 			args: args{
 				request.UpsertCustomTokenConfigRequest{
-					Address:             "",
-					Symbol:              "1233454532n",
-					ChainID:             12354,
-					Decimals:            10,
+					Id: 0,
+
+					Address:             "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
+					Symbol:              "ftm",
+					ChainID:             0,
+					Decimals:            0,
 					DiscordBotSupported: true,
-					CoinGeckoID:         "1234125",
-					Name:                "nminhdai",
-					GuildDefault:        false,
-					GuildID:             "980100825579917343",
+					CoinGeckoID:         "",
+
+					GuildID:      "980100825579917343",
+					Name:         "",
+					GuildDefault: true,
+					Active:       false,
 				},
 			},
 			wantErr: false,
@@ -214,18 +223,17 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 	}
 
 	tokenParam := model.Token{
-		ID:                  0,
-		Address:             "",
-		Symbol:              "1233454532n",
-		ChainID:             12354,
-		Decimals:            10,
+		Address:             "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
+		Symbol:              "ftm",
+		ChainID:             250,
+		Decimals:            18,
 		DiscordBotSupported: true,
-		CoinGeckoID:         "1234125",
-		Name:                "NMINHDAI",
+		CoinGeckoID:         "fantom",
+		Name:                "Fantom",
 		GuildDefault:        false,
 	}
 
-	uToken.EXPECT().GetBySymbol("1233454532n", true).Return(tokenParam, nil).AnyTimes()
+	uToken.EXPECT().GetBySymbol("ftm", true).Return(tokenParam, nil).AnyTimes()
 	guildConfigTokenParam := model.GuildConfigToken{
 		GuildID: "980100825579917343",
 		TokenID: tokenParam.ID,
