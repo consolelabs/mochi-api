@@ -395,19 +395,17 @@ func (e *Entity) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, err
 
 func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(address string) (int, error), error) {
 
-	var rpcUrl string
-	switch config.ChainID {
-	case "1":
-		rpcUrl = e.cfg.EthereumRPC
-	case "56":
-		rpcUrl = e.cfg.BscRPC
-	case "250":
-		rpcUrl = e.cfg.FantomRPC
-	default:
-		return nil, fmt.Errorf("chain id %s not supported", config.ChainID)
+	chainID, err := strconv.Atoi(config.ChainID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert chain id %s to int: %v", config.ChainID, err)
 	}
 
-	client, err := ethclient.Dial(rpcUrl)
+	chain, err := e.repo.Chain.GetByID(chainID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chain by id %s: %v", config.ChainID, err)
+	}
+
+	client, err := ethclient.Dial(chain.RPC)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
 	}
