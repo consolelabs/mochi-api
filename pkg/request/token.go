@@ -4,6 +4,7 @@ type UpsertCustomTokenConfigRequest struct {
 	Id       int    `json:"id"`
 	Address  string `json:"address"`
 	Symbol   string `json:"symbol"`
+	Chain    string `json:"chain"`
 	ChainID  int    `json:"chain_id" gorm:"default:0"`
 	Decimals int    `json:"decimals" gorm:"default:18"`
 
