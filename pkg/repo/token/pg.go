@@ -3,6 +3,7 @@ package token
 import (
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type pg struct {
@@ -35,4 +36,22 @@ func (pg *pg) GetDefaultTokens() ([]model.Token, error) {
 
 func (pg *pg) CreateOne(record model.Token) error {
 	return pg.db.Create(&record).Error
+}
+
+func (pg *pg) UpsertOne(token model.Token) error {
+
+	tx := pg.db.Begin()
+	err := tx.Clauses(clause.OnConflict{
+		Columns: []clause.Column{
+			{Name: "id"},
+		},
+		UpdateAll: true,
+	}).Create(&token).Error
+
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
 }

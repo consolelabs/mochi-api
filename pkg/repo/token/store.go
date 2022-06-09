@@ -8,4 +8,5 @@ type Store interface {
 	GetByAddress(address string, chainID int) (*model.Token, error)
 	GetDefaultTokens() ([]model.Token, error)
 	CreateOne(token model.Token) error
+	UpsertOne(token model.Token) error
 }

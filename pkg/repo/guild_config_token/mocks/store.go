@@ -76,3 +76,17 @@ func (mr *MockStoreMockRecorder) UpsertMany(configs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertMany", reflect.TypeOf((*MockStore)(nil).UpsertMany), configs)
 }
+
+// UpsertOne mocks base method.
+func (m *MockStore) UpsertOne(configs model.GuildConfigToken) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertOne", configs)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertOne indicates an expected call of UpsertOne.
+func (mr *MockStoreMockRecorder) UpsertOne(configs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), configs)
+}
