@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
@@ -323,7 +324,21 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 		return err
 	}
 
-	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType)
+	channel, err := e.GetGuildChannel(statChannel.ChannelID)
+	coinData := []string{}
+	if channel.Name[:10] == "Top ticker" {
+		channelNameArr := util.SplitAndTrimSpaceString(channel.Name, "-")
+		symbol := channelNameArr[1]
+		interval, _ := strconv.Atoi(util.SplitAndTrimSpaceString(channelNameArr[2], " ")[1]) //get the chars before whitespace and conv to int
+
+		coinData, err = e.GetHighestTicker(symbol, interval)
+		if err != nil {
+			log.Error(err, "cannot update ticker")
+			return err
+		}
+	}
+
+	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType, coinData...)
 	_, err = e.discord.ChannelEdit(statChannel.ChannelID, newChannelName)
 	if err != nil {
 		log.Error(err, "failed to edit channel name")
