@@ -107,7 +107,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 
 	tokenParam := model.Token{
 		Address: "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
-		Symbol:  "ftm",
+		Symbol:  "FTM",
 
 		ChainID:             250,
 		Decimals:            18,
@@ -209,6 +209,7 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 
 					Address:             "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB6",
 					Symbol:              "ftm",
+					Chain:               "ftm",
 					ChainID:             0,
 					Decimals:            0,
 					DiscordBotSupported: true,

@@ -81,7 +81,7 @@ func (e *Entity) GetChainIdBySymbol(symbol string) (int, error) {
 func (e *Entity) UpsertCustomToken(req request.UpsertCustomTokenConfigRequest) error {
 	err := e.repo.Token.UpsertOne(model.Token{
 		Address:             req.Address,
-		Symbol:              req.Symbol,
+		Symbol:              strings.ToUpper(req.Symbol),
 		ChainID:             req.ChainID,
 		Decimals:            req.Decimals,
 		DiscordBotSupported: req.DiscordBotSupported,
