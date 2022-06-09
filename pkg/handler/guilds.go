@@ -1,14 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -81,18 +79,10 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 		symbol := c.Query("symbol")
 		interval, _ := strconv.Atoi(c.Query("interval"))
 
-		coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
-		data, err, status := h.entities.GetSvc().CoinGecko.GetHistoricalMarketData(&coinRequest)
+		coinData, err = h.entities.GetHighestTicker(symbol, interval)
 		if err != nil {
-			c.JSON(status, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
-
-		highestPrice := util.GetMaxFloat64(data.Prices)
-
-		coinData = append(coinData, symbol)
-		coinData = append(coinData, fmt.Sprintf("%v", interval))
-		coinData = append(coinData, fmt.Sprintf("%v", highestPrice))
-
 	}
 	err = h.entities.CreateGuildChannel(guildID, countType, coinData...)
 
