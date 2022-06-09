@@ -34,6 +34,10 @@ func (pg *pg) GetDefaultTokens() ([]model.Token, error) {
 	return tokens, pg.db.Preload("Chain").Where("guild_default = TRUE").Find(&tokens).Error
 }
 
+func (pg *pg) CreateOne(record model.Token) error {
+	return pg.db.Create(&record).Error
+}
+
 func (pg *pg) UpsertOne(token model.Token) error {
 
 	tx := pg.db.Begin()
