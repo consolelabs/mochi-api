@@ -117,7 +117,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 		GuildDefault:        true,
 	}
 
-	uToken.EXPECT().UpsertOne(tokenParam).Return(nil).AnyTimes()
+	uToken.EXPECT().CreateOne(tokenParam).Return(nil).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -131,7 +131,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			if err := e.UpsertCustomToken(tt.args.req); (err != nil) != tt.wantErr {
+			if err := e.CreateCustomToken(tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("Entity.UpsertCustomToken() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -243,7 +243,7 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 		Active:  false,
 	}
 
-	uGuildConfigToken.EXPECT().UpsertOne(guildConfigTokenParam).Return(nil).AnyTimes()
+	uGuildConfigToken.EXPECT().CreateOne(guildConfigTokenParam).Return(nil).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -257,8 +257,8 @@ func TestEntity_UpsertGuildCustomTokenConfig(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			if err := e.UpsertGuildCustomTokenConfig(tt.args.req); (err != nil) != tt.wantErr {
-				t.Errorf("Entity.UpsertGuildCustomTokenConfig() error = %v, wantErr %v", err, tt.wantErr)
+			if err := e.CreateGuildCustomTokenConfig(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.CreateGuildCustomTokenConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

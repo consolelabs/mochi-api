@@ -34,6 +34,20 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// CreateOne mocks base method.
+func (m *MockStore) CreateOne(token model.GuildConfigToken) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOne", token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOne indicates an expected call of CreateOne.
+func (mr *MockStoreMockRecorder) CreateOne(token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), token)
+}
+
 // GetByGuildID mocks base method.
 func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildConfigToken, error) {
 	m.ctrl.T.Helper()
@@ -61,18 +75,4 @@ func (m *MockStore) UpsertMany(configs []model.GuildConfigToken) error {
 func (mr *MockStoreMockRecorder) UpsertMany(configs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertMany", reflect.TypeOf((*MockStore)(nil).UpsertMany), configs)
-}
-
-// UpsertOne mocks base method.
-func (m *MockStore) UpsertOne(configs model.GuildConfigToken) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertOne", configs)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpsertOne indicates an expected call of UpsertOne.
-func (mr *MockStoreMockRecorder) UpsertOne(configs interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), configs)
 }

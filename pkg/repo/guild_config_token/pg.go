@@ -36,19 +36,6 @@ func (pg *pg) UpsertMany(configs []model.GuildConfigToken) error {
 	return tx.Commit().Error
 }
 
-func (pg *pg) UpsertOne(configs model.GuildConfigToken) error {
-
-	tx := pg.db.Begin()
-	err := tx.Clauses(clause.OnConflict{
-		Columns: []clause.Column{{Name: "guild_id"}, {Name: "token_id"}},
-
-		UpdateAll: true,
-	}).Create(&configs).Error
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit().Error
+func (pg *pg) CreateOne(record model.GuildConfigToken) error {
+	return pg.db.Create(&record).Error
 }

@@ -59,7 +59,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.ChainID = chainId
 
 	// add to token schemas
-	if err := h.entities.UpsertCustomToken(req); err != nil {
+	if err := h.entities.CreateCustomToken(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token schema"})
 		return
 	}
@@ -74,7 +74,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.Id = token
 
 	// add to custom token config
-	if err := h.entities.UpsertGuildCustomTokenConfig(req); err != nil {
+	if err := h.entities.CreateGuildCustomTokenConfig(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token config"})
 		return
 	}
