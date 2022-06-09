@@ -27,6 +27,10 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Address is required"})
 		return
 	}
+	if req.Chain == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Chain is required"})
+		return
+	}
 
 	// set default
 	req.Decimals = 18
@@ -44,7 +48,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.CoinGeckoID, req.Name = id, name
 
 	// get the chainID
-	chainId, err := h.entities.GetChainIdBySymbol(req.Symbol)
+	chainId, err := h.entities.GetChainIdBySymbol(req.Chain)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
