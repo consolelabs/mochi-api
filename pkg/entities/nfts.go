@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/contracts/erc1155"
 	"github.com/defipod/mochi/pkg/contracts/erc721"
+	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/ethereum/go-ethereum/common"
@@ -145,6 +146,15 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 	go PutSyncMoralisNFTCollection(strings.ToLower(req.Address), req.Chain, e.cfg)
 
+	chainID, err := strconv.Atoi(req.ChainID)
+	if err != nil {
+		return
+	}
+
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: req.Address,
+		ChainID: chainID,
+	})
 	return
 }
 

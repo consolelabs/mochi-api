@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo/pg"
@@ -47,8 +48,9 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 	s := pg.NewPostgresStore(&cfg)
 	repo := pg.NewRepo(s.DB())
 	l := logger.NewLogrusLogger()
+	indexer := indexer.NewIndexer(cfg, l)
 
-	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil)
+	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer)
 
 	h := Handler{
 		entities: e,
