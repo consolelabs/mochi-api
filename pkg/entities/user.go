@@ -266,6 +266,7 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		NrOfActions:  gUserXP.NrOfActions,
 		Progress:     progress,
 		Guild:        gUserXP.Guild,
+		GuildRank:    gUserXP.GuildRank,
 	}, nil
 }
 
