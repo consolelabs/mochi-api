@@ -78,10 +78,10 @@ func (e *Entity) GetChainIdBySymbol(symbol string) (int, error) {
 	return 0, err
 }
 
-func (e *Entity) UpsertCustomToken(req request.UpsertCustomTokenConfigRequest) error {
-	err := e.repo.Token.UpsertOne(model.Token{
+func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
+	err := e.repo.Token.CreateOne(model.Token{
 		Address:             req.Address,
-		Symbol:              req.Symbol,
+		Symbol:              strings.ToUpper(req.Symbol),
 		ChainID:             req.ChainID,
 		Decimals:            req.Decimals,
 		DiscordBotSupported: req.DiscordBotSupported,
@@ -104,8 +104,8 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	return token.ID, nil
 }
 
-func (e *Entity) UpsertGuildCustomTokenConfig(req request.UpsertCustomTokenConfigRequest) error {
-	err := e.repo.GuildConfigToken.UpsertOne(model.GuildConfigToken{
+func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfigRequest) error {
+	err := e.repo.GuildConfigToken.CreateOne(model.GuildConfigToken{
 		GuildID: req.GuildID,
 		TokenID: req.Id,
 		Active:  req.Active,

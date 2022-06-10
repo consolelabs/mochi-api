@@ -36,6 +36,10 @@ func (pg *pg) UpsertMany(configs []model.GuildConfigToken) error {
 	return tx.Commit().Error
 }
 
+func (pg *pg) CreateOne(record model.GuildConfigToken) error {
+	return pg.db.Create(&record).Error
+}
+
 func (pg *pg) UpsertOne(configs model.GuildConfigToken) error {
 
 	tx := pg.db.Begin()

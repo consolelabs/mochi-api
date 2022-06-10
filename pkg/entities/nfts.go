@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"strconv"
 
 	"encoding/json"
 	"io/ioutil"
 	"strings"
 	"time"
-
-	"strconv"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/contracts/erc1155"
@@ -43,156 +42,25 @@ var (
 	}
 )
 
-type NFTDetailDataResponse struct {
-	TokenAddress string   `json:"token_address"`
-	TokenId      string   `json:"token_id"`
-	ContractType string   `json:"contract_type"`
-	TokenUri     string   `json:"token_uri"`
-	Metadata     Metadata `json:"metadata"`
-	SyncedAt     string   `json:"synced_at"`
-	Amount       string   `json:"amount"`
-	Name         string   `json:"name"`
-	Symbol       string   `json:"symbol"`
-}
-type Metadata struct {
-	Name        string      `json:"name"`
-	Description string      `json:"description"`
-	TokenId     int         `json:"token_id"`
-	Attributes  []Attribute `json:"attributes"`
-	Image       string      `json:"image"`
-	Rarity      interface{} `json:"rarity"`
-}
-
-type Attribute struct {
-	TraitType string `json:"trait_type"`
-	Value     string `json:"value"`
-	Count     int    `json:"count"`
-	Rarity    string `json:"rarity"`
-	Frequency string `json:"frequency"`
-}
-
-func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTDetailDataResponse, err error) {
+func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTTokenResponse, err error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		err = fmt.Errorf("failed to get nft collection : %v", err)
 		return nil, err
 	}
-	chain := ""
-	for k, v := range mapChainChainId {
-		if strings.ToLower(v) == strings.ToLower(collection.ChainID) {
-			chain = k
-		}
-	}
-
-	nfts := &NFTDetailData{}
-	//support for nft rabby // fukuro- get from backendapi
-	switch symbol {
-	case "rabby", "fukuro":
-		nftsResponse, err = GetNFTDetailFromPodtown(*collection, collection.Address, tokenId, symbol)
-		if err != nil {
-			err = fmt.Errorf("failed to get user NFTS: %v", err)
-			return nil, err
-		}
-		return
-	default:
-		nfts, err = GetNFTDetailFromMoralis(strings.ToLower(collection.Address), tokenId, chain, e.cfg)
-		if err != nil {
-			err = fmt.Errorf("failed to get user NFTS: %v", err)
-			return nil, err
-		}
-	}
-
-	if nfts == nil {
-		err = fmt.Errorf("response from debank nil")
-		return nil, err
-	}
-
-	meta := nfts.Metadata
-	if nfts.Metadata == "" && nfts.TokenUri != "" {
-		client := &http.Client{
-			Timeout: time.Second * 60,
-		}
-
-		req, err := http.NewRequest("GET", nfts.TokenUri, nil)
-		if err != nil {
-			return nil, err
-		}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-
-		defer resp.Body.Close()
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		meta = string(body)
-	}
-
-	var metaParse Metadata
-	_ = json.Unmarshal([]byte(meta), &metaParse)
-	nftResponse := NFTDetailDataResponse{
-		TokenAddress: nfts.TokenAddress,
-		TokenId:      nfts.TokenId,
-		ContractType: nfts.ContractType,
-		TokenUri:     nfts.TokenUri,
-		SyncedAt:     nfts.SyncedAt,
-		Amount:       nfts.Amount,
-		Name:         nfts.Name,
-		Symbol:       nfts.Symbol,
-		Metadata:     metaParse,
-	}
-	return &nftResponse, nil
-}
-
-type NFTDetailData struct {
-	TokenAddress string `json:"token_address"`
-	TokenId      string `json:"token_id"`
-	ContractType string `json:"contract_type"`
-	TokenUri     string `json:"token_uri"`
-	Metadata     string `json:"metadata"`
-	SyncedAt     string `json:"synced_at"`
-	Amount       string `json:"amount"`
-	Name         string `json:"name"`
-	Symbol       string `json:"symbol"`
-}
-
-func GetNFTDetailFromMoralis(address, tokenId, chain string, cfg config.Config) (*NFTDetailData, error) {
-	nftsData := &NFTDetailData{}
-	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/%s?chain=%s&format=decimal"
-	client := &http.Client{
-		Timeout: time.Second * 60,
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf(moralisApi, address, tokenId, chain), nil)
+	nftsResponse, err = GetNFTDetailFromIndexer(collection.Address, tokenId)
 	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
-	q := req.URL.Query()
-
-	req.URL.RawQuery = q.Encode()
-	resp, err := client.Do(req)
-	if err != nil {
+		err = fmt.Errorf("failed to get NFT from indexer: %v", err)
 		return nil, err
 	}
 
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(body, &nftsData)
-	if err != nil {
+	if nftsResponse == nil {
+		err = fmt.Errorf("response nfts from indexer nil")
 		return nil, err
 	}
 
-	return nftsData, nil
+	return nftsResponse, nil
 }
 
 type NFTCollectionData struct {
@@ -316,7 +184,7 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 }
 
 type NFTTokenResponse struct {
-	TokenID           uint64          `json:"tokenId"`
+	TokenId           uint64          `json:"token_id"`
 	CollectionAddress string          `json:"collection_address"`
 	Name              string          `json:"name"`
 	Description       string          `json:"description"`
@@ -337,15 +205,23 @@ type NFTTokenRarity struct {
 	Rarity string `json:"rarity,omitempty"`
 }
 
-func GetNFTDetailFromPodtown(collection model.NFTCollection, address, tokenId, symbol string) (*NFTDetailDataResponse, error) {
-	nftsData := &NFTDetailDataResponse{}
-	var r NFTTokenResponse
-	podtown := "https://backend.pod.so/api/v1/nft/%s/items/%s"
+type Attribute struct {
+	TraitType string `json:"trait_type"`
+	Value     string `json:"value"`
+	Count     int    `json:"count"`
+	Rarity    string `json:"rarity"`
+	Frequency string `json:"frequency"`
+}
+
+func GetNFTDetailFromIndexer(address, tokenId string) (*NFTTokenResponse, error) {
+	nftsData := &NFTTokenResponse{}
+	//TODO change to prod
+	indexerAPI := "https://develop-api.indexer.console.so/api/v1/nft/%s/%s"
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf(podtown, address, tokenId), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(indexerAPI, address, tokenId), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -361,26 +237,9 @@ func GetNFTDetailFromPodtown(collection model.NFTCollection, address, tokenId, s
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, &r)
+	err = json.Unmarshal(body, &nftsData)
 	if err != nil {
 		return nil, err
-	}
-	nftsData = &NFTDetailDataResponse{
-		TokenAddress: r.CollectionAddress,
-		TokenId:      strconv.FormatUint(r.TokenID, 10),
-		ContractType: "ERC721",
-		Amount:       strconv.FormatUint(r.Amount, 10),
-		Name:         r.Name,
-		Symbol:       symbol,
-		Metadata: Metadata{
-			Name:        r.Name,
-			Description: r.Description,
-			TokenId:     int(r.TokenID),
-			Attributes:  r.Attributes,
-			Image:       r.Image,
-			Rarity:      r.Rarity,
-		},
-		TokenUri: fmt.Sprintf("https://backend.pod.so/api/v1/nft/%s/metadata/%s", strings.ToLower(collection.Symbol), r.MetadataId),
 	}
 	return nftsData, nil
 }

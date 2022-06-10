@@ -27,6 +27,10 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Address is required"})
 		return
 	}
+	if req.Chain == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Chain is required"})
+		return
+	}
 
 	// set default
 	req.Decimals = 18
@@ -44,7 +48,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.CoinGeckoID, req.Name = id, name
 
 	// get the chainID
-	chainId, err := h.entities.GetChainIdBySymbol(req.Symbol)
+	chainId, err := h.entities.GetChainIdBySymbol(req.Chain)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err,
@@ -55,7 +59,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.ChainID = chainId
 
 	// add to token schemas
-	if err := h.entities.UpsertCustomToken(req); err != nil {
+	if err := h.entities.CreateCustomToken(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token schema"})
 		return
 	}
@@ -70,7 +74,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.Id = token
 
 	// add to custom token config
-	if err := h.entities.UpsertGuildCustomTokenConfig(req); err != nil {
+	if err := h.entities.CreateGuildCustomTokenConfig(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token config"})
 		return
 	}
