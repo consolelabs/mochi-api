@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
+	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
@@ -31,6 +32,7 @@ type Entity struct {
 	cache    cache.Cache
 	svc      *service.Service
 	cfg      config.Config
+	indexer  indexer.Indexer
 }
 
 var e *Entity
@@ -86,6 +88,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		cache:    cache,
 		svc:      service,
 		cfg:      cfg,
+		indexer:  indexer.NewIndexer(cfg, log),
 	}
 
 	if e.discord != nil && e.cache != nil {
@@ -153,7 +156,7 @@ func (e *Entity) initInviteTrackerCache() error {
 	return nil
 }
 
-func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service) *Entity {
+func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Indexer) *Entity {
 	return &Entity{
 		repo:     repo,
 		store:    store,
@@ -163,5 +166,6 @@ func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store
 		cache:    cache,
 		svc:      svc,
 		cfg:      cfg,
+		indexer:  indexer,
 	}
 }
