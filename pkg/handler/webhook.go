@@ -33,6 +33,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		h.handleGuildCreate(c, req.Data)
 	case request.GUILD_MEMBER_UPDATE:
 		h.handleGuildMemberUpdate(c, req.Data)
+	case request.MESSAGE_REACTION_ADD:
+		h.handleMessageReactionAdd(c, req.Data)
 	}
 }
 
@@ -205,4 +207,45 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "OK"})
+}
+
+func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage) {
+	var req request.CreateMessageRepostHistRequest
+
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	conf, err := h.entities.GetGuildRepostReactionConfigByReaction(req.GuildID, req.Reaction)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if req.ReactionCount < conf.Quantity {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "insufficient quantity"})
+		return
+	}
+
+	if repostable := h.entities.IsRepostableMessage(req.GuildID, req.MessageID); !repostable {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "this message is not repostable"})
+		return
+	}
+
+	err = h.entities.CreateRepostMessageHist(req, conf.RepostChannelID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":            "OK",
+		"repost_channel_id": conf.RepostChannelID,
+	})
 }

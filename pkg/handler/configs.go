@@ -245,3 +245,75 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
+
+func (h *Handler) ConfigRepostReaction(c *gin.Context) {
+	var req request.ConfigRepostRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.GuildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+	if req.Emoji == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		return
+	}
+	if req.Quantity < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "quantity is required"})
+		return
+	}
+	if req.RepostChannelID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "repost_channel_id is required"})
+		return
+	}
+
+	if err := h.entities.ConfigRepostReaction(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
+	var req request.ConfigRepostRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.GuildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+	if req.Emoji == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		return
+	}
+
+	if err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
