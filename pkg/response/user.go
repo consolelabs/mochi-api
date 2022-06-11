@@ -47,4 +47,5 @@ type GetUserProfileResponse struct {
 	Progress     float64              `json:"progress"`
 	Guild        *model.DiscordGuild  `json:"guild"`
 	GuildRank    int                  `json:"guild_rank"`
+	UserWallet   *model.UserWallet    `json:"user_wallet"`
 }
