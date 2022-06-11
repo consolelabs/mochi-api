@@ -256,6 +256,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				NrOfActions:  0,
 				Progress:     1,
 				Guild:        &dcGValue,
+				UserWallet:   &model.UserWallet{},
 			},
 			wantErr: false,
 		},
