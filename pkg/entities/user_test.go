@@ -256,6 +256,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				NrOfActions:  0,
 				Progress:     1,
 				Guild:        &dcGValue,
+				UserWallet:   &model.UserWallet{},
 			},
 			wantErr: false,
 		},
@@ -309,4 +310,138 @@ func TestEntity_GetUserProfile(t *testing.T) {
 		})
 	}
 
+}
+
+func TestEntity_GetTopUsers(t *testing.T) {
+	type fields struct {
+		repo     *repo.Repo
+		store    repo.Store
+		log      logger.Logger
+		dcwallet discordwallet.IDiscordWallet
+		discord  *discordgo.Session
+		cache    cache.Cache
+		svc      *service.Service
+		cfg      config.Config
+	}
+
+	type args struct {
+		guildID string
+		userID  string
+		limit   int
+		page    int
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "https://rpc.ftm.tools",
+		FantomScan:              "https://api.ftmscan.com/api?",
+		FantomScanAPIKey:        "XEKSVDF5VWQDY5VY6ZNT6AK9QPQRH483EF",
+
+		EthereumRPC:        "https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114",
+		EthereumScan:       "https://api.etherscan.io/api?",
+		EthereumScanAPIKey: "SM5BHYSNIRZ1HEWJ1JPHVTMJS95HRA6DQF",
+
+		BscRPC:        "https://bsc-dataseed.binance.org",
+		BscScan:       "https://api.bscscan.com/api?",
+		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
+		DiscordToken:  "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	uXp := mock_guild_user_xp.NewMockStore(ctrl)
+	dcG := mock_discord_guilds.NewMockStore(ctrl)
+
+	r.GuildUserXP = uXp
+	r.DiscordGuilds = dcG
+
+	userXP := model.GuildUserXP{
+		GuildID: "981128899280908299",
+		UserID:  "963641551416881183",
+	}
+
+	leaderboard := []model.GuildUserXP{}
+
+	uXp.EXPECT().GetTopUsers(gomock.Any(), gomock.Any(), gomock.Any()).Return(leaderboard, nil).AnyTimes()
+
+	dcGValue := model.DiscordGuild{}
+
+	dcG.EXPECT().GetByID("981128899280908299").Return(&dcGValue, nil).AnyTimes()
+
+	uXp.EXPECT().GetOne("981128899280908299", "963641551416881183").Return(&userXP, nil).AnyTimes()
+
+	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("cannot find user")).AnyTimes()
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *response.GetTopUsersResponse
+		wantErr bool
+	}{
+		{
+			name: "test get successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "981128899280908299",
+				userID:  "963641551416881183",
+				limit:   5,
+				page:    0,
+			},
+			want: &response.GetTopUsersResponse{
+				Author:      &userXP,
+				Leaderboard: leaderboard,
+			},
+			wantErr: false,
+		},
+		{
+			name: "test user does not exist",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "abc",
+				userID:  "abc",
+				limit:   5,
+				page:    0,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:     tt.fields.repo,
+				store:    tt.fields.store,
+				log:      tt.fields.log,
+				dcwallet: tt.fields.dcwallet,
+				discord:  tt.fields.discord,
+				cache:    tt.fields.cache,
+				svc:      tt.fields.svc,
+				cfg:      tt.fields.cfg,
+			}
+			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, tt.args.limit, tt.args.page)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetTopUsers() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetTopUsers() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

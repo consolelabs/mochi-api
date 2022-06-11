@@ -1,6 +1,8 @@
 package response
 
-import "math/big"
+import (
+	"math/big"
+)
 
 type InDiscordWalletWithdrawResponse struct {
 	FromDiscordId    string     `json:"fromDiscordId"`
@@ -52,12 +54,21 @@ type CoinPriceHistoryResponse struct {
 }
 
 type GetCoinResponse struct {
-	ID            string     `json:"id"`
-	Name          string     `json:"name"`
-	Symbol        string     `json:"symbol"`
-	MarketCapRank int        `json:"market_cap_rank"`
-	Image         CoinImage  `json:"image"`
-	MarketData    MarketData `json:"market_data"`
+	ID            string       `json:"id"`
+	Name          string       `json:"name"`
+	Symbol        string       `json:"symbol"`
+	MarketCapRank int          `json:"market_cap_rank"`
+	Image         CoinImage    `json:"image"`
+	MarketData    MarketData   `json:"market_data"`
+	Tickers       []TickerData `json:"tickers"`
+}
+
+type TickerData struct {
+	Base         string  `json:"base"`
+	Target       string  `json:"target"`
+	Last         float32 `json:"last"`
+	CoinID       string  `json:"coin_id"`
+	TargetCoinID string  `json:"target_coin_id"`
 }
 
 type MarketData struct {

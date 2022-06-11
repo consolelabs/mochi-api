@@ -389,3 +389,15 @@ func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 
 	return e.repo.GuildConfigToken.UpsertMany(configs)
 }
+
+func (e *Entity) GetHighestTicker(symbol string, interval int) ([]string, error) {
+	var coinData []string
+	coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
+	data, err, _ := e.svc.CoinGecko.GetHistoricalMarketData(&coinRequest)
+	if err != nil {
+		return coinData, err
+	}
+	highestPrice := util.GetMaxFloat64(data.Prices)
+	coinData = append(coinData, symbol, fmt.Sprintf("%v", interval), fmt.Sprintf("%v", highestPrice))
+	return coinData, nil
+}

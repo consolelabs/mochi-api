@@ -2,14 +2,15 @@ package request
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CreateNFTCollectionRequest struct {
 	Address string `json:"address"`
 	Chain   string `json:"chain"`
-	ChainID string `json:"-"`
+	ChainID string `json:"chain_id"`
 }
 
 func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
@@ -21,33 +22,33 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		err = fmt.Errorf("address is required")
 		return err
 	}
-	if input.Chain == "" {
+	if input.ChainID == "" {
 		err = fmt.Errorf("chain is required")
 		return err
 	}
 	mapChainChainId := map[string]string{
-		"eth":    "1",
-		"heco":   "128",
-		"bsc":    "56",
-		"matic":  "137",
-		"op":     "10",
-		"btt":    "199",
-		"okt":    "66",
-		"movr":   "1285",
-		"celo":   "42220",
-		"metis":  "1088",
-		"cro":    "25",
-		"xdai":   "0x64",
-		"boba":   "288",
-		"ftm":    "250",
-		"avax":   "0xa86a",
-		"arb":    "42161",
-		"aurora": "1313161554",
+		"1":          "eth",
+		"128":        "heco",
+		"56":         "bsc",
+		"137":        "matic",
+		"10":         "op",
+		"199":        "btt",
+		"66":         "okt",
+		"1285":       "movr",
+		"42220":      "celo",
+		"1088":       "metis",
+		"25":         "cro",
+		"0x64":       "xdai",
+		"288":        "boba",
+		"250":        "ftm",
+		"0xa86a":     "avax",
+		"42161":      "arb",
+		"1313161554": "aurora",
 	}
-	if c, exist := mapChainChainId[strings.ToLower(input.Chain)]; exist {
-		input.ChainID = c
+	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
+		input.Chain = c
 	}
-	if input.ChainID == "" {
+	if input.Chain == "" {
 		err = fmt.Errorf("chain is not supported/invalid")
 		return err
 	}

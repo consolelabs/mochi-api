@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
@@ -212,7 +213,7 @@ func (e *Entity) CountGuildMembers(guildID string) (int, int, int, error) {
 	return nr_of_members, nr_of_user, nr_of_bots, nil
 }
 
-func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
+func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData ...string) error {
 	log := logger.NewLogrusLogger()
 	err := e.UpdateOneGuildStats(guildID)
 	if err != nil {
@@ -226,7 +227,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string) error {
 	}
 
 	// create channel count stat
-	channelName := util.CreateChannelName(guildStat, countType)
+	channelName := util.CreateChannelName(guildStat, countType, coinData...)
 	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
 		log.Error(err, "failed to create discord channel")
@@ -323,7 +324,21 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 		return err
 	}
 
-	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType)
+	channel, err := e.GetGuildChannel(statChannel.ChannelID)
+	coinData := []string{}
+	if channel.Name[:10] == "Top ticker" {
+		channelNameArr := util.SplitAndTrimSpaceString(channel.Name, "-")
+		symbol := channelNameArr[1]
+		interval, _ := strconv.Atoi(util.SplitAndTrimSpaceString(channelNameArr[2], " ")[1]) //get the chars before whitespace and conv to int
+
+		coinData, err = e.GetHighestTicker(symbol, interval)
+		if err != nil {
+			log.Error(err, "cannot update ticker")
+			return err
+		}
+	}
+
+	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType, coinData...)
 	_, err = e.discord.ChannelEdit(statChannel.ChannelID, newChannelName)
 	if err != nil {
 		log.Error(err, "failed to edit channel name")

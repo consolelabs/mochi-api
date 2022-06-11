@@ -46,8 +46,6 @@ type Config struct {
 	BscScan       string
 	BscScanAPIKey string
 
-	ProcessorServerHost string
-
 	DiscordToken string
 
 	RedisURL string
@@ -55,6 +53,8 @@ type Config struct {
 	MochiLogChannelID string
 
 	MoralisXApiKey string
+
+	IndexerServerHost string
 }
 
 // GetCORS in config
@@ -114,8 +114,6 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BscScan:       v.GetString("BSC_SCAN"),
 		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
 
-		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
-
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
@@ -124,6 +122,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		MochiLogChannelID: v.GetString("MOCHI_LOG_CHANNEL_ID"),
 
 		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
+
+		IndexerServerHost: v.GetString("INDEXER_SERVER_HOST"),
 	}
 }
 

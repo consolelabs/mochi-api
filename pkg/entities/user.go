@@ -258,6 +258,11 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		}
 	}
 
+	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(userID, guildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
 	return &response.GetUserProfileResponse{
 		ID:           userID,
 		CurrentLevel: currentLevel,
@@ -266,6 +271,8 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		NrOfActions:  gUserXP.NrOfActions,
 		Progress:     progress,
 		Guild:        gUserXP.Guild,
+		GuildRank:    gUserXP.GuildRank,
+		UserWallet:   userWallet,
 	}, nil
 }
 
