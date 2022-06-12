@@ -61,6 +61,9 @@ gen-mock:
 	@mockgen -source=./pkg/repo/config_xp_level/store.go -destination=./pkg/repo/config_xp_level/mocks/store.go
 	@mockgen -source=./pkg/repo/token/store.go -destination=./pkg/repo/token/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_token/store.go -destination=./pkg/repo/guild_config_token/mocks/store.go
+	@mockgen -source=./pkg/repo/discord_guild_stats/store.go -destination=./pkg/repo/discord_guild_stats/mocks/store.go
+	@mockgen -source=./pkg/repo/discord_guild_stat_channels/store.go -destination=./pkg/repo/discord_guild_stat_channels/mocks/store.go
+	
 
 setup-githook:
 	@echo Setting up softlink pre-commit hooks
