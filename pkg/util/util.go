@@ -30,9 +30,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/nfnt/resize"
 
@@ -533,4 +535,13 @@ func GetMaxFloat64(arr []float64) float64 {
 func RoundFloat(val float64, precision uint) float64 {
 	ratio := math.Pow(10, float64(precision))
 	return math.Round(val*ratio) / ratio
+}
+
+func GetNullUUID(id string) uuid.NullUUID {
+	uid, err := uuid.FromBytes([]byte(id))
+	if err != nil {
+		log.Error("uuid invalid")
+	}
+	nullid := uuid.NullUUID{UUID: uid, Valid: true}
+	return nullid
 }
