@@ -35,6 +35,15 @@ func (pg *pg) GetByReaction(guildID string, emoji string) (model.GuildConfigRepo
 	return config, nil
 }
 
+func (pg *pg) GetByRepostChannelID(guildID, channelID string) (model.GuildConfigRepostReaction, error) {
+	var config model.GuildConfigRepostReaction
+	err := pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND repost_channel_id = ?", guildID, channelID).First(&config).Error
+	if err != nil {
+		return config, fmt.Errorf("failed to get message repost history: %w", err)
+	}
+	return config, nil
+}
+
 func (pg *pg) UpsertOne(config model.GuildConfigRepostReaction) error {
 	tx := pg.db.Begin()
 

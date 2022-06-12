@@ -225,16 +225,13 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 
 	conf, err := h.entities.GetGuildRepostReactionConfigByReaction(req.GuildID, req.Reaction)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if req.ReactionCount < conf.Quantity {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "insufficient quantity"})
 		return
 	}
 
-	if repostable := h.entities.IsRepostableMessage(req.GuildID, req.MessageID); !repostable {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "this message is not repostable"})
+	if isRepostable := h.entities.IsRepostableMessage(req); !isRepostable {
 		return
 	}
 

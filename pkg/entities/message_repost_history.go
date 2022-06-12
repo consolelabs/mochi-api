@@ -7,9 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func (e *Entity) IsRepostableMessage(guildID, messageID string) bool {
-	_, err := e.repo.MessageRepostHistory.GetByMessageID(guildID, messageID)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+func (e *Entity) IsRepostableMessage(req request.CreateMessageRepostHistRequest) bool {
+	_, msgErr := e.repo.MessageRepostHistory.GetByMessageID(req.GuildID, req.MessageID)
+	_, channelErr := e.repo.GuildConfigRepostReaction.GetByRepostChannelID(req.GuildID, req.ChannelID)
+	if errors.Is(msgErr, gorm.ErrRecordNotFound) && errors.Is(channelErr, gorm.ErrRecordNotFound) {
 		return true
 	}
 

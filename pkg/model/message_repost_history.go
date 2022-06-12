@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
+	"time"
 )
 
 type MessageRepostHistory struct {
@@ -10,4 +11,5 @@ type MessageRepostHistory struct {
 	OriginMessageID string        `json:"origin_message_id"`
 	OriginChannelID string        `json:"origin_channel_id"`
 	RepostChannelID string        `json:"repost_channel_id"`
+	CreatedAt       *time.Time    `json:"created_at"`
 }
