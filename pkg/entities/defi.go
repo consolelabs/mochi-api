@@ -34,6 +34,19 @@ func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHi
 	return data, nil, http.StatusOK
 }
 
+func (e *Entity) GetMarketData(c *gin.Context) (*response.MarketDataResponse, error, int) {
+	coinID := c.Query("id")
+	currency := c.Query("currency")
+	if coinID == "" {
+		return nil, fmt.Errorf("id is required"), http.StatusBadRequest
+	}
+	if currency == "" {
+		currency = "usd"
+	}
+	data, err, statusCode := e.svc.CoinGecko.GetMarketData(coinID, currency)
+	return data, err, statusCode
+}
+
 func (e *Entity) generateInDiscordWallet(user *model.User) error {
 	if !user.InDiscordWalletAddress.Valid || user.InDiscordWalletAddress.String == "" {
 		inDiscordWalletNumber := e.repo.Users.GetLatestWalletNumber() + 1

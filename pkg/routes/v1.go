@@ -124,6 +124,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
+		defiGroup.GET("/market", h.GetMarketData)
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
 	}

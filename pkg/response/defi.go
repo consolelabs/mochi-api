@@ -34,6 +34,19 @@ type HistoricalMarketChartResponse struct {
 	Prices [][]float64 `json:"prices"`
 }
 
+type MarketDataResponse struct {
+	ID                           string  `json:"id"`
+	Name                         string  `json:"name"`
+	Symbol                       string  `json:"symbol"`
+	CurrentPrice                 float64 `json:"current_price"`
+	MarketCap                    float64 `json:"market_cap"`
+	TotalVolume                  float64 `json:"total_volume"`
+	PriceChange24h               float64 `json:"price_change_24h"`
+	PriceChangePercentage24h     float64 `json:"price_change_percentage_24h"`
+	MarketCapChange24h           float64 `json:"market_cap_change_24h"`
+	MarketCapChangePercentage24h float64 `json:"market_cap_change_percentage_24h"`
+}
+
 type SearchedCoinsListResponse struct {
 	Coins []SearchedCoin `json:"coins"`
 }

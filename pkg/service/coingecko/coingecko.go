@@ -13,6 +13,7 @@ import (
 
 type CoinGecko struct {
 	getMarketChartURL string
+	getMarketDataURL  string
 	searchCoinURL     string
 	getCoinURL        string
 	getPriceURL       string
@@ -21,6 +22,7 @@ type CoinGecko struct {
 func NewService() Service {
 	return &CoinGecko{
 		getMarketChartURL: "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d",
+		getMarketDataURL:  "https://api.coingecko.com/api/v3/coins/markets?vs_currency=%s&ids=%s",
 		searchCoinURL:     "https://api.coingecko.com/api/v3/search?query=%s",
 		getCoinURL:        "https://api.coingecko.com/api/v3/coins/%s",
 		getPriceURL:       "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
@@ -63,6 +65,17 @@ func (c *CoinGecko) GetHistoricalMarketData(req *request.GetMarketChartRequest) 
 	data.To = to
 
 	return data, nil, http.StatusOK
+}
+
+func (c *CoinGecko) GetMarketData(coinID string, currency string) (*response.MarketDataResponse, error, int) {
+	data := []response.MarketDataResponse{}
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getMarketDataURL, currency, coinID), &data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", coinID, err), statusCode
+	}
+
+	coinData := data[0]
+	return &coinData, nil, http.StatusOK
 }
 
 func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, int) {

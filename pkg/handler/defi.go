@@ -18,6 +18,16 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
+func (h *Handler) GetMarketData(c *gin.Context) {
+	data, err, statusCode := h.entities.GetMarketData(c)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": data})
+
+}
+
 func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 	var req request.TransferRequest
 	if err := req.Bind(c); err != nil {
