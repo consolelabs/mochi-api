@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -73,7 +74,9 @@ func (c *CoinGecko) GetMarketData(coinID string, currency string) (*response.Mar
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", coinID, err), statusCode
 	}
-
+	if len(data) == 0 {
+		return nil, errors.New(fmt.Sprintf("cannot find any coin with id: %s", coinID)), http.StatusBadRequest
+	}
 	coinData := data[0]
 	return &coinData, nil, http.StatusOK
 }
