@@ -107,23 +107,3 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 
 	c.JSON(http.StatusBadRequest, gin.H{"message": "Your guild has already added this token."})
 }
-
-func (h *Handler) ListAllCustomToken(c *gin.Context) {
-	returnToken, err := h.entities.ListAllCustomToken()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"supportedToken": returnToken})
-}
-
-func (h *Handler) ListAllChain(c *gin.Context) {
-	returnChain, err := h.entities.ListAllChain()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"supportedChain": returnChain})
-}

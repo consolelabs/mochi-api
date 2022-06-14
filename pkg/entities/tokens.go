@@ -127,23 +127,3 @@ func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfi
 
 	return nil
 }
-
-func (e *Entity) ListAllCustomToken() ([]model.Token, error) {
-	listToken, err := e.repo.Token.GetAll()
-	var returnToken []model.Token
-	if err != nil {
-		return returnToken, err
-	}
-
-	return listToken, nil
-}
-
-func (e *Entity) ListAllChain() ([]model.Chain, error) {
-	listChain, err := e.repo.Chain.GetAll()
-	var returnChain []model.Chain
-	if err != nil {
-		return returnChain, err
-	}
-
-	return listChain, nil
-}
