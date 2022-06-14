@@ -50,7 +50,7 @@ func (e *Entity) GetChainIdBySymbol(symbol string) ([]model.Chain, error) {
 	}
 
 	for i := 0; i < len(listChain); i++ {
-		if strings.ToUpper(symbol) == listChain[i].Name {
+		if strings.ToUpper(symbol) == listChain[i].Currency {
 			returnChain = append(returnChain, listChain[i])
 			return returnChain, nil
 		}
