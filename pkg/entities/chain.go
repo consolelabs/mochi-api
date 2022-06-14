@@ -14,9 +14,9 @@ func (e *Entity) GetChainIdBySymbol(symbol string) (model.Chain, bool, error) {
 		return returnChain, false, err
 	}
 
-	for i := 0; i < len(listChain); i++ {
-		if symbol == strings.ToLower(listChain[i].Currency) {
-			return listChain[i], true, nil
+	for i, chain := range listChain {
+		if strings.ToLower(symbol) == strings.ToLower(listChain[i].Currency) {
+			return chain, true, nil
 		}
 	}
 
