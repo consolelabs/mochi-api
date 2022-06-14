@@ -30,6 +30,8 @@ import (
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	"github.com/defipod/mochi/pkg/repo/token"
+	userbalance "github.com/defipod/mochi/pkg/repo/user_balance"
+	userdefiactivitylog "github.com/defipod/mochi/pkg/repo/user_defi_activity_log"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -71,5 +73,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigNFTRole:                   guildconfignftrole.NewPG(db),
 		UserNFTBalance:                       usernftbalance.NewPG(db),
 		MessageRepostHistory:                 messagereposthistory.NewPG(db),
+		UserDefiActivityLog:                  userdefiactivitylog.NewPG(db),
+		UserBalance:                          userbalance.NewPG(db),
 	}
 }

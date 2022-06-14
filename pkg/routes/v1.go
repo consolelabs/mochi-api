@@ -128,6 +128,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/balances", h.InDiscordWalletBalances)
 		defiGroup.GET("/tokens", h.GetSupportedTokens)
 
+		// web3 v2 APIs
+		defiGroup.POST("/transfer/v2", h.InDiscordWalletTransferVer2)
+		defiGroup.POST("/withdraw/v2", h.InDiscordWalletWithdrawVer2)
+		defiGroup.GET("/balances/v2", h.InDiscordWalletBalancesVer2)
+
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)

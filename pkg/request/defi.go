@@ -13,16 +13,24 @@ type GetMarketChartRequest struct {
 	Days     int    `json:"days"`
 }
 
+type TransferType string
+
+const (
+	TIP      TransferType = "tip"
+	AIRDROP  TransferType = "airdrop"
+	WITHDRAW TransferType = "withdraw"
+)
+
 type TransferRequest struct {
-	Sender         string   `json:"sender"`
-	Recipients     []string `json:"recipients"`
-	GuildID        string   `json:"guildId"`
-	ChannelID      string   `json:"channelId"`
-	Amount         float64  `json:"amount"`
-	Cryptocurrency string   `json:"cryptocurrency"`
-	Each           bool     `json:"each"`
-	All            bool     `json:"all"`
-	TransferType   string   `json:"transferType"`
+	Sender         string       `json:"sender"`
+	Recipients     []string     `json:"recipients"`
+	GuildID        string       `json:"guildId"`
+	ChannelID      string       `json:"channelId"`
+	Amount         float64      `json:"amount"`
+	Cryptocurrency string       `json:"cryptocurrency"`
+	Each           bool         `json:"each"`
+	All            bool         `json:"all"`
+	TransferType   TransferType `json:"transferType"`
 }
 
 func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {

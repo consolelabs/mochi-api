@@ -27,6 +27,8 @@ import (
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	token "github.com/defipod/mochi/pkg/repo/token"
+	userbalance "github.com/defipod/mochi/pkg/repo/user_balance"
+	userdefiactivitylog "github.com/defipod/mochi/pkg/repo/user_defi_activity_log"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	users "github.com/defipod/mochi/pkg/repo/users"
@@ -66,4 +68,6 @@ type Repo struct {
 	GuildConfigNFTRole                   guildconfignftrole.Store
 	UserNFTBalance                       usernftbalance.Store
 	MessageRepostHistory                 messagereposthistory.Store
+	UserDefiActivityLog                  userdefiactivitylog.Store
+	UserBalance                          userbalance.Store
 }

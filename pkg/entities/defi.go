@@ -112,20 +112,10 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		nonce = int(signedTx.Nonce()) + 1
 		transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
-		gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
+		gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, string(req.TransferType))
 		if err != nil {
-			if err != gorm.ErrRecordNotFound {
-				errs = append(errs, fmt.Sprintf("error get activity cfg: %v", err))
-				continue
-			}
-			if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
-				errs = append(errs, fmt.Sprintf("error init default activities: %v", err))
-				continue
-			}
-			if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
-				errs = append(errs, fmt.Sprintf("error get activity cfg 2: %v", err))
-				continue
-			}
+			errs = append(errs, err.Error())
+			continue
 		}
 
 		if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
@@ -188,18 +178,9 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		return
 	}
 
-	gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
+	gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, string(req.TransferType))
 	if err != nil {
-		if err != gorm.ErrRecordNotFound {
-			err = fmt.Errorf("error get activity cfg: %v", err)
-			return
-		}
-		if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
-			return
-		}
-		if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
-			return
-		}
+		return
 	}
 
 	if err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
@@ -400,4 +381,217 @@ func (e *Entity) GetHighestTicker(symbol string, interval int) ([]string, error)
 	highestPrice := util.GetMaxFloat64(data.Prices)
 	coinData = append(coinData, symbol, fmt.Sprintf("%v", interval), fmt.Sprintf("%v", highestPrice))
 	return coinData, nil
+}
+
+func (e *Entity) InDiscordWalletBalancesVer2(guildID, discordID string) (*response.UserBalancesResponse, error) {
+	response := &response.UserBalancesResponse{}
+
+	gTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
+	if err != nil {
+		err = fmt.Errorf("failed to get guild %s tokens - err: %v", guildID, err)
+		return nil, err
+	}
+	if len(gTokens) == 0 {
+		if err = e.InitGuildDefaultTokenConfigs(guildID); err != nil {
+			return nil, err
+		}
+		return e.InDiscordWalletBalancesVer2(guildID, discordID)
+	}
+
+	balances, err := e.repo.UserBalance.GetUserBalances(discordID)
+	if err != nil {
+		return nil, err
+	}
+
+	gTokenMap := make(map[int]*model.Token)
+	for _, gToken := range gTokens {
+		gTokenMap[gToken.TokenID] = gToken.Token
+	}
+
+	response.Balances = make(map[string]float64)
+	for _, b := range balances {
+		if token, ok := gTokenMap[b.TokenID]; ok {
+			response.Balances[token.Symbol] = b.Balance
+		}
+	}
+
+	var coinIDs []string
+	for _, b := range balances {
+		coinIDs = append(coinIDs, b.Token.CoinGeckoID)
+	}
+
+	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(coinIDs, "usd")
+	if err != nil {
+		err = fmt.Errorf("cannot get user balances: %v", err)
+		return nil, err
+	}
+
+	response.BalancesInUSD = make(map[string]float64)
+	for _, b := range balances {
+		token := b.Token
+		response.BalancesInUSD[token.Symbol] = response.Balances[token.Symbol] * tokenPrices[token.CoinGeckoID]
+	}
+
+	return response, nil
+}
+
+func (e *Entity) InDiscordWalletTransferVer2(req request.TransferRequest) ([]response.InDiscordWalletTransferResponse, error) {
+	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
+	if err != nil {
+		return nil, err
+	}
+
+	userBal, err := e.repo.UserBalance.GetOne(req.Sender, token.ID)
+	if err != nil {
+		return nil, err
+	}
+	if req.All {
+		req.Amount = userBal.Balance
+		req.Each = false
+	}
+
+	amountEach := req.Amount / float64(len(req.Recipients))
+	if req.Each {
+		amountEach = req.Amount
+	}
+	totalAmount := amountEach * float64(len(req.Recipients))
+
+	if userBal.Balance < totalAmount || userBal.Balance == 0 {
+		return nil, errors.New("insufficient balance")
+	}
+
+	if err := e.repo.UserDefiActivityLog.CreateTransferLogs(req, token.ID, amountEach, totalAmount); err != nil {
+		return nil, err
+	}
+
+	var res []response.InDiscordWalletTransferResponse
+	for _, recipient := range req.Recipients {
+		res = append(res, response.InDiscordWalletTransferResponse{
+			FromDiscordID:  req.Sender,
+			ToDiscordID:    recipient,
+			Amount:         amountEach,
+			Cryptocurrency: req.Cryptocurrency,
+		})
+
+		if req.GuildID == "" {
+			continue
+		}
+
+		gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, string(req.TransferType))
+		if err != nil {
+			return nil, err
+		}
+
+		if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+			GuildID:      req.GuildID,
+			UserID:       req.Sender,
+			ActivityName: gActivityConfig.Activity.Name,
+			EarnedXP:     gActivityConfig.Activity.XP,
+			CreatedAt:    time.Now(),
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	return res, nil
+}
+
+func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.GuildConfigActivity, error) {
+	gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(guildID, transferType)
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+		if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(guildID); err != nil {
+			return nil, err
+		}
+		if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(guildID, transferType); err != nil {
+			return nil, err
+		}
+	}
+	return gActivityConfig, nil
+}
+
+func (e *Entity) InDiscordWalletWithdrawVer2(req request.TransferRequest) (*response.InDiscordWalletWithdrawResponse, error) {
+	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
+	if err != nil {
+		return nil, fmt.Errorf("error getting token info: %v", err)
+	}
+
+	userBal, err := e.repo.UserBalance.GetOne(req.Sender, token.ID)
+	if err != nil {
+		return nil, err
+	}
+	if !req.All && userBal.Balance < req.Amount {
+		return nil, errors.New("insufficient balance")
+	}
+	if req.All {
+		req.Amount = userBal.Balance
+	}
+
+	fromAccount, err := e.dcwallet.GetAccountByWalletNumber(0)
+	if err != nil {
+		return nil, fmt.Errorf("error getting Mochi fund account: %v", err)
+	}
+
+	signedTx, transferredAmount, err := e.transferVer2(
+		fromAccount, accounts.Account{Address: common.HexToAddress(req.Recipients[0])},
+		req.Amount, token, req.All,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error transfer: %v", err)
+	}
+
+	if err := e.repo.UserDefiActivityLog.CreateTransferLogs(req, token.ID, 0, req.Amount); err != nil {
+		return nil, fmt.Errorf("error creating transfer logs: %v", err)
+	}
+
+	gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, string(req.TransferType))
+	if err != nil {
+		return nil, fmt.Errorf("error getting guild activity config: %v", err)
+	}
+
+	if err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+		GuildID:      req.GuildID,
+		UserID:       req.Sender,
+		ActivityName: gActivityConfig.Activity.Name,
+		EarnedXP:     gActivityConfig.Activity.XP,
+		CreatedAt:    time.Now(),
+	}); err != nil {
+		return nil, fmt.Errorf("error create withdraw activity log: %v", err)
+	}
+
+	withdrawalAmount := util.WeiToEther(signedTx.Value())
+	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
+
+	return &response.InDiscordWalletWithdrawResponse{
+		FromDiscordId:    req.Sender,
+		ToAddress:        req.Recipients[0],
+		Amount:           transferredAmount,
+		Cryptocurrency:   req.Cryptocurrency,
+		TxHash:           signedTx.Hash().Hex(),
+		TxURL:            fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
+		WithdrawalAmount: withdrawalAmount,
+		TransactionFee:   transactionFee,
+	}, nil
+}
+
+func (e *Entity) transferVer2(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, all bool) (*types.Transaction, float64, error) {
+	chain := e.dcwallet.Chain(token.ChainID)
+	if chain == nil {
+		return nil, 0, errors.New("cryptocurrency not supported")
+	}
+	signedTx, amount, err := chain.TransferVer2(
+		fromAccount,
+		toAccount,
+		amount,
+		token,
+		all,
+	)
+	if err != nil {
+		err = fmt.Errorf("error transfer: %v", err)
+		return nil, 0, err
+	}
+
+	return signedTx, amount, nil
 }
