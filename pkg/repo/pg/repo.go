@@ -19,6 +19,7 @@ import (
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
+	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -26,6 +27,7 @@ import (
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	"github.com/defipod/mochi/pkg/repo/token"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -51,6 +53,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
+		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
 		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
@@ -67,5 +70,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Chain:                                chain.NewPG(db),
 		GuildConfigNFTRole:                   guildconfignftrole.NewPG(db),
 		UserNFTBalance:                       usernftbalance.NewPG(db),
+		MessageRepostHistory:                 messagereposthistory.NewPG(db),
 	}
 }
