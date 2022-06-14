@@ -9,4 +9,5 @@ type Store interface {
 	GetDefaultTokens() ([]model.Token, error)
 	CreateOne(token model.Token) error
 	UpsertOne(token model.Token) error
+	GetAll() ([]model.Token, error)
 }
