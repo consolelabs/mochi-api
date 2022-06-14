@@ -63,6 +63,7 @@ gen-mock:
 	@mockgen -source=./pkg/repo/guild_config_token/store.go -destination=./pkg/repo/guild_config_token/mocks/store.go
 	@mockgen -source=./pkg/repo/discord_guild_stats/store.go -destination=./pkg/repo/discord_guild_stats/mocks/store.go
 	@mockgen -source=./pkg/repo/discord_guild_stat_channels/store.go -destination=./pkg/repo/discord_guild_stat_channels/mocks/store.go
+	@mockgen -source=./pkg/repo/chain/store.go -destination=./pkg/repo/chain/mocks/store.go
 
 
 setup-githook:
