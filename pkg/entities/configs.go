@@ -233,3 +233,29 @@ func (e *Entity) GetGuildRepostReactionConfigByReaction(guildID string, reaction
 func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {
 	return e.repo.GuildConfigRepostReaction.DeleteOne(guildID, emoji)
 }
+
+func (e *Entity) ListActivityConfigsByName(activityName string) ([]model.GuildConfigActivity, error) {
+	activities, err := e.repo.GuildConfigActivity.ListByActivity(activityName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list activity configs: %v", err.Error())
+	}
+	return activities, nil
+}
+
+func (e *Entity) ToggleActivityConfig(guildID, activityName string, active bool) error {
+	activity, err := e.repo.Activity.GetByName(activityName)
+	if err != nil {
+		return fmt.Errorf("failed to get activity: %v", err.Error())
+	}
+
+	err = e.repo.GuildConfigActivity.UpsertOne(model.GuildConfigActivity{
+		GuildID:    guildID,
+		ActivityID: activity.ID,
+		Active:     active,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to upsert guild config activity: %v", err.Error())
+	}
+
+	return nil
+}

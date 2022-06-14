@@ -118,6 +118,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.POST("", h.ConfigRepostReaction)
 			repostReactionGroup.DELETE("", h.RemoveRepostReactionConfig)
 		}
+		activitygroup := configGroup.Group("/activities")
+		{
+			activitygroup.POST("/:activity", h.ToggleActivityConfig)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
