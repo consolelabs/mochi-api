@@ -39,3 +39,10 @@ func (cfg ConfigNFTRoleRequest) Validate() error {
 	}
 	return nil
 }
+
+type ConfigRepostRequest struct {
+	GuildID         string `json:"guild_id"`
+	Emoji           string `json:"emoji"`
+	Quantity        int    `json:"quantity"`
+	RepostChannelID string `json:"repost_channel_id"`
+}

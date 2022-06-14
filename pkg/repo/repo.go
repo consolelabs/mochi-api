@@ -16,6 +16,7 @@ import (
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
+	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -23,6 +24,7 @@ import (
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -47,6 +49,7 @@ type Repo struct {
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
+	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	GuildConfigToken                     guildconfigtoken.Store
@@ -62,4 +65,5 @@ type Repo struct {
 	Chain                                chain.Store
 	GuildConfigNFTRole                   guildconfignftrole.Store
 	UserNFTBalance                       usernftbalance.Store
+	MessageRepostHistory                 messagereposthistory.Store
 }

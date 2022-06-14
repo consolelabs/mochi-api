@@ -212,3 +212,24 @@ func (e *Entity) ListGuildNFTRoles(guildID string) ([]response.GuildNFTRolesResp
 
 	return res, nil
 }
+
+func (e *Entity) ConfigRepostReaction(req request.ConfigRepostRequest) error {
+	return e.repo.GuildConfigRepostReaction.UpsertOne(model.GuildConfigRepostReaction{
+		GuildID:         req.GuildID,
+		Emoji:           req.Emoji,
+		Quantity:        req.Quantity,
+		RepostChannelID: req.RepostChannelID,
+	})
+}
+
+func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildConfigRepostReaction, error) {
+	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
+}
+
+func (e *Entity) GetGuildRepostReactionConfigByReaction(guildID string, reaction string) (model.GuildConfigRepostReaction, error) {
+	return e.repo.GuildConfigRepostReaction.GetByReaction(guildID, reaction)
+}
+
+func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {
+	return e.repo.GuildConfigRepostReaction.DeleteOne(guildID, emoji)
+}

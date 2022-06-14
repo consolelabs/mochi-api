@@ -112,6 +112,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			nftRoleGroup.PUT("/:config_id", h.EditGuildNFTRole)
 			nftRoleGroup.DELETE("/:config_id", h.RemoveGuildNFTRole)
 		}
+		repostReactionGroup := configGroup.Group("/repost-reactions")
+		{
+			repostReactionGroup.GET("/:guild_id", h.GetRepostReactionConfigs)
+			repostReactionGroup.POST("", h.ConfigRepostReaction)
+			repostReactionGroup.DELETE("", h.RemoveRepostReactionConfig)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
