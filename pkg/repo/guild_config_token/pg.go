@@ -56,3 +56,8 @@ func (pg *pg) UpsertOne(configs model.GuildConfigToken) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) GetAll() ([]model.GuildConfigToken, error) {
+	var guildConfigToken []model.GuildConfigToken
+	return guildConfigToken, pg.db.Find(&guildConfigToken).Error
+}

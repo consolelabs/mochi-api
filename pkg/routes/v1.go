@@ -98,6 +98,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		customTokenGroup := configGroup.Group("/custom-tokens")
 		{
 			customTokenGroup.POST("", h.HandlerGuildCustomTokenConfig)
+			customTokenGroup.GET("", h.ListAllCustomToken)
+			customTokenGroup.GET("/chains", h.ListAllChain)
 		}
 		levelRoleGroup := configGroup.Group("/level-roles")
 		{

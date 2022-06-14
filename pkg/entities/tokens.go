@@ -2,10 +2,8 @@ package entities
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -44,38 +42,36 @@ func (e *Entity) GetIDAndName(symbol string) (string, string, error) {
 	return "", "", err
 }
 
-func (e *Entity) GetChainIdBySymbol(symbol string) (int, error) {
-	mapChainChainId := map[string]string{
-		"eth":    "1",
-		"heco":   "128",
-		"bsc":    "56",
-		"matic":  "137",
-		"op":     "10",
-		"btt":    "199",
-		"okt":    "66",
-		"movr":   "1285",
-		"celo":   "42220",
-		"metis":  "1088",
-		"cro":    "25",
-		"xdai":   "0x64",
-		"boba":   "288",
-		"ftm":    "250",
-		"avax":   "0xa86a",
-		"arb":    "42161",
-		"aurora": "1313161554",
+func (e *Entity) GetChainIdBySymbol(symbol string) ([]model.Chain, error) {
+	listChain, err := e.repo.Chain.GetAll()
+	var returnChain []model.Chain
+	if err != nil {
+		return listChain, err
 	}
 
-	if c, exist := mapChainChainId[strings.ToLower(symbol)]; exist {
-		chainID, err := strconv.Atoi(c)
-		if err != nil {
-			err = fmt.Errorf("chain is not supported/invalid")
-			return 0, err
+	for i := 0; i < len(listChain); i++ {
+		if strings.ToUpper(symbol) == listChain[i].Name {
+			returnChain = append(returnChain, listChain[i])
+			return returnChain, nil
 		}
-		return chainID, nil
 	}
 
-	err := fmt.Errorf("chain is not supported/invalid")
-	return 0, err
+	return listChain, nil
+}
+
+func (e *Entity) CheckExistToken(symbol string) (bool, error) {
+	listSymbol, err := e.repo.Token.GetAll()
+	if err != nil {
+		return false, err
+	}
+
+	for i := 0; i < len(listSymbol); i++ {
+		if strings.ToUpper(symbol) == listSymbol[i].Symbol {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
@@ -104,6 +100,21 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	return token.ID, nil
 }
 
+func (e *Entity) CheckExistTokenConfig(tokenId int, guildID string) (bool, error) {
+	listConfigToken, err := e.repo.GuildConfigToken.GetAll()
+	if err != nil {
+		return false, err
+	}
+
+	for i := 0; i < len(listConfigToken); i++ {
+		if tokenId == listConfigToken[i].TokenID && guildID == listConfigToken[i].GuildID {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfigRequest) error {
 	err := e.repo.GuildConfigToken.CreateOne(model.GuildConfigToken{
 		GuildID: req.GuildID,
@@ -115,4 +126,24 @@ func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfi
 	}
 
 	return nil
+}
+
+func (e *Entity) ListAllCustomToken() ([]model.Token, error) {
+	listToken, err := e.repo.Token.GetAll()
+	var returnToken []model.Token
+	if err != nil {
+		return returnToken, err
+	}
+
+	return listToken, nil
+}
+
+func (e *Entity) ListAllChain() ([]model.Chain, error) {
+	listChain, err := e.repo.Chain.GetAll()
+	var returnChain []model.Chain
+	if err != nil {
+		return returnChain, err
+	}
+
+	return listChain, nil
 }

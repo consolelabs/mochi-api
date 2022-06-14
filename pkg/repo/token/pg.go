@@ -55,3 +55,8 @@ func (pg *pg) UpsertOne(token model.Token) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) GetAll() ([]model.Token, error) {
+	var tokens []model.Token
+	return tokens, pg.db.Find(&tokens).Error
+}
