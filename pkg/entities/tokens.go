@@ -82,3 +82,14 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	}
 	return token.ID, nil
 }
+
+func (e *Entity) ListAllCustomToken() ([]model.Token, error) {
+	var returnToken []model.Token
+
+	listToken, err := e.repo.Token.GetAll()
+	if err != nil {
+		return returnToken, err
+	}
+
+	return listToken, nil
+}
