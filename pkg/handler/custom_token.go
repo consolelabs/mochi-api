@@ -39,20 +39,20 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	req.Active = false
 
 	// get the chainID
-	returnChain, err := h.entities.GetChainIdBySymbol(req.Chain)
+	returnChain, isFound, err := h.entities.GetChainIdBySymbol(req.Chain)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if len(returnChain) > 1 {
+	if !isFound {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Chain is not supported",
 		})
 		return
 	}
 
-	req.ChainID = returnChain[0].ID
+	req.ChainID = returnChain.ID
 
 	// check token exists or not
 	checkExistToken, err := h.entities.CheckExistToken(req.Symbol)
@@ -94,16 +94,16 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 		return
 	}
 
-	if !checkExistTokenConfig {
-		// add to custom token config
-		if err := h.entities.CreateGuildCustomTokenConfig(req); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token config"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	if checkExistTokenConfig {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Your guild has already added this token."})
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, gin.H{"message": "Your guild has already added this token."})
+	// add to custom token config
+	if err := h.entities.CreateGuildCustomTokenConfig(req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot add to token config"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }

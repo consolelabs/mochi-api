@@ -69,7 +69,8 @@ func TestEntity_GetChainIdBySymbol(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    []model.Chain
+		want    model.Chain
+		want1   bool
 		wantErr bool
 	}{
 		{
@@ -80,13 +81,13 @@ func TestEntity_GetChainIdBySymbol(t *testing.T) {
 			args: args{
 				symbol: "eth",
 			},
-			want: []model.Chain{
-				{
-					ID:       1,
-					Name:     "Ethereum Mainnet",
-					Currency: "ETH",
-				},
+			want: model.Chain{
+
+				ID:       1,
+				Name:     "Ethereum Mainnet",
+				Currency: "ETH",
 			},
+			want1:   true,
 			wantErr: false,
 		},
 		{
@@ -97,23 +98,13 @@ func TestEntity_GetChainIdBySymbol(t *testing.T) {
 			args: args{
 				symbol: "ethaaaaaaaaaa",
 			},
-			want: []model.Chain{
-				{
-					ID:       1,
-					Name:     "Ethereum Mainnet",
-					Currency: "ETH",
-				},
-				{
-					ID:       56,
-					Name:     "Binance Smart Chain Mainnet",
-					Currency: "BNB",
-				},
-				{
-					ID:       250,
-					Name:     "Fantom Opera",
-					Currency: "FTM",
-				},
+			want: model.Chain{
+
+				ID:       1,
+				Name:     "Ethereum Mainnet",
+				Currency: "ETH",
 			},
+			want1:   false,
 			wantErr: false,
 		},
 	}
@@ -150,13 +141,16 @@ func TestEntity_GetChainIdBySymbol(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.GetChainIdBySymbol(tt.args.symbol)
+			got, got1, err := e.GetChainIdBySymbol(tt.args.symbol)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetChainIdBySymbol() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Entity.GetChainIdBySymbol() = %v, want %v", got, tt.want)
+				t.Errorf("Entity.GetChainIdBySymbol() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Entity.GetChainIdBySymbol() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

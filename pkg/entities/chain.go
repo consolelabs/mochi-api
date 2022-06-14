@@ -6,19 +6,19 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 )
 
-func (e *Entity) GetChainIdBySymbol(symbol string) ([]model.Chain, error) {
+func (e *Entity) GetChainIdBySymbol(symbol string) (model.Chain, bool, error) {
+	var returnChain model.Chain
+
 	listChain, err := e.repo.Chain.GetAll()
-	var returnChain []model.Chain
 	if err != nil {
-		return listChain, err
+		return returnChain, false, err
 	}
 
 	for i := 0; i < len(listChain); i++ {
-		if strings.ToUpper(symbol) == listChain[i].Currency {
-			returnChain = append(returnChain, listChain[i])
-			return returnChain, nil
+		if symbol == strings.ToLower(listChain[i].Currency) {
+			return listChain[i], true, nil
 		}
 	}
 
-	return listChain, nil
+	return listChain[0], false, nil
 }

@@ -49,7 +49,7 @@ func (e *Entity) CheckExistToken(symbol string) (bool, error) {
 	}
 
 	for i := 0; i < len(listSymbol); i++ {
-		if strings.ToUpper(symbol) == listSymbol[i].Symbol {
+		if symbol == strings.ToLower(listSymbol[i].Symbol) {
 			return true, nil
 		}
 	}
