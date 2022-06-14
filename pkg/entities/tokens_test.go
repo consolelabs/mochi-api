@@ -387,6 +387,10 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 		cfg      config.Config
 	}
 
+	type args struct {
+		listTokenId []int
+	}
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -424,6 +428,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
+		args    args
 		want    []model.Token
 		wantErr bool
 	}{
@@ -431,6 +436,11 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 			name: "test return successfully",
 			fields: fields{
 				repo: r,
+			},
+			args: args{
+				listTokenId: []int{
+					1, 56,
+				},
 			},
 
 			want: []model.Token{
@@ -441,10 +451,6 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 				{
 					ID:     56,
 					Symbol: "BNCA",
-				},
-				{
-					ID:     250,
-					Symbol: "BNCAB",
 				},
 			},
 			wantErr: false,
@@ -479,7 +485,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.ListAllCustomToken()
+			got, err := e.ListAllCustomToken(tt.args.listTokenId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.ListAllCustomToken() error = %v, wantErr %v", err, tt.wantErr)
 				return

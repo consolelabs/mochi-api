@@ -109,11 +109,21 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 }
 
 func (h *Handler) ListAllCustomToken(c *gin.Context) {
-	returnToken, err := h.entities.ListAllCustomToken()
+	guildID := c.Param("guild_id")
+
+	// get all tokenID with guildID
+	listTokenID, err := h.entities.ListAllTokenID(guildID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"supportedToken": returnToken})
+	// get the token corresponding with listtokenID
+	returnToken, err := h.entities.ListAllCustomToken(listTokenID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": returnToken})
 }

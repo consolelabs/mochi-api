@@ -32,3 +32,20 @@ func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfi
 
 	return nil
 }
+
+func (e *Entity) ListAllTokenID(guildID string) ([]int, error) {
+	var listTokenID []int
+
+	listGuildConfigToken, err := e.repo.GuildConfigToken.GetAll()
+	if err != nil {
+		return listTokenID, err
+	}
+
+	for i, _ := range listGuildConfigToken {
+		if guildID == listGuildConfigToken[i].GuildID {
+			listTokenID = append(listTokenID, listGuildConfigToken[i].TokenID)
+		}
+	}
+
+	return listTokenID, nil
+}
