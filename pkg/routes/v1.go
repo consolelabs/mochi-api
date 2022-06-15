@@ -31,7 +31,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.GET("/:guild_id", h.GetGuild)
 		guildGroup.GET("/:guild_id/custom-tokens", h.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.ListMyGuilds)
-		guildGroup.PUT("/global-xp/:guild_id", h.ToggleGlobalXP)
+		guildGroup.PUT("/:guild_id", h.UpdateGuild)
 
 		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
 		{

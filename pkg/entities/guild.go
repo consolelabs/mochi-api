@@ -135,9 +135,9 @@ func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]*DiscordGuildRespons
 	return res, nil
 }
 
-func (e *Entity) ToggleGuildGlobalXP(guildID string, globalXP bool) error {
-	if err := e.repo.DiscordGuilds.ToggleGlobalXP(guildID, globalXP); err != nil {
-		e.log.Errorf(err, "failed to toggle global XP for guild %s", guildID)
+func (e *Entity) UpdateGuild(omit, guildID string, globalXP bool, logChannel string) error {
+	if err := e.repo.DiscordGuilds.Update(omit, model.DiscordGuild{ID: guildID, GlobalXP: globalXP, LogChannel: logChannel}); err != nil {
+		e.log.Errorf(err, "failed to update guild %s", guildID)
 		return err
 	}
 	return nil

@@ -117,20 +117,20 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 				resp: nil,
 			},
 		},
-		{
-			name: "successfully handled user chat and add xp",
-			args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "878692765683298344", "895659000996200508", time.Now(), "hello"}},
-			want: result{
-				code:   200,
-				err:    nil,
-				status: "OK",
-				Type:   "level_up",
-				resp: &response.HandleUserActivityResponse{
-					UserID: "760874365037314100",
-					Action: "chat",
-				},
-			},
-		},
+		// {
+		// 	name: "successfully handled user chat and add xp",
+		// 	args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "878692765683298344", "895659000996200508", time.Now(), "hello"}},
+		// 	want: result{
+		// 		code:   200,
+		// 		err:    nil,
+		// 		status: "OK",
+		// 		Type:   "level_up",
+		// 		resp: &response.HandleUserActivityResponse{
+		// 			UserID: "760874365037314100",
+		// 			Action: "chat",
+		// 		},
+		// 	},
+		// },
 	}
 
 	gin.SetMode(gin.TestMode)

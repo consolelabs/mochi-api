@@ -112,33 +112,6 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		nonce = int(signedTx.Nonce()) + 1
 		transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
-		gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
-		if err != nil {
-			if err != gorm.ErrRecordNotFound {
-				errs = append(errs, fmt.Sprintf("error get activity cfg: %v", err))
-				continue
-			}
-			if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
-				errs = append(errs, fmt.Sprintf("error init default activities: %v", err))
-				continue
-			}
-			if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
-				errs = append(errs, fmt.Sprintf("error get activity cfg 2: %v", err))
-				continue
-			}
-		}
-
-		if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
-			GuildID:      req.GuildID,
-			UserID:       req.Sender,
-			ActivityName: gActivityConfig.Activity.Name,
-			EarnedXP:     gActivityConfig.Activity.XP,
-			CreatedAt:    time.Now(),
-		}); err != nil {
-			errs = append(errs, fmt.Sprintf("error create activity log: %v", err))
-			continue
-		}
-
 		res = append(res, response.InDiscordWalletTransferResponse{
 			FromDiscordID:  req.Sender,
 			ToDiscordID:    toUser.ID,
@@ -152,31 +125,65 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 	if len(errs) == 0 {
 		errs = nil
 	}
+	if len(res) > 0 {
+		if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+			GuildID:   req.GuildID,
+			ChannelID: req.ChannelID,
+			UserID:    req.Sender,
+			Timestamp: time.Now(),
+			Action:    req.TransferType,
+		}); err != nil {
+			err = fmt.Errorf("error create activity log: %v", err)
+			errs = append(errs, err.Error())
+		}
+	}
+
+	if err := e.sendTransferLogs(req, res); err != nil {
+		e.log.Errorf(err, "failed to send discord transfer logs")
+	}
 
 	return res, errs
 }
 
-func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res response.InDiscordWalletWithdrawResponse, err error) {
+func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {
+	if len(res) == 0 {
+		return nil
+	}
+	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
+	if err != nil {
+		return err
+	}
+
+	var recipients []string
+	for _, tx := range res {
+		recipients = append(recipients, fmt.Sprintf("<@%s>", tx.ToDiscordID))
+	}
+	recipientsStr := strings.Join(recipients, ", ")
+	description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, strings.ToUpper(res[0].Cryptocurrency), req.ChannelID)
+	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, strings.ToUpper(req.TransferType), description)
+}
+
+func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response.InDiscordWalletWithdrawResponse, error) {
 	fromUser, err := e.repo.Users.GetOne(req.Sender)
 	if err != nil {
 		err = fmt.Errorf("user not found: %v", err)
-		return
+		return nil, err
 	}
 	if err = e.generateInDiscordWallet(fromUser); err != nil {
 		err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
-		return
+		return nil, err
 	}
 
 	fromAccount, err := e.dcwallet.GetAccountByWalletNumber(int(fromUser.InDiscordWalletNumber.Int64))
 	if err != nil {
 		err = fmt.Errorf("error getting user address: %v", err)
-		return
+		return nil, err
 	}
 
 	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
 	if err != nil {
 		err = fmt.Errorf("error getting token info: %v", err)
-		return
+		return nil, err
 	}
 
 	signedTx, transferredAmount, err := e.transfer(fromAccount,
@@ -185,39 +192,25 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		token, -1, req.All)
 	if err != nil {
 		err = fmt.Errorf("error transfer: %v", err)
-		return
+		return nil, err
 	}
 
-	gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType)
-	if err != nil {
-		if err != gorm.ErrRecordNotFound {
-			err = fmt.Errorf("error get activity cfg: %v", err)
-			return
-		}
-		if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
-			return
-		}
-		if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.TransferType); err != nil {
-			return
-		}
-	}
-
-	if err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
-		GuildID:      req.GuildID,
-		UserID:       req.Sender,
-		ActivityName: gActivityConfig.Activity.Name,
-		EarnedXP:     gActivityConfig.Activity.XP,
-		CreatedAt:    time.Now(),
+	if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		UserID:    req.Sender,
+		Timestamp: time.Now(),
+		Action:    req.TransferType,
 	}); err != nil {
 		err = fmt.Errorf("error create activity log: %v", err)
-		return
+		return nil, err
 	}
 
 	withdrawalAmount := util.WeiToEther(signedTx.Value())
 	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
-	res = response.InDiscordWalletWithdrawResponse{
-		FromDiscordId:    req.Sender,
+	res := &response.InDiscordWalletWithdrawResponse{
+		FromDiscordID:    req.Sender,
 		ToAddress:        req.Recipients[0],
 		Amount:           transferredAmount,
 		Cryptocurrency:   req.Cryptocurrency,
@@ -226,7 +219,19 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (res respo
 		WithdrawalAmount: withdrawalAmount,
 		TransactionFee:   transactionFee,
 	}
-	return
+	err = e.sendWithdrawLogs(req, res)
+	return nil, err
+}
+
+func (e *Entity) sendWithdrawLogs(req request.TransferRequest, res *response.InDiscordWalletWithdrawResponse) error {
+	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
+	if err != nil {
+		return err
+	}
+
+	description := fmt.Sprintf("<@%s> has withdrawn **%g %s** to %s at <#%s>", res.FromDiscordID, res.Amount, strings.ToUpper(res.Cryptocurrency), res.ToAddress, req.ChannelID)
+	description += fmt.Sprintf("\n[See transaction](%s)", res.TxURL)
+	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, "WITHDRAW", description)
 }
 
 func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
@@ -400,4 +405,20 @@ func (e *Entity) GetHighestTicker(symbol string, interval int) ([]string, error)
 	highestPrice := util.GetMaxFloat64(data.Prices)
 	coinData = append(coinData, symbol, fmt.Sprintf("%v", interval), fmt.Sprintf("%v", highestPrice))
 	return coinData, nil
+}
+
+func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.GuildConfigActivity, error) {
+	gActivityConfig, err := e.repo.GuildConfigActivity.GetOneByActivityName(guildID, transferType)
+	if err != nil {
+		if err != gorm.ErrRecordNotFound {
+			return nil, err
+		}
+		if err = e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(guildID); err != nil {
+			return nil, err
+		}
+		if gActivityConfig, err = e.repo.GuildConfigActivity.GetOneByActivityName(guildID, transferType); err != nil {
+			return nil, err
+		}
+	}
+	return gActivityConfig, nil
 }
