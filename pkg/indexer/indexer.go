@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	res "github.com/defipod/mochi/pkg/response"
 )
 
 type CreateERC721ContractRequest struct {
@@ -59,4 +61,43 @@ func (i *indexer) CreateERC721Contract(req CreateERC721ContractRequest) error {
 
 	defer response.Body.Close()
 	return nil
+}
+
+func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, error) {
+
+	url := fmt.Sprintf("%s/api/v1/nft/%s/tickers", i.cfg.IndexerServerHost, address)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNFTCollection - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollection - failed to get nft collection info %s: %v", address, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.NFTCollectionResponse{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
 }

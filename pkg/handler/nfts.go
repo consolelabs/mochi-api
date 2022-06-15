@@ -51,3 +51,19 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }
+
+func (h *Handler) GetNFTCollection(c *gin.Context) {
+	symbol := c.Param("symbol")
+	if symbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
+	}
+
+	nfts, err := h.entities.GetNFTCollection(symbol)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": nfts})
+}
