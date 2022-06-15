@@ -83,17 +83,13 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	return token.ID, nil
 }
 
-func (e *Entity) ListAllCustomToken(listTokenId []int) ([]model.Token, error) {
+func (e *Entity) GetAllSupportedToken(guildID string) ([]model.Token, error) {
 	var returnToken []model.Token
 
-	listToken, err := e.repo.Token.GetAll()
+	listToken, err := e.repo.Token.GetAllSupportedToken(guildID)
 	if err != nil {
 		return returnToken, err
 	}
 
-	for i, _ := range listTokenId {
-		returnToken = append(returnToken, listToken[i])
-	}
-
-	return returnToken, nil
+	return listToken, nil
 }

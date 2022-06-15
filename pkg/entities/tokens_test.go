@@ -388,7 +388,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 	}
 
 	type args struct {
-		listTokenId []int
+		guildId string
 	}
 
 	ctrl := gomock.NewController(t)
@@ -438,9 +438,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 				repo: r,
 			},
 			args: args{
-				listTokenId: []int{
-					1, 56,
-				},
+				guildId: "1234",
 			},
 
 			want: []model.Token{
@@ -466,13 +464,9 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 			ID:     56,
 			Symbol: "BNCA",
 		},
-		{
-			ID:     250,
-			Symbol: "BNCAB",
-		},
 	}
 
-	uToken.EXPECT().GetAll().Return(resList, nil).AnyTimes()
+	uToken.EXPECT().GetAllSupportedToken("1234").Return(resList, nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{
@@ -485,7 +479,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.ListAllCustomToken(tt.args.listTokenId)
+			got, err := e.GetAllSupportedToken(tt.args.guildId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.ListAllCustomToken() error = %v, wantErr %v", err, tt.wantErr)
 				return

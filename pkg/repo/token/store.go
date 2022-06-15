@@ -10,4 +10,5 @@ type Store interface {
 	CreateOne(token model.Token) error
 	UpsertOne(token model.Token) error
 	GetAll() ([]model.Token, error)
+	GetAllSupportedToken(guildId string) ([]model.Token, error)
 }
