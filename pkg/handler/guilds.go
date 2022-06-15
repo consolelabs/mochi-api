@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -105,7 +107,7 @@ func (h *Handler) ListMyGuilds(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": guilds})
 }
 
-func (h *Handler) ToggleGlobalXP(c *gin.Context) {
+func (h *Handler) UpdateGuild(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
@@ -113,14 +115,22 @@ func (h *Handler) ToggleGlobalXP(c *gin.Context) {
 	}
 
 	var req struct {
-		GlobalXP bool `json:"global_xp"`
+		GlobalXP   string `json:"global_xp"`
+		LogChannel string `json:"log_channel"`
 	}
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "global_xp is required"})
 		return
 	}
 
-	if err := h.entities.ToggleGuildGlobalXP(guildID, req.GlobalXP); err != nil {
+	omit := "log_channel"
+	if req.GlobalXP == "" {
+		omit = "global_xp"
+	}
+	globalXP := strings.EqualFold(req.GlobalXP, "true")
+	fmt.Println(omit, globalXP, req)
+
+	if err := h.entities.UpdateGuild(omit, guildID, globalXP, req.LogChannel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}

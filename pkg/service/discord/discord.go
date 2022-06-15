@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/config"
@@ -46,6 +47,26 @@ func (d *Discord) NotifyNewGuild(guildID string) error {
 	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Discord) SendGuildActivityLogs(channelID, title, description string) error {
+	if channelID == "" {
+		return nil
+	}
+
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       title,
+		Description: description,
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err := d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send activity logs to channel %s: %w", channelID, err)
 	}
 
 	return nil

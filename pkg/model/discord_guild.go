@@ -11,4 +11,5 @@ type DiscordGuild struct {
 	CreatedAt                time.Time                `json:"created_at"`
 	GuildConfigInviteTracker GuildConfigInviteTracker `json:"-" gorm:"foreignkey:GuildID"`
 	GlobalXP                 bool                     `json:"global_xp"`
+	LogChannel               string                   `json:"log_channel"`
 }

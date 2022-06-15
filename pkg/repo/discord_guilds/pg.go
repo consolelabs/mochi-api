@@ -49,3 +49,8 @@ func (pg *pg) GetByID(id string) (*model.DiscordGuild, error) {
 func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
 	return pg.db.Model(&model.DiscordGuild{}).Where("id = ?", guildID).Update("global_xp", globalXP).Error
 }
+
+func (pg *pg) Update(omit string, guild model.DiscordGuild) error {
+	fmt.Println(omit, guild.GlobalXP, guild.LogChannel)
+	return pg.db.Model(&guild).Where("id = ?", guild.ID).Omit(omit).Updates(map[string]interface{}{"global_xp": guild.GlobalXP, "log_channel": guild.LogChannel}).Error
+}

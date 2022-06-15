@@ -5,7 +5,7 @@ import (
 )
 
 type InDiscordWalletWithdrawResponse struct {
-	FromDiscordId    string     `json:"fromDiscordId"`
+	FromDiscordID    string     `json:"fromDiscordId"`
 	ToAddress        string     `json:"toAddress"`
 	Amount           float64    `json:"amount"`
 	Cryptocurrency   string     `json:"cryptocurrency"`
