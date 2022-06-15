@@ -47,10 +47,15 @@ type SearchedCoin struct {
 	Large         string `json:"large"`
 }
 type CoinPriceHistoryResponse struct {
-	Timestamps []string  `json:"timestamps"`
+	TokenTickers
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+type TokenTickers struct {
+	Timestamps []int64   `json:"timestamps"`
 	Prices     []float64 `json:"prices"`
-	From       string    `json:"from"`
-	To         string    `json:"to"`
+	Times      []string  `json:"times"`
 }
 
 type GetCoinResponse struct {

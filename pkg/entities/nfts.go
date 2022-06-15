@@ -17,6 +17,7 @@ import (
 	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -327,4 +328,22 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 		return fmt.Errorf("failed to upsert user nft balance: %v", err.Error())
 	}
 	return nil
+}
+
+func (e *Entity) GetNFTCollection(symbol string) (*response.NFTCollectionResponse, error) {
+	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := e.indexer.GetNFTCollection(collection.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, ts := range data.Tickers.Timestamps {
+		time := time.UnixMilli(ts)
+		data.Tickers.Times = append(data.Tickers.Times, time.Format("01-02"))
+	}
+	return data, nil
 }

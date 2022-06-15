@@ -54,7 +54,7 @@ func (c *CoinGecko) GetHistoricalMarketData(req *request.GetMarketChartRequest) 
 	data := &response.CoinPriceHistoryResponse{}
 	for _, p := range resp.Prices {
 		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
-		data.Timestamps = append(data.Timestamps, timestamp)
+		data.Times = append(data.Times, timestamp)
 		data.Prices = append(data.Prices, p[1])
 	}
 	from := time.UnixMilli(int64(resp.Prices[0][0])).Format("January 02, 2006")
