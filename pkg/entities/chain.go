@@ -22,3 +22,12 @@ func (e *Entity) GetChainIdBySymbol(symbol string) (model.Chain, bool, error) {
 
 	return listChain[0], false, nil
 }
+
+func (e *Entity) ListAllChain() (returnChain []model.Chain, err error) {
+	returnChain, err = e.repo.Chain.GetAll()
+	if err != nil {
+		return returnChain, err
+	}
+
+	return returnChain, nil
+}
