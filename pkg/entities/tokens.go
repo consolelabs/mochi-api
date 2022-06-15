@@ -84,10 +84,10 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 }
 
 func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
-	listToken, err := e.repo.Token.GetAllSupportedToken(guildID)
+	returnToken, err = e.repo.Token.GetAllSupportedToken(guildID)
 	if err != nil {
 		return returnToken, err
 	}
 
-	return listToken, nil
+	return returnToken, nil
 }
