@@ -79,18 +79,18 @@ func (mr *MockStoreMockRecorder) GetAllSupported() *gomock.Call {
 }
 
 // GetAllSupportedToken mocks base method.
-func (m *MockStore) GetAllSupportedToken(guildId string) ([]model.Token, error) {
+func (m *MockStore) GetAllSupportedToken(guildID string) ([]model.Token, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllSupportedToken", guildId)
+	ret := m.ctrl.Call(m, "GetAllSupportedToken", guildID)
 	ret0, _ := ret[0].([]model.Token)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllSupportedToken indicates an expected call of GetAllSupportedToken.
-func (mr *MockStoreMockRecorder) GetAllSupportedToken(guildId interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAllSupportedToken(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupportedToken", reflect.TypeOf((*MockStore)(nil).GetAllSupportedToken), guildId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupportedToken", reflect.TypeOf((*MockStore)(nil).GetAllSupportedToken), guildID)
 }
 
 // GetByAddress mocks base method.
