@@ -242,20 +242,22 @@ func (e *Entity) ListActivityConfigsByName(activityName string) ([]model.GuildCo
 	return activities, nil
 }
 
-func (e *Entity) ToggleActivityConfig(guildID, activityName string, active bool) error {
+func (e *Entity) ToggleActivityConfig(guildID, activityName string) (*model.GuildConfigActivity, error) {
 	activity, err := e.repo.Activity.GetByName(activityName)
 	if err != nil {
-		return fmt.Errorf("failed to get activity: %v", err.Error())
+		return nil, fmt.Errorf("failed to get activity: %v", err.Error())
 	}
 
-	err = e.repo.GuildConfigActivity.UpsertOne(model.GuildConfigActivity{
+	config := model.GuildConfigActivity{
 		GuildID:    guildID,
 		ActivityID: activity.ID,
-		Active:     active,
-	})
-	if err != nil {
-		return fmt.Errorf("failed to upsert guild config activity: %v", err.Error())
+		Active:     true,
 	}
 
-	return nil
+	err = e.repo.GuildConfigActivity.UpsertToggleActive(&config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upsert guild config activity: %v", err.Error())
+	}
+
+	return &config, nil
 }

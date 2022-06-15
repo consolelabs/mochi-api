@@ -323,8 +323,6 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 	var (
 		activityName = c.Param("activity")
 		guildID      = c.Query("guild_id")
-		activeStr    = c.Query("active")
-		active       = activeStr == "true"
 	)
 
 	if activityName == "" {
@@ -337,10 +335,11 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 		return
 	}
 
-	if err := h.entities.ToggleActivityConfig(guildID, activityName, active); err != nil {
+	config, err := h.entities.ToggleActivityConfig(guildID, activityName)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
 }

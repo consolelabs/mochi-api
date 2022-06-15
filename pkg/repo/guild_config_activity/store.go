@@ -7,5 +7,5 @@ type Store interface {
 	UpsertMany(configs []model.GuildConfigActivity) error
 	ForkDefaulActivityConfigs(guildID string) error
 	ListByActivity(activity string) ([]model.GuildConfigActivity, error)
-	UpsertOne(config model.GuildConfigActivity) error
+	UpsertToggleActive(config *model.GuildConfigActivity) error
 }

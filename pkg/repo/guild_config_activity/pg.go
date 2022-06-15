@@ -60,14 +60,14 @@ func (pg *pg) ListByActivity(activity string) ([]model.GuildConfigActivity, erro
 		Find(&res).Error
 }
 
-func (pg *pg) UpsertOne(config model.GuildConfigActivity) error {
+func (pg *pg) UpsertToggleActive(config *model.GuildConfigActivity) error {
 	tx := pg.db.Begin()
 
 	// update on conflict
 	err := tx.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "guild_id"}, {Name: "activity_id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"active"}),
-	}).Create(&config).Error
+		DoUpdates: clause.Assignments(map[string]interface{}{"active": gorm.Expr("NOT guild_config_activities.active")}),
+	}).Create(config).Error
 	if err != nil {
 		tx.Rollback()
 		return err
