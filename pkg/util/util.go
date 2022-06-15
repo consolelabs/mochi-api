@@ -39,7 +39,6 @@ import (
 	"github.com/nfnt/resize"
 
 	"github.com/defipod/mochi/pkg/model/errors"
-	"github.com/defipod/mochi/pkg/response"
 )
 
 const (
@@ -545,23 +544,4 @@ func GetNullUUID(id string) uuid.NullUUID {
 	}
 	nullid := uuid.NullUUID{UUID: uid, Valid: true}
 	return nullid
-}
-
-func GetMockIndexer() []response.IndexerNFTResponse {
-	mockResp := []response.IndexerNFTResponse{}
-	for i := 1; i < 4; i++ {
-		volume := response.TradeVolume{
-			BuyNumber:  11 * i,
-			SellNumber: 11*i + 2,
-		}
-		resp := response.IndexerNFTResponse{
-			CollectionAddress: "0xea5da2215038169ccf60dc5be188c43d9982f39" + strconv.Itoa(i),
-			CollectionName:    "Cyber Neko " + strconv.Itoa(i),
-			Symbol:            "Neko",
-			ChainID:           "250",
-			TradingVolume:     volume,
-		}
-		mockResp = append(mockResp, resp)
-	}
-	return mockResp
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/request"
@@ -53,10 +54,11 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 }
 
 func (h *Handler) GetNFTIndexer(c *gin.Context) {
-	nfts, err := h.entities.GetNFTIndexer()
+	limit, _ := strconv.Atoi(c.Query("limit"))
+	nfts, err := h.entities.GetSvc().NFT.GetNFTIndexer(limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, nfts)
+	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }

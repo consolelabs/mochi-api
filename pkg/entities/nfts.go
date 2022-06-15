@@ -17,8 +17,6 @@ import (
 	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -329,9 +327,4 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 		return fmt.Errorf("failed to upsert user nft balance: %v", err.Error())
 	}
 	return nil
-}
-
-// Mock data, not yet implemented
-func (e *Entity) GetNFTIndexer() ([]response.IndexerNFTResponse, error) {
-	return util.GetMockIndexer(), nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/discord"
+	"github.com/defipod/mochi/pkg/service/nft"
 )
 
 // import "github.com/defipod/api/pkg/service/binance"
@@ -13,6 +14,7 @@ import (
 type Service struct {
 	CoinGecko coingecko.Service
 	Discord   discord.Service
+	NFT       nft.Service
 }
 
 func NewService(
@@ -27,5 +29,6 @@ func NewService(
 	return &Service{
 		CoinGecko: coingecko.NewService(),
 		Discord:   discordSvc,
+		NFT:       nft.NewService(),
 	}, nil
 }
