@@ -82,3 +82,12 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	}
 	return token.ID, nil
 }
+
+func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
+	returnToken, err = e.repo.Token.GetAllSupportedToken(guildID)
+	if err != nil {
+		return returnToken, err
+	}
+
+	return returnToken, nil
+}
