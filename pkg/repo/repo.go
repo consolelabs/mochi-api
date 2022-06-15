@@ -20,6 +20,7 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
+	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -66,4 +67,5 @@ type Repo struct {
 	GuildConfigNFTRole                   guildconfignftrole.Store
 	UserNFTBalance                       usernftbalance.Store
 	MessageRepostHistory                 messagereposthistory.Store
+	GuildScheduledEvent                  guildscheduledevent.Store
 }
