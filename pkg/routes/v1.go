@@ -13,6 +13,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
+	cryptoGroup := v1.Group("/crypto")
+	{
+		cryptoGroup.GET("/token-compare", h.TokenCompare)
+	}
+
 	chainGroup := v1.Group("/chains")
 	{
 		chainGroup.GET("", h.ListAllChain)
