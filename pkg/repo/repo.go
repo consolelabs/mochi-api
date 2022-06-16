@@ -17,6 +17,7 @@ import (
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
+	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -38,6 +39,7 @@ import (
 type Repo struct {
 	DiscordUserGMStreak                  discordusergmstreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store
+	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
 	DiscordGuilds                        discordguilds.Store
 	DiscordWalletVerification            discordwalletverification.Store
