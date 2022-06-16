@@ -138,11 +138,14 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 }
 
 func (e *Entity) sendLevelUpLogs(res *response.HandleUserActivityResponse) error {
+	if !res.LevelUp {
+		return nil
+	}
+
 	guild, err := e.repo.DiscordGuilds.GetByID(res.GuildID)
 	if err != nil {
 		return err
 	}
-
 	description := fmt.Sprintf("<@%s> has leveled up **(%d - %d)**", res.UserID, res.CurrentLevel-1, res.CurrentLevel)
 	description += fmt.Sprintf("\nLatest action: **%s**", res.Action)
 	description += fmt.Sprintf("\nCurrent XP: **%d**", res.CurrentXP)
