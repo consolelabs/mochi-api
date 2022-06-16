@@ -20,14 +20,16 @@ type CreateERC721ContractRequest struct {
 }
 
 type indexer struct {
-	cfg config.Config
-	log logger.Logger
+	cfg            config.Config
+	log            logger.Logger
+	tradeVolumeURL string
 }
 
 func NewIndexer(cfg config.Config, log logger.Logger) Service {
 	return &indexer{
-		cfg: cfg,
-		log: log,
+		cfg:            cfg,
+		log:            log,
+		tradeVolumeURL: "https://develop-api.indexer.console.so/api/v1/nft/daily-trading-volume",
 	}
 }
 
