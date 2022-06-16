@@ -22,7 +22,7 @@ type indexer struct {
 	log logger.Logger
 }
 
-func NewIndexer(cfg config.Config, log logger.Logger) Indexer {
+func NewIndexer(cfg config.Config, log logger.Logger) Service {
 	return &indexer{
 		cfg: cfg,
 		log: log,
