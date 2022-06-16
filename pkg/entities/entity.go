@@ -12,11 +12,11 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
-	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/indexer"
 )
 
 var (
@@ -32,7 +32,7 @@ type Entity struct {
 	cache    cache.Cache
 	svc      *service.Service
 	cfg      config.Config
-	indexer  indexer.Indexer
+	indexer  indexer.Service
 }
 
 var e *Entity
@@ -73,7 +73,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		log.Fatal(err, "failed to init redis cache")
 	}
 
-	service, err := service.NewService(cfg)
+	service, err := service.NewService(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init service")
 	}
@@ -156,7 +156,7 @@ func (e *Entity) initInviteTrackerCache() error {
 	return nil
 }
 
-func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Indexer) *Entity {
+func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service) *Entity {
 	return &Entity{
 		repo:     repo,
 		store:    store,
