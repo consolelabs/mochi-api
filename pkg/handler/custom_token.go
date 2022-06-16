@@ -95,7 +95,7 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	}
 
 	if checkExistTokenConfig {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Your guild has already added this token."})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Your guild has already added this token."})
 		return
 	}
 
