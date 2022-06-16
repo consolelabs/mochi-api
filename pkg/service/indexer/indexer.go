@@ -65,7 +65,7 @@ func (i *indexer) CreateERC721Contract(req CreateERC721ContractRequest) error {
 	return nil
 }
 
-func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, error) {
+func (i *indexer) GetNFTCollectionTickers(address string) (*res.IndexerNFTCollectionTickersResponse, error) {
 
 	url := fmt.Sprintf("%s/api/v1/nft/%s/tickers", i.cfg.IndexerServerHost, address)
 	request, err := http.NewRequest("GET", url, nil)
@@ -95,7 +95,7 @@ func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, 
 	if err != nil {
 		return nil, err
 	}
-	data := &res.NFTCollectionResponse{}
+	data := &res.IndexerNFTCollectionTickersResponse{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		return nil, err
@@ -103,6 +103,86 @@ func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, 
 	defer response.Body.Close()
 	return data, nil
 }
+
+func (i *indexer) GetNFTCollections(query string) (*res.IndexerGetNFTCollectionsResponse, error) {
+
+	url := fmt.Sprintf("%s/api/v1/nft?%s", i.cfg.IndexerServerHost, query)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNFTCollections - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollections - failed to filter nft collections with query=%s: %v", query, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.IndexerGetNFTCollectionsResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
+}
+
+func (i *indexer) GetNFTTokens(address, query string) (*res.IndexerGetNFTTokensResponse, error) {
+
+	url := fmt.Sprintf("%s/api/v1/nft/%s?%s", i.cfg.IndexerServerHost, address, query)
+	fmt.Println(url)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNFTTokens - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTTokens - failed to filter nft tokens with symbol=%s, query=%s: %v", address, query, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.IndexerGetNFTTokensResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
+}
+
 func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
 	url := fmt.Sprintf("%s/api/v1/nft/daily-trading-volume", i.cfg.IndexerServerHost)
 

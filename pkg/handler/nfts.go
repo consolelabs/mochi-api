@@ -59,13 +59,13 @@ func (h *Handler) GetNFTCollection(c *gin.Context) {
 		return
 	}
 
-	nfts, err := h.entities.GetNFTCollection(symbol)
+	data, err := h.entities.GetNFTCollection(symbol)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": nfts})
+	c.JSON(http.StatusOK, data)
 }
 func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
@@ -74,4 +74,28 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
+}
+
+func (h *Handler) GetNFTCollections(c *gin.Context) {
+	data, err := h.entities.GetNFTCollections(c.Request.URL.RawQuery)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+func (h *Handler) GetNFTTokens(c *gin.Context) {
+	symbol := c.Param("symbol")
+	if symbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
+	}
+
+	data, err := h.entities.GetNFTTokens(symbol, c.Request.URL.RawQuery)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
 }
