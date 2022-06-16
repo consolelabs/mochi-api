@@ -20,16 +20,14 @@ type CreateERC721ContractRequest struct {
 }
 
 type indexer struct {
-	cfg            config.Config
-	log            logger.Logger
-	tradeVolumeURL string
+	cfg config.Config
+	log logger.Logger
 }
 
 func NewIndexer(cfg config.Config, log logger.Logger) Service {
 	return &indexer{
-		cfg:            cfg,
-		log:            log,
-		tradeVolumeURL: "https://develop-api.indexer.console.so/api/v1/nft/daily-trading-volume",
+		cfg: cfg,
+		log: log,
 	}
 }
 
@@ -107,6 +105,7 @@ func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, 
 }
 func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
 	url := fmt.Sprintf("%s/api/v1/nft/daily-trading-volume", i.cfg.IndexerServerHost)
+
 	nftList := response.NFTTradingVolumeResponse{}
 	client := &http.Client{Timeout: time.Second * 30}
 
