@@ -18,6 +18,11 @@ func (pg *pg) GetOne(id int) (*model.Activity, error) {
 	return activity, pg.db.First(&activity, id).Error
 }
 
+func (pg *pg) GetByName(activityName string) (*model.Activity, error) {
+	var activity model.Activity
+	return &activity, pg.db.Where("name = ?", activityName).First(&activity).Error
+}
+
 func (pg *pg) GetDefaultActivities() ([]model.Activity, error) {
 	var activities []model.Activity
 	return activities, pg.db.Where("guild_default = TRUE").Find(&activities).Error

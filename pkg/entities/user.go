@@ -103,25 +103,16 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return nil, err
 	}
 
-	gConfigActivity, err := e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.Action)
+	gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, req.Action)
 	if err != nil {
-		if err != gorm.ErrRecordNotFound {
-			return nil, err
-		}
-		if err := e.repo.GuildConfigActivity.ForkDefaulActivityConfigs(req.GuildID); err != nil {
-			return nil, err
-		}
-		gConfigActivity, err = e.repo.GuildConfigActivity.GetOneByActivityName(req.GuildID, req.Action)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
-		}
+		return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
 	}
 
 	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID:      req.GuildID,
 		UserID:       req.UserID,
-		ActivityName: gConfigActivity.Activity.Name,
-		EarnedXP:     gConfigActivity.Activity.XP,
+		ActivityName: gActivityConfig.Activity.Name,
+		EarnedXP:     gActivityConfig.Activity.XP,
 		CreatedAt:    req.Timestamp,
 	}); err != nil {
 		return nil, err
@@ -132,16 +123,30 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return nil, err
 	}
 
-	return &response.HandleUserActivityResponse{
+	res := &response.HandleUserActivityResponse{
 		GuildID:      req.GuildID,
 		UserID:       req.UserID,
-		Action:       gConfigActivity.Activity.Name,
-		AddedXP:      gConfigActivity.Activity.XP,
+		Action:       gActivityConfig.Activity.Name,
+		AddedXP:      gActivityConfig.Activity.XP,
 		CurrentXP:    latestUserXP.TotalXP,
 		CurrentLevel: latestUserXP.Level,
 		Timestamp:    req.Timestamp,
 		LevelUp:      latestUserXP.Level > userXP.Level,
-	}, nil
+	}
+	e.sendLevelUpLogs(res)
+	return res, nil
+}
+
+func (e *Entity) sendLevelUpLogs(res *response.HandleUserActivityResponse) error {
+	guild, err := e.repo.DiscordGuilds.GetByID(res.GuildID)
+	if err != nil {
+		return err
+	}
+
+	description := fmt.Sprintf("<@%s> has leveled up **(%d - %d)**", res.UserID, res.CurrentLevel-1, res.CurrentLevel)
+	description += fmt.Sprintf("\nLatest action: **%s**", res.Action)
+	description += fmt.Sprintf("\nCurrent XP: **%d**", res.CurrentXP)
+	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, "Level up!", description)
 }
 
 func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {

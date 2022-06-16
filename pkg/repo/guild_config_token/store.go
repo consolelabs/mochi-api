@@ -7,4 +7,5 @@ type Store interface {
 	UpsertMany(configs []model.GuildConfigToken) error
 	UpsertOne(configs model.GuildConfigToken) error
 	CreateOne(token model.GuildConfigToken) error
+	GetAll() ([]model.GuildConfigToken, error)
 }

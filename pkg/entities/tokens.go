@@ -2,10 +2,8 @@ package entities
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -44,38 +42,19 @@ func (e *Entity) GetIDAndName(symbol string) (string, string, error) {
 	return "", "", err
 }
 
-func (e *Entity) GetChainIdBySymbol(symbol string) (int, error) {
-	mapChainChainId := map[string]string{
-		"eth":    "1",
-		"heco":   "128",
-		"bsc":    "56",
-		"matic":  "137",
-		"op":     "10",
-		"btt":    "199",
-		"okt":    "66",
-		"movr":   "1285",
-		"celo":   "42220",
-		"metis":  "1088",
-		"cro":    "25",
-		"xdai":   "0x64",
-		"boba":   "288",
-		"ftm":    "250",
-		"avax":   "0xa86a",
-		"arb":    "42161",
-		"aurora": "1313161554",
+func (e *Entity) CheckExistToken(symbol string) (bool, error) {
+	listSymbol, err := e.repo.Token.GetAll()
+	if err != nil {
+		return false, err
 	}
 
-	if c, exist := mapChainChainId[strings.ToLower(symbol)]; exist {
-		chainID, err := strconv.Atoi(c)
-		if err != nil {
-			err = fmt.Errorf("chain is not supported/invalid")
-			return 0, err
+	for i, _ := range listSymbol {
+		if strings.ToLower(symbol) == strings.ToLower(listSymbol[i].Symbol) {
+			return true, nil
 		}
-		return chainID, nil
 	}
 
-	err := fmt.Errorf("chain is not supported/invalid")
-	return 0, err
+	return false, nil
 }
 
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
@@ -104,15 +83,11 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	return token.ID, nil
 }
 
-func (e *Entity) CreateGuildCustomTokenConfig(req request.UpsertCustomTokenConfigRequest) error {
-	err := e.repo.GuildConfigToken.CreateOne(model.GuildConfigToken{
-		GuildID: req.GuildID,
-		TokenID: req.Id,
-		Active:  req.Active,
-	})
+func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
+	returnToken, err = e.repo.Token.GetAllSupportedToken(guildID)
 	if err != nil {
-		return err
+		return returnToken, err
 	}
 
-	return nil
+	return returnToken, nil
 }

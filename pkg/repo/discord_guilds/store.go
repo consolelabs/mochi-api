@@ -6,5 +6,5 @@ type Store interface {
 	Gets() ([]model.DiscordGuild, error)
 	GetByID(id string) (*model.DiscordGuild, error)
 	CreateIfNotExists(guild model.DiscordGuild) error
-	ToggleGlobalXP(guildID string, globalXP bool) error
+	Update(omit string, guild model.DiscordGuild) error
 }

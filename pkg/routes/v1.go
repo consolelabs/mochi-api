@@ -13,6 +13,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
+	chainGroup := v1.Group("/chains")
+	{
+		chainGroup.GET("", h.ListAllChain)
+	}
+
 	authGroup := v1.Group("/auth")
 	{
 		authGroup.POST("/login", h.Login)
@@ -24,8 +29,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.POST("", h.CreateGuild)
 		guildGroup.GET("", h.GetGuilds)
 		guildGroup.GET("/:guild_id", h.GetGuild)
+		guildGroup.GET("/:guild_id/custom-tokens", h.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.ListMyGuilds)
-		guildGroup.PUT("/global-xp/:guild_id", h.ToggleGlobalXP)
+		guildGroup.PUT("/:guild_id", h.UpdateGuild)
 
 		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
 		{
@@ -118,6 +124,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.POST("", h.ConfigRepostReaction)
 			repostReactionGroup.DELETE("", h.RemoveRepostReactionConfig)
 		}
+		activitygroup := configGroup.Group("/activities")
+		{
+			activitygroup.POST("/:activity", h.ToggleActivityConfig)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
@@ -166,7 +176,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("", h.ListAllNFTCollections)
 		nftsGroup.GET("/:symbol/:id", h.GetNFTDetail)
 		nftsGroup.GET("/supported-chains", h.GetSupportedChains)
-		nftsGroup.POST("/collection", h.CreateNFTCollection)
+		nftsGroup.POST("/collections", h.CreateNFTCollection)
+		nftsGroup.GET("/collections/:symbol/tickers", h.GetNFTCollection)
 	}
 	giftGroup := v1.Group("/gift")
 	{

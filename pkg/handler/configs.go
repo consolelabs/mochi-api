@@ -317,3 +317,29 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
+
+func (h *Handler) ToggleActivityConfig(c *gin.Context) {
+
+	var (
+		activityName = c.Param("activity")
+		guildID      = c.Query("guild_id")
+	)
+
+	if activityName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "activity is required"})
+		return
+	}
+
+	if guildID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	config, err := h.entities.ToggleActivityConfig(guildID, activityName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+}

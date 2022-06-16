@@ -23,6 +23,7 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
+	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -71,5 +72,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigNFTRole:                   guildconfignftrole.NewPG(db),
 		UserNFTBalance:                       usernftbalance.NewPG(db),
 		MessageRepostHistory:                 messagereposthistory.NewPG(db),
+		GuildScheduledEvent:                  guildscheduledevent.NewPG(db),
 	}
 }

@@ -5,7 +5,7 @@ import (
 )
 
 type InDiscordWalletWithdrawResponse struct {
-	FromDiscordId    string     `json:"fromDiscordId"`
+	FromDiscordID    string     `json:"fromDiscordId"`
 	ToAddress        string     `json:"toAddress"`
 	Amount           float64    `json:"amount"`
 	Cryptocurrency   string     `json:"cryptocurrency"`
@@ -47,10 +47,15 @@ type SearchedCoin struct {
 	Large         string `json:"large"`
 }
 type CoinPriceHistoryResponse struct {
-	Timestamps []string  `json:"timestamps"`
+	TokenTickers
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+type TokenTickers struct {
+	Timestamps []int64   `json:"timestamps"`
 	Prices     []float64 `json:"prices"`
-	From       string    `json:"from"`
-	To         string    `json:"to"`
+	Times      []string  `json:"times"`
 }
 
 type GetCoinResponse struct {

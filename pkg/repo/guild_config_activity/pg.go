@@ -41,8 +41,34 @@ func (pg *pg) ForkDefaulActivityConfigs(guildID string) error {
 
 	if err := tx.Exec(`
 	insert into guild_config_activities(guild_id, activity_id, active)
-	select ?, id, true from activities on conflict (guild_id, activity_id) do nothing
+	select ?, id, true from activities where guild_default = true on conflict (guild_id, activity_id) do nothing
 	`, guildID).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit().Error
+}
+
+func (pg *pg) ListByActivity(activity string) ([]model.GuildConfigActivity, error) {
+	var res []model.GuildConfigActivity
+
+	return res, pg.db.
+		Select("guild_id").
+		Joins("inner join activities on activities.id = guild_config_activities.activity_id").
+		Where("name = ? and active = true", activity).
+		Find(&res).Error
+}
+
+func (pg *pg) UpsertToggleActive(config *model.GuildConfigActivity) error {
+	tx := pg.db.Begin()
+
+	// update on conflict
+	err := tx.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "guild_id"}, {Name: "activity_id"}},
+		DoUpdates: clause.Assignments(map[string]interface{}{"active": gorm.Expr("NOT guild_config_activities.active")}),
+	}).Create(config).Error
+	if err != nil {
 		tx.Rollback()
 		return err
 	}

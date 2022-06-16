@@ -55,3 +55,17 @@ func (pg *pg) UpsertOne(token model.Token) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) GetAll() ([]model.Token, error) {
+	var tokens []model.Token
+	return tokens, pg.db.Find(&tokens).Error
+}
+
+func (pg *pg) GetAllSupportedToken(guildID string) ([]model.Token, error) {
+	var tokens []model.Token
+	return tokens, pg.db.
+		Table("tokens").
+		Joins("JOIN guild_config_tokens ON guild_config_tokens.token_id = tokens.id").
+		Where("guild_config_tokens.guild_id = ?", guildID).
+		Find(&tokens).Error
+}
