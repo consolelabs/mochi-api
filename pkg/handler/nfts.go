@@ -67,3 +67,11 @@ func (h *Handler) GetNFTCollection(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }
+func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
+	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": nfts})
+}
