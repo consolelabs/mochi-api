@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"github.com/defipod/mochi/pkg/logger"
 	"strconv"
 	"time"
 
@@ -266,6 +267,8 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 }
 
 func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	log := logger.NewLogrusLogger()
+	log.Infof("New boost event start at guildID %v by user %v", message.GuildID, message.Author.ID)
 	var resp *response.HandleUserActivityResponse
 
 	resp, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
@@ -274,7 +277,8 @@ func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUs
 		Action:  "boost",
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+		log.Info("Failed to handle user boost activity")
+		return nil, fmt.Errorf("failed to handle user boost activity: %v", err.Error())
 	}
 
 	return resp, nil
