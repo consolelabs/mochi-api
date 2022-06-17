@@ -35,7 +35,7 @@ func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesT
 
 	return config, nil
 }
-func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSTConfigRequest) error {
+func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRequest) error {
 	tmp := &model.GuildConfigSalesTracker{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,

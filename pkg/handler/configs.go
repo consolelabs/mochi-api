@@ -65,7 +65,7 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 }
 
 func (h *Handler) UpsertSalesTrackerConfig(c *gin.Context) {
-	var req request.UpsertSTConfigRequest
+	var req request.UpsertSalesTrackerConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
