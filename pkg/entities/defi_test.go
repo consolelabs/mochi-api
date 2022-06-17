@@ -62,7 +62,7 @@ func TestEntity_TokenCompare(t *testing.T) {
 		RedisURL: "redis://localhost:6379/0",
 	}
 
-	svc, _ := service.NewService(cfg, logger)
+	svc, _ := service.NewService(cfg)
 
 	uCompare := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = uCompare
