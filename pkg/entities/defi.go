@@ -422,3 +422,21 @@ func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.Gu
 	}
 	return gActivityConfig, nil
 }
+
+func (e *Entity) GetHistoryCoinInfo(sourceSymbol string, interval string) (res [][]float32, err error, statusCode int) {
+	res, err, statusCode = e.svc.CoinGecko.GetHistoryCoinInfo(sourceSymbol, interval)
+	if err != nil {
+		return nil, err, statusCode
+	}
+
+	return res, nil, http.StatusOK
+}
+
+func (e *Entity) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (tokenCompareRes *response.TokenCompareReponse, err error) {
+	tokenCompareRes, err = e.svc.CoinGecko.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenCompareRes, nil
+}

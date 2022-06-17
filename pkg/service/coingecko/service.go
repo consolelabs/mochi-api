@@ -10,4 +10,6 @@ type Service interface {
 	GetCoin(coinID string) (*response.GetCoinResponse, error, int)
 	GetCoinPrice(coinIDs []string, currency string) (map[string]float64, error)
 	SearchCoins(query string) ([]response.SearchedCoin, error, int)
+	GetHistoryCoinInfo(sourceSymbol string, interval string) ([][]float32, error, int)
+	TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (tokenCompareRes *response.TokenCompareReponse, err error)
 }

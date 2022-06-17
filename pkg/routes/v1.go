@@ -13,11 +13,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
-	cryptoGroup := v1.Group("/crypto")
-	{
-		cryptoGroup.GET("/token-compare", h.TokenCompare)
-	}
-
 	chainGroup := v1.Group("/chains")
 	{
 		chainGroup.GET("", h.ListAllChain)
@@ -147,6 +142,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
+		defiGroup.GET("/coins/compare", h.TokenCompare)
 	}
 
 	webhook := v1.Group("/webhook")
