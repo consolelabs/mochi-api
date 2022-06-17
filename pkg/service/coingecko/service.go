@@ -11,5 +11,5 @@ type Service interface {
 	GetCoinPrice(coinIDs []string, currency string) (map[string]float64, error)
 	SearchCoins(query string) ([]response.SearchedCoin, error, int)
 	GetHistoryCoinInfo(sourceSymbol string, interval string) ([][]float32, error, int)
-	TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (tokenCompareRes *response.TokenCompareReponse, err error)
+	TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error)
 }

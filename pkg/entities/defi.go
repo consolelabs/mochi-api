@@ -432,8 +432,9 @@ func (e *Entity) GetHistoryCoinInfo(sourceSymbol string, interval string) (res [
 	return res, nil, http.StatusOK
 }
 
-func (e *Entity) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (tokenCompareRes *response.TokenCompareReponse, err error) {
-	tokenCompareRes, err = e.svc.CoinGecko.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
+func (e *Entity) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
+	fmt.Println(sourceSymbolInfo, targetSymbolInfo)
+	tokenCompareRes, err := e.svc.CoinGecko.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
 	if err != nil {
 		return nil, err
 	}

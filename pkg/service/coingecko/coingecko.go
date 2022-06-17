@@ -104,6 +104,7 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (re
 }
 
 func (c *CoinGecko) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
+	fmt.Println("aaaaaaaaaaaaaaaa")
 	tokenCompareRes := &response.TokenCompareReponse{}
 	for i := 0; i < len(sourceSymbolInfo); i++ {
 		currentRatio := sourceSymbolInfo[i][1] / targetSymbolInfo[i][1]
