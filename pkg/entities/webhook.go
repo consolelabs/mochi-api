@@ -265,12 +265,12 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 	return resp, nil
 }
 
-func (e *Entity) BoostXPIncrease(member *discordgo.Member) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	var resp *response.HandleUserActivityResponse
 
 	resp, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID: member.GuildID,
-		UserID:  member.User.ID,
+		GuildID: message.GuildID,
+		UserID:  message.Author.ID,
 		Action:  "boost",
 	})
 	if err != nil {
