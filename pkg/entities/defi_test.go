@@ -65,7 +65,7 @@ func TestEntity_TokenCompare(t *testing.T) {
 	svc, _ := service.NewService(cfg)
 
 	uCompare := mock_coingecko.NewMockService(ctrl)
-	abc.CoinGecko = uCompare
+	svc.CoinGecko = uCompare
 	tests := []struct {
 		name                string
 		fields              fields
