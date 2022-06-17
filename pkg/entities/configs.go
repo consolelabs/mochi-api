@@ -27,7 +27,7 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 
 	return nil
 }
-func (e *Entity) GetSTConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
+func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
 	config, err := e.repo.GuildConfigSalesTracker.GetByGuildID(guildID)
 	if err != nil {
 		return nil, err
@@ -35,14 +35,13 @@ func (e *Entity) GetSTConfig(guildID string) (*model.GuildConfigSalesTracker, er
 
 	return config, nil
 }
-func (e *Entity) UpsertSTConfig(req request.UpsertSTConfigRequest) error {
+func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSTConfigRequest) error {
 	tmp := &model.GuildConfigSalesTracker{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 	}
 
 	if err := e.repo.GuildConfigSalesTracker.UpsertOne(tmp); err != nil {
-		fmt.Println(tmp)
 		return err
 	}
 	return nil

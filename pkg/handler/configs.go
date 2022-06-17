@@ -48,13 +48,13 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
-func (h *Handler) GetSTConfig(c *gin.Context) {
+func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
-	config, err := h.entities.GetSTConfig(guildID)
+	config, err := h.entities.GetSalesTrackerConfig(guildID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -78,7 +78,7 @@ func (h *Handler) UpsertSalesTrackerConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
 	}
 
-	if err := h.entities.UpsertSTConfig(req); err != nil {
+	if err := h.entities.UpsertSalesTrackerConfig(req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
