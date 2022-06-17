@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/response"
 	res "github.com/defipod/mochi/pkg/response"
 )
 
@@ -100,4 +102,28 @@ func (i *indexer) GetNFTCollection(address string) (*res.NFTCollectionResponse, 
 	}
 	defer response.Body.Close()
 	return data, nil
+}
+func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
+	url := fmt.Sprintf("%s/api/v1/nft/daily-trading-volume", i.cfg.IndexerServerHost)
+
+	nftList := response.NFTTradingVolumeResponse{}
+	client := &http.Client{Timeout: time.Second * 30}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(b), &nftList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch nft indexer")
+	}
+
+	return nftList.Data, nil
 }
