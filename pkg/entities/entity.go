@@ -106,9 +106,6 @@ func Get() *Entity {
 func (e *Entity) GetSvc() *service.Service {
 	return e.svc
 }
-func (e *Entity) GetIndexer() indexer.Indexer {
-	return e.indexer
-}
 
 func Shutdown() error {
 	e.store.Shutdown()
