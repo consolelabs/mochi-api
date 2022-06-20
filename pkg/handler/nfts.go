@@ -75,3 +75,32 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }
+
+func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
+	var req request.NFTSalesTrackerRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.entities.CreateNFTSalesTracker(req.ContractAddress, req.Platform, req.SalesConfigID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+
+}
+
+func (h *Handler) GetNFTSalesTracker(c *gin.Context){
+	addr := c.Query("contract_address")
+	platform := c.Query("platform")
+	trackers,err := h.entities.GetAllSalesTracker(addr,platform)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": trackers})
+}

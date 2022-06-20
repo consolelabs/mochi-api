@@ -10,7 +10,15 @@ type UpsertGmConfigRequest struct {
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
 }
+<<<<<<< HEAD
+<<<<<<< HEAD
 type UpsertSalesTrackerConfigRequest struct {
+=======
+type UpsertSTConfigRequest struct {
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+type UpsertSalesTrackerConfigRequest struct {
+>>>>>>> 665a93b (feat: sales tracker config)
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
 }

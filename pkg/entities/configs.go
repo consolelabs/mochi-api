@@ -27,7 +27,15 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 
 	return nil
 }
+<<<<<<< HEAD
+<<<<<<< HEAD
 func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
+=======
+func (e *Entity) GetSTConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
+>>>>>>> 4b36907 (feat: sales tracker config)
 	config, err := e.repo.GuildConfigSalesTracker.GetByGuildID(guildID)
 	if err != nil {
 		return nil, err
@@ -35,13 +43,32 @@ func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesT
 
 	return config, nil
 }
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRequest) error {
+=======
+func (e *Entity) UpsertSTConfig(req request.UpsertSTConfigRequest) error {
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSTConfigRequest) error {
+>>>>>>> 4b36907 (feat: sales tracker config)
+=======
+func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRequest) error {
+>>>>>>> 665a93b (feat: sales tracker config)
 	tmp := &model.GuildConfigSalesTracker{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 	}
 
 	if err := e.repo.GuildConfigSalesTracker.UpsertOne(tmp); err != nil {
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		fmt.Println(tmp)
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+>>>>>>> 4b36907 (feat: sales tracker config)
 		return err
 	}
 	return nil

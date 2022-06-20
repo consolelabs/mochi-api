@@ -347,3 +347,15 @@ func (e *Entity) GetNFTCollection(symbol string) (*response.NFTCollectionRespons
 	}
 	return data, nil
 }
+
+func (e *Entity) CreateNFTSalesTracker(addr string, platform string, configID string) error {
+	return e.repo.NFTSalesTracker.FirstOrCreate(&model.InsertNFTSalesTracker{
+		ContractAddress: addr,
+		Platform: platform,
+		SalesConfigID: configID,
+	})
+}
+
+func (e *Entity) GetAllSalesTracker(addr string, platform string) (*[]model.NFTSalesTracker,error){
+	return e.repo.NFTSalesTracker.GetAllTracker(addr,platform)
+}

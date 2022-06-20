@@ -31,6 +31,7 @@ import (
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	"github.com/defipod/mochi/pkg/repo/token"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
@@ -53,6 +54,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
+		NFTSalesTracker: 					  nftsalestracker.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),

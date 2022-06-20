@@ -28,6 +28,7 @@ import (
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
@@ -40,6 +41,7 @@ type Repo struct {
 	DiscordUserGMStreak                  discordusergmstreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
+	NFTSalesTracker 					 nftsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
 	DiscordGuilds                        discordguilds.Store
 	DiscordWalletVerification            discordwalletverification.Store

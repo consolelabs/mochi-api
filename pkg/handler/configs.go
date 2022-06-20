@@ -48,13 +48,29 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
+=======
+func (h *Handler) GetSTConfig(c *gin.Context) {
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
+>>>>>>> 4b36907 (feat: sales tracker config)
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 	config, err := h.entities.GetSalesTrackerConfig(guildID)
+=======
+	config, err := h.entities.GetSTConfig(guildID)
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+	config, err := h.entities.GetSalesTrackerConfig(guildID)
+>>>>>>> 4b36907 (feat: sales tracker config)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -65,7 +81,15 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 }
 
 func (h *Handler) UpsertSalesTrackerConfig(c *gin.Context) {
+<<<<<<< HEAD
+<<<<<<< HEAD
 	var req request.UpsertSalesTrackerConfigRequest
+=======
+	var req request.UpsertSTConfigRequest
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+	var req request.UpsertSalesTrackerConfigRequest
+>>>>>>> 665a93b (feat: sales tracker config)
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -78,7 +102,15 @@ func (h *Handler) UpsertSalesTrackerConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
 	}
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 	if err := h.entities.UpsertSalesTrackerConfig(req); err != nil {
+=======
+	if err := h.entities.UpsertSTConfig(req); err != nil {
+>>>>>>> 8098244 (feat: sales tracker config)
+=======
+	if err := h.entities.UpsertSalesTrackerConfig(req); err != nil {
+>>>>>>> 4b36907 (feat: sales tracker config)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
