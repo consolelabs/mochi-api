@@ -12,12 +12,12 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/entities"
-	"github.com/defipod/mochi/pkg/indexer"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )

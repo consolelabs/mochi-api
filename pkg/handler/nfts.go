@@ -2,17 +2,16 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) GetNFTDetail(c *gin.Context) {
-	symbol := strings.ToLower(c.Param("symbol"))
-	tokenId := c.Param("id")
+	symbol := c.Param("symbol")
+	tokenID := c.Param("id")
 
-	data, err := h.entities.GetNFTDetail(symbol, tokenId)
+	data, err := h.entities.GetNFTDetail(symbol, tokenID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -59,11 +58,43 @@ func (h *Handler) GetNFTCollection(c *gin.Context) {
 		return
 	}
 
-	nfts, err := h.entities.GetNFTCollection(symbol)
+	data, err := h.entities.GetNFTCollection(symbol)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	c.JSON(http.StatusOK, data)
+}
+func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
+	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
+}
+
+func (h *Handler) GetNFTCollections(c *gin.Context) {
+	data, err := h.entities.GetNFTCollections(c.Request.URL.RawQuery)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+func (h *Handler) GetNFTTokens(c *gin.Context) {
+	symbol := c.Param("symbol")
+	if symbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
+	}
+
+	data, err := h.entities.GetNFTTokens(symbol, c.Request.URL.RawQuery)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
 }

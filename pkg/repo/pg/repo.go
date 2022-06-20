@@ -20,6 +20,7 @@ import (
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
+	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -51,6 +52,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
+		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
