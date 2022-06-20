@@ -2,17 +2,16 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) GetNFTDetail(c *gin.Context) {
-	symbol := strings.ToLower(c.Param("symbol"))
-	tokenId := c.Param("id")
+	symbol := c.Param("symbol")
+	tokenID := c.Param("id")
 
-	data, err := h.entities.GetNFTDetail(symbol, tokenId)
+	data, err := h.entities.GetNFTDetail(symbol, tokenID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -8,4 +8,5 @@ type Service interface {
 	GetNFTTradingVolume() ([]response.NFTTradingVolume, error)
 	GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error)
 	GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error)
+	GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error)
 }
