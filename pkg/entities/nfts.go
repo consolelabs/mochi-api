@@ -330,13 +330,13 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 	return nil
 }
 
-func (e *Entity) GetNFTCollection(symbol string) (*response.NFTCollectionResponse, error) {
+func (e *Entity) GetNFTCollection(symbol string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := e.indexer.GetNFTCollection(collection.Address)
+	data, err := e.indexer.GetNFTCollectionTickers(collection.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -344,6 +344,30 @@ func (e *Entity) GetNFTCollection(symbol string) (*response.NFTCollectionRespons
 	for _, ts := range data.Tickers.Timestamps {
 		time := time.UnixMilli(ts)
 		data.Tickers.Times = append(data.Tickers.Times, time.Format("01-02"))
+	}
+	return data, nil
+}
+
+func (e *Entity) GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error) {
+	data, err := e.svc.Indexer.GetNFTCollections(query)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTTokensResponse, error) {
+	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	if err != nil {
+		return nil, err
+	}
+	if collection.Address == "" {
+		return nil, fmt.Errorf("invalid address - collection %s", collection.ID.UUID)
+	}
+	data, err := e.svc.Indexer.GetNFTTokens(collection.Address, query)
+	if err != nil {
+		return nil, err
 	}
 	return data, nil
 }
