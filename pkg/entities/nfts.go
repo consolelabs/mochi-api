@@ -44,25 +44,25 @@ var (
 	}
 )
 
-func (e *Entity) GetNFTDetail(symbol, tokenId string) (nftsResponse *NFTTokenResponse, err error) {
+func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		err = fmt.Errorf("failed to get nft collection : %v", err)
 		return nil, err
 	}
-	nftsResponse, err = GetNFTDetailFromIndexer(collection.Address, tokenId)
+	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
 	if err != nil {
 		err = fmt.Errorf("failed to get NFT from indexer: %v", err)
 		return nil, err
 	}
 
-	if nftsResponse == nil {
-		err = fmt.Errorf("response nfts from indexer nil")
+	if data == nil {
+		err = fmt.Errorf("no nft data from indexer")
 		return nil, err
 	}
 
-	return nftsResponse, nil
+	return data, nil
 }
 
 type NFTCollectionData struct {
@@ -192,67 +192,6 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 	}
 
 	return nil
-}
-
-type NFTTokenResponse struct {
-	TokenId           uint64          `json:"token_id"`
-	CollectionAddress string          `json:"collection_address"`
-	Name              string          `json:"name"`
-	Description       string          `json:"description"`
-	Amount            uint64          `json:"amount"`
-	Image             string          `json:"image"`
-	ImageCDN          string          `json:"image_cdn"`
-	ThumbnailCDN      string          `json:"thumbnail_cdn"`
-	ImageContentType  string          `json:"image_content_type"`
-	Rarity            *NFTTokenRarity `json:"rarity"`
-	Attributes        []Attribute     `json:"attributes"`
-	MetadataId        string          `json:"metadata_id"`
-}
-
-type NFTTokenRarity struct {
-	Rank   uint64 `json:"rank"`
-	Score  string `json:"score"`
-	Total  uint64 `json:"total"`
-	Rarity string `json:"rarity,omitempty"`
-}
-
-type Attribute struct {
-	TraitType string `json:"trait_type"`
-	Value     string `json:"value"`
-	Count     int    `json:"count"`
-	Rarity    string `json:"rarity"`
-	Frequency string `json:"frequency"`
-}
-
-func GetNFTDetailFromIndexer(address, tokenId string) (*NFTTokenResponse, error) {
-	nftsData := &NFTTokenResponse{}
-	//TODO change to prod
-	indexerAPI := "https://develop-api.indexer.console.so/api/v1/nft/%s/%s"
-	client := &http.Client{
-		Timeout: time.Second * 60,
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf(indexerAPI, address, tokenId), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(body, &nftsData)
-	if err != nil {
-		return nil, err
-	}
-	return nftsData, nil
 }
 
 func (e *Entity) ListAllNFTCollections() ([]model.NFTCollection, error) {

@@ -32,20 +32,21 @@ type IndexerGetNFTTokensResponse struct {
 }
 
 type IndexerNFTToken struct {
-	TokenId           uint64 `json:"token_id,omitempty"`
-	CollectionAddress string `json:"collection_address,omitempty"`
-	Name              string `json:"name,omitempty"`
-	Description       string `json:"description,omitempty"`
-	Amount            uint64 `json:"amount,omitempty"`
-	Image             string `json:"image,omitempty"`
-	ImageCDN          string `json:"image_cdn,omitempty"`
-	ThumbnailCDN      string `json:"thumbnail_cdn,omitempty"`
-	ImageContentType  string `json:"image_content_type,omitempty"`
-	RarityRank        uint64 `json:"rarity_rank,omitempty"`
-	RarityScore       string `json:"rarity_score,omitempty"`
-	RarityTier        string `json:"rarity_tier"`
-
-	Attributes []IndexerNFTTokenAttribute `json:"attributes" gorm:"-"`
+	TokenID           uint64                     `json:"token_id,omitempty"`
+	CollectionAddress string                     `json:"collection_address,omitempty"`
+	Name              string                     `json:"name,omitempty"`
+	Description       string                     `json:"description,omitempty"`
+	Amount            uint64                     `json:"amount,omitempty"`
+	Image             string                     `json:"image,omitempty"`
+	ImageCDN          string                     `json:"image_cdn,omitempty"`
+	ThumbnailCDN      string                     `json:"thumbnail_cdn,omitempty"`
+	ImageContentType  string                     `json:"image_content_type"`
+	RarityRank        uint64                     `json:"rarity_rank"`
+	RarityScore       string                     `json:"rarity_score,omitempty"`
+	RarityTier        string                     `json:"rarity_tier"`
+	Attributes        []IndexerNFTTokenAttribute `json:"attributes" gorm:"-"`
+	Rarity            *IndexerNFTTokenRarity     `json:"rarity"`
+	MetadataID        string                     `json:"metadata_id"`
 }
 
 type IndexerNFTTokenAttribute struct {
@@ -56,4 +57,19 @@ type IndexerNFTTokenAttribute struct {
 	Count             uint64 `json:"count"`
 	Rarity            string `json:"rarity"`
 	Frequency         string `json:"frequency"`
+}
+
+type IndexerNFTTokenRarity struct {
+	Rank   uint64 `json:"rank"`
+	Score  string `json:"score"`
+	Total  uint64 `json:"total"`
+	Rarity string `json:"rarity,omitempty"`
+}
+
+type IndexerAttribute struct {
+	TraitType string `json:"trait_type"`
+	Value     string `json:"value"`
+	Count     int    `json:"count"`
+	Rarity    string `json:"rarity"`
+	Frequency string `json:"frequency"`
 }
