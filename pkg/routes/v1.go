@@ -144,6 +144,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
+		defiGroup.GET("/coins/compare", h.TokenCompare)
 	}
 
 	webhook := v1.Group("/webhook")
