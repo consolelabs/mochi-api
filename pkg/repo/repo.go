@@ -28,6 +28,7 @@ import (
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
@@ -70,4 +71,5 @@ type Repo struct {
 	UserNFTBalance                       usernftbalance.Store
 	MessageRepostHistory                 messagereposthistory.Store
 	GuildScheduledEvent                  guildscheduledevent.Store
+	NFTSalesTracker 					 nftsalestracker.Store
 }

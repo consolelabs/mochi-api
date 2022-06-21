@@ -28,7 +28,8 @@ func (pg *pg) GetByAddress(address string) (*model.NFTCollection, error) {
 
 func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
-	err := pg.db.Table("nft_collections").Where("lower(symbol) = ?", strings.ToLower(symbol)).Where("is_verified = ?", true).First(&collection).Error
+	err := pg.db.Table("nft_collections").Where("lower(symbol) = lower(?)", symbol).
+		Where("is_verified = ?", true).First(&collection).Error
 	if err != nil {
 		return nil, err
 	}

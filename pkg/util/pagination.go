@@ -1,9 +1,9 @@
 package util
 
 type Pagination struct {
-	Page  int `json:"page" form:"page"`
-	Size  int `json:"size" form:"size"`
-	Total int `json:"total"`
+	Page  int64 `json:"page" form:"page"`
+	Size  int64 `json:"size" form:"size"`
+	Total int64 `json:"total"`
 }
 
 func (p *Pagination) Standardize() {

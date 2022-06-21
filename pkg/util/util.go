@@ -538,7 +538,7 @@ func RoundFloat(val float64, precision uint) float64 {
 }
 
 func GetNullUUID(id string) uuid.NullUUID {
-	uid, err := uuid.FromBytes([]byte(id))
+	uid, err := uuid.Parse(id)
 	if err != nil {
 		log.Error("uuid invalid")
 	}
