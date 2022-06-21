@@ -51,7 +51,7 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": nfts})
 }
 
-func (h *Handler) GetNFTCollection(c *gin.Context) {
+func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 	symbol := c.Param("symbol")
 	if symbol == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
@@ -64,7 +64,7 @@ func (h *Handler) GetNFTCollection(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
