@@ -179,12 +179,16 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("", h.ListAllNFTCollections)
 		nftsGroup.GET("/:symbol/:id", h.GetNFTDetail)
 		nftsGroup.GET("/supported-chains", h.GetSupportedChains)
-		nftsGroup.GET("/collections", h.GetNFTCollections)
-		nftsGroup.POST("/collections", h.CreateNFTCollection)
-		nftsGroup.GET("/collections/:symbol", h.GetNFTTokens)
-		nftsGroup.GET("/collections/:symbol/tickers", h.GetNFTCollection)
 		nftsGroup.GET("/trading-volume", h.GetNFTTradingVolume)
 		nftsGroup.POST("/sales-tracker", h.CreateNFTSalesTracker)
+
+		collectionsGroup := nftsGroup.Group("/collections")
+		{
+			collectionsGroup.GET("", h.GetNFTCollections)
+			collectionsGroup.POST("", h.CreateNFTCollection)
+			collectionsGroup.GET("/:symbol", h.GetNFTTokens)
+			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
+		}
 	}
 	giftGroup := v1.Group("/gift")
 	{
