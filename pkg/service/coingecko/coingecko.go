@@ -3,6 +3,7 @@ package coingecko
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,7 @@ type CoinGecko struct {
 	searchCoinURL     string
 	getCoinURL        string
 	getPriceURL       string
+	getHistoryInfo    string
 }
 
 func NewService() Service {
@@ -24,6 +26,7 @@ func NewService() Service {
 		searchCoinURL:     "https://api.coingecko.com/api/v3/search?query=%s",
 		getCoinURL:        "https://api.coingecko.com/api/v3/coins/%s",
 		getPriceURL:       "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
+		getHistoryInfo:    "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
 	}
 }
 
@@ -89,4 +92,40 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 	}
 
 	return prices, nil
+}
+
+func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (resp [][]float32, err error, statusCode int) {
+	statusCode, err = util.FetchData(fmt.Sprintf(c.getHistoryInfo, sourceSymbol, interval), &resp)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, err, statusCode
+	}
+
+	return resp, nil, http.StatusOK
+}
+
+func (c *CoinGecko) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
+	tokenCompareRes := &response.TokenCompareReponse{}
+
+	for i, _ := range sourceSymbolInfo {
+		currentRatio := sourceSymbolInfo[i][1] / targetSymbolInfo[i][1]
+		tokenCompareRes.PriceCompare = append(tokenCompareRes.PriceCompare, currentRatio)
+		// get times and convert to string, ex: 2022-05-24T07:59:30Z
+		getTime := int(sourceSymbolInfo[i][0])
+		getStringTime := strconv.Itoa(getTime / 1000)
+		convertTime, err := strconv.ParseInt(getStringTime, 10, 64)
+		if err != nil {
+			return tokenCompareRes, err
+		}
+
+		stringTime, err := time.Unix(convertTime, 0).UTC().MarshalText()
+		if err != nil {
+			return tokenCompareRes, err
+		}
+
+		resTime := string(stringTime)[5:10]
+
+		tokenCompareRes.Times = append(tokenCompareRes.Times, resTime)
+	}
+
+	return tokenCompareRes, nil
 }
