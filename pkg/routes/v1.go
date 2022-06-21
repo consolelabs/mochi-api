@@ -183,6 +183,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/collections/:symbol", h.GetNFTTokens)
 		nftsGroup.GET("/collections/:symbol/tickers", h.GetNFTCollection)
 		nftsGroup.GET("/trading-volume", h.GetNFTTradingVolume)
+		nftsGroup.POST("/sales-tracker", h.CreateNFTSalesTracker)
 	}
 	giftGroup := v1.Group("/gift")
 	{

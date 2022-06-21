@@ -78,7 +78,7 @@ func (mr *MockStoreMockRecorder) Gets() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Gets", reflect.TypeOf((*MockStore)(nil).Gets))
 }
 
-// UpdateGuild mocks base method.
+// Update mocks base method.
 func (m *MockStore) Update(omit string, guild model.DiscordGuild) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", omit, guild)
@@ -86,8 +86,8 @@ func (m *MockStore) Update(omit string, guild model.DiscordGuild) error {
 	return ret0
 }
 
-// ToggleGlobalXP indicates an expected call of ToggleGlobalXP.
-func (mr *MockStoreMockRecorder) Update(omit string, guild model.DiscordGuild) *gomock.Call {
+// Update indicates an expected call of Update.
+func (mr *MockStoreMockRecorder) Update(omit, guild interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStore)(nil).Update), omit, guild)
 }

@@ -310,3 +310,16 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 	}
 	return data, nil
 }
+
+func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID string) error {
+	config, err := e.GetSalesTrackerConfig(guildID)
+	if err!=nil{
+		return err
+	}
+
+	return e.repo.NFTSalesTracker.FirstOrCreate(&model.InsertNFTSalesTracker{
+		ContractAddress: addr,
+		Platform: platform,
+		SalesConfigID: config.ID.UUID.String(),
+	})
+}
