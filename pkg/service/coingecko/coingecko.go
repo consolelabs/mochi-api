@@ -105,7 +105,8 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (re
 
 func (c *CoinGecko) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
 	tokenCompareRes := &response.TokenCompareReponse{}
-	for i := 0; i < len(sourceSymbolInfo); i++ {
+
+	for i, _ := range sourceSymbolInfo {
 		currentRatio := sourceSymbolInfo[i][1] / targetSymbolInfo[i][1]
 		tokenCompareRes.PriceCompare = append(tokenCompareRes.PriceCompare, currentRatio)
 		// get times and convert to string, ex: 2022-05-24T07:59:30Z
