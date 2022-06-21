@@ -121,7 +121,9 @@ func (c *CoinGecko) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo 
 			return tokenCompareRes, err
 		}
 
-		tokenCompareRes.Times = append(tokenCompareRes.Times, string(stringTime))
+		resTime := string(stringTime)[5:10]
+
+		tokenCompareRes.Times = append(tokenCompareRes.Times, resTime)
 	}
 
 	return tokenCompareRes, nil
