@@ -10,4 +10,6 @@ const (
 	// stickers type
 	CustomSticker = 1
 	ServerSticker = 2
+	// message types
+	MessageTypeUserPremiumGuildSubscription = 8
 )

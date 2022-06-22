@@ -111,3 +111,50 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
+
+func (h *Handler) TokenCompare(c *gin.Context) {
+	sourceSymbol := c.Query("source_symbol")
+	targetSymbol := c.Query("target_symbol")
+	interval := c.Query("interval")
+
+	if sourceSymbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "source symbol is required"})
+		return
+	}
+
+	if targetSymbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "target symbol is required"})
+		return
+	}
+	if interval == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "interval is required"})
+		return
+	}
+
+	// get all token with guildID
+	sourceSymbolInfo, err, statusCode := h.entities.GetHistoryCoinInfo(sourceSymbol, interval)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	targetSymbolInfo, err, statusCode := h.entities.GetHistoryCoinInfo(targetSymbol, interval)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	//check if one of 2 symbol is old
+	if len(sourceSymbolInfo) != len(targetSymbolInfo) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "One token is expired."})
+		return
+	}
+
+	tokenCompareReponse, err := h.entities.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": tokenCompareReponse})
+}
