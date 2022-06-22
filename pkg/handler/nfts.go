@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,6 +26,11 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 
 	if err := req.Bind(c); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
+	if checksumAddress != req.Address {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Address does not have correct format. Do not lowercase your address"})
 		return
 	}
 

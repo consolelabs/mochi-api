@@ -149,7 +149,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:   collection.TokenAddress,
+		Address:   req.Address,
 		Symbol:    collection.Symbol,
 		Name:      collection.Name,
 		ChainID:   req.ChainID,
