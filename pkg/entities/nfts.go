@@ -298,6 +298,19 @@ func (e *Entity) GetNFTCollections(query string) (*response.IndexerGetNFTCollect
 		return nil, err
 	}
 
+	chainMap := make(map[int]model.Chain)
+	if chains, err := e.repo.Chain.GetAll(); err == nil {
+		for _, chain := range chains {
+			chainMap[chain.ID] = chain
+		}
+	}
+	for i, collection := range data.Data {
+		chain, ok := chainMap[collection.ChainId]
+		if ok {
+			data.Data[i].Chain = &chain
+		}
+	}
+
 	return data, nil
 }
 

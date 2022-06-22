@@ -1,6 +1,9 @@
 package response
 
-import "github.com/defipod/mochi/pkg/util"
+import (
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/util"
+)
 
 type IndexerNFTCollectionTickersResponse struct {
 	Tickers         TokenTickers `json:"tickers"`
@@ -17,13 +20,14 @@ type IndexerGetNFTCollectionsResponse struct {
 }
 
 type IndexerNFTCollection struct {
-	Address            string `json:"address"`
-	Name               string `json:"name"`
-	Symbol             string `json:"symbol"`
-	ChainId            int    `json:"chain_id"`
-	ERCFormat          string `json:"erc_format"`
-	Supply             uint64 `json:"supply"`
-	IsRarityCalculated bool   `json:"is_rarity_calculated"`
+	Address            string       `json:"address"`
+	Name               string       `json:"name"`
+	Symbol             string       `json:"symbol"`
+	ChainId            int          `json:"chain_id"`
+	Chain              *model.Chain `json:"chain,omitempty"`
+	ERCFormat          string       `json:"erc_format"`
+	Supply             uint64       `json:"supply"`
+	IsRarityCalculated bool         `json:"is_rarity_calculated"`
 }
 
 type IndexerGetNFTTokensResponse struct {
