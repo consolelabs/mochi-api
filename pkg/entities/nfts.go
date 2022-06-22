@@ -124,6 +124,20 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	chainID, err := strconv.Atoi(req.ChainID)
+	if err != nil {
+		return
+	}
+
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: req.Address,
+		ChainID: chainID,
+	})
+	if err != nil {
+		err = fmt.Errorf("failed to add contract to Indexer: %v", err)
+		return
+	}
+
 	collection, err := GetNFTCollectionFromMoralis(strings.ToLower(req.Address), req.Chain, e.cfg)
 	if err != nil {
 		err = fmt.Errorf("failed to get collection NFT from moralis: %v", err)
@@ -147,15 +161,6 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 	go PutSyncMoralisNFTCollection(strings.ToLower(req.Address), req.Chain, e.cfg)
 
-	chainID, err := strconv.Atoi(req.ChainID)
-	if err != nil {
-		return
-	}
-
-	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: req.Address,
-		ChainID: chainID,
-	})
 	return
 }
 
@@ -313,13 +318,13 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 
 func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID string) error {
 	config, err := e.GetSalesTrackerConfig(guildID)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 
 	return e.repo.NFTSalesTracker.FirstOrCreate(&model.InsertNFTSalesTracker{
 		ContractAddress: addr,
-		Platform: platform,
-		SalesConfigID: config.ID.UUID.String(),
+		Platform:        platform,
+		SalesConfigID:   config.ID.UUID.String(),
 	})
 }
