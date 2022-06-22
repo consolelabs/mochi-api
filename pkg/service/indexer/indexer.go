@@ -238,3 +238,34 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*response.Ind
 	}
 	return data, nil
 }
+
+func (i *indexer) GetNftSales() (*response.NftSalesResponse, error) {
+	data := &response.NftSalesResponse{}
+	url := "%s/api/v1/nft/sales"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to read response body")
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &data); err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
+		return nil, err
+	}
+	return data, nil
+}
