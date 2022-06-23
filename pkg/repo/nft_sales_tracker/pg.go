@@ -19,6 +19,6 @@ func (pg *pg) FirstOrCreate(tracker *model.InsertNFTSalesTracker) error {
 
 func (pg *pg) GetAll() ([]model.NFTSalesTracker, error) {
 	data := []model.NFTSalesTracker{}
-	err := pg.db.Preload("SalesConfig").Find(&data)
+	err := pg.db.Preload("GuildConfigSalesTracker").Find(&data)
 	return data, err.Error
 }

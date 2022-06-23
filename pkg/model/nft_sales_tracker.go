@@ -5,10 +5,11 @@ import (
 )
 
 type NFTSalesTracker struct {
-	ID              uuid.NullUUID             `json:"id" gorm:"default:uuid_generate_v4()"`
-	ContractAddress string                    `json:"contract_address"`
-	Platform        string                    `json:"platform"`
-	SalesConfig     []GuildConfigSalesTracker `json:"sales_config_id" gorm:"foreignKey:GuildID"`
+	ID                      uuid.NullUUID           `json:"id" gorm:"default:uuid_generate_v4()"`
+	ContractAddress         string                  `json:"contract_address"`
+	Platform                string                  `json:"platform"`
+	SalesConfigID           string                  `json:"sales_config_id"`
+	GuildConfigSalesTracker GuildConfigSalesTracker `json:"guild_config_sales_tracker" gorm:"foreignKey:sales_config_id"`
 }
 type InsertNFTSalesTracker struct {
 	ID              uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
