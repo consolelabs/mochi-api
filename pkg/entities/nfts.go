@@ -349,3 +349,20 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 	}
 	return collection, nil
 }
+
+func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, error) {
+	resp := []response.NFTSalesTrackerResponse{}
+	data, err := e.repo.NFTSalesTracker.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range data {
+		resp = append(resp, response.NFTSalesTrackerResponse{
+			ContractAddress: item.ContractAddress,
+			Platform:        item.Platform,
+			GuildID:         item.GuildConfigSalesTracker.GuildID,
+			ChannelID:       item.GuildConfigSalesTracker.ChannelID,
+		})
+	}
+	return resp, nil
+}

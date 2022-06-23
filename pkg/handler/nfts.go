@@ -102,6 +102,7 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
+
 func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	var req request.NFTSalesTrackerRequest
 	if err := c.Bind(&req); err != nil {
@@ -127,4 +128,13 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": collection})
+}
+func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
+	data, err := h.entities.GetAllNFTSalesTracker()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }
