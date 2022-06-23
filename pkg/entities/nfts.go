@@ -341,3 +341,11 @@ func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID str
 		SalesConfigID:   config.ID.UUID.String(),
 	})
 }
+
+func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
+	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
+}
