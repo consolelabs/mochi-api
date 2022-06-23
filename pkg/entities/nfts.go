@@ -349,3 +349,11 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 	}
 	return collection, nil
 }
+
+func (e *Entity) GetAllNFTSalesTracker() ([]model.NFTSalesTracker, error) {
+	data, err := e.repo.NFTSalesTracker.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

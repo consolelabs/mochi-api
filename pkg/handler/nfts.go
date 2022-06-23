@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/request"
@@ -127,4 +128,15 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": collection})
+}
+
+func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
+	data, err := h.entities.GetAllNFTSalesTracker()
+	fmt.Println(data)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }
