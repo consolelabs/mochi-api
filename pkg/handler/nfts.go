@@ -29,10 +29,8 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		return
 	}
 	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
-	if checksumAddress != req.Address {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Address does not have correct format. Do not lowercase your address"})
-		return
-	}
+
+	req.Address = checksumAddress
 
 	data, err := h.entities.CreateNFTCollection(req)
 	if err != nil {
@@ -119,4 +117,14 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 
+}
+
+func (h *Handler) GetDetailNftCollection(c *gin.Context) {
+	collectionSymbol := c.Query("collectionSymbol")
+	collection, err := h.entities.GetDetailNftCollection(collectionSymbol)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": collection})
 }

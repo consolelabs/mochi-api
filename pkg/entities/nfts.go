@@ -124,6 +124,7 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	fmt.Println(req)
 	chainID, err := strconv.Atoi(req.ChainID)
 	if err != nil {
 		return
@@ -340,4 +341,12 @@ func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID str
 		Platform:        platform,
 		SalesConfigID:   config.ID.UUID.String(),
 	})
+}
+
+func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
+	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
 }
