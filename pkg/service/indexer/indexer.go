@@ -3,6 +3,7 @@ package indexer
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/response"
 	res "github.com/defipod/mochi/pkg/response"
 )
 
@@ -183,10 +183,10 @@ func (i *indexer) GetNFTTokens(address, query string) (*res.IndexerGetNFTTokensR
 	return data, nil
 }
 
-func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
+func (i *indexer) GetNFTTradingVolume() ([]res.NFTTradingVolume, error) {
 	url := fmt.Sprintf("%s/api/v1/nft/daily-trading-volume", i.cfg.IndexerServerHost)
 
-	nftList := response.NFTTradingVolumeResponse{}
+	nftList := res.NFTTradingVolumeResponse{}
 	client := &http.Client{Timeout: time.Second * 30}
 
 	resp, err := client.Get(url)
@@ -208,8 +208,8 @@ func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
 	return nftList.Data, nil
 }
 
-func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error) {
-	data := &response.IndexerNFTToken{}
+func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerNFTToken, error) {
+	data := &res.IndexerNFTToken{}
 	url := "%s/api/v1/nft/%s/%s"
 	client := &http.Client{
 		Timeout: time.Second * 60,
@@ -237,4 +237,81 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*response.Ind
 		return nil, err
 	}
 	return data, nil
+}
+
+func (i *indexer) GetNftSales(addr string, platform string) (*res.NftSales, error) {
+	data := &res.NftSalesResponse{}
+	url := "%s/api/v1/nft/sales?collection_address=%s&platform=%s"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost, addr, platform), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to read response body")
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &data); err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
+		return nil, err
+	}
+
+	// ------------- Mock data, delete when implement
+	sales := &res.NftSalesResponse{
+		Data: []res.NftSales{
+			{
+				Platform:             "paintswap",
+				NftName:              "Light",
+				NftStatus:            "sold",
+				NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+				NftPrice:             12.12,
+				NftPriceToken:        "eth",
+				Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
+				Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+			},
+			{
+				Platform:             "paintswap",
+				NftName:              "Cyber Neko 3",
+				NftStatus:            "sold",
+				NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+				NftPrice:             12.12,
+				NftPriceToken:        "eth",
+				Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
+				Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+			},
+			{
+				Platform:             "paintswap",
+				NftName:              "Cyber Neko 4",
+				NftStatus:            "sold",
+				NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+				NftPrice:             12.12,
+				NftPriceToken:        "eth",
+				Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
+				Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+			},
+		},
+	}
+	nft := res.NftSales{}
+	for _, ele := range sales.Data {
+		if ele.NftCollectionAddress == addr && ele.Platform == platform {
+			nft = ele
+		}
+	}
+	if nft == (res.NftSales{}) {
+		return nil, errors.New("collection not found")
+	}
+	// -------------
+
+	return &nft, nil
 }
