@@ -131,6 +131,19 @@ func (h *Handler) TokenCompare(c *gin.Context) {
 		return
 	}
 
+	// get search coin
+	sourceSymbol, err, statusCode := h.entities.SearchCoinsBySymbol(sourceSymbol)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	targetSymbol, err, statusCode = h.entities.SearchCoinsBySymbol(targetSymbol)
+	if err != nil {
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
 	// get all token with guildID
 	sourceSymbolInfo, err, statusCode := h.entities.GetHistoryCoinInfo(sourceSymbol, interval)
 	if err != nil {
