@@ -67,6 +67,7 @@ gen-mock:
 	@mockgen -source=./pkg/service/coingecko/service.go -destination=./pkg/service/coingecko/mocks/service.go
 	@mockgen -source=./pkg/repo/nft_sales_tracker/store.go -destination=./pkg/repo/nft_sales_tracker/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_sales_tracker/store.go -destination=./pkg/repo/guild_config_sales_tracker/mocks/store.go
+	@mockgen -source=./pkg/service/indexer/service.go -destination=./pkg/service/indexer/mocks/service.go
 
 setup-githook:
 	@echo Setting up softlink pre-commit hooks

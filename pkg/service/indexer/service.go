@@ -9,4 +9,5 @@ type Service interface {
 	GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error)
 	GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error)
 	GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error)
+	GetNftSales() (*response.NftSalesResponse, error)
 }
