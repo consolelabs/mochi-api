@@ -1,6 +1,9 @@
 package indexer
 
-import "github.com/defipod/mochi/pkg/response"
+import (
+	"github.com/defipod/mochi/pkg/response"
+	res "github.com/defipod/mochi/pkg/response"
+)
 
 type Service interface {
 	CreateERC721Contract(CreateERC721ContractRequest) error
@@ -9,5 +12,5 @@ type Service interface {
 	GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error)
 	GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error)
 	GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error)
-	GetNftSales(string, string) (*response.NftSales, error)
+	GetNftSales(addr string, platform string) (*res.NftSalesResponse, error)
 }

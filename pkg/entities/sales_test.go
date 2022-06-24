@@ -41,7 +41,7 @@ func TestEntity_GetNftSales(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *response.NftSales
+		want    *response.NftSalesResponse
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -54,15 +54,17 @@ func TestEntity_GetNftSales(t *testing.T) {
 				addr:     "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
 				platform: "paintswap",
 			},
-			want: &response.NftSales{
-				Platform:             "paintswap",
-				NftName:              "Cyber Neko 4",
-				NftStatus:            "sold",
-				NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
-				NftPrice:             12.12,
-				NftPriceToken:        "eth",
-				Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
-				Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+			want: &response.NftSalesResponse{
+				Data: []response.NftSales{{
+					Platform:             "paintswap",
+					NftName:              "Cyber Neko 4",
+					NftStatus:            "sold",
+					NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+					NftPrice:             12.12,
+					NftPriceToken:        "eth",
+					Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
+					Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+				}},
 			},
 			wantErr: false,
 		},
@@ -79,15 +81,17 @@ func TestEntity_GetNftSales(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	indexerResponse := &response.NftSales{
-		Platform:             "paintswap",
-		NftName:              "Cyber Neko 4",
-		NftStatus:            "sold",
-		NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
-		NftPrice:             12.12,
-		NftPriceToken:        "eth",
-		Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
-		Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+	indexerResponse := &response.NftSalesResponse{
+		Data: []response.NftSales{{
+			Platform:             "paintswap",
+			NftName:              "Cyber Neko 4",
+			NftStatus:            "sold",
+			NftCollectionAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+			NftPrice:             12.12,
+			NftPriceToken:        "eth",
+			Buyer:                "0x9f1420cd1a1bbef2240de9d8a005ec2dba9c58c5",
+			Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
+		}},
 	}
 	mockIndexer.EXPECT().GetNftSales("0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0", "paintswap").Return(indexerResponse, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNftSales("0xb54FF1EBc9950fce19Ee9E055A382B1abc", "paintswap").Return(nil, errors.New("collection not found")).AnyTimes()

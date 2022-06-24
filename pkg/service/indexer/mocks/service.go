@@ -125,16 +125,16 @@ func (mr *MockServiceMockRecorder) GetNFTTradingVolume() *gomock.Call {
 }
 
 // GetNftSales mocks base method.
-func (m *MockService) GetNftSales(arg0, arg1 string) (*response.NftSales, error) {
+func (m *MockService) GetNftSales(addr, platform string) (*response.NftSalesResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNftSales", arg0, arg1)
-	ret0, _ := ret[0].(*response.NftSales)
+	ret := m.ctrl.Call(m, "GetNftSales", addr, platform)
+	ret0, _ := ret[0].(*response.NftSalesResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetNftSales indicates an expected call of GetNftSales.
-func (mr *MockServiceMockRecorder) GetNftSales(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetNftSales(addr, platform interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftSales", reflect.TypeOf((*MockService)(nil).GetNftSales), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftSales", reflect.TypeOf((*MockService)(nil).GetNftSales), addr, platform)
 }
