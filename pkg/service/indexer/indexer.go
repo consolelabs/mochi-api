@@ -3,6 +3,7 @@ package indexer
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -238,14 +239,14 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerN
 	return data, nil
 }
 
-func (i *indexer) GetNftSales() (*res.NftSalesResponse, error) {
+func (i *indexer) GetNftSales(addr string, platform string) (*res.NftSales, error) {
 	data := &res.NftSalesResponse{}
-	url := "%s/api/v1/nft/sales"
+	url := "%s/api/v1/nft/sales?collection_address=%s&platform=%s"
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost, addr, platform), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +266,9 @@ func (i *indexer) GetNftSales() (*res.NftSalesResponse, error) {
 		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
 		return nil, err
 	}
-	return &res.NftSalesResponse{
+
+	// ------------- Mock data, delete when implement
+	sales := &res.NftSalesResponse{
 		Data: []res.NftSales{
 			{
 				Platform:             "paintswap",
@@ -298,5 +301,17 @@ func (i *indexer) GetNftSales() (*res.NftSalesResponse, error) {
 				Seller:               "0x9dce416892c8a38c187016c16355443ccae3aae4",
 			},
 		},
-	}, nil
+	}
+	nft := res.NftSales{}
+	for _, ele := range sales.Data {
+		if ele.NftCollectionAddress == addr && ele.Platform == platform {
+			nft = ele
+		}
+	}
+	if nft == (res.NftSales{}) {
+		return nil, errors.New("collection not found")
+	}
+	// -------------
+
+	return &nft, nil
 }
