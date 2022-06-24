@@ -6,7 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetNftSales(addr string, platform string) (*response.NftSales, error) {
+func (e *Entity) GetNftSales(addr string, platform string) (*response.NftSalesResponse, error) {
 	nft, err := e.indexer.GetNftSales(addr, platform)
 	if err != nil {
 		err = fmt.Errorf("failed to get sales from indexer: %v", err)

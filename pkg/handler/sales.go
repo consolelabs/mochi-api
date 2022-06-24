@@ -7,7 +7,7 @@ import (
 )
 
 func (h *Handler) GetNftSalesHandler(c *gin.Context) {
-	addr := c.Query("collection_address")
+	addr := c.Query("collection-address")
 	platform := c.Query("platform")
 	data, err := h.entities.GetNftSales(addr, platform)
 	if err != nil || data == nil {
