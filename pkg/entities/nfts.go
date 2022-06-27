@@ -44,7 +44,7 @@ var (
 	}
 )
 
-func (e *Entity) CheckExitNFT(address string) (bool, error) {
+func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetByAddress(address)
 	if err != nil {

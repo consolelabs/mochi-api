@@ -264,7 +264,7 @@ func TestEntity_GetAllNFTSalesTracker(t *testing.T) {
 	}
 }
 
-func TestEntity_CheckExitNFT(t *testing.T) {
+func TestEntity_CheckExistNftCollection(t *testing.T) {
 	type fields struct {
 		repo     *repo.Repo
 		store    repo.Store
@@ -292,19 +292,19 @@ func TestEntity_CheckExitNFT(t *testing.T) {
 		DBName: "mochi_local",
 
 		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
-		FantomRPC:               "https://rpc.ftm.tools",
-		FantomScan:              "https://api.ftmscan.com/api?",
-		FantomScanAPIKey:        "XEKSVDF5VWQDY5VY6ZNT6AK9QPQRH483EF",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
 
-		EthereumRPC:        "https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114",
-		EthereumScan:       "https://api.etherscan.io/api?",
-		EthereumScanAPIKey: "SM5BHYSNIRZ1HEWJ1JPHVTMJS95HRA6DQF",
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
 
-		BscRPC:        "https://bsc-dataseed.binance.org",
-		BscScan:       "https://api.bscscan.com/api?",
-		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
 
-		DiscordToken: "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
+		DiscordToken: "sample",
 
 		RedisURL: "redis://localhost:6379/0",
 	}
@@ -369,13 +369,13 @@ func TestEntity_CheckExitNFT(t *testing.T) {
 				cfg:      tt.fields.cfg,
 				indexer:  tt.fields.indexer,
 			}
-			got, err := e.CheckExitNFT(tt.args.address)
+			got, err := e.CheckExistNftCollection(tt.args.address)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Entity.CheckExitNFT() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Entity.CheckExistNftCollection() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("Entity.CheckExitNFT() = %v, want %v", got, tt.want)
+				t.Errorf("Entity.CheckExistNftCollection() = %v, want %v", got, tt.want)
 			}
 		})
 	}
