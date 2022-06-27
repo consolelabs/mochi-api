@@ -17,6 +17,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -137,19 +138,19 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
-	// chainID, err := strconv.Atoi(req.ChainID)
-	// if err != nil {
-	// 	return
-	// }
+	chainID, err := strconv.Atoi(req.ChainID)
+	if err != nil {
+		return
+	}
 
-	// err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-	// 	Address: req.Address,
-	// 	ChainID: chainID,
-	// })
-	// if err != nil {
-	// 	err = fmt.Errorf("failed to add contract to Indexer: %v", err)
-	// 	return
-	// }
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: req.Address,
+		ChainID: chainID,
+	})
+	if err != nil {
+		err = fmt.Errorf("failed to add contract to Indexer: %v", err)
+		return
+	}
 
 	collection, err := GetNFTCollectionFromMoralis(strings.ToLower(req.Address), req.Chain, e.cfg)
 	if err != nil {
