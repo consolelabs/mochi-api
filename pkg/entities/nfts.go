@@ -47,18 +47,20 @@ var (
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	// cannot find collection in db
 	if err != nil {
-		err = fmt.Errorf("failed to get nft collection : %v", err)
+		err = fmt.Errorf("collection has not been added")
 		return nil, err
 	}
 	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
+	// cannot find collection in indexer
 	if err != nil {
-		err = fmt.Errorf("failed to get NFT from indexer: %v", err)
+		err = fmt.Errorf("sync data in progress")
 		return nil, err
 	}
 
 	if data == nil {
-		err = fmt.Errorf("no nft data from indexer")
+		err := fmt.Errorf("no nft data from indexer")
 		return nil, err
 	}
 

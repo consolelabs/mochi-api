@@ -145,7 +145,6 @@ func (i *indexer) GetNFTCollections(query string) (*res.IndexerGetNFTCollections
 func (i *indexer) GetNFTTokens(address, query string) (*res.IndexerGetNFTTokensResponse, error) {
 
 	url := fmt.Sprintf("%s/api/v1/nft/%s?%s", i.cfg.IndexerServerHost, address, query)
-	fmt.Println(url)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -213,17 +212,17 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerN
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-
 	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost, collectionAddress, tokenID), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := client.Do(req)
-	if err != nil {
+	resp, _ := client.Do(req)
+	// err still == nil even if indexer return error
+	if resp.StatusCode != 200 {
+		err = fmt.Errorf("GetNFTDetail - failed to get record")
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
