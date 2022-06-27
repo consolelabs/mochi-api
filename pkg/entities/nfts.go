@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -20,6 +21,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"gorm.io/gorm"
 )
 
 var (
@@ -47,18 +49,28 @@ var (
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	// cannot find collection in db
 	if err != nil {
-		err = fmt.Errorf("failed to get nft collection : %v", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = fmt.Errorf("database: record nft collection not found")
+		} else {
+			err = fmt.Errorf("failed to get nft collection : %v", err)
+		}
 		return nil, err
 	}
 	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
+	// cannot find collection in indexer
 	if err != nil {
-		err = fmt.Errorf("failed to get NFT from indexer: %v", err)
+		if err.Error() == "record not found" {
+			err = fmt.Errorf("indexer: record nft not found")
+		} else {
+			err = fmt.Errorf("failed to get nft from indexer: %v", err)
+		}
 		return nil, err
 	}
 
 	if data == nil {
-		err = fmt.Errorf("no nft data from indexer")
+		err := fmt.Errorf("no nft data from indexer")
 		return nil, err
 	}
 
