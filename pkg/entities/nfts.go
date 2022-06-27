@@ -49,13 +49,13 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	// cannot find collection in db
 	if err != nil {
-		err = fmt.Errorf("collection has not been added")
+		err = fmt.Errorf("failed to get nft collection : %v", err)
 		return nil, err
 	}
 	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
 	// cannot find collection in indexer
 	if err != nil {
-		err = fmt.Errorf("sync data in progress")
+		err = fmt.Errorf("failed to get nft from indexer: %v", err)
 		return nil, err
 	}
 
