@@ -89,6 +89,21 @@ type MoralisMessageFail struct {
 	Message string `json:"message"`
 }
 
+func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
+	_, err := e.repo.NFTCollection.GetByAddress(address)
+	// cannot find collection in db
+	if err != nil {
+		if err.Error() == "record not found" {
+			err = errors.New("database: record nft collection not found")
+			return false, err
+		} else {
+			err = errors.New("failed to get nft collection")
+			return false, err
+		}
+	}
+	return true, nil
+}
+
 func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFTCollectionData, error) {
 	colData := &NFTCollectionData{}
 	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/metadata?chain=%s"

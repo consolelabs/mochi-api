@@ -13,6 +13,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
 	mock_guild_config_sales_tracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker/mocks"
+	mock_nft_collection "github.com/defipod/mochi/pkg/repo/nft_collection/mocks"
 	mock_nft_sales_tracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/response"
@@ -258,6 +259,123 @@ func TestEntity_GetAllNFTSalesTracker(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetAllNFTSalesTracker() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_CheckExistNftCollection(t *testing.T) {
+	type fields struct {
+		repo     *repo.Repo
+		store    repo.Store
+		log      logger.Logger
+		dcwallet discordwallet.IDiscordWallet
+		discord  *discordgo.Session
+		cache    cache.Cache
+		svc      *service.Service
+		cfg      config.Config
+		indexer  indexer.Service
+	}
+
+	type args struct {
+		address string
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	r.NFTCollection = nftCollection
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		{
+			name: "check exist successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name: "check not exist",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE72",
+			},
+			want:    false,
+			wantErr: true,
+		},
+	}
+
+	nftCollectionParam := model.NFTCollection{
+		Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+		Name:      "Cyber Neko",
+		Symbol:    "NEKO",
+		ChainID:   "250",
+		ERCFormat: "ERC721",
+	}
+
+	nftCollection.EXPECT().GetByAddress("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73").Return(&nftCollectionParam, nil).AnyTimes()
+	nftCollection.EXPECT().GetByAddress("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE72").Return(nil, errors.New("error")).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:     tt.fields.repo,
+				store:    tt.fields.store,
+				log:      tt.fields.log,
+				dcwallet: tt.fields.dcwallet,
+				discord:  tt.fields.discord,
+				cache:    tt.fields.cache,
+				svc:      tt.fields.svc,
+				cfg:      tt.fields.cfg,
+				indexer:  tt.fields.indexer,
+			}
+			got, err := e.CheckExistNftCollection(tt.args.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.CheckExistNftCollection() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Entity.CheckExistNftCollection() = %v, want %v", got, tt.want)
 			}
 		})
 	}
