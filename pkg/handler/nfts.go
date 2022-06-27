@@ -28,6 +28,14 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	checkExitsNFT, _ := h.entities.CheckExitNFT(req.Address)
+
+	if checkExitsNFT {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
+		return
+	}
+
 	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
 
 	req.Address = checksumAddress

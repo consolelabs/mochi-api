@@ -44,6 +44,20 @@ var (
 	}
 )
 
+func (e *Entity) CheckExitNFT(address string) (bool, error) {
+	// get collection
+	collection, err := e.repo.NFTCollection.GetByAddress(address)
+	if err != nil {
+		return false, err
+	}
+
+	if collection == nil {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
