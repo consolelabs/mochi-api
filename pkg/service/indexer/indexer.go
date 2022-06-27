@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/response"
 	res "github.com/defipod/mochi/pkg/response"
 )
 
@@ -146,7 +146,6 @@ func (i *indexer) GetNFTCollections(query string) (*res.IndexerGetNFTCollections
 func (i *indexer) GetNFTTokens(address, query string) (*res.IndexerGetNFTTokensResponse, error) {
 
 	url := fmt.Sprintf("%s/api/v1/nft/%s?%s", i.cfg.IndexerServerHost, address, query)
-	fmt.Println(url)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
@@ -183,10 +182,10 @@ func (i *indexer) GetNFTTokens(address, query string) (*res.IndexerGetNFTTokensR
 	return data, nil
 }
 
-func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
+func (i *indexer) GetNFTTradingVolume() ([]res.NFTTradingVolume, error) {
 	url := fmt.Sprintf("%s/api/v1/nft/daily-trading-volume", i.cfg.IndexerServerHost)
 
-	nftList := response.NFTTradingVolumeResponse{}
+	nftList := res.NFTTradingVolumeResponse{}
 	client := &http.Client{Timeout: time.Second * 30}
 
 	resp, err := client.Get(url)
@@ -208,23 +207,24 @@ func (i *indexer) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
 	return nftList.Data, nil
 }
 
-func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error) {
-	data := &response.IndexerNFTToken{}
+func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerNFTToken, error) {
+	data := &res.IndexerNFTToken{}
+	errorMsg := &res.ErrorMessage{}
 	url := "%s/api/v1/nft/%s/%s"
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-
 	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost, collectionAddress, tokenID), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	resp, err := client.Do(req)
+	// err still == nil even if indexer return error
 	if err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to get record")
 		return nil, err
 	}
-
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -236,5 +236,45 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*response.Ind
 		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
 		return nil, err
 	}
+	if err := json.Unmarshal(body, &errorMsg); err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
+		return nil, err
+	}
+	// error message not empty
+	if strings.Contains(errorMsg.Error, "record not found") {
+		err = fmt.Errorf("record not found")
+		return nil, err
+	}
+	return data, nil
+}
+
+func (i *indexer) GetNftSales(addr string, platform string) (*res.NftSalesResponse, error) {
+	data := &res.NftSalesResponse{}
+	url := "%s/api/v1/nft/sales?collection_address=%s&platform=%s"
+	client := &http.Client{
+		Timeout: time.Second * 60,
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf(url, i.cfg.IndexerServerHost, addr, platform), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to read response body")
+		return nil, err
+	}
+	if err := json.Unmarshal(body, &data); err != nil {
+		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
+		return nil, err
+	}
+
 	return data, nil
 }

@@ -8,6 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type error interface {
+	Error() string
+}
+
 func (h *Handler) GetNFTDetail(c *gin.Context) {
 	symbol := c.Param("symbol")
 	tokenID := c.Param("id")
@@ -29,6 +33,17 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		return
 	}
 	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
+
+	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if checkExitsNFT {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
+		return
+	}
 
 	req.Address = checksumAddress
 
@@ -102,6 +117,7 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
+
 func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	var req request.NFTSalesTrackerRequest
 	if err := c.Bind(&req); err != nil {
@@ -127,4 +143,13 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": collection})
+}
+func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
+	data, err := h.entities.GetAllNFTSalesTracker()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
 }

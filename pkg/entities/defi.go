@@ -374,6 +374,15 @@ func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, in
 	return data, nil, http.StatusOK
 }
 
+func (e *Entity) SearchCoinsBySymbol(symbol string) (string, error, int) {
+	data, err, statusCode := e.svc.CoinGecko.SearchCoins(symbol)
+	if err != nil {
+		return "", err, statusCode
+	}
+
+	return data[0].ID, nil, http.StatusOK
+}
+
 func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 	tokens, err := e.repo.Token.GetDefaultTokens()
 	if err != nil {

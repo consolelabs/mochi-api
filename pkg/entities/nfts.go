@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"net/http"
@@ -18,8 +19,10 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"gorm.io/gorm"
 )
 
 var (
@@ -47,18 +50,28 @@ var (
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	// cannot find collection in db
 	if err != nil {
-		err = fmt.Errorf("failed to get nft collection : %v", err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			err = fmt.Errorf("database: record nft collection not found")
+		} else {
+			err = fmt.Errorf("failed to get nft collection : %v", err)
+		}
 		return nil, err
 	}
 	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
+	// cannot find collection in indexer
 	if err != nil {
-		err = fmt.Errorf("failed to get NFT from indexer: %v", err)
+		if err.Error() == "record not found" {
+			err = fmt.Errorf("indexer: record nft not found")
+		} else {
+			err = fmt.Errorf("failed to get nft from indexer: %v", err)
+		}
 		return nil, err
 	}
 
 	if data == nil {
-		err = fmt.Errorf("no nft data from indexer")
+		err := fmt.Errorf("no nft data from indexer")
 		return nil, err
 	}
 
@@ -75,6 +88,20 @@ type NFTCollectionData struct {
 
 type MoralisMessageFail struct {
 	Message string `json:"message"`
+}
+
+func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
+	_, err := e.repo.NFTCollection.GetByAddress(address)
+	// cannot find collection in db
+	if err != nil {
+		if err.Error() == "record not found" {
+			return false, nil
+		} else {
+			err = errors.New("failed to get nft collection")
+			return false, err
+		}
+	}
+	return true, nil
 }
 
 func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFTCollectionData, error) {
@@ -124,7 +151,8 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
-	chainID, err := strconv.Atoi(req.ChainID)
+	convertedChainId := util.ConvertChainToChainId(req.ChainID)
+	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
 		return
 	}
@@ -138,28 +166,23 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		return
 	}
 
-	collection, err := GetNFTCollectionFromMoralis(strings.ToLower(req.Address), req.Chain, e.cfg)
+	// query name and symbol from contract
+	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
-		err = fmt.Errorf("failed to get collection NFT from moralis: %v", err)
-		return
-	}
-	if collection == nil {
-		err = fmt.Errorf("response collection from moralis nil")
 		return
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:   req.Address,
-		Symbol:    collection.Symbol,
-		Name:      collection.Name,
-		ChainID:   req.ChainID,
-		ERCFormat: collection.ContractType,
+		Symbol:    symbol,
+		Name:      name,
+		ChainID:   convertedChainId,
+		ERCFormat: "ERC721",
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)
 		return
 	}
-	go PutSyncMoralisNFTCollection(strings.ToLower(req.Address), req.Chain, e.cfg)
 
 	return
 }
@@ -348,4 +371,21 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 		return nil, err
 	}
 	return collection, nil
+}
+
+func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, error) {
+	resp := []response.NFTSalesTrackerResponse{}
+	data, err := e.repo.NFTSalesTracker.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range data {
+		resp = append(resp, response.NFTSalesTrackerResponse{
+			ContractAddress: item.ContractAddress,
+			Platform:        item.Platform,
+			GuildID:         item.GuildConfigSalesTracker.GuildID,
+			ChannelID:       item.GuildConfigSalesTracker.ChannelID,
+		})
+	}
+	return resp, nil
 }

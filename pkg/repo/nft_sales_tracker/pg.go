@@ -14,5 +14,11 @@ func NewPG(db *gorm.DB) Store {
 }
 
 func (pg *pg) FirstOrCreate(tracker *model.InsertNFTSalesTracker) error {
-	return pg.db.Where("contract_address=? AND platform=? AND sales_config_id=?",tracker.ContractAddress,tracker.Platform,tracker.SalesConfigID).FirstOrCreate(tracker).Error
-} 
+	return pg.db.Where("contract_address=? AND platform=? AND sales_config_id=?", tracker.ContractAddress, tracker.Platform, tracker.SalesConfigID).FirstOrCreate(tracker).Error
+}
+
+func (pg *pg) GetAll() ([]model.NFTSalesTracker, error) {
+	data := []model.NFTSalesTracker{}
+	err := pg.db.Preload("GuildConfigSalesTracker").Find(&data)
+	return data, err.Error
+}
