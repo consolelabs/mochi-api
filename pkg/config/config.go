@@ -55,6 +55,14 @@ type Config struct {
 	MoralisXApiKey string
 
 	IndexerServerHost string
+
+	RpcUrl RpcUrl
+}
+
+type RpcUrl struct {
+	Eth string
+	Ftm string
+	Opt string
 }
 
 // GetCORS in config
@@ -124,6 +132,12 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
 
 		IndexerServerHost: v.GetString("INDEXER_SERVER_HOST"),
+
+		RpcUrl: RpcUrl{
+			Eth: v.GetString("ETH_RPC"),
+			Ftm: v.GetString("FTM_RPC"),
+			Opt: v.GetString("OPTIMISM_RPC"),
+		},
 	}
 }
 
@@ -142,6 +156,9 @@ func LoadConfig(loaders []Loader) Config {
 	v := viper.New()
 	v.SetDefault("PORT", "8080")
 	v.SetDefault("ENV", "local")
+	v.SetDefault("FTM_RPC", "https://rpc.fantom.network")
+	v.SetDefault("ETH_RPC", "https://speedy-nodes-nyc.moralis.io/246a0d2b6b4a18a7587130ec/eth/mainnet")
+	v.SetDefault("OPTIMISM_RPC", "https://mainnet.optimism.io")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

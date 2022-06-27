@@ -18,6 +18,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
@@ -124,7 +125,8 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
-	chainID, err := strconv.Atoi(req.ChainID)
+	convertedChainId := util.ConvertChainToChainId(req.ChainID)
+	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
 		return
 	}
@@ -138,28 +140,23 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		return
 	}
 
-	collection, err := GetNFTCollectionFromMoralis(strings.ToLower(req.Address), req.Chain, e.cfg)
+	// query name and symbol from contract
+	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
-		err = fmt.Errorf("failed to get collection NFT from moralis: %v", err)
-		return
-	}
-	if collection == nil {
-		err = fmt.Errorf("response collection from moralis nil")
 		return
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:   req.Address,
-		Symbol:    collection.Symbol,
-		Name:      collection.Name,
-		ChainID:   req.ChainID,
-		ERCFormat: collection.ContractType,
+		Symbol:    symbol,
+		Name:      name,
+		ChainID:   convertedChainId,
+		ERCFormat: "ERC721",
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)
 		return
 	}
-	go PutSyncMoralisNFTCollection(strings.ToLower(req.Address), req.Chain, e.cfg)
 
 	return
 }

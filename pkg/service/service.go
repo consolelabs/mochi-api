@@ -5,6 +5,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -16,6 +17,7 @@ type Service struct {
 	CoinGecko coingecko.Service
 	Discord   discord.Service
 	Indexer   indexer.Service
+	Abi       abi.Service
 }
 
 func NewService(
@@ -32,5 +34,6 @@ func NewService(
 		CoinGecko: coingecko.NewService(),
 		Discord:   discordSvc,
 		Indexer:   indexer.NewIndexer(cfg, log),
+		Abi:       abi.NewAbi(&cfg),
 	}, nil
 }

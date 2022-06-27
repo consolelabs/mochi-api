@@ -44,6 +44,9 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"0xa86a":     "avax",
 		"42161":      "arb",
 		"1313161554": "aurora",
+		"eth":        "eth",
+		"ftm":        "ftm",
+		"op":         "op",
 	}
 	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
 		input.Chain = c
