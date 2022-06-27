@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
@@ -37,10 +36,8 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 
 	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)
 	if err != nil {
-		if strings.Contains(err.Error(), "failed to get nft collection") {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	if checkExitsNFT {

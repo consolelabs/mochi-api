@@ -332,17 +332,6 @@ func TestEntity_CheckExistNftCollection(t *testing.T) {
 			want:    true,
 			wantErr: false,
 		},
-		{
-			name: "check not exist",
-			fields: fields{
-				repo: r,
-			},
-			args: args{
-				address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE72",
-			},
-			want:    false,
-			wantErr: true,
-		},
 	}
 
 	nftCollectionParam := model.NFTCollection{
@@ -354,7 +343,6 @@ func TestEntity_CheckExistNftCollection(t *testing.T) {
 	}
 
 	nftCollection.EXPECT().GetByAddress("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73").Return(&nftCollectionParam, nil).AnyTimes()
-	nftCollection.EXPECT().GetByAddress("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE72").Return(nil, errors.New("error")).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

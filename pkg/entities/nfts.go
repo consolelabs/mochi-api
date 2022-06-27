@@ -94,8 +94,7 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 	// cannot find collection in db
 	if err != nil {
 		if err.Error() == "record not found" {
-			err = errors.New("database: record nft collection not found")
-			return false, err
+			return false, nil
 		} else {
 			err = errors.New("failed to get nft collection")
 			return false, err
