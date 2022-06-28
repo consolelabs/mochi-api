@@ -4,7 +4,7 @@ alter table nft_collections drop constraint nft_collections_pkey;
 
 alter table nft_collections alter column chain_id type text;
 
-alter table nft_collections add column is_verified bool default false;
+alter table nft_collections add column is_verified bool default true;
 
 create unique index address_chain_id_unique_idx on nft_collections (lower(address), chain_id);
 -- +migrate Down
