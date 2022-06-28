@@ -1,6 +1,8 @@
 package response
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -76,4 +78,20 @@ type IndexerAttribute struct {
 	Count     int    `json:"count"`
 	Rarity    string `json:"rarity"`
 	Frequency string `json:"frequency"`
+}
+
+type IndexerContract struct {
+	ID              int       `json:"id"`
+	LastUpdateTime  time.Time `json:"last_updated_time"`
+	LastUpdateBlock int       `json:"last_updated_block"`
+	CreationBlock   int       `json:"creation_block"`
+	CreatedTime     time.Time `json:"created_time"`
+	Address         string    `json:"address"`
+	ChainID         int       `json:"chain_id"`
+	Type            string    `json:"Type"`
+	IsProxy         bool      `json:"is_proxy"`
+	LogicAddress    string    `json:"logic_address"`
+	Protocol        string    `json:"Protocol"`
+	GRPCAddress     string    `json:"GrpcAddress"`
+	IsSynced        bool      `json:"is_synced"`
 }
