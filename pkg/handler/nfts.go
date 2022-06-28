@@ -32,7 +32,9 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
+
+	address := util.HandleMarketplaceLink(req.Address, req.ChainID)
+	checksumAddress, _ := util.ConvertToChecksumAddr(address)
 
 	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)
 	if err != nil {
