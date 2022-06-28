@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 )
@@ -51,8 +52,9 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 	l := logger.NewLogrusLogger()
 	indexer := indexer.NewIndexer(cfg, l)
 	abi := abi.NewAbi(&cfg)
+	marketplace := marketplace.NewMarketplace(&cfg)
 
-	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer, abi)
+	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer, abi, marketplace)
 
 	h := Handler{
 		entities: e,

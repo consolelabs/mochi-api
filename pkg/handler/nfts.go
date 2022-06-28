@@ -34,7 +34,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		return
 	}
 
-	address := util.HandleMarketplaceLink(req.Address, req.ChainID)
+	address := h.entities.HandleMarketplaceLink(req.Address, req.ChainID)
 	checksumAddress, _ := util.ConvertToChecksumAddr(address)
 
 	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)

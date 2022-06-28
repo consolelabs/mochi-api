@@ -57,8 +57,19 @@ type Config struct {
 	IndexerServerHost string
 
 	RpcUrl RpcUrl
+
+	MarketplaceBaseUrl MarketplaceBaseUrl
+
+	MarketplaceApiKey MarketplaceApiKey
 }
 
+type MarketplaceBaseUrl struct {
+	Opensea string
+}
+
+type MarketplaceApiKey struct {
+	Opensea string
+}
 type RpcUrl struct {
 	Eth string
 	Ftm string
@@ -138,6 +149,13 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Ftm: v.GetString("FTM_RPC"),
 			Opt: v.GetString("OPTIMISM_RPC"),
 		},
+
+		MarketplaceBaseUrl: MarketplaceBaseUrl{
+			Opensea: v.GetString("OPENSEA_BASE_URL"),
+		},
+		MarketplaceApiKey: MarketplaceApiKey{
+			Opensea: v.GetString("OPENSEA_API_KEY"),
+		},
 	}
 }
 
@@ -159,6 +177,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("FTM_RPC", "https://rpc.ankr.com/fantom")
 	v.SetDefault("ETH_RPC", "https://rpc.ankr.com/eth")
 	v.SetDefault("OPTIMISM_RPC", "https://rpc.ankr.com/optimism")
+	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)
