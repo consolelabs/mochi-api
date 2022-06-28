@@ -220,7 +220,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 		TransactionFee:   transactionFee,
 	}
 	err = e.sendWithdrawLogs(req, res)
-	return nil, err
+	return res, err
 }
 
 func (e *Entity) sendWithdrawLogs(req request.TransferRequest, res *response.InDiscordWalletWithdrawResponse) error {
