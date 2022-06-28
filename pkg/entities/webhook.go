@@ -2,9 +2,10 @@ package entities
 
 import (
 	"fmt"
-	"github.com/defipod/mochi/pkg/logger"
 	"strconv"
 	"time"
+
+	"github.com/defipod/mochi/pkg/logger"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
@@ -130,7 +131,7 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 	return resp, nil
 }
 
-func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
+func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	var (
 		discordID = message.Author.ID
 		guildID   = message.GuildID
@@ -144,22 +145,22 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) error {
 	case isGmMessage:
 		guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if guildConfigGm.ChannelID != channelID {
 			// do nothing if not gm channel
-			return nil
+			return nil, nil
 		}
 		return e.newUserGM(discordID, guildID, channelID, sentAt)
 	}
-	return nil
+	return nil, nil
 }
 
-func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) error {
+func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return fmt.Errorf("failed to get user's gm streak: %v", err)
+		return nil, fmt.Errorf("failed to get user's gm streak: %v", err)
 	}
 
 	if err == gorm.ErrRecordNotFound {
@@ -172,9 +173,9 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 		}
 		err = e.repo.DiscordUserGMStreak.UpsertOne(newStreak)
 		if err != nil {
-			return fmt.Errorf("failed to create new user gm streak: %v", err)
+			return nil, fmt.Errorf("failed to create new user gm streak: %v", err)
 		}
-		return nil
+		return nil, nil
 	}
 
 	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
@@ -182,7 +183,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	switch {
 	case chatDate.Before(nextStreakDate):
 		durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
-		return e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
+		return nil, e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
 	case chatDate.Equal(nextStreakDate):
 		streak.StreakCount++
 	case chatDate.After(nextStreakDate):
@@ -192,27 +193,27 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	streak.TotalCount++
 
 	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
-		return fmt.Errorf("failed to update user gm streak: %v", err)
+		return nil, fmt.Errorf("failed to update user gm streak: %v", err)
 	}
 
 	// add new feature : GmExIncrease
 	///////
 	if streak.StreakCount < 2 {
-		return e.replyGmGn(streak, channelID, discordID, "", true)
+		return nil, e.replyGmGn(streak, channelID, discordID, "", true)
 	}
 
-	_, err = e.HandleUserActivities(&request.HandleUserActivityRequest{
+	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
 		GuildID:   guildID,
 		ChannelID: channelID,
 		UserID:    discordID,
 		Action:    "gm_streak",
-		Timestamp: chatDate,
+		Timestamp: sentAt,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to handle user activity: %v", err.Error())
+		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 	}
 
-	return e.replyGmGn(streak, channelID, discordID, "", true)
+	return res, e.replyGmGn(streak, channelID, discordID, "", true)
 }
 
 func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, durationTilNextGoal string, newStreakRecorded bool) error {

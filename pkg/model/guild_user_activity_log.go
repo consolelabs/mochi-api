@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type GuildUserActivityLog struct {
 	ID           int       `json:"id"`

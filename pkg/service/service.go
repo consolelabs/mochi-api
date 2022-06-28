@@ -25,7 +25,7 @@ func NewService(
 	log logger.Logger,
 ) (*Service, error) {
 
-	discordSvc, err := discord.NewService(cfg)
+	discordSvc, err := discord.NewService(cfg, log)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
