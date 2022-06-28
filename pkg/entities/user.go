@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -103,16 +102,20 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return nil, err
 	}
 
-	gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, req.Action)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
+	earnedXP := int(req.CustomXP)
+	if earnedXP == 0 {
+		gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, req.Action)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
+		}
+		earnedXP = gActivityConfig.Activity.XP
 	}
 
 	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID:      req.GuildID,
 		UserID:       req.UserID,
-		ActivityName: gActivityConfig.Activity.Name,
-		EarnedXP:     gActivityConfig.Activity.XP,
+		ActivityName: req.Action,
+		EarnedXP:     earnedXP,
 		CreatedAt:    req.Timestamp,
 	}); err != nil {
 		return nil, err
@@ -125,31 +128,23 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 
 	res := &response.HandleUserActivityResponse{
 		GuildID:      req.GuildID,
+		ChannelID:    req.ChannelID,
 		UserID:       req.UserID,
-		Action:       gActivityConfig.Activity.Name,
-		AddedXP:      gActivityConfig.Activity.XP,
+		Action:       req.Action,
+		AddedXP:      earnedXP,
 		CurrentXP:    latestUserXP.TotalXP,
 		CurrentLevel: latestUserXP.Level,
 		Timestamp:    req.Timestamp,
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}
-	e.sendLevelUpLogs(res)
-	return res, nil
-}
 
-func (e *Entity) sendLevelUpLogs(res *response.HandleUserActivityResponse) error {
-	if !res.LevelUp {
-		return nil
-	}
-
-	guild, err := e.repo.DiscordGuilds.GetByID(res.GuildID)
+	role, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.UserID)
 	if err != nil {
-		return err
+		e.log.Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed - guild %s, user %s", req.GuildID, req.UserID)
+	} else {
+		e.svc.Discord.SendLevelUpMessage(userXP.Guild.LogChannel, role, res)
 	}
-	description := fmt.Sprintf("<@%s> has leveled up **(%d - %d)**", res.UserID, res.CurrentLevel-1, res.CurrentLevel)
-	description += fmt.Sprintf("\nLatest action: **%s**", res.Action)
-	description += fmt.Sprintf("\nCurrent XP: **%d**", res.CurrentXP)
-	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, "Level up!", description)
+	return res, nil
 }
 
 func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
@@ -284,39 +279,20 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 	}, nil
 }
 
-func (e *Entity) SendGiftXp(guildID string, userID string, earnedXp int, activityName string) (*response.HandleUserActivityResponse, error) {
-	log := logger.NewLogrusLogger()
-	userXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		log.Errorf(err, "Failed to get guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
-		return nil, err
-	}
-
-	err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
-		GuildID:      guildID,
-		UserID:       userID,
-		EarnedXP:     earnedXp,
-		ActivityName: activityName,
+func (e *Entity) SendGiftXp(req request.GiftXPRequest) (*response.HandleUserActivityResponse, error) {
+	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		UserID:    req.UserDiscordID,
+		Action:    "gifted",
+		CustomXP:  int64(req.XPAmount),
 	})
 	if err != nil {
-		log.Errorf(err, "Failed to create user activity log. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
+		e.log.Errorf(err, "[SendGiftXp] - HandleUserActivities failed: %v %v %v", req.GuildID, req.UserDiscordID, req.XPAmount)
 		return nil, err
 	}
 
-	latestUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
-	if err != nil {
-		log.Errorf(err, "Failed to get latest guild user xp. Gift: %v %v %v %v", guildID, userID, earnedXp, activityName)
-		return nil, err
-	}
-
-	return &response.HandleUserActivityResponse{
-		GuildID:      guildID,
-		UserID:       userID,
-		Action:       activityName,
-		CurrentXP:    latestUserXP.TotalXP,
-		CurrentLevel: latestUserXP.Level,
-		LevelUp:      latestUserXP.Level > userXP.Level,
-	}, nil
+	return res, nil
 }
 
 func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
@@ -325,4 +301,32 @@ func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
 		return nil, fmt.Errorf("failed to get wallet addresses: %v", err.Error())
 	}
 	return was, nil
+}
+
+func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, error) {
+	if e.discord == nil {
+		return "", nil
+	}
+	configs, err := e.repo.GuildConfigLevelRole.GetByGuildID(guildID)
+	if err != nil {
+		return "", err
+	}
+
+	gMember, err := e.discord.GuildMember(guildID, userID)
+	if err != nil {
+		return "", err
+	}
+	if gMember.Roles == nil {
+		return "", fmt.Errorf("Member %s of guild %s has no role", userID, guildID)
+	}
+
+	for _, cfg := range configs {
+		for _, memRole := range gMember.Roles {
+			if cfg.RoleID == memRole {
+				return fmt.Sprintf("<@&%s>", cfg.RoleID), nil
+			}
+		}
+	}
+
+	return "", nil
 }

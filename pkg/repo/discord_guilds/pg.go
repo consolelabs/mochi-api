@@ -51,6 +51,5 @@ func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
 }
 
 func (pg *pg) Update(omit string, guild model.DiscordGuild) error {
-	fmt.Println(omit, guild.GlobalXP, guild.LogChannel)
 	return pg.db.Model(&guild).Where("id = ?", guild.ID).Omit(omit).Updates(map[string]interface{}{"global_xp": guild.GlobalXP, "log_channel": guild.LogChannel}).Error
 }

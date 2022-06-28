@@ -146,6 +146,10 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 }
 
 func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {
+	// only send tip logs
+	if !strings.EqualFold(req.TransferType, "tip") {
+		return nil
+	}
 	if len(res) == 0 {
 		return nil
 	}
@@ -160,7 +164,7 @@ func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.In
 	}
 	recipientsStr := strings.Join(recipients, ", ")
 	description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, strings.ToUpper(res[0].Cryptocurrency), req.ChannelID)
-	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, strings.ToUpper(req.TransferType), description)
+	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, req.Sender, strings.ToUpper(req.TransferType), description)
 }
 
 func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response.InDiscordWalletWithdrawResponse, error) {
@@ -219,19 +223,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 		WithdrawalAmount: withdrawalAmount,
 		TransactionFee:   transactionFee,
 	}
-	err = e.sendWithdrawLogs(req, res)
-	return res, err
-}
-
-func (e *Entity) sendWithdrawLogs(req request.TransferRequest, res *response.InDiscordWalletWithdrawResponse) error {
-	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
-	if err != nil {
-		return err
-	}
-
-	description := fmt.Sprintf("<@%s> has withdrawn **%g %s** to %s at <#%s>", res.FromDiscordID, res.Amount, strings.ToUpper(res.Cryptocurrency), res.ToAddress, req.ChannelID)
-	description += fmt.Sprintf("\n[See transaction](%s)", res.TxURL)
-	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, "WITHDRAW", description)
+	return res, nil
 }
 
 func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {

@@ -1,8 +1,9 @@
 package request
 
-type GiftXpRequest struct {
-	AdminDiscordId string `json:"admin_discord_id"`
-	UserDiscordId string `json:"user_discord_id"`
-	GuildId string `json:"guild_id"`
-	XpAmount string `json:"xp_amount"`
+type GiftXPRequest struct {
+	AdminDiscordID string `json:"admin_discord_id"`
+	UserDiscordID  string `json:"user_discord_id"`
+	GuildID        string `json:"guild_id"`
+	XPAmount       uint64 `json:"xp_amount"`
+	ChannelID      string `json:"channel_id"`
 }

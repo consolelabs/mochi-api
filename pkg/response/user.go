@@ -22,6 +22,7 @@ type GetGuildUserResponse struct {
 }
 
 type HandleUserActivityResponse struct {
+	ChannelID    string    `json:"channel_id"`
 	GuildID      string    `json:"guild_id"`
 	UserID       string    `json:"user_id"`
 	Action       string    `json:"action"`
