@@ -179,8 +179,6 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		return
 	}
 
-	fmt.Println(chainID)
-	fmt.Println(req.Address)
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
