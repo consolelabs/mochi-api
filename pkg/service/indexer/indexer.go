@@ -208,6 +208,16 @@ func (i *indexer) GetNFTTradingVolume() ([]res.NFTTradingVolume, error) {
 }
 
 func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerNFTToken, error) {
+	//--check data in sync
+	contract, err := i.GetNFTContract(collectionAddress)
+	if err != nil {
+		return nil, err
+	}
+	if !contract.IsSynced {
+		err = fmt.Errorf("data not in sync")
+		return nil, err
+	}
+	//--
 	data := &res.IndexerNFTToken{}
 	errorMsg := &res.ErrorMessage{}
 	url := "%s/api/v1/nft/%s/%s"
@@ -236,12 +246,13 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerN
 		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
 		return nil, err
 	}
+	// parse error msg, empty if not
 	if err := json.Unmarshal(body, &errorMsg); err != nil {
 		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
 		return nil, err
 	}
-	// error message not empty
-	if strings.Contains(errorMsg.Error, "record not found") {
+	// if id too large api will return out of range and unsigned number instead
+	if strings.Contains(errorMsg.Error, "record not found") || strings.Contains(errorMsg.Error, "out of range") || strings.Contains(errorMsg.Error, "unsigned number") {
 		err = fmt.Errorf("record not found")
 		return nil, err
 	}
@@ -268,13 +279,39 @@ func (i *indexer) GetNftSales(addr string, platform string) (*res.NftSalesRespon
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		err = fmt.Errorf("GetNFTDetail - failed to read response body")
+		err = fmt.Errorf("GetNFTSales - failed to read response body")
 		return nil, err
 	}
 	if err := json.Unmarshal(body, &data); err != nil {
-		err = fmt.Errorf("GetNFTDetail - failed to unmarshal response data")
+		err = fmt.Errorf("GetNFTSales - failed to unmarshal response data")
 		return nil, err
 	}
 
 	return data, nil
+}
+
+func (i *indexer) GetNFTContract(address string) (*res.IndexerContract, error) {
+	url := fmt.Sprintf("%s/api/v1/contract/%s", i.cfg.IndexerServerHost, address)
+
+	contract := &res.IndexerContract{}
+	client := &http.Client{Timeout: time.Second * 30}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(b), &contract)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, fmt.Errorf("GETNFTContract - failed to unmarshal data")
+	}
+
+	return contract, nil
 }
