@@ -9,6 +9,7 @@ type NFTCollection struct {
 	Symbol    string        `json:"symbol"`
 	ChainID   string        `json:"chain_id"`
 	ERCFormat string        `json:"erc_format"`
+	Is_Verify bool          `json:"is_verified"`
 }
 
 type NFTCollectionConfig struct {

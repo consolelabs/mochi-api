@@ -191,6 +191,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		Name:      name,
 		ChainID:   convertedChainId,
 		ERCFormat: "ERC721",
+		Is_Verify: true,
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)
