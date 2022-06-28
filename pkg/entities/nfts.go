@@ -186,12 +186,12 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:     req.Address,
-		Symbol:      symbol,
-		Name:        name,
-		ChainID:     convertedChainId,
-		ERCFormat:   "ERC721",
-		Is_Verified: true,
+		Address:    req.Address,
+		Symbol:     symbol,
+		Name:       name,
+		ChainID:    convertedChainId,
+		ERCFormat:  "ERC721",
+		IsVerified: true,
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)
