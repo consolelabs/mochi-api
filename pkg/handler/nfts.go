@@ -21,6 +21,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	data.Image = util.StandardizeUri(data.Image)
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
@@ -32,7 +33,9 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	checksumAddress, _ := util.ConvertToChecksumAddr(req.Address)
+
+	address := util.HandleMarketplaceLink(req.Address, req.ChainID)
+	checksumAddress, _ := util.ConvertToChecksumAddr(address)
 
 	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)
 	if err != nil {
@@ -41,7 +44,17 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	}
 
 	if checkExitsNFT {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
+		is_sync, err := h.entities.CheckIsSync(checksumAddress)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		if !is_sync {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is done with sync"})
+		}
 		return
 	}
 

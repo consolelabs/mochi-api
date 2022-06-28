@@ -108,6 +108,15 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 	return true, nil
 }
 
+func (e *Entity) CheckIsSync(address string) (bool, error) {
+	indexerContract, err := e.svc.Indexer.GetNFTContract(address)
+	if err != nil {
+		return false, err
+	}
+
+	return indexerContract.IsSynced, nil
+}
+
 func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFTCollectionData, error) {
 	colData := &NFTCollectionData{}
 	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/metadata?chain=%s"
@@ -177,11 +186,12 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:   req.Address,
-		Symbol:    symbol,
-		Name:      name,
-		ChainID:   convertedChainId,
-		ERCFormat: "ERC721",
+		Address:    req.Address,
+		Symbol:     symbol,
+		Name:       name,
+		ChainID:    convertedChainId,
+		ERCFormat:  "ERC721",
+		IsVerified: true,
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create collection NFTS: %v", err)

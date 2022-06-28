@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/defipod/mochi/pkg/consts"
 	"net/http"
+
+	"github.com/defipod/mochi/pkg/consts"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
@@ -141,7 +142,8 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 		return
 	}
 
-	if err = h.entities.HandleDiscordMessage(message); err != nil {
+	uActivity, err := h.entities.HandleDiscordMessage(message)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -152,6 +154,10 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	case consts.MessageTypeUserPremiumGuildSubscription:
 		resp, err = h.entities.BoostXPIncrease(message)
 	default:
+		if uActivity != nil {
+			// break if message was already handled
+			break
+		}
 		resp, err = h.entities.ChatXPIncrease(message)
 	}
 	if err != nil {

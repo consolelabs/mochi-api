@@ -17,8 +17,10 @@ import (
 	mock_guild_user_activity_log "github.com/defipod/mochi/pkg/repo/guild_user_activity_log/mocks"
 	mock_guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
+	mock_discord "github.com/defipod/mochi/pkg/service/discord/mocks"
 	"github.com/golang/mock/gomock"
 )
 
@@ -34,10 +36,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 		cfg      config.Config
 	}
 	type args struct {
-		guildID      string
-		userID       string
-		earnedXp     int
-		activityName string
+		request.GiftXPRequest
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -71,6 +70,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 	r := pg.NewRepo(s.DB())
 	uXp := mock_guild_user_xp.NewMockStore(ctrl)
 	uLog := mock_guild_user_activity_log.NewMockStore(ctrl)
+	discordMock := mock_discord.NewMockService(ctrl)
 
 	r.GuildUserXP = uXp
 	r.GuildUserActivityLog = uLog
@@ -86,12 +86,17 @@ func TestEntity_SendGiftXp(t *testing.T) {
 			name: "test gift xp successfully",
 			fields: fields{
 				repo: r,
+				log:  logger.NewLogrusLogger(),
+				svc: &service.Service{
+					Discord: discordMock,
+				},
 			},
 			args: args{
-				guildID:      "552427722551459840",
-				userID:       "973069332034752522",
-				earnedXp:     10,
-				activityName: "gifted",
+				GiftXPRequest: request.GiftXPRequest{
+					GuildID:       "552427722551459840",
+					UserDiscordID: "973069332034752522",
+					XPAmount:      10,
+				},
 			},
 			want: &response.HandleUserActivityResponse{
 				GuildID:      "552427722551459840",
@@ -100,6 +105,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 				CurrentXP:    20,
 				CurrentLevel: 0,
 				LevelUp:      false,
+				AddedXP:      10,
 			},
 			wantErr: false,
 		},
@@ -107,12 +113,14 @@ func TestEntity_SendGiftXp(t *testing.T) {
 			name: "case user not exist in server, cannot gift xp to this user",
 			fields: fields{
 				repo: r,
+				log:  logger.NewLogrusLogger(),
 			},
 			args: args{
-				guildID:      "abc",
-				userID:       "abc",
-				earnedXp:     10,
-				activityName: "gifted",
+				GiftXPRequest: request.GiftXPRequest{
+					GuildID:       "abc",
+					UserDiscordID: "abc",
+					XPAmount:      10,
+				},
 			},
 			want:    nil,
 			wantErr: true,
@@ -123,6 +131,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 		UserID:  "973069332034752522",
 		TotalXP: 20,
 		Level:   0,
+		Guild:   &model.DiscordGuild{},
 	}
 	guildUserActivityLog := model.GuildUserActivityLog{
 		GuildID:      "552427722551459840",
@@ -136,6 +145,13 @@ func TestEntity_SendGiftXp(t *testing.T) {
 	uLog.EXPECT().CreateOne(guildUserActivityLog).Return(nil).AnyTimes()
 	// case cannot find user, user not exist in server discord
 	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("Error cannot find user in server")).AnyTimes()
+	discordMock.EXPECT().SendLevelUpMessage("", "", &response.HandleUserActivityResponse{
+		GuildID:   "552427722551459840",
+		UserID:    "973069332034752522",
+		Action:    "gifted",
+		AddedXP:   10,
+		CurrentXP: 20,
+	}).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -149,7 +165,7 @@ func TestEntity_SendGiftXp(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.SendGiftXp(tt.args.guildID, tt.args.userID, tt.args.earnedXp, tt.args.activityName)
+			got, err := e.SendGiftXp(tt.args.GiftXPRequest)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.SendGiftXp() error = %v, wantErr %v", err, tt.wantErr)
 				return
