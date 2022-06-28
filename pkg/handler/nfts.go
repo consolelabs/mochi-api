@@ -21,6 +21,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	data.Image = util.StandardizeUri(data.Image)
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
