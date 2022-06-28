@@ -156,9 +156,9 @@ func LoadConfig(loaders []Loader) Config {
 	v := viper.New()
 	v.SetDefault("PORT", "8080")
 	v.SetDefault("ENV", "local")
-	v.SetDefault("FTM_RPC", "https://rpc.fantom.network")
-	v.SetDefault("ETH_RPC", "https://speedy-nodes-nyc.moralis.io/246a0d2b6b4a18a7587130ec/eth/mainnet")
-	v.SetDefault("OPTIMISM_RPC", "https://mainnet.optimism.io")
+	v.SetDefault("FTM_RPC", "https://rpc.ankr.com/fantom")
+	v.SetDefault("ETH_RPC", "https://rpc.ankr.com/eth")
+	v.SetDefault("OPTIMISM_RPC", "https://rpc.ankr.com/optimism")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)
