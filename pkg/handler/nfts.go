@@ -47,7 +47,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 			return
 		}
 
-		if is_sync {
+		if !is_sync {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is done with sync"})
