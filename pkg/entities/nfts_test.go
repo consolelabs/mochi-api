@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/cache"
@@ -18,7 +19,9 @@ import (
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/golang/mock/gomock"
 )
@@ -364,6 +367,180 @@ func TestEntity_CheckExistNftCollection(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("Entity.CheckExistNftCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetNewListedNFTCollection(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	type args struct {
+		interval string
+		page     string
+		size     string
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	r.NFTCollection = nftCollection
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *response.NFTNewListedResponse
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "get new listed NFT successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				interval: "7",
+				page:     "1",
+				size:     "2",
+			},
+			want: &response.NFTNewListedResponse{
+				Pagination: util.Pagination{
+					Page:  int64(1),
+					Size:  int64(2),
+					Total: int64(2),
+				},
+				Data: []model.NFTCollection{
+					{
+						ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
+						Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
+						Name:       "neko",
+						Symbol:     "neko",
+						ChainID:    "250",
+						ERCFormat:  "721",
+						IsVerified: true,
+						CreatedAt:  time.Date(2022, 6, 24, 1, 2, 3, 4, time.UTC),
+					},
+					{
+						ID:         util.GetNullUUID("42970b6d-e141-4162-8529-7f961baf9fce"),
+						Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE78",
+						Name:       "neko",
+						Symbol:     "neko",
+						ChainID:    "250",
+						ERCFormat:  "721",
+						IsVerified: true,
+						CreatedAt:  time.Date(2022, 6, 22, 1, 2, 3, 4, time.UTC),
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid API params",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				interval: "a",
+				page:     "b",
+				size:     "c",
+			},
+			want: &response.NFTNewListedResponse{
+				Pagination: util.Pagination{
+					Page:  int64(0),
+					Size:  int64(0),
+					Total: int64(0),
+				},
+				Data: []model.NFTCollection{},
+			},
+			wantErr: false,
+		},
+	}
+	repoReturn := []model.NFTCollection{
+		{
+			ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
+			Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
+			Name:       "neko",
+			Symbol:     "neko",
+			ChainID:    "250",
+			ERCFormat:  "721",
+			IsVerified: true,
+			CreatedAt:  time.Date(2022, 6, 24, 1, 2, 3, 4, time.UTC),
+		},
+		{
+			ID:         util.GetNullUUID("42970b6d-e141-4162-8529-7f961baf9fce"),
+			Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE78",
+			Name:       "neko",
+			Symbol:     "neko",
+			ChainID:    "250",
+			ERCFormat:  "721",
+			IsVerified: true,
+			CreatedAt:  time.Date(2022, 6, 22, 1, 2, 3, 4, time.UTC),
+		},
+	}
+	emptyReturn := []model.NFTCollection{}
+	nftCollection.EXPECT().GetNewListed(7, 1, 2).Return(repoReturn, int64(2), nil).AnyTimes()
+	nftCollection.EXPECT().GetNewListed(0, 0, 0).Return(emptyReturn, int64(0), nil).AnyTimes()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetNewListedNFTCollection(tt.args.interval, tt.args.page, tt.args.size)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetNewListedNFTCollection() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetNewListedNFTCollection() = %v, want %v", got, tt.want)
 			}
 		})
 	}
