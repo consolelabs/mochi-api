@@ -404,7 +404,7 @@ func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, er
 	return resp, nil
 }
 
-func (e *Entity) GetNewlyListedNFTCollection(interval string, page string, size string) (*response.NFTNewListedResponse, error) {
+func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListedResponse, error) {
 	itv, _ := strconv.Atoi(interval)
 	pg, _ := strconv.Atoi(page)
 	lim, _ := strconv.Atoi(size)
