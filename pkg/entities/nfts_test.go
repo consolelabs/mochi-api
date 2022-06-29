@@ -439,12 +439,12 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 			},
 			args: args{
 				interval: "7",
-				page:     "1",
+				page:     "0",
 				size:     "2",
 			},
 			want: &response.NFTNewListedResponse{
 				Pagination: util.Pagination{
-					Page:  int64(1),
+					Page:  int64(0),
 					Size:  int64(2),
 					Total: int64(2),
 				},
@@ -517,7 +517,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 		},
 	}
 	emptyReturn := []model.NFTCollection{}
-	nftCollection.EXPECT().GetNewListed(7, 1, 2).Return(repoReturn, int64(2), nil).AnyTimes()
+	nftCollection.EXPECT().GetNewListed(7, 0, 2).Return(repoReturn, int64(2), nil).AnyTimes()
 	nftCollection.EXPECT().GetNewListed(0, 0, 0).Return(emptyReturn, int64(0), nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

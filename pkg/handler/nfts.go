@@ -175,7 +175,7 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 		interval = "7"
 	}
 	if page == "" {
-		page = "1"
+		page = "0"
 	}
 	if size == "" {
 		size = "10"
