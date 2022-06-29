@@ -12,6 +12,7 @@ type NFTCollection struct {
 	Name       string        `json:"name"`
 	Symbol     string        `json:"symbol"`
 	ChainID    string        `json:"chain_id"`
+	Chain      string        `json:"chain"`
 	ERCFormat  string        `json:"erc_format"`
 	IsVerified bool          `json:"is_verified"`
 	CreatedAt  time.Time     `json:"created_at"`

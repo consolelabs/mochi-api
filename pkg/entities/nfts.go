@@ -409,6 +409,14 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 	pg, _ := strconv.Atoi(page)
 	lim, _ := strconv.Atoi(size)
 	data, total, err := e.repo.NFTCollection.GetNewListed(itv, pg, lim)
+	for i, ele := range data {
+		chainId, _ := strconv.Atoi(ele.ChainID)
+		chain, err := e.repo.Chain.GetByID(chainId)
+		if err != nil {
+			return nil, err
+		}
+		data[i].Chain = chain.Name
+	}
 	return &response.NFTNewListedResponse{
 		Pagination: util.Pagination{
 			Page:  int64(pg),

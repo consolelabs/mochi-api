@@ -455,6 +455,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 						Name:       "neko",
 						Symbol:     "neko",
 						ChainID:    "250",
+						Chain:      "Fantom Opera",
 						ERCFormat:  "721",
 						IsVerified: true,
 						CreatedAt:  time.Date(2022, 6, 24, 1, 2, 3, 4, time.UTC),
@@ -465,6 +466,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 						Name:       "neko",
 						Symbol:     "neko",
 						ChainID:    "250",
+						Chain:      "Fantom Opera",
 						ERCFormat:  "721",
 						IsVerified: true,
 						CreatedAt:  time.Date(2022, 6, 22, 1, 2, 3, 4, time.UTC),
@@ -501,6 +503,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 			Name:       "neko",
 			Symbol:     "neko",
 			ChainID:    "250",
+			Chain:      "Fantom Opera",
 			ERCFormat:  "721",
 			IsVerified: true,
 			CreatedAt:  time.Date(2022, 6, 24, 1, 2, 3, 4, time.UTC),
@@ -511,6 +514,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 			Name:       "neko",
 			Symbol:     "neko",
 			ChainID:    "250",
+			Chain:      "Fantom Opera",
 			ERCFormat:  "721",
 			IsVerified: true,
 			CreatedAt:  time.Date(2022, 6, 22, 1, 2, 3, 4, time.UTC),
@@ -519,6 +523,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 	emptyReturn := []model.NFTCollection{}
 	nftCollection.EXPECT().GetNewListed(7, 0, 2).Return(repoReturn, int64(2), nil).AnyTimes()
 	nftCollection.EXPECT().GetNewListed(0, 0, 0).Return(emptyReturn, int64(0), nil).AnyTimes()
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{
