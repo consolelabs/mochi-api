@@ -1,6 +1,7 @@
 package nftcollection
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -67,4 +68,16 @@ func (pg *pg) ListByGuildID(guildID string) ([]model.NFTCollection, error) {
 		Joins("left join guild_config_nft_roles on guild_config_nft_roles.nft_collection_id = nft_collections.id").
 		Where("guild_id = ?", guildID).
 		Find(&collections).Error
+}
+
+func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NFTCollection, int64, error) {
+	var collection []model.NFTCollection
+	var count int64
+	return collection, count, pg.db.Table("nft_collections").
+		Where(fmt.Sprintf("created_at > now() - interval '%v days'", interval)). //error if uses placeholder
+		Order("created_at DESC").
+		Count(&count).
+		Limit(size).
+		Offset(size * (page - 1)).
+		Find(&collection).Error
 }

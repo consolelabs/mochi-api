@@ -403,3 +403,18 @@ func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, er
 	}
 	return resp, nil
 }
+
+func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListedResponse, error) {
+	itv, _ := strconv.Atoi(interval)
+	pg, _ := strconv.Atoi(page)
+	lim, _ := strconv.Atoi(size)
+	data, total, err := e.repo.NFTCollection.GetNewListed(itv, pg, lim)
+	return &response.NFTNewListedResponse{
+		Pagination: util.Pagination{
+			Page:  int64(pg),
+			Size:  int64(lim),
+			Total: total,
+		},
+		Data: data,
+	}, err
+}

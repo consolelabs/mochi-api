@@ -166,3 +166,25 @@ func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
+
+func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	interval := c.Query("interval")
+	if interval == "" {
+		interval = "7"
+	}
+	if page == "" {
+		page = "1"
+	}
+	if size == "" {
+		size = "10"
+	}
+
+	data, err := h.entities.GetNewListedNFTCollection(interval, page, size)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, data)
+}
