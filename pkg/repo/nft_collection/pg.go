@@ -78,6 +78,6 @@ func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NFTCollect
 		Order("created_at DESC").
 		Count(&count).
 		Limit(size).
-		Offset(size * (page - 1)).
+		Offset(size * page).
 		Find(&collection).Error
 }
