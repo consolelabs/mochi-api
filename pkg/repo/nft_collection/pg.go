@@ -70,8 +70,8 @@ func (pg *pg) ListByGuildID(guildID string) ([]model.NFTCollection, error) {
 		Find(&collections).Error
 }
 
-func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NFTCollection, int64, error) {
-	var collection []model.NFTCollection
+func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NewListedNFTCollection, int64, error) {
+	var collection []model.NewListedNFTCollection
 	var count int64
 	return collection, count, pg.db.Table("nft_collections").
 		Where(fmt.Sprintf("created_at > now() - interval '%v days'", interval)). //error if uses placeholder
