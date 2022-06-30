@@ -1,5 +1,10 @@
 package response
 
+import (
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/util"
+)
+
 type NFTTradingVolume struct {
 	CollectionAddress string  `json:"collection_address"`
 	CollectionName    string  `json:"collection_name"`
@@ -11,4 +16,9 @@ type NFTTradingVolume struct {
 
 type NFTTradingVolumeResponse struct {
 	Data []NFTTradingVolume `json:"data"`
+}
+
+type NFTNewListedResponse struct {
+	util.Pagination
+	Data []model.NewListedNFTCollection `json:"data"`
 }
