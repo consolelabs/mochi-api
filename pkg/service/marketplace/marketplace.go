@@ -44,8 +44,6 @@ func (e *marketplace) ConvertOpenseaToEthAddress(openseaMarketplace string) stri
 	splittedOpensea := strings.Split(openseaMarketplace, "/")
 	collectionSymbol := splittedOpensea[len(splittedOpensea)-1]
 	openseaCollection, _ := e.GetCollectionFromOpensea(collectionSymbol)
-	fmt.Println("result here ??")
-	fmt.Println(openseaCollection)
 	return openseaCollection.Collection.PrimaryAssetContracts[0].Address
 }
 
@@ -100,11 +98,9 @@ func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*opense
 	}
 	data := &openseaGetCollectionResponse{}
 	err = json.Unmarshal(body, data)
-	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(data)
 
 	return data, nil
 }
