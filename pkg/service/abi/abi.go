@@ -1,6 +1,8 @@
 package abi
 
 import (
+	"errors"
+
 	"github.com/defipod/mochi/pkg/config"
 	abi "github.com/defipod/mochi/pkg/contract/erc721"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -32,11 +34,20 @@ func (e *abiEntity) GetNameAndSymbol(address string, chainId int64) (name string
 	}
 	name, err = instance.Name(&bind.CallOpts{})
 	if err != nil {
-		return "", "", err
+		if err.Error() == "execution reverted" {
+			return "", "", errors.New("This collection does not support collection name")
+		} else {
+			return "", "", err
+		}
+
 	}
 	symbol, err = instance.Symbol(&bind.CallOpts{})
 	if err != nil {
-		return "", "", err
+		if err.Error() == "execution reverted" {
+			return "", "", errors.New("This collection does not support collection symbol")
+		} else {
+			return "", "", err
+		}
 	}
 	return name, symbol, nil
 }
