@@ -139,13 +139,7 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 		return
 	}
 
-	checksum, err := util.ConvertToChecksumAddr(req.ContractAddress)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = h.entities.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
+	err := h.entities.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 	})
@@ -154,9 +148,9 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 		return
 	}
 
-	err = h.entities.CreateNFTSalesTracker(checksum, req.Platform, req.GuildID)
+	err = h.entities.CreateNFTSalesTracker(req.ContractAddress, req.Platform, req.GuildID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
