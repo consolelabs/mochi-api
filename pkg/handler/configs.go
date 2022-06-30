@@ -64,28 +64,6 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
 }
 
-func (h *Handler) UpsertSalesTrackerConfig(c *gin.Context) {
-	var req request.UpsertSalesTrackerConfigRequest
-
-	if err := c.BindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if req.GuildID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
-	}
-	if req.ChannelID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
-	}
-
-	if err := h.entities.UpsertSalesTrackerConfig(req); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
-}
-
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
