@@ -26,6 +26,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
+// TODO: add test for this api
 func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	var req request.CreateNFTCollectionRequest
 
