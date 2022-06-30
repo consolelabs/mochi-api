@@ -30,6 +30,7 @@ type IndexerNFTCollection struct {
 	ERCFormat          string       `json:"erc_format"`
 	Supply             uint64       `json:"supply"`
 	IsRarityCalculated bool         `json:"is_rarity_calculated"`
+	Image              string       `json:"image"`
 }
 
 type IndexerGetNFTTokensResponse struct {

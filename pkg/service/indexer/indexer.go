@@ -66,7 +66,6 @@ func (i *indexer) CreateERC721Contract(req CreateERC721ContractRequest) error {
 }
 
 func (i *indexer) GetNFTCollectionTickers(address string) (*res.IndexerNFTCollectionTickersResponse, error) {
-
 	url := fmt.Sprintf("%s/api/v1/nft/ticker/%s", i.cfg.IndexerServerHost, address)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
