@@ -167,7 +167,15 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
-		return
+		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
+		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
+	}
+
+	// query name and symbol from contract
+	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
+	if err != nil {
+		e.log.Errorf(err, "[GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", req.Address, chainID)
+		return nil, fmt.Errorf("Cannot get name and symbol of contract: %v", err)
 	}
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
@@ -175,14 +183,8 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		ChainID: chainID,
 	})
 	if err != nil {
-		err = fmt.Errorf("failed to add contract to Indexer: %v", err)
-		return
-	}
-
-	// query name and symbol from contract
-	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
-	if err != nil {
-		return
+		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
@@ -194,8 +196,8 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		IsVerified: true,
 	})
 	if err != nil {
-		err = fmt.Errorf("failed to create collection NFTS: %v", err)
-		return
+		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
 
 	return
