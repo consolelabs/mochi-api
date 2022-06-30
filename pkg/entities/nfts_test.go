@@ -79,6 +79,7 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 	r.NFTSalesTracker = salesTracker
 	r.GuildConfigSalesTracker = configSalesTracker
 
+	address, _ := util.ConvertToChecksumAddr("0x7aCeE5D0acC520222222")
 	tests := []struct {
 		name    string
 		fields  fields
@@ -92,7 +93,7 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 				repo: r,
 			},
 			args: args{
-				addr:     "0xakjsdbajksbfqwueh182937h8123hbj1h2b3",
+				addr:     "0x7aCeE5D0acC520222222",
 				platform: "ethereum",
 				guildID:  "863278424433229854",
 			},
@@ -104,7 +105,7 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 				repo: r,
 			},
 			args: args{
-				addr:     "0xakjsdbajksbfqwueh182937h8123hbj1h2b3",
+				addr:     "0x7aCeE5D0acC520222222",
 				platform: "ethereum",
 				guildID:  "123",
 			},
@@ -112,12 +113,12 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 		},
 	}
 	correctSalesTracker := model.InsertNFTSalesTracker{
-		ContractAddress: "0xakjsdbajksbfqwueh182937h8123hbj1h2b3",
+		ContractAddress: address,
 		Platform:        "ethereum",
 		SalesConfigID:   "abab53eb-c13f-4f6a-b617-27d38a08e519",
 	}
 	invalidSalesTracker := model.InsertNFTSalesTracker{
-		ContractAddress: "0xakjsdbajksbfqwueh182937h8123hbj1h2b3",
+		ContractAddress: address,
 		Platform:        "ethereum",
 		SalesConfigID:   "abc",
 	}
