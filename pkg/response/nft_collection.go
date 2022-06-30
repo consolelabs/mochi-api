@@ -20,5 +20,5 @@ type NFTTradingVolumeResponse struct {
 
 type NFTNewListedResponse struct {
 	util.Pagination
-	Data []model.NFTCollection `json:"data"`
+	Data []model.NewListedNFTCollection `json:"data"`
 }

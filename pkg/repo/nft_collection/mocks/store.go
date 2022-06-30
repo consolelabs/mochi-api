@@ -95,10 +95,10 @@ func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
 }
 
 // GetNewListed mocks base method.
-func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NFTCollection, int64, error) {
+func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NewListedNFTCollection, int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNewListed", interval, page, size)
-	ret0, _ := ret[0].([]model.NFTCollection)
+	ret0, _ := ret[0].([]model.NewListedNFTCollection)
 	ret1, _ := ret[1].(int64)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2

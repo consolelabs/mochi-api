@@ -448,7 +448,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 					Size:  int64(2),
 					Total: int64(2),
 				},
-				Data: []model.NFTCollection{
+				Data: []model.NewListedNFTCollection{
 					{
 						ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
 						Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
@@ -491,12 +491,12 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 					Size:  int64(0),
 					Total: int64(0),
 				},
-				Data: []model.NFTCollection{},
+				Data: []model.NewListedNFTCollection{},
 			},
 			wantErr: false,
 		},
 	}
-	repoReturn := []model.NFTCollection{
+	repoReturn := []model.NewListedNFTCollection{
 		{
 			ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
 			Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
@@ -520,7 +520,7 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 			CreatedAt:  time.Date(2022, 6, 22, 1, 2, 3, 4, time.UTC),
 		},
 	}
-	emptyReturn := []model.NFTCollection{}
+	emptyReturn := []model.NewListedNFTCollection{}
 	nftCollection.EXPECT().GetNewListed(7, 0, 2).Return(repoReturn, int64(2), nil).AnyTimes()
 	nftCollection.EXPECT().GetNewListed(0, 0, 0).Return(emptyReturn, int64(0), nil).AnyTimes()
 
