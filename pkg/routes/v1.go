@@ -83,7 +83,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configGroup.GET("/gm", h.GetGmConfig)
 		configGroup.POST("/gm", h.UpsertGmConfig)
 		configGroup.GET("/sales-tracker", h.GetSalesTrackerConfig)
-		configGroup.POST("/sales-tracker", h.UpsertSalesTrackerConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
 			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)

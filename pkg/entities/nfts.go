@@ -369,13 +369,18 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 }
 
 func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID string) error {
+	checksum, err := util.ConvertToChecksumAddr(addr)
+	if err != nil {
+		e.log.Errorf(err, "[util.ConvertToChecksumAddr] cannot convert to checksum")
+		return fmt.Errorf("invalid contract address")
+	}
 	config, err := e.GetSalesTrackerConfig(guildID)
 	if err != nil {
 		return err
 	}
 
 	return e.repo.NFTSalesTracker.FirstOrCreate(&model.InsertNFTSalesTracker{
-		ContractAddress: addr,
+		ContractAddress: checksum,
 		Platform:        platform,
 		SalesConfigID:   config.ID.UUID.String(),
 	})
