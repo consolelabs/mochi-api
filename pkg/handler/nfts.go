@@ -159,7 +159,12 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 }
 
 func (h *Handler) GetDetailNftCollection(c *gin.Context) {
-	collectionSymbol := c.Query("collectionSymbol")
+	collectionSymbol := c.Param("symbol")
+	if collectionSymbol == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
+	}
+
 	collection, err := h.entities.GetDetailNftCollection(collectionSymbol)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

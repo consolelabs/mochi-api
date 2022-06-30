@@ -391,6 +391,11 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 	if err != nil {
 		return nil, err
 	}
+
+	res, err := e.svc.Indexer.GetNFTCollections(fmt.Sprintf("address=%s", collection.Address))
+	if err == nil && len(res.Data) > 0 {
+		collection.Image = res.Data[0].Image
+	}
 	return collection, nil
 }
 
