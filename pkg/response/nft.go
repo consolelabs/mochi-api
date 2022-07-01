@@ -39,11 +39,11 @@ type IndexerGetNFTTokensResponse struct {
 }
 
 type IndexerNFTToken struct {
-	TokenID           uint64                     `json:"token_id,omitempty"`
+	TokenID           string                     `json:"token_id,omitempty"`
 	CollectionAddress string                     `json:"collection_address,omitempty"`
 	Name              string                     `json:"name,omitempty"`
 	Description       string                     `json:"description,omitempty"`
-	Amount            uint64                     `json:"amount,omitempty"`
+	Amount            string                     `json:"amount,omitempty"`
 	Image             string                     `json:"image,omitempty"`
 	ImageCDN          string                     `json:"image_cdn,omitempty"`
 	ThumbnailCDN      string                     `json:"thumbnail_cdn,omitempty"`
@@ -58,7 +58,7 @@ type IndexerNFTToken struct {
 
 type IndexerNFTTokenAttribute struct {
 	CollectionAddress string `json:"collection_address"`
-	TokenId           uint64 `json:"token_id"`
+	TokenId           string `json:"token_id"`
 	TraitType         string `json:"trait_type"`
 	Value             string `json:"value"`
 	Count             uint64 `json:"count"`
