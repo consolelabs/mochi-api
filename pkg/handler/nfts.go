@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
@@ -35,34 +36,12 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		return
 	}
 
-	address := h.entities.HandleMarketplaceLink(req.Address, req.ChainID)
-	checksumAddress, _ := util.ConvertToChecksumAddr(address)
-
-	checkExitsNFT, err := h.entities.CheckExistNftCollection(checksumAddress)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if checkExitsNFT {
-		is_sync, err := h.entities.CheckIsSync(checksumAddress)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		if !is_sync {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is in sync progress"})
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Already added. Nft is done with sync"})
-		}
-		return
-	}
-
-	req.Address = checksumAddress
-
 	data, err := h.entities.CreateNFTCollection(req)
 	if err != nil {
+		if strings.Contains(err.Error(), "Already added") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
