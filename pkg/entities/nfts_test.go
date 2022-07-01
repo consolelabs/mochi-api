@@ -21,6 +21,7 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/golang/mock/gomock"
@@ -547,6 +548,216 @@ func TestEntity_GetNewListedNFTCollection(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetNewListedNFTCollection() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetNFTDetail(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	type args struct {
+		symbol  string
+		tokenID string
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	mockIndexer := mock_indexer.NewMockService(ctrl)
+
+	r.NFTCollection = nftCollection
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *response.IndexerNFTToken
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "query nft successfully",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+			},
+			args: args{
+				symbol:  "rabby",
+				tokenID: "1",
+			},
+			want: &response.IndexerNFTToken{
+				TokenID:           "1",
+				CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+				Name:              "Cyber Rabby #1",
+				Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
+				Amount:            "1",
+				Image:             "pic.png",
+				ImageCDN:          "pic.png",
+				ThumbnailCDN:      "thumb.png",
+				ImageContentType:  "",
+				RarityRank:        0,
+				RarityScore:       "",
+				RarityTier:        "",
+				Attributes:        []response.IndexerNFTTokenAttribute{},
+				Rarity:            &response.IndexerNFTTokenRarity{},
+				MetadataID:        "",
+			},
+			wantErr: false,
+		},
+		{
+			name: "nft not in sync - indexer return isSync=false",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+			},
+			args: args{
+				symbol:  "neko",
+				tokenID: "1",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "nft not found in db",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+			},
+			args: args{
+				symbol:  "doggo",
+				tokenID: "1",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "token not found - symbol in db and indexer but ID not found",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+			},
+			args: args{
+				symbol:  "rabby",
+				tokenID: "99999999",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	validNFTCollectionRabby := &model.NFTCollection{
+		ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
+		Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		Name:       "rabby",
+		Symbol:     "rabby",
+		ChainID:    "250",
+		ERCFormat:  "721",
+		IsVerified: true,
+		CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+	}
+	validNFTCollectionNeko := &model.NFTCollection{
+		ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
+		Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
+		Name:       "neko",
+		Symbol:     "neko",
+		ChainID:    "250",
+		ERCFormat:  "721",
+		IsVerified: true,
+		CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+	}
+	validIndexerResponse := &response.IndexerNFTToken{
+		TokenID:           "1",
+		CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		Name:              "Cyber Rabby #1",
+		Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
+		Amount:            "1",
+		Image:             "pic.png",
+		ImageCDN:          "pic.png",
+		ThumbnailCDN:      "thumb.png",
+		ImageContentType:  "",
+		RarityRank:        0,
+		RarityScore:       "",
+		RarityTier:        "",
+		Attributes:        []response.IndexerNFTTokenAttribute{},
+		Rarity:            &response.IndexerNFTTokenRarity{},
+		MetadataID:        "",
+	}
+	// success
+	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "1").Return(validIndexerResponse, nil).AnyTimes()
+
+	// fail - sync data in progress
+	nftCollection.EXPECT().GetBySymbol("neko").Return(validNFTCollectionNeko, nil).AnyTimes()
+	mockIndexer.EXPECT().GetNFTDetail("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79", "1").Return(nil, errors.New("data not in sync")).AnyTimes()
+
+	// fail - collection has not been added
+	nftCollection.EXPECT().GetBySymbol("doggo").Return(nil, errors.New("record not found")).AnyTimes()
+	// function does not call indexer if record not found in database
+
+	// fail - token not found
+	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "99999999").Return(nil, errors.New("token not found")).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetNFTDetail() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetNFTDetail() = %v, want %v", got, tt.want)
 			}
 		})
 	}
