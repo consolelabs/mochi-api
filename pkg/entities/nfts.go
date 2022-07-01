@@ -164,6 +164,29 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 }
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
+	checksumAddress, _ := util.ConvertToChecksumAddr(address)
+
+	checkExitsNFT, err := e.CheckExistNftCollection(checksumAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	if checkExitsNFT {
+		is_sync, err := e.CheckIsSync(checksumAddress)
+		if err != nil {
+			return nil, err
+		}
+
+		if !is_sync {
+			return nil, fmt.Errorf("Already added. Nft is in sync progress")
+		} else {
+			return nil, fmt.Errorf("Already added. Nft is done with sync")
+		}
+	}
+
+	req.Address = checksumAddress
+
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
