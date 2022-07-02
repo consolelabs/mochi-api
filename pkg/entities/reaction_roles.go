@@ -3,9 +3,11 @@ package entities
 import (
 	"encoding/json"
 	"errors"
+
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) ListAllReactionRoles(guildID string) (*response.ListRoleReactionResponse, error) {
