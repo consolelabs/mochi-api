@@ -366,10 +366,28 @@ func (e *Entity) GetNFTCollections(query string) (*response.IndexerGetNFTCollect
 			chainMap[chain.ID] = chain
 		}
 	}
+
+	// TODO: remove after indexer data's better
+	collectionMap := make(map[string]model.NFTCollection)
+	if collections, err := e.repo.NFTCollection.ListAll(); err == nil {
+		for _, col := range collections {
+			collectionMap[col.Address] = col
+		}
+	}
+
 	for i, collection := range data.Data {
-		chain, ok := chainMap[collection.ChainId]
-		if ok {
+		if chain, ok := chainMap[collection.ChainId]; ok {
 			data.Data[i].Chain = &chain
+		}
+
+		// TODO: remove after indexer data's better
+		if idxCol, ok := collectionMap[collection.Address]; ok {
+			if collection.Name == "" && idxCol.Name != "" {
+				data.Data[i].Name = idxCol.Name
+			}
+			if collection.Symbol == "" && idxCol.Symbol != "" {
+				data.Data[i].Symbol = idxCol.Symbol
+			}
 		}
 	}
 
