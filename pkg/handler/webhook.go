@@ -211,19 +211,7 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		return
 	}
 
-	conf, err := h.entities.GetGuildRepostReactionConfigByReaction(req.GuildID, req.Reaction)
-	if err != nil {
-		return
-	}
-	if req.ReactionCount < conf.Quantity {
-		return
-	}
-
-	if isRepostable := h.entities.IsRepostableMessage(req); !isRepostable {
-		return
-	}
-
-	err = h.entities.CreateRepostMessageHist(req, conf.RepostChannelID)
+	chanID, err := h.entities.CreateRepostReactionEvent(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -231,6 +219,6 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":            "OK",
-		"repost_channel_id": conf.RepostChannelID,
+		"repost_channel_id": chanID,
 	})
 }
