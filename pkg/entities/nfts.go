@@ -173,12 +173,14 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 
 	checkExistNFT, err := e.CheckExistNftCollection(checksumAddress)
 	if err != nil {
+		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
 		return nil, err
 	}
 
 	if checkExistNFT {
 		is_sync, err := e.CheckIsSync(checksumAddress)
 		if err != nil {
+			e.log.Errorf(err, "[e.CheckIsSync] failed to check if nft is synced: %v", err)
 			return nil, err
 		}
 
@@ -190,14 +192,12 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	req.Address = checksumAddress
-
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
-
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {

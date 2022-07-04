@@ -813,6 +813,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
 
 	nftCollection := mock_nft_collection.NewMockStore(ctrl)
 	mockIndexer := mock_indexer.NewMockService(ctrl)
@@ -836,6 +837,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				abi:         mockAbi,
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
+				log:         log,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -864,12 +866,70 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				abi:         mockAbi,
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
+				log:         log,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
 					Address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
 					Chain:   "Fantom",
 					ChainID: "ftm",
+				},
+			},
+			wantNftCollection: nil,
+			wantErr:           true,
+		},
+		{
+			name: "invalid chain id",
+			fields: fields{
+				repo:        r,
+				abi:         mockAbi,
+				indexer:     mockIndexer,
+				marketplace: mockMarketplace,
+				log:         log,
+			},
+			args: args{
+				request.CreateNFTCollectionRequest{
+					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68b",
+					Chain:   "Etheabc",
+					ChainID: "abc",
+				},
+			},
+			wantNftCollection: nil,
+			wantErr:           true,
+		},
+		{
+			name: "abi contract not found",
+			fields: fields{
+				repo:        r,
+				abi:         mockAbi,
+				indexer:     mockIndexer,
+				marketplace: mockMarketplace,
+				log:         log,
+			},
+			args: args{
+				request.CreateNFTCollectionRequest{
+					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68c",
+					Chain:   "Ethereum",
+					ChainID: "11111",
+				},
+			},
+			wantNftCollection: nil,
+			wantErr:           true,
+		},
+		{
+			name: "invalid address",
+			fields: fields{
+				repo:        r,
+				abi:         mockAbi,
+				indexer:     mockIndexer,
+				marketplace: mockMarketplace,
+				log:         log,
+			},
+			args: args{
+				request.CreateNFTCollectionRequest{
+					Address: "0xabc",
+					Chain:   "Ethereum",
+					ChainID: "eth",
 				},
 			},
 			wantNftCollection: nil,
@@ -923,7 +983,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		IsSynced:        true,
 	}
 
-	// ########## SUCCESSFUL
+	// ########## Case 1: SUCCESSFUL
 	mockMarketplace.EXPECT().HandleMarketplaceLink("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "ftm").Return("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").AnyTimes()
 	//---convert to checksum - tested
 	nftCollection.EXPECT().GetByAddress("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(nil, errors.New("record not found")).AnyTimes() //repo call for checkexist
@@ -934,12 +994,34 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
 	//####################
 
-	// ########## FAIL - duplicated entry
+	// ########## Case 2: FAIL - duplicated entry
 	mockMarketplace.EXPECT().HandleMarketplaceLink("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79", "ftm").Return("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").AnyTimes()
 	//---convert to checksum - tested
 	nftCollection.EXPECT().GetByAddress("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").Return(nftReturnedByCheckExist, nil).AnyTimes() //repo call for checkexist
 	mockIndexer.EXPECT().GetNFTContract("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").Return(syncedContract, nil).AnyTimes()          //repo call for check is sync
 	// function stops here and return error
+	// ####################
+
+	// ########## Case 3: FAIL - invalid chain id
+	mockMarketplace.EXPECT().HandleMarketplaceLink("0x23581767a106ae21c074b2276D25e5C3e136a68b", "abc").Return("0x23581767a106ae21c074b2276D25e5C3e136a68b").AnyTimes()
+	//---convert to checksum - tested
+	nftCollection.EXPECT().GetByAddress("0x23581767a106ae21c074b2276D25e5C3e136a68b").Return(nil, errors.New("record not found")).AnyTimes() //repo call for checkexist
+	//---collection not existed so skip sync check
+	// failed to convert chain id 'abc' and return error
+	// ####################
+
+	// ########## Case 4: FAIL - abi contract not found
+	mockMarketplace.EXPECT().HandleMarketplaceLink("0x23581767a106ae21c074b2276D25e5C3e136a68c", "11111").Return("0x23581767a106ae21c074b2276D25e5C3e136a68c").AnyTimes()
+	//---convert to checksum - tested
+	nftCollection.EXPECT().GetByAddress("0x23581767A106Ae21C074B2276d25e5c3e136a68c").Return(nil, errors.New("record not found")).AnyTimes() //repo call for checkexist
+	//---collection not existed so skip sync check
+	mockAbi.EXPECT().GetNameAndSymbol("0x23581767A106Ae21C074B2276d25e5c3e136a68c", int64(11111)).Return("", "", errors.New("contract not found")).AnyTimes()
+	// failed to find contract and return error
+	// ####################
+
+	// ########## Case 5: FAIL - invalid address
+	mockMarketplace.EXPECT().HandleMarketplaceLink("0xabc", "eth").Return("0xabc").AnyTimes()
+	// failed convert to checksum and return error
 	// ####################
 
 	for _, tt := range tests {
@@ -968,7 +1050,6 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		})
 	}
 }
-
 func TestEntity_CheckIsSync(t *testing.T) {
 	type fields struct {
 		repo        *repo.Repo
