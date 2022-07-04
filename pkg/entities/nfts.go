@@ -109,7 +109,7 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 }
 
 func (e *Entity) CheckIsSync(address string) (bool, error) {
-	indexerContract, err := e.svc.Indexer.GetNFTContract(address)
+	indexerContract, err := e.indexer.GetNFTContract(address)
 	if err != nil {
 		return false, err
 	}
@@ -165,14 +165,18 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
-	checksumAddress, _ := util.ConvertToChecksumAddr(address)
+	checksumAddress, err := util.ConvertToChecksumAddr(address)
+	if err != nil {
+		e.log.Errorf(err, "[util.ConvertToChecksumAddr] failed to convert checksum address: %v", err)
+		return nil, fmt.Errorf("Failed to validate address: %v", err)
+	}
 
-	checkExitsNFT, err := e.CheckExistNftCollection(checksumAddress)
+	checkExistNFT, err := e.CheckExistNftCollection(checksumAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	if checkExitsNFT {
+	if checkExistNFT {
 		is_sync, err := e.CheckIsSync(checksumAddress)
 		if err != nil {
 			return nil, err

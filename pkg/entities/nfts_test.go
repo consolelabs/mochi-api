@@ -17,12 +17,15 @@ import (
 	mock_nft_collection "github.com/defipod/mochi/pkg/repo/nft_collection/mocks"
 	mock_nft_sales_tracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
+	mock_abi "github.com/defipod/mochi/pkg/service/abi/mocks"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
 	"github.com/defipod/mochi/pkg/service/marketplace"
+	mock_marketplace "github.com/defipod/mochi/pkg/service/marketplace/mocks"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/golang/mock/gomock"
 )
@@ -758,6 +761,333 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetNFTDetail() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_CreateNFTCollection(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	type args struct {
+		req request.CreateNFTCollectionRequest
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	mockIndexer := mock_indexer.NewMockService(ctrl)
+	mockAbi := mock_abi.NewMockService(ctrl)
+	mockMarketplace := mock_marketplace.NewMockService(ctrl)
+
+	r.NFTCollection = nftCollection
+
+	tests := []struct {
+		name              string
+		fields            fields
+		args              args
+		wantNftCollection *model.NFTCollection
+		wantErr           bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "add collection successfully",
+			fields: fields{
+				repo:        r,
+				abi:         mockAbi,
+				indexer:     mockIndexer,
+				marketplace: mockMarketplace,
+			},
+			args: args{
+				request.CreateNFTCollectionRequest{
+					Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+					Chain:   "Fantom",
+					ChainID: "ftm",
+				},
+			},
+			wantNftCollection: &model.NFTCollection{
+				ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
+				Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+				Symbol:     "rabby",
+				Name:       "Cyber Rabby",
+				ChainID:    "250",
+				ERCFormat:  "ERC721",
+				IsVerified: true,
+				CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+				Image:      "/Imagelink",
+			},
+			wantErr: false,
+		},
+		{
+			name: "duplicated entry",
+			fields: fields{
+				repo:        r,
+				abi:         mockAbi,
+				indexer:     mockIndexer,
+				marketplace: mockMarketplace,
+			},
+			args: args{
+				request.CreateNFTCollectionRequest{
+					Address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
+					Chain:   "Fantom",
+					ChainID: "ftm",
+				},
+			},
+			wantNftCollection: nil,
+			wantErr:           true,
+		},
+	}
+
+	validCollection := model.NFTCollection{
+		Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		Symbol:     "rabby",
+		Name:       "Cyber Rabby",
+		ChainID:    "250",
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+	}
+	returnedValidCollection := model.NFTCollection{
+		ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
+		Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		Symbol:     "rabby",
+		Name:       "Cyber Rabby",
+		ChainID:    "250",
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		Image:      "/Imagelink",
+	}
+	nftReturnedByCheckExist := &model.NFTCollection{
+		ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
+		Address:    "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
+		Name:       "Cyber Neko",
+		Symbol:     "NEKO",
+		ChainID:    "250",
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		Image:      "/Imagelink",
+	}
+	syncedContract := &response.IndexerContract{
+		ID:              3,
+		LastUpdateTime:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		LastUpdateBlock: 1000,
+		CreationBlock:   1,
+		CreatedTime:     time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		Address:         "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
+		ChainID:         250,
+		Type:            "ERC721",
+		IsProxy:         false,
+		LogicAddress:    "",
+		Protocol:        "",
+		GRPCAddress:     "indexer-grpc:80",
+		IsSynced:        true,
+	}
+
+	// ########## SUCCESSFUL
+	mockMarketplace.EXPECT().HandleMarketplaceLink("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "ftm").Return("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").AnyTimes()
+	//---convert to checksum - tested
+	nftCollection.EXPECT().GetByAddress("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(nil, errors.New("record not found")).AnyTimes() //repo call for checkexist
+	//---collection not existed so skip sync check
+	//---convert chain to chain id
+	mockAbi.EXPECT().GetNameAndSymbol("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", int64(250)).Return("Cyber Rabby", "rabby", nil).AnyTimes()
+	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250}).Return(nil).AnyTimes()
+	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
+	//####################
+
+	// ########## FAIL - duplicated entry
+	mockMarketplace.EXPECT().HandleMarketplaceLink("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79", "ftm").Return("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").AnyTimes()
+	//---convert to checksum - tested
+	nftCollection.EXPECT().GetByAddress("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").Return(nftReturnedByCheckExist, nil).AnyTimes() //repo call for checkexist
+	mockIndexer.EXPECT().GetNFTContract("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").Return(syncedContract, nil).AnyTimes()          //repo call for check is sync
+	// function stops here and return error
+	// ####################
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			gotNftCollection, err := e.CreateNFTCollection(tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.CreateNFTCollection() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotNftCollection, tt.wantNftCollection) {
+				t.Errorf("Entity.CreateNFTCollection() = %v, want %v", gotNftCollection, tt.wantNftCollection)
+			}
+		})
+	}
+}
+
+func TestEntity_CheckIsSync(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	type args struct {
+		address string
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockIndexer := mock_indexer.NewMockService(ctrl)
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "check is sync successfully",
+			fields: fields{
+				indexer: mockIndexer,
+			},
+			args: args{
+				address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+			},
+			want:    true,
+			wantErr: false,
+		},
+		{
+			name: "address invalid",
+			fields: fields{
+				indexer: mockIndexer,
+			},
+			args: args{
+				address: "0x7D1070fdbF0eF8752a9627a79b0022abc",
+			},
+			want:    false,
+			wantErr: true,
+		},
+		{
+			name: "valid address, is not synced",
+			fields: fields{
+				indexer: mockIndexer,
+			},
+			args: args{
+				address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
+			},
+			want:    false,
+			wantErr: false,
+		},
+	}
+	syncedContract := &response.IndexerContract{
+		ID:              3,
+		LastUpdateTime:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		LastUpdateBlock: 1000,
+		CreationBlock:   1,
+		CreatedTime:     time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		Address:         "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		ChainID:         250,
+		Type:            "ERC721",
+		IsProxy:         false,
+		LogicAddress:    "",
+		Protocol:        "",
+		GRPCAddress:     "indexer-grpc:80",
+		IsSynced:        true,
+	}
+	notSyncedContract := &response.IndexerContract{
+		ID:              3,
+		LastUpdateTime:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		LastUpdateBlock: 1000,
+		CreationBlock:   1,
+		CreatedTime:     time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
+		Address:         "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
+		ChainID:         250,
+		Type:            "ERC721",
+		IsProxy:         false,
+		LogicAddress:    "",
+		Protocol:        "",
+		GRPCAddress:     "indexer-grpc:80",
+		IsSynced:        false,
+	}
+	mockIndexer.EXPECT().GetNFTContract("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(syncedContract, nil).AnyTimes()
+	mockIndexer.EXPECT().GetNFTContract("0x7D1070fdbF0eF8752a9627a79b0022abc").Return(nil, errors.New("invalid address")).AnyTimes()
+	mockIndexer.EXPECT().GetNFTContract("0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79").Return(notSyncedContract, nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.CheckIsSync(tt.args.address)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.CheckIsSync() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Entity.CheckIsSync() = %v, want %v", got, tt.want)
 			}
 		})
 	}
