@@ -109,7 +109,7 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 }
 
 func (e *Entity) CheckIsSync(address string) (bool, error) {
-	indexerContract, err := e.svc.Indexer.GetNFTContract(address)
+	indexerContract, err := e.indexer.GetNFTContract(address)
 	if err != nil {
 		return false, err
 	}
@@ -165,16 +165,22 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
-	checksumAddress, _ := util.ConvertToChecksumAddr(address)
-
-	checkExitsNFT, err := e.CheckExistNftCollection(checksumAddress)
+	checksumAddress, err := util.ConvertToChecksumAddr(address)
 	if err != nil {
+		e.log.Errorf(err, "[util.ConvertToChecksumAddr] failed to convert checksum address: %v", err)
+		return nil, fmt.Errorf("Failed to validate address: %v", err)
+	}
+
+	checkExistNFT, err := e.CheckExistNftCollection(checksumAddress)
+	if err != nil {
+		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
 		return nil, err
 	}
 
-	if checkExitsNFT {
+	if checkExistNFT {
 		is_sync, err := e.CheckIsSync(checksumAddress)
 		if err != nil {
+			e.log.Errorf(err, "[e.CheckIsSync] failed to check if nft is synced: %v", err)
 			return nil, err
 		}
 
@@ -186,14 +192,12 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	req.Address = checksumAddress
-
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
-
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
