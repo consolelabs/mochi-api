@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/defipod/mochi/pkg/config"
+	res "github.com/defipod/mochi/pkg/response"
 )
 
 type marketplace struct {
@@ -19,20 +20,6 @@ func NewMarketplace(cfg *config.Config) Service {
 	return &marketplace{
 		config: cfg,
 	}
-}
-
-type openseaPrimaryAssetContracts struct {
-	Address string `json:"address"`
-}
-type openseaCollection struct {
-	Editors               interface{}                    `json:"editors"`
-	PaymentTokens         interface{}                    `json:"payment_tokens"`
-	PrimaryAssetContracts []openseaPrimaryAssetContracts `json:"primary_asset_contracts"`
-	Traits                interface{}                    `json:"traits"`
-}
-
-type openseaGetCollectionResponse struct {
-	Collection openseaCollection `json:"collection"`
 }
 
 func (e *marketplace) ConvertPaintswapToFtmAddress(paintswapMarketplace string) string {
@@ -65,7 +52,7 @@ func (e *marketplace) HandleMarketplaceLink(contractAddress, chain string) strin
 	}
 }
 
-func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*openseaGetCollectionResponse, error) {
+func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*res.OpenseaGetCollectionResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/collection/%s", e.config.MarketplaceBaseUrl.Opensea, collectionSymbol)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -96,7 +83,7 @@ func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*opense
 	if err != nil {
 		return nil, err
 	}
-	data := &openseaGetCollectionResponse{}
+	data := &res.OpenseaGetCollectionResponse{}
 	err = json.Unmarshal(body, data)
 	if err != nil {
 		return nil, err
