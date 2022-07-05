@@ -65,8 +65,6 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 	if err != nil {
 		if err.Error() == "record not found" {
 			err = fmt.Errorf("indexer: record nft not found")
-		} else if err.Error() == "data not in sync" {
-			err = fmt.Errorf("indexer: data not in sync")
 		} else {
 			err = fmt.Errorf("failed to get nft from indexer: %v", err)
 		}
