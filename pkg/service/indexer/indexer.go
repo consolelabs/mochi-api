@@ -208,14 +208,14 @@ func (i *indexer) GetNFTTradingVolume() ([]res.NFTTradingVolume, error) {
 
 func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerNFTToken, error) {
 	//--check data in sync
-	contract, err := i.GetNFTContract(collectionAddress)
-	if err != nil {
-		return nil, err
-	}
-	if !contract.IsSynced {
-		err = fmt.Errorf("data not in sync")
-		return nil, err
-	}
+	// contract, err := i.GetNFTContract(collectionAddress)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if !contract.IsSynced {
+	// 	err = fmt.Errorf("data not in sync")
+	// 	return nil, err
+	// }
 	//--
 	data := &res.IndexerNFTToken{}
 	errorMsg := &res.ErrorMessage{}
