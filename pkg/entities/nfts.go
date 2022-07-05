@@ -378,6 +378,7 @@ func (e *Entity) GetNFTCollections(query string) (*response.IndexerGetNFTCollect
 	}
 
 	for i, collection := range data.Data {
+		data.Data[i].Image = util.StandardizeUri(collection.Image)
 		if chain, ok := chainMap[collection.ChainId]; ok {
 			data.Data[i].Chain = &chain
 		}
@@ -437,7 +438,7 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 
 	res, err := e.svc.Indexer.GetNFTCollections(fmt.Sprintf("address=%s", collection.Address))
 	if err == nil && len(res.Data) > 0 {
-		collection.Image = res.Data[0].Image
+		collection.Image = util.StandardizeUri(res.Data[0].Image)
 	}
 	return collection, nil
 }
