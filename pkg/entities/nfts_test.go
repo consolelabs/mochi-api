@@ -844,6 +844,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
 					Chain:   "Fantom",
 					ChainID: "ftm",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: &model.NFTCollection{
@@ -856,6 +857,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				IsVerified: true,
 				CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 				Image:      "/Imagelink",
+				Author:     "catngh",
 			},
 			wantErr: false,
 		},
@@ -873,6 +875,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
 					Chain:   "Fantom",
 					ChainID: "ftm",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -892,6 +895,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68b",
 					Chain:   "Etheabc",
 					ChainID: "abc",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -911,6 +915,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68c",
 					Chain:   "Ethereum",
 					ChainID: "11111",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -930,6 +935,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0xabc",
 					Chain:   "Ethereum",
 					ChainID: "eth",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -944,6 +950,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ChainID:    "250",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
+		Author:     "catngh",
 	}
 	returnedValidCollection := model.NFTCollection{
 		ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
@@ -955,6 +962,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 		Image:      "/Imagelink",
+		Author:     "catngh",
 	}
 	nftReturnedByCheckExist := &model.NFTCollection{
 		ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
@@ -966,6 +974,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 		Image:      "/Imagelink",
+		Author:     "catngh",
 	}
 	syncedContract := &response.IndexerContract{
 		ID:              3,

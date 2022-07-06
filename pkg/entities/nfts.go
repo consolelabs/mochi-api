@@ -219,6 +219,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		ChainID:    convertedChainId,
 		ERCFormat:  "ERC721",
 		IsVerified: true,
+		Author:     req.Author,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
