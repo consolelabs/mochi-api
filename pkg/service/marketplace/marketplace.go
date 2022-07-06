@@ -34,6 +34,13 @@ func (e *marketplace) ConvertOpenseaToEthAddress(openseaMarketplace string) stri
 	return openseaCollection.Collection.PrimaryAssetContracts[0].Address
 }
 
+func (e *marketplace) ConvertQuixoticToOpAddress(quixoticMarketplace string) string {
+	splittedQuixotic := strings.Split(quixoticMarketplace, "/")
+	collectionSymbol := splittedQuixotic[len(splittedQuixotic)-1]
+	quixoticCollection, _ := e.GetCollectionFromQuixotic(collectionSymbol)
+	return quixoticCollection.Address
+}
+
 func (e *marketplace) HandleMarketplaceLink(contractAddress, chain string) string {
 	switch strings.Contains(contractAddress, "/") {
 	case false:
@@ -44,6 +51,8 @@ func (e *marketplace) HandleMarketplaceLink(contractAddress, chain string) strin
 			return e.ConvertPaintswapToFtmAddress(contractAddress)
 		case "opensea":
 			return e.ConvertOpenseaToEthAddress(contractAddress)
+		case "quixotic":
+			return e.ConvertQuixoticToOpAddress(contractAddress)
 		default:
 			return e.ConvertPaintswapToFtmAddress(contractAddress)
 		}
@@ -84,6 +93,46 @@ func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*res.Op
 		return nil, err
 	}
 	data := &res.OpenseaGetCollectionResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (e *marketplace) GetCollectionFromQuixotic(collectionSymbol string) (*res.QuixoticCollectionResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/collection/%s", e.config.MarketplaceBaseUrl.Quixotic, collectionSymbol)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("X-API-KEY", e.config.MarketplaceApiKey.Quixotic)
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("quixoticGetCollection - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollections - failed to get quixotic collections with symbol=%s: %v", collectionSymbol, errBody.String())
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.QuixoticCollectionResponse{}
 	err = json.Unmarshal(body, data)
 	if err != nil {
 		return nil, err
