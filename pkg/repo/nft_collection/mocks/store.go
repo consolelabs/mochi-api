@@ -79,6 +79,21 @@ func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
 
+// GetByName mocks base method.
+func (m *MockStore) GetByName(symbol string) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByName", symbol)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByName indicates an expected call of GetByName.
+func (mr *MockStoreMockRecorder) GetByName(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockStore)(nil).GetByName), symbol)
+}
+
 // GetBySymbol mocks base method.
 func (m *MockStore) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	m.ctrl.T.Helper()

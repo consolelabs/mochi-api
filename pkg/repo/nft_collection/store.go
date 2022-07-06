@@ -7,6 +7,7 @@ import (
 type Store interface {
 	GetByAddress(address string) (*model.NFTCollection, error)
 	GetBySymbol(symbol string) (*model.NFTCollection, error)
+	GetByName(symbol string) (*model.NFTCollection, error)
 	GetByID(id string) (*model.NFTCollection, error)
 	GetNewListed(interval int, page int, size int) ([]model.NewListedNFTCollection, int64, error)
 	Create(collection model.NFTCollection) (*model.NFTCollection, error)

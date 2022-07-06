@@ -27,6 +27,20 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
+func (h *Handler) GetNFTDetailWithName(c *gin.Context) {
+	name := c.Param("name")
+	tokenID := c.Param("id")
+
+	data, err := h.entities.GetNFTDetailWithName(name, tokenID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	data.Image = util.StandardizeUri(data.Image)
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
 // TODO: add test for this api
 func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	var req request.CreateNFTCollectionRequest
@@ -145,6 +159,21 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 	}
 
 	collection, err := h.entities.GetDetailNftCollection(collectionSymbol)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": collection})
+}
+
+func (h *Handler) GetDetailNftCollectionWithName(c *gin.Context) {
+	collectionName := c.Param("name")
+	if collectionName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		return
+	}
+
+	collection, err := h.entities.GetDetailNftCollectionWithName(collectionName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
