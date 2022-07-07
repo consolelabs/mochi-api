@@ -55,3 +55,7 @@ func ConvertToChecksumAddr(addrStr string) (string, error) {
 
 	return result, nil
 }
+
+func ShortenAddress(address string) string {
+	return string(address[0:6]) + "..." + string(address[len(address)-6])
+}

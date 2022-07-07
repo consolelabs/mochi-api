@@ -126,16 +126,7 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 		return
 	}
 
-	err := h.entities.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-	})
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = h.entities.CreateNFTSalesTracker(req.ContractAddress, req.Platform, req.GuildID)
+	err := h.entities.CreateSalesTracker(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

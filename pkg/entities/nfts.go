@@ -394,7 +394,7 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 	return data, nil
 }
 
-func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID string) error {
+func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 	checksum, err := util.ConvertToChecksumAddr(addr)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertToChecksumAddr] cannot convert to checksum")
