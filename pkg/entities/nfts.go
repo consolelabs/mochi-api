@@ -52,45 +52,22 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	// cannot find collection in db
 	if err != nil {
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = fmt.Errorf("database: record nft collection not found")
+			// get collection
+			collection, err = e.repo.NFTCollection.GetByName(symbol)
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					err = fmt.Errorf("database: record nft collection not found")
+				} else {
+					err = fmt.Errorf("failed to get nft collection : %v", err)
+				}
+				return nil, err
+			}
 		} else {
 			err = fmt.Errorf("failed to get nft collection : %v", err)
+			return nil, err
 		}
-		return nil, err
-	}
-
-	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
-	// cannot find collection in indexer
-	if err != nil {
-		if err.Error() == "record not found" {
-			err = fmt.Errorf("indexer: record nft not found")
-		} else {
-			err = fmt.Errorf("failed to get nft from indexer: %v", err)
-		}
-		return nil, err
-	}
-
-	// empty response
-	if data == nil {
-		err := fmt.Errorf("no nft data from indexer")
-		return nil, err
-	}
-
-	return data, nil
-}
-
-func (e *Entity) GetNFTDetailWithName(name, tokenID string) (*response.IndexerNFTToken, error) {
-	// get collection
-	collection, err := e.repo.NFTCollection.GetByName(name)
-	// cannot find collection in db
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = fmt.Errorf("database: record nft collection not found")
-		} else {
-			err = fmt.Errorf("failed to get nft collection : %v", err)
-		}
-		return nil, err
 	}
 
 	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
@@ -464,24 +441,27 @@ func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID str
 }
 
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
+	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	// cannot find collection in db
 	if err != nil {
-		return nil, err
-	}
 
-	res, err := e.svc.Indexer.GetNFTCollections(fmt.Sprintf("address=%s", collection.Address))
-	if err == nil && len(res.Data) > 0 {
-		collection.Image = util.StandardizeUri(res.Data[0].Image)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// get collection
+			collection, err = e.repo.NFTCollection.GetByName(symbol)
+			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					err = fmt.Errorf("database: record nft collection not found")
+				} else {
+					err = fmt.Errorf("failed to get nft collection : %v", err)
+				}
+				return nil, err
+			}
+		} else {
+			err = fmt.Errorf("failed to get nft collection : %v", err)
+			return nil, err
+		}
 	}
-	return collection, nil
-}
-
-func (e *Entity) GetDetailNftCollectionWithName(name string) (*model.NFTCollection, error) {
-	collection, err := e.repo.NFTCollection.GetByName(name)
-	if err != nil {
-		return nil, err
-	}
-
 	res, err := e.svc.Indexer.GetNFTCollections(fmt.Sprintf("address=%s", collection.Address))
 	if err == nil && len(res.Data) > 0 {
 		collection.Image = util.StandardizeUri(res.Data[0].Image)
