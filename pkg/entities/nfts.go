@@ -190,6 +190,10 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
+	image, err := e.getImageFromMarketPlace(chainID, req.Address)
+	if err != nil {
+		return nil, err
+	}
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
@@ -214,6 +218,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		Author:     req.Author,
+		Image:      image,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
@@ -221,6 +226,27 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	return
+}
+
+func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, error) {
+	if chainID == 1 {
+		collection, err := e.marketplace.GetOpenseaAssetContract(address)
+		if err != nil {
+			e.log.Errorf(err, "[GetOpenseaAssetContract] cannot get contract: %s | chainId %d", address, chainID)
+			return "", fmt.Errorf("Cannot get contract: %v", err)
+		}
+		return collection.Collection.Image, nil
+	}
+	if chainID == 250 {
+		collection, err := e.marketplace.GetCollectionFromPaintswap(address)
+		if err != nil {
+			e.log.Errorf(err, "[GetCollectionFromPaintswap] cannot get collection: %s | chainId %d", address, chainID)
+			return "", fmt.Errorf("Cannot get collection: %v", err)
+		}
+		return collection.Collection.Image, nil
+	}
+
+	return "", nil
 }
 
 func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err error) {

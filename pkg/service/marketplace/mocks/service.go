@@ -49,6 +49,21 @@ func (mr *MockServiceMockRecorder) GetCollectionFromOpensea(collectionSymbol int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollectionFromOpensea", reflect.TypeOf((*MockService)(nil).GetCollectionFromOpensea), collectionSymbol)
 }
 
+// GetCollectionFromPaintswap mocks base method.
+func (m *MockService) GetCollectionFromPaintswap(address string) (*response.PaintswapCollectionResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCollectionFromPaintswap", address)
+	ret0, _ := ret[0].(*response.PaintswapCollectionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCollectionFromPaintswap indicates an expected call of GetCollectionFromPaintswap.
+func (mr *MockServiceMockRecorder) GetCollectionFromPaintswap(address interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollectionFromPaintswap", reflect.TypeOf((*MockService)(nil).GetCollectionFromPaintswap), address)
+}
+
 // GetCollectionFromQuixotic mocks base method.
 func (m *MockService) GetCollectionFromQuixotic(collectionSymbol string) (*response.QuixoticCollectionResponse, error) {
 	m.ctrl.T.Helper()
@@ -62,6 +77,21 @@ func (m *MockService) GetCollectionFromQuixotic(collectionSymbol string) (*respo
 func (mr *MockServiceMockRecorder) GetCollectionFromQuixotic(collectionSymbol interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollectionFromQuixotic", reflect.TypeOf((*MockService)(nil).GetCollectionFromQuixotic), collectionSymbol)
+}
+
+// GetOpenseaAssetContract mocks base method.
+func (m *MockService) GetOpenseaAssetContract(address string) (*response.OpenseaAssetContractResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOpenseaAssetContract", address)
+	ret0, _ := ret[0].(*response.OpenseaAssetContractResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOpenseaAssetContract indicates an expected call of GetOpenseaAssetContract.
+func (mr *MockServiceMockRecorder) GetOpenseaAssetContract(address interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOpenseaAssetContract", reflect.TypeOf((*MockService)(nil).GetOpenseaAssetContract), address)
 }
 
 // HandleMarketplaceLink mocks base method.
