@@ -70,7 +70,7 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 		return
 	}
 
-	data, err := h.entities.GetNFTCollection(symbol)
+	data, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
