@@ -22,7 +22,6 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"gorm.io/gorm"
 )
 
 var (
@@ -49,14 +48,9 @@ var (
 
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
-	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	// cannot find collection in db
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = fmt.Errorf("database: record nft collection not found")
-		} else {
-			err = fmt.Errorf("failed to get nft collection : %v", err)
-		}
 		return nil, err
 	}
 
@@ -413,7 +407,7 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 }
 
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
-	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	if err != nil {
 		return nil, err
 	}

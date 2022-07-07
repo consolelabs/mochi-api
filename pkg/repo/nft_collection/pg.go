@@ -37,6 +37,16 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
+func (pg *pg) GetBySymbolorName(name string) (*model.NFTCollection, error) {
+	var collection model.NFTCollection
+	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?) OR lower(symbol) = lower(?)", name, name).
+		Where("is_verified = ?", true).First(&collection).Error
+	if err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}
+
 func (pg *pg) GetByID(id string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
 	return &collection, pg.db.Table("nft_collections").Where("id = ?", id).First(&collection).Error
