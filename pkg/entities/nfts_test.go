@@ -724,19 +724,19 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		MetadataID:        "",
 	}
 	// success
-	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "1").Return(validIndexerResponse, nil).AnyTimes()
 
 	// fail - sync data in progress
-	nftCollection.EXPECT().GetBySymbol("neko").Return(validNFTCollectionNeko, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("neko").Return(validNFTCollectionNeko, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79", "1").Return(nil, errors.New("data not in sync")).AnyTimes()
 
 	// fail - collection has not been added
-	nftCollection.EXPECT().GetBySymbol("doggo").Return(nil, errors.New("record not found")).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("doggo").Return(nil, errors.New("record not found")).AnyTimes()
 	// function does not call indexer if record not found in database
 
 	// fail - token not found
-	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "99999999").Return(nil, errors.New("token not found")).AnyTimes()
 
 	for _, tt := range tests {
