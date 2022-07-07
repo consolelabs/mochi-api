@@ -101,6 +101,7 @@ func (e *marketplace) GetCollectionFromOpensea(collectionSymbol string) (*res.Op
 	return data, nil
 }
 
+// TODO: test with real api key
 func (e *marketplace) GetCollectionFromQuixotic(collectionSymbol string) (*res.QuixoticCollectionResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/collection/%s", e.config.MarketplaceBaseUrl.Quixotic, collectionSymbol)
 	request, err := http.NewRequest("GET", url, nil)
