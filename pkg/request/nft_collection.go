@@ -11,6 +11,7 @@ type CreateNFTCollectionRequest struct {
 	Address string `json:"address"`
 	Chain   string `json:"chain"`
 	ChainID string `json:"chain_id"`
+	Author  string `json:"author"`
 }
 
 func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
@@ -49,6 +50,7 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"op":         "op",
 		"paintswap":  "ftm",
 		"opensea":    "eth",
+		"quixotic":   "op",
 	}
 	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
 		input.Chain = c

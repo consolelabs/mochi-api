@@ -88,12 +88,20 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 }
 
 func (h *Handler) GetNFTCollections(c *gin.Context) {
-	data, err := h.entities.GetNFTCollections(c.Request.URL.RawQuery)
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "10"
+	}
+	data, err := h.entities.GetNFTCollections(page, size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, data)
 }
 
 func (h *Handler) GetNFTTokens(c *gin.Context) {
@@ -118,16 +126,7 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 		return
 	}
 
-	err := h.entities.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-	})
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = h.entities.CreateNFTSalesTracker(req.ContractAddress, req.Platform, req.GuildID)
+	err := h.entities.CreateSalesTracker(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -149,6 +149,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	webhook := v1.Group("/webhook")
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
+		webhook.POST("/sales", h.WebhookNftSaleHandler)
 	}
 
 	verifyGroup := v1.Group("/verify")

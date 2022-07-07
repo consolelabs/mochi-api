@@ -22,7 +22,6 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"gorm.io/gorm"
 )
 
 var (
@@ -49,14 +48,9 @@ var (
 
 func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
 	// get collection
-	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	// cannot find collection in db
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			err = fmt.Errorf("database: record nft collection not found")
-		} else {
-			err = fmt.Errorf("failed to get nft collection : %v", err)
-		}
 		return nil, err
 	}
 
@@ -219,6 +213,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		ChainID:    convertedChainId,
 		ERCFormat:  "ERC721",
 		IsVerified: true,
+		Author:     req.Author,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
@@ -356,45 +351,26 @@ func (e *Entity) GetNFTCollection(symbol string) (*response.IndexerNFTCollection
 	return data, nil
 }
 
-func (e *Entity) GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error) {
-	data, err := e.svc.Indexer.GetNFTCollections(query)
+func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollectionsResponse, error) {
+	page, _ := strconv.Atoi(p)
+	size, _ := strconv.Atoi(s)
+	data, total, err := e.repo.NFTCollection.ListAllWithPaging(page, size)
 	if err != nil {
 		return nil, err
 	}
 
-	chainMap := make(map[int]model.Chain)
-	if chains, err := e.repo.Chain.GetAll(); err == nil {
-		for _, chain := range chains {
-			chainMap[chain.ID] = chain
-		}
+	for i, _ := range data {
+		data[i].Image = util.StandardizeUri(data[i].Image)
 	}
 
-	// TODO: remove after indexer data's better
-	collectionMap := make(map[string]model.NFTCollection)
-	if collections, err := e.repo.NFTCollection.ListAll(); err == nil {
-		for _, col := range collections {
-			collectionMap[col.Address] = col
-		}
-	}
-
-	for i, collection := range data.Data {
-		data.Data[i].Image = util.StandardizeUri(collection.Image)
-		if chain, ok := chainMap[collection.ChainId]; ok {
-			data.Data[i].Chain = &chain
-		}
-
-		// TODO: remove after indexer data's better
-		if idxCol, ok := collectionMap[collection.Address]; ok {
-			if collection.Name == "" && idxCol.Name != "" {
-				data.Data[i].Name = idxCol.Name
-			}
-			if collection.Symbol == "" && idxCol.Symbol != "" {
-				data.Data[i].Symbol = idxCol.Symbol
-			}
-		}
-	}
-
-	return data, nil
+	return &response.NFTCollectionsResponse{
+		Pagination: util.Pagination{
+			Page:  int64(page),
+			Size:  int64(size),
+			Total: total,
+		},
+		Data: data,
+	}, err
 }
 
 func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTTokensResponse, error) {
@@ -412,7 +388,7 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 	return data, nil
 }
 
-func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID string) error {
+func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 	checksum, err := util.ConvertToChecksumAddr(addr)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertToChecksumAddr] cannot convert to checksum")
@@ -431,7 +407,7 @@ func (e *Entity) CreateNFTSalesTracker(addr string, platform string, guildID str
 }
 
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
-	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	if err != nil {
 		return nil, err
 	}

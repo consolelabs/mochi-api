@@ -49,6 +49,13 @@ func (mr *MockServiceMockRecorder) GetCollectionFromOpensea(collectionSymbol int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollectionFromOpensea", reflect.TypeOf((*MockService)(nil).GetCollectionFromOpensea), collectionSymbol)
 }
 
+
+// GetCollectionFromQuixotic indicates an expected call of GetCollectionFromQuixotic.
+func (mr *MockServiceMockRecorder) GetCollectionFromQuixotic(collectionSymbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCollectionFromQuixotic", reflect.TypeOf((*MockService)(nil).GetCollectionFromQuixotic), collectionSymbol)
+}
+
 // HandleMarketplaceLink mocks base method.
 func (m *MockService) HandleMarketplaceLink(contractAddress, chain string) string {
 	m.ctrl.T.Helper()

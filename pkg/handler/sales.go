@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,4 +16,20 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) WebhookNftSaleHandler(c *gin.Context) {
+	var req request.NftSalesRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	for _, nftSale := range req.NftSales {
+		err := h.entities.SendNftSalesToChannel(nftSale)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }

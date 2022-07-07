@@ -724,19 +724,19 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		MetadataID:        "",
 	}
 	// success
-	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "1").Return(validIndexerResponse, nil).AnyTimes()
 
 	// fail - sync data in progress
-	nftCollection.EXPECT().GetBySymbol("neko").Return(validNFTCollectionNeko, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("neko").Return(validNFTCollectionNeko, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79", "1").Return(nil, errors.New("data not in sync")).AnyTimes()
 
 	// fail - collection has not been added
-	nftCollection.EXPECT().GetBySymbol("doggo").Return(nil, errors.New("record not found")).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("doggo").Return(nil, errors.New("record not found")).AnyTimes()
 	// function does not call indexer if record not found in database
 
 	// fail - token not found
-	nftCollection.EXPECT().GetBySymbol("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
+	nftCollection.EXPECT().GetBySymbolorName("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
 	mockIndexer.EXPECT().GetNFTDetail("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "99999999").Return(nil, errors.New("token not found")).AnyTimes()
 
 	for _, tt := range tests {
@@ -844,6 +844,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
 					Chain:   "Fantom",
 					ChainID: "ftm",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: &model.NFTCollection{
@@ -856,6 +857,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				IsVerified: true,
 				CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 				Image:      "/Imagelink",
+				Author:     "catngh",
 			},
 			wantErr: false,
 		},
@@ -873,6 +875,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
 					Chain:   "Fantom",
 					ChainID: "ftm",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -892,6 +895,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68b",
 					Chain:   "Etheabc",
 					ChainID: "abc",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -911,6 +915,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0x23581767a106ae21c074b2276D25e5C3e136a68c",
 					Chain:   "Ethereum",
 					ChainID: "11111",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -930,6 +935,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Address: "0xabc",
 					Chain:   "Ethereum",
 					ChainID: "eth",
+					Author:  "catngh",
 				},
 			},
 			wantNftCollection: nil,
@@ -944,6 +950,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ChainID:    "250",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
+		Author:     "catngh",
 	}
 	returnedValidCollection := model.NFTCollection{
 		ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
@@ -955,6 +962,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 		Image:      "/Imagelink",
+		Author:     "catngh",
 	}
 	nftReturnedByCheckExist := &model.NFTCollection{
 		ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
@@ -966,6 +974,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
 		Image:      "/Imagelink",
+		Author:     "catngh",
 	}
 	syncedContract := &response.IndexerContract{
 		ID:              3,

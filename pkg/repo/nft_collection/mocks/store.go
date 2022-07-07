@@ -94,6 +94,21 @@ func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol)
 }
 
+// GetBySymbolorName mocks base method.
+func (m *MockStore) GetBySymbolorName(symbol string) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBySymbolorName", symbol)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBySymbolorName indicates an expected call of GetBySymbolorName.
+func (mr *MockStoreMockRecorder) GetBySymbolorName(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetBySymbolorName), symbol)
+}
+
 // GetNewListed mocks base method.
 func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NewListedNFTCollection, int64, error) {
 	m.ctrl.T.Helper()
@@ -138,6 +153,22 @@ func (m *MockStore) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, 
 func (mr *MockStoreMockRecorder) ListAllNFTCollectionConfigs() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllNFTCollectionConfigs", reflect.TypeOf((*MockStore)(nil).ListAllNFTCollectionConfigs))
+}
+
+// ListAllWithPaging mocks base method.
+func (m *MockStore) ListAllWithPaging(page, size int) ([]model.NFTCollection, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllWithPaging", page, size)
+	ret0, _ := ret[0].([]model.NFTCollection)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListAllWithPaging indicates an expected call of ListAllWithPaging.
+func (mr *MockStoreMockRecorder) ListAllWithPaging(page, size interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllWithPaging", reflect.TypeOf((*MockStore)(nil).ListAllWithPaging), page, size)
 }
 
 // ListByGuildID mocks base method.

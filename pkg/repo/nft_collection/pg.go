@@ -37,6 +37,16 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
+func (pg *pg) GetBySymbolorName(name string) (*model.NFTCollection, error) {
+	var collection model.NFTCollection
+	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?) OR lower(symbol) = lower(?)", name, name).
+		Where("is_verified = ?", true).First(&collection).Error
+	if err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}
+
 func (pg *pg) GetByID(id string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
 	return &collection, pg.db.Table("nft_collections").Where("id = ?", id).First(&collection).Error
@@ -49,6 +59,15 @@ func (pg *pg) Create(collection model.NFTCollection) (*model.NFTCollection, erro
 func (pg *pg) ListAll() ([]model.NFTCollection, error) {
 	var collections []model.NFTCollection
 	return collections, pg.db.Table("nft_collections").Find(&collections).Error
+}
+func (pg *pg) ListAllWithPaging(page int, size int) ([]model.NFTCollection, int64, error) {
+	var collection []model.NFTCollection
+	var count int64
+	return collection, count, pg.db.Table("nft_collections").
+		Count(&count).
+		Limit(size).
+		Offset(size * page).
+		Find(&collection).Error
 }
 
 func (pg *pg) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
