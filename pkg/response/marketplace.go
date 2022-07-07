@@ -32,3 +32,21 @@ type QuixoticCollectionResponse struct {
 	FloorPrice      int64       `json:"floor_price"`
 	VolumeTraded    int64       `json:"volume_traded"`
 }
+
+type OpenseaAssetContractResponse struct {
+	Collection OpenseaAssetContract `json:"collection"`
+	Address    string               `json:"address"`
+}
+
+type OpenseaAssetContract struct {
+	// add more fields if needed
+	Image string `json:"image_url"`
+}
+
+type PaintswapCollectionResponse struct {
+	Collection PaintswapCollection `json:"collection"`
+}
+type PaintswapCollection struct {
+	// add more fields if needed
+	Image string `json:"poster"`
+}

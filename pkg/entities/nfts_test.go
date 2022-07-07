@@ -950,6 +950,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ChainID:    "250",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
+		Image:      "/Imagelink",
 		Author:     "catngh",
 	}
 	returnedValidCollection := model.NFTCollection{
@@ -991,7 +992,11 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		GRPCAddress:     "indexer-grpc:80",
 		IsSynced:        true,
 	}
-
+	paintswapCollection := &response.PaintswapCollectionResponse{
+		Collection: response.PaintswapCollection{
+			Image: "/Imagelink",
+		},
+	}
 	// ########## Case 1: SUCCESSFUL
 	mockMarketplace.EXPECT().HandleMarketplaceLink("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", "ftm").Return("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").AnyTimes()
 	//---convert to checksum - tested
@@ -1000,6 +1005,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	//---convert chain to chain id
 	mockAbi.EXPECT().GetNameAndSymbol("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", int64(250)).Return("Cyber Rabby", "rabby", nil).AnyTimes()
 	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250}).Return(nil).AnyTimes()
+	mockMarketplace.EXPECT().GetCollectionFromPaintswap("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(paintswapCollection, nil) //marketplace call for get image
 	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
 	//####################
 

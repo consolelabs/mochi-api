@@ -66,6 +66,7 @@ type Config struct {
 type MarketplaceBaseUrl struct {
 	Opensea  string
 	Quixotic string
+	Painswap string
 }
 
 type MarketplaceApiKey struct {
@@ -155,6 +156,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		MarketplaceBaseUrl: MarketplaceBaseUrl{
 			Opensea:  v.GetString("OPENSEA_BASE_URL"),
 			Quixotic: v.GetString("QUIXOTIC_BASE_URL"),
+			Painswap: v.GetString("PAINTSWAP_BASE_URL"),
 		},
 		MarketplaceApiKey: MarketplaceApiKey{
 			Opensea:  v.GetString("OPENSEA_API_KEY"),
@@ -182,6 +184,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("ETH_RPC", "https://rpc.ankr.com/eth")
 	v.SetDefault("OPTIMISM_RPC", "https://rpc.ankr.com/optimism")
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
+	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
 
 	for idx := range loaders {
