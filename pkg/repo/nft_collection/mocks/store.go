@@ -140,6 +140,22 @@ func (mr *MockStoreMockRecorder) ListAllNFTCollectionConfigs() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllNFTCollectionConfigs", reflect.TypeOf((*MockStore)(nil).ListAllNFTCollectionConfigs))
 }
 
+// ListAllWithPaging mocks base method.
+func (m *MockStore) ListAllWithPaging(page, size int) ([]model.NFTCollection, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllWithPaging", page, size)
+	ret0, _ := ret[0].([]model.NFTCollection)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListAllWithPaging indicates an expected call of ListAllWithPaging.
+func (mr *MockStoreMockRecorder) ListAllWithPaging(page, size interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllWithPaging", reflect.TypeOf((*MockStore)(nil).ListAllWithPaging), page, size)
+}
+
 // ListByGuildID mocks base method.
 func (m *MockStore) ListByGuildID(guildID string) ([]model.NFTCollection, error) {
 	m.ctrl.T.Helper()

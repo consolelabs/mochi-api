@@ -88,12 +88,20 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 }
 
 func (h *Handler) GetNFTCollections(c *gin.Context) {
-	data, err := h.entities.GetNFTCollections(c.Request.URL.RawQuery)
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "10"
+	}
+	data, err := h.entities.GetNFTCollections(page, size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, data)
 }
 
 func (h *Handler) GetNFTTokens(c *gin.Context) {

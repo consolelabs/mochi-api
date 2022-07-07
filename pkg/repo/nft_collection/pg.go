@@ -50,6 +50,15 @@ func (pg *pg) ListAll() ([]model.NFTCollection, error) {
 	var collections []model.NFTCollection
 	return collections, pg.db.Table("nft_collections").Find(&collections).Error
 }
+func (pg *pg) ListAllWithPaging(page int, size int) ([]model.NFTCollection, int64, error) {
+	var collection []model.NFTCollection
+	var count int64
+	return collection, count, pg.db.Table("nft_collections").
+		Count(&count).
+		Limit(size).
+		Offset(size * page).
+		Find(&collection).Error
+}
 
 func (pg *pg) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
 	var configs []model.NFTCollectionConfig
