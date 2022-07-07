@@ -14,6 +14,8 @@ type IndexerNFTCollectionTickersResponse struct {
 	ContractAddress string       `json:"contract_address"`
 	Chain           string       `json:"chain"`
 	Platforms       []string     `json:"platforms"`
+	TotalVolume     float64      `json:"total_volume"`
+	VolumeToken     string       `json:"volume_token"`
 }
 
 type IndexerGetNFTCollectionsResponse struct {
