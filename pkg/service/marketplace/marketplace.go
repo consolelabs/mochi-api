@@ -140,3 +140,80 @@ func (e *marketplace) GetCollectionFromQuixotic(collectionSymbol string) (*res.Q
 
 	return data, nil
 }
+
+func (e *marketplace) GetCollectionFromPaintswap(address string) (*res.PaintswapCollectionResponse, error) {
+	url := fmt.Sprintf("%s/v2/collections/%s", e.config.MarketplaceBaseUrl.Painswap, address)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("openseaGetAssetContract - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollections - failed to get opensea asset contract with address=%s: %v", address, errBody.String())
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.PaintswapCollectionResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (e *marketplace) GetOpenseaAssetContract(address string) (*res.OpenseaAssetContractResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/asset_contract/%s", e.config.MarketplaceBaseUrl.Opensea, address)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("X-API-KEY", e.config.MarketplaceApiKey.Opensea)
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("openseaGetAssetContract - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollections - failed to get opensea asset contract with address=%s: %v", address, errBody.String())
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.OpenseaAssetContractResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
