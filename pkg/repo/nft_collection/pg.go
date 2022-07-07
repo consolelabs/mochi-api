@@ -37,9 +37,9 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
-func (pg *pg) GetByName(name string) (*model.NFTCollection, error) {
+func (pg *pg) GetBySymbolorName(name string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
-	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?)", name).
+	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?) OR lower(symbol) = lower(?)", name, name).
 		Where("is_verified = ?", true).First(&collection).Error
 	if err != nil {
 		return nil, err

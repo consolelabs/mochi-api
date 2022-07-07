@@ -79,21 +79,6 @@ func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
 
-// GetByName mocks base method.
-func (m *MockStore) GetByName(symbol string) (*model.NFTCollection, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByName", symbol)
-	ret0, _ := ret[0].(*model.NFTCollection)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByName indicates an expected call of GetByName.
-func (mr *MockStoreMockRecorder) GetByName(symbol interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockStore)(nil).GetByName), symbol)
-}
-
 // GetBySymbol mocks base method.
 func (m *MockStore) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	m.ctrl.T.Helper()
@@ -107,6 +92,21 @@ func (m *MockStore) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol)
+}
+
+// GetBySymbolorName mocks base method.
+func (m *MockStore) GetBySymbolorName(symbol string) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBySymbolorName", symbol)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBySymbolorName indicates an expected call of GetBySymbolorName.
+func (mr *MockStoreMockRecorder) GetBySymbolorName(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetBySymbolorName), symbol)
 }
 
 // GetNewListed mocks base method.
