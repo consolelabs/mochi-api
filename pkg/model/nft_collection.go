@@ -15,7 +15,7 @@ type NFTCollection struct {
 	ERCFormat  string        `json:"erc_format"`
 	IsVerified bool          `json:"is_verified"`
 	CreatedAt  time.Time     `json:"created_at"`
-	Image      string        `json:"image" gorm:"-"`
+	Image      string        `json:"image"`
 	Author     string        `json:"author"`
 }
 type NewListedNFTCollection struct {
@@ -28,6 +28,7 @@ type NewListedNFTCollection struct {
 	ERCFormat  string        `json:"erc_format"`
 	IsVerified bool          `json:"is_verified"`
 	CreatedAt  time.Time     `json:"created_at"`
+	Image      string        `json:"image"`
 	Author     string        `json:"author"`
 }
 

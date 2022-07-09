@@ -359,13 +359,13 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 	return nil
 }
 
-func (e *Entity) GetNFTCollection(symbol string) (*response.IndexerNFTCollectionTickersResponse, error) {
+func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := e.indexer.GetNFTCollectionTickers(collection.Address)
+	data, err := e.indexer.GetNFTCollectionTickers(collection.Address, rawQuery)
 	if err != nil {
 		return nil, err
 	}

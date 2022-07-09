@@ -17,11 +17,11 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 			IconURL: nftSale.CollectionImage,
 		},
 		Description: nftSale.TokenName + " sold!",
-		Color:       100,
+		Color:       int(e.RarityColors(nftSale.Rarity)),
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Rarity",
-				Value:  "<:sparkle:984824963112513607> " + nftSale.Rarity,
+				Value:  e.RarityEmoji(nftSale.Rarity) + " " + nftSale.Rarity,
 				Inline: true,
 			},
 			{
@@ -114,4 +114,42 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 	}
 
 	return nil
+}
+
+func (e *Entity) RarityColors(rarity string) int64 {
+	switch strings.ToLower(rarity) {
+	case "common":
+		return 9671571
+	case "uncommon":
+		return 2282633
+	case "rare":
+		return 177151
+	case "epic":
+		return 9962230
+	case "legendary":
+		return 16744449
+	case "mythic":
+		return 15542585
+	default:
+		return 9671571
+	}
+}
+
+func (e *Entity) RarityEmoji(rarity string) string {
+	switch strings.ToLower(rarity) {
+	case "common":
+		return ":white_circle:"
+	case "uncommon":
+		return ":green_circle:"
+	case "rare":
+		return ":blue_circle:"
+	case "epic":
+		return ":purple_circle:"
+	case "legendary":
+		return ":orange_circle:"
+	case "mythic":
+		return ":red_circle:"
+	default:
+		return ":white_circle:"
+	}
 }

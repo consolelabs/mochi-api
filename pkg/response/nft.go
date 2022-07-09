@@ -11,9 +11,14 @@ type IndexerNFTCollectionTickersResponse struct {
 	Tickers         TokenTickers `json:"tickers"`
 	FloorPrice      float64      `json:"floor_price"`
 	Name            string       `json:"name"`
-	ContractAddress string       `json:"contract_address"`
+	Address         string       `json:"address"`
 	Chain           string       `json:"chain"`
-	Platforms       []string     `json:"platforms"`
+	Marketplaces    []string     `json:"marketplaces"`
+	TotalVolume     float64      `json:"total_volume"`
+	VolumeToken     string       `json:"volume_token"`
+	Items           int64        `json:"items"`
+	Owners          int64        `json:"owners"`
+	CollectionImage string       `json:"collection_image"`
 }
 
 type IndexerGetNFTCollectionsResponse struct {
