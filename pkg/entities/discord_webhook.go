@@ -11,6 +11,14 @@ import (
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
+	var urlMarketPlace = ""
+	if nftSale.Marketplace == "Opeasea" {
+		urlMarketPlace = "[" + nftSale.Marketplace + "]" + "(https://opensea.io/assets/ethereum/" + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")"
+	} else if nftSale.Marketplace == "Paintswap" {
+		urlMarketPlace = "[" + nftSale.Marketplace + "]" + "(https://paintswap.finance/marketplace/assets/" + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")"
+	} else { // quixotic
+		urlMarketPlace = "[" + nftSale.Marketplace + "]" + "(https://quixotic.io/asset/" + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")"
+	}
 	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
@@ -29,7 +37,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  "[" + nftSale.Marketplace + "]" + "(https://opensea.io/assets/ethereum/" + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
+			Value:  urlMarketPlace,
 			Inline: true,
 		},
 		{
