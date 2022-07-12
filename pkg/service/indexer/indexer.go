@@ -314,3 +314,27 @@ func (i *indexer) GetNFTContract(address string) (*res.IndexerContract, error) {
 
 	return contract, nil
 }
+
+func (i *indexer) GetAttributeIcon() (*res.AttributeIconResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/nft/metadata/attributes-icon", i.cfg.IndexerServerHost)
+	client := &http.Client{Timeout: time.Second * 30}
+
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &res.AttributeIconResponse{}
+	err = json.Unmarshal([]byte(b), &data)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, fmt.Errorf("GetAttributeIcon - failed to unmarshal data")
+	}
+	return data, nil
+}

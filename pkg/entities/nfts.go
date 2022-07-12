@@ -484,3 +484,11 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 		Data: data,
 	}, err
 }
+
+func (e *Entity) GetAllAttributeIcon() (*response.AttributeIconResponse, error) {
+	data, err := e.indexer.GetAttributeIcon()
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
