@@ -101,12 +101,15 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		data = append(data, &dataPnl)
 	}
 
-	dataPnl := discordgo.MessageEmbedField{
-		Name:   "\u200B",
-		Value:  "\u200B",
-		Inline: true,
+	if !(((nftSale.Pnl != "") && (nftSale.Hodl != "") && (nftSale.Gain != "")) || ((nftSale.Pnl == "") && (nftSale.Hodl == "") && (nftSale.Gain == ""))) {
+		dataPnl := discordgo.MessageEmbedField{
+			Name:   "\u200B",
+			Value:  "\u200B",
+			Inline: true,
+		}
+		data = append(data, &dataPnl)
 	}
-	data = append(data, &dataPnl)
+
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    nftSale.CollectionName,
