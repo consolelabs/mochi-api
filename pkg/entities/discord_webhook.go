@@ -29,7 +29,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  "[" + nftSale.Marketplace + "]" + util.GetURLMarketPlace(nftSale.Marketplace) + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
+			Value:  "[" + nftSale.Marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
 			Inline: true,
 		},
 		{
