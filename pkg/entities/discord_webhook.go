@@ -29,7 +29,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  nftSale.Marketplace,
+			Value:  "[" + nftSale.Marketplace + "]" + "(https://opensea.io/assets/ethereum/" + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
 			Inline: true,
 		},
 		{
@@ -101,6 +101,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		data = append(data, &dataPnl)
 	}
 
+	dataPnl := discordgo.MessageEmbedField{
+		Name:   "\u200B",
+		Value:  "\u200B",
+		Inline: true,
+	}
+	data = append(data, &dataPnl)
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    nftSale.CollectionName,
