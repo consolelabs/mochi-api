@@ -2,14 +2,13 @@ package util
 
 import "strings"
 
-func GetURLMarketPlace(marketplace string) string {
-	var urlMarketPlace = ""
+func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 	if strings.ToLower(marketplace) == "opensea" {
-		urlMarketPlace = "[" + marketplace + "]" + "(https://opensea.io/assets/ethereum/"
+		urlMarketPlace = "(https://opensea.io/assets/ethereum/"
 	} else if strings.ToLower(marketplace) == "Paintswap" {
-		urlMarketPlace = "[" + marketplace + "]" + "(https://paintswap.finance/marketplace/assets/"
+		urlMarketPlace = "(https://paintswap.finance/marketplace/assets/"
 	} else { // quixotic
-		urlMarketPlace = "[" + marketplace + "]" + "(https://quixotic.io/asset/"
+		urlMarketPlace = "(https://quixotic.io/asset/"
 	}
 	return urlMarketPlace
 }
