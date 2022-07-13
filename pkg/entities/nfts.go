@@ -51,6 +51,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	// cannot find collection in db
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
 		return nil, err
 	}
 
@@ -58,8 +59,10 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 	// cannot find collection in indexer
 	if err != nil {
 		if err.Error() == "record not found" {
+			e.log.Errorf(err, "[indexer.GetNFTDetail] indexer: record nft not found")
 			err = fmt.Errorf("indexer: record nft not found")
 		} else {
+			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
 			err = fmt.Errorf("failed to get nft from indexer: %v", err)
 		}
 		return nil, err
@@ -67,6 +70,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken
 
 	// empty response
 	if data == nil {
+		e.log.Errorf(err, "[indexer.GetNFTDetail] no nft data from indexer")
 		err := fmt.Errorf("no nft data from indexer")
 		return nil, err
 	}
@@ -91,8 +95,10 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 	// cannot find collection in db
 	if err != nil {
 		if err.Error() == "record not found" {
+			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] record not found")
 			return false, nil
 		} else {
+			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection by %s", address)
 			err = errors.New("failed to get nft collection")
 			return false, err
 		}
@@ -103,6 +109,7 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 func (e *Entity) CheckIsSync(address string) (bool, error) {
 	indexerContract, err := e.indexer.GetNFTContract(address)
 	if err != nil {
+		e.log.Errorf(err, "[indexer.GetNFTContract] failed to get nft contract by %s", address)
 		return false, err
 	}
 
@@ -118,6 +125,7 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 
 	req, err := http.NewRequest("GET", fmt.Sprintf(moralisApi, address, chain), nil)
 	if err != nil {
+		e.log.Errorf(err, "[http.NewRequest] failed to req Get to moralisApi %s by %s and %s", moralisApi, address, chain)
 		return nil, err
 	}
 	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
@@ -126,6 +134,7 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Do(req)
 	if err != nil {
+		e.log.Errorf(err, "[client.Do] failed to Client.Do with req")
 		return nil, err
 	}
 
@@ -134,10 +143,12 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 		mesErr := &MoralisMessageFail{}
 		mes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
+			e.log.Errorf(err, "[ioutil.ReadAll] failed to ioutil.ReadAll")
 			return nil, err
 		}
 		err = json.Unmarshal(mes, &mesErr)
 		if err != nil {
+			e.log.Errorf(err, "[json.Unmarshal] failed to json.Unmarshal")
 			return nil, err
 		}
 		err = fmt.Errorf("%v", mesErr.Message)
@@ -145,10 +156,12 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		e.log.Errorf(err, "[ioutil.ReadAll] failed to ioutil.ReadAll")
 		return nil, err
 	}
 	err = json.Unmarshal(body, &colData)
 	if err != nil {
+		e.log.Errorf(err, "[json.Unmarshal] failed to json.Unmarshal")
 		return nil, err
 	}
 
@@ -177,8 +190,10 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		}
 
 		if !is_sync {
+			e.log.Errorf(err, "[e.CheckIsSync] Already added. Nft is in sync progress")
 			return nil, fmt.Errorf("Already added. Nft is in sync progress")
 		} else {
+			e.log.Errorf(err, "[e.CheckIsSync] Already added. Nft is done with sync")
 			return nil, fmt.Errorf("Already added. Nft is done with sync")
 		}
 	}
@@ -192,6 +207,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 	image, err := e.getImageFromMarketPlace(chainID, req.Address)
 	if err != nil {
+		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
 		return nil, err
 	}
 	// query name and symbol from contract
@@ -258,6 +274,7 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 
 	req, err := http.NewRequest("PUT", fmt.Sprintf(moralisApi, address, chain), nil)
 	if err != nil {
+		e.log.Errorf(err, "[http.NewRequest] cannot request PUT to moralisApi %s with address %s | chain %s", moralisApi, address, chain)
 		return
 	}
 	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
@@ -266,6 +283,7 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Do(req)
 	if err != nil {
+		e.log.Errorf(err, "[client.Do] failed to Client.Do with req")
 		return
 	}
 
@@ -275,6 +293,7 @@ func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err 
 		mes, _ := ioutil.ReadAll(resp.Body)
 		err = json.Unmarshal(mes, &mesErr)
 		if err != nil {
+			e.log.Errorf(err, "[json.Unmarshal] failed to json.Unmarshal")
 			return
 		}
 		err = fmt.Errorf("%v", mesErr.Message)
@@ -296,16 +315,19 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 
 	chainID, err := strconv.Atoi(config.ChainID)
 	if err != nil {
+		e.log.Errorf(err, "[strconv.Atoi] failed to convert chain id %s to int", config.ChainID)
 		return nil, fmt.Errorf("failed to convert chain id %s to int: %v", config.ChainID, err)
 	}
 
 	chain, err := e.repo.Chain.GetByID(chainID)
 	if err != nil {
+		e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain by id %s", config.ChainID)
 		return nil, fmt.Errorf("failed to get chain by id %s: %v", config.ChainID, err)
 	}
 
 	client, err := ethclient.Dial(chain.RPC)
 	if err != nil {
+		e.log.Errorf(err, "[ethclient.Dial] failed to connect to chain client")
 		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
 	}
 
@@ -314,12 +336,14 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 	case "721", "erc721":
 		contract721, err := erc721.NewErc721(common.HexToAddress(config.Address), client)
 		if err != nil {
+			e.log.Errorf(err, "[erc721.NewErc721] failed to init erc721 contract")
 			return nil, fmt.Errorf("failed to init erc721 contract: %v", err.Error())
 		}
 
 		balanceOf = func(address string) (int, error) {
 			b, err := contract721.BalanceOf(nil, common.HexToAddress(address))
 			if err != nil {
+				e.log.Errorf(err, "[contract721.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
 				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
 			}
 			return int(b.Int64()), nil
@@ -328,23 +352,27 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 	case "1155", "erc1155":
 		contract1155, err := erc1155.NewErc1155(common.HexToAddress(config.Address), client)
 		if err != nil {
+			e.log.Errorf(err, "[erc1155.NewErc1155] failed to init erc1155 contract")
 			return nil, fmt.Errorf("failed to init erc1155 contract: %v", err.Error())
 		}
 
 		tokenID, err := strconv.ParseInt(config.TokenID, 10, 64)
 		if err != nil {
+			e.log.Errorf(err, "[strconv.ParseInt] token id is not valid")
 			return nil, fmt.Errorf("token id is not valid")
 		}
 
 		balanceOf = func(address string) (int, error) {
 			b, err := contract1155.BalanceOf(nil, common.HexToAddress(address), big.NewInt(tokenID))
 			if err != nil {
+				e.log.Errorf(err, "[contract1155.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
 				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
 			}
 			return int(b.Int64()), nil
 		}
 
 	default:
+		e.log.Errorf(err, "[GetNFTBalanceFunc] erc format %s not supported", config.ERCFormat)
 		return nil, fmt.Errorf("erc format %s not supported", config.ERCFormat)
 	}
 
@@ -354,6 +382,7 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 	err := e.repo.UserNFTBalance.Upsert(balance)
 	if err != nil {
+		e.log.Errorf(err, "[repo.UserNFTBalance.Upsert] failed to upsert user nft balance")
 		return fmt.Errorf("failed to upsert user nft balance: %v", err.Error())
 	}
 	return nil
@@ -362,11 +391,13 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by symbol %s", symbol)
 		return nil, err
 	}
 
 	data, err := e.indexer.GetNFTCollectionTickers(collection.Address, rawQuery)
 	if err != nil {
+		e.log.Errorf(err, "[indexer.GetNFTCollectionTickers] failed to get nft collection tickers by %s and %s", collection.Address, rawQuery)
 		return nil, err
 	}
 
@@ -382,6 +413,7 @@ func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollections
 	size, _ := strconv.Atoi(s)
 	data, total, err := e.repo.NFTCollection.ListAllWithPaging(page, size)
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.ListAllWithPaging] failed to list all nft collection with paging")
 		return nil, err
 	}
 
@@ -402,13 +434,16 @@ func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollections
 func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTTokensResponse, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by symbol %s", symbol)
 		return nil, err
 	}
 	if collection.Address == "" {
+		e.log.Errorf(err, "[GetNFTTokens] invalid address - collection %s", collection.ID.UUID)
 		return nil, fmt.Errorf("invalid address - collection %s", collection.ID.UUID)
 	}
 	data, err := e.svc.Indexer.GetNFTTokens(collection.Address, query)
 	if err != nil {
+		e.log.Errorf(err, "[svc.Indexer.GetNFTTokens] failed to get nft tokens by %s and  %s", collection.Address, query)
 		return nil, err
 	}
 	return data, nil
@@ -422,6 +457,7 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 	}
 	config, err := e.GetSalesTrackerConfig(guildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.GetSalesTrackerConfig] cannot convert to checksum")
 		return err
 	}
 
@@ -435,6 +471,7 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
 		return nil, err
 	}
 
@@ -449,6 +486,7 @@ func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, er
 	resp := []response.NFTSalesTrackerResponse{}
 	data, err := e.repo.NFTSalesTracker.GetAll()
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTSalesTracker.GetAll] failed to get all nft sales trackers")
 		return nil, err
 	}
 	for _, item := range data {
@@ -471,6 +509,7 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 		chainId, _ := strconv.Atoi(ele.ChainID)
 		chain, err := e.repo.Chain.GetByID(chainId)
 		if err != nil {
+			e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain %d", chainId)
 			return nil, err
 		}
 		data[i].Chain = chain.Name
