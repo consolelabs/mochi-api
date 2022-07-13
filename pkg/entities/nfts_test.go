@@ -78,6 +78,7 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
 	salesTracker := mock_nft_sales_tracker.NewMockStore(ctrl)
 	configSalesTracker := mock_guild_config_sales_tracker.NewMockStore(ctrl)
 	r.NFTSalesTracker = salesTracker
@@ -107,6 +108,7 @@ func TestEntity_CreateNFTSalesTracker(t *testing.T) {
 			name: "invalid guild id",
 			fields: fields{
 				repo: r,
+				log:  log,
 			},
 			args: args{
 				addr:     "0x7aCeE5D0acC520222222",
@@ -604,6 +606,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
 
 	nftCollection := mock_nft_collection.NewMockStore(ctrl)
 	mockIndexer := mock_indexer.NewMockService(ctrl)
@@ -651,6 +654,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			fields: fields{
 				repo:    r,
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				symbol:  "neko",
@@ -664,6 +668,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			fields: fields{
 				repo:    r,
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				symbol:  "doggo",
@@ -677,6 +682,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			fields: fields{
 				repo:    r,
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				symbol:  "rabby",
@@ -1084,6 +1090,8 @@ func TestEntity_CheckIsSync(t *testing.T) {
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+
+	log := logger.NewLogrusLogger()
 	mockIndexer := mock_indexer.NewMockService(ctrl)
 
 	tests := []struct {
@@ -1109,6 +1117,7 @@ func TestEntity_CheckIsSync(t *testing.T) {
 			name: "address invalid",
 			fields: fields{
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				address: "0x7D1070fdbF0eF8752a9627a79b0022abc",
@@ -1120,6 +1129,7 @@ func TestEntity_CheckIsSync(t *testing.T) {
 			name: "valid address, is not synced",
 			fields: fields{
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				address: "0x7ACeE5d0ACC520Fab33b3ea25d4fEEf1FfEBdE79",
