@@ -29,7 +29,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  nftSale.Marketplace,
+			Value:  "[" + nftSale.Marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
 			Inline: true,
 		},
 		{
@@ -96,6 +96,15 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		dataPnl := discordgo.MessageEmbedField{
 			Name:   "Pnl",
 			Value:  "$" + nftSale.Pnl + " " + "`+" + nftSale.SubPnl + "%`",
+			Inline: true,
+		}
+		data = append(data, &dataPnl)
+	}
+
+	if !(((nftSale.Pnl != "") && (nftSale.Hodl != "") && (nftSale.Gain != "")) || ((nftSale.Pnl == "") && (nftSale.Hodl == "") && (nftSale.Gain == ""))) {
+		dataPnl := discordgo.MessageEmbedField{
+			Name:   "\u200B",
+			Value:  "\u200B",
 			Inline: true,
 		}
 		data = append(data, &dataPnl)
