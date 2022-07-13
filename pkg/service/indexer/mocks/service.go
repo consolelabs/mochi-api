@@ -49,21 +49,6 @@ func (mr *MockServiceMockRecorder) CreateERC721Contract(arg0 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateERC721Contract", reflect.TypeOf((*MockService)(nil).CreateERC721Contract), arg0)
 }
 
-// GetAttributeIcon mocks base method.
-func (m *MockService) GetAttributeIcon() (*response.AttributeIconResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAttributeIcon")
-	ret0, _ := ret[0].(*response.AttributeIconResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAttributeIcon indicates an expected call of GetAttributeIcon.
-func (mr *MockServiceMockRecorder) GetAttributeIcon() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAttributeIcon", reflect.TypeOf((*MockService)(nil).GetAttributeIcon))
-}
-
 // GetNFTCollectionTickers mocks base method.
 func (m *MockService) GetNFTCollectionTickers(address, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	m.ctrl.T.Helper()
@@ -152,6 +137,21 @@ func (m *MockService) GetNFTTradingVolume() ([]response.NFTTradingVolume, error)
 func (mr *MockServiceMockRecorder) GetNFTTradingVolume() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTradingVolume", reflect.TypeOf((*MockService)(nil).GetNFTTradingVolume))
+}
+
+// GetNftMetadataAttrIcon mocks base method.
+func (m *MockService) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNftMetadataAttrIcon")
+	ret0, _ := ret[0].(*response.NftMetadataAttrIconResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNftMetadataAttrIcon indicates an expected call of GetNftMetadataAttrIcon.
+func (mr *MockServiceMockRecorder) GetNftMetadataAttrIcon() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftMetadataAttrIcon", reflect.TypeOf((*MockService)(nil).GetNftMetadataAttrIcon))
 }
 
 // GetNftSales mocks base method.

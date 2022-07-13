@@ -102,13 +102,13 @@ type IndexerContract struct {
 	IsSynced        bool      `json:"is_synced"`
 }
 
-type AttributeIcon struct {
+type NftMetadataAttrIcon struct {
 	ID          int    `json:"id"`
 	Trait       string `json:"trait_type"`
 	DiscordIcon string `json:"discord_icon"`
 	UnicodeIcon string `json:"unicode_icon"`
 }
 
-type AttributeIconResponse struct {
-	Data []AttributeIcon `json:"data"`
+type NftMetadataAttrIconResponse struct {
+	Data []NftMetadataAttrIcon `json:"data"`
 }

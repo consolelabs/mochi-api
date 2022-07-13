@@ -315,7 +315,7 @@ func (i *indexer) GetNFTContract(address string) (*res.IndexerContract, error) {
 	return contract, nil
 }
 
-func (i *indexer) GetAttributeIcon() (*res.AttributeIconResponse, error) {
+func (i *indexer) GetNftMetadataAttrIcon() (*res.NftMetadataAttrIconResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/nft/metadata/attributes-icon", i.cfg.IndexerServerHost)
 	client := &http.Client{Timeout: time.Second * 30}
 
@@ -330,7 +330,7 @@ func (i *indexer) GetAttributeIcon() (*res.AttributeIconResponse, error) {
 		return nil, err
 	}
 
-	data := &res.AttributeIconResponse{}
+	data := &res.NftMetadataAttrIconResponse{}
 	err = json.Unmarshal([]byte(b), &data)
 	if err != nil {
 		fmt.Println(err.Error())

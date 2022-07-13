@@ -485,8 +485,8 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 	}, err
 }
 
-func (e *Entity) GetAllAttributeIcon() (*response.AttributeIconResponse, error) {
-	data, err := e.indexer.GetAttributeIcon()
+func (e *Entity) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {
+	data, err := e.indexer.GetNftMetadataAttrIcon()
 	if err != nil {
 		return nil, err
 	}
