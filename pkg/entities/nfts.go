@@ -133,7 +133,6 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Do(req)
 	if err != nil {
-		e.log.Errorf(err, "[client.Do] failed to Client.Do with req")
 		return nil, err
 	}
 
@@ -142,12 +141,10 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 		mesErr := &MoralisMessageFail{}
 		mes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			e.log.Errorf(err, "[ioutil.ReadAll] failed to ioutil.ReadAll")
 			return nil, err
 		}
 		err = json.Unmarshal(mes, &mesErr)
 		if err != nil {
-			e.log.Errorf(err, "[json.Unmarshal] failed to json.Unmarshal")
 			return nil, err
 		}
 		err = fmt.Errorf("%v", mesErr.Message)
@@ -155,12 +152,10 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		e.log.Errorf(err, "[ioutil.ReadAll] failed to ioutil.ReadAll")
 		return nil, err
 	}
 	err = json.Unmarshal(body, &colData)
 	if err != nil {
-		e.log.Errorf(err, "[json.Unmarshal] failed to json.Unmarshal")
 		return nil, err
 	}
 
@@ -189,10 +184,10 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		}
 
 		if !is_sync {
-			e.log.Errorf(err, "[e.CheckIsSync] Already added. Nft is in sync progress")
+			e.log.Infof("[e.CheckIsSync] Already added. Nft is in sync progress")
 			return nil, fmt.Errorf("Already added. Nft is in sync progress")
 		} else {
-			e.log.Errorf(err, "[e.CheckIsSync] Already added. Nft is done with sync")
+			e.log.Infof("[e.CheckIsSync] Already added. Nft is done with sync")
 			return nil, fmt.Errorf("Already added. Nft is done with sync")
 		}
 	}
