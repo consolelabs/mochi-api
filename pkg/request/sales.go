@@ -1,6 +1,7 @@
 package request
 
 type NftSale struct {
+	TokenId           string `json:"token_id"`
 	CollectionAddress string `json:"collection_address"`
 	CollectionName    string `json:"collection_name"`
 	CollectionImage   string `json:"collection_image"`

@@ -184,6 +184,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/sales-tracker", h.GetAllNFTSalesTracker)
 		nftsGroup.GET("/sales", h.GetNftSalesHandler)
 		nftsGroup.GET("/new-listed", h.GetNewListedNFTCollection)
+		nftsGroup.GET("/icons", h.GetNftMetadataAttrIcon)
 		collectionsGroup := nftsGroup.Group("/collections")
 		{
 			collectionsGroup.GET("/:symbol/detail", h.GetDetailNftCollection)

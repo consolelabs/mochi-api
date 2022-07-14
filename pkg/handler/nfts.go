@@ -181,3 +181,13 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
+
+func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
+	data, err := h.entities.GetNftMetadataAttrIcon()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get icons"})
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
+}
