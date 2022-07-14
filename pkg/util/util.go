@@ -545,3 +545,16 @@ func GetNullUUID(id string) uuid.NullUUID {
 	nullid := uuid.NullUUID{UUID: uid, Valid: true}
 	return nullid
 }
+
+func ConvertToFloat(amount string, decimal int) float64 {
+	tmp, _ := strconv.ParseInt(amount, 10, 64)
+
+	dec := float64(decimal)
+	amnt := float64(tmp)
+	value := amnt * math.Pow(10, -dec)
+	return value
+}
+
+func SecondsToDays(sec int) int {
+	return sec / 86400
+}

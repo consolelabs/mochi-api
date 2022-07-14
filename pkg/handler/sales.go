@@ -24,12 +24,11 @@ func (h *Handler) WebhookNftSaleHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
-	for _, nftSale := range req.NftSales {
-		err := h.entities.SendNftSalesToChannel(nftSale)
-		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-			return
-		}
+	err := h.entities.SendNftSalesToChannel(req)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
