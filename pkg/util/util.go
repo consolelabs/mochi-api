@@ -473,6 +473,12 @@ func WeiToEther(wei *big.Int, decimals ...int) *big.Float {
 	return f.Quo(fWei.SetInt(wei), e)
 }
 
+func StringWeiToEther(stringWei string, decimals int) *big.Float {
+	wei := new(big.Int)
+	wei.SetString(stringWei, 10)
+	return WeiToEther(wei, decimals)
+}
+
 func TrimAddressFromLog(s string) string {
 	return strings.ReplaceAll(s, "0x000000000000000000000000", "0x")
 }
