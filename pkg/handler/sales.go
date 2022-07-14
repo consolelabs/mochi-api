@@ -12,7 +12,7 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 	platform := c.Query("platform")
 	data, err := h.entities.GetNftSales(addr, platform)
 	if err != nil || data == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "collection not found"})
+		c.JSON(http.StatusOK, gin.H{"error": "collection not found"})
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -21,13 +21,13 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 func (h *Handler) WebhookNftSaleHandler(c *gin.Context) {
 	var req request.NftSalesRequest
 	if err := c.Bind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	for _, nftSale := range req.NftSales {
 		err := h.entities.SendNftSalesToChannel(nftSale)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 			return
 		}
 	}
