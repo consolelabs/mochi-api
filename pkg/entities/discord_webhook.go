@@ -21,21 +21,24 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		return err
 	}
 
-	price := util.ConvertToFloat(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
-	gain := util.ConvertToFloat(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
+	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
+	gain := util.StringWeiToEther(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
 	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
 	rarityDisplay := indexerToken.Rarity.Rarity
 
 	if rarityDisplay == "" {
 		rarityDisplay = "N/A"
 	} else {
-		rarityDisplay = e.RarityEmoji(rarityDisplay) + " " + rarityDisplay
+		rarityDisplay = util.RarityEmoji(rarityDisplay) + " " + rarityDisplay
 	}
 	if indexerToken.Rarity.Rank == 0 {
 		rankDisplay = "N/A"
 	} else {
 		rankDisplay = "<:cup:985137841027821589> " + rankDisplay
 	}
+
+	// handle marketplace
+	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
 
 	data := []*discordgo.MessageEmbedField{
 		{
@@ -56,7 +59,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  "[" + nftSale.Marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + nftSale.CollectionAddress + "/" + nftSale.TokenId + ")",
+			Value:  "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")",
 			Inline: true,
 		},
 		{
@@ -97,7 +100,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 	}
 	if nftSale.Hodl != 0 {
 		dataHodl := discordgo.MessageEmbedField{
-			Name:   "Hold",
+			Name:   "Hodl",
 			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
 			Inline: true,
 		}
@@ -145,7 +148,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		Fields:      data,
 		Description: indexerToken.Name + " sold!",
-		Color:       int(e.RarityColors(indexerToken.Rarity.Rarity)),
+		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: indexerToken.Image,
 		},
@@ -173,42 +176,4 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 	}
 
 	return nil
-}
-
-func (e *Entity) RarityColors(rarity string) int64 {
-	switch strings.ToLower(rarity) {
-	case "common":
-		return 9671571
-	case "uncommon":
-		return 2282633
-	case "rare":
-		return 177151
-	case "epic":
-		return 9962230
-	case "legendary":
-		return 16744449
-	case "mythic":
-		return 15542585
-	default:
-		return 9671571
-	}
-}
-
-func (e *Entity) RarityEmoji(rarity string) string {
-	switch strings.ToLower(rarity) {
-	case "common":
-		return ":white_circle:"
-	case "uncommon":
-		return ":green_circle:"
-	case "rare":
-		return ":blue_circle:"
-	case "epic":
-		return ":purple_circle:"
-	case "legendary":
-		return ":orange_circle:"
-	case "mythic":
-		return ":red_circle:"
-	default:
-		return ":white_circle:"
-	}
 }
