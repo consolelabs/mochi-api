@@ -11,6 +11,20 @@ import (
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
+	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
+	if err != nil {
+		return err
+	}
+	nftSale.TokenName = indexerToken.Name
+	nftSale.TokenImage = indexerToken.Image
+
+	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
+	if err != nil {
+		return err
+	}
+	nftSale.CollectionName = collection.Name
+	nftSale.CollectionImage = collection.Image
+
 	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
@@ -125,6 +139,16 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 	resp, _ := e.GetAllNFTSalesTracker()
 
 	for _, saleChannel := range resp {
+		//## special case address = *, can be removed if not used
+		if saleChannel.ContractAddress == "*" {
+			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
+			if err != nil {
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", nftSale.CollectionName, nftSale.TokenName)
+				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
+			}
+
+		}
+		//##
 		if nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
