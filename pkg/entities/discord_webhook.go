@@ -139,6 +139,25 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 	resp, _ := e.GetAllNFTSalesTracker()
 
 	for _, saleChannel := range resp {
+		//## special case address = *, can be removed if not used
+		if saleChannel.ContractAddress == "*" {
+			collectionList, err := e.repo.NFTCollection.ListAll()
+			if err != nil {
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot get collection data")
+				return fmt.Errorf("cannot get data for address = *")
+			}
+			// if request address found in database => send sales message
+			for _, col := range collectionList {
+				if nftSale.CollectionAddress == col.Address {
+					_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
+					if err != nil {
+						e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", nftSale.CollectionName, nftSale.TokenName)
+						return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
+					}
+				}
+			}
+		}
+		//##
 		if nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
