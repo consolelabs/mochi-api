@@ -11,6 +11,20 @@ import (
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
+	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
+	if err != nil {
+		return err
+	}
+	nftSale.TokenName = indexerToken.Name
+	nftSale.TokenImage = indexerToken.Image
+
+	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
+	if err != nil {
+		return err
+	}
+	nftSale.CollectionName = collection.Name
+	nftSale.CollectionImage = collection.Image
+
 	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
