@@ -56,6 +56,7 @@ func (h *Handler) GetSupportedChains(c *gin.Context) {
 func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 	nfts, err := h.entities.ListAllNFTCollections()
 	if err != nil {
+		h.log.Errorf(err, "[handler.ListAllNFTCollections] failed to get all collections, %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

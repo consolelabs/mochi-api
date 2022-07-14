@@ -10,13 +10,15 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
+func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
 	if err != nil {
 		return err
 	}
 	nftSale.TokenName = indexerToken.Name
 	nftSale.TokenImage = indexerToken.Image
+	nftSale.Rank = indexerToken.Rarity.Rank
+	nftSale.Rarity = indexerToken.Rarity.Rarity
 
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
@@ -25,15 +27,32 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 	nftSale.CollectionName = collection.Name
 	nftSale.CollectionImage = collection.Image
 
-	data := []*discordgo.MessageEmbedField{
+	price := util.ConvertToFloat(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
+	gain := util.ConvertToFloat(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
+	rankDisplay := strconv.Itoa(int(nftSale.Rank))
+	rarityDisplay := nftSale.Rarity
+
+	data := []*discordgo.MessageEmbedField{}
+	if nftSale.Rarity == "" {
+		rarityDisplay = "N/A"
+	} else {
+		rarityDisplay = e.RarityEmoji(nftSale.Rarity) + " " + nftSale.Rarity
+	}
+	if nftSale.Rank == 0 {
+		rankDisplay = "N/A"
+	} else {
+		rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+	}
+	fixed := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
-			Value:  e.RarityEmoji(nftSale.Rarity) + " " + nftSale.Rarity,
+			Value:  rarityDisplay,
 			Inline: true,
 		},
 		{
+
 			Name:   "Rank",
-			Value:  "<:cup:985137841027821589> " + strconv.Itoa(int(nftSale.Rank)),
+			Value:  rankDisplay,
 			Inline: true,
 		},
 		{
@@ -73,49 +92,51 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSale) error {
 		},
 		{
 			Name:   "Price",
-			Value:  nftSale.Price + " " + strings.ToUpper(nftSale.PaymentToken),
-			Inline: true,
-		},
-		{
-			Name:   "Bought",
-			Value:  nftSale.Bought + " " + strings.ToUpper(nftSale.PaymentToken),
+			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 		{
 			Name:   "Sold",
-			Value:  nftSale.Sold + " " + strings.ToUpper(nftSale.PaymentToken),
+			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 	}
-
-	if nftSale.Hodl != "" {
+	data = append(data, fixed...)
+	if nftSale.Hodl != 0 {
 		dataHodl := discordgo.MessageEmbedField{
-			Name:   "HODL",
-			Value:  nftSale.Hodl,
+			Name:   "Hold",
+			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
 			Inline: true,
 		}
 		data = append(data, &dataHodl)
 	}
 
-	if nftSale.Gain != "" {
+	if nftSale.Gain.Amount != "" {
 		dataGain := discordgo.MessageEmbedField{
 			Name:   "Gain",
-			Value:  nftSale.Gain + " " + strings.ToUpper(nftSale.PaymentToken),
+			Value:  fmt.Sprintf("%.2f", gain) + " " + strings.ToUpper(nftSale.Gain.Token.Symbol),
 			Inline: true,
 		}
 		data = append(data, &dataGain)
 	}
 
-	if nftSale.Pnl != "" {
-		dataPnl := discordgo.MessageEmbedField{
-			Name:   "Pnl",
-			Value:  "$" + nftSale.Pnl + " " + "`+" + nftSale.SubPnl + "%`",
-			Inline: true,
+	if nftSale.Pnl != 0 {
+		dataPnl := []*discordgo.MessageEmbedField{
+			{
+				Name:   "Pnl",
+				Value:  "$" + fmt.Sprintf("%v", nftSale.Pnl) + " " + "`+" + fmt.Sprintf("%v", nftSale.SubPnl) + "%`",
+				Inline: true,
+			},
+			{
+				Name:   "\u200B",
+				Value:  "\u200B",
+				Inline: true,
+			},
 		}
-		data = append(data, &dataPnl)
+		data = append(data, dataPnl...)
 	}
 
-	if !(((nftSale.Pnl != "") && (nftSale.Hodl != "") && (nftSale.Gain != "")) || ((nftSale.Pnl == "") && (nftSale.Hodl == "") && (nftSale.Gain == ""))) {
+	if !(((nftSale.Pnl != 0) && (nftSale.Hodl != 0) && (nftSale.Gain.Amount != "")) || ((nftSale.Pnl == 0) && (nftSale.Hodl == 0) && (nftSale.Gain.Amount == ""))) {
 		dataPnl := discordgo.MessageEmbedField{
 			Name:   "\u200B",
 			Value:  "\u200B",
