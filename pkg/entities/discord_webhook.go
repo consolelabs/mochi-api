@@ -15,35 +15,29 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 	if err != nil {
 		return err
 	}
-	nftSale.TokenName = indexerToken.Name
-	nftSale.TokenImage = indexerToken.Image
-	nftSale.Rank = indexerToken.Rarity.Rank
-	nftSale.Rarity = indexerToken.Rarity.Rarity
 
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
 		return err
 	}
-	nftSale.CollectionName = collection.Name
-	nftSale.CollectionImage = collection.Image
 
 	price := util.ConvertToFloat(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
 	gain := util.ConvertToFloat(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
-	rankDisplay := strconv.Itoa(int(nftSale.Rank))
-	rarityDisplay := nftSale.Rarity
+	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
+	rarityDisplay := indexerToken.Rarity.Rarity
 
-	data := []*discordgo.MessageEmbedField{}
-	if nftSale.Rarity == "" {
+	if rarityDisplay == "" {
 		rarityDisplay = "N/A"
 	} else {
-		rarityDisplay = e.RarityEmoji(nftSale.Rarity) + " " + nftSale.Rarity
+		rarityDisplay = e.RarityEmoji(rarityDisplay) + " " + rarityDisplay
 	}
-	if nftSale.Rank == 0 {
+	if indexerToken.Rarity.Rank == 0 {
 		rankDisplay = "N/A"
 	} else {
 		rankDisplay = "<:cup:985137841027821589> " + rankDisplay
 	}
-	fixed := []*discordgo.MessageEmbedField{
+
+	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
 			Value:  rarityDisplay,
@@ -101,7 +95,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 	}
-	data = append(data, fixed...)
 	if nftSale.Hodl != 0 {
 		dataHodl := discordgo.MessageEmbedField{
 			Name:   "Hold",
@@ -147,14 +140,14 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    nftSale.CollectionName,
-			IconURL: nftSale.CollectionImage,
+			Name:    collection.Name,
+			IconURL: collection.Image,
 		},
 		Fields:      data,
-		Description: nftSale.TokenName + " sold!",
-		Color:       int(e.RarityColors(nftSale.Rarity)),
+		Description: indexerToken.Name + " sold!",
+		Color:       int(e.RarityColors(indexerToken.Rarity.Rarity)),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: nftSale.TokenImage,
+			URL: indexerToken.Image,
 		},
 	}}
 	resp, _ := e.GetAllNFTSalesTracker()
@@ -164,7 +157,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		if saleChannel.ContractAddress == "*" {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", nftSale.CollectionName, nftSale.TokenName)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
@@ -173,7 +166,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		if nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", nftSale.CollectionName, nftSale.TokenName)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 		}
