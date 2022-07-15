@@ -108,12 +108,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "Price",
-			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Value:  util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 		{
 			Name:   "Last Price",
-			Value:  fmt.Sprintf("%.2f", lastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
+			Value:  util.FormatCryptoPrice(*lastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
 			Inline: true,
 		},
 		{
