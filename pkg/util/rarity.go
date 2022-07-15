@@ -1,8 +1,11 @@
 package util
 
-import "strings"
+import (
+	"strings"
+)
 
 func RarityColors(rarity string) int64 {
+	// strconv.ParseInt("62A1FE", 16, 64)
 	switch strings.ToLower(rarity) {
 	case "common":
 		return 9671571
@@ -17,7 +20,7 @@ func RarityColors(rarity string) int64 {
 	case "mythic":
 		return 15542585
 	default:
-		return 9671571
+		return 6463998
 	}
 }
 

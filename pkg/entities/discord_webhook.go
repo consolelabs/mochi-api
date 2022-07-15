@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -21,8 +22,15 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		return err
 	}
 
+	// calculate last price, price, pnl, sub pnl
 	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
-	gain := util.StringWeiToEther(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
+	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
+	pnl := new(big.Float)
+	pnl = pnl.Sub(price, lastPrice)
+	subPnl := new(big.Float).Quo(pnl, lastPrice)
+	subPnlPer := subPnl.Mul(subPnl, big.NewFloat(100))
+
+	// handle rarity, rank
 	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
 	rarityDisplay := indexerToken.Rarity.Rarity
 
@@ -39,6 +47,17 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 
 	// handle marketplace
 	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
+	marketplaceLink := ""
+	if strings.ToLower(nftSale.Marketplace) == "opensea" {
+		res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
+		if err != nil {
+			e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
+			return fmt.Errorf("cannot get opensea data. Error: %v", err)
+		}
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
+	} else {
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
+	}
 
 	data := []*discordgo.MessageEmbedField{
 		{
@@ -59,12 +78,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")",
+			Value:  marketplaceLink,
 			Inline: true,
 		},
 		{
 			Name:   "Transaction",
-			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")",
 			Inline: true,
 		},
 		{
@@ -74,73 +93,38 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "From",
-			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.From) + ")",
 			Inline: true,
 		},
 		{
 			Name:   "To",
-			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.To) + ")",
 			Inline: true,
 		},
 		{
-			Name:   "\u200B",
-			Value:  "\u200B",
+			Name:   "Hodl",
+			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
 			Inline: true,
 		},
 		{
 			Name:   "Price",
-			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Value:  util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 		{
-			Name:   "Sold",
-			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Name:   "Last Price",
+			Value:  util.FormatCryptoPrice(*lastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
+			Inline: true,
+		},
+		{
+			Name: "PnL",
+			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
+			Value:  util.GetGainEmoji(pnl) + fmt.Sprintf("%.2f", pnl) + " `" + util.GetChangePnl(pnl) + " " + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + "%`",
 			Inline: true,
 		},
 	}
-	if nftSale.Hodl != 0 {
-		dataHodl := discordgo.MessageEmbedField{
-			Name:   "Hodl",
-			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
-			Inline: true,
-		}
-		data = append(data, &dataHodl)
-	}
 
-	if nftSale.Gain.Amount != "" {
-		dataGain := discordgo.MessageEmbedField{
-			Name:   "Gain",
-			Value:  fmt.Sprintf("%.2f", gain) + " " + strings.ToUpper(nftSale.Gain.Token.Symbol),
-			Inline: true,
-		}
-		data = append(data, &dataGain)
-	}
-
-	if nftSale.Pnl != 0 {
-		dataPnl := []*discordgo.MessageEmbedField{
-			{
-				Name:   "Pnl",
-				Value:  "$" + fmt.Sprintf("%v", nftSale.Pnl) + " " + "`+" + fmt.Sprintf("%v", nftSale.SubPnl) + "%`",
-				Inline: true,
-			},
-			{
-				Name:   "\u200B",
-				Value:  "\u200B",
-				Inline: true,
-			},
-		}
-		data = append(data, dataPnl...)
-	}
-
-	if !(((nftSale.Pnl != 0) && (nftSale.Hodl != 0) && (nftSale.Gain.Amount != "")) || ((nftSale.Pnl == 0) && (nftSale.Hodl == 0) && (nftSale.Gain.Amount == ""))) {
-		dataPnl := discordgo.MessageEmbedField{
-			Name:   "\u200B",
-			Value:  "\u200B",
-			Inline: true,
-		}
-		data = append(data, &dataPnl)
-	}
-
+	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    collection.Name,
