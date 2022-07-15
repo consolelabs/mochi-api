@@ -30,6 +30,11 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 	subPnl := new(big.Float).Quo(pnl, lastPrice)
 	subPnlPer := subPnl.Mul(subPnl, big.NewFloat(100))
 
+	subPnlDisplay := ""
+	if util.FormatCryptoPrice(*lastPrice) != "0" {
+		subPnlDisplay = " `" + util.GetChangePnl(pnl) + " " + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + "%`"
+	}
+
 	// handle rarity, rank
 	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
 	rarityDisplay := indexerToken.Rarity.Rarity
@@ -119,7 +124,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		{
 			Name: "PnL",
 			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
-			Value:  util.GetGainEmoji(pnl) + fmt.Sprintf("%.2f", pnl) + " `" + util.GetChangePnl(pnl) + " " + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + "%`",
+			Value:  util.GetGainEmoji(pnl) + util.FormatCryptoPrice(*pnl) + subPnlDisplay,
 			Inline: true,
 		},
 	}
