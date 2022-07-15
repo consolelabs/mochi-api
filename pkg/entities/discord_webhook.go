@@ -22,11 +22,13 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		return err
 	}
 
-	// calculate last price, price, gain
+	// calculate last price, price, pnl, sub pnl
 	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
 	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
-	gain := new(big.Float)
-	gain = gain.Sub(price, lastPrice)
+	pnl := new(big.Float)
+	pnl = pnl.Sub(price, lastPrice)
+	subPnl := new(big.Float).Quo(pnl, lastPrice)
+	subPnlPer := subPnl.Mul(subPnl, big.NewFloat(100))
 
 	// handle rarity, rank
 	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
@@ -109,8 +111,9 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 		{
-			Name:   "Gain",
-			Value:  util.GetGainEmoji(gain) + fmt.Sprintf("%.2f", gain) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Name: "Pnl",
+			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
+			Value:  util.GetGainEmoji(pnl) + fmt.Sprintf("%.2f", pnl) + " `" + util.GetChangePnl(pnl) + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + " %`",
 			Inline: true,
 		},
 	}

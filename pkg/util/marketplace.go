@@ -8,7 +8,7 @@ import (
 func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 	switch strings.ToLower(marketplace) {
 	case "opensea":
-		return "https://opensea.io/assets/ethereum/"
+		return "https://opensea.io/assets/"
 	case "paintswap":
 		return "https://paintswap.finance/marketplace/collections/"
 	case "quixotic":
@@ -24,5 +24,14 @@ func GetGainEmoji(gain *big.Float) string {
 		return "<a:increase:997330373560250379>"
 	} else {
 		return "<a:decrease:997330345089302588>"
+	}
+}
+
+func GetChangePnl(pnl *big.Float) string {
+	cmp := pnl.Cmp(big.NewFloat(0))
+	if cmp == 1 {
+		return "+"
+	} else {
+		return "-"
 	}
 }
