@@ -91,8 +91,8 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 		{
-			Name:   "\u200B",
-			Value:  "\u200B",
+			Name:   "Hodl",
+			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
 			Inline: true,
 		},
 		{
@@ -106,14 +106,9 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 		{
-			Name:   "Hodl",
-			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
-			Inline: true,
-		},
-		{
-			Name: "Pnl",
+			Name: "PnL",
 			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
-			Value:  util.GetGainEmoji(pnl) + fmt.Sprintf("%.2f", pnl) + " `" + util.GetChangePnl(pnl) + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + " %`",
+			Value:  util.GetGainEmoji(pnl) + fmt.Sprintf("%.2f", pnl) + " `" + util.GetChangePnl(pnl) + " " + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + "%`",
 			Inline: true,
 		},
 	}
