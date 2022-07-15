@@ -45,6 +45,7 @@ func (e *Entity) GetIDAndName(symbol string) (string, string, error) {
 func (e *Entity) CheckExistToken(symbol string) (bool, error) {
 	listSymbol, err := e.repo.Token.GetAll()
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.Token.GetAll] cannot get all token")
 		return false, err
 	}
 
@@ -69,6 +70,7 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 		GuildDefault:        req.GuildDefault,
 	})
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.Token.CreateOne] fail to create token")
 		return err
 	}
 
@@ -78,6 +80,7 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 	token, err := e.repo.Token.GetBySymbol(symbol, flag)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.Token.GetBySymbol] cannot get token by symbol %s", symbol)
 		return 0, err
 	}
 	return token.ID, nil
@@ -86,6 +89,7 @@ func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
 func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
 	returnToken, err = e.repo.Token.GetAllSupportedToken(guildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.Token.GetAllSupportedToken] cannot get all supported token by guildID %s", guildID)
 		return returnToken, err
 	}
 

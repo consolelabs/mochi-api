@@ -36,6 +36,7 @@ func TestEntity_GetNftSales(t *testing.T) {
 	}
 	ctrl := gomock.NewController(t)
 	mockIndexer := mock_indexer.NewMockService(ctrl)
+	log := logger.NewLogrusLogger()
 
 	tests := []struct {
 		name    string
@@ -72,6 +73,7 @@ func TestEntity_GetNftSales(t *testing.T) {
 			name: "collection not exist",
 			fields: fields{
 				indexer: mockIndexer,
+				log:     log,
 			},
 			args: args{
 				addr:     "0xb54FF1EBc9950fce19Ee9E055A382B1abc",

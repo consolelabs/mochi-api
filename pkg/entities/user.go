@@ -28,6 +28,7 @@ func (e *Entity) CreateUser(req request.CreateUserRequest) error {
 	}
 
 	if err := e.repo.Users.Create(user); err != nil {
+		e.log.Errorf(err, "[e.repo.Users.Create] failed to create user")
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 
@@ -41,6 +42,7 @@ func (e *Entity) CreateUserIfNotExists(id, username string) error {
 	}
 
 	if err := e.repo.Users.FirstOrCreate(user); err != nil {
+		e.log.Errorf(err, "[e.repo.Users.FirstOrCreate] failed to create if not exists user")
 		return fmt.Errorf("failed to create if not exists user: %w", err)
 	}
 
@@ -53,6 +55,7 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 		if err == gorm.ErrRecordNotFound {
 			return nil, ErrRecordNotFound
 		}
+		e.log.Errorf(err, "[e.repo.Users.GetOne] failed to get user")
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
@@ -68,6 +71,7 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 
 	if user.InDiscordWalletAddress.String == "" {
 		if err = e.generateInDiscordWallet(user); err != nil {
+			e.log.Errorf(err, "[e.generateInDiscordWallet] cannot generate in-discord wallet")
 			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
 			return nil, err
 		}
@@ -86,10 +90,12 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.DiscordUserGMStreak, int, error) {
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID] cannot get user's gm streak by discordID %s and guildID %s", discordID, guildID)
 		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's gm streak: %v", err)
 	}
 
 	if err == gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID] user has no gm streak")
 		return nil, http.StatusBadRequest, fmt.Errorf("user has no gm streak")
 	}
 
@@ -106,6 +112,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 	if earnedXP == 0 {
 		gActivityConfig, err := e.GetGuildActivityConfig(req.GuildID, req.Action)
 		if err != nil {
+			e.log.Errorf(err, "[e.GetGuildActivityConfig] cannot get guild config activity by guildID %s and action %s", req.GuildID, req.Action)
 			return nil, fmt.Errorf("failed to get guild config activity: %v", err.Error())
 		}
 		earnedXP = gActivityConfig.Activity.XP
@@ -298,6 +305,7 @@ func (e *Entity) SendGiftXp(req request.GiftXPRequest) (*response.HandleUserActi
 func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
 	was, err := e.repo.UserWallet.ListWalletAddresses("evm")
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.UserWallet.ListWalletAddresses] cannot get wallet addresses")
 		return nil, fmt.Errorf("failed to get wallet addresses: %v", err.Error())
 	}
 	return was, nil
@@ -317,6 +325,7 @@ func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, erro
 		return "", err
 	}
 	if gMember.Roles == nil {
+		e.log.Errorf(err, "Member %s of guild %s has no role", userID, guildID)
 		return "", fmt.Errorf("Member %s of guild %s has no role", userID, guildID)
 	}
 
