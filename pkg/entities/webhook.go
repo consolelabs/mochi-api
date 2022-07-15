@@ -160,6 +160,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID] failed to get user's gm streak: %v", err)
 		return nil, fmt.Errorf("failed to get user's gm streak: %v", err)
 	}
 
@@ -173,6 +174,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 		}
 		err = e.repo.DiscordUserGMStreak.UpsertOne(newStreak)
 		if err != nil {
+			e.log.Errorf(err, "[e.repo.DiscordUserGMStreak.UpsertOne] failed to create new user gm streak: %v", err)
 			return nil, fmt.Errorf("failed to create new user gm streak: %v", err)
 		}
 		return nil, nil
@@ -193,6 +195,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	streak.TotalCount++
 
 	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
+		e.log.Errorf(err, "[e.repo.DiscordUserGMStreak.UpsertOne] failed to update user gm streak: %v", err)
 		return nil, fmt.Errorf("failed to update user gm streak: %v", err)
 	}
 
@@ -210,6 +213,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 		Timestamp: sentAt,
 	})
 	if err != nil {
+		e.log.Errorf(err, "[e.HandleUserActivities] failed to handle user activity: %v", err.Error())
 		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 	}
 
@@ -241,6 +245,7 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 
 	exists, err := e.cache.GetBool(xpID)
 	if err != nil {
+		e.log.Errorf(err, "[e.cache.GetBool] failed to get chat xp cooldown: %v", err.Error())
 		return nil, fmt.Errorf("failed to get chat xp cooldown: %v", err.Error())
 	}
 
@@ -255,11 +260,13 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 			Timestamp: message.Timestamp,
 		})
 		if err != nil {
+			e.log.Errorf(err, "[e.HandleUserActivities] failed to handle user activity: %v", err.Error())
 			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 		}
 
 		err = e.cache.Set(xpID, true, time.Minute)
 		if err != nil {
+			e.log.Errorf(err, `[e.cache.Set] failed to set chat xp cooldown: %v`, err.Error())
 			return nil, fmt.Errorf(`failed to set chat xp cooldown: %v`, err.Error())
 		}
 	}

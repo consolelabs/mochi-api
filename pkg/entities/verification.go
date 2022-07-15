@@ -18,12 +18,14 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 
 	_, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.DiscordGuilds.GetByID] cannot get discordGuild by guildID %s", req.GuildID)
 		return nil, fmt.Errorf("failed to get discord guild: %v", err.Error())
 	}
 
 	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	switch err {
 	case nil:
+		e.log.Errorf(err, "[e.repo.GuildConfigWalletVerificationMessage.GetOne] cannot get GuildConfigWalletVerificationMessage by guildID %s", req.GuildID)
 		return nil, fmt.Errorf("this guild already have a verification config")
 	case gorm.ErrRecordNotFound:
 	default:
@@ -68,12 +70,14 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 
 	m, err := e.discord.ChannelMessageSendComplex(req.VerifyChannelID, verificationMsg)
 	if err != nil {
+		e.log.Errorf(err, "[e.discord.ChannelMessageSendComplex] failed to send message")
 		return nil, fmt.Errorf("failed to send message: %v", err.Error())
 	}
 
 	req.DiscordMessageID = m.ID
 
 	if err := e.repo.GuildConfigWalletVerificationMessage.UpsertOne(req); err != nil {
+		e.log.Errorf(err, "[e.repo.GuildConfigWalletVerificationMessage.UpsertOne] failed to upsert guild config verification")
 		return nil, fmt.Errorf("failed to upsert guild config verification: %v", err.Error())
 	}
 
@@ -84,11 +88,13 @@ func (e *Entity) UpdateGuildConfigWalletVerificationMessage(req model.GuildConfi
 
 	_, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.DiscordGuilds.GetByID] failed to get discord guild by guildID %s", req.GuildID)
 		return nil, fmt.Errorf("failed to get discord guild: %v", err.Error())
 	}
 
 	verificationMsg, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.DiscordGuilds.GetByID] failed to get guild config verification by guildID %s", req.GuildID)
 		return nil, fmt.Errorf("failed to get guild config verification: %v", err.Error())
 	}
 
@@ -124,6 +130,7 @@ func (e *Entity) UpdateGuildConfigWalletVerificationMessage(req model.GuildConfi
 		if verificationMsg.DiscordMessageID != "" {
 			err = e.discord.ChannelMessageDelete(verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
 			if err != nil {
+				e.log.Errorf(err, "[e.discord.ChannelMessageDelete] failed to delete discord message with channelID %s and discordMessageID %s", verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
 				return nil, fmt.Errorf("failed to delete discord message: %v", err.Error())
 			}
 		}
@@ -137,6 +144,7 @@ func (e *Entity) UpdateGuildConfigWalletVerificationMessage(req model.GuildConfi
 			Components: components,
 		})
 		if err != nil {
+			e.log.Errorf(err, "[e.discord.ChannelMessageSendComplex] failed to send new verification message")
 			return nil, fmt.Errorf("failed to send new verification message: %v", err.Error())
 		}
 		req.DiscordMessageID = m.ID
@@ -166,17 +174,20 @@ func (e *Entity) DeleteGuildConfigWalletVerificationMessage(guildID string) erro
 
 	verificationMsg, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(guildID)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.GuildConfigWalletVerificationMessage.GetOne] cannot get one GuildConfigWalletVerificationMessage by guildID %s", guildID)
 		return fmt.Errorf("failed to get guild config verification message: %v", err.Error())
 	}
 
 	if verificationMsg.DiscordMessageID != "" {
 		err = e.discord.ChannelMessageDelete(verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
 		if err != nil {
+			e.log.Errorf(err, "[e.discord.ChannelMessageDelete] failed to delete discord message with channelID %s and discordMessageID %s", verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
 			return fmt.Errorf("failed to delete discord message: %v", err.Error())
 		}
 	}
 
 	if err := e.repo.GuildConfigWalletVerificationMessage.DeleteOne(guildID); err != nil {
+		e.log.Errorf(err, "[e.repo.GuildConfigWalletVerificationMessage.DeleteOne] cannot delete by guildID %s", guildID)
 		return fmt.Errorf("failed to delete guild config verification: %v", err.Error())
 	}
 
@@ -188,6 +199,7 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+			e.log.Errorf(err, "[e.repo.GuildConfigWalletVerificationMessage.GetOne] cannot get one by guildID %s", req.GuildID)
 			return "", http.StatusBadRequest, fmt.Errorf("this guild has not set verification config")
 		}
 		return "", http.StatusInternalServerError, fmt.Errorf("failed to get guild config verification: %v", err.Error())
@@ -197,6 +209,7 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 	switch err {
 	case nil:
 		if !req.IsReverify {
+			e.log.Errorf(err, "[e.repo.UserWallet.GetOneByDiscordIDAndGuildID] cannot get user wallet by discordID %s and guildID %s", req.UserDiscordID, req.GuildID)
 			return uw.Address, http.StatusBadRequest, fmt.Errorf("already have a verified wallet")
 		}
 	case gorm.ErrRecordNotFound:
@@ -226,6 +239,7 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (int, error) {
 	verification, err := e.repo.DiscordWalletVerification.GetByValidCode(req.Code)
 	if err != nil {
+		e.log.Errorf(err, "[e.repo.DiscordWalletVerification.GetByValidCode] cannot get by validCode %s", req.Code)
 		return http.StatusBadRequest, fmt.Errorf("invalid code")
 	}
 
@@ -259,6 +273,7 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 	case nil:
 		if uw.UserDiscordID != verification.UserDiscordID {
 			// this address is already used by another user in this guild
+			e.log.Errorf(err, "[e.repo.UserWallet.GetOneByGuildIDAndAddress] cannot get by guildID %s and address %s", verification.GuildID, req.WalletAddress)
 			return http.StatusBadRequest, fmt.Errorf("this wallet address already belong to another user")
 		}
 

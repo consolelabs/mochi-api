@@ -10,6 +10,7 @@ import (
 func (e *Entity) GetNftSales(addr string, platform string) (*response.NftSalesResponse, error) {
 	nft, err := e.indexer.GetNftSales(addr, platform)
 	if err != nil {
+		e.log.Errorf(err, "[e.indexer.GetNftSales] cannot get nft sales from address %s and platform %s", addr, platform)
 		err = fmt.Errorf("failed to get sales from indexer: %v", err)
 		return nil, err
 	}
