@@ -8,11 +8,37 @@ import (
 func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 	switch strings.ToLower(marketplace) {
 	case "opensea":
-		return "https://opensea.io/assets/"
+		return "https://opensea.io/collection/"
 	case "paintswap":
 		return "https://paintswap.finance/marketplace/collections/"
 	case "quixotic":
 		return "https://quixotic.io/asset/"
+	default:
+		return ""
+	}
+}
+
+func GetTransactionUrl(marketplace string) (urlMarketPlace string) {
+	switch strings.ToLower(marketplace) {
+	case "opensea":
+		return "https://etherscan.io/tx/"
+	case "paintswap":
+		return "https://ftmscan.com/tx/"
+	case "quixotic":
+		return "https://optimistic.etherscan.io/tx/"
+	default:
+		return ""
+	}
+}
+
+func GetWalletUrl(marketplace string) (urlMarketPlace string) {
+	switch strings.ToLower(marketplace) {
+	case "opensea":
+		return "https://etherscan.io/address/"
+	case "paintswap":
+		return "https://ftmscan.com/address/"
+	case "quixotic":
+		return "https://optimistic.etherscan.io/address/"
 	default:
 		return ""
 	}

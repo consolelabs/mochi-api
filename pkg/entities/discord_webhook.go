@@ -47,6 +47,17 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 
 	// handle marketplace
 	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
+	marketplaceLink := ""
+	if strings.ToLower(nftSale.Marketplace) == "opensea" {
+		res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
+		if err != nil {
+			e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
+			return fmt.Errorf("cannot get opensea data. Error: %v", err)
+		}
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
+	} else {
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
+	}
 
 	data := []*discordgo.MessageEmbedField{
 		{
@@ -67,12 +78,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "Marketplace",
-			Value:  "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")",
+			Value:  marketplaceLink,
 			Inline: true,
 		},
 		{
 			Name:   "Transaction",
-			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")",
 			Inline: true,
 		},
 		{
@@ -82,12 +93,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		},
 		{
 			Name:   "From",
-			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.From) + ")",
 			Inline: true,
 		},
 		{
 			Name:   "To",
-			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(https://www.youtube.com/)",
+			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.To) + ")",
 			Inline: true,
 		},
 		{

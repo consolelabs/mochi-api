@@ -40,7 +40,8 @@ type OpenseaAssetContractResponse struct {
 
 type OpenseaAssetContract struct {
 	// add more fields if needed
-	Image string `json:"image_url"`
+	Image   string `json:"image_url"`
+	UrlName string `json:"slug"`
 }
 
 type PaintswapCollectionResponse struct {
