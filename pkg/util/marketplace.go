@@ -21,9 +21,9 @@ func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 func GetGainEmoji(gain *big.Float) string {
 	cmp := gain.Cmp(big.NewFloat(0))
 	if cmp == 1 {
-		return "<a:increase:997330373560250379>"
+		return "<a:increase:997355555431665736>"
 	} else {
-		return "<a:decrease:997330345089302588>"
+		return "<a:decrease:997355537551327363>"
 	}
 }
 
