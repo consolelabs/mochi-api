@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"math/big"
+	"strings"
+)
 
 func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 	switch strings.ToLower(marketplace) {
@@ -12,5 +15,14 @@ func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 		return "https://quixotic.io/asset/"
 	default:
 		return ""
+	}
+}
+
+func GetGainEmoji(gain *big.Float) string {
+	cmp := gain.Cmp(big.NewFloat(0))
+	if cmp == 1 {
+		return "<a:increase:997330373560250379>"
+	} else {
+		return "<a:decrease:997330345089302588>"
 	}
 }

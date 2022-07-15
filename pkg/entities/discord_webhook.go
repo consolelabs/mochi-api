@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -21,8 +22,13 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		return err
 	}
 
+	// calculate last price, price, gain
 	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
-	gain := util.StringWeiToEther(nftSale.Gain.Amount, nftSale.Gain.Token.Decimal)
+	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
+	gain := new(big.Float)
+	gain = gain.Sub(price, lastPrice)
+
+	// handle rarity, rank
 	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
 	rarityDisplay := indexerToken.Rarity.Rarity
 
@@ -93,54 +99,23 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 		{
-			Name:   "Sold",
-			Value:  fmt.Sprintf("%.2f", price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Name:   "Last Price",
+			Value:  fmt.Sprintf("%.2f", lastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
 			Inline: true,
 		},
-	}
-	if nftSale.Hodl != 0 {
-		dataHodl := discordgo.MessageEmbedField{
+		{
 			Name:   "Hodl",
 			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
 			Inline: true,
-		}
-		data = append(data, &dataHodl)
-	}
-
-	if nftSale.Gain.Amount != "" {
-		dataGain := discordgo.MessageEmbedField{
+		},
+		{
 			Name:   "Gain",
-			Value:  fmt.Sprintf("%.2f", gain) + " " + strings.ToUpper(nftSale.Gain.Token.Symbol),
+			Value:  util.GetGainEmoji(gain) + fmt.Sprintf("%.2f", gain) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
-		}
-		data = append(data, &dataGain)
+		},
 	}
 
-	if nftSale.Pnl != 0 {
-		dataPnl := []*discordgo.MessageEmbedField{
-			{
-				Name:   "Pnl",
-				Value:  "$" + fmt.Sprintf("%v", nftSale.Pnl) + " " + "`+" + fmt.Sprintf("%v", nftSale.SubPnl) + "%`",
-				Inline: true,
-			},
-			{
-				Name:   "\u200B",
-				Value:  "\u200B",
-				Inline: true,
-			},
-		}
-		data = append(data, dataPnl...)
-	}
-
-	if !(((nftSale.Pnl != 0) && (nftSale.Hodl != 0) && (nftSale.Gain.Amount != "")) || ((nftSale.Pnl == 0) && (nftSale.Hodl == 0) && (nftSale.Gain.Amount == ""))) {
-		dataPnl := discordgo.MessageEmbedField{
-			Name:   "\u200B",
-			Value:  "\u200B",
-			Inline: true,
-		}
-		data = append(data, &dataPnl)
-	}
-
+	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    collection.Name,
