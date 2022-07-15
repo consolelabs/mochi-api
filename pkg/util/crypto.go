@@ -16,6 +16,10 @@ func FormatCryptoPrice(price big.Float) string {
 		}
 		return formatPrice
 	} else {
-		return fmt.Sprintf("%.4f", priceFloat64)
+		formatPrice := fmt.Sprintf("%.4f", priceFloat64)
+		if string(strings.Split(formatPrice, ".")[1]) == "0000" {
+			return strings.Split(formatPrice, ".0000")[0]
+		}
+		return formatPrice
 	}
 }
