@@ -2,7 +2,6 @@ package entities
 
 import (
 	"fmt"
-
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -244,8 +243,22 @@ func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildCon
 	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
 }
 
-func (e *Entity) GetGuildRepostReactionConfigByReaction(guildID string, reaction string) (model.GuildConfigRepostReaction, error) {
-	return e.repo.GuildConfigRepostReaction.GetByReaction(guildID, reaction)
+func (e *Entity) CreateRepostReactionEvent(req request.CreateMessageRepostHistRequest) (string, error) {
+	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
+	if err != nil {
+		return "", err
+	}
+	if req.ReactionCount < conf.Quantity {
+		return "", nil
+	}
+	if isRepostable := e.IsRepostableMessage(req); !isRepostable {
+		return "", fmt.Errorf("message cannot be reposted")
+	}
+	err = e.CreateRepostMessageHist(req, conf.RepostChannelID)
+	if err != nil {
+		return "", err
+	}
+	return conf.RepostChannelID, nil
 }
 
 func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {

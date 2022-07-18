@@ -5,18 +5,19 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/consts"
+	"github.com/defipod/mochi/pkg/logger"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 	var req request.HandleDiscordWebhookRequest
 	if err := req.Bind(c); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.HandleDiscordWebhook] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,11 +43,13 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 	var member discordgo.Member
 	byteData, err := data.MarshalJSON()
 	if err != nil {
+		h.log.Info("[handler.handleGuildMemberAdd] - failed to json marshal data")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := discordgo.Unmarshal(byteData, &member); err != nil {
+		h.log.Info("[handler.handleGuildMemberAdd] - failed to unmarshal data")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -59,7 +62,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 
 	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
 	if err != nil {
-		logrus.WithError(err).Errorf("Guild %s: failed to find inviter", invitee.GuildID)
+		h.log.Fields(logger.Fields{"invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to find inviter")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -72,7 +75,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			Nickname: inviter.Nick,
 			GuildID:  inviter.GuildID,
 		}); err != nil {
-			logrus.WithError(err).Errorf("Guild %s: failed to index iviter", invitee.GuildID)
+			h.log.Fields(logger.Fields{"inviterID": inviter.User.ID, "inviterUsrName": inviter.User.Username, "inviterNickName": inviter.Nick, "inviterGuildID": inviter.GuildID}).Error(err, "[handler.handleInviteTracker] - failed to create user")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -89,7 +92,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			GuildID:   invitee.GuildID,
 			InvitedBy: invitee.User.ID,
 		}); err != nil {
-			logrus.WithError(err).Errorf("Guild %s: failed to index invitee", invitee.GuildID)
+			h.log.Fields(logger.Fields{"inviteeID": invitee.User.ID, "inviteeUsrName": invitee.User.Username, "inviteeNickName": invitee.Nick, "inviteeGuildID": invitee.GuildID}).Error(err, "[handler.handleInviteTracker] - failed to create user")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		response.InviteeID = invitee.User.ID
@@ -111,14 +114,14 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 		Invitee: invitee.User.ID,
 		Type:    inviteType,
 	}); err != nil {
-		logrus.WithError(err).Errorf("Guild %s: failed to create invite history", invitee.GuildID)
+		h.log.Fields(logger.Fields{"inviteeID": invitee.User.ID, "inviterID": invitee.User.ID, "inviteType": inviteType, "inviteeGuildID": invitee.GuildID}).Error(err, "[handler.handleInviteTracker] - failed to create invite history")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	totalInvites, err := h.entities.CountInviteHistoriesByGuildUser(inviter.GuildID, inviter.User.ID)
 	if err != nil {
-		logrus.WithError(err).Errorf("Guild %s: failed to count inviter invites", invitee.GuildID)
+		h.log.Fields(logger.Fields{"inviterID": invitee.User.ID, "inviterGuildID": inviter.GuildID}).Error(err, "[handler.handleInviteTracker] - failed to count inviter invites")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -133,17 +136,20 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	message := &discordgo.Message{}
 	byteData, err := data.MarshalJSON()
 	if err != nil {
+		h.log.Error(err, "[handler.handleMessageCreate] - failed to json marshal data")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := discordgo.Unmarshal(byteData, &message); err != nil {
+		h.log.Error(err, "[handler.handleMessageCreate] - failed to unmarshal data")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	uActivity, err := h.entities.HandleDiscordMessage(message)
 	if err != nil {
+		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -175,21 +181,25 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 
 	byteData, err := data.MarshalJSON()
 	if err != nil {
+		h.log.Error(err, "[handler.handleGuildCreate] - failed to json marshal data")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Error(err, "[handler.handleGuildCreate] - failed to unmarshal data")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] - failed to init default token configs")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] - failed to init default activity configs")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -202,35 +212,26 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 
 	byteData, err := data.MarshalJSON()
 	if err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to json marshal data")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to unmarshal data")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	conf, err := h.entities.GetGuildRepostReactionConfigByReaction(req.GuildID, req.Reaction)
+	chanID, err := h.entities.CreateRepostReactionEvent(req)
 	if err != nil {
-		return
-	}
-	if req.ReactionCount < conf.Quantity {
-		return
-	}
-
-	if isRepostable := h.entities.IsRepostableMessage(req); !isRepostable {
-		return
-	}
-
-	err = h.entities.CreateRepostMessageHist(req, conf.RepostChannelID)
-	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":            "OK",
-		"repost_channel_id": conf.RepostChannelID,
+		"repost_channel_id": chanID,
 	})
 }

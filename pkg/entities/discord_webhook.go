@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/request"
@@ -64,6 +65,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
 	} else {
 		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
+	}
+
+	// handle image
+	image := indexerToken.ImageCDN
+	if image == "" {
+		image = indexerToken.Image
 	}
 
 	data := []*discordgo.MessageEmbedField{
@@ -131,8 +138,9 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		Description: indexerToken.Name + " sold!",
 		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
 		Image: &discordgo.MessageEmbedImage{
-			URL: indexerToken.Image,
+			URL: image,
 		},
+		Timestamp: time.Now().Format(time.RFC3339),
 	}}
 	resp, _ := e.GetAllNFTSalesTracker()
 

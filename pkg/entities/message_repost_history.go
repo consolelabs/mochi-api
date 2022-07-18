@@ -13,7 +13,6 @@ func (e *Entity) IsRepostableMessage(req request.CreateMessageRepostHistRequest)
 	if errors.Is(msgErr, gorm.ErrRecordNotFound) && errors.Is(channelErr, gorm.ErrRecordNotFound) {
 		return true
 	}
-
 	return false
 }
 

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
@@ -13,12 +14,14 @@ import (
 func (h *Handler) GetGmConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.GetGmConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
 	config, err := h.entities.GetGmConfig(guildID)
 
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGmConfig] - failed to get gm config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -30,17 +33,21 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	var req request.UpsertGmConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertGmConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if req.GuildID == "" {
+		h.log.Info("[handler.UpsertGmConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 	if req.ChannelID == "" {
+		h.log.Info("[handler.UpsertGmConfig] - channel id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
 	}
 
 	if err := h.entities.UpsertGmConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertGmConfig] - failed to upsert gm config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -51,12 +58,14 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.GetSalesTrackerConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
 	config, err := h.entities.GetSalesTrackerConfig(guildID)
 
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetSalesTrackerConfig] - failed to get sales tracker config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,11 +76,13 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.GetGuildTokens] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 	}
 
 	guildTokens, err := h.entities.GetGuildTokens(guildID)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildTokens] - failed to get guild tokens")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -88,19 +99,23 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 	var req request.UpsertGuildTokenConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "symbol": req.Symbol, "active": req.Active}).Error(err, "[handler.UpsertGuildTokenConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if req.GuildID == "" {
+		h.log.Info("[handler.UpsertGuildTokenConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 	if req.Symbol == "" {
+		h.log.Info("[handler.UpsertGuildTokenConfig] - symbol empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
 		return
 	}
 
 	if err := h.entities.UpsertGuildTokenConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "symbol": req.Symbol, "active": req.Active}).Error(err, "[handler.UpsertGuildTokenConfig] - failed to upsert guild token config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -111,24 +126,29 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 func (h *Handler) ConfigLevelRole(c *gin.Context) {
 	var req request.ConfigLevelRoleRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if req.GuildID == "" {
+		h.log.Info("[handler.ConfigLevelRole] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 	if req.RoleID == "" {
+		h.log.Info("[handler.ConfigLevelRole] - role id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "role_id is required"})
 		return
 	}
 	if req.Level == 0 {
+		h.log.Info("[handler.ConfigLevelRole] - level empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
 		return
 	}
 
 	if err := h.entities.ConfigLevelRole(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to config level role")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -139,12 +159,14 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.GetLevelRoleConfigs] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
 	data, err := h.entities.GetGuildLevelRoleConfigs(guildID)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetLevelRoleConfigs] - failed to get guild level role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -155,23 +177,27 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.RemoveLevelRoleConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
 	level := c.Query("level")
 	if level == "" {
+		h.log.Info("[handler.RemoveLevelRoleConfig] - level empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "level is required"})
 		return
 	}
 
 	levelNr, err := strconv.Atoi(level)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID, "level": level}).Error(err, "[handler.RemoveLevelRoleConfig] - invalid level")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
 		return
 	}
 
 	if err := h.entities.RemoveGuildLevelRoleConfig(guildID, levelNr); err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID, "level": level}).Error(err, "[handler.RemoveLevelRoleConfig] - failed to remove guild level role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -182,12 +208,14 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.ListGuildNFTRoles] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
 	roles, err := h.entities.ListGuildNFTRoles(guildID)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildNFTRoles] - failed to list all nft roles")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -198,17 +226,20 @@ func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
 func (h *Handler) NewGuildNFTRole(c *gin.Context) {
 	var req request.ConfigNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := req.Validate(); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to validate request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	newRole, err := h.entities.NewGuildNFTRoleConfig(req)
 	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to create nft role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -220,17 +251,20 @@ func (h *Handler) EditGuildNFTRole(c *gin.Context) {
 
 	var req request.ConfigNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := req.Validate(); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to validate request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	id, err := uuid.Parse(c.Param("config_id"))
 	if err != nil {
+		h.log.Fields(logger.Fields{"configID": c.Param("config_id")}).Error(err, "[handler.EditGuildNFTRole] - failed to read config ID")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid config_id"})
 		return
 	}
@@ -239,6 +273,7 @@ func (h *Handler) EditGuildNFTRole(c *gin.Context) {
 
 	config, err := h.entities.EditGuildNFTRoleConfig(req)
 	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to edit nft role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -255,6 +290,7 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 	}
 
 	if err := h.entities.RemoveGuildNFTRoleConfig(configID); err != nil {
+		h.log.Fields(logger.Fields{"configID": configID}).Error(err, "[handler.RemoveGuildNFTRole] - failed to remove nft role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -265,28 +301,34 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if req.GuildID == "" {
+		h.log.Info("[handler.ConfigRepostReaction] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 	if req.Emoji == "" {
+		h.log.Info("[handler.ConfigRepostReaction] - emoji empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
 		return
 	}
 	if req.Quantity < 1 {
+		h.log.Info("[handler.ConfigRepostReaction] - quantity empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "quantity is required"})
 		return
 	}
 	if req.RepostChannelID == "" {
+		h.log.Info("[handler.ConfigRepostReaction] - channel id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "repost_channel_id is required"})
 		return
 	}
 
 	if err := h.entities.ConfigRepostReaction(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to add config repost reaction")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -297,12 +339,14 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
+		h.log.Info("[handler.GetRepostReactionConfigs] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
 	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetRepostReactionConfigs] - failed to get guild repost reaction config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -313,20 +357,24 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if req.GuildID == "" {
+		h.log.Info("[handler.RemoveRepostReactionConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 	if req.Emoji == "" {
+		h.log.Info("[handler.RemoveRepostReactionConfig] - emoji empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
 		return
 	}
 
 	if err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to remove repost reaction config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -342,17 +390,20 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 	)
 
 	if activityName == "" {
+		h.log.Info("[handler.ToggleActivityConfig] - activity name empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "activity is required"})
 		return
 	}
 
 	if guildID == "" {
+		h.log.Info("[handler.ToggleActivityConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
 	config, err := h.entities.ToggleActivityConfig(guildID, activityName)
 	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID, "activity": activityName}).Error(err, "[handler.ToggleActivityConfig] - failed to toggle activity config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
