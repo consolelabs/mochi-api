@@ -12,13 +12,15 @@ import (
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
-	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
+	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
 		return err
 	}
 
-	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
+	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
 	if err != nil {
+		e.log.Errorf(err, "[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
 		return err
 	}
 
@@ -77,11 +79,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 			Inline: true,
 		},
 		{
-			Name:   "\u200B",
-			Value:  "\u200B",
-			Inline: true,
-		},
-		{
 			Name:   "Marketplace",
 			Value:  marketplaceLink,
 			Inline: true,
@@ -89,11 +86,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		{
 			Name:   "Transaction",
 			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")",
-			Inline: true,
-		},
-		{
-			Name:   "\u200B",
-			Value:  "\u200B",
 			Inline: true,
 		},
 		{
@@ -138,7 +130,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		Fields:      data,
 		Description: indexerToken.Name + " sold!",
 		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
+		Image: &discordgo.MessageEmbedImage{
 			URL: indexerToken.Image,
 		},
 	}}
@@ -152,7 +144,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
-
 		}
 		//##
 		if nftSale.CollectionAddress == saleChannel.ContractAddress {
