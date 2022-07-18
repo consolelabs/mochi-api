@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 
 	data, err := h.entities.GetNFTDetail(symbol, tokenID)
 	if err != nil {
+		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -32,6 +34,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	var req request.CreateNFTCollectionRequest
 
 	if err := req.Bind(c); err != nil {
+		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -39,6 +42,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	data, err := h.entities.CreateNFTCollection(req)
 	if err != nil {
 		if strings.Contains(err.Error(), "Already added") {
+			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - duplicated record")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
@@ -56,7 +60,7 @@ func (h *Handler) GetSupportedChains(c *gin.Context) {
 func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 	nfts, err := h.entities.ListAllNFTCollections()
 	if err != nil {
-		h.log.Errorf(err, "[handler.ListAllNFTCollections] failed to get all collections, %v", err)
+		h.log.Fields(logger.Fields{"body": "none"}).Error(err, "[handler.ListAllNFTCollections] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -73,6 +77,7 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 
 	data, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
 	if err != nil {
+		h.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[handler.GetNFTCollectionTickers] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -82,6 +87,7 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
 	if err != nil {
+		h.log.Fields(logger.Fields{"body": "none"}).Error(err, "[handler.GetNFTTradingVolume] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -99,6 +105,7 @@ func (h *Handler) GetNFTCollections(c *gin.Context) {
 	}
 	data, err := h.entities.GetNFTCollections(page, size)
 	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.GetNFTCollections] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -114,6 +121,7 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 
 	data, err := h.entities.GetNFTTokens(symbol, c.Request.URL.RawQuery)
 	if err != nil {
+		h.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[handler.GetNFTTokens] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -123,12 +131,14 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	var req request.NFTSalesTrackerRequest
 	if err := c.Bind(&req); err != nil {
+		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to response")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err := h.entities.CreateSalesTracker(req)
 	if err != nil {
+		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -146,6 +156,7 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 
 	collection, err := h.entities.GetDetailNftCollection(collectionSymbol)
 	if err != nil {
+		h.log.Fields(logger.Fields{"symbol": collectionSymbol}).Error(err, "[handler.GetDetailNftCollection] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -154,6 +165,7 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
+		h.log.Fields(logger.Fields{"body": "none"}).Error(err, "[handler.GetAllNFTSalesTracker] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
 		return
 	}
@@ -177,6 +189,7 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 
 	data, err := h.entities.GetNewListedNFTCollection(interval, page, size)
 	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size, "interval": interval}).Error(err, "[handler.GetNewListedNFTCollection] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -186,6 +199,7 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
 	data, err := h.entities.GetNftMetadataAttrIcon()
 	if err != nil {
+		h.log.Fields(logger.Fields{"body": "none"}).Error(err, "[handler.GetNftMetadataAttrIcon] - failed to response")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get icons"})
 		return
 	}
