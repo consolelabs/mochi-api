@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/request"
@@ -139,6 +140,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		Image: &discordgo.MessageEmbedImage{
 			URL: image,
 		},
+		Timestamp: time.Now().Format(time.RFC3339),
 	}}
 	resp, _ := e.GetAllNFTSalesTracker()
 
