@@ -12,7 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
+func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
@@ -163,5 +163,21 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.NftSalesRequest) error {
 		}
 	}
 
+	return nil
+}
+
+func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebhookRequest) error {
+	channelNewCollection := "701029345795375114"
+	messageAddedNewCollection := []*discordgo.MessageEmbed{{
+		Title:       "Mochi has added new collection!",
+		Description: nftAddedCollection.CollectionAddress + " (" + nftAddedCollection.Chain + ")",
+		Color:       0xFCD3C1,
+		Timestamp:   time.Now().Format(time.RFC3339),
+	}}
+	_, err := e.discord.ChannelMessageSendEmbeds(channelNewCollection, messageAddedNewCollection)
+	if err != nil {
+		e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to new added collection channel. CollectionAddress: %s, Chain: %s", nftAddedCollection.CollectionAddress, nftAddedCollection.Chain)
+		return fmt.Errorf("cannot send message to new added collection channel. Error: %v", err)
+	}
 	return nil
 }

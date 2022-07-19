@@ -1,6 +1,7 @@
 package request
 
-type NftSalesRequest struct {
+type HandleNftWebhookRequest struct {
+	Event             string `json:"event"`
 	TokenId           string `json:"token_id"`
 	CollectionAddress string `json:"collection_address"`
 	Marketplace       string `json:"marketplace"`
@@ -10,6 +11,8 @@ type NftSalesRequest struct {
 	Price             Token  `json:"price"`
 	Hodl              int    `json:"hold"`
 	LastPrice         Token  `json:"last_price"`
+
+	Chain string `json:"chain"`
 }
 type Token struct {
 	Token  TokenInfo `json:"token"`
