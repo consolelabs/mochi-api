@@ -12,6 +12,8 @@ func ConvertChainToChainId(chain string) string {
 		return "250"
 	case "opensea":
 		return "1"
+	case "quixotic":
+		return "10"
 	default:
 		return chain
 	}
