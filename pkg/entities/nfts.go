@@ -95,7 +95,6 @@ func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
 	// cannot find collection in db
 	if err != nil {
 		if err.Error() == "record not found" {
-			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] record not found")
 			return false, nil
 		} else {
 			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection by address %s", address)
@@ -254,6 +253,14 @@ func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, e
 			return "", fmt.Errorf("Cannot get collection: %v", err)
 		}
 		return collection.Collection.Image, nil
+	}
+	if chainID == 10 {
+		collection, err := e.marketplace.GetCollectionFromQuixotic(address)
+		if err != nil {
+			e.log.Errorf(err, "[GetCollectionFromQuixotic] cannot get collection: %s | chainId %d", address, chainID)
+			return "", fmt.Errorf("Cannot get collection: %v", err)
+		}
+		return collection.ImageUrl, nil
 	}
 
 	return "", nil
