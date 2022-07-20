@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
@@ -227,7 +226,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData .
 	}
 
 	// create channel count stat
-	channelName := util.CreateChannelName(guildStat, countType, coinData...)
+	channelName := util.CreateChannelName(guildStat, countType)
 	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
 		log.Error(err, "failed to create discord channel")
@@ -324,21 +323,21 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 		return err
 	}
 
-	channel, err := e.GetGuildChannel(statChannel.ChannelID)
-	coinData := []string{}
-	if channel.Name[:10] == "Top ticker" {
-		channelNameArr := util.SplitAndTrimSpaceString(channel.Name, "-")
-		symbol := channelNameArr[1]
-		interval, _ := strconv.Atoi(util.SplitAndTrimSpaceString(channelNameArr[2], " ")[1]) //get the chars before whitespace and conv to int
+	// channel, err := e.GetGuildChannel(statChannel.ChannelID)
+	// coinData := []string{}
+	// if channel.Name[:10] == "Top ticker" {
+	// 	channelNameArr := util.SplitAndTrimSpaceString(channel.Name, "-")
+	// 	symbol := channelNameArr[1]
+	// 	interval, _ := strconv.Atoi(util.SplitAndTrimSpaceString(channelNameArr[2], " ")[1]) //get the chars before whitespace and conv to int
 
-		coinData, err = e.GetHighestTicker(symbol, interval)
-		if err != nil {
-			log.Error(err, "cannot update ticker")
-			return err
-		}
-	}
+	// 	coinData, err = e.GetHighestTicker(symbol, interval)
+	// 	if err != nil {
+	// 		log.Error(err, "cannot update ticker")
+	// 		return err
+	// 	}
+	// }
 
-	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType, coinData...)
+	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType)
 	_, err = e.discord.ChannelEdit(statChannel.ChannelID, newChannelName)
 	if err != nil {
 		log.Error(err, "failed to edit channel name")
