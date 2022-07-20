@@ -167,7 +167,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 }
 
 func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebhookRequest) error {
-	channelNewCollection := "701029345795375114"
+	channelNewCollection := "964780299307343912"
 	messageAddedNewCollection := []*discordgo.MessageEmbed{{
 		Title:       "Mochi has added new collection!",
 		Description: nftAddedCollection.CollectionAddress + " (" + nftAddedCollection.Chain + ")",
