@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -28,7 +27,6 @@ func (h *Handler) WebhookNftHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(req)
 
 	switch req.Event {
 	case "sales":
