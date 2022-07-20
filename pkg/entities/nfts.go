@@ -471,11 +471,8 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
 		return nil, err
 	}
+	collection.Image = util.StandardizeUri(collection.Image)
 
-	res, err := e.svc.Indexer.GetNFTCollections(fmt.Sprintf("address=%s", collection.Address))
-	if err == nil && len(res.Data) > 0 {
-		collection.Image = util.StandardizeUri(res.Data[0].Image)
-	}
 	return collection, nil
 }
 
