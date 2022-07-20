@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/entities"
@@ -80,22 +79,10 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	log := logger.NewLogrusLogger()
 	guildID := c.Param("guild_id")
 	countType := c.Query("count_type")
-	var coinData []string
-	var err error
 
 	log.Infof("Creating stats channel for counting. GuildId: %v, CountType: %v", guildID, countType)
-	if countType == "highest_ticker" {
-		symbol := c.Query("symbol")
-		interval, _ := strconv.Atoi(c.Query("interval"))
 
-		coinData, err = h.entities.GetHighestTicker(symbol, interval)
-		if err != nil {
-			h.log.Fields(logger.Fields{"guildID": guildID, "countType": countType, "symbol": symbol, "interval": interval}).Error(err, "[handler.CreateGuildChannel] - failed to get highest ticker")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-	}
-	err = h.entities.CreateGuildChannel(guildID, countType, coinData...)
-
+	err := h.entities.CreateGuildChannel(guildID, countType)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "countType": countType}).Error(err, "[handler.CreateGuildChannel] - failed to create guild channel")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
