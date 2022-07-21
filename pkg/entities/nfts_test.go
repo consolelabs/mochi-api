@@ -1198,3 +1198,314 @@ func TestEntity_CheckIsSync(t *testing.T) {
 		})
 	}
 }
+
+func TestEntity_GetNFTCollectionTickers(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	mockIndexer := mock_indexer.NewMockService(ctrl)
+
+	r.NFTCollection = nftCollection
+
+	type args struct {
+		symbol   string
+		rawQuery string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *response.IndexerNFTCollectionTickersResponse
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "get tickers successfully",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+				log:     log,
+			},
+			args: args{
+				symbol:   "neko",
+				rawQuery: "from=1658206545000&to=1658292945000",
+			},
+			want: &response.IndexerNFTCollectionTickersResponse{
+				Tickers:         response.TokenTickers{},
+				FloorPrice:      10.0,
+				Name:            "Neko",
+				Address:         "0x23581767a106ae21c074b2276D25e5C3e136a68h",
+				Chain:           "eth",
+				Marketplaces:    []string{"abc"},
+				TotalVolume:     10.0,
+				Items:           23,
+				Owners:          100,
+				CollectionImage: "image.png",
+			},
+			wantErr: false,
+		},
+		{
+			name: "failed to query repo - invalid symbol",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+				log:     log,
+			},
+			args: args{
+				symbol:   "abc",
+				rawQuery: "from=1658206545000&to=1658292945000",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "failed to query indexer - invalid raw query",
+			fields: fields{
+				repo:    r,
+				indexer: mockIndexer,
+				log:     log,
+			},
+			args: args{
+				symbol:   "neko",
+				rawQuery: "from=1658206545&to=1658292945",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	repoCollection := &model.NFTCollection{
+		Address: "0x23581767a106ae21c074b2276D25e5C3e136a68h",
+	}
+	indexerTicker := &response.IndexerNFTCollectionTickersResponse{
+		Tickers:         response.TokenTickers{},
+		FloorPrice:      10.0,
+		Name:            "Neko",
+		Address:         "0x23581767a106ae21c074b2276D25e5C3e136a68h",
+		Chain:           "eth",
+		Marketplaces:    []string{"abc"},
+		TotalVolume:     10.0,
+		Items:           23,
+		Owners:          100,
+		CollectionImage: "image.png",
+	}
+
+	// case success
+	nftCollection.EXPECT().GetBySymbol("neko").Return(repoCollection, nil).AnyTimes()
+	mockIndexer.EXPECT().GetNFTCollectionTickers("0x23581767a106ae21c074b2276D25e5C3e136a68h", "from=1658206545000&to=1658292945000").Return(indexerTicker, nil).AnyTimes()
+
+	// case fail repo
+	nftCollection.EXPECT().GetBySymbol("abc").Return(nil, errors.New("invalid symbol")).AnyTimes()
+
+	// case fail indexer
+	mockIndexer.EXPECT().GetNFTCollectionTickers("0x23581767a106ae21c074b2276D25e5C3e136a68h", "from=1658206545&to=1658292945").Return(nil, errors.New("invalid query")).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetNFTCollectionTickers(tt.args.symbol, tt.args.rawQuery)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetNFTCollectionTickers() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetNFTCollectionTickers() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetNFTCollections(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	type args struct {
+		p string
+		s string
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	r.NFTCollection = nftCollection
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *response.NFTCollectionsResponse
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "successful",
+			fields: fields{
+				repo: r,
+				log:  log,
+			},
+			args: args{
+				p: "0",
+				s: "2",
+			},
+			want: &response.NFTCollectionsResponse{
+				Pagination: util.Pagination{
+					Page:  int64(0),
+					Size:  int64(2),
+					Total: int64(2),
+				},
+				Data: []model.NFTCollection{
+					{
+						Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+						Name:      "Cyber Neko",
+						Symbol:    "NEKO",
+						ChainID:   "250",
+						ERCFormat: "ERC721",
+					},
+					{
+						Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+						Name:      "Cyber Neko",
+						Symbol:    "NEKO",
+						ChainID:   "250",
+						ERCFormat: "ERC721",
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	repoNFTList := []model.NFTCollection{
+		{
+			Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+			Name:      "Cyber Neko",
+			Symbol:    "NEKO",
+			ChainID:   "250",
+			ERCFormat: "ERC721",
+		},
+		{
+			Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+			Name:      "Cyber Neko",
+			Symbol:    "NEKO",
+			ChainID:   "250",
+			ERCFormat: "ERC721",
+		},
+	}
+	nftCollection.EXPECT().ListAllWithPaging(0, 2).Return(repoNFTList, int64(2), nil).AnyTimes()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetNFTCollections(tt.args.p, tt.args.s)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetNFTCollections() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetNFTCollections() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
