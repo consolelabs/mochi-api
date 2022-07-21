@@ -7,18 +7,35 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
+type IndexerPrice struct {
+	Token  IndexerToken `json:"token"`
+	Amount string       `json:"amount"`
+}
+
+type IndexerToken struct {
+	Symbol   string `json:"symbol"`
+	IsNative bool   `json:"is_native"`
+	Address  string `json:"address"`
+	Decimals int64  `json:"decimals"`
+}
+
+type IndexerTickers struct {
+	Timestamps []int64        `json:"timestamps"`
+	Prices     []IndexerPrice `json:"prices"`
+	Times      []string       `json:"times"`
+}
+
 type IndexerNFTCollectionTickersResponse struct {
-	Tickers         TokenTickers `json:"tickers"`
-	FloorPrice      float64      `json:"floor_price"`
-	Name            string       `json:"name"`
-	Address         string       `json:"address"`
-	Chain           string       `json:"chain"`
-	Marketplaces    []string     `json:"marketplaces"`
-	TotalVolume     float64      `json:"total_volume"`
-	VolumeToken     string       `json:"volume_token"`
-	Items           int64        `json:"items"`
-	Owners          int64        `json:"owners"`
-	CollectionImage string       `json:"collection_image"`
+	Tickers         *IndexerTickers `json:"tickers"`
+	FloorPrice      *IndexerPrice   `json:"floor_price"`
+	Name            string          `json:"name"`
+	Address         string          `json:"address"`
+	Chain           string          `json:"chain"`
+	Marketplaces    []string        `json:"marketplaces"`
+	TotalVolume     *IndexerPrice   `json:"total_volume"`
+	Items           int64           `json:"items"`
+	Owners          int64           `json:"owners"`
+	CollectionImage string          `json:"collection_image"`
 }
 
 type IndexerGetNFTCollectionsResponse struct {
