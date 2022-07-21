@@ -47,6 +47,7 @@ func (d *Discord) NotifyNewGuild(guildID string) error {
 		Title:       "Mochi has joined new Guild!",
 		Description: fmt.Sprintf("**%s** (%s)", guild.Name, guild.ID),
 		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
 
 	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
