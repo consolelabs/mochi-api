@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
@@ -78,6 +79,22 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 	}
 
 	return &req, nil
+}
+
+func (e *Entity) GetGuildConfigWalletVerificationMessage(guildId string) (*model.GuildConfigWalletVerificationMessage, error) {
+	_, err := e.repo.DiscordGuilds.GetByID(guildId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[e.repo.DiscordGuilds.GetByID] - failed to get guild by id")
+		return nil, fmt.Errorf("failed to get discord guild: %v", err.Error())
+	}
+
+	res, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(guildId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[e.repo.GuildConfigWalletVerificationMessage.GetOne] - failed to get config by guild id")
+		return nil, fmt.Errorf("failed to get guild config verification: %v", err.Error())
+	}
+
+	return res, nil
 }
 
 func (e *Entity) UpdateGuildConfigWalletVerificationMessage(req model.GuildConfigWalletVerificationMessage) (*model.GuildConfigWalletVerificationMessage, error) {
