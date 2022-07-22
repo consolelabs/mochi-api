@@ -37,6 +37,26 @@ func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
 	})
 }
 
+func (h *Handler) GetGuildConfigWalletVerificationMessage(c *gin.Context) {
+	guildId := c.Param("guild_id")
+	if guildId == "" {
+		h.log.Info("[handler.GetGuildConfigWalletVerificationMessage] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	res, err := h.entities.GetGuildConfigWalletVerificationMessage(guildId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[handler.GetGuildConfigWalletVerificationMessage] - failed to get config")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   res,
+	})
+}
 func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 	var req request.NewGuildConfigWalletVerificationMessageRequest
 
