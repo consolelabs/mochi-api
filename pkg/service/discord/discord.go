@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -48,6 +49,31 @@ func (d *Discord) NotifyNewGuild(guildID string) error {
 		Description: fmt.Sprintf("**%s** (%s)", guild.Name, guild.ID),
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Discord) NotifyAddNewCollection(guildID string, collectionName string, symbol string, chain string, image string) error {
+	// get guild info
+	guild, err := d.session.Guild(guildID)
+	if err != nil {
+		return fmt.Errorf("failed to get guild info: %w", err)
+	}
+
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("%s just added a new collection", guild.Name),
+		Description: fmt.Sprintf("%s (%s) on chain %s", collectionName, symbol, strings.ToUpper(chain)),
+		Color:       mochiLogColor,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
 
 	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)

@@ -22,6 +22,7 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
 	mock_abi "github.com/defipod/mochi/pkg/service/abi/mocks"
+	mock_discord "github.com/defipod/mochi/pkg/service/discord/mocks"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
 	"github.com/defipod/mochi/pkg/service/marketplace"
@@ -825,7 +826,10 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	mockIndexer := mock_indexer.NewMockService(ctrl)
 	mockAbi := mock_abi.NewMockService(ctrl)
 	mockMarketplace := mock_marketplace.NewMockService(ctrl)
+	mockDiscord := mock_discord.NewMockService(ctrl)
 
+	svc, _ := service.NewService(cfg, log)
+	svc.Discord = mockDiscord
 	r.NFTCollection = nftCollection
 
 	tests := []struct {
@@ -844,6 +848,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
 				log:         log,
+				svc:         svc,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -851,6 +856,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Chain:   "Fantom",
 					ChainID: "ftm",
 					Author:  "catngh",
+					GuildID: "863278424433229854",
 				},
 			},
 			wantNftCollection: &model.NFTCollection{
@@ -875,6 +881,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
 				log:         log,
+				svc:         svc,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -882,6 +889,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Chain:   "Fantom",
 					ChainID: "ftm",
 					Author:  "catngh",
+					GuildID: "863278424433229854",
 				},
 			},
 			wantNftCollection: nil,
@@ -895,6 +903,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
 				log:         log,
+				svc:         svc,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -902,6 +911,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Chain:   "Etheabc",
 					ChainID: "abc",
 					Author:  "catngh",
+					GuildID: "863278424433229854",
 				},
 			},
 			wantNftCollection: nil,
@@ -915,6 +925,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
 				log:         log,
+				svc:         svc,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -922,6 +933,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Chain:   "Ethereum",
 					ChainID: "11111",
 					Author:  "catngh",
+					GuildID: "863278424433229854",
 				},
 			},
 			wantNftCollection: nil,
@@ -935,6 +947,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				indexer:     mockIndexer,
 				marketplace: mockMarketplace,
 				log:         log,
+				svc:         svc,
 			},
 			args: args{
 				request.CreateNFTCollectionRequest{
@@ -942,6 +955,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 					Chain:   "Ethereum",
 					ChainID: "eth",
 					Author:  "catngh",
+					GuildID: "863278424433229854",
 				},
 			},
 			wantNftCollection: nil,
@@ -1013,6 +1027,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250}).Return(nil).AnyTimes()
 	mockMarketplace.EXPECT().GetCollectionFromPaintswap("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(paintswapCollection, nil) //marketplace call for get image
 	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
+	mockDiscord.EXPECT().NotifyAddNewCollection("863278424433229854", "Cyber Rabby", "rabby", "ftm", "/Imagelink").Return(nil).AnyTimes()
 	//####################
 
 	// ########## Case 2: FAIL - duplicated entry
