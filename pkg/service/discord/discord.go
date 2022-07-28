@@ -37,16 +37,26 @@ func NewService(
 	}, nil
 }
 
-func (d *Discord) NotifyNewGuild(guildID string) error {
+func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 	// get new guild info
 	guild, err := d.session.Guild(guildID)
 	if err != nil {
 		return fmt.Errorf("failed to get guild info: %w", err)
 	}
-
+	postfix := "th"
+	switch count % 10 {
+	case 1:
+		postfix = "st"
+	case 2:
+		postfix = "nd"
+	case 3:
+		postfix = "rd"
+	default:
+		postfix = "th"
+	}
 	msgEmbed := discordgo.MessageEmbed{
 		Title:       "Mochi has joined new Guild!",
-		Description: fmt.Sprintf("**%s** (%s)", guild.Name, guild.ID),
+		Description: fmt.Sprintf("**%s**, the %v%s guild", guild.Name, count, postfix),
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
