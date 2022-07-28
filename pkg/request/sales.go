@@ -12,7 +12,7 @@ type HandleNftWebhookRequest struct {
 	Hodl              int    `json:"hold"`
 	LastPrice         Token  `json:"last_price"`
 
-	Chain string `json:"chain"`
+	ChainId int64 `json:"chain_id"`
 }
 type Token struct {
 	Token  TokenInfo `json:"token"`

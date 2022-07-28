@@ -167,16 +167,26 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 }
 
 func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebhookRequest) error {
+	collection, err := e.repo.NFTCollection.GetByAddress(nftAddedCollection.CollectionAddress)
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection. CollectionAddress: %s", nftAddedCollection.CollectionAddress)
+		return err
+	}
+
 	channelNewCollection := "964780299307343912"
 	messageAddedNewCollection := []*discordgo.MessageEmbed{{
-		Title:       "Mochi has added new collection!",
-		Description: nftAddedCollection.CollectionAddress + " (" + nftAddedCollection.Chain + ")",
+		Title:       "New collection: " + collection.Name,
+		Description: "We're happy to announce that " + collection.Name + " ranking is available.\n\n" + "You can check your rank using:\n" + "`$nft " + strings.ToLower(collection.Symbol) + " <token_id>`\n\n" + ":warning: Remeber that ranks are calculated using metadata, wrong and bad metadata can impact ranks as well.\n:warning:Ranks are not a financial indicator.\n",
 		Color:       0xFCD3C1,
 		Timestamp:   time.Now().Format(time.RFC3339),
+		Image: &discordgo.MessageEmbedImage{
+			URL: collection.Image,
+		},
 	}}
-	_, err := e.discord.ChannelMessageSendEmbeds(channelNewCollection, messageAddedNewCollection)
+
+	_, err = e.discord.ChannelMessageSendEmbeds(channelNewCollection, messageAddedNewCollection)
 	if err != nil {
-		e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to new added collection channel. CollectionAddress: %s, Chain: %s", nftAddedCollection.CollectionAddress, nftAddedCollection.Chain)
+		e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to new added collection channel. CollectionAddress: %s, Chain: %s", nftAddedCollection.CollectionAddress, nftAddedCollection.ChainId)
 		return fmt.Errorf("cannot send message to new added collection channel. Error: %v", err)
 	}
 	return nil
