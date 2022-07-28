@@ -11,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/util"
 	"gorm.io/gorm"
 )
@@ -192,6 +193,15 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 		return err
 	}
 
+	// add indexer
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: nftSale.CollectionAddress,
+		ChainID: int(chainID),
+	})
+	if err != nil && err.Error() != "block number not synced yet, TODO: add to queue and try later" {
+		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+		return err
+	}
 	// add collection
 	_, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    nftSale.CollectionAddress,
