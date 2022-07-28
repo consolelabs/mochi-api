@@ -233,7 +233,11 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
-
+	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, name, symbol, util.ConvertChainIDToChain(convertedChainId), image)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
+		return nil, fmt.Errorf("Cannot send embed message: %v", err)
+	}
 	return
 }
 
