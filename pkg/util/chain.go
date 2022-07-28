@@ -1,5 +1,7 @@
 package util
 
+import "strings"
+
 func ConvertChainToChainId(chain string) string {
 	switch chain {
 	case "eth":
@@ -29,5 +31,18 @@ func ConvertChainIDToChain(chain string) string {
 		return "op"
 	default:
 		return chain
+	}
+}
+
+func ConvertMarkplaceToChainId(marketplace string) int64 {
+	switch strings.ToLower(marketplace) {
+	case "opensea":
+		return 1
+	case "quixotic":
+		return 10
+	case "paintswap":
+		return 250
+	default:
+		return 250
 	}
 }
