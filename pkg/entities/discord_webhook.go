@@ -173,8 +173,7 @@ func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebh
 		return err
 	}
 
-	channelNewCollection := "701029345795375114"
-	// "964780299307343912"
+	channelNewCollection := "964780299307343912"
 	messageAddedNewCollection := []*discordgo.MessageEmbed{{
 		Title:       "New collection: " + collection.Name,
 		Description: "We're happy to announce that " + collection.Name + " ranking is available.\n\n" + "You can check your rank using:\n" + "`$nft " + strings.ToLower(collection.Symbol) + " <token_id>`\n\n" + ":warning: Remeber that ranks are calculated using metadata, wrong and bad metadata can impact ranks as well.\n:warning:Ranks are not a financial indicator.\n",
