@@ -31,8 +31,8 @@ func (h *Handler) WebhookNftHandler(c *gin.Context) {
 	switch req.Event {
 	case "sales":
 		h.handleNftSales(c, req)
-	case "nft_added_collection":
-		h.handleNftAddedCollection(c, req)
+	case "notify_done_sync":
+		h.handleNofityDoneSync(c, req)
 	}
 }
 
@@ -76,14 +76,14 @@ func (h *Handler) handleNftSales(c *gin.Context, req request.HandleNftWebhookReq
 }
 
 // {
-// 	"event": "nft_added_collection",
+// 	"event": "notify_done_sync",
 // 	"collection_address": "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
 // 	"chain": "ftm"
 // }
-func (h *Handler) handleNftAddedCollection(c *gin.Context, req request.HandleNftWebhookRequest) {
+func (h *Handler) handleNofityDoneSync(c *gin.Context, req request.HandleNftWebhookRequest) {
 	err := h.entities.SendNftAddedCollection(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleNftAddedCollection] - failed to send new added collection to channel")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleNofityDoneSync] - failed to send new added collection to channel")
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
