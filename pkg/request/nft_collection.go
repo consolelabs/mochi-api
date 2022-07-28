@@ -12,6 +12,7 @@ type CreateNFTCollectionRequest struct {
 	Chain   string `json:"chain"`
 	ChainID string `json:"chain_id"`
 	Author  string `json:"author"`
+	GuildID string `json:"guild_id"`
 }
 
 func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {

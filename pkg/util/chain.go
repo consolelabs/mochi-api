@@ -18,3 +18,16 @@ func ConvertChainToChainId(chain string) string {
 		return chain
 	}
 }
+
+func ConvertChainIDToChain(chain string) string {
+	switch chain {
+	case "1":
+		return "eth"
+	case "250":
+		return "ftm"
+	case "10":
+		return "op"
+	default:
+		return chain
+	}
+}
