@@ -1532,3 +1532,104 @@ func TestEntity_GetNFTCollections(t *testing.T) {
 		})
 	}
 }
+
+func TestEntity_GetCollectionCount(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "5434",
+		DBName: "mochi_local",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
+
+	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	r.NFTCollection = nftCollection
+	tests := []struct {
+		name    string
+		fields  fields
+		want    *response.NFTCollectionCount
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "successful",
+			fields: fields{
+				repo: r,
+				log:  log,
+			},
+			want: &response.NFTCollectionCount{
+				Total:    10,
+				ETHCount: 4,
+				FTMCount: 3,
+				OPCount:  3,
+			},
+			wantErr: false,
+		},
+	}
+	nftCollection.EXPECT().GetByChain(1).Return(nil, 4, nil).AnyTimes()
+	nftCollection.EXPECT().GetByChain(250).Return(nil, 3, nil).AnyTimes()
+	nftCollection.EXPECT().GetByChain(10).Return(nil, 3, nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetCollectionCount()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetCollectionCount() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetCollectionCount() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

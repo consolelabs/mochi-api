@@ -49,17 +49,17 @@ func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionNam
 }
 
 // NotifyNewGuild mocks base method.
-func (m *MockService) NotifyNewGuild(newGuildID string) error {
+func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyNewGuild", newGuildID)
+	ret := m.ctrl.Call(m, "NotifyNewGuild", newGuildID, count)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // NotifyNewGuild indicates an expected call of NotifyNewGuild.
-func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
 }
 
 // SendGuildActivityLogs mocks base method.

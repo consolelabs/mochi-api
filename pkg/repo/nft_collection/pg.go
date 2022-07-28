@@ -52,6 +52,16 @@ func (pg *pg) GetByID(id string) (*model.NFTCollection, error) {
 	return &collection, pg.db.Table("nft_collections").Where("id = ?", id).First(&collection).Error
 }
 
+func (pg *pg) GetByChain(chain int) ([]model.NFTCollection, int, error) {
+	var collections []model.NFTCollection
+	var count int64
+	err := pg.db.Table("nft_collections").Where(fmt.Sprintf("chain_id='%v'", chain)).Find(&collections).Count(&count)
+	if err.Error != nil {
+		return nil, 0, err.Error
+	}
+	return collections, int(count), nil
+}
+
 func (pg *pg) Create(collection model.NFTCollection) (*model.NFTCollection, error) {
 	return &collection, pg.db.Table("nft_collections").Create(&collection).Error
 }

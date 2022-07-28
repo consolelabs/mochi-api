@@ -9,6 +9,7 @@ type Store interface {
 	GetBySymbol(symbol string) (*model.NFTCollection, error)
 	GetBySymbolorName(symbol string) (*model.NFTCollection, error)
 	GetByID(id string) (*model.NFTCollection, error)
+	GetByChain(chain int) ([]model.NFTCollection, int, error)
 	GetNewListed(interval int, page int, size int) ([]model.NewListedNFTCollection, int64, error)
 	Create(collection model.NFTCollection) (*model.NFTCollection, error)
 	ListAll() ([]model.NFTCollection, error)

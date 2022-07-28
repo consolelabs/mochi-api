@@ -166,11 +166,23 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"data": collection})
 }
+
 func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
 		h.log.Error(err, "[handler.GetAllNFTSalesTracker] - failed to get all NFT sales tracker")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": data})
+}
+
+func (h *Handler) GetCollectionCount(c *gin.Context) {
+	data, err := h.entities.GetCollectionCount()
+	if err != nil {
+		h.log.Error(err, "[handler.GetCollectionCount] - failed to get collections count")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get collections count"})
 		return
 	}
 

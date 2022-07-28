@@ -27,3 +27,10 @@ type NFTCollectionsResponse struct {
 	util.Pagination
 	Data []model.NFTCollection `json:"data"`
 }
+
+type NFTCollectionCount struct {
+	Total    int `json:"total"`
+	ETHCount int `json:"eth_collection"`
+	FTMCount int `json:"ftm_collection"`
+	OPCount  int `json:"op_collection"`
+}

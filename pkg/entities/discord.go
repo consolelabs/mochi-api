@@ -213,15 +213,14 @@ func (e *Entity) CountGuildMembers(guildID string) (int, int, int, error) {
 }
 
 func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData ...string) error {
-	log := logger.NewLogrusLogger()
 	err := e.UpdateOneGuildStats(guildID)
 	if err != nil {
-		log.Error(err, "failed to get guild stats from discord")
+		e.log.Error(err, "failed to get guild stats from discord")
 		return err
 	}
 	guildStat, err := e.GetByGuildID(guildID)
 	if err != nil {
-		log.Error(err, "failed to get guild stats from database")
+		e.log.Error(err, "failed to get guild stats from database")
 		return err
 	}
 
@@ -229,7 +228,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData .
 	channelName := util.CreateChannelName(guildStat, countType)
 	createdChannel, err := e.discord.GuildChannelCreate(guildID, channelName, 2)
 	if err != nil {
-		log.Error(err, "failed to create discord channel")
+		e.log.Error(err, "failed to create discord channel")
 		return err
 	}
 
@@ -244,7 +243,7 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData .
 		},
 	})
 	if err != nil {
-		log.Error(err, "failed to update discord channel permission")
+		e.log.Error(err, "failed to update discord channel permission")
 		return err
 	}
 
@@ -255,15 +254,14 @@ func (e *Entity) CreateGuildChannel(guildID string, countType string, coinData .
 		CountType: countType,
 	})
 	if err != nil {
-		log.Error(err, "failed to store channel id")
+		e.log.Error(err, "failed to store channel id")
 		return err
 	}
 	return nil
 }
 
 func (e *Entity) UpdateOneGuildStats(guildID string) error {
-	log := logger.NewLogrusLogger()
-	log.Infof("Starting count stats for . GuildId: %v", guildID)
+	e.log.Infof("Starting count stats for . GuildId: %v", guildID)
 	nr_of_members, nr_of_user, nr_of_bots, err := e.CountGuildMembers(guildID)
 	if err != nil {
 		return err
