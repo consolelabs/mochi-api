@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -8,15 +9,22 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
-		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
-		return err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return e.handleNotAddedCollection(nftSale)
+		} else {
+			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
+			return err
+		}
+
 	}
 
 	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
@@ -163,6 +171,48 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		}
 	}
 
+	return nil
+}
+
+func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookRequest) error {
+	// convert marketplace to chain id
+	chainID := util.ConvertMarkplaceToChainId(nftSale.Marketplace)
+
+	// query name and symbol from contract
+	name, symbol, err := e.abi.GetNameAndSymbol(nftSale.CollectionAddress, int64(chainID))
+	if err != nil {
+		e.log.Errorf(err, "[e.abi.GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", nftSale.CollectionAddress, chainID)
+		return err
+	}
+
+	// get image from marketplace
+	image, err := e.getImageFromMarketPlace(int(chainID), nftSale.CollectionAddress)
+	if err != nil {
+		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
+		return err
+	}
+
+	// add collection
+	_, err = e.repo.NFTCollection.Create(model.NFTCollection{
+		Address:    nftSale.CollectionAddress,
+		Symbol:     symbol,
+		Name:       name,
+		ChainID:    strconv.Itoa(int(chainID)),
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+		Image:      image,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+		return err
+	}
+
+	// notify added collection
+	err = e.svc.Discord.NotifyAddNewCollection("962589711841525780", name, symbol, util.ConvertChainIDToChain(strconv.Itoa(int(chainID))), image)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
+		return err
+	}
 	return nil
 }
 
