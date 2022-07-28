@@ -20,11 +20,18 @@ func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
 		},
 	})
 	if err != nil {
+		e.log.Errorf(err, "[e.CreateGuild] failed to create guild id = %s", guild.ID)
+		return err
+	}
+
+	guilds, err := e.repo.DiscordGuilds.Gets()
+	if err != nil {
+		e.log.Errorf(err, "[e.CreateGuild] failed to get all guilds")
 		return err
 	}
 
 	// notifiy new guild to discord
-	err = e.svc.Discord.NotifyNewGuild(guild.ID)
+	err = e.svc.Discord.NotifyNewGuild(guild.ID, len(guilds))
 	if err != nil {
 		e.log.Errorf(err, "failed to notify new guild %s to discord", guild.ID)
 	}

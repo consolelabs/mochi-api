@@ -22,6 +22,7 @@ func TestDiscord_NotifyNewGuild(t *testing.T) {
 	}
 	type args struct {
 		guildID string
+		chain   int
 	}
 	tests := []struct {
 		name    string
@@ -48,7 +49,7 @@ func TestDiscord_NotifyNewGuild(t *testing.T) {
 				session:           tt.fields.session,
 				mochiLogChannelID: tt.fields.mochiLogChannelID,
 			}
-			if err := d.NotifyNewGuild(tt.args.guildID); (err != nil) != tt.wantErr {
+			if err := d.NotifyNewGuild(tt.args.guildID, tt.args.chain); (err != nil) != tt.wantErr {
 				t.Errorf("Discord.NotifyNewGuild() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

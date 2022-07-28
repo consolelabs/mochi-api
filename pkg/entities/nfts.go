@@ -529,3 +529,27 @@ func (e *Entity) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse
 	}
 	return data, nil
 }
+
+func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
+	_, nr_of_eth, err := e.repo.NFTCollection.GetByChain(1)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of ETH collections")
+		return nil, err
+	}
+	_, nr_of_ftm, err := e.repo.NFTCollection.GetByChain(250)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of FTM collections")
+		return nil, err
+	}
+	_, nr_of_op, err := e.repo.NFTCollection.GetByChain(10)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of OP collections")
+		return nil, err
+	}
+	return &response.NFTCollectionCount{
+		Total:    nr_of_eth + nr_of_ftm + nr_of_op,
+		ETHCount: nr_of_eth,
+		FTMCount: nr_of_ftm,
+		OPCount:  nr_of_op,
+	}, nil
+}
