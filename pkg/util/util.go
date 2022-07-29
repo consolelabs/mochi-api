@@ -474,6 +474,9 @@ func WeiToEther(wei *big.Int, decimals ...int) *big.Float {
 }
 
 func StringWeiToEther(stringWei string, decimals int) *big.Float {
+	if decimals == 0 {
+		decimals = 18
+	}
 	wei := new(big.Int)
 	wei.SetString(stringWei, 10)
 	return WeiToEther(wei, decimals)
