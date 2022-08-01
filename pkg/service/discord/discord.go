@@ -164,3 +164,21 @@ func (d *Discord) SendLevelUpMessage(logChannelID, role string, uActivity *respo
 		return
 	}
 }
+
+func (d *Discord) NotifyStealFloorPrice(price float64, floor float64, url string, name string, image string) error {
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       "NFT Steal Alert!",
+		Description: fmt.Sprintf("%s was listed at %v, under the floor price of %v\nClick here to buy now [Market](%s)", name, price, floor, url),
+		Color:       mochiLogColor,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}
