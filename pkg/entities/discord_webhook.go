@@ -172,6 +172,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		}
 	}
 
+	// send feed to twitter - waiting for api keys to test
+	// err = e.svc.Twitter.SendSalesTweet(image, &nftSale, indexerToken)
+	// if err != nil {
+	// 	e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot post tweet. Image: %s, CollectionName: %s, TokenName: %s", image, collection.Name, indexerToken.Name)
+	// 	return fmt.Errorf("cannot post tweet. Error: %v", err)
+	// }
 	return nil
 }
 
