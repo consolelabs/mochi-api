@@ -62,6 +62,20 @@ func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
 }
 
+// NotifyStealFloorPrice mocks base method.
+func (m *MockService) NotifyStealFloorPrice(price, floor float64, url, name, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyStealFloorPrice", price, floor, url, name, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyStealFloorPrice indicates an expected call of NotifyStealFloorPrice.
+func (mr *MockServiceMockRecorder) NotifyStealFloorPrice(price, floor, url, name, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealFloorPrice", reflect.TypeOf((*MockService)(nil).NotifyStealFloorPrice), price, floor, url, name, image)
+}
+
 // SendGuildActivityLogs mocks base method.
 func (m *MockService) SendGuildActivityLogs(channelID, userID, title, description string) error {
 	m.ctrl.T.Helper()
