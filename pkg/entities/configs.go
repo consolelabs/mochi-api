@@ -306,3 +306,18 @@ func (e *Entity) ToggleActivityConfig(guildID, activityName string) (*model.Guil
 
 	return &config, nil
 }
+
+func (e *Entity) GetAllTwitterConfig() ([]model.GuildConfigTwitterFeed, error) {
+	configs, err := e.repo.GuildConfigTwitterFeed.GetAll()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get twitter configs: %v", err.Error())
+	}
+	return configs, nil
+}
+func (e *Entity) CreateTwitterConfig(req *model.GuildConfigTwitterFeed) error {
+	err := e.repo.GuildConfigTwitterFeed.UpsertOne(req)
+	if err != nil {
+		return fmt.Errorf("failed to upsert twitter configs: %v", err.Error())
+	}
+	return nil
+}

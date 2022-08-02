@@ -21,8 +21,8 @@ import (
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
-
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
+	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
@@ -60,13 +60,14 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
+		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
 		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		WhitelistCampaigns:                   whitelistcampaigns.NewPG(db),
 		WhitelistCampaignUsers:               whitelistcampaignusers.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
-		NFTSalesTracker: 					  nftsalestracker.NewPG(db),
+		NFTSalesTracker:                      nftsalestracker.NewPG(db),
 		Activity:                             activity.NewPG(db),
 		GuildConfigActivity:                  guildconfigactivity.NewPG(db),
 		ConfigXPLevel:                        configxplevel.NewPG(db),

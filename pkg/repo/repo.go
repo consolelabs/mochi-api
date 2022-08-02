@@ -19,6 +19,7 @@ import (
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
+	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
@@ -54,6 +55,7 @@ type Repo struct {
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
+	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	GuildConfigToken                     guildconfigtoken.Store
@@ -71,5 +73,5 @@ type Repo struct {
 	UserNFTBalance                       usernftbalance.Store
 	MessageRepostHistory                 messagereposthistory.Store
 	GuildScheduledEvent                  guildscheduledevent.Store
-	NFTSalesTracker 					 nftsalestracker.Store
+	NFTSalesTracker                      nftsalestracker.Store
 }
