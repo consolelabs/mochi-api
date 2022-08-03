@@ -60,7 +60,11 @@ type Config struct {
 
 	MarketplaceBaseUrl MarketplaceBaseUrl
 
-	MarketplaceApiKey MarketplaceApiKey
+	MarketplaceApiKey        MarketplaceApiKey
+	TwitterAccessToken       string
+	TwitterAccessTokenSecret string
+	TwitterConsumerKey       string
+	TwitterConsumerSecret    string
 }
 
 type MarketplaceBaseUrl struct {
@@ -162,6 +166,10 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Opensea:  v.GetString("OPENSEA_API_KEY"),
 			Quixotic: v.GetString("QUIXOTIC_API_KEY"),
 		},
+		TwitterAccessToken:       v.GetString("TWITTER_ACCESS_TOKEN"),
+		TwitterAccessTokenSecret: v.GetString("TWITTER_ACCESS_TOKEN_SECRET"),
+		TwitterConsumerKey:       v.GetString("TWITTER_CONSUMER_KEY"),
+		TwitterConsumerSecret:    v.GetString("TWITTER_CONSUMER_SECRET"),
 	}
 }
 
