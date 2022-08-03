@@ -37,6 +37,6 @@ func NewService(
 		Discord:   discordSvc,
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),
-		Twitter:   twitter.NewTwitter(),
+		Twitter:   twitter.NewTwitter(&cfg),
 	}, nil
 }

@@ -9,22 +9,21 @@ import (
 	"strconv"
 
 	"github.com/ChimeraCoder/anaconda"
+	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type twitter struct {
+	config  *config.Config
 	twitter *anaconda.TwitterApi
 }
 
-func NewTwitter() Service {
-	accessToken := os.Getenv("TWITTER_ACCESS_TOKEN")
-	accessTokenScrt := os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
-	consumerKey := os.Getenv("TWITTER_CONSUMER_KEY")
-	consumerKeyScrt := os.Getenv("TWITTER_CONSUMER_SECRET")
-	t := anaconda.NewTwitterApiWithCredentials(accessToken, accessTokenScrt, consumerKey, consumerKeyScrt)
+func NewTwitter(cfg *config.Config) Service {
+	t := anaconda.NewTwitterApiWithCredentials(cfg.TwitterAccessToken, cfg.TwitterAccessTokenSecret, cfg.TwitterConsumerKey, cfg.TwitterConsumerSecret)
 	return &twitter{
 		twitter: t,
+		config:  cfg,
 	}
 }
 func (t *twitter) preprocessTwitterImage(image string) ([]byte, string, error) {
@@ -33,7 +32,7 @@ func (t *twitter) preprocessTwitterImage(image string) ([]byte, string, error) {
 	if err != nil {
 		return nil, "", fmt.Errorf("[twitter.SendSalesTweet] cannot download image: %s", err)
 	}
-	defer deleteFile(imageFile)
+	// defer deleteFile(imageFile)
 
 	resizedImageFile, _, _, err := util.CheckAndResizeImg(imageFile)
 	if err != nil {
