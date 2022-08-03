@@ -19,18 +19,21 @@ func NewUpdateUserNFTBalancesJob(e *entities.Entity, l logger.Logger) Job {
 }
 
 func (c *updateUserNFTBalances) Run() error {
+	c.log.Info("start updating user nft balances")
 	nftConfigs, err := c.entity.ListAllNFTCollectionConfigs()
 	if err != nil {
+		c.log.Error(err, "entity.ListAllNFTCollectionConfigs failed")
 		return err
 	}
 
 	if len(nftConfigs) == 0 {
-		c.log.Infof("no nft collection configs found")
+		c.log.Info("entity.ListAllNFTCollectionConfigs - no data found")
 		return nil
 	}
 
 	was, err := c.entity.ListAllWalletAddresses()
 	if err != nil {
+		c.log.Error(err, "entity.ListAllWalletAddresses failed")
 		return err
 	}
 

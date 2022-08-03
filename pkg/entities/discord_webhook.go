@@ -171,7 +171,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 			}
 		}
 	}
-
 	return nil
 }
 

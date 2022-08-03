@@ -2,6 +2,8 @@ package entities
 
 import (
 	"fmt"
+
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -98,21 +100,33 @@ func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
 
 func (e *Entity) RemoveGuildMemberRoles(guildID string, rolesToRemove map[string]string) error {
 	for userID, roleID := range rolesToRemove {
+		gMemberRoleLog := e.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+			"roleId":  roleID,
+		})
 		if err := e.discord.GuildMemberRoleRemove(guildID, userID, roleID); err != nil {
+			gMemberRoleLog.Error(err, "[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove failed")
 			return err
 		}
+		gMemberRoleLog.Info("[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove executed successfully")
 	}
-
 	return nil
 }
 
 func (e *Entity) AddGuildMemberRoles(guildID string, rolesToAdd map[string]string) error {
 	for userID, roleID := range rolesToAdd {
+		gMemberRoleLog := e.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+			"roleId":  roleID,
+		})
 		if err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID); err != nil {
+			gMemberRoleLog.Error(err, "[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd failed")
 			return err
 		}
+		gMemberRoleLog.Info("[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd executed successfully")
 	}
-
 	return nil
 }
 
@@ -291,4 +305,21 @@ func (e *Entity) ToggleActivityConfig(guildID, activityName string) (*model.Guil
 	}
 
 	return &config, nil
+}
+
+func (e *Entity) GetAllTwitterConfig() ([]model.GuildConfigTwitterFeed, error) {
+	configs, err := e.repo.GuildConfigTwitterFeed.GetAll()
+	if err != nil {
+		e.log.Errorf(err, "[e.GetAllTwitterConfig] failed to get all twitter configs")
+		return nil, fmt.Errorf("failed to get twitter configs: %v", err.Error())
+	}
+	return configs, nil
+}
+func (e *Entity) CreateTwitterConfig(req *model.GuildConfigTwitterFeed) error {
+	err := e.repo.GuildConfigTwitterFeed.UpsertOne(req)
+	if err != nil {
+		e.log.Errorf(err, "[e.CreateTwitterConfig] failed to upsert twitter configs")
+		return fmt.Errorf("failed to upsert twitter configs: %v", err.Error())
+	}
+	return nil
 }

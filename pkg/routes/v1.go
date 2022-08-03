@@ -129,6 +129,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			activitygroup.POST("/:activity", h.ToggleActivityConfig)
 		}
+		twitterGroup := configGroup.Group("/twitter")
+		{
+			twitterGroup.POST("", h.CreateTwitterConfig)
+			twitterGroup.GET("", h.GetAllTwitterConfig)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")

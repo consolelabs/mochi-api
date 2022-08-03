@@ -15,6 +15,7 @@ type HandleDiscordWebhookRequest struct {
 const (
 	GUILD_MEMBER_ADD     = "guildMemberAdd"
 	MESSAGE_CREATE       = "messageCreate"
+	SALES_CREATE         = "salesCreate"
 	GUILD_CREATE         = "guildCreate"
 	MESSAGE_REACTION_ADD = "messageReactionAdd"
 )
@@ -22,6 +23,7 @@ const (
 var acceptedEvents = map[string]bool{
 	GUILD_MEMBER_ADD:     true,
 	MESSAGE_CREATE:       true,
+	SALES_CREATE:         true,
 	GUILD_CREATE:         true,
 	MESSAGE_REACTION_ADD: true,
 }

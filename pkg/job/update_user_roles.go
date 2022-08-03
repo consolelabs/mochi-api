@@ -1,11 +1,8 @@
 package job
 
 import (
-	"fmt"
-
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"gorm.io/gorm"
 )
 
 type updateUserRoles struct {
@@ -42,23 +39,26 @@ func (c *updateUserRoles) Run() error {
 }
 
 func (c *updateUserRoles) updateLevelRoles(guildID string) error {
-	c.log.Infof("start updating users role - guild %s", guildID)
+	l := c.log.Fields(logger.Fields{"guildId": guildID})
+	l.Info("start scanning levelroles")
 	lrConfigs, err := c.entity.GetGuildLevelRoleConfigs(guildID)
 	if err != nil {
+		l.Error(err, "entity.GetGuildLevelRoleConfigs failed")
 		return err
 	}
 
 	if len(lrConfigs) == 0 {
-		c.log.Infof("no levelrole configs found - guild %s", guildID)
+		l.Info("entity.GetGuildLevelRoleConfigs - no data found")
 		return nil
 	}
 
 	userXPs, err := c.entity.GetGuildUserXPs(guildID)
 	if err != nil {
+		l.Error(err, "entity.GetGuildUserXPs failed")
 		return err
 	}
 	if len(userXPs) == 0 {
-		c.log.Infof("no user XP found - guild %s", guildID)
+		l.Info("entity.GetGuildUserXPs - no data found")
 		return nil
 	}
 
@@ -67,17 +67,19 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 	for _, userXP := range userXPs {
 		member, err := c.entity.GetGuildMember(guildID, userXP.UserID)
 		if err != nil {
-			c.log.Errorf(err, "cannot get guild member %s - guild %s", userXP.UserID, guildID)
+			c.log.Fields(logger.Fields{
+				"userId":  userXP.UserID,
+				"guildId": guildID,
+			}).Error(err, "entity.GetGuildMember failed")
 			return err
 		}
 
 		userLevelRole, err := c.entity.GetUserRoleByLevel(guildID, userXP.Level)
 		if err != nil {
-			if err != gorm.ErrRecordNotFound {
-				c.log.Errorf(err, "cannot get role by level %d - guild %s", userXP.Level, guildID)
-				return err
-			}
-			c.log.Infof("no config found for level %d - guild %s", userXP.Level, guildID)
+			c.log.Fields(logger.Fields{
+				"level":   userXP.Level,
+				"guildId": guildID,
+			}).Error(err, "entity.GetUserRoleByLevel failed")
 			return err
 		}
 
@@ -99,26 +101,43 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	if err := c.entity.RemoveGuildMemberRoles(guildID, rolesToRemove); err != nil {
-		c.log.Errorf(err, "cannot remove guild member roles - guild %s", guildID)
+		c.log.Fields(logger.Fields{
+			"guildId":       guildID,
+			"rolesToRemove": rolesToRemove,
+		}).Error(err, "entity.RemoveGuildMemberRoles failed")
 		return err
 	}
+	c.log.Fields(logger.Fields{
+		"guildId":       guildID,
+		"rolesToRemove": rolesToRemove,
+	}).Info("entity.RemoveGuildMemberRoles executed successfully")
 
 	if err := c.entity.AddGuildMemberRoles(guildID, rolesToAdd); err != nil {
-		c.log.Errorf(err, "cannot add guild member roles - guild %s", guildID)
+		c.log.Fields(logger.Fields{
+			"guildId":    guildID,
+			"rolesToAdd": rolesToAdd,
+		}).Error(err, "entity.AddGuildMemberRoles failed")
 		return err
 	}
+	c.log.Fields(logger.Fields{
+		"guildId":       guildID,
+		"rolesToRemove": rolesToAdd,
+	}).Info("entity.AddGuildMemberRoles executed successfully")
 
 	return nil
 }
 
 func (c *updateUserRoles) updateNFTRoles(guildID string) error {
+	l := c.log.Fields(logger.Fields{"guildId": guildID})
+	l.Info("start scanning nftroles")
 	hrConfigs, err := c.entity.ListGuildNFTRoleConfigs(guildID)
 	if err != nil {
-		return fmt.Errorf("failed to get guild nft role configs: %v", err.Error())
+		l.Error(err, "entity.ListGuildNFTRoleConfigs failed")
+		return err
 	}
 
 	if len(hrConfigs) == 0 {
-		c.log.Infof("no nftrole configs found - guild %s", guildID)
+		l.Info("entity.ListGuildNFTRoleConfigs - no data found")
 		return nil
 	}
 
@@ -129,12 +148,14 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 
 	rolesToAdd, err := c.entity.ListMemberNFTRolesToAdd(guildID)
 	if err != nil {
-		return fmt.Errorf("failed to get member nft roles to add: %v", err.Error())
+		l.Error(err, "entity.ListMemberNFTRolesToAdd failed")
+		return err
 	}
 
 	members, err := c.entity.ListGuildMembers(guildID)
 	if err != nil {
-		return fmt.Errorf("failed to list guild members: %v", err.Error())
+		l.Error(err, "[job][pdateNFTRoles] entity.ListGuildMembers failed")
+		return err
 	}
 
 	for _, member := range members {
@@ -145,19 +166,31 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 					continue
 				}
 
+				gMemberRoleLog := c.log.Fields(logger.Fields{
+					"guildId": guildID,
+					"userId":  member.User.ID,
+					"roleId":  roleID,
+				})
 				err = c.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
 				if err != nil {
-					c.log.Errorf(err, "cannot remove guild member role %s of %s - guild %s", roleID, member.User.ID, guildID)
+					gMemberRoleLog.Error(err, "entity.RemoveGuildMemberRole failed")
 				}
+				gMemberRoleLog.Info("entity.RemoveGuildMemberRole executed successfully")
 			}
 		}
 	}
 
 	for roleToAdd := range rolesToAdd {
+		gMemberRoleLog := c.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  roleToAdd[0],
+			"roleId":  roleToAdd[1],
+		})
 		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1])
 		if err != nil {
-			c.log.Errorf(err, "cannot add guild member %s role %s - guild %s", roleToAdd[0], roleToAdd[1], guildID)
+			gMemberRoleLog.Error(err, "entity.AddGuildMemberRole failed")
 		}
+		gMemberRoleLog.Info("entity.AddGuildMemberRole executed successfully")
 	}
 
 	return nil
