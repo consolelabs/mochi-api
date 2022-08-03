@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/twitter"
 )
 
 // import "github.com/defipod/api/pkg/service/binance"
@@ -18,6 +19,7 @@ type Service struct {
 	Discord   discord.Service
 	Indexer   indexer.Service
 	Abi       abi.Service
+	Twitter   twitter.Service
 }
 
 func NewService(
@@ -35,5 +37,6 @@ func NewService(
 		Discord:   discordSvc,
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),
+		Twitter:   twitter.NewTwitter(),
 	}, nil
 }

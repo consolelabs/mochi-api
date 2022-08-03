@@ -410,3 +410,31 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
 }
+
+func (h *Handler) GetAllTwitterConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	config, err := h.entities.GetAllTwitterConfig()
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetTwitterConfig] - failed to get twitter config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+}
+
+func (h *Handler) CreateTwitterConfig(c *gin.Context) {
+	cfg := model.GuildConfigTwitterFeed{}
+	err := c.BindJSON(&cfg)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": cfg}).Error(err, "[handler.CreateTwitterConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	err = h.entities.CreateTwitterConfig(&cfg)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": cfg}).Error(err, "[handler.GetTwitterConfig] - failed to create twitter config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
