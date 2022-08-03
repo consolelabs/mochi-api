@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -320,6 +321,53 @@ func (e *Entity) CreateTwitterConfig(req *model.GuildConfigTwitterFeed) error {
 	if err != nil {
 		e.log.Errorf(err, "[e.CreateTwitterConfig] failed to upsert twitter configs")
 		return fmt.Errorf("failed to upsert twitter configs: %v", err.Error())
+	}
+	return nil
+}
+
+func (e *Entity) GetTwitterHashtagConfig(guildId string) ([]string, error) {
+	_, err := e.discord.Guild(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get guild")
+		return nil, fmt.Errorf("failed to get guild: %v", err.Error())
+	}
+
+	hashtags, err := e.repo.GuildConfigTwitterHashtag.GetByGuildID(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to upsert twitter configs")
+		return nil, fmt.Errorf("failed to get twitter hashtags: %v", err.Error())
+	}
+	return strings.Split(hashtags, ","), nil
+}
+
+func (e *Entity) DeleteTwitterHashtagConfig(guildId string) error {
+	_, err := e.discord.Guild(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get guild")
+		return fmt.Errorf("failed to get guild: %v", err.Error())
+	}
+
+	err = e.repo.GuildConfigTwitterHashtag.DeleteByGuildID(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to delete twitter configs")
+		return fmt.Errorf("failed to delete twitter hashtags: %v", err.Error())
+	}
+	return nil
+}
+
+func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
+	hashtags := ""
+	for _, tag := range req.Hashtag {
+		hashtags += tag + ","
+	}
+	err := e.repo.GuildConfigTwitterHashtag.UpsertOne(&model.GuildConfigTwitterHashtag{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		Hashtag:   strings.TrimSuffix(hashtags, ","), //save as '#abc,#bca,#abe'
+	})
+	if err != nil {
+		e.log.Errorf(err, "[e.CreateTwitterHashtagConfig] failed to upsert twitter configs")
+		return fmt.Errorf("failed to create twitter hashtag: %v", err.Error())
 	}
 	return nil
 }
