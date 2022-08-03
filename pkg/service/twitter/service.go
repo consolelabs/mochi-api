@@ -1,10 +1,9 @@
 package twitter
 
 import (
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type Service interface {
-	SendSalesTweet(imageURL string, nft *request.HandleNftWebhookRequest, token *response.IndexerNFTToken) error
+	SendSalesMessageToTwitter(message *model.TwitterSalesMessage, twitter *model.GuildConfigTwitterFeed) error
 }

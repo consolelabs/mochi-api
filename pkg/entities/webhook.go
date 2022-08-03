@@ -156,6 +156,15 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 	return nil, nil
 }
 
+func (e *Entity) HandleMochiSalesMessage(message *request.TwitterSalesMessage) error {
+	err := e.repo.MochiNFTSales.CreateOne(message)
+	if err != nil {
+		e.log.Errorf(err, "[e.HandleMochiSalesMessage] failed to create mochi nft sales: %s", err)
+		return err
+	}
+	return nil
+}
+
 func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
