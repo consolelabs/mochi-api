@@ -448,13 +448,6 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 		return
 	}
 
-	_, err := h.entities.GetGuildById(guildId)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get guild")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild not found"})
-		return
-	}
-
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
