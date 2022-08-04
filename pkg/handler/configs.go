@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -441,8 +442,19 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 
 func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
+	if guildId == "" {
+		h.log.Fields(logger.Fields{"guild_id": guildId}).Info("[handler.GetTwitterHashtagConfig] - empty guild id")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid guild id"})
+		return
+	}
+
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
 	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - hashtag config empty")
+			c.JSON(http.StatusOK, gin.H{"data": hashtags})
+			return
+		}
 		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
