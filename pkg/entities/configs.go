@@ -326,12 +326,6 @@ func (e *Entity) CreateTwitterConfig(req *model.GuildConfigTwitterFeed) error {
 }
 
 func (e *Entity) GetTwitterHashtagConfig(guildId string) ([]string, error) {
-	_, err := e.discord.Guild(guildId)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get guild")
-		return nil, fmt.Errorf("failed to get guild: %v", err.Error())
-	}
-
 	hashtags, err := e.repo.GuildConfigTwitterHashtag.GetByGuildID(guildId)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to upsert twitter configs")
@@ -341,13 +335,7 @@ func (e *Entity) GetTwitterHashtagConfig(guildId string) ([]string, error) {
 }
 
 func (e *Entity) DeleteTwitterHashtagConfig(guildId string) error {
-	_, err := e.discord.Guild(guildId)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get guild")
-		return fmt.Errorf("failed to get guild: %v", err.Error())
-	}
-
-	err = e.repo.GuildConfigTwitterHashtag.DeleteByGuildID(guildId)
+	err := e.repo.GuildConfigTwitterHashtag.DeleteByGuildID(guildId)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to delete twitter configs")
 		return fmt.Errorf("failed to delete twitter hashtags: %v", err.Error())
