@@ -1,5 +1,3 @@
-
--- +migrate Up
 INSERT INTO tokens (id,address,symbol,chain_id,decimals,discord_bot_supported,coin_gecko_id,"name",guild_default,is_native) VALUES
     (1,'0x321162Cd933E2Be498Cd2267a90534A804051b11','BTC',250,8,true,'bitcoin','Bitcoin',false,false),
     (2,'0x74b23882a30290451A17c44f4F05243b6b58C76d','ETH',250,18,true,'ethereum','Ethereum',false,false),
@@ -30,7 +28,6 @@ INSERT INTO tokens (id,address,symbol,chain_id,decimals,discord_bot_supported,co
     (27,'0x991170CDe1B4E90907A7C0515123C1B18D635107','XMR',56,18,true,'monero','Monero',false,false),
     (28,'0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf','BCH',56,18,true,'binance-peg-bitcoin-cash','Binance-Peg Bitcoin Cash',false,false),
     (29,'0x4d224452801ACEd8B2F0aebE155379bb5D594381','APE',1,18,true,'apecoin','ApeCoin',false,false),
-    (30,'0x4E15361FD6b4BB609Fa63C81A2be19d873717870','FTM',1,18,true,'fantom','Fantom',false,false);
-
--- +migrate Down
-DELETE FROM tokens WHERE id <= 30;
+    (30,'0x4E15361FD6b4BB609Fa63C81A2be19d873717870','FTM',1,18,true,'fantom','Fantom',false,false),
+    (31,'0xb661f4576d5e0b622fee6ab041fd5451fe02ba4c','DFG',56,18,true,'defigram','DeFiGram',false,false),
+    (32,'0x090185f2135308bad17527004364ebcc2d37e5f6','SPELL',1,18,true,'spell-token','Spell',false,false);

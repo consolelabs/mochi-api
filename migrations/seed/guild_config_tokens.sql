@@ -1,5 +1,3 @@
-
--- +migrate Up
 INSERT INTO guild_config_tokens (guild_id,token_id,active) VALUES
     ('895659000996200508',1,true),
     ('895659000996200508',2,true),
@@ -31,6 +29,3 @@ INSERT INTO guild_config_tokens (guild_id,token_id,active) VALUES
     ('895659000996200508',28,true),
     ('895659000996200508',29,true),
     ('895659000996200508',30,true);
-
--- +migrate Down
-DELETE FROM guild_config_tokens WHERE token_id <= 30;
