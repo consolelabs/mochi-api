@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -337,6 +338,7 @@ func (e *Entity) GetTwitterHashtagConfig(guildId string) (*response.TwitterHasht
 		ChannelID: hashtag.ChannelID,
 		Hashtag:   strings.Split(hashtag.Hashtag, ","),
 		CreatedAt: hashtag.CreatedAt,
+		UpdatedAt: hashtag.UpdatedAt,
 	}, nil
 }
 
@@ -359,6 +361,7 @@ func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 		Hashtag:   strings.TrimSuffix(hashtags, ","), //save as '#abc,#bca,#abe'
+		UpdatedAt: time.Now(),
 	})
 	if err != nil {
 		e.log.Errorf(err, "[e.CreateTwitterHashtagConfig] failed to upsert twitter hashtag configs")
