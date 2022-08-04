@@ -34,15 +34,16 @@ type IndexerChain struct {
 
 type IndexerNFTCollectionTickersResponse struct {
 	Tickers         *IndexerTickers `json:"tickers"`
-	FloorPrice      *IndexerPrice   `json:"floor_price"`
 	Name            string          `json:"name"`
 	Address         string          `json:"address"`
 	Chain           *IndexerChain   `json:"chain"`
 	Marketplaces    []string        `json:"marketplaces"`
-	TotalVolume     *IndexerPrice   `json:"total_volume"`
 	Items           int64           `json:"items"`
 	Owners          int64           `json:"owners"`
 	CollectionImage string          `json:"collection_image"`
+	TotalVolume     *IndexerPrice   `json:"total_volume"`
+	FloorPrice      *IndexerPrice   `json:"floor_price"`
+	LastSalePrice   *IndexerPrice   `json:"last_sale_price"`
 }
 
 type IndexerGetNFTCollectionsResponse struct {
