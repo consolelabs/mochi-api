@@ -8,4 +8,5 @@ type Service interface {
 	SendGuildActivityLogs(channelID, userID, title, description string) error
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
 	NotifyStealFloorPrice(price float64, floor float64, url string, name string, image string) error
+	NotifyStealAveragePrice(price float64, floor float64, url string, name string, image string) error
 }

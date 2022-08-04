@@ -270,6 +270,7 @@ func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebh
 
 func (e *Entity) SendStealAlert(price float64, address string, marketplace string, token string, image string, name string) error {
 	var floor float64 = 0
+	var average float64 = 0
 	url := ""
 	switch marketplace {
 	case "opensea":
@@ -285,6 +286,7 @@ func (e *Entity) SendStealAlert(price float64, address string, marketplace strin
 		}
 
 		floor = collection.Collection.Stats.FloorPrice
+		average = collection.Collection.Stats.AveragePrice
 		url = fmt.Sprintf("https://opensea.io/assets/ethereum/%s/%s", address, token)
 
 	case "paintswap":
@@ -295,6 +297,8 @@ func (e *Entity) SendStealAlert(price float64, address string, marketplace strin
 		}
 		floorPrice, _ := util.StringWeiToEther(res.Collection.Stats.FloorPrice, 18).Float64()
 		floor = floorPrice
+		avgPrice, _ := util.StringWeiToEther(res.Collection.Stats.AveragePrice, 18).Float64()
+		average = avgPrice
 		url = fmt.Sprintf("https://paintswap.finance/marketplace/assets/%s/%s", address, token)
 
 	case "optimism":
@@ -306,10 +310,16 @@ func (e *Entity) SendStealAlert(price float64, address string, marketplace strin
 		length := len(strconv.Itoa(int(res.FloorPrice)))
 		floorPrice, _ := util.StringWeiToEther(strconv.Itoa(int(res.FloorPrice)), length).Float64()
 		floor = floorPrice
+		//api does not have average price
 		url = fmt.Sprintf("https://quixotic.io/asset/%s/%s", address, token)
 	}
 	if price < floor {
 		err := e.svc.Discord.NotifyStealFloorPrice(price, floor, url, name, image)
+		if err != nil {
+			return err
+		}
+	} else if price < average {
+		err := e.svc.Discord.NotifyStealAveragePrice(price, average, url, name, image)
 		if err != nil {
 			return err
 		}
