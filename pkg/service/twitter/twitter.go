@@ -57,7 +57,7 @@ func (t *twitter) SendSalesMessageToTwitter(message *model.TwitterSalesMessage, 
 	defer deleteFile(filePath)
 
 	// upload image to twitter
-	mediaResponse, err := t.twitter.UploadMedia(base64.StdEncoding.EncodeToString(data))
+	mediaResponse, err := twitterApi.UploadMedia(base64.StdEncoding.EncodeToString(data))
 	if err != nil {
 		return fmt.Errorf("[twitter.SendSalesTweet] cannot upload media to twitter: %s", err)
 	}

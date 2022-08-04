@@ -438,3 +438,43 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
+
+func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
+	guildId := c.Param("guild_id")
+	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": hashtags})
+}
+
+func (h *Handler) DeleteTwitterHashtagConfig(c *gin.Context) {
+	guildId := c.Param("guild_id")
+	err := h.entities.DeleteTwitterHashtagConfig(guildId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to delete")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
+	req := request.TwitterHashtag{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateTwitterHashtagConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.entities.CreateTwitterHashtagConfig(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateTwitterHashtagConfig] - failed to create hashtag")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
