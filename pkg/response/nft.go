@@ -25,12 +25,19 @@ type IndexerTickers struct {
 	Times      []string       `json:"times"`
 }
 
+type IndexerChain struct {
+	Name    string `json:"name"`
+	Symbol  string `json:"symbol"`
+	ChainId int64  `json:"chain_id"`
+	IsEvm   bool   `json:"is_evm"`
+}
+
 type IndexerNFTCollectionTickersResponse struct {
 	Tickers         *IndexerTickers `json:"tickers"`
 	FloorPrice      *IndexerPrice   `json:"floor_price"`
 	Name            string          `json:"name"`
 	Address         string          `json:"address"`
-	Chain           string          `json:"chain"`
+	Chain           *IndexerChain   `json:"chain"`
 	Marketplaces    []string        `json:"marketplaces"`
 	TotalVolume     *IndexerPrice   `json:"total_volume"`
 	Items           int64           `json:"items"`
