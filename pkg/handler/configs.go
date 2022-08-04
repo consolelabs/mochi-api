@@ -447,7 +447,7 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": hashtags})
+	c.JSON(http.StatusOK, gin.H{"data": hashtags})
 }
 
 func (h *Handler) DeleteTwitterHashtagConfig(c *gin.Context) {
