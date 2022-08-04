@@ -37,11 +37,11 @@ func (pg *pg) DeleteByGuildID(guildID string) error {
 	return pg.db.Table("guild_config_twitter_hashtags").Where(fmt.Sprintf("guild_id='%s'", guildID)).Delete(hashtag).Error
 }
 
-func (pg *pg) GetByGuildID(guildID string) (string, error) {
+func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigTwitterHashtag, error) {
 	hashtag := model.GuildConfigTwitterHashtag{}
-	err := pg.db.Table("guild_config_twitter_hashtags").Where(fmt.Sprintf("guild_id='%s'", guildID)).Select("hashtag").First(&hashtag)
+	err := pg.db.Table("guild_config_twitter_hashtags").Where(fmt.Sprintf("guild_id='%s'", guildID)).First(&hashtag)
 	if err.Error != nil {
-		return "", err.Error
+		return nil, err.Error
 	}
-	return hashtag.Hashtag, nil
+	return &hashtag, nil
 }
