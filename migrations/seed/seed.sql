@@ -5,3 +5,5 @@
 \ir activities.sql
 \ir config_xp_levels.sql
 \ir user_wallets.sql
+\ir tokens.sql
+\ir guild_config_tokens.sql

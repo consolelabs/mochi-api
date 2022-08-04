@@ -1295,7 +1295,7 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 				},
 				Name:         "Neko",
 				Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
-				Chain:        "eth",
+				Chain:        &response.IndexerChain{Name: "eth"},
 				Marketplaces: []string{"abc"},
 				TotalVolume: &response.IndexerPrice{
 					Amount: "10",
@@ -1345,7 +1345,7 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 		},
 		Name:         "Neko",
 		Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
-		Chain:        "eth",
+		Chain:        &response.IndexerChain{Name: "eth"},
 		Marketplaces: []string{"abc"},
 		TotalVolume: &response.IndexerPrice{
 			Amount: "10",
