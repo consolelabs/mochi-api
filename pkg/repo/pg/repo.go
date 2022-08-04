@@ -23,6 +23,7 @@ import (
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
+	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
@@ -62,6 +63,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
+		GuildConfigTwitterHashtag:            guildconfigtwitterhashtag.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
 		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
