@@ -219,7 +219,6 @@ func (ch *Chain) transferToken(fromAcc accounts.Account, toAcc accounts.Account,
 	if err != nil {
 		return nil, 0, err
 	}
-	gasLimit *= 3
 
 	tx := types.NewTransaction(nonce, tokenAddress, value, gasLimit, gasPrice, data)
 
