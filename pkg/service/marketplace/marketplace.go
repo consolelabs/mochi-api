@@ -158,10 +158,10 @@ func (e *marketplace) GetCollectionFromPaintswap(address string) (*res.Paintswap
 		errBody := new(bytes.Buffer)
 		_, err = errBody.ReadFrom(response.Body)
 		if err != nil {
-			return nil, fmt.Errorf("openseaGetAssetContract - failed to read response: %v", err)
+			return nil, fmt.Errorf("paintswapGetAssetContract - failed to read response: %v", err)
 		}
 
-		err = fmt.Errorf("GetNFTCollections - failed to get opensea asset contract with address=%s: %v", address, errBody.String())
+		err = fmt.Errorf("GetNFTCollections - failed to get Paintswap asset contract with address=%s: %v", address, errBody.String())
 		return nil, err
 	}
 
