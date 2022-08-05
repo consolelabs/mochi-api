@@ -13,7 +13,7 @@ type OpenseaCollection struct {
 
 type OpenseaCollectionStat struct {
 	FloorPrice   float64 `json:"floor_price"`
-	AveragePrice float64 `json:"average_price"`
+	AveragePrice float64 `json:"one_day_average_price"`
 }
 
 type OpenseaGetCollectionResponse struct {

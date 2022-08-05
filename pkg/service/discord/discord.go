@@ -9,12 +9,14 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Discord struct {
-	session           *discordgo.Session
-	log               logger.Logger
-	mochiLogChannelID string
+	session            *discordgo.Session
+	log                logger.Logger
+	mochiLogChannelID  string
+	mochiSaleChannelID string
 }
 
 const (
@@ -31,9 +33,10 @@ func NewService(
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
 	return &Discord{
-		session:           discord,
-		log:               log,
-		mochiLogChannelID: cfg.MochiLogChannelID,
+		session:            discord,
+		log:                log,
+		mochiLogChannelID:  cfg.MochiLogChannelID,
+		mochiSaleChannelID: cfg.MochiSaleChannelID,
 	}, nil
 }
 
@@ -171,11 +174,11 @@ func (d *Discord) NotifyStealFloorPrice(price float64, floor float64, url string
 		Description: fmt.Sprintf("%s was listed at %v, under the floor price of %v\nClick here to buy now [Market](%s)", name, price, floor, url),
 		Color:       mochiLogColor,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: image,
+			URL: util.StandardizeUri(image),
 		},
 		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
-	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiSaleChannelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
@@ -189,11 +192,11 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 		Description: fmt.Sprintf("%s was listed at %v, under the average price of %v\nClick here to buy now [Market](%s)", name, price, avg, url),
 		Color:       mochiLogColor,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: image,
+			URL: util.StandardizeUri(image),
 		},
 		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
-	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiSaleChannelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}

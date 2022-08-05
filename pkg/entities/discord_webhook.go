@@ -136,7 +136,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 			Inline: true,
 		},
 	}
-
 	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
@@ -147,7 +146,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		Description: indexerToken.Name + " sold!",
 		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
 		Image: &discordgo.MessageEmbedImage{
-			URL: image,
+			URL: util.StandardizeUri(image),
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
 	}}
@@ -161,10 +160,10 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
-			// check to alert steal deal
-			currPrice, _ := price.Float64()
 
-			err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
+			// check to alert steal deal
+			//currPrice, _ := price.Float64()
+			//err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot alert steal deal. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to steal channel. Error: %v", err)
@@ -178,10 +177,10 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
-			// check to alert steal deal
-			currPrice, _ := price.Float64()
 
-			err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
+			// check to alert steal deal
+			//currPrice, _ := price.Float64()
+			//err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot alert steal deal. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to steal channel. Error: %v", err)
