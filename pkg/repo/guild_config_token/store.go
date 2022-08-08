@@ -8,4 +8,5 @@ type Store interface {
 	UpsertOne(configs model.GuildConfigToken) error
 	CreateOne(token model.GuildConfigToken) error
 	GetAll() ([]model.GuildConfigToken, error)
+	GetByGuildIDAndTokenID(guildID string, tokenID int) (*model.GuildConfigToken, error)
 }

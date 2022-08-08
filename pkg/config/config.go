@@ -46,6 +46,8 @@ type Config struct {
 	BscScan       string
 	BscScanAPIKey string
 
+	CovalentAPIKey string
+
 	DiscordToken string
 
 	RedisURL string
@@ -140,6 +142,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BscRPC:        v.GetString("BSC_RPC"),
 		BscScan:       v.GetString("BSC_SCAN"),
 		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
+
+		CovalentAPIKey: v.GetString("COVALENT_API_KEY"),
 
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 
