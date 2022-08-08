@@ -153,37 +153,30 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 	resp, _ := e.GetAllNFTSalesTracker()
 
 	for _, saleChannel := range resp {
-		//## special case address = *, can be removed if not used
-		if saleChannel.ContractAddress == "*" {
+		if saleChannel.ContractAddress == "*" || nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
-			// check to alert steal deal
-			//currPrice, _ := price.Float64()
-			//err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
+			// add sales message to database
+			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
+				TokenName:         indexerToken.Name,
+				CollectionName:    collection.Name,
+				Price:             util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+				SellerAddress:     util.ShortenAddress(nftSale.From),
+				BuyerAddress:      util.ShortenAddress(nftSale.To),
+				Marketplace:       marketplace,
+				MarketplaceURL:    util.GetStringBetweenParentheses(marketplaceLink),
+				Image:             image,
+				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
+				CollectionAddress: collection.Address,
+				TokenID:           indexerToken.TokenID,
+			})
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot alert steal deal. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
-				return fmt.Errorf("cannot send message to steal channel. Error: %v", err)
-			}
-
-		}
-		//##
-		if nftSale.CollectionAddress == saleChannel.ContractAddress {
-			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
-			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
-				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
-			}
-
-			// check to alert steal deal
-			//currPrice, _ := price.Float64()
-			//err = e.SendStealAlert(currPrice, collection.Address, nftSale.Marketplace, nftSale.TokenId, image, indexerToken.Name)
-			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot alert steal deal. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
-				return fmt.Errorf("cannot send message to steal channel. Error: %v", err)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
+				return fmt.Errorf("cannot handle mochi sales msg. Error: %v", err)
 			}
 		}
 	}
