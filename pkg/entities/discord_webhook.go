@@ -48,18 +48,30 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 	}
 
 	// handle rarity, rank
-	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
-	rarityDisplay := indexerToken.Rarity.Rarity
+	rankDisplay := ""
+	rarityDisplay := ""
+	rarityRate := ""
 
-	if rarityDisplay == "" {
-		rarityDisplay = "N/A"
-	} else {
-		rarityDisplay = util.RarityEmoji(rarityDisplay) + " " + rarityDisplay
-	}
-	if indexerToken.Rarity.Rank == 0 {
+	if indexerToken.Rarity == nil {
 		rankDisplay = "N/A"
+		rarityDisplay = "N/A"
+		rarityRate = ""
 	} else {
-		rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+		if indexerToken.Rarity.Rarity == "" {
+			rarityDisplay = "N/A"
+			rarityRate = ""
+		} else {
+			rarityDisplay = indexerToken.Rarity.Rarity
+			rarityDisplay = util.RarityEmoji(rarityDisplay) + " " + rarityDisplay
+			rarityRate = indexerToken.Rarity.Rarity
+		}
+
+		if indexerToken.Rarity.Rank == 0 {
+			rankDisplay = "N/A"
+		} else {
+			rankDisplay = strconv.Itoa(int(indexerToken.Rarity.Rank))
+			rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+		}
 	}
 
 	// handle marketplace
@@ -144,7 +156,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		},
 		Fields:      data,
 		Description: indexerToken.Name + " sold!",
-		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
+		Color:       int(util.RarityColors(rarityRate)),
 		Image: &discordgo.MessageEmbedImage{
 			URL: util.StandardizeUri(image),
 		},
