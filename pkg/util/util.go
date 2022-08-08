@@ -567,3 +567,14 @@ func ConvertToFloat(amount string, decimal int) float64 {
 func SecondsToDays(sec int) int {
 	return sec / 86400
 }
+
+func GetStringBetweenParentheses(s string) string {
+	i := strings.Index(s, "(")
+	if i >= 0 {
+		j := strings.Index(s, ")")
+		if j >= 0 {
+			return s[i+1 : j]
+		}
+	}
+	return s
+}

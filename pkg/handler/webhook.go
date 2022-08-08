@@ -36,8 +36,6 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		h.handleGuildCreate(c, req.Data)
 	case request.MESSAGE_REACTION_ADD:
 		h.handleMessageReactionAdd(c, req.Data)
-	case request.SALES_CREATE:
-		h.handleSalesCreate(c, req.Data)
 	}
 }
 
@@ -133,30 +131,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 		"data": response,
 	})
 }
-func (h *Handler) handleSalesCreate(c *gin.Context, data json.RawMessage) {
-	message := &request.TwitterSalesMessage{}
-	byteData, err := data.MarshalJSON()
-	if err != nil {
-		h.log.Error(err, "[handler.handleMessageCreate] - failed to json marshal data")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 
-	if err := discordgo.Unmarshal(byteData, &message); err != nil {
-		h.log.Error(err, "[handler.handleMessageCreate] - failed to unmarshal data")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Add nft sales message to database
-	if err := h.entities.HandleMochiSalesMessage(message); err != nil {
-		h.log.Error(err, "[handler.handleMessageCreate] - failed to handle sales message")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
-
-}
 func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	message := &discordgo.Message{}
 	byteData, err := data.MarshalJSON()

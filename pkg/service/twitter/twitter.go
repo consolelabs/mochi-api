@@ -54,9 +54,9 @@ func (t *twitter) SendSalesMessageToTwitter(message *model.TwitterSalesMessage, 
 	// buyer,seller = 0x23...1234
 	// price = 123 FTM
 	// edit post UI ->
-  tweetStatus := fmt.Sprintf("%s bought for %s from %s by %s\nMarketplace: %s\nTx: [TODO:tx_link]\nhttps://rarepepe.gg/asset/[TODO:collection_address]/[TODO:token_id]?twitter",
-		message.TokenName, message.Price, message.BuyerAddress, message.SellerAddress, message.Marketplace)
-  _, err := twitterApi.PostTweet(tweetStatus, v)
+	tweetStatus := fmt.Sprintf("%s bought for %s from %s by %s\nMarketplace: %s\nTx: %s\nhttps://rarepepe.gg/asset/%s/%s?twitter",
+		message.TokenName, message.Price, message.BuyerAddress, message.SellerAddress, message.Marketplace, message.TxURL, message.CollectionAddress, message.TokenID)
+	_, err := twitterApi.PostTweet(tweetStatus, v)
 	if err != nil {
 		return fmt.Errorf("[twitter.SendSalesTweet] cannot post tweet: %s", err)
 	}
