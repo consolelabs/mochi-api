@@ -451,7 +451,7 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
-			h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - hashtag config empty")
+			h.log.Fields(logger.Fields{"guild_id": guildId}).Info("[handler.GetTwitterHashtagConfig] - hashtag config empty")
 			c.JSON(http.StatusOK, gin.H{"data": hashtags})
 			return
 		}

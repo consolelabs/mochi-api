@@ -1,12 +1,10 @@
 package twitter
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
-	"strconv"
 
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/defipod/mochi/pkg/config"
@@ -50,29 +48,15 @@ func (t *twitter) SendSalesMessageToTwitter(message *model.TwitterSalesMessage, 
 	twitterApi := anaconda.NewTwitterApiWithCredentials(twitter.TwitterAccessToken, twitter.TwitterAccessTokenSecret, twitter.TwitterConsumerKey, twitter.TwitterConsumerSecret)
 	v := url.Values{}
 
-	data, filePath, err := t.preprocessTwitterImage(message.Image)
-	if err != nil {
-		return fmt.Errorf("[twitter.SendSalesTweet] cannot process image: %s", err)
-	}
-	defer deleteFile(filePath)
-
-	// upload image to twitter
-	mediaResponse, err := twitterApi.UploadMedia(base64.StdEncoding.EncodeToString(data))
-	if err != nil {
-		return fmt.Errorf("[twitter.SendSalesTweet] cannot upload media to twitter: %s", err)
-	}
-	// set media to v
-	v.Set("media_ids", strconv.FormatInt(mediaResponse.MediaID, 10))
-
 	// **fields format ->
 	// marketplace = {Paintswap, Opensea, Optimisim}
 	// token name = Cyber Neko #2
 	// buyer,seller = 0x23...1234
 	// price = 123 FTM
 	// edit post UI ->
-	tweetStatus := fmt.Sprintf("A new sale has been made on %s for %s!\n\nBuyer: %s\n\nSeller: %s\n\nValue: %s\n\n→ Check collection at: %s",
-		message.Marketplace, message.TokenName, message.BuyerAddress, message.SellerAddress, message.Price, message.MarketplaceURL)
-	_, err = twitterApi.PostTweet(tweetStatus, v)
+	tweetStatus := fmt.Sprintf("%s bought for %s from %s by %s\nMarketplace: %s\nTx: %s\nhttps://rarepepe.gg/asset/%s/%s?twitter",
+		message.TokenName, message.Price, message.BuyerAddress, message.SellerAddress, message.Marketplace, message.TxURL, message.CollectionAddress, message.TokenID)
+	_, err := twitterApi.PostTweet(tweetStatus, v)
 	if err != nil {
 		return fmt.Errorf("[twitter.SendSalesTweet] cannot post tweet: %s", err)
 	}

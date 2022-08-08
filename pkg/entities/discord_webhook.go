@@ -48,18 +48,30 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 	}
 
 	// handle rarity, rank
-	rankDisplay := strconv.Itoa(int(indexerToken.Rarity.Rank))
-	rarityDisplay := indexerToken.Rarity.Rarity
+	rankDisplay := ""
+	rarityDisplay := ""
+	rarityRate := ""
 
-	if rarityDisplay == "" {
-		rarityDisplay = "N/A"
-	} else {
-		rarityDisplay = util.RarityEmoji(rarityDisplay) + " " + rarityDisplay
-	}
-	if indexerToken.Rarity.Rank == 0 {
+	if indexerToken.Rarity == nil {
 		rankDisplay = "N/A"
+		rarityDisplay = "N/A"
+		rarityRate = ""
 	} else {
-		rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+		if indexerToken.Rarity.Rarity == "" {
+			rarityDisplay = "N/A"
+			rarityRate = ""
+		} else {
+			rarityDisplay = indexerToken.Rarity.Rarity
+			rarityDisplay = util.RarityEmoji(rarityDisplay) + " " + rarityDisplay
+			rarityRate = indexerToken.Rarity.Rarity
+		}
+
+		if indexerToken.Rarity.Rank == 0 {
+			rankDisplay = "N/A"
+		} else {
+			rankDisplay = strconv.Itoa(int(indexerToken.Rarity.Rank))
+			rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+		}
 	}
 
 	// handle marketplace
@@ -136,7 +148,6 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 			Inline: true,
 		},
 	}
-
 	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
@@ -145,29 +156,39 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		},
 		Fields:      data,
 		Description: indexerToken.Name + " sold!",
-		Color:       int(util.RarityColors(indexerToken.Rarity.Rarity)),
+		Color:       int(util.RarityColors(rarityRate)),
 		Image: &discordgo.MessageEmbedImage{
-			URL: image,
+			URL: util.StandardizeUri(image),
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
 	}}
 	resp, _ := e.GetAllNFTSalesTracker()
 
 	for _, saleChannel := range resp {
-		//## special case address = *, can be removed if not used
-		if saleChannel.ContractAddress == "*" {
+		if saleChannel.ContractAddress == "*" || nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
-		}
-		//##
-		if nftSale.CollectionAddress == saleChannel.ContractAddress {
-			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
+
+			// add sales message to database
+			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
+				TokenName:         indexerToken.Name,
+				CollectionName:    collection.Name,
+				Price:             util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+				SellerAddress:     util.ShortenAddress(nftSale.From),
+				BuyerAddress:      util.ShortenAddress(nftSale.To),
+				Marketplace:       marketplace,
+				MarketplaceURL:    util.GetStringBetweenParentheses(marketplaceLink),
+				Image:             image,
+				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
+				CollectionAddress: collection.Address,
+				TokenID:           indexerToken.TokenID,
+			})
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
-				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
+				return fmt.Errorf("cannot handle mochi sales msg. Error: %v", err)
 			}
 		}
 	}
@@ -247,6 +268,65 @@ func (e *Entity) SendNftAddedCollection(nftAddedCollection request.HandleNftWebh
 	if err != nil {
 		e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to new added collection channel. CollectionAddress: %s, Chain: %s", nftAddedCollection.CollectionAddress, nftAddedCollection.ChainId)
 		return fmt.Errorf("cannot send message to new added collection channel. Error: %v", err)
+	}
+	return nil
+}
+
+func (e *Entity) SendStealAlert(price float64, address string, marketplace string, token string, image string, name string) error {
+	var floor float64 = 0
+	var average float64 = 0
+	url := ""
+	switch marketplace {
+	case "opensea":
+		//ETH: opensea -> asseet_contract -> slug -> collection/slug -> floor
+		res, err := e.marketplace.GetOpenseaAssetContract(address)
+		if err != nil {
+			return err
+		}
+
+		collection, err := e.marketplace.GetCollectionFromOpensea(res.Collection.UrlName)
+		if err != nil {
+			return err
+		}
+
+		floor = collection.Collection.Stats.FloorPrice
+		average = collection.Collection.Stats.AveragePrice
+		url = fmt.Sprintf("https://opensea.io/assets/ethereum/%s/%s", address, token)
+
+	case "paintswap":
+		// FTM: paintswap
+		res, err := e.marketplace.GetCollectionFromPaintswap(address)
+		if err != nil {
+			return err
+		}
+		floorPrice, _ := util.StringWeiToEther(res.Collection.Stats.FloorPrice, 18).Float64()
+		floor = floorPrice
+		avgPrice, _ := util.StringWeiToEther(res.Collection.Stats.AveragePrice, 18).Float64()
+		average = avgPrice
+		url = fmt.Sprintf("https://paintswap.finance/marketplace/assets/%s/%s", address, token)
+
+	case "optimism":
+		// OP: quixotic -> collection/slug == collection/address
+		res, err := e.marketplace.GetCollectionFromQuixotic(address)
+		if err != nil {
+			return err
+		}
+		length := len(strconv.Itoa(int(res.FloorPrice)))
+		floorPrice, _ := util.StringWeiToEther(strconv.Itoa(int(res.FloorPrice)), length).Float64()
+		floor = floorPrice
+		//api does not have average price
+		url = fmt.Sprintf("https://quixotic.io/asset/%s/%s", address, token)
+	}
+	if price < floor {
+		err := e.svc.Discord.NotifyStealFloorPrice(price, floor, url, name, image)
+		if err != nil {
+			return err
+		}
+	} else if price < average {
+		err := e.svc.Discord.NotifyStealAveragePrice(price, average, url, name, image)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

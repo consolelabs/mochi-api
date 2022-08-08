@@ -8,6 +8,12 @@ type OpenseaCollection struct {
 	PaymentTokens         interface{}                    `json:"payment_tokens"`
 	PrimaryAssetContracts []OpenseaPrimaryAssetContracts `json:"primary_asset_contracts"`
 	Traits                interface{}                    `json:"traits"`
+	Stats                 OpenseaCollectionStat          `json:"stats"`
+}
+
+type OpenseaCollectionStat struct {
+	FloorPrice   float64 `json:"floor_price"`
+	AveragePrice float64 `json:"one_day_average_price"`
 }
 
 type OpenseaGetCollectionResponse struct {
@@ -49,5 +55,11 @@ type PaintswapCollectionResponse struct {
 }
 type PaintswapCollection struct {
 	// add more fields if needed
-	Image string `json:"poster"`
+	Image string                  `json:"poster"`
+	Stats PaintswapCollectionStat `json:"stats"`
+}
+
+type PaintswapCollectionStat struct {
+	FloorPrice   string `json:"floor"`
+	AveragePrice string `json:"averagePrice"`
 }
