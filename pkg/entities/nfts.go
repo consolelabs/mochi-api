@@ -209,7 +209,12 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", req.Address, chainID)
 		return nil, fmt.Errorf("Cannot get name and symbol of contract: %v", err)
 	}
-
+	// host image to cloud if necessary
+	image, err = e.svc.Cloud.HostImageToGCS(image, strings.ReplaceAll(name, " ", ""))
+	if err != nil {
+		e.log.Errorf(err, "[cloud.HostImageToGCS] failed to host image to GCS: %v", err)
+		return nil, err
+	}
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
 		Address: req.Address,
 		ChainID: chainID,

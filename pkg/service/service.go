@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service/abi"
+	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -20,6 +21,7 @@ type Service struct {
 	Indexer   indexer.Service
 	Abi       abi.Service
 	Twitter   twitter.Service
+	Cloud     cloud.Service
 }
 
 func NewService(
@@ -38,5 +40,6 @@ func NewService(
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),
 		Twitter:   twitter.NewTwitter(&cfg),
+		Cloud:     cloud.NewCloudClient(&cfg),
 	}, nil
 }
