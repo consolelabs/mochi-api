@@ -617,7 +617,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *response.IndexerNFTToken
+		want    *response.IndexerGetNFTTokenDetailResponse
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -631,22 +631,24 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				symbol:  "rabby",
 				tokenID: "1",
 			},
-			want: &response.IndexerNFTToken{
-				TokenID:           "1",
-				CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
-				Name:              "Cyber Rabby #1",
-				Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
-				Amount:            "1",
-				Image:             "pic.png",
-				ImageCDN:          "pic.png",
-				ThumbnailCDN:      "thumb.png",
-				ImageContentType:  "",
-				RarityRank:        0,
-				RarityScore:       "",
-				RarityTier:        "",
-				Attributes:        []response.IndexerNFTTokenAttribute{},
-				Rarity:            &response.IndexerNFTTokenRarity{},
-				MetadataID:        "",
+			want: &response.IndexerGetNFTTokenDetailResponse{
+				Data: response.IndexerNFTTokenDetailData{
+					TokenID:           "1",
+					CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+					Name:              "Cyber Rabby #1",
+					Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
+					Amount:            "1",
+					Image:             "pic.png",
+					ImageCDN:          "pic.png",
+					ThumbnailCDN:      "thumb.png",
+					ImageContentType:  "",
+					RarityRank:        0,
+					RarityScore:       "",
+					RarityTier:        "",
+					Attributes:        []response.IndexerNFTTokenAttribute{},
+					Rarity:            &response.IndexerNFTTokenRarity{},
+					MetadataID:        "",
+				},
 			},
 			wantErr: false,
 		},
@@ -713,22 +715,24 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
 	}
-	validIndexerResponse := &response.IndexerNFTToken{
-		TokenID:           "1",
-		CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
-		Name:              "Cyber Rabby #1",
-		Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
-		Amount:            "1",
-		Image:             "pic.png",
-		ImageCDN:          "pic.png",
-		ThumbnailCDN:      "thumb.png",
-		ImageContentType:  "",
-		RarityRank:        0,
-		RarityScore:       "",
-		RarityTier:        "",
-		Attributes:        []response.IndexerNFTTokenAttribute{},
-		Rarity:            &response.IndexerNFTTokenRarity{},
-		MetadataID:        "",
+	validIndexerResponse := &response.IndexerGetNFTTokenDetailResponse{
+		Data: response.IndexerNFTTokenDetailData{
+			TokenID:           "1",
+			CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+			Name:              "Cyber Rabby #1",
+			Description:       "The true pioneer Omnichain NFT to be minted on Ethereum and transferred across chains",
+			Amount:            "1",
+			Image:             "pic.png",
+			ImageCDN:          "pic.png",
+			ThumbnailCDN:      "thumb.png",
+			ImageContentType:  "",
+			RarityRank:        0,
+			RarityScore:       "",
+			RarityTier:        "",
+			Attributes:        []response.IndexerNFTTokenAttribute{},
+			Rarity:            &response.IndexerNFTTokenRarity{},
+			MetadataID:        "",
+		},
 	}
 	// success
 	nftCollection.EXPECT().GetBySymbolorName("rabby").Return(validNFTCollectionRabby, nil).AnyTimes()
@@ -1289,20 +1293,22 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 				rawQuery: "from=1658206545000&to=1658292945000",
 			},
 			want: &response.IndexerNFTCollectionTickersResponse{
-				Tickers: &response.IndexerTickers{},
-				FloorPrice: &response.IndexerPrice{
-					Amount: "10",
+				Data: response.IndexerNFTCollectionTickersData{
+					Tickers: &response.IndexerTickers{},
+					FloorPrice: &response.IndexerPrice{
+						Amount: "10",
+					},
+					Name:         "Neko",
+					Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
+					Chain:        &response.IndexerChain{Name: "eth"},
+					Marketplaces: []string{"abc"},
+					TotalVolume: &response.IndexerPrice{
+						Amount: "10",
+					},
+					Items:           23,
+					Owners:          100,
+					CollectionImage: "image.png",
 				},
-				Name:         "Neko",
-				Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
-				Chain:        &response.IndexerChain{Name: "eth"},
-				Marketplaces: []string{"abc"},
-				TotalVolume: &response.IndexerPrice{
-					Amount: "10",
-				},
-				Items:           23,
-				Owners:          100,
-				CollectionImage: "image.png",
 			},
 			wantErr: false,
 		},
@@ -1339,20 +1345,22 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 		Address: "0x23581767a106ae21c074b2276D25e5C3e136a68h",
 	}
 	indexerTicker := &response.IndexerNFTCollectionTickersResponse{
-		Tickers: &response.IndexerTickers{},
-		FloorPrice: &response.IndexerPrice{
-			Amount: "10",
+		Data: response.IndexerNFTCollectionTickersData{
+			Tickers: &response.IndexerTickers{},
+			FloorPrice: &response.IndexerPrice{
+				Amount: "10",
+			},
+			Name:         "Neko",
+			Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
+			Chain:        &response.IndexerChain{Name: "eth"},
+			Marketplaces: []string{"abc"},
+			TotalVolume: &response.IndexerPrice{
+				Amount: "10",
+			},
+			Items:           23,
+			Owners:          100,
+			CollectionImage: "image.png",
 		},
-		Name:         "Neko",
-		Address:      "0x23581767a106ae21c074b2276D25e5C3e136a68h",
-		Chain:        &response.IndexerChain{Name: "eth"},
-		Marketplaces: []string{"abc"},
-		TotalVolume: &response.IndexerPrice{
-			Amount: "10",
-		},
-		Items:           23,
-		Owners:          100,
-		CollectionImage: "image.png",
 	}
 
 	// case success

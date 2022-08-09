@@ -95,10 +95,10 @@ func (mr *MockServiceMockRecorder) GetNFTContract(addr interface{}) *gomock.Call
 }
 
 // GetNFTDetail mocks base method.
-func (m *MockService) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error) {
+func (m *MockService) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNFTDetail", collectionAddress, tokenID)
-	ret0, _ := ret[0].(*response.IndexerNFTToken)
+	ret0, _ := ret[0].(*response.IndexerGetNFTTokenDetailResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
