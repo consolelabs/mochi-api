@@ -33,6 +33,7 @@ import (
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	token "github.com/defipod/mochi/pkg/repo/token"
+	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	users "github.com/defipod/mochi/pkg/repo/users"
@@ -66,6 +67,7 @@ type Repo struct {
 	WhitelistCampaignUsers               whitelistcampaignusers.Store
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store
+	TwitterPost                          twitterpost.Store
 	GuildConfigActivity                  guildconfigactivity.Store
 	ConfigXPLevel                        configxplevel.Store
 	GuildUserActivityLog                 guilduseractivitylog.Store

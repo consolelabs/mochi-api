@@ -13,3 +13,10 @@ type TwitterSalesMessage struct {
 	CollectionAddress string `json:"collection_address"`
 	TokenID           string `json:"token_id"`
 }
+
+type TwitterPost struct {
+	TwitterID     string `json:"twitter_id"`
+	TwitterHandle string `json:"twitter_handle"`
+	TweetID       string `json:"tweet_id"`
+	GuildID       string `json:"guild_id"`
+}

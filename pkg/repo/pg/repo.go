@@ -36,6 +36,7 @@ import (
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	"github.com/defipod/mochi/pkg/repo/token"
+	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -70,6 +71,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		WhitelistCampaigns:                   whitelistcampaigns.NewPG(db),
 		WhitelistCampaignUsers:               whitelistcampaignusers.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
+		TwitterPost:                          twitterpost.NewPG(db),
 		NFTSalesTracker:                      nftsalestracker.NewPG(db),
 		Activity:                             activity.NewPG(db),
 		GuildConfigActivity:                  guildconfigactivity.NewPG(db),
