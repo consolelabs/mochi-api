@@ -26,12 +26,12 @@ func (c *updateUserRoles) Run() error {
 	for _, guild := range guilds.Data {
 		err = c.updateLevelRoles(guild.ID)
 		if err != nil {
-			c.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "job.updateLevelRoles failed")
+			c.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("job.updateLevelRoles failed, error: %v", err)
 		}
 
 		err = c.updateNFTRoles(guild.ID)
 		if err != nil {
-			c.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "job.updateNFTRoles failed")
+			c.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("job.updateNFTRoles failed, error: %v", err)
 		}
 	}
 
