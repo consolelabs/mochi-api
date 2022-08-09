@@ -67,8 +67,9 @@ type Config struct {
 	TwitterConsumerKey       string
 	TwitterConsumerSecret    string
 
-	GoogleCloudBucketName string
-	GoogleCloudProjectID  string
+	GoogleCloudBucketName     string
+	GoogleCloudProjectID      string
+	GoogleCloudServiceAccount string
 }
 
 type MarketplaceBaseUrl struct {
@@ -176,8 +177,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		TwitterConsumerKey:       v.GetString("TWITTER_CONSUMER_KEY"),
 		TwitterConsumerSecret:    v.GetString("TWITTER_CONSUMER_SECRET"),
 
-		GoogleCloudBucketName: v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
-		GoogleCloudProjectID:  v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
+		GoogleCloudBucketName:     v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
+		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
+		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
 	}
 }
 

@@ -40,6 +40,6 @@ func NewService(
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),
 		Twitter:   twitter.NewTwitter(&cfg),
-		Cloud:     cloud.NewCloudClient(&cfg),
+		Cloud:     cloud.NewCloudClient(&cfg, log),
 	}, nil
 }
