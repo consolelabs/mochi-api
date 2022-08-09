@@ -71,7 +71,7 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 				"userId":  userXP.UserID,
 				"guildId": guildID,
 			}).Error(err, "entity.GetGuildMember failed")
-			return err
+			continue
 		}
 
 		userLevelRole, err := c.entity.GetUserRoleByLevel(guildID, userXP.Level)
@@ -80,7 +80,7 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Error(err, "entity.GetUserRoleByLevel failed")
-			return err
+			continue
 		}
 
 		memberRoles := make(map[string]bool)
@@ -100,12 +100,12 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		}
 	}
 
-	if err := c.entity.RemoveGuildMemberRoles(guildID, rolesToRemove); err != nil {
+	err = c.entity.RemoveGuildMemberRoles(guildID, rolesToRemove)
+	if err != nil {
 		c.log.Fields(logger.Fields{
 			"guildId":       guildID,
 			"rolesToRemove": rolesToRemove,
 		}).Error(err, "entity.RemoveGuildMemberRoles failed")
-		return err
 	}
 	c.log.Fields(logger.Fields{
 		"guildId":       guildID,
@@ -117,7 +117,6 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 			"guildId":    guildID,
 			"rolesToAdd": rolesToAdd,
 		}).Error(err, "entity.AddGuildMemberRoles failed")
-		return err
 	}
 	c.log.Fields(logger.Fields{
 		"guildId":       guildID,
