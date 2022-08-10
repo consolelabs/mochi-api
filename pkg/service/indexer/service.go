@@ -10,7 +10,7 @@ type Service interface {
 	GetNFTTradingVolume() ([]response.NFTTradingVolume, error)
 	GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error)
 	GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error)
-	GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerNFTToken, error)
+	GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error)
 	GetNftSales(addr string, platform string) (*response.NftSalesResponse, error)
 	GetNFTContract(addr string) (*response.IndexerContract, error)
 	GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error)

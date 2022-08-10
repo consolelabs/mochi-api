@@ -28,11 +28,12 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 
 	}
 
-	indexerToken, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
+	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
 	if err != nil {
 		e.log.Errorf(err, "[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
 		return err
 	}
+	indexerToken := indexerTokenRes.Data
 
 	// calculate last price, price, pnl, sub pnl
 	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)

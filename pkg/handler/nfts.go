@@ -18,15 +18,15 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	symbol := c.Param("symbol")
 	tokenID := c.Param("id")
 
-	data, err := h.entities.GetNFTDetail(symbol, tokenID)
+	res, err := h.entities.GetNFTDetail(symbol, tokenID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	data.Image = util.StandardizeUri(data.Image)
+	res.Data.Image = util.StandardizeUri(res.Data.Image)
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, res)
 }
 
 // TODO: add test for this api
@@ -77,14 +77,14 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 		return
 	}
 
-	data, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
+	res, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "query": c.Request.URL.RawQuery}).Error(err, "[handler.GetNFTCollectionTickers] - failed to get NFT collection ticker")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, res)
 }
 func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()

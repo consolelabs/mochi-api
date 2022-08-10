@@ -33,6 +33,10 @@ type IndexerChain struct {
 }
 
 type IndexerNFTCollectionTickersResponse struct {
+	Data IndexerNFTCollectionTickersData `json:"data"`
+}
+
+type IndexerNFTCollectionTickersData struct {
 	Tickers         *IndexerTickers `json:"tickers"`
 	Name            string          `json:"name"`
 	Address         string          `json:"address"`
@@ -65,10 +69,14 @@ type IndexerNFTCollection struct {
 
 type IndexerGetNFTTokensResponse struct {
 	util.Pagination
-	Data []IndexerNFTToken `json:"data"`
+	Data []IndexerNFTTokenDetailData `json:"data"`
 }
 
-type IndexerNFTToken struct {
+type IndexerGetNFTTokenDetailResponse struct {
+	Data IndexerNFTTokenDetailData `json:"data"`
+}
+
+type IndexerNFTTokenDetailData struct {
 	TokenID           string                     `json:"token_id,omitempty"`
 	CollectionAddress string                     `json:"collection_address,omitempty"`
 	Name              string                     `json:"name,omitempty"`
