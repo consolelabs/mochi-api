@@ -344,6 +344,28 @@ func (e *Entity) GetTwitterHashtagConfig(guildId string) (*response.TwitterHasht
 	}, nil
 }
 
+func (e *Entity) GetAllTwitterHashtagConfig() ([]response.TwitterHashtag, error) {
+	data, err := e.repo.GuildConfigTwitterHashtag.GetAll()
+	hashtags := []response.TwitterHashtag{}
+	if err != nil {
+		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get twitter hashtag configs")
+		return nil, fmt.Errorf("failed to get twitter hashtags: %v", err.Error())
+	}
+	for _, tag := range data {
+		hashtags = append(hashtags, response.TwitterHashtag{
+			UserID:          tag.UserID,
+			GuildID:         tag.GuildID,
+			ChannelID:       tag.ChannelID,
+			Hashtag:         strings.Split(tag.Hashtag, ","),
+			TwitterUsername: strings.Split(tag.TwitterUsername, ","),
+			RuleID:          tag.RuleID,
+			CreatedAt:       tag.CreatedAt,
+			UpdatedAt:       tag.UpdatedAt,
+		})
+	}
+	return hashtags, nil
+}
+
 func (e *Entity) DeleteTwitterHashtagConfig(guildId string) error {
 	err := e.repo.GuildConfigTwitterHashtag.DeleteByGuildID(guildId)
 	if err != nil {

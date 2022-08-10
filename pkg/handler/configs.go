@@ -442,12 +442,6 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 
 func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
-	if guildId == "" {
-		h.log.Fields(logger.Fields{"guild_id": guildId}).Info("[handler.GetTwitterHashtagConfig] - empty guild id")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid guild id"})
-		return
-	}
-
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
@@ -456,6 +450,21 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 			return
 		}
 		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": hashtags})
+}
+
+func (h *Handler) GetAllTwitterHashtagConfig(c *gin.Context) {
+	hashtags, err := h.entities.GetAllTwitterHashtagConfig()
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			h.log.Info("[handler.GetTwitterHashtagConfig] - hashtag config empty")
+			c.JSON(http.StatusOK, gin.H{"data": hashtags})
+			return
+		}
+		h.log.Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
