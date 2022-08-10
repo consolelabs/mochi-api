@@ -45,3 +45,12 @@ func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigTwitterHashtag, er
 	}
 	return &hashtag, nil
 }
+
+func (pg *pg) GetAll() ([]model.GuildConfigTwitterHashtag, error) {
+	hashtags := []model.GuildConfigTwitterHashtag{}
+	err := pg.db.Table("guild_config_twitter_hashtags").Find(&hashtags)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	return hashtags, nil
+}

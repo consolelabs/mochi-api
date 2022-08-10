@@ -136,6 +136,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.GET("/hashtag/:guild_id", h.GetTwitterHashtagConfig)
 			twitterGroup.DELETE("/hashtag/:guild_id", h.DeleteTwitterHashtagConfig)
 			twitterGroup.POST("/hashtag", h.CreateTwitterHashtagConfig)
+			twitterGroup.GET("/hashtag", h.GetAllTwitterHashtagConfig)
 		}
 	}
 
