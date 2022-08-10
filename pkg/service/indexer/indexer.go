@@ -206,7 +206,7 @@ func (i *indexer) GetNFTTradingVolume() ([]res.NFTTradingVolume, error) {
 	return nftList.Data, nil
 }
 
-func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerNFTToken, error) {
+func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerGetNFTTokenDetailResponse, error) {
 	//--check data in sync
 	// contract, err := i.GetNFTContract(collectionAddress)
 	// if err != nil {
@@ -217,7 +217,7 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerN
 	// 	return nil, err
 	// }
 	//--
-	data := &res.IndexerNFTToken{}
+	data := &res.IndexerGetNFTTokenDetailResponse{}
 	errorMsg := &res.ErrorMessage{}
 	url := "%s/api/v1/nft/%s/%s"
 	client := &http.Client{

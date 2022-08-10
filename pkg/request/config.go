@@ -51,8 +51,10 @@ type ConfigRepostRequest struct {
 }
 
 type TwitterHashtag struct {
-	UserID    string   `json:"user_id"`
-	GuildID   string   `json:"guild_id"`
-	ChannelID string   `json:"channel_id"`
-	Hashtag   []string `json:"hashtag"`
+	UserID          string   `json:"user_id"`
+	TwitterUsername []string `json:"twitter_username"`
+	GuildID         string   `json:"guild_id"`
+	RuleID          string   `json:"rule_id"`
+	ChannelID       string   `json:"channel_id"`
+	Hashtag         []string `json:"hashtag"`
 }

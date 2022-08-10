@@ -46,7 +46,7 @@ var (
 	}
 )
 
-func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerNFTToken, error) {
+func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
 	// get collection
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	// cannot find collection in db
@@ -396,17 +396,17 @@ func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.Ind
 		return nil, err
 	}
 
-	data, err := e.indexer.GetNFTCollectionTickers(collection.Address, rawQuery)
+	res, err := e.indexer.GetNFTCollectionTickers(collection.Address, rawQuery)
 	if err != nil {
 		e.log.Errorf(err, "[indexer.GetNFTCollectionTickers] failed to get nft collection tickers by %s and %s", collection.Address, rawQuery)
 		return nil, err
 	}
 
-	for _, ts := range data.Tickers.Timestamps {
+	for _, ts := range res.Data.Tickers.Timestamps {
 		time := time.UnixMilli(ts)
-		data.Tickers.Times = append(data.Tickers.Times, time.Format("01-02"))
+		res.Data.Tickers.Times = append(res.Data.Tickers.Times, time.Format("01-02"))
 	}
-	return data, nil
+	return res, nil
 }
 
 func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollectionsResponse, error) {
