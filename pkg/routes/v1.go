@@ -209,4 +209,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		giftGroup.POST("/xp", h.GiftXpHandler)
 	}
+	twitterGroup := v1.Group("/twitter")
+	{
+		twitterGroup.POST("", h.CreateTwitterPost)
+	}
 }
