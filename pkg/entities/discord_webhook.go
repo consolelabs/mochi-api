@@ -173,6 +173,10 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
+			sub := ""
+			if util.FormatCryptoPrice(*lastPrice) != "0" {
+				sub = util.GetChangePnl(pnl) + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer))
+			}
 			// add sales message to database
 			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
 				TokenName:         indexerToken.Name,
@@ -186,6 +190,9 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
 				CollectionAddress: collection.Address,
 				TokenID:           indexerToken.TokenID,
+				SubPnl:            sub,
+				Pnl:               util.FormatCryptoPrice(*pnl),
+				Hodl:              strconv.Itoa(util.SecondsToDays(nftSale.Hodl)),
 			})
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)

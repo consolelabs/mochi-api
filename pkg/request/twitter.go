@@ -12,6 +12,9 @@ type TwitterSalesMessage struct {
 	TxURL             string `json:"tx_url"`
 	CollectionAddress string `json:"collection_address"`
 	TokenID           string `json:"token_id"`
+	Hodl              string `json:"hodl"`
+	Pnl               string `json:"pnl"`
+	SubPnl            string `json:"sub_pnl"`
 }
 
 type TwitterPost struct {

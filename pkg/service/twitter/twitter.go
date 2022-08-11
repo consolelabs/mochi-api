@@ -48,12 +48,7 @@ func (t *twitter) SendSalesMessageToTwitter(message *model.TwitterSalesMessage, 
 	twitterApi := anaconda.NewTwitterApiWithCredentials(twitter.TwitterAccessToken, twitter.TwitterAccessTokenSecret, twitter.TwitterConsumerKey, twitter.TwitterConsumerSecret)
 	v := url.Values{}
 
-	// **fields format ->
-	// marketplace = {Paintswap, Opensea, Optimisim}
-	// token name = Cyber Neko #2
-	// buyer,seller = 0x23...1234
-	// price = 123 FTM
-	// edit post UI ->
+	// Twitter post UI
 	tweetStatus := fmt.Sprintf("%s bought for %s from %s by %s\nMarketplace: %s\nTx: %s\nhttps://rarepepe.gg/asset/%s/%s?twitter",
 		message.TokenName, message.Price, message.BuyerAddress, message.SellerAddress, message.Marketplace, message.TxURL, message.CollectionAddress, message.TokenID)
 	_, err := twitterApi.PostTweet(tweetStatus, v)
