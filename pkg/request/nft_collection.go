@@ -53,7 +53,7 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
 		input.Chain = c
 	}
-	// handle usecase req chainId = "eth
+	// handle usecase req chainId = "eth"
 	for _, v := range mapChainChainId {
 		if v == input.ChainID {
 			input.Chain = v

@@ -6,7 +6,7 @@ import (
 
 type Store interface {
 	GetByAddress(address string) (*model.NFTCollection, error)
-	GetByAddressChain(address string, chain int) (*model.NFTCollection, error)
+	GetByAddressChainId(address, chainId string) (*model.NFTCollection, error)
 	GetBySymbol(symbol string) (*model.NFTCollection, error)
 	GetBySymbolorName(symbol string) (*model.NFTCollection, error)
 	GetByID(id string) (*model.NFTCollection, error)

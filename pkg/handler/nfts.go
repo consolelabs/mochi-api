@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -226,19 +225,19 @@ func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
 func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 	address := c.Param("address")
 	if address == "" {
-		h.log.Info("[handler.GetNFTCollectionByAddress] - address empty")
+		h.log.Info("[handler.GetNFTCollectionByAddressChain] - address empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
 		return
 	}
-
-	chainStr := c.Query("chain")
-	if chainStr == "" {
-		h.log.Info("[handler.GetDetailNftCollection] - chain empty")
+	inputChain := c.Query("chain")
+	if inputChain == "" {
+		h.log.Info("[handler.GetNFTCollectionByAddressChain] - input chain empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "chain is required"})
 		return
 	}
-	chain, _ := strconv.Atoi(chainStr)
-	data, err := h.entities.GetNFTCollectionByAddressChainId(address, chain)
+	chainId := util.ConvertInputToChainId(inputChain)
+
+	data, err := h.entities.GetNFTCollectionByAddressChain(address, chainId)
 	if err != nil {
 		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.GetNFTCollectionByAddressChain] - failed to get NFT Collection by Address and chain")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
