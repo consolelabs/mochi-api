@@ -27,6 +27,15 @@ func (pg *pg) GetByAddress(address string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
+func (pg *pg) GetByAddressChain(address string, chain int) (*model.NFTCollection, error) {
+	var collection model.NFTCollection
+	err := pg.db.Table("nft_collections").Where("lower(address) = ?", strings.ToLower(address)).Where("chain_id = ?", chain).First(&collection).Error
+	if err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}
+
 func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	var collection model.NFTCollection
 	err := pg.db.Table("nft_collections").Where("lower(symbol) = lower(?)", symbol).

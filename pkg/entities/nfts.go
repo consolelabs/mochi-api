@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"math/big"
@@ -223,7 +224,6 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
 		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
 	}
-
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    req.Address,
 		Symbol:     symbol,
@@ -243,6 +243,16 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
 		return nil, fmt.Errorf("Cannot send embed message: %v", err)
 	}
+
+	//Add collection to podtown
+	go CreatePodtownNFTCollection(model.NFTCollection{
+		Address:   req.Address,
+		Symbol:    symbol,
+		Name:      name,
+		ChainID:   convertedChainId,
+		ERCFormat: "ERC721",
+	}, e.cfg)
+
 	return
 }
 
@@ -275,37 +285,26 @@ func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, e
 	return "", nil
 }
 
-func PutSyncMoralisNFTCollection(address, chain string, cfg config.Config) (err error) {
-	time.Sleep(1000)
-	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/sync?chain=%s"
+func CreatePodtownNFTCollection(collection model.NFTCollection, cfg config.Config) (err error) {
+	body, err := json.Marshal(collection)
+	if err != nil {
+		return err
+	}
+	jsonBody := bytes.NewBuffer(body)
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
 
-	req, err := http.NewRequest("PUT", fmt.Sprintf(moralisApi, address, chain), nil)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/nft/collection", cfg.PodtownServerHost), jsonBody)
 	if err != nil {
 		return
 	}
-	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
-	q := req.URL.Query()
-
-	req.URL.RawQuery = q.Encode()
 	resp, err := client.Do(req)
 	if err != nil {
 		return
 	}
 
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusCreated {
-		mesErr := &MoralisMessageFail{}
-		mes, _ := ioutil.ReadAll(resp.Body)
-		err = json.Unmarshal(mes, &mesErr)
-		if err != nil {
-			return
-		}
-		err = fmt.Errorf("%v", mesErr.Message)
-		return
-	}
 
 	return nil
 }
@@ -557,4 +556,15 @@ func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
 		FTMCount: nr_of_ftm,
 		OPCount:  nr_of_op,
 	}, nil
+}
+
+func (e *Entity) GetNFTCollectionByAddressChainId(address string, chain int) (*model.NFTCollection, error) {
+	collection, err := e.repo.NFTCollection.GetByAddressChain(address, chain)
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection by address %s", address)
+		return nil, err
+	}
+	collection.Image = util.StandardizeUri(collection.Image)
+
+	return collection, nil
 }
