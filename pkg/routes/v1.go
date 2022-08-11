@@ -203,7 +203,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.POST("", h.CreateNFTCollection)
 			collectionsGroup.GET("/:symbol", h.GetNFTTokens)
 			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
-
+			collectionsGroup.GET("/address/:address", h.GetNFTCollectionByAddressChain)
 		}
 	}
 	giftGroup := v1.Group("/gift")

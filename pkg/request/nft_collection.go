@@ -46,15 +46,18 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"0xa86a":     "avax",
 		"42161":      "arb",
 		"1313161554": "aurora",
-		"eth":        "eth",
-		"ftm":        "ftm",
-		"op":         "op",
 		"paintswap":  "ftm",
 		"opensea":    "eth",
 		"quixotic":   "op",
 	}
 	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
 		input.Chain = c
+	}
+	// handle usecase req chainId = "eth
+	for _, v := range mapChainChainId {
+		if v == input.ChainID {
+			input.Chain = v
+		}
 	}
 	if input.Chain == "" {
 		err = fmt.Errorf("chain is not supported/invalid")

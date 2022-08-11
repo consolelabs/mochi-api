@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -147,7 +148,6 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
-
 }
 
 func (h *Handler) GetDetailNftCollection(c *gin.Context) {
@@ -220,5 +220,29 @@ func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
 		return
 	}
 
+	c.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
+	address := c.Param("address")
+	if address == "" {
+		h.log.Info("[handler.GetNFTCollectionByAddress] - address empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		return
+	}
+
+	chainStr := c.Query("chain")
+	if chainStr == "" {
+		h.log.Info("[handler.GetDetailNftCollection] - chain empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "chain is required"})
+		return
+	}
+	chain, _ := strconv.Atoi(chainStr)
+	data, err := h.entities.GetNFTCollectionByAddressChainId(address, chain)
+	if err != nil {
+		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.GetNFTCollectionByAddressChain] - failed to get NFT Collection by Address and chain")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, data)
 }

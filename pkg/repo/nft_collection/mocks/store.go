@@ -64,6 +64,21 @@ func (mr *MockStoreMockRecorder) GetByAddress(address interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockStore)(nil).GetByAddress), address)
 }
 
+// GetByAddressChain mocks base method.
+func (m *MockStore) GetByAddressChain(address string, chain int) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByAddressChain", address, chain)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByAddressChain indicates an expected call of GetByAddressChain.
+func (mr *MockStoreMockRecorder) GetByAddressChain(address, chain interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddressChain", reflect.TypeOf((*MockStore)(nil).GetByAddressChain), address, chain)
+}
+
 // GetByChain mocks base method.
 func (m *MockStore) GetByChain(chain int) ([]model.NFTCollection, int, error) {
 	m.ctrl.T.Helper()
