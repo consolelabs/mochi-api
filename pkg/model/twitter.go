@@ -16,4 +16,7 @@ type TwitterSalesMessage struct {
 	MarketplaceURL    string        `json:"marketplace_url"`
 	TxURL             string        `json:"tx_url"`
 	Image             string        `json:"image"`
+	Hodl              string        `json:"hodl"`
+	Pnl               string        `json:"pnl"`
+	SubPnl            string        `json:"sub_pnl"`
 }

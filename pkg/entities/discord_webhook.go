@@ -173,6 +173,10 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
+			sub := ""
+			if util.FormatCryptoPrice(*lastPrice) != "0" {
+				sub = util.GetChangePnl(pnl) + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer))
+			}
 			// add sales message to database
 			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
 				TokenName:         indexerToken.Name,
@@ -186,6 +190,9 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
 				CollectionAddress: collection.Address,
 				TokenID:           indexerToken.TokenID,
+				SubPnl:            sub,
+				Pnl:               util.FormatCryptoPrice(*pnl),
+				Hodl:              strconv.Itoa(util.SecondsToDays(nftSale.Hodl)),
 			})
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
@@ -221,7 +228,7 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 	})
 	if err != nil && err.Error() != "block number not synced yet, TODO: add to queue and try later" {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
-		return err
+		return nil
 	}
 	// add collection
 	_, err = e.repo.NFTCollection.Create(model.NFTCollection{
