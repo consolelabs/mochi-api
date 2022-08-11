@@ -60,16 +60,17 @@ func (c *clientUploader) HostImageToGCS(imageUrl string, name string) (string, e
 		return "", fmt.Errorf("[cloud.HostImageToGCS] failed to find storage bucket: %s", err)
 	}
 
-	// resize image if from google
-	if strings.Contains(imageUrl, "googleusercontent") {
-		src, err := imaging.Open("temp")
-		if err != nil {
-			c.log.Errorf(err, "[cloud.HostImageToGCS] failed to resize image: %s", err)
-			return "", fmt.Errorf("[cloud.HostImageToGCS] failed to resize image: %s", err)
-		}
-		src = imaging.Resize(src, 300, 0, imaging.Lanczos)
-		_ = imaging.Save(src, "resized.png")
+	// open image with imaging package
+	src, err := imaging.Open("temp")
+	if err != nil {
+		c.log.Errorf(err, "[cloud.HostImageToGCS] failed to resize image: %s", err)
+		return "", fmt.Errorf("[cloud.HostImageToGCS] failed to resize image: %s", err)
 	}
+	// resize image if from google and save as png
+	if strings.Contains(imageUrl, "googleusercontent") {
+		src = imaging.Resize(src, 300, 0, imaging.Lanczos)
+	}
+	_ = imaging.Save(src, "resized.png")
 
 	// open downloaded image
 	file, err := os.Open("resized.png")
