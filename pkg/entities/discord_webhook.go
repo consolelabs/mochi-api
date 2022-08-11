@@ -228,7 +228,7 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 	})
 	if err != nil && err.Error() != "block number not synced yet, TODO: add to queue and try later" {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
-		return err
+		return nil
 	}
 	// add collection
 	_, err = e.repo.NFTCollection.Create(model.NFTCollection{
