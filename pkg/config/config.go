@@ -46,6 +46,8 @@ type Config struct {
 	BscScan       string
 	BscScanAPIKey string
 
+	CovalentAPIKey string
+
 	DiscordToken string
 
 	RedisURL string
@@ -66,6 +68,10 @@ type Config struct {
 	TwitterAccessTokenSecret string
 	TwitterConsumerKey       string
 	TwitterConsumerSecret    string
+
+	GoogleCloudBucketName     string
+	GoogleCloudProjectID      string
+	GoogleCloudServiceAccount string
 }
 
 type MarketplaceBaseUrl struct {
@@ -141,6 +147,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BscScan:       v.GetString("BSC_SCAN"),
 		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
 
+		CovalentAPIKey: v.GetString("COVALENT_API_KEY"),
+
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
@@ -172,6 +180,10 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		TwitterAccessTokenSecret: v.GetString("TWITTER_ACCESS_TOKEN_SECRET"),
 		TwitterConsumerKey:       v.GetString("TWITTER_CONSUMER_KEY"),
 		TwitterConsumerSecret:    v.GetString("TWITTER_CONSUMER_SECRET"),
+
+		GoogleCloudBucketName:     v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
+		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
+		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
 	}
 }
 

@@ -6,7 +6,9 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service/abi"
+	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
+	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/twitter"
@@ -16,10 +18,12 @@ import (
 
 type Service struct {
 	CoinGecko coingecko.Service
+	Covalent  covalent.Service
 	Discord   discord.Service
 	Indexer   indexer.Service
 	Abi       abi.Service
 	Twitter   twitter.Service
+	Cloud     cloud.Service
 }
 
 func NewService(
@@ -34,9 +38,11 @@ func NewService(
 
 	return &Service{
 		CoinGecko: coingecko.NewService(),
+		Covalent:  covalent.NewService(&cfg),
 		Discord:   discordSvc,
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),
 		Twitter:   twitter.NewTwitter(&cfg),
+		Cloud:     cloud.NewCloudClient(&cfg, log),
 	}, nil
 }

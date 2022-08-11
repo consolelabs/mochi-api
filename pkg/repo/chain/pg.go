@@ -22,3 +22,11 @@ func (pg *pg) GetByID(id int) (model.Chain, error) {
 	var chain model.Chain
 	return chain, pg.db.Where("id = ?", id).First(&chain).Error
 }
+
+func (pg *pg) GetByShortName(shortName string) (*model.Chain, error) {
+	chain := &model.Chain{}
+	if err := pg.db.First(chain, "upper(short_name) = upper(?)", shortName).Error; err != nil {
+		return nil, err
+	}
+	return chain, nil
+}

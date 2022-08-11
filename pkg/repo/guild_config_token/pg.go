@@ -61,3 +61,11 @@ func (pg *pg) GetAll() ([]model.GuildConfigToken, error) {
 	var guildConfigToken []model.GuildConfigToken
 	return guildConfigToken, pg.db.Find(&guildConfigToken).Error
 }
+
+func (pg *pg) GetByGuildIDAndTokenID(guildID string, tokenID int) (*model.GuildConfigToken, error) {
+	gct := &model.GuildConfigToken{}
+	if err := pg.db.First(gct, "guild_id = ? AND token_id = ?", guildID, tokenID).Error; err != nil {
+		return nil, err
+	}
+	return gct, nil
+}

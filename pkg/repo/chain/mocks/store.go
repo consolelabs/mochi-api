@@ -63,3 +63,18 @@ func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
+
+// GetByShortName mocks base method.
+func (m *MockStore) GetByShortName(shortName string) (*model.Chain, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByShortName", shortName)
+	ret0, _ := ret[0].(*model.Chain)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByShortName indicates an expected call of GetByShortName.
+func (mr *MockStoreMockRecorder) GetByShortName(shortName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByShortName", reflect.TypeOf((*MockStore)(nil).GetByShortName), shortName)
+}

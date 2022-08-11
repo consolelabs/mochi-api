@@ -5,5 +5,6 @@ import "github.com/defipod/mochi/pkg/model"
 type Store interface {
 	UpsertOne(*model.GuildConfigTwitterHashtag) error
 	GetByGuildID(guildID string) (*model.GuildConfigTwitterHashtag, error)
+	GetAll() ([]model.GuildConfigTwitterHashtag, error)
 	DeleteByGuildID(guildID string) error
 }

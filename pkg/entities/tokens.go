@@ -1,86 +1,94 @@
 package entities
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
+	"errors"
+	"fmt"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"gorm.io/gorm"
 )
 
-type Response struct {
-	Id     string `json:"id"`
-	Symbol string `json:"symbol"`
-	Name   string `json:"name"`
-}
-
-func (e *Entity) GetIDAndName(symbol string) (string, string, error) {
-	resp, err := http.Get("https://api.coingecko.com/api/v3/coins/list")
-	// Get request
-	if err != nil {
-		return "", "", err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", "", err
-	}
-	var res []Response
-	err1 := json.Unmarshal([]byte(body), &res)
-	if err1 != nil {
-		return "", "", err
-	}
-	for i := 0; i < len(res); i++ {
-		if res[i].Symbol == symbol {
-			return res[i].Id, res[i].Name, nil
-		}
-	}
-
-	return "", "", err
-}
-
-func (e *Entity) CheckExistToken(symbol string) (bool, error) {
-	listSymbol, err := e.repo.Token.GetAll()
-	if err != nil {
-		return false, err
-	}
-
-	for i, _ := range listSymbol {
-		if strings.ToLower(symbol) == strings.ToLower(listSymbol[i].Symbol) {
-			return true, nil
-		}
-	}
-
-	return false, nil
-}
-
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
-	err := e.repo.Token.CreateOne(model.Token{
-		Address:             req.Address,
-		Symbol:              strings.ToUpper(req.Symbol),
-		ChainID:             req.ChainID,
-		Decimals:            req.Decimals,
-		DiscordBotSupported: req.DiscordBotSupported,
-		CoinGeckoID:         req.CoinGeckoID,
-		Name:                strings.ToUpper(req.Name),
-		GuildDefault:        req.GuildDefault,
-	})
+	chain, err := e.repo.Chain.GetByShortName(req.Chain)
 	if err != nil {
+		e.log.Error(err, "[Entity][CreateCustomToken] repo.Chain.GetByShortName failed")
+		return fmt.Errorf("error getting chain: %v", err)
+	}
+
+	coins, err, _ := e.svc.CoinGecko.SearchCoins(req.Symbol)
+	if err != nil {
+		e.log.Error(err, "[Entity][CreateCustomToken] svc.CoinGecko.SearchCoins failed")
+		return fmt.Errorf("error seaching coin: %v", err)
+	}
+	if len(coins) == 0 {
+		return fmt.Errorf("cannot find token by symbol")
+	}
+
+	coin, err, _ := e.svc.CoinGecko.GetCoin(coins[0].ID)
+	if err != nil {
+		e.log.Error(err, "[Entity][CreateCustomToken] svc.CoinGecko.GetCoin failed")
+		return fmt.Errorf("error getting coin: %v", err)
+	}
+	if coin.AssetPlatformID != chain.CoinGeckoID {
+		e.log.
+			Fields(logger.Fields{"asset_platform_id": coin.AssetPlatformID, "coin_gecko_id": chain.CoinGeckoID}).
+			Error(nil, "[Entity][CreateCustomToken] token is not supported on this chain")
+		return fmt.Errorf("token is not supported on this chain")
+	}
+
+	historicalTokenPrices, err, statusCode := e.svc.Covalent.GetHistoricalTokenPrices(chain.ID, chain.Currency, req.Address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"statusCode": statusCode}).Error(err, "[Entity][CreateCustomToken] svc.Covalent.GetHistoricalTokenPrices failed")
 		return err
 	}
 
-	return nil
-}
-
-func (e *Entity) GetTokenBySymbol(symbol string, flag bool) (int, error) {
-	token, err := e.repo.Token.GetBySymbol(symbol, flag)
+	token, err := e.repo.Token.GetOneBySymbol(req.Symbol)
 	if err != nil {
-		return 0, err
+		e.log.Error(err, "[Entity][CreateCustomToken] repo.Token.GetOneBySymbol failed")
 	}
-	return token.ID, nil
+
+	if token == nil {
+		token = &model.Token{
+			ChainID:             chain.ID,
+			Address:             req.Address,
+			CoinGeckoID:         coins[0].ID,
+			Name:                coins[0].Name,
+			Symbol:              strings.ToUpper(coins[0].Symbol),
+			Decimals:            historicalTokenPrices.Data[0].Decimals,
+			DiscordBotSupported: true,
+			Chain:               chain,
+		}
+		if err = e.repo.Token.CreateOne(token); err != nil {
+			e.log.Error(err, "[Entity][CreateCustomToken] repo.Token.CreateOne failed")
+			return err
+		}
+	}
+
+	if !token.DiscordBotSupported {
+		return errors.New("token is not supported to add to your server")
+	}
+
+	gct, err := e.repo.GuildConfigToken.GetByGuildIDAndTokenID(req.GuildID, token.ID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Error(err, "[Entity][CreateCustomToken] repo.GuildConfigToken.GetByGuildIDAndTokenID failed")
+		return err
+	}
+
+	if gct == nil {
+		if err := e.repo.GuildConfigToken.CreateOne(model.GuildConfigToken{
+			GuildID: req.GuildID,
+			TokenID: token.ID,
+			Active:  true,
+		}); err != nil {
+			e.log.Error(err, "[Entity][CreateCustomToken] repo.GuildConfigToken.CreateOne failed")
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
