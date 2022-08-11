@@ -34,8 +34,8 @@ func (pg *pg) GetDefaultTokens() ([]model.Token, error) {
 	return tokens, pg.db.Preload("Chain").Where("guild_default = TRUE").Find(&tokens).Error
 }
 
-func (pg *pg) CreateOne(record model.Token) error {
-	return pg.db.Create(&record).Error
+func (pg *pg) CreateOne(record *model.Token) error {
+	return pg.db.Create(record).Error
 }
 
 func (pg *pg) UpsertOne(token model.Token) error {
@@ -68,4 +68,12 @@ func (pg *pg) GetAllSupportedToken(guildID string) ([]model.Token, error) {
 		Joins("JOIN guild_config_tokens ON guild_config_tokens.token_id = tokens.id").
 		Where("guild_config_tokens.guild_id = ?", guildID).
 		Find(&tokens).Error
+}
+
+func (pg *pg) GetOneBySymbol(symbol string) (*model.Token, error) {
+	token := &model.Token{}
+	if err := pg.db.Preload("Chain").First(token, "lower(symbol) = lower(?)", symbol).Error; err != nil {
+		return nil, err
+	}
+	return token, nil
 }

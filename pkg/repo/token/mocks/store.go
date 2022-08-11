@@ -35,7 +35,7 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // CreateOne mocks base method.
-func (m *MockStore) CreateOne(token model.Token) error {
+func (m *MockStore) CreateOne(token *model.Token) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOne", token)
 	ret0, _ := ret[0].(error)
@@ -136,6 +136,21 @@ func (m *MockStore) GetDefaultTokens() ([]model.Token, error) {
 func (mr *MockStoreMockRecorder) GetDefaultTokens() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokens", reflect.TypeOf((*MockStore)(nil).GetDefaultTokens))
+}
+
+// GetOneBySymbol mocks base method.
+func (m *MockStore) GetOneBySymbol(symbol string) (*model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOneBySymbol", symbol)
+	ret0, _ := ret[0].(*model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOneBySymbol indicates an expected call of GetOneBySymbol.
+func (mr *MockStoreMockRecorder) GetOneBySymbol(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneBySymbol", reflect.TypeOf((*MockStore)(nil).GetOneBySymbol), symbol)
 }
 
 // UpsertOne mocks base method.

@@ -78,6 +78,21 @@ func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
 }
 
+// GetByGuildIDAndTokenID mocks base method.
+func (m *MockStore) GetByGuildIDAndTokenID(guildID string, tokenID int) (*model.GuildConfigToken, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByGuildIDAndTokenID", guildID, tokenID)
+	ret0, _ := ret[0].(*model.GuildConfigToken)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByGuildIDAndTokenID indicates an expected call of GetByGuildIDAndTokenID.
+func (mr *MockStoreMockRecorder) GetByGuildIDAndTokenID(guildID, tokenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildIDAndTokenID", reflect.TypeOf((*MockStore)(nil).GetByGuildIDAndTokenID), guildID, tokenID)
+}
+
 // UpsertMany mocks base method.
 func (m *MockStore) UpsertMany(configs []model.GuildConfigToken) error {
 	m.ctrl.T.Helper()
