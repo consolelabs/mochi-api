@@ -203,6 +203,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 	return nil
 }
 
+// temporary skip add collection if has any issue
 func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookRequest) error {
 	// convert marketplace to chain id
 	chainID := util.ConvertMarkplaceToChainId(nftSale.Marketplace)
@@ -210,15 +211,15 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(nftSale.CollectionAddress, int64(chainID))
 	if err != nil {
-		e.log.Errorf(err, "[e.abi.GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", nftSale.CollectionAddress, chainID)
-		return err
+		// e.log.Errorf(err, "[e.abi.GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", nftSale.CollectionAddress, chainID)
+		return nil
 	}
 
 	// get image from marketplace
 	image, err := e.getImageFromMarketPlace(int(chainID), nftSale.CollectionAddress)
 	if err != nil {
-		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
-		return err
+		// e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
+		return nil
 	}
 
 	// add indexer
@@ -227,7 +228,7 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 		ChainID: int(chainID),
 	})
 	if err != nil && err.Error() != "block number not synced yet, TODO: add to queue and try later" {
-		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+		// e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
 		return nil
 	}
 	// add collection
@@ -241,15 +242,15 @@ func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookReques
 		Image:      image,
 	})
 	if err != nil {
-		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
-		return err
+		// e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+		return nil
 	}
 
 	// notify added collection
 	err = e.svc.Discord.NotifyAddNewCollection("962589711841525780", name, symbol, util.ConvertChainIDToChain(strconv.Itoa(int(chainID))), image)
 	if err != nil {
-		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
-		return err
+		// e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
+		return nil
 	}
 	return nil
 }
