@@ -85,19 +85,19 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		return nil, errs
 	}
 
-	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
-	if err != nil {
-		errs = append(errs, fmt.Sprintf("error getting token info: %v", err))
-		return nil, errs
-	}
-
+	var token model.Token
 	if req.Cryptocurrency == "" {
 		token, err = e.repo.Token.GetDefaultTokenByGuildID(req.GuildID)
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("error getting default token: %v", err))
 			return nil, errs
 		}
-		req.Cryptocurrency = token.Symbol
+	} else {
+		token, err = e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
+		if err != nil {
+			errs = append(errs, fmt.Sprintf("error getting token info: %v", err))
+			return nil, errs
+		}
 	}
 
 	nonce := -1
@@ -125,7 +125,7 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 			FromDiscordID:  req.Sender,
 			ToDiscordID:    toUser.ID,
 			Amount:         transferredAmount,
-			Cryptocurrency: req.Cryptocurrency,
+			Cryptocurrency: token.Symbol,
 			TxHash:         signedTx.Hash().Hex(),
 			TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
 			TransactionFee: transactionFee,
