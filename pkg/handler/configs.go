@@ -499,3 +499,20 @@ func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
+
+func (h *Handler) ConfigDefaultToken(c *gin.Context) {
+	req := request.ConfigDefaultTokenRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.SetDefaultToken(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}

@@ -91,6 +91,15 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 		return nil, errs
 	}
 
+	if req.Cryptocurrency == "" {
+		token, err = e.repo.Token.GetDefaultTokenByGuildID(req.GuildID)
+		if err != nil {
+			errs = append(errs, fmt.Sprintf("error getting default token: %v", err))
+			return nil, errs
+		}
+		req.Cryptocurrency = token.Symbol
+	}
+
 	nonce := -1
 	for _, toUser := range toUsers {
 		if err = e.generateInDiscordWallet(&toUser); err != nil {

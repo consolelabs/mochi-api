@@ -77,3 +77,12 @@ func (pg *pg) GetOneBySymbol(symbol string) (*model.Token, error) {
 	}
 	return token, nil
 }
+
+func (pg *pg) GetDefaultTokenByGuildID(guildID string) (model.Token, error) {
+	var token model.Token
+	return token, pg.db.
+		Table("tokens").
+		Joins("JOIN guild_config_tokens ON guild_config_tokens.token_id = tokens.id").
+		Where("guild_config_tokens.guild_id = ? AND is_default = TRUE", guildID).
+		First(&token).Error
+}

@@ -123,6 +123,21 @@ func (mr *MockStoreMockRecorder) GetBySymbol(symbol, botSupported interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol, botSupported)
 }
 
+// GetDefaultTokenByGuildID mocks base method.
+func (m *MockStore) GetDefaultTokenByGuildID(guildID string) (model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultTokenByGuildID", guildID)
+	ret0, _ := ret[0].(model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultTokenByGuildID indicates an expected call of GetDefaultTokenByGuildID.
+func (mr *MockStoreMockRecorder) GetDefaultTokenByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokenByGuildID", reflect.TypeOf((*MockStore)(nil).GetDefaultTokenByGuildID), guildID)
+}
+
 // GetDefaultTokens mocks base method.
 func (m *MockStore) GetDefaultTokens() ([]model.Token, error) {
 	m.ctrl.T.Helper()
