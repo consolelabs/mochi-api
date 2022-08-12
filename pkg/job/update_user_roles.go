@@ -75,7 +75,13 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		}
 
 		userLevelRole, err := c.entity.GetUserRoleByLevel(guildID, userXP.Level)
-		if err != nil {
+		switch {
+		case err == entities.ErrRecordNotFound:
+			c.log.Fields(logger.Fields{
+				"level":   userXP.Level,
+				"guildId": guildID,
+			}).Info("entity.GetUserRoleByLevel - no data found")
+		case err != nil:
 			c.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
@@ -119,8 +125,8 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		}).Error(err, "entity.AddGuildMemberRoles failed")
 	}
 	c.log.Fields(logger.Fields{
-		"guildId":       guildID,
-		"rolesToRemove": rolesToAdd,
+		"guildId":    guildID,
+		"rolesToAdd": rolesToAdd,
 	}).Info("entity.AddGuildMemberRoles executed successfully")
 
 	return nil
@@ -164,7 +170,6 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 					delete(rolesToAdd, [2]string{member.User.ID, roleID})
 					continue
 				}
-
 				gMemberRoleLog := c.log.Fields(logger.Fields{
 					"guildId": guildID,
 					"userId":  member.User.ID,
