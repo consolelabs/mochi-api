@@ -46,3 +46,39 @@ func ConvertMarkplaceToChainId(marketplace string) int64 {
 		return 250
 	}
 }
+
+func ConvertInputToChainId(input string) string {
+	mapChainIdChain := map[string]string{
+		"1":          "eth",
+		"128":        "heco",
+		"56":         "bsc",
+		"137":        "matic",
+		"10":         "op",
+		"199":        "btt",
+		"66":         "okt",
+		"1285":       "movr",
+		"42220":      "celo",
+		"1088":       "metis",
+		"25":         "cro",
+		"0x64":       "xdai",
+		"288":        "boba",
+		"250":        "ftm",
+		"0xa86a":     "avax",
+		"42161":      "arb",
+		"1313161554": "aurora",
+		"paintswap":  "ftm",
+		"opensea":    "eth",
+		"quixotic":   "op",
+	}
+	chainId := ""
+	if _, exist := mapChainIdChain[strings.ToLower(input)]; exist {
+		chainId = input
+	}
+
+	for k, v := range mapChainIdChain {
+		if v == input {
+			chainId = k
+		}
+	}
+	return ConvertChainToChainId(chainId)
+}

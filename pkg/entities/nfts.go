@@ -558,8 +558,8 @@ func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
 	}, nil
 }
 
-func (e *Entity) GetNFTCollectionByAddressChainId(address string, chain int) (*model.NFTCollection, error) {
-	collection, err := e.repo.NFTCollection.GetByAddressChain(address, chain)
+func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model.NFTCollection, error) {
+	collection, err := e.repo.NFTCollection.GetByAddressChainId(address, chainId)
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection by address %s", address)
 		return nil, err
