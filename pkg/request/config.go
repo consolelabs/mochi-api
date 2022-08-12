@@ -58,3 +58,8 @@ type TwitterHashtag struct {
 	ChannelID       string   `json:"channel_id"`
 	Hashtag         []string `json:"hashtag"`
 }
+
+type ConfigDefaultTokenRequest struct {
+	GuildID string `json:"guild_id"`
+	Symbol  string `json:"symbol"`
+}
