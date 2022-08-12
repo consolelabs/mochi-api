@@ -245,3 +245,19 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
+
+func (h *Handler) UpdateNFTCollection(c *gin.Context) {
+	address := c.Param("address")
+	if address == "" {
+		h.log.Info("[handler.GetNFTCollectionByAddressChain] - address empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		return
+	}
+	err := h.entities.UpdateNFTCollection(address)
+	if err != nil {
+		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.UpdateNFTCollection] - failed to update collection")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}

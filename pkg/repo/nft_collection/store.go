@@ -17,4 +17,5 @@ type Store interface {
 	ListAllWithPaging(page int, size int) ([]model.NFTCollection, int64, error)
 	ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error)
 	ListByGuildID(guildID string) ([]model.NFTCollection, error)
+	UpdateImage(address string, image string) error
 }
