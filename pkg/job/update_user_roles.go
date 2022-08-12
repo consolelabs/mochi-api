@@ -159,7 +159,7 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 
 	members, err := c.entity.ListGuildMembers(guildID)
 	if err != nil {
-		l.Error(err, "[job][pdateNFTRoles] entity.ListGuildMembers failed")
+		l.Error(err, "[job][updateNFTRoles] entity.ListGuildMembers failed")
 		return err
 	}
 
