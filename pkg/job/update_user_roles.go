@@ -91,7 +91,6 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Info("entity.GetUserRoleByLevel - no data found")
-			continue
 		case err != nil:
 			c.log.Fields(logger.Fields{
 				"level":   userXP.Level,
