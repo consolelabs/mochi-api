@@ -99,3 +99,34 @@ func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token
 
 	return returnToken, nil
 }
+
+func (e *Entity) SetDefaultToken(req request.ConfigDefaultTokenRequest) error {
+	_, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[Entity][SetDefaultToken] repo.DiscordGuilds.GetByID failed")
+		return err
+	}
+
+	token, err := e.repo.Token.GetBySymbol(req.Symbol, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[Entity][SetDefaultToken] repo.Token.GetBySymbol failed")
+		return err
+	}
+
+	if err = e.repo.GuildConfigToken.UpsertOne(model.GuildConfigToken{
+		GuildID:   req.GuildID,
+		TokenID:   token.ID,
+		Active:    true,
+		IsDefault: true,
+	}); err != nil {
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID, "token_id": token.ID}).Error(err, "[Entity][SetDefaultToken] repo.GuildConfigToken.UpsertOne failed")
+		return err
+	}
+
+	if err := e.repo.GuildConfigToken.UnsetOldDefaultToken(req.GuildID, token.ID); err != nil {
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID, "token_id": token.ID}).Error(err, "[Entity][SetDefaultToken] repo.GuildConfigToken.SetDefaultToken failed")
+		return err
+	}
+
+	return nil
+}

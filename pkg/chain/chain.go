@@ -41,7 +41,7 @@ func NewClient(hdwallet *hdwallet.Wallet, log logger.Logger, rpcURL, apiKey, bas
 		Timeout: 15 * time.Second,
 		Key:     apiKey,
 		BaseURL: baseURL,
-		Verbose: true,
+		Verbose: false,
 	})
 
 	return &Chain{

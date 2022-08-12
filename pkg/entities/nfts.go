@@ -568,3 +568,25 @@ func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model
 
 	return collection, nil
 }
+
+func (e *Entity) UpdateNFTCollection(address string) error {
+	collection, err := e.repo.NFTCollection.GetByAddress(address)
+	if err != nil {
+		e.log.Errorf(err, "[e.UpdateNFTCollection] cannot get address")
+		return err
+	}
+	// if image already valid, function return same string
+	image, err := e.svc.Cloud.HostImageToGCS(collection.Image, strings.ReplaceAll(collection.Name, " ", ""))
+	if err != nil {
+		e.log.Errorf(err, "[e.UpdateNFTCollection] cannot host image")
+		return err
+	}
+	if image != collection.Image {
+		err := e.repo.NFTCollection.UpdateImage(address, image)
+		if err != nil {
+			e.log.Errorf(err, "[e.UpdateNFTCollection] cannot update image")
+			return err
+		}
+	}
+	return nil
+}

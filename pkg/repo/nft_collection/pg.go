@@ -119,3 +119,7 @@ func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NewListedN
 		Offset(size * page).
 		Find(&collection).Error
 }
+
+func (pg *pg) UpdateImage(address string, image string) error {
+	return pg.db.Table("nft_collections").Where("address=?", address).Update("image", image).Error
+}

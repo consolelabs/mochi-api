@@ -216,3 +216,17 @@ func (mr *MockStoreMockRecorder) ListByGuildID(guildID interface{}) *gomock.Call
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByGuildID", reflect.TypeOf((*MockStore)(nil).ListByGuildID), guildID)
 }
+
+// UpdateImage mocks base method.
+func (m *MockStore) UpdateImage(address, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateImage", address, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateImage indicates an expected call of UpdateImage.
+func (mr *MockStoreMockRecorder) UpdateImage(address, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateImage", reflect.TypeOf((*MockStore)(nil).UpdateImage), address, image)
+}

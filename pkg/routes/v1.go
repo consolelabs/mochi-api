@@ -101,6 +101,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			tokenGroup.GET("", h.GetGuildTokens)
 			tokenGroup.POST("", h.UpsertGuildTokenConfig)
+			tokenGroup.POST("/default", h.ConfigDefaultToken)
 		}
 		customTokenGroup := configGroup.Group("/custom-tokens")
 		{
@@ -201,6 +202,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/stats", h.GetCollectionCount)
 			collectionsGroup.GET("", h.GetNFTCollections)
 			collectionsGroup.POST("", h.CreateNFTCollection)
+			collectionsGroup.PATCH("/:address", h.UpdateNFTCollection) //to update collection images, delete after use
 			collectionsGroup.GET("/:symbol", h.GetNFTTokens)
 			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.GetNFTCollectionByAddressChain)
