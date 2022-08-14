@@ -34,6 +34,7 @@ require (
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible // indirect
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
 	github.com/azr/backoff v0.0.0-20160115115103-53511d3c7330 // indirect
+	github.com/chai2010/webp v1.1.1 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-jsonpointer v0.0.0-20160814072949-ba0abeacc3dc // indirect
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
@@ -42,8 +43,9 @@ require (
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
+	github.com/kolesa-team/go-webp v1.0.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9 // indirect
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
