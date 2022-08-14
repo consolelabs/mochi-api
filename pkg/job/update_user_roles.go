@@ -163,8 +163,21 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
+	levelRole, err := c.entity.GetGuildLevelRoleConfigs(guildID)
+	if err != nil {
+		l.Error(err, "entity.GetGuildLevelRoleConfigs failed")
+		return err
+	}
+	var mapLVRole map[string]bool
+	for _, role := range levelRole {
+		mapLVRole[role.RoleID] = true
+	}
+
 	for _, member := range members {
 		for _, roleID := range member.Roles {
+			if _, found := mapLVRole[roleID]; found {
+				continue
+			}
 			if isNFTRoles[roleID] {
 				if rolesToAdd[[2]string{member.User.ID, roleID}] {
 					delete(rolesToAdd, [2]string{member.User.ID, roleID})
