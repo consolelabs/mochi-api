@@ -36,6 +36,11 @@ func (pg *pg) GetByMessageID(guildId, messageID string) (model.GuildConfigReacti
 	return config, nil
 }
 
+func (pg *pg) GetByRoleID(guildID, roleID string) (*model.GuildConfigReactionRole, error) {
+	config := &model.GuildConfigReactionRole{}
+	return config, pg.db.Where("guild_id = ? AND role_id = ?", guildID, roleID).First(config).Error
+}
+
 func (pg *pg) UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
 	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", req.GuildID, req.MessageID).Update("reaction_roles", updateJson).Error
 	if err != nil {
