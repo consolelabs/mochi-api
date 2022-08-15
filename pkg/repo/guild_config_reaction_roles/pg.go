@@ -2,6 +2,7 @@ package guild_config_reaction_roles
 
 import (
 	"fmt"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"gorm.io/gorm"
@@ -33,6 +34,11 @@ func (pg *pg) GetByMessageID(guildId, messageID string) (model.GuildConfigReacti
 	}
 
 	return config, nil
+}
+
+func (pg *pg) GetByRoleID(guildID, roleID string) (*model.GuildConfigReactionRole, error) {
+	config := &model.GuildConfigReactionRole{}
+	return config, pg.db.Where("guild_id = ? AND role_id = ?", guildID, roleID).First(config).Error
 }
 
 func (pg *pg) UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
