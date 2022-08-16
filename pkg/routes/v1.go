@@ -101,7 +101,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			tokenGroup.GET("", h.GetGuildTokens)
 			tokenGroup.POST("", h.UpsertGuildTokenConfig)
+			tokenGroup.GET("/default", h.GetDefaultToken)
 			tokenGroup.POST("/default", h.ConfigDefaultToken)
+			tokenGroup.DELETE("/default", h.RemoveDefaultToken)
 		}
 		customTokenGroup := configGroup.Group("/custom-tokens")
 		{

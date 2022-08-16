@@ -10,4 +10,5 @@ type Store interface {
 	GetAll() ([]model.GuildConfigToken, error)
 	GetByGuildIDAndTokenID(guildID string, tokenID int) (*model.GuildConfigToken, error)
 	UnsetOldDefaultToken(guildID string, tokenID int) error
+	RemoveDefaultToken(guildID string) error
 }
