@@ -8,7 +8,6 @@ import (
 type Store interface {
 	ListAllByGuildID(guildID string) ([]model.GuildConfigReactionRole, error)
 	GetByMessageID(guildID, messageID string) (model.GuildConfigReactionRole, error)
-	GetByRoleID(guildID, roleID string) (*model.GuildConfigReactionRole, error)
 	UpdateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 	CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error
 	ClearMessageConfig(guildID, messageID string) error
