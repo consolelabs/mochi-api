@@ -121,15 +121,18 @@ func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
 }
 
 func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
-	_, err := e.repo.GuildConfigReactionRole.GetByRoleID(guildID, roleID)
-	switch err {
-	case gorm.ErrRecordNotFound:
-		return nil
-	case nil:
-		return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
-	default:
+	configs, err := e.ListAllReactionRoles(guildID)
+	if err != nil {
 		return err
 	}
+	for _, cfg := range configs.Configs {
+		for _, v := range cfg.Roles {
+			if v.ID == roleID {
+				return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+			}
+		}
+	}
+	return nil
 }
 
 func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
