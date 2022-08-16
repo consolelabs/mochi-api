@@ -500,6 +500,18 @@ func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
+func (h *Handler) GetDefaultToken(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	token, err := h.entities.GetDefaultToken(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.ConfigDefaultToken] - failed to get default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": token})
+}
+
 func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 	req := request.ConfigDefaultTokenRequest{}
 	if err := c.BindJSON(&req); err != nil {
@@ -510,6 +522,17 @@ func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 
 	if err := h.entities.SetDefaultToken(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) RemoveDefaultToken(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if err := h.entities.RemoveDefaultToken(guildID); err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.RemoveDefaultToken] - failed to remove default token")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
