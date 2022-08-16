@@ -48,7 +48,7 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 
 func (pg *pg) GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error) {
 	var collection []model.NFTCollection
-	err := pg.db.Table("nft_collections").Where(fmt.Sprintf("LEVENSHTEIN(symbol, '%s') <= %v OR LEVENSHTEIN(name, '%s') <= %v", name, len, name, len)).Find(&collection).Error
+	err := pg.db.Table("nft_collections").Where(fmt.Sprintf("LEVENSHTEIN(symbol, '%s') <= %v OR LEVENSHTEIN(name, '%s') <= %v", name, len, name, len)).Limit(5).Order(fmt.Sprintf("LEVENSHTEIN(symbol, '%s')", name)).Find(&collection).Error
 	if err != nil {
 		return nil, err
 	}

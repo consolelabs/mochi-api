@@ -90,6 +90,7 @@ type RpcUrl struct {
 	Eth string
 	Ftm string
 	Opt string
+	Bsc string
 }
 
 // GetCORS in config
@@ -169,6 +170,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Eth: v.GetString("ETH_RPC"),
 			Ftm: v.GetString("FTM_RPC"),
 			Opt: v.GetString("OPTIMISM_RPC"),
+			Bsc: v.GetString("BSC_RPC"),
 		},
 
 		MarketplaceBaseUrl: MarketplaceBaseUrl{
@@ -209,6 +211,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("FTM_RPC", "https://rpc.ankr.com/fantom")
 	v.SetDefault("ETH_RPC", "https://rpc.ankr.com/eth")
 	v.SetDefault("OPTIMISM_RPC", "https://rpc.ankr.com/optimism")
+	v.SetDefault("BSC_RPC", "https://rpc.ankr.com/bsc")
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
