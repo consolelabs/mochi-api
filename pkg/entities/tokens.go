@@ -107,7 +107,7 @@ func (e *Entity) GetDefaultToken(guildID string) (*model.Token, error) {
 	}
 
 	token, err := e.repo.Token.GetDefaultTokenByGuildID(guildID)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[Entity][GetDefaultToken] repo.Token.GetDefaultTokenByGuildID failed")
 		return nil, err
 	}
