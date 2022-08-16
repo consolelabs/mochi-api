@@ -75,6 +75,17 @@ type IndexerGetNFTTokensResponse struct {
 type IndexerGetNFTTokenDetailResponse struct {
 	Data IndexerNFTTokenDetailData `json:"data"`
 }
+type IndexerGetNFTTokenDetailResponseWithSuggestions struct {
+	Data        IndexerNFTTokenDetailData `json:"data"`
+	Suggestions []CollectionSuggestions   `json:"suggestions"`
+}
+
+type CollectionSuggestions struct {
+	Name    string `json:"name"`
+	Symbol  string `json:"symbol"`
+	Address string `json:"address"`
+	Chain   string `json:"chain"`
+}
 
 type IndexerNFTTokenDetailData struct {
 	TokenID           string                     `json:"token_id,omitempty"`

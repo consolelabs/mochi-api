@@ -47,25 +47,38 @@ var (
 	}
 )
 
-func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
-	// get collection
-	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
-	// cannot find collection in db
-	if err != nil {
-		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by symbol %s", symbol)
-		return nil, err
+func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
+	suggest := []response.CollectionSuggestions{}
+	// handle query by address
+	if symbol[:2] == "0x" {
+		data, err := e.GetNFTDetailByAddress(symbol, tokenID)
+		if err != nil {
+			e.log.Errorf(err, "[e.GetNFTDetailByAddress] failed to get nft collection by address")
+			return nil, err
+		}
+		return data, nil
 	}
 
-	data, err := e.indexer.GetNFTDetail(collection.Address, tokenID)
-	// cannot find collection in indexer
-	if err != nil {
-		if err.Error() == "record not found" {
-			e.log.Errorf(err, "[indexer.GetNFTDetail] indexer: record nft not found")
-			err = fmt.Errorf("indexer: record nft not found")
-		} else {
-			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
-			err = fmt.Errorf("failed to get nft from indexer: %v", err)
+	// get collection
+	collections, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
+	// cannot find collection or found multiple => return suggested collections
+	if err != nil || len(collections) != 1 {
+		suggest, err = e.GetNFTSuggestion(symbol, tokenID)
+		if err != nil {
+			e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by symbol %s", symbol)
+			return nil, err
 		}
+		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Suggestions: suggest,
+		}, nil
+	}
+
+	// db returned 1 collection
+	collection := collections[0]
+
+	data, err := e.getTokenDetailFromIndexer(collection.Address, tokenID)
+	if err != nil {
+		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}
 
@@ -76,7 +89,11 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 		return nil, err
 	}
 
-	return data, nil
+	data.Data.Image = util.StandardizeUri(data.Data.Image)
+	return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+		Data:        data.Data,
+		Suggestions: suggest,
+	}, nil
 }
 
 type NFTCollectionData struct {
@@ -89,6 +106,70 @@ type NFTCollectionData struct {
 
 type MoralisMessageFail struct {
 	Message string `json:"message"`
+}
+
+func (e *Entity) GetNFTSuggestion(symbol string, tokenID string) ([]response.CollectionSuggestions, error) {
+	// get collections that are correct 50%
+	matches, err := e.repo.NFTCollection.GetSuggestionsBySymbolorName(symbol, len(symbol)/2)
+	if err != nil {
+		if err.Error() == "record not found" {
+			e.log.Info("[repo.NFTCollection.GetSuggestionsBySymbolorName] found no suggestions")
+			return nil, fmt.Errorf("[repo.NFTCollection.GetSuggestionsBySymbolorName] record not found")
+		} else {
+			e.log.Errorf(err, "[repo.NFTCollection.GetSuggestionsBySymbolorName] failed to get nft suggestions for symbol %s", symbol)
+			return nil, fmt.Errorf("[repo.NFTCollection.GetSuggestionsBySymbolorName] failed to get nft suggestions: %s", err)
+		}
+	}
+
+	res := []response.CollectionSuggestions{}
+	for _, col := range matches {
+		res = append(res, response.CollectionSuggestions{
+			Name:    col.Name,
+			Symbol:  col.Symbol,
+			Address: col.Address,
+			Chain:   util.ConvertChainIDToChain(col.ChainID),
+		})
+	}
+
+	return res, nil
+}
+
+func (e *Entity) getTokenDetailFromIndexer(address string, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
+	data, err := e.indexer.GetNFTDetail(address, tokenID)
+	// cannot find collection in indexer
+	if err != nil {
+		if err.Error() == "record not found" {
+			e.log.Errorf(err, "[indexer.GetNFTDetail] indexer: record nft not found")
+			err = fmt.Errorf("[e.GetNFTDetail] indexer: record nft not found")
+		} else {
+			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
+			err = fmt.Errorf("[e.GetNFTDetail] failed to get nft from indexer: %v", err)
+		}
+		return nil, err
+	}
+	return data, nil
+}
+
+func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
+	exist, err := e.CheckExistNftCollection(address)
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection by address %s", address)
+		return nil, err
+	}
+
+	if !exist {
+		return nil, fmt.Errorf("record not found")
+	}
+
+	data, err := e.getTokenDetailFromIndexer(address, tokenID)
+	if err != nil {
+		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
+		return nil, err
+	}
+	return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+		Data: data.Data,
+	}, nil
+
 }
 
 func (e *Entity) CheckExistNftCollection(address string) (bool, error) {
@@ -475,13 +556,13 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
-	if err != nil {
+	if err != nil || len(collection) == 0 {
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
 		return nil, err
 	}
-	collection.Image = util.StandardizeUri(collection.Image)
+	collection[0].Image = util.StandardizeUri(collection[0].Image)
 
-	return collection, nil
+	return &collection[0], nil
 }
 
 func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, error) {
