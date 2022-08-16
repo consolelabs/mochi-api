@@ -555,6 +555,16 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 }
 
 func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
+	if symbol[:2] == "0x" {
+		data, err := e.repo.NFTCollection.GetByAddress(symbol)
+		if err != nil {
+			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection by address")
+			return nil, err
+		}
+		data.Image = util.StandardizeUri(data.Image)
+		return data, nil
+	}
+
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
 	if err != nil || len(collection) == 0 {
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
