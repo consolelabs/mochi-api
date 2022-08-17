@@ -61,8 +61,8 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 
 	// get collection
 	collections, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
-	// cannot find collection or found multiple => return suggested collections
-	if err != nil || len(collections) != 1 {
+	// cannot find collection => return suggested collections
+	if err != nil || len(collections) == 0 {
 		suggest, err = e.GetNFTSuggestion(symbol, tokenID)
 		if err != nil {
 			e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by symbol %s", symbol)
@@ -73,9 +73,23 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 		}, nil
 	}
 
+	// found multiple symbols => only suggest those
+	if len(collections) != 1 {
+		for _, col := range collections {
+			suggest = append(suggest, response.CollectionSuggestions{
+				Name:    col.Name,
+				Symbol:  col.Symbol,
+				Address: col.Address,
+				Chain:   util.ConvertChainIDToChain(col.ChainID),
+			})
+		}
+		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Suggestions: suggest,
+		}, nil
+	}
+
 	// db returned 1 collection
 	collection := collections[0]
-
 	data, err := e.getTokenDetailFromIndexer(collection.Address, tokenID)
 	if err != nil {
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
