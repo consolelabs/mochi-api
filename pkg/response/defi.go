@@ -94,8 +94,10 @@ type CoinImage struct {
 type CoinPriceResponse map[string]map[string]float64
 
 type TokenCompareReponse struct {
-	PriceCompare []float32 `json:"price_compare"`
-	Times        []string  `json:"times"`
+	BaseCoin   GetCoinResponse `json:"base_coin"`
+	TargetCoin GetCoinResponse `json:"target_coin"`
+	Ratios     []float32       `json:"ratios"`
+	Times      []string        `json:"times"`
 }
 
 type HistoricalTokenPricesResponse struct {
