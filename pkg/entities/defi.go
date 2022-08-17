@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -375,15 +376,6 @@ func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, in
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) SearchCoinsBySymbol(symbol string) (string, error, int) {
-	data, err, statusCode := e.svc.CoinGecko.SearchCoins(symbol)
-	if err != nil {
-		return "", err, statusCode
-	}
-
-	return data[0].ID, nil, http.StatusOK
-}
-
 func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 	tokens, err := e.repo.Token.GetDefaultTokens()
 	if err != nil {
@@ -433,20 +425,68 @@ func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.Gu
 	return gActivityConfig, nil
 }
 
-func (e *Entity) GetHistoryCoinInfo(sourceSymbol string, interval string) (res [][]float32, err error, statusCode int) {
-	res, err, statusCode = e.svc.CoinGecko.GetHistoryCoinInfo(sourceSymbol, interval)
+func (e *Entity) CompareToken(base, target, interval string) (*response.TokenCompareReponse, error) {
+	// search coins
+	searchRes, err, _ := e.svc.CoinGecko.SearchCoins(base)
 	if err != nil {
-		return nil, err, statusCode
+		e.log.Fields(logger.Fields{"base": base}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins failed")
+		return nil, err
 	}
+	if len(searchRes) == 0 {
+		e.log.Fields(logger.Fields{"base": base}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins - no result found")
+		return nil, fmt.Errorf("coin %s not found", base)
+	}
+	baseID := searchRes[0].ID
 
-	return res, nil, http.StatusOK
-}
-
-func (e *Entity) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
-	tokenCompareRes, err := e.svc.CoinGecko.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
+	searchRes, err, _ = e.svc.CoinGecko.SearchCoins(target)
 	if err != nil {
+		e.log.Fields(logger.Fields{"target": target}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins failed")
+		return nil, err
+	}
+	if len(searchRes) == 0 {
+		e.log.Fields(logger.Fields{"target": target}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins - no result found")
+		return nil, fmt.Errorf("coin %s not found", target)
+	}
+	targetID := searchRes[0].ID
+
+	// get coins ohlc
+	baseOhlc, err, _ := e.svc.CoinGecko.GetHistoryCoinInfo(baseID, interval)
+	if err != nil {
+		e.log.Fields(logger.Fields{"baseID": baseID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
+		return nil, err
+	}
+	targetOhlc, err, _ := e.svc.CoinGecko.GetHistoryCoinInfo(targetID, interval)
+	if err != nil {
+		e.log.Fields(logger.Fields{"targetD": targetID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
 		return nil, err
 	}
 
-	return tokenCompareRes, nil
+	baseCoin, err, _ := e.svc.CoinGecko.GetCoin(baseID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"baseID": baseID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetCoin failed")
+		return nil, err
+	}
+	targetCoin, err, _ := e.svc.CoinGecko.GetCoin(targetID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"targetID": targetID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetCoin failed")
+		return nil, err
+	}
+
+	tokenCompareRes := response.TokenCompareReponse{BaseCoin: *baseCoin, TargetCoin: *targetCoin}
+	size := len(baseOhlc)
+	if size > len(targetOhlc) {
+		size = len(targetOhlc)
+	}
+	for i := 0; i < size; i++ {
+		// for i := range baseOhlc {
+		targetPrice := targetOhlc[i][1]
+		if targetPrice == 0 {
+			continue
+		}
+		ratio := baseOhlc[i][1] / targetPrice
+		tokenCompareRes.Ratios = append(tokenCompareRes.Ratios, ratio)
+		timeStr := time.UnixMilli(int64(baseOhlc[i][0])).Format("01-02")
+		tokenCompareRes.Times = append(tokenCompareRes.Times, timeStr)
+	}
+	return &tokenCompareRes, nil
 }
