@@ -30,7 +30,7 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 
 	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
 	if err != nil {
-		e.log.Errorf(err, "[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
+		e.log.Infof("[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
 		return err
 	}
 	indexerToken := indexerTokenRes.Data
