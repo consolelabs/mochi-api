@@ -124,71 +124,34 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
-func (h *Handler) TokenCompare(c *gin.Context) {
-	sourceSymbol := c.Query("source_symbol")
-	targetSymbol := c.Query("target_symbol")
+func (h *Handler) CompareToken(c *gin.Context) {
+	base := c.Query("base")
+	target := c.Query("target")
 	interval := c.Query("interval")
 
-	if sourceSymbol == "" {
-		h.log.Info("[handler.TokenCompare] - source symbol empty")
+	if base == "" {
+		h.log.Info("[handler.CompareToken] base is required")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "source symbol is required"})
 		return
 	}
 
-	if targetSymbol == "" {
-		h.log.Info("[handler.TokenCompare] - target symbol empty")
+	if target == "" {
+		h.log.Info("[handler.CompareToken] target is required")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "target symbol is required"})
 		return
 	}
 	if interval == "" {
-		h.log.Info("[handler.TokenCompare] - interval empty")
+		h.log.Info("[handler.CompareToken] interval empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "interval is required"})
 		return
 	}
 
-	// get search coin
-	sourceSymbol, err, statusCode := h.entities.SearchCoinsBySymbol(sourceSymbol)
+	res, err := h.entities.CompareToken(base, target, interval)
 	if err != nil {
-		h.log.Fields(logger.Fields{"sourceSymbol": sourceSymbol}).Error(err, "[handler.TokenCompare] - failed to search coin by symbol")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
-		return
-	}
-
-	targetSymbol, err, statusCode = h.entities.SearchCoinsBySymbol(targetSymbol)
-	if err != nil {
-		h.log.Fields(logger.Fields{"targetSymbol": targetSymbol}).Error(err, "[handler.TokenCompare] - failed to search coin by symbol")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
-		return
-	}
-
-	// get all token with guildID
-	sourceSymbolInfo, err, statusCode := h.entities.GetHistoryCoinInfo(sourceSymbol, interval)
-	if err != nil {
-		h.log.Fields(logger.Fields{"sourceSymbol": sourceSymbol}).Error(err, "[handler.TokenCompare] - failed to get history coin info")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
-		return
-	}
-
-	targetSymbolInfo, err, statusCode := h.entities.GetHistoryCoinInfo(targetSymbol, interval)
-	if err != nil {
-		h.log.Fields(logger.Fields{"targetSymbol": targetSymbol}).Error(err, "[handler.TokenCompare] - failed to get history coin info")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
-		return
-	}
-
-	//check if one of 2 symbol is old
-	if len(sourceSymbolInfo) != len(targetSymbolInfo) {
-		h.log.Fields(logger.Fields{"sourceInfo": sourceSymbolInfo, "targetInfo": targetSymbolInfo}).Error(err, "[handler.TokenCompare] - token expired")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "One token is expired."})
-		return
-	}
-
-	tokenCompareReponse, err := h.entities.TokenCompare(sourceSymbolInfo, targetSymbolInfo)
-	if err != nil {
-		h.log.Fields(logger.Fields{"sourceSymbol": sourceSymbol, "targetSymbol": targetSymbol}).Error(err, "[handler.TokenCompare] - failed to compare token")
+		h.log.Fields(logger.Fields{"base": base, "target": target}).Error(err, "[handler.CompareToken] entity.CompareToken failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": tokenCompareReponse})
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
