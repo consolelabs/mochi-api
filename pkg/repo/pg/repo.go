@@ -15,6 +15,7 @@ import (
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
+	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
@@ -87,5 +88,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		MessageRepostHistory:                 messagereposthistory.NewPG(db),
 		GuildScheduledEvent:                  guildscheduledevent.NewPG(db),
 		MochiNFTSales:                        mochinftsales.NewPG(db),
+		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
 	}
 }

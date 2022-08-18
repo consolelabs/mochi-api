@@ -12,6 +12,7 @@ import (
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
+	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
@@ -82,4 +83,5 @@ type Repo struct {
 	GuildScheduledEvent                  guildscheduledevent.Store
 	NFTSalesTracker                      nftsalestracker.Store
 	MochiNFTSales                        mochinftsales.Store
+	GuildConfigDefaultTicker             guildconfigdefaultticker.Store
 }

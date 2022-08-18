@@ -490,3 +490,22 @@ func (e *Entity) CompareToken(base, target, interval string) (*response.TokenCom
 	}
 	return &tokenCompareRes, nil
 }
+
+func (e *Entity) SetGuildDefaultTicker(req request.GuildConfigDefaultTickerRequest) error {
+	return e.repo.GuildConfigDefaultTicker.UpsertOne(&model.GuildConfigDefaultTicker{
+		Query:         req.Query,
+		GuildID:       req.GuildID,
+		DefaultTicker: req.DefaultTicker,
+	})
+}
+
+func (e *Entity) GetGuildDefaultTicker(q request.GetGuildDefaultTickerQuery) (*response.GetGuildDefaultTickerResponse, error) {
+	defaultTicker, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(q.GuildID, q.Query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guildID": q.GuildID, "query": q.Query}).Error(err, "[entity.GetGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery failed")
+		return nil, err
+	}
+	return &response.GetGuildDefaultTickerResponse{
+		Data: defaultTicker,
+	}, nil
+}

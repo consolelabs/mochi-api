@@ -157,3 +157,7 @@ type NftMetadataAttrIcon struct {
 type NftMetadataAttrIconResponse struct {
 	Data []NftMetadataAttrIcon `json:"data"`
 }
+
+type GetGuildDefaultTickerResponse struct {
+	Data *model.GuildConfigDefaultTicker `json:"data"`
+}
