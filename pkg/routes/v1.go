@@ -145,6 +145,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.POST("/hashtag", h.CreateTwitterHashtagConfig)
 			twitterGroup.GET("/hashtag", h.GetAllTwitterHashtagConfig)
 		}
+		defaultTickerGroup := configGroup.Group("/default-ticker")
+		{
+			defaultTickerGroup.GET("", h.GetGuildDefaultTicker)
+			defaultTickerGroup.POST("", h.SetGuildDefaultTicker)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
