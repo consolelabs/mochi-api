@@ -63,3 +63,10 @@ type ConfigDefaultTokenRequest struct {
 	GuildID string `json:"guild_id"`
 	Symbol  string `json:"symbol"`
 }
+
+type ConfigDefaultCollection struct {
+	GuildID string `json:"guild_id"`
+	Symbol  string `json:"symbol"`
+	Address string `json:"address"`
+	ChainID string `json:"chain"`
+}

@@ -576,6 +576,8 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 	type args struct {
 		symbol  string
 		tokenID string
+		guildID string
+		chainID string
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -630,6 +632,8 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "rabby",
 				tokenID: "1",
+				guildID: "12312123",
+				chainID: "ftm",
 			},
 			want: &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
 				Data: response.IndexerNFTTokenDetailData{
@@ -663,6 +667,8 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "neko",
 				tokenID: "1",
+				guildID: "12312123",
+				chainID: "ftm",
 			},
 			want:    nil,
 			wantErr: true,
@@ -677,6 +683,8 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "doggo",
 				tokenID: "1",
+				guildID: "12312123",
+				chainID: "ftm",
 			},
 			want:    nil,
 			wantErr: true,
@@ -691,6 +699,8 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "rabby",
 				tokenID: "99999999",
+				guildID: "12312123",
+				chainID: "ftm",
 			},
 			want:    nil,
 			wantErr: true,
@@ -771,7 +781,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				abi:         tt.fields.abi,
 				marketplace: tt.fields.marketplace,
 			}
-			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID)
+			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID, tt.args.guildID, tt.args.chainID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetNFTDetail() error = %v, wantErr %v", err, tt.wantErr)
 				return
