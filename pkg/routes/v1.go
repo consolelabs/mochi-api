@@ -97,6 +97,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
 			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
 		}
+		defaultSymbolGroup := configGroup.Group("/default-symbol")
+		{
+			defaultSymbolGroup.POST("", h.CreateDefaultCollectionSymbol)
+		}
 		tokenGroup := configGroup.Group("/tokens")
 		{
 			tokenGroup.GET("", h.GetGuildTokens)

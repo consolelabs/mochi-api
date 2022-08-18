@@ -47,7 +47,7 @@ var (
 	}
 )
 
-func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
+func (e *Entity) GetNFTDetail(symbol, tokenID, guildID, chainId string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
 	suggest := []response.CollectionSuggestions{}
 	// handle query by address
 	if symbol[:2] == "0x" {
@@ -75,7 +75,20 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 
 	// found multiple symbols => only suggest those
 	if len(collections) != 1 {
+		var defaultSymbol *response.CollectionSuggestions
+		// check default symbol
+		symbols, _ := e.GetDefaultCollectionSymbol(guildID, chainId)
 		for _, col := range collections {
+			// if found default symbol
+			if len(symbols) != 0 && checkIsDefaultSymbol(symbols, &col) {
+				def := response.CollectionSuggestions{
+					Address: col.Address,
+					Chain:   util.ConvertChainIDToChain(col.ChainID),
+					Name:    col.Name,
+					Symbol:  col.Symbol,
+				}
+				defaultSymbol = &def
+			}
 			suggest = append(suggest, response.CollectionSuggestions{
 				Name:    col.Name,
 				Symbol:  col.Symbol,
@@ -84,7 +97,8 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 			})
 		}
 		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-			Suggestions: suggest,
+			Suggestions:   suggest,
+			DefaultSymbol: defaultSymbol,
 		}, nil
 	}
 
@@ -108,6 +122,15 @@ func (e *Entity) GetNFTDetail(symbol, tokenID string) (*response.IndexerGetNFTTo
 		Data:        data.Data,
 		Suggestions: suggest,
 	}, nil
+}
+
+func checkIsDefaultSymbol(defaults []model.GuildConfigDefaultCollection, symbol *model.NFTCollection) bool {
+	for _, def := range defaults {
+		if def.Address == symbol.Address {
+			return true
+		}
+	}
+	return false
 }
 
 type NFTCollectionData struct {

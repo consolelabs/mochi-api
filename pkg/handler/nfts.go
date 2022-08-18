@@ -17,8 +17,17 @@ type error interface {
 func (h *Handler) GetNFTDetail(c *gin.Context) {
 	symbol := c.Param("symbol")
 	tokenID := c.Param("id")
+	guildID := c.Query("guild_id")
+	chainName := c.Query("chain")
+	// to prevent error when query db
+	if guildID == "" {
+		guildID = "0"
+	}
+	if chainName == "" {
+		chainName = "eth"
+	}
 
-	res, err := h.entities.GetNFTDetail(symbol, tokenID)
+	res, err := h.entities.GetNFTDetail(symbol, tokenID, guildID, util.ConvertChainToChainId(chainName))
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

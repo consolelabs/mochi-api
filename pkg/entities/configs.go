@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
@@ -396,6 +397,30 @@ func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
 	if err != nil {
 		e.log.Errorf(err, "[e.CreateTwitterHashtagConfig] failed to upsert twitter hashtag configs")
 		return fmt.Errorf("failed to create twitter hashtag: %v", err.Error())
+	}
+	return nil
+}
+
+func (e *Entity) GetDefaultCollectionSymbol(guildID string, chainID string) ([]model.GuildConfigDefaultCollection, error) {
+	data, err := e.repo.GuildConfigDefaultCollection.GetByGuildIDandChainID(guildID, chainID)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetDefaultCollectionSymbol] failed to get default collection: %s", err)
+		return nil, err
+	}
+	return data, nil
+}
+
+func (e *Entity) CreateDefaultCollectionSymbol(req request.ConfigDefaultCollection) error {
+	err := e.repo.GuildConfigDefaultCollection.Upsert(&model.GuildConfigDefaultCollection{
+		GuildID:   req.GuildID,
+		Symbol:    req.Symbol,
+		Address:   req.Address,
+		ChainID:   util.ConvertChainToChainId(req.ChainID),
+		UpdatedAt: time.Now(),
+	})
+	if err != nil {
+		e.log.Errorf(err, "[e.CreateDefaultCollectionSymbol] failed to upsert default ticker: %s", err)
+		return err
 	}
 	return nil
 }

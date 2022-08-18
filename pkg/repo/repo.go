@@ -10,6 +10,7 @@ import (
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
+	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
@@ -57,6 +58,7 @@ type Repo struct {
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
+	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigTwitterHashtag            guildconfigtwitterhashtag.Store
