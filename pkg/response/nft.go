@@ -76,8 +76,9 @@ type IndexerGetNFTTokenDetailResponse struct {
 	Data IndexerNFTTokenDetailData `json:"data"`
 }
 type IndexerGetNFTTokenDetailResponseWithSuggestions struct {
-	Data        IndexerNFTTokenDetailData `json:"data"`
-	Suggestions []CollectionSuggestions   `json:"suggestions"`
+	Data          IndexerNFTTokenDetailData `json:"data"`
+	Suggestions   []CollectionSuggestions   `json:"suggestions"`
+	DefaultSymbol *CollectionSuggestions    `json:"default_symbol"`
 }
 
 type CollectionSuggestions struct {
@@ -155,4 +156,8 @@ type NftMetadataAttrIcon struct {
 
 type NftMetadataAttrIconResponse struct {
 	Data []NftMetadataAttrIcon `json:"data"`
+}
+
+type GetGuildDefaultTickerResponse struct {
+	Data *model.GuildConfigDefaultTicker `json:"data"`
 }

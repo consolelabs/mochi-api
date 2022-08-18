@@ -539,3 +539,20 @@ func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
+
+func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
+	req := request.ConfigDefaultCollection{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.CreateDefaultCollectionSymbol(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}

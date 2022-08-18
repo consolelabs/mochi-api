@@ -13,7 +13,9 @@ import (
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
+	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
+	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
@@ -61,6 +63,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
+		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
@@ -85,5 +88,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		MessageRepostHistory:                 messagereposthistory.NewPG(db),
 		GuildScheduledEvent:                  guildscheduledevent.NewPG(db),
 		MochiNFTSales:                        mochinftsales.NewPG(db),
+		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
 	}
 }

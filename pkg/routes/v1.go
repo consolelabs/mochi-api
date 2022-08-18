@@ -97,6 +97,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
 			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
 		}
+		defaultSymbolGroup := configGroup.Group("/default-symbol")
+		{
+			defaultSymbolGroup.POST("", h.CreateDefaultCollectionSymbol)
+		}
 		tokenGroup := configGroup.Group("/tokens")
 		{
 			tokenGroup.GET("", h.GetGuildTokens)
@@ -140,6 +144,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.DELETE("/hashtag/:guild_id", h.DeleteTwitterHashtagConfig)
 			twitterGroup.POST("/hashtag", h.CreateTwitterHashtagConfig)
 			twitterGroup.GET("/hashtag", h.GetAllTwitterHashtagConfig)
+		}
+		defaultTickerGroup := configGroup.Group("/default-ticker")
+		{
+			defaultTickerGroup.GET("", h.GetGuildDefaultTicker)
+			defaultTickerGroup.POST("", h.SetGuildDefaultTicker)
 		}
 	}
 
