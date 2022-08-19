@@ -9,6 +9,7 @@ type GuildConfigTwitterHashtag struct {
 	RuleID          string    `json:"rule_id"`
 	TwitterUsername string    `json:"twitter_username"`
 	Hashtag         string    `json:"hashtag"`
+	FromTwitter     string    `json:"from_twitter"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
