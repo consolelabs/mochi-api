@@ -1,7 +1,6 @@
 package guild_config_default_roles
 
 import (
-	"fmt"
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -19,7 +18,7 @@ func (pg *pg) GetAllByGuildID(guildID string) (model.GuildConfigDefaultRole, err
 	var role model.GuildConfigDefaultRole
 	err := pg.db.Model(&model.GuildConfigDefaultRole{}).Where("guild_id = ?", guildID).First(&role).Error
 	if err != nil {
-		return role, fmt.Errorf("failed to query default roles: %w", err)
+		return role, err
 	}
 
 	return role, nil
