@@ -576,6 +576,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 	type args struct {
 		symbol  string
 		tokenID string
+		guildID string
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -617,7 +618,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *response.IndexerGetNFTTokenDetailResponse
+		want    *response.IndexerGetNFTTokenDetailResponseWithSuggestions
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -630,8 +631,9 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "rabby",
 				tokenID: "1",
+				guildID: "12312123",
 			},
-			want: &response.IndexerGetNFTTokenDetailResponse{
+			want: &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
 				Data: response.IndexerNFTTokenDetailData{
 					TokenID:           "1",
 					CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
@@ -649,6 +651,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 					Rarity:            &response.IndexerNFTTokenRarity{},
 					MetadataID:        "",
 				},
+				Suggestions: []response.CollectionSuggestions{},
 			},
 			wantErr: false,
 		},
@@ -662,6 +665,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "neko",
 				tokenID: "1",
+				guildID: "12312123",
 			},
 			want:    nil,
 			wantErr: true,
@@ -676,6 +680,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "doggo",
 				tokenID: "1",
+				guildID: "12312123",
 			},
 			want:    nil,
 			wantErr: true,
@@ -690,30 +695,35 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 			args: args{
 				symbol:  "rabby",
 				tokenID: "99999999",
+				guildID: "12312123",
 			},
 			want:    nil,
 			wantErr: true,
 		},
 	}
-	validNFTCollectionRabby := &model.NFTCollection{
-		ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
-		Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
-		Name:       "rabby",
-		Symbol:     "rabby",
-		ChainID:    "250",
-		ERCFormat:  "721",
-		IsVerified: true,
-		CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+	validNFTCollectionRabby := []model.NFTCollection{
+		{
+			ID:         util.GetNullUUID("0905f61e-aaf5-4e82-82ef-4c5b929915ed"),
+			Address:    "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+			Name:       "rabby",
+			Symbol:     "rabby",
+			ChainID:    "250",
+			ERCFormat:  "721",
+			IsVerified: true,
+			CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+		},
 	}
-	validNFTCollectionNeko := &model.NFTCollection{
-		ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
-		Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
-		Name:       "neko",
-		Symbol:     "neko",
-		ChainID:    "250",
-		ERCFormat:  "721",
-		IsVerified: true,
-		CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+	validNFTCollectionNeko := []model.NFTCollection{
+		{
+			ID:         util.GetNullUUID("05b1a563-1499-437f-b1e8-da4e630ab3ad"),
+			Address:    "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE79",
+			Name:       "neko",
+			Symbol:     "neko",
+			ChainID:    "250",
+			ERCFormat:  "721",
+			IsVerified: true,
+			CreatedAt:  time.Date(2022, 6, 20, 1, 2, 3, 4, time.UTC),
+		},
 	}
 	validIndexerResponse := &response.IndexerGetNFTTokenDetailResponse{
 		Data: response.IndexerNFTTokenDetailData{
@@ -744,6 +754,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 
 	// fail - collection has not been added
 	nftCollection.EXPECT().GetBySymbolorName("doggo").Return(nil, errors.New("record not found")).AnyTimes()
+	nftCollection.EXPECT().GetSuggestionsBySymbolorName("doggo", 2).Return(nil, errors.New("record not found")).AnyTimes()
 	// function does not call indexer if record not found in database
 
 	// fail - token not found
@@ -765,7 +776,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				abi:         tt.fields.abi,
 				marketplace: tt.fields.marketplace,
 			}
-			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID)
+			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID, tt.args.guildID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetNFTDetail() error = %v, wantErr %v", err, tt.wantErr)
 				return

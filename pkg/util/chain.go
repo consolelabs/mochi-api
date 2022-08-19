@@ -10,6 +10,8 @@ func ConvertChainToChainId(chain string) string {
 		return "250"
 	case "op":
 		return "10"
+	case "bsc":
+		return "56"
 	case "paintswap":
 		return "250"
 	case "opensea":

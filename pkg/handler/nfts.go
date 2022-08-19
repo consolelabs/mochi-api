@@ -17,8 +17,13 @@ type error interface {
 func (h *Handler) GetNFTDetail(c *gin.Context) {
 	symbol := c.Param("symbol")
 	tokenID := c.Param("id")
+	guildID := c.Query("guild_id")
+	// to prevent error when query db
+	if guildID == "" {
+		guildID = "0"
+	}
 
-	res, err := h.entities.GetNFTDetail(symbol, tokenID)
+	res, err := h.entities.GetNFTDetail(symbol, tokenID, guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -244,4 +249,20 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) UpdateNFTCollection(c *gin.Context) {
+	address := c.Param("address")
+	if address == "" {
+		h.log.Info("[handler.GetNFTCollectionByAddressChain] - address empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		return
+	}
+	err := h.entities.UpdateNFTCollection(address)
+	if err != nil {
+		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.UpdateNFTCollection] - failed to update collection")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }

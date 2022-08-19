@@ -57,4 +57,28 @@ type TwitterHashtag struct {
 	RuleID          string   `json:"rule_id"`
 	ChannelID       string   `json:"channel_id"`
 	Hashtag         []string `json:"hashtag"`
+	FromTwitter     []string `json:"from_twitter"`
+}
+
+type ConfigDefaultTokenRequest struct {
+	GuildID string `json:"guild_id"`
+	Symbol  string `json:"symbol"`
+}
+
+type ConfigDefaultCollection struct {
+	GuildID string `json:"guild_id"`
+	Symbol  string `json:"symbol"`
+	Address string `json:"address"`
+	ChainID string `json:"chain"`
+}
+
+type GetGuildDefaultTickerQuery struct {
+	GuildID string `json:"guild_id" form:"guild_id" binding:"required"`
+	Query   string `json:"query" form:"query" binding:"required"`
+}
+
+type GuildConfigDefaultTickerRequest struct {
+	GuildID       string `json:"guild_id"`
+	Query         string `json:"query"`
+	DefaultTicker string `json:"default_ticker"`
 }

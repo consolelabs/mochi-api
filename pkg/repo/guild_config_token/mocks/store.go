@@ -93,6 +93,34 @@ func (mr *MockStoreMockRecorder) GetByGuildIDAndTokenID(guildID, tokenID interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildIDAndTokenID", reflect.TypeOf((*MockStore)(nil).GetByGuildIDAndTokenID), guildID, tokenID)
 }
 
+// RemoveDefaultToken mocks base method.
+func (m *MockStore) RemoveDefaultToken(guildID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveDefaultToken", guildID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveDefaultToken indicates an expected call of RemoveDefaultToken.
+func (mr *MockStoreMockRecorder) RemoveDefaultToken(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveDefaultToken", reflect.TypeOf((*MockStore)(nil).RemoveDefaultToken), guildID)
+}
+
+// UnsetOldDefaultToken mocks base method.
+func (m *MockStore) UnsetOldDefaultToken(guildID string, tokenID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UnsetOldDefaultToken", guildID, tokenID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UnsetOldDefaultToken indicates an expected call of UnsetOldDefaultToken.
+func (mr *MockStoreMockRecorder) UnsetOldDefaultToken(guildID, tokenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnsetOldDefaultToken", reflect.TypeOf((*MockStore)(nil).UnsetOldDefaultToken), guildID, tokenID)
+}
+
 // UpsertMany mocks base method.
 func (m *MockStore) UpsertMany(configs []model.GuildConfigToken) error {
 	m.ctrl.T.Helper()

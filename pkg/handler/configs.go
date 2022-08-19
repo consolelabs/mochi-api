@@ -76,9 +76,16 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
+	// if guild id empty, return global default tokens
 	if guildID == "" {
-		h.log.Info("[handler.GetGuildTokens] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		defaultTokens, err := h.entities.GetGlobalDefaultToken()
+		if err != nil {
+			h.log.Error(err, "[handler.GetGuildTokens] - failed to get default tokens")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": defaultTokens})
+		return
 	}
 
 	guildTokens, err := h.entities.GetGuildTokens(guildID)
@@ -497,5 +504,62 @@ func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) GetDefaultToken(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	token, err := h.entities.GetDefaultToken(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.ConfigDefaultToken] - failed to get default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": token})
+}
+
+func (h *Handler) ConfigDefaultToken(c *gin.Context) {
+	req := request.ConfigDefaultTokenRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.SetDefaultToken(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) RemoveDefaultToken(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if err := h.entities.RemoveDefaultToken(guildID); err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.RemoveDefaultToken] - failed to remove default token")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
+func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
+	req := request.ConfigDefaultCollection{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.CreateDefaultCollectionSymbol(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 }

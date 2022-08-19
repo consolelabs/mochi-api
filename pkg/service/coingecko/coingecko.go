@@ -3,7 +3,6 @@ package coingecko
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -101,31 +100,4 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (re
 	}
 
 	return resp, nil, http.StatusOK
-}
-
-func (c *CoinGecko) TokenCompare(sourceSymbolInfo [][]float32, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
-	tokenCompareRes := &response.TokenCompareReponse{}
-
-	for i, _ := range sourceSymbolInfo {
-		currentRatio := sourceSymbolInfo[i][1] / targetSymbolInfo[i][1]
-		tokenCompareRes.PriceCompare = append(tokenCompareRes.PriceCompare, currentRatio)
-		// get times and convert to string, ex: 2022-05-24T07:59:30Z
-		getTime := int(sourceSymbolInfo[i][0])
-		getStringTime := strconv.Itoa(getTime / 1000)
-		convertTime, err := strconv.ParseInt(getStringTime, 10, 64)
-		if err != nil {
-			return tokenCompareRes, err
-		}
-
-		stringTime, err := time.Unix(convertTime, 0).UTC().MarshalText()
-		if err != nil {
-			return tokenCompareRes, err
-		}
-
-		resTime := string(stringTime)[5:10]
-
-		tokenCompareRes.Times = append(tokenCompareRes.Times, resTime)
-	}
-
-	return tokenCompareRes, nil
 }

@@ -97,10 +97,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
 			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
 		}
+		defaultSymbolGroup := configGroup.Group("/default-symbol")
+		{
+			defaultSymbolGroup.POST("", h.CreateDefaultCollectionSymbol)
+		}
 		tokenGroup := configGroup.Group("/tokens")
 		{
 			tokenGroup.GET("", h.GetGuildTokens)
 			tokenGroup.POST("", h.UpsertGuildTokenConfig)
+			tokenGroup.GET("/default", h.GetDefaultToken)
+			tokenGroup.POST("/default", h.ConfigDefaultToken)
+			tokenGroup.DELETE("/default", h.RemoveDefaultToken)
 		}
 		customTokenGroup := configGroup.Group("/custom-tokens")
 		{
@@ -138,6 +145,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.POST("/hashtag", h.CreateTwitterHashtagConfig)
 			twitterGroup.GET("/hashtag", h.GetAllTwitterHashtagConfig)
 		}
+		defaultTickerGroup := configGroup.Group("/default-ticker")
+		{
+			defaultTickerGroup.GET("", h.GetGuildDefaultTicker)
+			defaultTickerGroup.POST("", h.SetGuildDefaultTicker)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
@@ -152,7 +164,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
-		defiGroup.GET("/coins/compare", h.TokenCompare)
+		defiGroup.GET("/coins/compare", h.CompareToken)
 	}
 
 	webhook := v1.Group("/webhook")
@@ -201,6 +213,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/stats", h.GetCollectionCount)
 			collectionsGroup.GET("", h.GetNFTCollections)
 			collectionsGroup.POST("", h.CreateNFTCollection)
+			collectionsGroup.PATCH("/:address", h.UpdateNFTCollection) //to update collection images, delete after use
 			collectionsGroup.GET("/:symbol", h.GetNFTTokens)
 			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.GetNFTCollectionByAddressChain)

@@ -69,3 +69,19 @@ func (pg *pg) GetByGuildIDAndTokenID(guildID string, tokenID int) (*model.GuildC
 	}
 	return gct, nil
 }
+
+func (pg *pg) UnsetOldDefaultToken(guildID string, tokenID int) error {
+	return pg.db.
+		Model(&model.GuildConfigToken{}).
+		Where("guild_id = ? AND token_id != ? AND is_default = TRUE", guildID, tokenID).
+		Update("is_default", false).
+		Error
+}
+
+func (pg *pg) RemoveDefaultToken(guildID string) error {
+	return pg.db.
+		Model(&model.GuildConfigToken{}).
+		Where("guild_id = ? AND is_default = TRUE", guildID).
+		Update("is_default", false).
+		Error
+}

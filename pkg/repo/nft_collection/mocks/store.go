@@ -126,10 +126,10 @@ func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
 }
 
 // GetBySymbolorName mocks base method.
-func (m *MockStore) GetBySymbolorName(symbol string) (*model.NFTCollection, error) {
+func (m *MockStore) GetBySymbolorName(symbol string) ([]model.NFTCollection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetBySymbolorName", symbol)
-	ret0, _ := ret[0].(*model.NFTCollection)
+	ret0, _ := ret[0].([]model.NFTCollection)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -154,6 +154,21 @@ func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NewListedNFT
 func (mr *MockStoreMockRecorder) GetNewListed(interval, page, size interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewListed", reflect.TypeOf((*MockStore)(nil).GetNewListed), interval, page, size)
+}
+
+// GetSuggestionsBySymbolorName mocks base method.
+func (m *MockStore) GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSuggestionsBySymbolorName", name, len)
+	ret0, _ := ret[0].([]model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSuggestionsBySymbolorName indicates an expected call of GetSuggestionsBySymbolorName.
+func (mr *MockStoreMockRecorder) GetSuggestionsBySymbolorName(name, len interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSuggestionsBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetSuggestionsBySymbolorName), name, len)
 }
 
 // ListAll mocks base method.
@@ -215,4 +230,18 @@ func (m *MockStore) ListByGuildID(guildID string) ([]model.NFTCollection, error)
 func (mr *MockStoreMockRecorder) ListByGuildID(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByGuildID", reflect.TypeOf((*MockStore)(nil).ListByGuildID), guildID)
+}
+
+// UpdateImage mocks base method.
+func (m *MockStore) UpdateImage(address, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateImage", address, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateImage indicates an expected call of UpdateImage.
+func (mr *MockStoreMockRecorder) UpdateImage(address, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateImage", reflect.TypeOf((*MockStore)(nil).UpdateImage), address, image)
 }

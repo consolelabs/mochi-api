@@ -8,8 +8,9 @@ type Store interface {
 	GetByAddress(address string) (*model.NFTCollection, error)
 	GetByAddressChainId(address, chainId string) (*model.NFTCollection, error)
 	GetBySymbol(symbol string) (*model.NFTCollection, error)
-	GetBySymbolorName(symbol string) (*model.NFTCollection, error)
+	GetBySymbolorName(symbol string) ([]model.NFTCollection, error)
 	GetByID(id string) (*model.NFTCollection, error)
+	GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error)
 	GetByChain(chain int) ([]model.NFTCollection, int, error)
 	GetNewListed(interval int, page int, size int) ([]model.NewListedNFTCollection, int64, error)
 	Create(collection model.NFTCollection) (*model.NFTCollection, error)
@@ -17,4 +18,5 @@ type Store interface {
 	ListAllWithPaging(page int, size int) ([]model.NFTCollection, int64, error)
 	ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error)
 	ListByGuildID(guildID string) ([]model.NFTCollection, error)
+	UpdateImage(address string, image string) error
 }

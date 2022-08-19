@@ -46,14 +46,23 @@ func (pg *pg) GetBySymbol(symbol string) (*model.NFTCollection, error) {
 	return &collection, nil
 }
 
-func (pg *pg) GetBySymbolorName(name string) (*model.NFTCollection, error) {
-	var collection model.NFTCollection
-	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?) OR lower(symbol) = lower(?)", name, name).
-		Where("is_verified = ?", true).First(&collection).Error
+func (pg *pg) GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error) {
+	var collection []model.NFTCollection
+	err := pg.db.Table("nft_collections").Where(fmt.Sprintf("LEVENSHTEIN(symbol, '%s') <= %v OR LEVENSHTEIN(name, '%s') <= %v", name, len, name, len)).Order(fmt.Sprintf("(LENGTH(symbol) = LENGTH('%s')) DESC, levenshtein(symbol, '%s')", name, name)).Limit(5).Find(&collection).Error
 	if err != nil {
 		return nil, err
 	}
-	return &collection, nil
+	return collection, nil
+}
+
+func (pg *pg) GetBySymbolorName(name string) ([]model.NFTCollection, error) {
+	var collection []model.NFTCollection
+	err := pg.db.Table("nft_collections").Where("lower(name) = lower(?) OR lower(symbol) = lower(?)", name, name).
+		Where("is_verified = ?", true).Find(&collection).Error
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
 }
 
 func (pg *pg) GetByID(id string) (*model.NFTCollection, error) {
@@ -118,4 +127,8 @@ func (pg *pg) GetNewListed(interval int, page int, size int) ([]model.NewListedN
 		Limit(size).
 		Offset(size * page).
 		Find(&collection).Error
+}
+
+func (pg *pg) UpdateImage(address string, image string) error {
+	return pg.db.Table("nft_collections").Where("address=?", address).Update("image", image).Error
 }
