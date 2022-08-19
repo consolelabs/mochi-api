@@ -340,6 +340,7 @@ func (e *Entity) GetTwitterHashtagConfig(guildId string) (*response.TwitterHasht
 		Hashtag:         strings.Split(hashtag.Hashtag, ","),
 		TwitterUsername: strings.Split(hashtag.TwitterUsername, ","),
 		RuleID:          hashtag.RuleID,
+		FromTwitter:     strings.Split(hashtag.FromTwitter, ","),
 		CreatedAt:       hashtag.CreatedAt,
 		UpdatedAt:       hashtag.UpdatedAt,
 	}, nil
@@ -360,6 +361,7 @@ func (e *Entity) GetAllTwitterHashtagConfig() ([]response.TwitterHashtag, error)
 			Hashtag:         strings.Split(tag.Hashtag, ","),
 			TwitterUsername: strings.Split(tag.TwitterUsername, ","),
 			RuleID:          tag.RuleID,
+			FromTwitter:     strings.Split(tag.FromTwitter, ","),
 			CreatedAt:       tag.CreatedAt,
 			UpdatedAt:       tag.UpdatedAt,
 		})
@@ -379,11 +381,15 @@ func (e *Entity) DeleteTwitterHashtagConfig(guildId string) error {
 func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
 	hashtags := ""
 	usernames := ""
+	fromTwitter := ""
 	for _, tag := range req.Hashtag {
 		hashtags += tag + ","
 	}
 	for _, usr := range req.TwitterUsername {
 		usernames += usr + ","
+	}
+	for _, from := range req.FromTwitter {
+		fromTwitter += from + ","
 	}
 	err := e.repo.GuildConfigTwitterHashtag.UpsertOne(&model.GuildConfigTwitterHashtag{
 		UserID:          req.UserID,
@@ -392,6 +398,7 @@ func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
 		RuleID:          req.RuleID,
 		Hashtag:         strings.TrimSuffix(hashtags, ","), //save as '#abc,#bca,#abe'
 		TwitterUsername: strings.TrimSuffix(usernames, ","),
+		FromTwitter:     strings.TrimSuffix(fromTwitter, ","),
 		UpdatedAt:       time.Now(),
 	})
 	if err != nil {
