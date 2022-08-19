@@ -115,6 +115,15 @@ func (e *Entity) GetDefaultToken(guildID string) (*model.Token, error) {
 	return &token, nil
 }
 
+func (e *Entity) GetGlobalDefaultToken() ([]model.Token, error) {
+	tokens, err := e.repo.Token.GetDefaultTokens()
+	if err != nil {
+		e.log.Error(err, "[Entity][GetGlobalDefaultToken] repo.Token.GetDefaultTokens failed")
+		return nil, err
+	}
+	return tokens, nil
+}
+
 func (e *Entity) SetDefaultToken(req request.ConfigDefaultTokenRequest) error {
 	_, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
 	if err != nil {

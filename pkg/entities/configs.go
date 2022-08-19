@@ -401,8 +401,8 @@ func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
 	return nil
 }
 
-func (e *Entity) GetDefaultCollectionSymbol(guildID string, chainID string) ([]model.GuildConfigDefaultCollection, error) {
-	data, err := e.repo.GuildConfigDefaultCollection.GetByGuildIDandChainID(guildID, chainID)
+func (e *Entity) GetDefaultCollectionSymbol(guildID string) ([]model.GuildConfigDefaultCollection, error) {
+	data, err := e.repo.GuildConfigDefaultCollection.GetByGuildID(guildID)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetDefaultCollectionSymbol] failed to get default collection: %s", err)
 		return nil, err

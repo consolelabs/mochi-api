@@ -14,9 +14,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetByGuildIDandChainID(guildID string, chainID string) ([]model.GuildConfigDefaultCollection, error) {
+func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigDefaultCollection, error) {
 	config := []model.GuildConfigDefaultCollection{}
-	err := pg.db.Table("guild_config_default_collections").Where("guild_id = ? AND chain_id = ?", guildID, chainID).Find(&config).Error
+	err := pg.db.Table("guild_config_default_collections").Where("guild_id = ?", guildID).Find(&config).Error
 	if err != nil {
 		return nil, err
 	}

@@ -76,9 +76,16 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
+	// if guild id empty, return global default tokens
 	if guildID == "" {
-		h.log.Info("[handler.GetGuildTokens] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		defaultTokens, err := h.entities.GetGlobalDefaultToken()
+		if err != nil {
+			h.log.Error(err, "[handler.GetGuildTokens] - failed to get default tokens")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": defaultTokens})
+		return
 	}
 
 	guildTokens, err := h.entities.GetGuildTokens(guildID)
