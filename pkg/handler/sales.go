@@ -67,7 +67,7 @@ func (h *Handler) WebhookNftHandler(c *gin.Context) {
 func (h *Handler) handleNftSales(c *gin.Context, req request.HandleNftWebhookRequest) {
 	err := h.entities.SendNftSalesToChannel(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleNftSales] - failed to send NFT sales to channel")
+		h.log.Fields(logger.Fields{"address": req.CollectionAddress, "token_id": req.TokenId, "chain_id": req.ChainId, "marketplace": req.Marketplace}).Infof("[handler.handleNftSales] - failed to send NFT sales to channel: %s", err)
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}

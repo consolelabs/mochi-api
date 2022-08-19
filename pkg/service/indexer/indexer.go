@@ -57,7 +57,7 @@ func (i *indexer) CreateERC721Contract(req CreateERC721ContractRequest) error {
 		if err != nil {
 			return fmt.Errorf("CreateERC721Contract - failed to read response: %v", err)
 		}
-		i.log.Errorf(err, "CreateERC721Contract error: %s | chain_id %d", req.Address, req.ChainID)
+		i.log.Errorf(err, "CreateERC721Contract address: %s | chain_id %d | error: %s", req.Address, req.ChainID, errBody.String())
 		return fmt.Errorf("CreateERC721Contract - failed to create erc721 contract: %v", errBody.String())
 	}
 
