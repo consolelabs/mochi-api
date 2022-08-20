@@ -43,7 +43,7 @@ func New(cfg config.Config, l logger.Logger, s repo.Store) (*DiscordWallet, erro
 	}
 
 	for _, c := range chains {
-		if c.RPC == "" || c.APIKey == "" || c.APIBaseURL == "" {
+		if c.RPC == "" {
 			continue
 		}
 		chain, err := chain.NewClient(wallet, l, c.RPC, c.APIKey, c.APIBaseURL)
