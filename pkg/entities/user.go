@@ -143,7 +143,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		e.log.Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed - guild %s, user %s", req.GuildID, req.UserID)
 	} else {
 		e.log.Infof("[HandleUserActivities] - SendLevelUpMessage - userXP: %v, role: %s, res: %v", userXP, role, res)
-		e.svc.Discord.SendLevelUpMessage(userXP.Guild.LogChannel, role, res)
+		e.svc.Discord.SendLevelUpMessage(latestUserXP.Guild.LogChannel, role, res)
 	}
 	return res, nil
 }
