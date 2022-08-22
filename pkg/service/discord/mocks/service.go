@@ -104,18 +104,6 @@ func (mr *MockServiceMockRecorder) SendGuildActivityLogs(channelID, userID, titl
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendGuildActivityLogs", reflect.TypeOf((*MockService)(nil).SendGuildActivityLogs), channelID, userID, title, description)
 }
 
-// SendLevelRoleMessage mocks base method.
-func (m *MockService) SendLevelRoleMessage(logChannelID, role, oldRole string, uActivity *response.HandleUserActivityResponse) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SendLevelRoleMessage", logChannelID, role, oldRole, uActivity)
-}
-
-// SendLevelRoleMessage indicates an expected call of SendLevelRoleMessage.
-func (mr *MockServiceMockRecorder) SendLevelRoleMessage(logChannelID, role, oldRole, uActivity interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelRoleMessage", reflect.TypeOf((*MockService)(nil).SendLevelRoleMessage), logChannelID, role, oldRole, uActivity)
-}
-
 // SendLevelUpMessage mocks base method.
 func (m *MockService) SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse) {
 	m.ctrl.T.Helper()
@@ -126,4 +114,16 @@ func (m *MockService) SendLevelUpMessage(logChannelID, role string, uActivity *r
 func (mr *MockServiceMockRecorder) SendLevelUpMessage(logChannelID, role, uActivity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), logChannelID, role, uActivity)
+}
+
+// SendUpdateRoleMessage mocks base method.
+func (m *MockService) SendUpdateRoleMessage(logChannelID, role, oldRole string, uActivity *response.HandleUserActivityResponse) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SendUpdateRoleMessage", logChannelID, role, oldRole, uActivity)
+}
+
+// SendUpdateRoleMessage indicates an expected call of SendUpdateRoleMessage.
+func (mr *MockServiceMockRecorder) SendUpdateRoleMessage(logChannelID, role, oldRole, uActivity interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRoleMessage", reflect.TypeOf((*MockService)(nil).SendUpdateRoleMessage), logChannelID, role, oldRole, uActivity)
 }

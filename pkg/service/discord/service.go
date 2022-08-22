@@ -9,5 +9,5 @@ type Service interface {
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
 	NotifyStealFloorPrice(price float64, floor float64, url string, name string, image string) error
 	NotifyStealAveragePrice(price float64, floor float64, url string, name string, image string) error
-	SendLevelRoleMessage(logChannelID, role, oldRole string, uActivity *response.HandleUserActivityResponse)
+	SendUpdateRoleMessage(logChannelID, role, oldRole string, uActivity *response.HandleUserActivityResponse)
 }

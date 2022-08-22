@@ -204,7 +204,7 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 	return nil
 }
 
-func (d *Discord) SendLevelRoleMessage(logChannelID, curRoleID, oldRoleID string, uActivity *response.HandleUserActivityResponse) {
+func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID, oldRoleID string, uActivity *response.HandleUserActivityResponse) {
 	if uActivity.ChannelID == "" && logChannelID == "" {
 		d.log.Info("Action was not performed at any channel and no log channel configured as well")
 		return
@@ -216,13 +216,13 @@ func (d *Discord) SendLevelRoleMessage(logChannelID, curRoleID, oldRoleID string
 
 	dcUser, err := d.session.User(uActivity.UserID)
 	if err != nil {
-		d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord user %s", uActivity.UserID)
+		d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord user %s", uActivity.UserID)
 		return
 	}
 
 	curRole, err := d.session.State.Role(uActivity.GuildID, curRoleID)
 	if err != nil {
-		d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord roleID %s", curRoleID)
+		d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord roleID %s", curRoleID)
 		return
 	}
 	var oldRole = &discordgo.Role{}
@@ -231,7 +231,7 @@ func (d *Discord) SendLevelRoleMessage(logChannelID, curRoleID, oldRoleID string
 	} else {
 		oldRole, err = d.session.State.Role(uActivity.GuildID, oldRoleID)
 		if err != nil {
-			d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord roleID %s", curRoleID)
+			d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord roleID %s", curRoleID)
 			return
 		}
 	}
@@ -252,7 +252,7 @@ func (d *Discord) SendLevelRoleMessage(logChannelID, curRoleID, oldRoleID string
 
 	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
 	if err != nil {
-		d.log.Errorf(err, "SendLevelRoleMessage - failed to send level up msg")
+		d.log.Errorf(err, "SendUpdateRoleMessage - failed to send level up msg")
 		return
 	}
 }

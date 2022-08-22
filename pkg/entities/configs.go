@@ -203,14 +203,19 @@ func (e *Entity) AddGuildMemberRoles(guildID, logChannelID string, rolesToAdd, r
 			gMemberRoleLog.Error(err, "[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd failed")
 			return err
 		}
-		e.svc.Discord.SendLevelRoleMessage(logChannelID, roleID, rolesToRemove[userID], &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
+		e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, rolesToRemove[userID], &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
 		gMemberRoleLog.Info("[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd executed successfully")
 	}
 	return nil
 }
 
-func (e *Entity) AddGuildMemberRole(guildID, userID, roleID string) error {
-	return e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
+func (e *Entity) AddGuildMemberRole(guildID, userID, roleID, logChannelID, oldRoleID string) error {
+	err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
+	if err != nil {
+		return err
+	}
+	e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, oldRoleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
+	return nil
 }
 
 func (e *Entity) RemoveGuildMemberRole(guildID, userID, roleID string) error {

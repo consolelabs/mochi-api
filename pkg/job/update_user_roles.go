@@ -87,6 +87,7 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Info("entity.GetUserRoleByLevel - no data found")
+			continue
 		case err != nil:
 			c.log.Fields(logger.Fields{
 				"level":   userXP.Level,
@@ -169,6 +170,8 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
+	rolesRemove := map[string]string{}
+
 	for _, member := range members {
 		for _, roleID := range member.Roles {
 			if isNFTRoles[roleID] {
@@ -184,7 +187,9 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 				err = c.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
 				if err != nil {
 					gMemberRoleLog.Error(err, "entity.RemoveGuildMemberRole failed")
+					continue
 				}
+				rolesRemove[member.User.ID] = roleID
 				gMemberRoleLog.Info("entity.RemoveGuildMemberRole executed successfully")
 			}
 		}
@@ -196,9 +201,15 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 			"userId":  roleToAdd[0],
 			"roleId":  roleToAdd[1],
 		})
-		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1])
+		guild, err := c.entity.GetGuild(guildID)
+		if err != nil {
+			l.Error(err, "entity.GetGuild failed")
+			return err
+		}
+		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1], guild.LogChannelID, rolesRemove[roleToAdd[0]])
 		if err != nil {
 			gMemberRoleLog.Error(err, "entity.AddGuildMemberRole failed")
+			continue
 		}
 		gMemberRoleLog.Info("entity.AddGuildMemberRole executed successfully")
 	}
