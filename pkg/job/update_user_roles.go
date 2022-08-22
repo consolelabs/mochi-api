@@ -62,6 +62,12 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		return nil
 	}
 
+	guild, err := c.entity.GetGuild(guildID)
+	if err != nil {
+		l.Error(err, "entity.GetGuild failed")
+		return err
+	}
+
 	rolesToAdd := make(map[string]string)
 	rolesToRemove := make(map[string]string)
 	for _, userXP := range userXPs {
@@ -118,7 +124,7 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		"rolesToRemove": rolesToRemove,
 	}).Info("entity.RemoveGuildMemberRoles executed successfully")
 
-	if err := c.entity.AddGuildMemberRoles(guildID, rolesToAdd); err != nil {
+	if err := c.entity.AddGuildMemberRoles(guildID, guild.LogChannelID, rolesToAdd, rolesToRemove); err != nil {
 		c.log.Fields(logger.Fields{
 			"guildId":    guildID,
 			"rolesToAdd": rolesToAdd,

@@ -203,3 +203,56 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 
 	return nil
 }
+
+func (d *Discord) SendLevelRoleMessage(logChannelID, curRoleID, oldRoleID string, uActivity *response.HandleUserActivityResponse) {
+	if uActivity.ChannelID == "" && logChannelID == "" {
+		d.log.Info("Action was not performed at any channel and no log channel configured as well")
+		return
+	}
+	channelID := logChannelID
+	if channelID == "" {
+		channelID = uActivity.ChannelID
+	}
+
+	dcUser, err := d.session.User(uActivity.UserID)
+	if err != nil {
+		d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord user %s", uActivity.UserID)
+		return
+	}
+
+	curRole, err := d.session.State.Role(uActivity.GuildID, curRoleID)
+	if err != nil {
+		d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord roleID %s", curRoleID)
+		return
+	}
+	var oldRole = &discordgo.Role{}
+	if oldRoleID == "" {
+		oldRole.Name = "N/A"
+	} else {
+		oldRole, err = d.session.State.Role(uActivity.GuildID, oldRoleID)
+		if err != nil {
+			d.log.Errorf(err, "SendLevelRoleMessage - failed to get discord roleID %s", curRoleID)
+			return
+		}
+	}
+
+	description := fmt.Sprintf("<@%s> has been updated role **(%s - %s)**\n\n**XP: **%d\n**Role: **%s", uActivity.UserID, oldRole.Name, curRole.Name, uActivity.CurrentXP, curRole.Name)
+	msgEmbed := discordgo.MessageEmbed{
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:    "Role update!",
+			IconURL: "https://cdn.discordapp.com/emojis/984824963112513607.png?size=240&quality=lossless",
+		},
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: dcUser.AvatarURL(""),
+		},
+		Description: description,
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	if err != nil {
+		d.log.Errorf(err, "SendLevelRoleMessage - failed to send level up msg")
+		return
+	}
+}
