@@ -192,7 +192,7 @@ func (e *Entity) RemoveGuildMemberRoles(guildID string, rolesToRemove map[string
 	return nil
 }
 
-func (e *Entity) AddGuildMemberRoles(guildID, logChannelID string, rolesToAdd, rolesToRemove map[string]string) error {
+func (e *Entity) AddGuildMemberRoles(guildID, logChannelID string, rolesToAdd map[string]string) error {
 	for userID, roleID := range rolesToAdd {
 		gMemberRoleLog := e.log.Fields(logger.Fields{
 			"guildId": guildID,
@@ -203,18 +203,18 @@ func (e *Entity) AddGuildMemberRoles(guildID, logChannelID string, rolesToAdd, r
 			gMemberRoleLog.Error(err, "[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd failed")
 			return err
 		}
-		e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, rolesToRemove[userID], &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
+		e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
 		gMemberRoleLog.Info("[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd executed successfully")
 	}
 	return nil
 }
 
-func (e *Entity) AddGuildMemberRole(guildID, userID, roleID, logChannelID, oldRoleID string) error {
+func (e *Entity) AddGuildMemberRole(guildID, userID, roleID, logChannelID string) error {
 	err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
 	if err != nil {
 		return err
 	}
-	e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, oldRoleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
+	e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
 	return nil
 }
 

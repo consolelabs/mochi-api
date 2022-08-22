@@ -117,13 +117,13 @@ func (mr *MockServiceMockRecorder) SendLevelUpMessage(logChannelID, role, uActiv
 }
 
 // SendUpdateRoleMessage mocks base method.
-func (m *MockService) SendUpdateRoleMessage(logChannelID, role, oldRole string, uActivity *response.HandleUserActivityResponse) {
+func (m *MockService) SendUpdateRoleMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SendUpdateRoleMessage", logChannelID, role, oldRole, uActivity)
+	m.ctrl.Call(m, "SendUpdateRoleMessage", logChannelID, role, uActivity)
 }
 
 // SendUpdateRoleMessage indicates an expected call of SendUpdateRoleMessage.
-func (mr *MockServiceMockRecorder) SendUpdateRoleMessage(logChannelID, role, oldRole, uActivity interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendUpdateRoleMessage(logChannelID, role, uActivity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRoleMessage", reflect.TypeOf((*MockService)(nil).SendUpdateRoleMessage), logChannelID, role, oldRole, uActivity)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRoleMessage", reflect.TypeOf((*MockService)(nil).SendUpdateRoleMessage), logChannelID, role, uActivity)
 }

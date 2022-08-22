@@ -125,7 +125,7 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		"rolesToRemove": rolesToRemove,
 	}).Info("entity.RemoveGuildMemberRoles executed successfully")
 
-	if err := c.entity.AddGuildMemberRoles(guildID, guild.LogChannelID, rolesToAdd, rolesToRemove); err != nil {
+	if err := c.entity.AddGuildMemberRoles(guildID, guild.LogChannelID, rolesToAdd); err != nil {
 		c.log.Fields(logger.Fields{
 			"guildId":    guildID,
 			"rolesToAdd": rolesToAdd,
@@ -206,7 +206,7 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 			l.Error(err, "entity.GetGuild failed")
 			return err
 		}
-		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1], guild.LogChannelID, rolesRemove[roleToAdd[0]])
+		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1], guild.LogChannelID)
 		if err != nil {
 			gMemberRoleLog.Error(err, "entity.AddGuildMemberRole failed")
 			continue

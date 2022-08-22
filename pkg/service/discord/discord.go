@@ -204,7 +204,7 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 	return nil
 }
 
-func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID, oldRoleID string, uActivity *response.HandleUserActivityResponse) {
+func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID string, uActivity *response.HandleUserActivityResponse) {
 	if uActivity.ChannelID == "" && logChannelID == "" {
 		d.log.Info("Action was not performed at any channel and no log channel configured as well")
 		return
@@ -225,18 +225,8 @@ func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID, oldRoleID strin
 		d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord roleID %s", curRoleID)
 		return
 	}
-	var oldRole = &discordgo.Role{}
-	if oldRoleID == "" {
-		oldRole.Name = "N/A"
-	} else {
-		oldRole, err = d.session.State.Role(uActivity.GuildID, oldRoleID)
-		if err != nil {
-			d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord roleID %s", curRoleID)
-			return
-		}
-	}
 
-	description := fmt.Sprintf("<@%s> has been updated role **(%s - %s)**\n\n**XP: **%d\n**Role: **%s", uActivity.UserID, oldRole.Name, curRole.Name, uActivity.CurrentXP, curRole.Name)
+	description := fmt.Sprintf("<@%s> has been updated role \n\n**Role: **%s", uActivity.UserID, curRole.Name)
 	msgEmbed := discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    "Role update!",
