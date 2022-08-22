@@ -91,6 +91,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Info("entity.GetUserRoleByLevel - no data found")
+			continue
 		case err != nil:
 			c.log.Fields(logger.Fields{
 				"level":   userXP.Level,
@@ -192,8 +193,6 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
-	rolesRemove := map[string]string{}
-
 	for _, member := range members {
 		for _, roleID := range member.Roles {
 			if isNFTRoles[roleID] {
@@ -241,12 +240,11 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		if err != nil {
 			gMemberRoleLog.Error(err, "[updateNFTRoles] entity.AddGuildMemberRole failed")
 			continue
-			continue
 		}
 
 		// send logs to moderation channel
 		gMemberRoleLog.Info("[updateNFTRoles] entity.AddGuildMemberRole executed successfully")
-		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
+		err = job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
 		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId":   guildID,
