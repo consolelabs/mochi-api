@@ -144,7 +144,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 	switch {
 	case isGmMessage:
 		guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
-		if err != nil {
+		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, err
 		}
 		if guildConfigGm.ChannelID != channelID {
