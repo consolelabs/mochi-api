@@ -217,6 +217,12 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		}
 	}
 
+	guild, err := job.entity.GetGuild(guildID)
+	if err != nil {
+		l.Error(err, "[updateNFTRoles] entity.GetGuild failed")
+		return err
+	}
+
 	for roleToAdd := range rolesToAdd {
 		userID := roleToAdd[0]
 		roleID := roleToAdd[1]
@@ -225,11 +231,6 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 			"userId":  userID,
 			"roleId":  roleID,
 		})
-		guild, err := job.entity.GetGuild(guildID)
-		if err != nil {
-			l.Error(err, "entity.GetGuild failed")
-			return err
-		}
 		err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
 		if err != nil {
 			gMemberRoleLog.Error(err, "[updateNFTRoles] entity.AddGuildMemberRole failed")
@@ -238,7 +239,7 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 
 		// send logs to moderation channel
 		gMemberRoleLog.Info("[updateNFTRoles] entity.AddGuildMemberRole executed successfully")
-		err = job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
+		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
 		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId":   guildID,
