@@ -1,14 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
@@ -21,10 +19,6 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 	data, err := h.entities.GetDefaultRoleByGuildID(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetDefaultRolesByGuildID] - failed to get default roles")
-		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("cannot find default role of guild %s", guildID)})
-			return
-		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

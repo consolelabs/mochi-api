@@ -1,13 +1,16 @@
 package entities
 
 import (
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleResponse, error) {
 	role, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetDefaultRoleByGuildID] failed to get default role by guild id")
 		return nil, err
 	}
 
@@ -15,7 +18,7 @@ func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleR
 	res.Success = true
 	res.Data = response.DefaultRole{
 		RoleID:  role.RoleID,
-		GuildID: role.GuildID,
+		GuildID: guildID,
 	}
 
 	return &res, nil
