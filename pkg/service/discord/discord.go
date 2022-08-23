@@ -220,13 +220,7 @@ func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID string, uActivit
 		return
 	}
 
-	curRole, err := d.session.State.Role(uActivity.GuildID, curRoleID)
-	if err != nil {
-		d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord roleID %s", curRoleID)
-		return
-	}
-
-	description := fmt.Sprintf("<@%s> has been updated role \n\n**Role: **%s", uActivity.UserID, curRole.Name)
+	description := fmt.Sprintf("<@%s> has been updated role \n\n**Role: ** <@&%s>", uActivity.UserID, curRoleID)
 	msgEmbed := discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			Name:    "Role update!",
