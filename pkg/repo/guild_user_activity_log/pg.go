@@ -16,3 +16,7 @@ func NewPG(db *gorm.DB) Store {
 func (pg *pg) CreateOne(record model.GuildUserActivityLog) error {
 	return pg.db.Create(&record).Error
 }
+
+func (pg *pg) CreateOneNoGuild(record model.GuildUserActivityLog) error {
+	return pg.db.Select("UserID", "ActivityName").Create(&record).Error
+}
