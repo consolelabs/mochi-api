@@ -246,6 +246,20 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 }
 
 func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	if message.Content == "" {
+		return &response.HandleUserActivityResponse{
+			GuildID:      message.GuildID,
+			ChannelID:    message.ChannelID,
+			UserID:       message.Author.ID,
+			Action:       "default",
+			AddedXP:      0,
+			CurrentXP:    0,
+			CurrentLevel: 0,
+			Timestamp:    message.Timestamp,
+			LevelUp:      false,
+		}, nil
+	}
+
 	xpID := fmt.Sprintf(`%s_%s_chat_xp_cooldown`, message.Author.ID, message.GuildID)
 
 	exists, err := e.cache.GetBool(xpID)
