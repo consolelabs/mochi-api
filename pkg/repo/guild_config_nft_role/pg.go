@@ -48,6 +48,11 @@ func (pg *pg) ListByGuildID(guildID string) ([]model.GuildConfigNFTRole, error) 
 	return configs, pg.db.Where("guild_id = ?", guildID).Order("nft_collection_id, token_id, number_of_tokens asc").Find(&configs).Error
 }
 
+func (pg *pg) GetByRoleID(guildID, roleID string) (*model.GuildConfigNFTRole, error) {
+	config := &model.GuildConfigNFTRole{}
+	return config, pg.db.Where("guild_id = ? AND role_id = ?", guildID, roleID).First(config).Error
+}
+
 func (pg *pg) UpsertOne(config *model.GuildConfigNFTRole) error {
 	tx := pg.db.Begin()
 

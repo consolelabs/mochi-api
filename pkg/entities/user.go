@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -118,6 +119,9 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		EarnedXP:     earnedXP,
 		CreatedAt:    req.Timestamp,
 	}); err != nil {
+		e.log.
+			Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID, "action": req.Action}).
+			Error(err, "[Entity][HandleUserActivities] failed to create guild_user_activity_logs")
 		return nil, err
 	}
 
@@ -140,10 +144,12 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 
 	role, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.UserID)
 	if err != nil {
-		e.log.Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed - guild %s, user %s", req.GuildID, req.UserID)
+		e.log.Fields(logger.Fields{
+			"guildId": req.GuildID,
+			"userId":  req.UserID,
+		}).Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed")
 	} else {
-		e.log.Infof("[HandleUserActivities] - SendLevelUpMessage - userXP: %v, role: %s, res: %v", userXP, role, res)
-		e.svc.Discord.SendLevelUpMessage(userXP.Guild.LogChannel, role, res)
+		e.svc.Discord.SendLevelUpMessage(latestUserXP.Guild.LogChannel, role, res)
 	}
 	return res, nil
 }

@@ -67,12 +67,6 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
 	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.InDiscordWalletBalances] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
-		return
-	}
-
 	discordID := c.Query("discord_id")
 	if discordID == "" {
 		h.log.Info("[handler.InDiscordWalletBalances] - discord id empty")

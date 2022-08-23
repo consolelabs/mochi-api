@@ -9,6 +9,7 @@ type GetGuildResponse struct {
 	Name         string   `json:"name"`
 	BotScopes    []string `json:"bot_scopes"`
 	Alias        string   `json:"alias"`
+	LogChannel   string   `json:"log_channel"`
 	LogChannelID string   `json:"log_channel_id"`
 	GlobalXP     bool     `json:"global_xp"`
 }

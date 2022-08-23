@@ -47,3 +47,17 @@ func (mr *MockStoreMockRecorder) CreateOne(record interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), record)
 }
+
+// CreateOneNoGuild mocks base method.
+func (m *MockStore) CreateOneNoGuild(record model.GuildUserActivityLog) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOneNoGuild", record)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOneNoGuild indicates an expected call of CreateOneNoGuild.
+func (mr *MockStoreMockRecorder) CreateOneNoGuild(record interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneNoGuild", reflect.TypeOf((*MockStore)(nil).CreateOneNoGuild), record)
+}

@@ -149,18 +149,13 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 	}
 
 	if err := e.sendTransferLogs(req, res); err != nil {
-		e.log.Errorf(err, "failed to send discord transfer logs")
+		e.log.Errorf(err, "[entity.InDiscordWalletTransfer] failed")
 	}
-
 	return res, errs
 }
 
 func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {
-	// only send tip logs
-	if !strings.EqualFold(req.TransferType, "tip") {
-		return nil
-	}
-	if len(res) == 0 {
+	if req.GuildID == "" || len(res) == 0 {
 		return nil
 	}
 	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
@@ -168,12 +163,18 @@ func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.In
 		return err
 	}
 
-	var recipients []string
-	for _, tx := range res {
-		recipients = append(recipients, fmt.Sprintf("<@%s>", tx.ToDiscordID))
+	token := strings.ToUpper(res[0].Cryptocurrency)
+	var description string
+	if req.TransferType == "withdraw" {
+		description = fmt.Sprintf("<@%s> has made a withdrawal of **%g %s** to address `%s`", res[0].FromDiscordID, res[0].Amount, token, req.Recipients[0])
+	} else {
+		var recipients []string
+		for _, tx := range res {
+			recipients = append(recipients, fmt.Sprintf("<@%s>", tx.ToDiscordID))
+		}
+		recipientsStr := strings.Join(recipients, ", ")
+		description = fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, token, req.ChannelID)
 	}
-	recipientsStr := strings.Join(recipients, ", ")
-	description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, strings.ToUpper(res[0].Cryptocurrency), req.ChannelID)
 	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, req.Sender, strings.ToUpper(req.TransferType), description)
 }
 
@@ -209,17 +210,27 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 		return nil, err
 	}
 
-	if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		UserID:    req.Sender,
-		Timestamp: time.Now(),
-		Action:    req.TransferType,
-	}); err != nil {
-		err = fmt.Errorf("error create activity log: %v", err)
-		return nil, err
+	if req.GuildID == "" {
+		// log activity
+		if err := e.repo.GuildUserActivityLog.CreateOneNoGuild(model.GuildUserActivityLog{
+			UserID:       req.Sender,
+			ActivityName: "withdraw",
+		}); err != nil {
+			err = fmt.Errorf("error create activity log: %v", err)
+			return nil, err
+		}
+	} else {
+		if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+			GuildID:   req.GuildID,
+			ChannelID: req.ChannelID,
+			UserID:    req.Sender,
+			Timestamp: time.Now(),
+			Action:    req.TransferType,
+		}); err != nil {
+			err = fmt.Errorf("error create activity log: %v", err)
+			return nil, err
+		}
 	}
-
 	withdrawalAmount := util.WeiToEther(signedTx.Value())
 	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
@@ -232,6 +243,20 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 		TxURL:            fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
 		WithdrawalAmount: withdrawalAmount,
 		TransactionFee:   transactionFee,
+	}
+
+	err = e.sendTransferLogs(req, []response.InDiscordWalletTransferResponse{
+		{
+			FromDiscordID:  req.Sender,
+			Amount:         transferredAmount,
+			Cryptocurrency: token.Symbol,
+			TxHash:         signedTx.Hash().Hex(),
+			TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
+			TransactionFee: transactionFee,
+		},
+	})
+	if err != nil {
+		e.log.Errorf(err, "[entity.InDiscordWalletWithdraw] sendTransferLogs failed")
 	}
 	return res, nil
 }
@@ -289,21 +314,18 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 		return nil, err
 	}
 
-	gTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
+	tokens, err := e.GetGuildTokens(guildID)
 	if err != nil {
-		err = fmt.Errorf("failed to get guild %s tokens - err: %v", guildID, err)
+		err = fmt.Errorf("failed to get global default tokens - err: %v", err)
 		return nil, err
 	}
-	if len(gTokens) == 0 {
+
+	// server does not have default tokens
+	if len(tokens) == 0 && guildID != "" {
 		if err = e.InitGuildDefaultTokenConfigs(guildID); err != nil {
 			return nil, err
 		}
 		return e.InDiscordWalletBalances(guildID, discordID)
-	}
-
-	var tokens []model.Token
-	for _, gToken := range gTokens {
-		tokens = append(tokens, *gToken.Token)
 	}
 
 	if user.InDiscordWalletAddress.String == "" {

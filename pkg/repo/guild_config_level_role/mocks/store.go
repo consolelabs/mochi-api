@@ -63,6 +63,21 @@ func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
 }
 
+// GetByRoleID mocks base method.
+func (m *MockStore) GetByRoleID(guildID, roleID string) (*model.GuildConfigLevelRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByRoleID", guildID, roleID)
+	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByRoleID indicates an expected call of GetByRoleID.
+func (mr *MockStoreMockRecorder) GetByRoleID(guildID, roleID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRoleID", reflect.TypeOf((*MockStore)(nil).GetByRoleID), guildID, roleID)
+}
+
 // GetHighest mocks base method.
 func (m *MockStore) GetHighest(guildID string, level int) (*model.GuildConfigLevelRole, error) {
 	m.ctrl.T.Helper()
