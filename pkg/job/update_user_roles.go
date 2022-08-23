@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
+	"gorm.io/gorm"
 )
 
 type updateUserRoles struct {
@@ -84,16 +85,16 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 			continue
 		}
 
-		userLevelRole, err := c.entity.GetUserRoleByLevel(guildID, userXP.Level)
+		userLevelRole, err := job.entity.GetUserRoleByLevel(guildID, userXP.Level)
 		switch {
-		case err == entities.ErrRecordNotFound:
-			c.log.Fields(logger.Fields{
+		case err == gorm.ErrRecordNotFound:
+			job.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Info("entity.GetUserRoleByLevel - no data found")
 			continue
 		case err != nil:
-			c.log.Fields(logger.Fields{
+			job.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
 			}).Error(err, "[updateLevelRoles] entity.GetUserRoleByLevel failed")
@@ -216,13 +217,6 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		}
 	}
 
-	guild, err := job.entity.GetGuild(guildID)
-	if err != nil {
-		l.Error(err, "[updateNFTRoles] entity.GetGuild failed")
-		return err
-	}
-
-<<<<<<< HEAD
 	for roleToAdd := range rolesToAdd {
 		userID := roleToAdd[0]
 		roleID := roleToAdd[1]
@@ -231,12 +225,12 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 			"userId":  userID,
 			"roleId":  roleID,
 		})
-		guild, err := c.entity.GetGuild(guildID)
+		guild, err := job.entity.GetGuild(guildID)
 		if err != nil {
 			l.Error(err, "entity.GetGuild failed")
 			return err
 		}
-		err = job.entity.AddGuildMemberRole(guildID, userID, roleID, guild.LogChannelID)
+		err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
 		if err != nil {
 			gMemberRoleLog.Error(err, "[updateNFTRoles] entity.AddGuildMemberRole failed")
 			continue
