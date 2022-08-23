@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -176,46 +175,8 @@ func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
 	return config.RoleID, nil
 }
 
-func (e *Entity) RemoveGuildMemberRoles(guildID string, rolesToRemove map[string]string) error {
-	for userID, roleID := range rolesToRemove {
-		gMemberRoleLog := e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-			"roleId":  roleID,
-		})
-		if err := e.discord.GuildMemberRoleRemove(guildID, userID, roleID); err != nil {
-			gMemberRoleLog.Error(err, "[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove failed")
-			return err
-		}
-		gMemberRoleLog.Info("[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove executed successfully")
-	}
-	return nil
-}
-
-func (e *Entity) AddGuildMemberRoles(guildID, logChannelID string, rolesToAdd map[string]string) error {
-	for userID, roleID := range rolesToAdd {
-		gMemberRoleLog := e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-			"roleId":  roleID,
-		})
-		if err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID); err != nil {
-			gMemberRoleLog.Error(err, "[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd failed")
-			return err
-		}
-		e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
-		gMemberRoleLog.Info("[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd executed successfully")
-	}
-	return nil
-}
-
-func (e *Entity) AddGuildMemberRole(guildID, userID, roleID, logChannelID string) error {
-	err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
-	if err != nil {
-		return err
-	}
-	e.svc.Discord.SendUpdateRoleMessage(logChannelID, roleID, &response.HandleUserActivityResponse{GuildID: guildID, UserID: userID})
-	return nil
+func (e *Entity) AddGuildMemberRole(guildID, userID, roleID string) error {
+	return e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
 }
 
 func (e *Entity) RemoveGuildMemberRole(guildID, userID, roleID string) error {

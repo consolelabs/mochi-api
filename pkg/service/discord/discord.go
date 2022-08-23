@@ -204,39 +204,31 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 	return nil
 }
 
-func (d *Discord) SendUpdateRoleMessage(logChannelID, curRoleID string, uActivity *response.HandleUserActivityResponse) {
-	if uActivity.ChannelID == "" && logChannelID == "" {
-		d.log.Info("Action was not performed at any channel and no log channel configured as well")
-		return
-	}
-	channelID := logChannelID
-	if channelID == "" {
-		channelID = uActivity.ChannelID
+func (d *Discord) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error {
+	if guildID == "" || logChannelID == "" || userID == "" || roleID == "" {
+		return nil
 	}
 
-	dcUser, err := d.session.User(uActivity.UserID)
+	member, err := d.session.GuildMember(guildID, userID)
 	if err != nil {
-		d.log.Errorf(err, "SendUpdateRoleMessage - failed to get discord user %s", uActivity.UserID)
-		return
+		d.log.Errorf(err, "[svc.Discord.SendUpdateRolesLog] - session.GuildMember failed %s", userID)
+		return err
 	}
 
-	description := fmt.Sprintf("<@%s> has been updated role \n\n**Role: ** <@&%s>", uActivity.UserID, curRoleID)
+	description := fmt.Sprintf("<@%s> has been assigned a new role\n**Type**: %s\n**Role**: <@&%s>", userID, _type, roleID)
 	msgEmbed := discordgo.MessageEmbed{
-		Author: &discordgo.MessageEmbedAuthor{
-			Name:    "Role update!",
-			IconURL: "https://cdn.discordapp.com/emojis/984824963112513607.png?size=240&quality=lossless",
-		},
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: dcUser.AvatarURL(""),
-		},
+		Title:       "Role updated",
 		Description: description,
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: member.AvatarURL(""),
+		},
 	}
 
-	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	_, err = d.session.ChannelMessageSendEmbed(logChannelID, &msgEmbed)
 	if err != nil {
-		d.log.Errorf(err, "SendUpdateRoleMessage - failed to send level up msg")
-		return
+		return fmt.Errorf("[svc.Discord.SendUpdateRolesLog] - ChannelMessageSendEmbed failed to channel %s: %s", logChannelID, err.Error())
 	}
+	return nil
 }
