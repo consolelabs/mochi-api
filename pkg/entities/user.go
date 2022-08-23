@@ -119,6 +119,9 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		EarnedXP:     earnedXP,
 		CreatedAt:    req.Timestamp,
 	}); err != nil {
+		e.log.
+			Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID, "action": req.Action}).
+			Error(err, "[Entity][HandleUserActivities] failed to create guild_user_activity_logs")
 		return nil, err
 	}
 

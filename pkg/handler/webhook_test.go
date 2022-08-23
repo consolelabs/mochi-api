@@ -114,7 +114,7 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 		},
 		{
 			name: "internal server error - invalid guild ID",
-			args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "", "895659000996200508", time.Now(), ""}},
+			args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "", "895659000996200508", time.Now(), "abc"}},
 			want: result{
 				code: 500,
 				err:  nil,
