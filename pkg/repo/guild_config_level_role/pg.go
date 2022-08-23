@@ -26,6 +26,11 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigLevelRole, error)
 	return configs, pg.db.Where("guild_id = ?", guildID).Preload("LevelConfig").Find(&configs).Error
 }
 
+func (pg *pg) GetByRoleID(guildID, roleID string) (*model.GuildConfigLevelRole, error) {
+	config := &model.GuildConfigLevelRole{}
+	return config, pg.db.Where("guild_id = ? AND role_id = ?", guildID, roleID).First(config).Error
+}
+
 func (pg *pg) UpsertOne(config model.GuildConfigLevelRole) error {
 	tx := pg.db.Begin()
 

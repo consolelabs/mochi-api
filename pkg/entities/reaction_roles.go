@@ -65,6 +65,10 @@ func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string)
 }
 
 func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) (*response.RoleReactionConfigResponse, error) {
+	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
+	if err != nil {
+		return nil, err
+	}
 	var roles []response.Role
 
 	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(req.GuildID, req.MessageID)
