@@ -53,7 +53,8 @@ func (e *Entity) GetGuilds() (*response.GetGuildsResponse, error) {
 			Name:         g.Name,
 			BotScopes:    g.BotScopes,
 			Alias:        g.Alias,
-			LogChannelID: g.GuildConfigInviteTracker.ChannelID,
+			LogChannelID: g.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
+			LogChannel:   g.LogChannel,
 		})
 	}
 
@@ -74,7 +75,8 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		Name:         guild.Name,
 		BotScopes:    guild.BotScopes,
 		Alias:        guild.Alias,
-		LogChannelID: guild.GuildConfigInviteTracker.ChannelID,
+		LogChannel:   guild.LogChannel,
+		LogChannelID: guild.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
 		GlobalXP:     guild.GlobalXP,
 	}, nil
 }

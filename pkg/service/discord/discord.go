@@ -203,3 +203,32 @@ func (d *Discord) NotifyStealAveragePrice(price float64, avg float64, url string
 
 	return nil
 }
+
+func (d *Discord) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error {
+	if guildID == "" || logChannelID == "" || userID == "" || roleID == "" {
+		return nil
+	}
+
+	member, err := d.session.GuildMember(guildID, userID)
+	if err != nil {
+		d.log.Errorf(err, "[svc.Discord.SendUpdateRolesLog] - session.GuildMember failed %s", userID)
+		return err
+	}
+
+	description := fmt.Sprintf("<@%s> has been assigned a new role\n**Type**: %s\n**Role**: <@&%s>", userID, _type, roleID)
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       "Role updated",
+		Description: description,
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: member.AvatarURL(""),
+		},
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(logChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("[svc.Discord.SendUpdateRolesLog] - ChannelMessageSendEmbed failed to channel %s: %s", logChannelID, err.Error())
+	}
+	return nil
+}

@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -99,38 +98,6 @@ func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
 	}
 
 	return config.RoleID, nil
-}
-
-func (e *Entity) RemoveGuildMemberRoles(guildID string, rolesToRemove map[string]string) error {
-	for userID, roleID := range rolesToRemove {
-		gMemberRoleLog := e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-			"roleId":  roleID,
-		})
-		if err := e.discord.GuildMemberRoleRemove(guildID, userID, roleID); err != nil {
-			gMemberRoleLog.Error(err, "[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove failed")
-			return err
-		}
-		gMemberRoleLog.Info("[Entity][RemoveGuildMemberRoles] discord.GuildMemberRoleRemove executed successfully")
-	}
-	return nil
-}
-
-func (e *Entity) AddGuildMemberRoles(guildID string, rolesToAdd map[string]string) error {
-	for userID, roleID := range rolesToAdd {
-		gMemberRoleLog := e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-			"roleId":  roleID,
-		})
-		if err := e.discord.GuildMemberRoleAdd(guildID, userID, roleID); err != nil {
-			gMemberRoleLog.Error(err, "[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd failed")
-			return err
-		}
-		gMemberRoleLog.Info("[Entity][AddGuildMemberRoles] discord.GuildMemberRoleAdd executed successfully")
-	}
-	return nil
 }
 
 func (e *Entity) AddGuildMemberRole(guildID, userID, roleID string) error {

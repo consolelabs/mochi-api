@@ -3,83 +3,93 @@ package job
 import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service"
 )
 
 type updateUserRoles struct {
-	entity *entities.Entity
-	log    logger.Logger
+	entity  *entities.Entity
+	service *service.Service
+	log     logger.Logger
 }
 
-func NewUpdateUserRolesJob(e *entities.Entity, l logger.Logger) Job {
+func NewUpdateUserRolesJob(e *entities.Entity, svc *service.Service, l logger.Logger) Job {
 	return &updateUserRoles{
-		entity: e,
-		log:    l,
+		entity:  e,
+		service: svc,
+		log:     l,
 	}
 }
 
-func (c *updateUserRoles) Run() error {
-	guilds, err := c.entity.GetGuilds()
+func (job *updateUserRoles) Run() error {
+	guilds, err := job.entity.GetGuilds()
 	if err != nil {
+		job.log.Error(err, "entity.GetGuilds failed")
 		return err
 	}
 
 	for _, guild := range guilds.Data {
-		err = c.updateLevelRoles(guild.ID)
+		err = job.updateLevelRoles(guild.ID)
 		if err != nil {
-			c.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("job.updateLevelRoles failed, error: %v", err)
+			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
 		}
 
-		err = c.updateNFTRoles(guild.ID)
+		err = job.updateNFTRoles(guild.ID)
 		if err != nil {
-			c.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("job.updateNFTRoles failed, error: %v", err)
+			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
 		}
 	}
 
 	return nil
 }
 
-func (c *updateUserRoles) updateLevelRoles(guildID string) error {
-	l := c.log.Fields(logger.Fields{"guildId": guildID})
-	l.Info("start scanning levelroles")
-	lrConfigs, err := c.entity.GetGuildLevelRoleConfigs(guildID)
+func (job *updateUserRoles) updateLevelRoles(guildID string) error {
+	l := job.log.Fields(logger.Fields{"guildId": guildID})
+	l.Info("[updateLevelRoles] starting")
+	lrConfigs, err := job.entity.GetGuildLevelRoleConfigs(guildID)
 	if err != nil {
-		l.Error(err, "entity.GetGuildLevelRoleConfigs failed")
+		l.Error(err, "[updateLevelRoles] entity.GetGuildLevelRoleConfigs failed")
 		return err
 	}
 
 	if len(lrConfigs) == 0 {
-		l.Info("entity.GetGuildLevelRoleConfigs - no data found")
+		l.Info("[updateLevelRoles] entity.GetGuildLevelRoleConfigs - no data found")
 		return nil
 	}
 
-	userXPs, err := c.entity.GetGuildUserXPs(guildID)
+	userXPs, err := job.entity.GetGuildUserXPs(guildID)
 	if err != nil {
-		l.Error(err, "entity.GetGuildUserXPs failed")
+		l.Error(err, "[updateLevelRoles] entity.GetGuildUserXPs failed")
 		return err
 	}
 	if len(userXPs) == 0 {
-		l.Info("entity.GetGuildUserXPs - no data found")
+		l.Info("[updateLevelRoles] entity.GetGuildUserXPs - no data found")
 		return nil
+	}
+
+	guild, err := job.entity.GetGuild(guildID)
+	if err != nil {
+		l.Error(err, "[updateLevelRoles] entity.GetGuild failed")
+		return err
 	}
 
 	rolesToAdd := make(map[string]string)
 	rolesToRemove := make(map[string]string)
 	for _, userXP := range userXPs {
-		member, err := c.entity.GetGuildMember(guildID, userXP.UserID)
+		member, err := job.entity.GetGuildMember(guildID, userXP.UserID)
 		if err != nil {
-			c.log.Fields(logger.Fields{
+			job.log.Fields(logger.Fields{
 				"userId":  userXP.UserID,
 				"guildId": guildID,
-			}).Error(err, "entity.GetGuildMember failed")
+			}).Error(err, "[updateLevelRoles] entity.GetGuildMember failed")
 			continue
 		}
 
-		userLevelRole, err := c.entity.GetUserRoleByLevel(guildID, userXP.Level)
+		userLevelRole, err := job.entity.GetUserRoleByLevel(guildID, userXP.Level)
 		if err != nil {
-			c.log.Fields(logger.Fields{
+			job.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
-			}).Error(err, "entity.GetUserRoleByLevel failed")
+			}).Error(err, "[updateLevelRoles] entity.GetUserRoleByLevel failed")
 			continue
 		}
 
@@ -100,43 +110,62 @@ func (c *updateUserRoles) updateLevelRoles(guildID string) error {
 		}
 	}
 
-	err = c.entity.RemoveGuildMemberRoles(guildID, rolesToRemove)
-	if err != nil {
-		c.log.Fields(logger.Fields{
-			"guildId":       guildID,
-			"rolesToRemove": rolesToRemove,
-		}).Error(err, "entity.RemoveGuildMemberRoles failed")
+	for userID, roleID := range rolesToRemove {
+		if err := job.entity.RemoveGuildMemberRole(guildID, userID, roleID); err != nil {
+			job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  userID,
+				"roleId":  roleID,
+			}).Error(err, "[updateLevelRoles] entity.RemoveGuildMemberRole failed")
+			continue
+		}
+		job.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+			"roleId":  roleID,
+		}).Info("[updateLevelRoles] entity.RemoveGuildMemberRole executed successfully")
 	}
-	c.log.Fields(logger.Fields{
-		"guildId":       guildID,
-		"rolesToRemove": rolesToRemove,
-	}).Info("entity.RemoveGuildMemberRoles executed successfully")
 
-	if err := c.entity.AddGuildMemberRoles(guildID, rolesToAdd); err != nil {
-		c.log.Fields(logger.Fields{
-			"guildId":    guildID,
-			"rolesToAdd": rolesToAdd,
-		}).Error(err, "entity.AddGuildMemberRoles failed")
+	for userID, roleID := range rolesToAdd {
+		if err := job.entity.AddGuildMemberRole(guildID, userID, roleID); err != nil {
+			job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  userID,
+				"roleId":  roleID,
+			}).Error(err, "[updateLevelRoles] entity.AddGuildMemberRole failed")
+			continue
+		}
+		job.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+			"roleId":  roleID,
+		}).Info("[updateLevelRoles] entity.AddGuildMemberRole executed successfully")
+
+		// send logs to moderation channel
+		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "level-role")
+		if err != nil {
+			job.log.Fields(logger.Fields{
+				"guildId":   guildID,
+				"channelId": guild.LogChannel,
+				"roleId":    roleID,
+			}).Info("[updateLevelRoles] service.Discord.SendUpdateRolesLog failed")
+			continue
+		}
 	}
-	c.log.Fields(logger.Fields{
-		"guildId":       guildID,
-		"rolesToRemove": rolesToAdd,
-	}).Info("entity.AddGuildMemberRoles executed successfully")
-
 	return nil
 }
 
-func (c *updateUserRoles) updateNFTRoles(guildID string) error {
-	l := c.log.Fields(logger.Fields{"guildId": guildID})
-	l.Info("start scanning nftroles")
-	hrConfigs, err := c.entity.ListGuildNFTRoleConfigs(guildID)
+func (job *updateUserRoles) updateNFTRoles(guildID string) error {
+	l := job.log.Fields(logger.Fields{"guildId": guildID})
+	l.Info("[updateNFTRoles] starting")
+	hrConfigs, err := job.entity.ListGuildNFTRoleConfigs(guildID)
 	if err != nil {
-		l.Error(err, "entity.ListGuildNFTRoleConfigs failed")
+		l.Error(err, "[updateNFTRoles] entity.ListGuildNFTRoleConfigs failed")
 		return err
 	}
 
 	if len(hrConfigs) == 0 {
-		l.Info("entity.ListGuildNFTRoleConfigs - no data found")
+		l.Info("[updateNFTRoles] entity.ListGuildNFTRoleConfigs - no data found")
 		return nil
 	}
 
@@ -145,15 +174,15 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 		isNFTRoles[hrConfig.RoleID] = true
 	}
 
-	rolesToAdd, err := c.entity.ListMemberNFTRolesToAdd(guildID)
+	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(guildID)
 	if err != nil {
-		l.Error(err, "entity.ListMemberNFTRolesToAdd failed")
+		l.Error(err, "[updateNFTRoles] entity.ListMemberNFTRolesToAdd failed")
 		return err
 	}
 
-	members, err := c.entity.ListGuildMembers(guildID)
+	members, err := job.entity.ListGuildMembers(guildID)
 	if err != nil {
-		l.Error(err, "[job][pdateNFTRoles] entity.ListGuildMembers failed")
+		l.Error(err, "[updateNFTRoles] entity.ListGuildMembers failed")
 		return err
 	}
 
@@ -165,32 +194,52 @@ func (c *updateUserRoles) updateNFTRoles(guildID string) error {
 					continue
 				}
 
-				gMemberRoleLog := c.log.Fields(logger.Fields{
+				gMemberRoleLog := job.log.Fields(logger.Fields{
 					"guildId": guildID,
 					"userId":  member.User.ID,
 					"roleId":  roleID,
 				})
-				err = c.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
+				err = job.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
 				if err != nil {
-					gMemberRoleLog.Error(err, "entity.RemoveGuildMemberRole failed")
+					gMemberRoleLog.Error(err, "[updateNFTRoles] entity.RemoveGuildMemberRole failed")
+					continue
 				}
-				gMemberRoleLog.Info("entity.RemoveGuildMemberRole executed successfully")
+				gMemberRoleLog.Info("[updateNFTRoles] entity.RemoveGuildMemberRole executed successfully")
 			}
 		}
 	}
 
-	for roleToAdd := range rolesToAdd {
-		gMemberRoleLog := c.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  roleToAdd[0],
-			"roleId":  roleToAdd[1],
-		})
-		err = c.entity.AddGuildMemberRole(guildID, roleToAdd[0], roleToAdd[1])
-		if err != nil {
-			gMemberRoleLog.Error(err, "entity.AddGuildMemberRole failed")
-		}
-		gMemberRoleLog.Info("entity.AddGuildMemberRole executed successfully")
+	guild, err := job.entity.GetGuild(guildID)
+	if err != nil {
+		l.Error(err, "[updateNFTRoles] entity.GetGuild failed")
+		return err
 	}
 
+	for roleToAdd := range rolesToAdd {
+		userID := roleToAdd[0]
+		roleID := roleToAdd[1]
+		gMemberRoleLog := job.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+			"roleId":  roleID,
+		})
+		err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		if err != nil {
+			gMemberRoleLog.Error(err, "[updateNFTRoles] entity.AddGuildMemberRole failed")
+			continue
+		}
+
+		// send logs to moderation channel
+		gMemberRoleLog.Info("[updateNFTRoles] entity.AddGuildMemberRole executed successfully")
+		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
+		if err != nil {
+			job.log.Fields(logger.Fields{
+				"guildId":   guildID,
+				"channelId": guild.LogChannel,
+				"roleId":    roleID,
+			}).Info("[updateNFTRoles] service.Discord.SendUpdateRolesLog failed")
+			continue
+		}
+	}
 	return nil
 }
