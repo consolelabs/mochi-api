@@ -113,18 +113,3 @@ func (mr *MockServiceMockRecorder) SearchCoins(query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCoins", reflect.TypeOf((*MockService)(nil).SearchCoins), query)
 }
-
-// TokenCompare mocks base method.
-func (m *MockService) TokenCompare(sourceSymbolInfo, targetSymbolInfo [][]float32) (*response.TokenCompareReponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "TokenCompare", sourceSymbolInfo, targetSymbolInfo)
-	ret0, _ := ret[0].(*response.TokenCompareReponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// TokenCompare indicates an expected call of TokenCompare.
-func (mr *MockServiceMockRecorder) TokenCompare(sourceSymbolInfo, targetSymbolInfo interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TokenCompare", reflect.TypeOf((*MockService)(nil).TokenCompare), sourceSymbolInfo, targetSymbolInfo)
-}

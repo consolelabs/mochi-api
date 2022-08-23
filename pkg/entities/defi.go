@@ -209,17 +209,27 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 		return nil, err
 	}
 
-	if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		UserID:    req.Sender,
-		Timestamp: time.Now(),
-		Action:    req.TransferType,
-	}); err != nil {
-		err = fmt.Errorf("error create activity log: %v", err)
-		return nil, err
+	if req.GuildID == "" {
+		// log activity
+		if err := e.repo.GuildUserActivityLog.CreateOneNoGuild(model.GuildUserActivityLog{
+			UserID:       req.Sender,
+			ActivityName: "withdraw",
+		}); err != nil {
+			err = fmt.Errorf("error create activity log: %v", err)
+			return nil, err
+		}
+	} else {
+		if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
+			GuildID:   req.GuildID,
+			ChannelID: req.ChannelID,
+			UserID:    req.Sender,
+			Timestamp: time.Now(),
+			Action:    req.TransferType,
+		}); err != nil {
+			err = fmt.Errorf("error create activity log: %v", err)
+			return nil, err
+		}
 	}
-
 	withdrawalAmount := util.WeiToEther(signedTx.Value())
 	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 
@@ -289,21 +299,18 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 		return nil, err
 	}
 
-	gTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
+	tokens, err := e.GetGuildTokens(guildID)
 	if err != nil {
-		err = fmt.Errorf("failed to get guild %s tokens - err: %v", guildID, err)
+		err = fmt.Errorf("failed to get global default tokens - err: %v", err)
 		return nil, err
 	}
-	if len(gTokens) == 0 {
+
+	// server does not have default tokens
+	if len(tokens) == 0 && guildID != "" {
 		if err = e.InitGuildDefaultTokenConfigs(guildID); err != nil {
 			return nil, err
 		}
 		return e.InDiscordWalletBalances(guildID, discordID)
-	}
-
-	var tokens []model.Token
-	for _, gToken := range gTokens {
-		tokens = append(tokens, *gToken.Token)
 	}
 
 	if user.InDiscordWalletAddress.String == "" {

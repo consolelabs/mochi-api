@@ -50,13 +50,28 @@ func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRe
 	}
 	return nil
 }
-func (e *Entity) GetGuildTokens(guildID string) ([]model.GuildConfigToken, error) {
+func (e *Entity) GetGuildTokens(guildID string) ([]model.Token, error) {
+	if guildID == "" {
+		tokens, err := e.repo.Token.GetDefaultTokens()
+		if err != nil {
+			e.log.Error(err, "[Entity][GetGuildTokens] repo.Token.GetDefaultTokens failed")
+			return nil, err
+		}
+		return tokens, nil
+	}
+
 	guildTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
 	if err != nil {
+		e.log.Error(err, "[Entity][GetGuildTokens] repo.GuildConfigToken.GetByGuildID failed")
 		return nil, err
 	}
 
-	return guildTokens, nil
+	var data []model.Token
+	for _, gToken := range guildTokens {
+		data = append(data, *gToken.Token)
+	}
+
+	return data, nil
 }
 
 func (e *Entity) UpsertGuildTokenConfig(req request.UpsertGuildTokenConfigRequest) error {
