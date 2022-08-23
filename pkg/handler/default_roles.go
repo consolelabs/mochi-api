@@ -47,8 +47,8 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.DefaultRoleResponse{
-		Data:    defaultRole,
-		Success: true,
+		Data: defaultRole,
+		Ok:   true,
 	})
 }
 

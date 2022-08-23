@@ -15,7 +15,7 @@ func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleR
 	}
 
 	var res response.DefaultRoleResponse
-	res.Success = true
+	res.Ok = true
 	res.Data = response.DefaultRole{
 		RoleID:  role.RoleID,
 		GuildID: guildID,
