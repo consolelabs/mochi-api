@@ -26,6 +26,10 @@ func GetTransactionUrl(marketplace string) (urlMarketPlace string) {
 		return "https://ftmscan.com/tx/"
 	case "quixotic":
 		return "https://optimistic.etherscan.io/tx/"
+	case "looksrare":
+		return "https://etherscan.io/tx/"
+	case "nftkey":
+		return "https://ftmscan.com/tx/"
 	default:
 		return ""
 	}
@@ -39,6 +43,10 @@ func GetWalletUrl(marketplace string) (urlMarketPlace string) {
 		return "https://ftmscan.com/address/"
 	case "quixotic":
 		return "https://optimistic.etherscan.io/address/"
+	case "looksrare":
+		return "https://etherscan.io/address/"
+	case "nftkey":
+		return "https://ftmscan.com/address/"
 	default:
 		return ""
 	}
