@@ -447,70 +447,89 @@ func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.Gu
 	return gActivityConfig, nil
 }
 
-func (e *Entity) CompareToken(base, target, interval string) (*response.TokenCompareReponse, error) {
-	// search coins
-	searchRes, err, _ := e.svc.CoinGecko.SearchCoins(base)
-	if err != nil {
-		e.log.Fields(logger.Fields{"base": base}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins failed")
-		return nil, err
+func (e *Entity) queryCoins(guildID, query string) ([]response.SearchedCoin, *response.GetCoinResponse, error) {
+	config, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildID, query)
+	// if default ticker was set then return ...
+	if err == nil {
+		coin, err, code := e.svc.CoinGecko.GetCoin(config.DefaultTicker)
+		if err != nil {
+			e.log.Fields(logger.Fields{"default_ticker": config.DefaultTicker, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
+			return nil, nil, err
+		}
+		return []response.SearchedCoin{{ID: coin.ID, Name: coin.Name, Symbol: coin.Symbol}}, coin, nil
 	}
-	if len(searchRes) == 0 {
-		e.log.Fields(logger.Fields{"base": base}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins - no result found")
-		return nil, fmt.Errorf("coin %s not found", base)
-	}
-	baseID := searchRes[0].ID
 
-	searchRes, err, _ = e.svc.CoinGecko.SearchCoins(target)
+	// ... else SearchCoins()
+	searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
 	if err != nil {
-		e.log.Fields(logger.Fields{"target": target}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins failed")
+		e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
+		return nil, nil, err
+	}
+	switch len(searchResult) {
+	case 0:
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no result found")
+		return nil, nil, fmt.Errorf("coin %s not found", query)
+	case 1:
+		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"coind_id": searchResult[0].ID, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
+			return nil, nil, err
+		}
+		return searchResult, coin, nil
+	default:
+		// if multiple search results then respond as suggestions
+		return searchResult, nil, nil
+	}
+}
+
+func (e *Entity) CompareToken(base, target, interval, guildID string) (*response.TokenCompareReponse, error) {
+	baseSearch, baseCoin, err := e.queryCoins(guildID, base)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guild_id": guildID, "base": base}).Error(err, "[entity.CompareToken] queryCoins failed")
 		return nil, err
 	}
-	if len(searchRes) == 0 {
-		e.log.Fields(logger.Fields{"target": target}).Error(err, "[entity.CompareToken] svc.CoinGecko.SearchCoins - no result found")
-		return nil, fmt.Errorf("coin %s not found", target)
+	targetSearch, targetCoin, err := e.queryCoins(guildID, target)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guild_id": guildID, "target": target}).Error(err, "[entity.CompareToken] queryCoins failed")
+		return nil, err
 	}
-	targetID := searchRes[0].ID
+
+	// if multiple coins (either base or target) found then return suggestions
+	if len(baseSearch) > 1 || len(targetSearch) > 1 {
+		return &response.TokenCompareReponse{BaseCoinSuggestions: baseSearch, TargetCoinSuggestions: targetSearch}, nil
+	}
+	baseID := baseSearch[0].ID
+	targetID := targetSearch[0].ID
 
 	// get coins ohlc
-	baseOhlc, err, _ := e.svc.CoinGecko.GetHistoryCoinInfo(baseID, interval)
+	baseOhlc, err, code := e.svc.CoinGecko.GetHistoryCoinInfo(baseID, interval)
 	if err != nil {
-		e.log.Fields(logger.Fields{"baseID": baseID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
+		e.log.Fields(logger.Fields{"base_id": baseID, "code": code}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
 		return nil, err
 	}
-	targetOhlc, err, _ := e.svc.CoinGecko.GetHistoryCoinInfo(targetID, interval)
+	targetOhlc, err, code := e.svc.CoinGecko.GetHistoryCoinInfo(targetID, interval)
 	if err != nil {
-		e.log.Fields(logger.Fields{"targetD": targetID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
-		return nil, err
-	}
-
-	baseCoin, err, _ := e.svc.CoinGecko.GetCoin(baseID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"baseID": baseID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetCoin failed")
-		return nil, err
-	}
-	targetCoin, err, _ := e.svc.CoinGecko.GetCoin(targetID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"targetID": targetID}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetCoin failed")
+		e.log.Fields(logger.Fields{"target_id": targetID, "code": code}).Error(err, "[entity.CompareToken] svc.CoinGecko.GetHistoryCoinInfo failed")
 		return nil, err
 	}
 
-	tokenCompareRes := response.TokenCompareReponse{BaseCoin: *baseCoin, TargetCoin: *targetCoin}
+	res := &response.TokenCompareReponse{BaseCoin: baseCoin, TargetCoin: targetCoin}
 	size := len(baseOhlc)
 	if size > len(targetOhlc) {
 		size = len(targetOhlc)
 	}
 	for i := 0; i < size; i++ {
-		// for i := range baseOhlc {
+		// ohlc format: [(time), (open), (high), (low), (close)]
 		targetPrice := targetOhlc[i][1]
 		if targetPrice == 0 {
 			continue
 		}
 		ratio := baseOhlc[i][1] / targetPrice
-		tokenCompareRes.Ratios = append(tokenCompareRes.Ratios, ratio)
 		timeStr := time.UnixMilli(int64(baseOhlc[i][0])).Format("01-02")
-		tokenCompareRes.Times = append(tokenCompareRes.Times, timeStr)
+		res.Ratios = append(res.Ratios, ratio)
+		res.Times = append(res.Times, timeStr)
 	}
-	return &tokenCompareRes, nil
+	return res, nil
 }
 
 func (e *Entity) SetGuildDefaultTicker(req request.GuildConfigDefaultTickerRequest) error {
