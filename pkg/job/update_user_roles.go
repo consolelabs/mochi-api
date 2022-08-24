@@ -93,7 +93,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 				"guildId": guildID,
 			}).Info("[updateLevelRoles] entity.GetUserRoleByLevel no role found")
 			continue
-		case err != nil:
+		case err != nil && err != gorm.ErrRecordNotFound:
 			job.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
