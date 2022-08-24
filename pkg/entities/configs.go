@@ -152,13 +152,17 @@ func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
 
 func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 	defaultRole, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
-	if err != nil {
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return nil
+	case nil:
+		if roleID == defaultRole.RoleID {
+			return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+		}
+		return nil
+	default:
 		return err
 	}
-	if roleID == defaultRole.RoleID {
-		return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
-	}
-	return nil
 }
 
 func (e *Entity) ConfigLevelRole(req request.ConfigLevelRoleRequest) error {
