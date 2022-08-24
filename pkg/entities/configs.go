@@ -137,17 +137,21 @@ func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
 
 func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
 	configs, err := e.ListAllReactionRoles(guildID)
-	if err != nil {
-		return err
-	}
-	for _, cfg := range configs.Configs {
-		for _, v := range cfg.Roles {
-			if v.ID == roleID {
-				return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return nil
+	case nil:
+		for _, cfg := range configs.Configs {
+			for _, v := range cfg.Roles {
+				if v.ID == roleID {
+					return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+				}
 			}
 		}
+		return nil
+	default:
+		return err
 	}
-	return nil
 }
 
 func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
@@ -161,6 +165,7 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 		}
 		return nil
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInDefaultRole] GetAllByGuildID default role failed")
 		return err
 	}
 }
@@ -168,6 +173,7 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 func (e *Entity) ConfigLevelRole(req request.ConfigLevelRoleRequest) error {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
+		e.log.Error(err, "[entity.ConfigLevelRole] check roleID config failed")
 		return err
 	}
 	return e.repo.GuildConfigLevelRole.UpsertOne(model.GuildConfigLevelRole{

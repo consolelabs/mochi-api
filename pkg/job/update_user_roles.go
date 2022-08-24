@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
+	"gorm.io/gorm"
 )
 
 type updateUserRoles struct {
@@ -85,7 +86,14 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 		}
 
 		userLevelRole, err := job.entity.GetUserRoleByLevel(guildID, userXP.Level)
-		if err != nil {
+		switch {
+		case err == gorm.ErrRecordNotFound:
+			job.log.Fields(logger.Fields{
+				"level":   userXP.Level,
+				"guildId": guildID,
+			}).Info("[updateLevelRoles] entity.GetUserRoleByLevel no role found")
+			continue
+		case err != nil:
 			job.log.Fields(logger.Fields{
 				"level":   userXP.Level,
 				"guildId": guildID,
