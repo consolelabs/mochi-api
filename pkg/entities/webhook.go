@@ -166,7 +166,8 @@ func (e *Entity) HandleMochiSalesMessage(message *request.TwitterSalesMessage) e
 }
 
 func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
-	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
+	sentAtTz := sentAt.Add(7 * time.Hour) // use with timezone +07:00
+	chatDate := time.Date(sentAtTz.Year(), sentAtTz.Month(), sentAtTz.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, fmt.Errorf("failed to get user's gm streak: %v", err)
@@ -191,7 +192,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 
 	switch {
 	case chatDate.Before(nextStreakDate):
-		durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
+		durationTilNextGoal := nextStreakDate.Sub(sentAtTz).String()
 		return nil, e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
 	case chatDate.Equal(nextStreakDate):
 		streak.StreakCount++
