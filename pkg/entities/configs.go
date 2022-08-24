@@ -119,6 +119,7 @@ func (e *Entity) checkRoleIDInLevelRole(guildID, roleID string) error {
 	case nil:
 		return fmt.Errorf("guild %v has used roleID %v in levelrole configs", guildID, roleID)
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInLevelRole] repo.GuildConfigLevelRole.GetByRoleID failed")
 		return err
 	}
 }
@@ -131,6 +132,7 @@ func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
 	case nil:
 		return fmt.Errorf("guild %v has used roleID %v in nftrole configs", guildID, roleID)
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInNFTRole] repo.GuildConfigNFTRole.GetByRoleID failed")
 		return err
 	}
 }
@@ -150,6 +152,7 @@ func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
 		}
 		return nil
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInReactionRole] e.ListAllReactionRoles failed")
 		return err
 	}
 }
@@ -165,7 +168,7 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 		}
 		return nil
 	default:
-		e.log.Error(err, "[entity.checkRoleIDInDefaultRole] GetAllByGuildID default role failed")
+		e.log.Error(err, "[entity.checkRoleIDInDefaultRole] repo.GuildConfigDefaultRole.GetAllByGuildID failed")
 		return err
 	}
 }
