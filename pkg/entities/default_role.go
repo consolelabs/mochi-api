@@ -25,11 +25,6 @@ func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleR
 }
 
 func (e *Entity) CreateDefaultRoleConfig(GuildID, RoleID string) error {
-	err := e.checkRoleIDBeenConfig(GuildID, RoleID)
-	if err != nil {
-		e.log.Error(err, "[entities.CreateDefaultRoleConfig] check roleID been configed failed")
-		return err
-	}
 	return e.repo.GuildConfigDefaultRole.CreateDefaultRoleIfNotExist(model.GuildConfigDefaultRole{
 		RoleID:  RoleID,
 		GuildID: GuildID,
