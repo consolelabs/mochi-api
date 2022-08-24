@@ -15,6 +15,9 @@ import (
 func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
 	config, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 
