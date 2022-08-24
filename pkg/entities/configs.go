@@ -233,6 +233,7 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, er
 func (e *Entity) NewGuildNFTRoleConfig(req request.ConfigNFTRoleRequest) (*model.GuildConfigNFTRole, error) {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
+		e.log.Error(err, "[entity.NewGuildNFTRoleConfig] check roleID config failed")
 		return nil, err
 	}
 
