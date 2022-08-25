@@ -62,7 +62,7 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
