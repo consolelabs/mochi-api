@@ -167,7 +167,7 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 		return nil
 	case nil:
 		if roleID == defaultRole.RoleID {
-			return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+			return fmt.Errorf("guild %v has used roleID %v in defaultrole configs", guildID, roleID)
 		}
 		return nil
 	default:
