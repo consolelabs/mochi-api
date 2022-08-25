@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -67,7 +68,7 @@ func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string)
 func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) (*response.RoleReactionConfigResponse, error) {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
-		e.log.Error(err, "[entity.UpdateConfigByMessageID] check roleID config failed")
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID}).Error(err, "[entity.UpdateConfigByMessageID] check roleID config failed")
 		return nil, err
 	}
 	var roles []response.Role

@@ -591,15 +591,14 @@ func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
 	})
 }
 
-func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, error) {
+func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollectionDetail, error) {
 	if symbol[:2] == "0x" {
 		data, err := e.repo.NFTCollection.GetByAddress(symbol)
 		if err != nil {
 			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection by address")
 			return nil, err
 		}
-		data.Image = util.StandardizeUri(data.Image)
-		return data, nil
+		return e.GetCollectionWithChainDetail(data), nil
 	}
 
 	collection, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
@@ -607,9 +606,34 @@ func (e *Entity) GetDetailNftCollection(symbol string) (*model.NFTCollection, er
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by %s", symbol)
 		return nil, err
 	}
-	collection[0].Image = util.StandardizeUri(collection[0].Image)
 
-	return &collection[0], nil
+	return e.GetCollectionWithChainDetail(&collection[0]), nil
+}
+
+func (e *Entity) GetCollectionWithChainDetail(collection *model.NFTCollection) *model.NFTCollectionDetail {
+	chainId, _ := strconv.Atoi(collection.ChainID)
+	var chainPtr *model.Chain
+
+	// if chain not exist return chain=nil
+	chain, err := e.repo.Chain.GetByID(chainId)
+	chainPtr = &chain
+	if err != nil {
+		e.log.Infof("[e.repo.Chain.GetByID] failed to get chain: %s", collection.ChainID)
+		chainPtr = nil
+	}
+	return &model.NFTCollectionDetail{
+		ID:         collection.ID,
+		Address:    collection.Address,
+		Name:       collection.Name,
+		Symbol:     collection.Symbol,
+		ChainID:    collection.ChainID,
+		Chain:      chainPtr,
+		ERCFormat:  collection.ERCFormat,
+		IsVerified: collection.IsVerified,
+		CreatedAt:  collection.CreatedAt,
+		Image:      util.StandardizeUri(collection.Image),
+		Author:     collection.Author,
+	}
 }
 
 func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, error) {
