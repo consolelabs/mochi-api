@@ -12,6 +12,8 @@ jobs:
 
       - name: Init Test DB
         run: make init
+          make init_test
+          make migrate-test
 
       - name: Run Test cases
         run: make test

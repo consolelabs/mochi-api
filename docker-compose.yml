@@ -20,3 +20,15 @@ services:
       - 6379:6379
     expose:
       - 6379
+  postgres_test:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: mochi_local_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    container_name: mochi_local_test
+    ports:
+      - 25432:5432
+    expose:
+      - 25432

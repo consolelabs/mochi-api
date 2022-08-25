@@ -1,5 +1,7 @@
 APP_NAME=mochi-api
 DEFAULT_PORT=8200
+POSTGRES_TEST_CONTAINER?=mochi_local_test
+
 .PHONY: setup init build dev test migrate-up migrate-down
 
 setup:
@@ -20,6 +22,15 @@ init:
 	make migrate-up
 	make seed-db
 
+init_test:
+	go install github.com/rubenv/sql-migrate/...@latest	
+	make remove-infras
+	docker-compose up -d postgres postgres_test
+	@echo "Waiting for database connection..."
+	@while ! docker exec $(POSTGRES_TEST_CONTAINER) pg_isready > /dev/null; do \
+		sleep 1; \
+	done
+
 remove-infras:
 	docker-compose down --remove-orphans
 
@@ -31,6 +42,9 @@ dev:
 
 test:
 	@PROJECT_PATH=$(shell pwd) go test -cover ./...
+
+migrate-test:
+	sql-migrate up -env=test
 
 migrate-new:
 	sql-migrate new -env=local ${name}
