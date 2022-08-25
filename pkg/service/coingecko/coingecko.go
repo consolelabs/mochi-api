@@ -30,15 +30,30 @@ func NewService() Service {
 }
 
 func (c *CoinGecko) SearchCoins(query string) ([]response.SearchedCoin, error, int) {
-	resp := &response.SearchedCoinsListResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(c.searchCoinURL, query), resp)
-	if err != nil || resp == nil || len(resp.Coins) == 0 {
+	// if query is valid coin ID then use GetCoin()
+	coin, err, _ := c.GetCoin(query)
+	if err == nil {
+		return []response.SearchedCoin{
+			{
+				ID:            coin.ID,
+				Name:          coin.Name,
+				Symbol:        coin.Symbol,
+				MarketCapRank: coin.MarketCapRank,
+				Thumb:         coin.Image.Thumb,
+			},
+		}, nil, http.StatusOK
+	}
+
+	// if not valid coin ID then search coins by symbol
+	res := &response.SearchedCoinsListResponse{}
+	statusCode, err := util.FetchData(fmt.Sprintf(c.searchCoinURL, query), res)
+	if err != nil || res == nil || len(res.Coins) == 0 {
 		return nil, fmt.Errorf("failed to search for coins by query %s: %v", query, err), statusCode
 	}
 
 	var matches []response.SearchedCoin
-	for _, coin := range resp.Coins {
-		if strings.EqualFold(query, coin.Symbol) || strings.EqualFold(query, coin.Name) {
+	for _, coin := range res.Coins {
+		if strings.EqualFold(query, coin.Symbol) {
 			matches = append(matches, coin)
 		}
 	}
