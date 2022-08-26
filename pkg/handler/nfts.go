@@ -173,6 +173,16 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 }
 
 func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
+	guildID := c.Query("guildID")
+	if guildID != "" {
+		data, err := h.entities.GetNFTSaleSTrackerByGuildID(guildID)
+		if err != nil {
+			h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetNFTSaleSTrackerByGuildID] - failed to get nft sales tracker")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": data})
+	}
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
 		h.log.Error(err, "[handler.GetAllNFTSalesTracker] - failed to get all NFT sales tracker")
@@ -210,22 +220,6 @@ func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "OK"})
 
-}
-
-func (h *Handler) GetNFTSaleSTrackerByGuildID(c *gin.Context) {
-	guildID := c.Param("guildID")
-	if guildID == "" {
-		h.log.Info("[handler.GetNFTSaleSTrackerByGuildID] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild id is required"})
-		return
-	}
-	data, err := h.entities.GetNFTSaleSTrackerByGuildID(guildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetNFTSaleSTrackerByGuildID] - failed to get nft sales tracker")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
 func (h *Handler) GetCollectionCount(c *gin.Context) {
