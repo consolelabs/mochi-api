@@ -172,7 +172,7 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 }
 
 func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
-	guildID := c.Query("guildID")
+	guildID := c.Query("guild_id")
 	if guildID != "" {
 		data, err := h.entities.GetNFTSaleSTrackerByGuildID(guildID)
 		if err != nil {
@@ -181,6 +181,7 @@ func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"data": data})
+		return
 	}
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
