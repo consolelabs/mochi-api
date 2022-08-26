@@ -667,7 +667,7 @@ func (e *Entity) DeleteNFTSalesTracker(guildID, contractAddress string) error {
 func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSalesTrackerGuildResponse, error) {
 	data, err := e.repo.NFTSalesTracker.GetSalesTrackerByGuildID(guildID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[repo.NFTSalesTracker.GetAll] failed to get nft sales trackers")
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.GetNFTSaleSTrackerByGuildID] failed to get nft sales trackers")
 		return nil, err
 	}
 	if len(data) == 0 {
