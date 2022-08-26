@@ -1,5 +1,7 @@
 APP_NAME=mochi-api
 DEFAULT_PORT=8200
+POSTGRES_TEST_CONTAINER?=mochi_local_test
+
 .PHONY: setup init build dev test migrate-up migrate-down
 
 setup:
@@ -17,7 +19,11 @@ init:
 	@while ! docker exec mochi-postgres pg_isready > /dev/null; do \
 		sleep 1; \
 	done
+	@while ! docker exec $(POSTGRES_TEST_CONTAINER) pg_isready > /dev/null; do \
+		sleep 1; \
+	done
 	make migrate-up
+	make migrate-test
 	make seed-db
 
 remove-infras:
@@ -31,6 +37,9 @@ dev:
 
 test:
 	@PROJECT_PATH=$(shell pwd) go test -cover ./...
+
+migrate-test:
+	sql-migrate up -env=test
 
 migrate-new:
 	sql-migrate new -env=local ${name}
