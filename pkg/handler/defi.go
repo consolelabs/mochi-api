@@ -62,17 +62,11 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
 	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.InDiscordWalletBalances] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
-		return
-	}
-
 	discordID := c.Query("discord_id")
 	if discordID == "" {
 		h.log.Info("[handler.InDiscordWalletBalances] - discord id empty")
@@ -128,6 +122,7 @@ func (h *Handler) CompareToken(c *gin.Context) {
 	base := c.Query("base")
 	target := c.Query("target")
 	interval := c.Query("interval")
+	guildID := c.Query("guild_id")
 
 	if base == "" {
 		h.log.Info("[handler.CompareToken] base is required")
@@ -145,8 +140,13 @@ func (h *Handler) CompareToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "interval is required"})
 		return
 	}
+	if guildID == "" {
+		h.log.Info("[handler.CompareToken] guild_id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
 
-	res, err := h.entities.CompareToken(base, target, interval)
+	res, err := h.entities.CompareToken(base, target, interval, guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"base": base, "target": target}).Error(err, "[handler.CompareToken] entity.CompareToken failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

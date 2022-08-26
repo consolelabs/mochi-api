@@ -44,6 +44,8 @@ func ConvertMarkplaceToChainId(marketplace string) int64 {
 		return 10
 	case "paintswap":
 		return 250
+	case "looksrare":
+		return 1
 	default:
 		return 250
 	}

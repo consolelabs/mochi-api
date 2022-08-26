@@ -133,11 +133,24 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	var (
-		discordID = message.Author.ID
-		guildID   = message.GuildID
-		sentAt    = message.Timestamp
-		channelID = message.ChannelID
+		discordID      = message.Author.ID
+		authorAvatar   = message.Author.Avatar
+		authorUsername = message.Author.Username
+		guildID        = message.GuildID
+		sentAt         = message.Timestamp
+		channelID      = message.ChannelID
 	)
+
+	// message.Content == "" is default message when new user join server
+	if message.Content == "" {
+		return nil, nil
+	}
+	if err := e.CreateUserIfNotExists(discordID, authorUsername); err != nil {
+		e.log.Fields(logger.Fields{"userID": discordID, "username": authorUsername}).Error(err, "[Entity][HandleDiscordMessage] failed to create user")
+	}
+	if err := e.CreateGuildUserIfNotExists(guildID, discordID, ""); err != nil {
+		e.log.Fields(logger.Fields{"userID": discordID, "guildID": guildID}).Error(err, "[Entity][HandleDiscordMessage] failed to create guild user")
+	}
 
 	isGmMessage := message.Content == "gm" || message.Content == "gn"
 
@@ -151,7 +164,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 			// do nothing if not gm channel
 			return nil, nil
 		}
-		return e.newUserGM(discordID, guildID, channelID, sentAt)
+		return e.newUserGM(authorAvatar, authorUsername, discordID, guildID, channelID, sentAt)
 	}
 	return nil, nil
 }
@@ -165,7 +178,7 @@ func (e *Entity) HandleMochiSalesMessage(message *request.TwitterSalesMessage) e
 	return nil
 }
 
-func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -191,8 +204,11 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 
 	switch {
 	case chatDate.Before(nextStreakDate):
-		durationTilNextGoal := nextStreakDate.Sub(sentAt).String()
-		return nil, e.replyGmGn(streak, channelID, discordID, durationTilNextGoal, false)
+		durationTilNextGoal := nextStreakDate.Sub(sentAt)
+		durationString := fmt.Sprintf("%.0f hours and %.0f minutes",
+			durationTilNextGoal.Hours(),
+			durationTilNextGoal.Minutes()-float64(int(durationTilNextGoal.Hours()))*60)
+		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, durationString, false)
 	case chatDate.Equal(nextStreakDate):
 		streak.StreakCount++
 	case chatDate.After(nextStreakDate):
@@ -208,7 +224,7 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 	// add new feature : GmExIncrease
 	///////
 	if streak.StreakCount < 2 {
-		return nil, e.replyGmGn(streak, channelID, discordID, "", true)
+		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
 
 	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
@@ -219,17 +235,29 @@ func (e *Entity) newUserGM(discordID, guildID, channelID string, sentAt time.Tim
 		Timestamp: sentAt,
 	})
 	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID":   guildID,
+			"channelID": channelID,
+			"userID":    discordID,
+			"action":    "gm_streak",
+		}).Error(err, "[Entity][newUserGM] failed to handle user activity")
 		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 	}
 
-	return res, e.replyGmGn(streak, channelID, discordID, "", true)
+	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 }
 
-func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, durationTilNextGoal string, newStreakRecorded bool) error {
+func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, authorAvatar, authorUsername, durationTilNextGoal string, newStreakRecorded bool) error {
 	if newStreakRecorded && streak.StreakCount >= 3 {
 		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 			Title:       "GM / GN",
 			Description: fmt.Sprintf("<@%s>, you've said gm-gn %d days in a row :fire: and %d days in total.", discordID, streak.StreakCount, streak.TotalCount),
+			Color:       3447003,
+			Footer: &discordgo.MessageEmbedFooter{
+				Text:    authorUsername,
+				IconURL: authorAvatar,
+			},
+			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 		})
 		return err
 	}
@@ -237,7 +265,13 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 	if !newStreakRecorded && durationTilNextGoal != "" {
 		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
 			Title:       "GM / GN",
-			Description: fmt.Sprintf("<@%s>, you've already said gm-gn today. You need to wait `%s` :alarm_clock: to reach your next streak goal :dart:.", discordID, durationTilNextGoal),
+			Description: fmt.Sprintf("<@%s>, you've already said gm-gn today. \nYou need to wait `%s` :alarm_clock: to reach your next streak goal :dart:", discordID, durationTilNextGoal),
+			Color:       3447003,
+			Footer: &discordgo.MessageEmbedFooter{
+				Text:    authorUsername,
+				IconURL: authorAvatar,
+			},
+			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 		})
 		return err
 	}
@@ -246,6 +280,20 @@ func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discord
 }
 
 func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	if message.Content == "" {
+		return &response.HandleUserActivityResponse{
+			GuildID:      message.GuildID,
+			ChannelID:    message.ChannelID,
+			UserID:       message.Author.ID,
+			Action:       "default",
+			AddedXP:      0,
+			CurrentXP:    0,
+			CurrentLevel: 0,
+			Timestamp:    message.Timestamp,
+			LevelUp:      false,
+		}, nil
+	}
+
 	xpID := fmt.Sprintf(`%s_%s_chat_xp_cooldown`, message.Author.ID, message.GuildID)
 
 	exists, err := e.cache.GetBool(xpID)
@@ -264,6 +312,13 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 			Timestamp: message.Timestamp,
 		})
 		if err != nil {
+			e.log.Fields(logger.Fields{
+				"content":   message.Content,
+				"guildID":   message.GuildID,
+				"channelID": message.ChannelID,
+				"userID":    message.Author.ID,
+				"action":    "chat",
+			}).Error(err, "[Entity][ChatXPIncrease] failed to handle user activity")
 			return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 		}
 

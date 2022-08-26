@@ -16,7 +16,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetOneByGuildIDAndQuery(guildID, query string) (*model.GuildConfigDefaultTicker, error) {
 	config := &model.GuildConfigDefaultTicker{}
-	return config, pg.db.Table("guild_config_default_ticker").Where("guild_id = ? AND query = ?", guildID, query).First(config).Error
+	return config, pg.db.Table("guild_config_default_ticker").Where("guild_id = ? AND query ILIKE ?", guildID, query).First(config).Error
 }
 
 func (pg *pg) UpsertOne(config *model.GuildConfigDefaultTicker) error {

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -15,6 +16,9 @@ import (
 func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
 	config, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -50,13 +54,28 @@ func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRe
 	}
 	return nil
 }
-func (e *Entity) GetGuildTokens(guildID string) ([]model.GuildConfigToken, error) {
+func (e *Entity) GetGuildTokens(guildID string) ([]model.Token, error) {
+	if guildID == "" {
+		tokens, err := e.repo.Token.GetDefaultTokens()
+		if err != nil {
+			e.log.Error(err, "[Entity][GetGuildTokens] repo.Token.GetDefaultTokens failed")
+			return nil, err
+		}
+		return tokens, nil
+	}
+
 	guildTokens, err := e.repo.GuildConfigToken.GetByGuildID(guildID)
 	if err != nil {
+		e.log.Error(err, "[Entity][GetGuildTokens] repo.GuildConfigToken.GetByGuildID failed")
 		return nil, err
 	}
 
-	return guildTokens, nil
+	var data []model.Token
+	for _, gToken := range guildTokens {
+		data = append(data, *gToken.Token)
+	}
+
+	return data, nil
 }
 
 func (e *Entity) UpsertGuildTokenConfig(req request.UpsertGuildTokenConfigRequest) error {
@@ -102,8 +121,9 @@ func (e *Entity) checkRoleIDInLevelRole(guildID, roleID string) error {
 	case gorm.ErrRecordNotFound:
 		return nil
 	case nil:
-		return fmt.Errorf("guild %v has used roleID %v in levelrole configs", guildID, roleID)
+		return fmt.Errorf("Role has been used for level role.")
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInLevelRole] repo.GuildConfigLevelRole.GetByRoleID failed")
 		return err
 	}
 }
@@ -114,41 +134,53 @@ func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
 	case gorm.ErrRecordNotFound:
 		return nil
 	case nil:
-		return fmt.Errorf("guild %v has used roleID %v in nftrole configs", guildID, roleID)
+		return fmt.Errorf("Role has been used for NFT role.")
 	default:
+		e.log.Error(err, "[entity.checkRoleIDInNFTRole] repo.GuildConfigNFTRole.GetByRoleID failed")
 		return err
 	}
 }
 
 func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
 	configs, err := e.ListAllReactionRoles(guildID)
-	if err != nil {
-		return err
-	}
-	for _, cfg := range configs.Configs {
-		for _, v := range cfg.Roles {
-			if v.ID == roleID {
-				return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return nil
+	case nil:
+		for _, cfg := range configs.Configs {
+			for _, v := range cfg.Roles {
+				if v.ID == roleID {
+					return fmt.Errorf("Role has been used for reaction role.")
+				}
 			}
 		}
+		return nil
+	default:
+		e.log.Error(err, "[entity.checkRoleIDInReactionRole] e.ListAllReactionRoles failed")
+		return err
 	}
-	return nil
 }
 
 func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 	defaultRole, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
-	if err != nil {
+	switch err {
+	case gorm.ErrRecordNotFound:
+		return nil
+	case nil:
+		if roleID == defaultRole.RoleID {
+			return fmt.Errorf("Role has been used for default role.")
+		}
+		return nil
+	default:
+		e.log.Error(err, "[entity.checkRoleIDInDefaultRole] repo.GuildConfigDefaultRole.GetAllByGuildID failed")
 		return err
 	}
-	if roleID == defaultRole.RoleID {
-		return fmt.Errorf("guild %v has used roleID %v in reactionrole configs", guildID, roleID)
-	}
-	return nil
 }
 
 func (e *Entity) ConfigLevelRole(req request.ConfigLevelRoleRequest) error {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID}).Error(err, "[entity.ConfigLevelRole] check roleID config failed")
 		return err
 	}
 	return e.repo.GuildConfigLevelRole.UpsertOne(model.GuildConfigLevelRole{
@@ -205,6 +237,7 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, er
 func (e *Entity) NewGuildNFTRoleConfig(req request.ConfigNFTRoleRequest) (*model.GuildConfigNFTRole, error) {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID}).Error(err, "[entity.NewGuildNFTRoleConfig] check roleID config failed")
 		return nil, err
 	}
 
