@@ -141,6 +141,17 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 		channelID      = message.ChannelID
 	)
 
+	// message.Content == "" is default message when new user join server
+	if message.Content == "" {
+		return nil, nil
+	}
+	if err := e.CreateUserIfNotExists(discordID, authorUsername); err != nil {
+		e.log.Fields(logger.Fields{"userID": discordID, "username": authorUsername}).Error(err, "[Entity][HandleDiscordMessage] failed to create user")
+	}
+	if err := e.CreateGuildUserIfNotExists(guildID, discordID, ""); err != nil {
+		e.log.Fields(logger.Fields{"userID": discordID, "guildID": guildID}).Error(err, "[Entity][HandleDiscordMessage] failed to create guild user")
+	}
+
 	isGmMessage := message.Content == "gm" || message.Content == "gn"
 
 	switch {
