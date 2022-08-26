@@ -16,6 +16,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/contracts/erc1155"
 	"github.com/defipod/mochi/pkg/contracts/erc721"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -628,6 +629,41 @@ func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, er
 		})
 	}
 	return resp, nil
+}
+
+func (e *Entity) DeleteNFTSalesTracker(guildID, contractAddress string) error {
+	salesTracker, err := e.repo.NFTSalesTracker.GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[repo.GuildConfigSalesTracker.GetByGuildID] failed to get nft sales trackers config")
+		return err
+	}
+	return e.repo.NFTSalesTracker.DeleteNFTSalesTracker(model.NFTSalesTracker{ID: salesTracker.ID})
+}
+
+func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSalesTrackerGuildResponse, error) {
+	data, err := e.repo.NFTSalesTracker.GetSalesTrackerByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[repo.NFTSalesTracker.GetAll] failed to get nft sales trackers")
+		return nil, err
+	}
+	if len(data) == 0 {
+		return nil, fmt.Errorf("Guild has no sales trackers")
+	}
+
+	cfgs := []response.NFTSalesTracker{}
+	for _, v := range data {
+		cfgs = append(cfgs, response.NFTSalesTracker{
+			ID:              v.ID.UUID.String(),
+			ContractAddress: v.ContractAddress,
+			Platform:        v.Platform,
+		})
+	}
+	return &response.NFTSalesTrackerGuildResponse{
+		ID:        data[0].SalesConfigID,
+		GuildID:   guildID,
+		ChannelID: data[0].GuildConfigSalesTracker.ChannelID,
+		Data:      cfgs,
+	}, nil
 }
 
 func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListedResponse, error) {
