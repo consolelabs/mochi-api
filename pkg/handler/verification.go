@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
@@ -46,7 +47,7 @@ func (h *Handler) GetGuildConfigWalletVerificationMessage(c *gin.Context) {
 	}
 
 	res, err := h.entities.GetGuildConfigWalletVerificationMessage(guildId)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		h.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[handler.GetGuildConfigWalletVerificationMessage] - failed to get config")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
