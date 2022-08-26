@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -174,8 +173,6 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 }
 
 func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
-	fmt.Println("[handler.GetAllNFTSalesTracker]")
-	h.log.Info("[handler.GetAllNFTSalesTracker]")
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
 		h.log.Error(err, "[handler.GetAllNFTSalesTracker] - failed to get all NFT sales tracker")
@@ -187,21 +184,26 @@ func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 }
 
 func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
-	h.log.Info("[handler.DeleteNFTSalesTracker]")
-	var req request.NFTSalesTrackerDeleteRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Info("[handler.DeleteNFTSalesTracker] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	guildID := c.Query("guild_id")
+	contractAddress := c.Query("contract_address")
+	if guildID == "" {
+		h.log.Info("[handler.DeleteNFTSalesTracker] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild id is required"})
 		return
 	}
-	err := h.entities.DeleteNFTSalesTracker(req.GuildID, req.ContractAddress)
+	if contractAddress == "" {
+		h.log.Info("[handler.DeleteNFTSalesTracker] - contract address empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "contract address is required"})
+		return
+	}
+	err := h.entities.DeleteNFTSalesTracker(guildID, contractAddress)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			h.log.Fields(logger.Fields{"guildID": req.GuildID, "contractAddress": req.ContractAddress}).Error(err, "[handler.DeleteCustomCommand] - failed to find sales tracker config for guild")
+			h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteCustomCommand] - failed to find sales tracker config for guild")
 			c.JSON(http.StatusNotFound, gin.H{"error": "no sales tracker config found"})
 			return
 		}
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "contractAddress": req.ContractAddress}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
+		h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -211,8 +213,6 @@ func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
 }
 
 func (h *Handler) GetNFTSaleSTrackerByGuildID(c *gin.Context) {
-	fmt.Println("[handler.GetNFTSaleSTrackerByGuildID]")
-	h.log.Info("[handler.GetNFTSaleSTrackerByGuildID]")
 	guildID := c.Param("guildID")
 	if guildID == "" {
 		h.log.Info("[handler.GetNFTSaleSTrackerByGuildID] - guild id empty")

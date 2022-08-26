@@ -8,10 +8,10 @@ type NFTSalesTrackerResponse struct {
 }
 
 type NFTSalesTrackerGuildResponse struct {
-	ID        string            `json:"id"`
-	GuildID   string            `json:"guild_id"`
-	ChannelID string            `json:"channel_id"`
-	Data      []NFTSalesTracker `json:"data"`
+	ID         string            `json:"id"`
+	GuildID    string            `json:"guild_id"`
+	ChannelID  string            `json:"channel_id"`
+	Collection []NFTSalesTracker `json:"collection"`
 }
 
 type NFTSalesTracker struct {

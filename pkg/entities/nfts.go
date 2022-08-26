@@ -650,19 +650,19 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 		return nil, fmt.Errorf("Guild has no sales trackers")
 	}
 
-	cfgs := []response.NFTSalesTracker{}
+	collection := []response.NFTSalesTracker{}
 	for _, v := range data {
-		cfgs = append(cfgs, response.NFTSalesTracker{
+		collection = append(collection, response.NFTSalesTracker{
 			ID:              v.ID.UUID.String(),
 			ContractAddress: v.ContractAddress,
 			Platform:        v.Platform,
 		})
 	}
 	return &response.NFTSalesTrackerGuildResponse{
-		ID:        data[0].SalesConfigID,
-		GuildID:   guildID,
-		ChannelID: data[0].GuildConfigSalesTracker.ChannelID,
-		Data:      cfgs,
+		ID:         data[0].SalesConfigID,
+		GuildID:    guildID,
+		ChannelID:  data[0].GuildConfigSalesTracker.ChannelID,
+		Collection: collection,
 	}, nil
 }
 
