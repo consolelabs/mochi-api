@@ -8,7 +8,6 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type error interface {
@@ -208,11 +207,6 @@ func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
 	}
 	err := h.entities.DeleteNFTSalesTracker(guildID, contractAddress)
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteCustomCommand] - failed to find sales tracker config for guild")
-			c.JSON(http.StatusNotFound, gin.H{"error": "no sales tracker config found"})
-			return
-		}
 		h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

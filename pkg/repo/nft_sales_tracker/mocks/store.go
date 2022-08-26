@@ -34,18 +34,18 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// DeleteNFTSalesTracker mocks base method.
-func (m *MockStore) DeleteNFTSalesTracker(salesTrack model.NFTSalesTracker) error {
+// DeleteNFTSalesTrackerByContractAddress mocks base method.
+func (m *MockStore) DeleteNFTSalesTrackerByContractAddress(contractAddress string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteNFTSalesTracker", salesTrack)
+	ret := m.ctrl.Call(m, "DeleteNFTSalesTrackerByContractAddress", contractAddress)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteNFTSalesTracker indicates an expected call of DeleteNFTSalesTracker.
-func (mr *MockStoreMockRecorder) DeleteNFTSalesTracker(salesTrack interface{}) *gomock.Call {
+// DeleteNFTSalesTrackerByContractAddress indicates an expected call of DeleteNFTSalesTrackerByContractAddress.
+func (mr *MockStoreMockRecorder) DeleteNFTSalesTrackerByContractAddress(contractAddress interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNFTSalesTracker", reflect.TypeOf((*MockStore)(nil).DeleteNFTSalesTracker), salesTrack)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNFTSalesTrackerByContractAddress", reflect.TypeOf((*MockStore)(nil).DeleteNFTSalesTrackerByContractAddress), contractAddress)
 }
 
 // FirstOrCreate mocks base method.

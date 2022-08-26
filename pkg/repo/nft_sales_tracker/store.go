@@ -9,5 +9,5 @@ type Store interface {
 	GetAll() ([]model.NFTSalesTracker, error)
 	GetSalesTrackerByGuildID(guildId string) ([]model.NFTSalesTracker, error)
 	GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress string) (*model.NFTSalesTracker, error)
-	DeleteNFTSalesTracker(salesTrack model.NFTSalesTracker) error
+	DeleteNFTSalesTrackerByContractAddress(contractAddress string) error
 }

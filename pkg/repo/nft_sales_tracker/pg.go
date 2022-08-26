@@ -42,6 +42,6 @@ func (pg *pg) GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress st
 		First(&tracker).Error
 }
 
-func (pg *pg) DeleteNFTSalesTracker(salesTrack model.NFTSalesTracker) error {
-	return pg.db.Delete(&salesTrack).Error
+func (pg *pg) DeleteNFTSalesTrackerByContractAddress(contractAddress string) error {
+	return pg.db.Where("contract_address = ?", contractAddress).Delete(&model.NFTSalesTracker{}).Error
 }

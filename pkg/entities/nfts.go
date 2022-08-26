@@ -656,12 +656,7 @@ func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, er
 }
 
 func (e *Entity) DeleteNFTSalesTracker(guildID, contractAddress string) error {
-	salesTracker, err := e.repo.NFTSalesTracker.GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress)
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[repo.GuildConfigSalesTracker.GetByGuildID] failed to get nft sales trackers config")
-		return err
-	}
-	return e.repo.NFTSalesTracker.DeleteNFTSalesTracker(model.NFTSalesTracker{ID: salesTracker.ID})
+	return e.repo.NFTSalesTracker.DeleteNFTSalesTrackerByContractAddress(contractAddress)
 }
 
 func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSalesTrackerGuildResponse, error) {
@@ -670,23 +665,12 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.GetNFTSaleSTrackerByGuildID] failed to get nft sales trackers")
 		return nil, err
 	}
-	if len(data) == 0 {
-		return nil, fmt.Errorf("Guild has no sales trackers")
-	}
 
-	collection := []response.NFTSalesTracker{}
-	for _, v := range data {
-		collection = append(collection, response.NFTSalesTracker{
-			ID:              v.ID.UUID.String(),
-			ContractAddress: v.ContractAddress,
-			Platform:        v.Platform,
-		})
-	}
 	return &response.NFTSalesTrackerGuildResponse{
 		ID:         data[0].SalesConfigID,
 		GuildID:    guildID,
 		ChannelID:  data[0].GuildConfigSalesTracker.ChannelID,
-		Collection: collection,
+		Collection: data,
 	}, nil
 }
 
