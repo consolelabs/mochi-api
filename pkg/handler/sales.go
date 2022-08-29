@@ -5,9 +5,20 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	_ "github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GetNftsalesHandler     godoc
+// @Summary     Get NFT sales
+// @Description Get NFT sales
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       collection-address   query  string true  "Collection address"
+// @Param       platform   query  string true  "Platform"
+// @Success     200 {object} response.NftSalesResponse
+// @Router      /nfts/sales [get]
 func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 	addr := c.Query("collection-address")
 	platform := c.Query("platform")

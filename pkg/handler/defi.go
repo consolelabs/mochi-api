@@ -6,9 +6,21 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GetHistoricalMarketChart     godoc
+// @Summary     Get historical market chart
+// @Description Get historical market chart
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       coin_id   path  string true  "Coin ID"
+// @Param       day   path  int true  "Day"
+// @Param       currency   path  string false  "Currency" default(usd)
+// @Success     200 {object} response.GetHistoricalMarketChartResponse
+// @Router      /defi/market-chart [get]
 func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 	data, err, statusCode := h.entities.GetHistoricalMarketChart(c)
 	if err != nil {
@@ -17,9 +29,18 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.GetHistoricalMarketChartResponse{Data: data})
 }
 
+// InDiscordWalletTransfer     godoc
+// @Summary     In Discord Wallet transfer
+// @Description In Discord Wallet transfer
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.TransferRequest true "In Discord Wallet transfer request"
+// @Success     200 {object} response.InDiscordWalletTransferResponseWrapper
+// @Router      /defi/transfer [post]
 func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 	var req request.TransferRequest
 	if err := req.Bind(c); err != nil {
@@ -29,7 +50,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 	}
 
 	res, errs := h.entities.InDiscordWalletTransfer(req)
-	if errs != nil {
+	if len(errs) != 0 {
 		for _, err := range errs {
 			fmt.Println("error transfer in dcwallet:", err)
 		}
@@ -41,12 +62,21 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data":   res,
-		"errors": errs,
+	c.JSON(http.StatusOK, response.InDiscordWalletTransferResponseWrapper{
+		Data:   res,
+		Errors: errs,
 	})
 }
 
+// InDiscordWalletWithdraw     godoc
+// @Summary     In Discord Wallet withdraw
+// @Description In Discord Wallet withdraw
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.TransferRequest true "In Discord Wallet withdraw request"
+// @Success     200 {object} response.InDiscordWalletWithdrawResponse
+// @Router      /defi/withdraw [post]
 func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 	var req request.TransferRequest
 	if err := req.Bind(c); err != nil {
@@ -65,6 +95,16 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": res})
 }
 
+// InDiscordWalletBalances     godoc
+// @Summary     In Discord Wallet balance
+// @Description In Discord Wallet balance
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string false  "Guild ID"
+// @Param       discord_id   path  string true  "Discord ID"
+// @Success     200 {object} response.InDiscordWalletBalancesResponse
+// @Router      /defi/balances [get]
 func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	discordID := c.Query("discord_id")
@@ -74,15 +114,23 @@ func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
 		return
 	}
 
-	response, err := h.entities.InDiscordWalletBalances(guildID, discordID)
+	data, err := h.entities.InDiscordWalletBalances(guildID, discordID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "discordID": discordID}).Error(err, "[handler.InDiscordWalletBalances] - failed to respond")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "ok", "data": response})
+	c.JSON(http.StatusOK, response.InDiscordWalletBalancesResponse{Status: "ok", Data: data})
 }
 
+// GetSupportedTokens     godoc
+// @Summary     Get supported tokens
+// @Description Get supported tokens
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetSupportedTokensResponse
+// @Router      /defi/tokens [get]
 func (h *Handler) GetSupportedTokens(c *gin.Context) {
 	tokens, err := h.entities.GetSupportedTokens()
 	if err != nil {
@@ -91,11 +139,20 @@ func (h *Handler) GetSupportedTokens(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": tokens,
+	c.JSON(http.StatusOK, response.GetSupportedTokensResponse{
+		Data: tokens,
 	})
 }
 
+// GetCoin     godoc
+// @Summary     Get coin
+// @Description Get coin
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       id   path  string true  "Coin ID"
+// @Success     200 {object} response.GetCoinResponseWrapper
+// @Router      /defi/coins/{id} [get]
 func (h *Handler) GetCoin(c *gin.Context) {
 	data, err, statusCode := h.entities.GetCoinData(c)
 	if err != nil {
@@ -104,9 +161,18 @@ func (h *Handler) GetCoin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.GetCoinResponseWrapper{Data: data})
 }
 
+// SearchCoins     godoc
+// @Summary     Search coin
+// @Description Search coin
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       query   query  string true  "coin query"
+// @Success     200 {object} response.SearchCoinsResponse
+// @Router      /defi/coins [get]
 func (h *Handler) SearchCoins(c *gin.Context) {
 	data, err, statusCode := h.entities.SearchCoins(c)
 	if err != nil {
@@ -115,9 +181,21 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.SearchCoinsResponse{Data: data})
 }
 
+// CompareToken     godoc
+// @Summary     Compare token
+// @Description Compare token
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       base   query  string true  "base token"
+// @Param       target   query  string true  "target token"
+// @Param       interval   query  string true  "compare interval"
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.CompareTokenResponse
+// @Router      /defi/coins/compare [get]
 func (h *Handler) CompareToken(c *gin.Context) {
 	base := c.Query("base")
 	target := c.Query("target")
@@ -153,9 +231,18 @@ func (h *Handler) CompareToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": res})
+	c.JSON(http.StatusOK, response.CompareTokenResponse{Data: res})
 }
 
+// SetGuildDefaultTicker     godoc
+// @Summary     Set guild default ticker
+// @Description Set guild default ticker
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.GuildConfigDefaultTickerRequest true "Set guild default ticker request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/default-ticker [post]
 func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 	req := request.GuildConfigDefaultTickerRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -169,9 +256,19 @@ func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "OK"})
+	c.JSON(http.StatusCreated, response.ResponseMessage{Message: "OK"})
 }
 
+// GetGuildDefaultTicker     godoc
+// @Summary     Get guild default ticker
+// @Description Get guild default ticker
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Param       query   query  string true  "Guild ticker query"
+// @Success     200 {object} response.GetGuildDefaultTickerResponse
+// @Router      /configs/default-ticker [get]
 func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 	var q request.GetGuildDefaultTickerQuery
 	if err := c.ShouldBindQuery(&q); err != nil {

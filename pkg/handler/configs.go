@@ -8,10 +8,20 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
+// GetGmConfig     godoc
+// @Summary     Get GM config
+// @Description Get GM config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetGmConfigResponse
+// @Router      /configs/gm [get]
 func (h *Handler) GetGmConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -27,9 +37,18 @@ func (h *Handler) GetGmConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+	c.JSON(http.StatusOK, response.GetGmConfigResponse{Message: "OK", Data: config})
 }
 
+// UpsertGmConfig     godoc
+// @Summary     Update or insert GM config
+// @Description Update or insert GM config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGmConfigRequest true "Upsert GM Config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/gm [post]
 func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	var req request.UpsertGmConfigRequest
 
@@ -53,9 +72,18 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetSalesTrackerConfig     godoc
+// @Summary     Get sales tracker config
+// @Description Get sales tracker config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetSalesTrackerConfigResponse
+// @Router      /configs/sales-tracker [get]
 func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -71,9 +99,18 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+	c.JSON(http.StatusOK, response.GetSalesTrackerConfigResponse{Message: "OK", Data: config})
 }
 
+// GetGuildtokens     godoc
+// @Summary     Get guild tokens
+// @Description Get guild tokens
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string false  "Guild ID"
+// @Success     200 {object} response.GetGuildTokensResponse
+// @Router      /configs/tokens [get]
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	// if guild id empty, return global default tokens
@@ -84,9 +121,18 @@ func (h *Handler) GetGuildTokens(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": guildTokens})
+	c.JSON(http.StatusOK, response.GetGuildTokensResponse{Data: guildTokens})
 }
 
+// UpsertGuildTokenConfig     godoc
+// @Summary     Update or insert guild token config
+// @Description Update or insert guild token config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildTokenConfigRequest true "Upsert Guild Token Config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/tokens [post]
 func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 	var req request.UpsertGuildTokenConfigRequest
 
@@ -112,9 +158,18 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// ConfigLevelRole     godoc
+// @Summary     Config Level role
+// @Description Config level role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigLevelRoleRequest true "Config level role request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/level-roles [post]
 func (h *Handler) ConfigLevelRole(c *gin.Context) {
 	var req request.ConfigLevelRoleRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -145,9 +200,18 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetLevelRoleConfig     godoc
+// @Summary     Get level role config
+// @Description Get level role config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GetLevelRoleConfigsResponse
+// @Router      /configs/level-roles/{guild_id} [get]
 func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -163,9 +227,18 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.GetLevelRoleConfigsResponse{Data: data})
 }
 
+// RemoveLevelRoleConfig     godoc
+// @Summary     Remove level role config
+// @Description Remove level role config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/level-roles/{guild_id} [delete]
 func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -194,9 +267,18 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// ListGuildNFTRoles     godoc
+// @Summary     List guild nft roles
+// @Description List guild nft roles
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ListGuildNFTRolesResponse
+// @Router      /configs/nft-roles [get]
 func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -212,9 +294,18 @@ func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": roles})
+	c.JSON(http.StatusOK, response.ListGuildNFTRolesResponse{Data: roles})
 }
 
+// NewGuildNFTRole     godoc
+// @Summary     New guild nft role
+// @Description New guild nft role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigNFTRoleRequest true "New NFT role request"
+// @Success     201 {object} response.NewGuildNFTRoleResponse
+// @Router      /configs/nft-roles [post]
 func (h *Handler) NewGuildNFTRole(c *gin.Context) {
 	var req request.ConfigNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -236,9 +327,19 @@ func (h *Handler) NewGuildNFTRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "OK", "data": newRole})
+	c.JSON(http.StatusCreated, response.NewGuildNFTRoleResponse{Message: "OK", Data: newRole})
 }
 
+// EditGuildNFTRole     godoc
+// @Summary     Edit guild nft role
+// @Description Edit guild nft role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       config_id  path string true "Config ID"
+// @Param       Request  body request.ConfigNFTRoleRequest true "Edit NFT role request"
+// @Success     200 {object} response.EditGuildNFTRoleResponse
+// @Router      /configs/nft-roles/{config_id} [put]
 func (h *Handler) EditGuildNFTRole(c *gin.Context) {
 
 	var req request.ConfigNFTRoleRequest
@@ -270,9 +371,18 @@ func (h *Handler) EditGuildNFTRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+	c.JSON(http.StatusOK, response.EditGuildNFTRoleResponse{Message: "OK", Data: config})
 }
 
+// RemoveGuildNFTRole     godoc
+// @Summary     Remove guild nft role
+// @Description Remove guild nft role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       config_id  path string true "Config ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/nft-roles/{config_id} [delete]
 func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 
 	configID := c.Param("config_id")
@@ -287,9 +397,18 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// ConfigResposeReaction     godoc
+// @Summary     Config Respost reaction
+// @Description Config Respost reaction
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigRepostRequest true "Config repost reaction request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions [post]
 func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -325,9 +444,18 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetReposeReactionConfigs     godoc
+// @Summary     Get Respost reaction configs
+// @Description Get Respost reaction configs
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GetRepostReactionConfigsResponse
+// @Router      /configs/repost-reactions/{guild_id} [get]
 func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -343,9 +471,18 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.GetRepostReactionConfigsResponse{Data: data})
 }
 
+// RemoveReposeReactionConfig     godoc
+// @Summary     Remove Respost reaction config
+// @Description Remove Respost reaction config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigRepostRequest true "Remove repost reaction config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions [delete]
 func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -371,9 +508,19 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// ToggleActivityConfig     godoc
+// @Summary     Toggle activity config
+// @Description Toggle activity config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       activity   path  string true  "Activity name"
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ToggleActivityConfigResponse
+// @Router      /configs/activities/{activity} [post]
 func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 
 	var (
@@ -400,9 +547,18 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+	c.JSON(http.StatusOK, response.ToggleActivityConfigResponse{Message: "OK", Data: config})
 }
 
+// GetAllTwitterConfig     godoc
+// @Summary     Get all twitter config
+// @Description Get all twitter config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetAllTwitterConfigResponse
+// @Router      /configs/twitter [get]
 func (h *Handler) GetAllTwitterConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	config, err := h.entities.GetAllTwitterConfig()
@@ -411,9 +567,18 @@ func (h *Handler) GetAllTwitterConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "OK", "data": config})
+	c.JSON(http.StatusOK, response.GetAllTwitterConfigResponse{Message: "OK", Data: config})
 }
 
+// CreateTwitterConfig     godoc
+// @Summary     Create twitter config
+// @Description Create twitter config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body model.GuildConfigTwitterFeed true "Create Twitter config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/twitter [post]
 func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 	cfg := model.GuildConfigTwitterFeed{}
 	err := c.BindJSON(&cfg)
@@ -428,9 +593,18 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetTwitterHashtagConfig     godoc
+// @Summary     Get twitter hashtag config
+// @Description get twitter hashtag config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GetTwitterHashtagConfigResponse
+// @Router      /configs/twitter/hashtag/{guild_id} [get]
 func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
@@ -444,9 +618,17 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": hashtags})
+	c.JSON(http.StatusOK, response.GetTwitterHashtagConfigResponse{Data: hashtags})
 }
 
+// GetAllTwitterHashtagConfig     godoc
+// @Summary     Get all twitter hashtag config
+// @Description get all twitter hashtag config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetAllTwitterHashtagConfigResponse
+// @Router      /configs/twitter/hashtag [get]
 func (h *Handler) GetAllTwitterHashtagConfig(c *gin.Context) {
 	hashtags, err := h.entities.GetAllTwitterHashtagConfig()
 	if err != nil {
@@ -459,9 +641,18 @@ func (h *Handler) GetAllTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": hashtags})
+	c.JSON(http.StatusOK, response.GetAllTwitterHashtagConfigResponse{Data: hashtags})
 }
 
+// DeleteTwitterHashtagConfig     godoc
+// @Summary     Delete twitter hashtag config
+// @Description Delete twitter hashtag config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/twitter/hashtag/{guild_id} [delete]
 func (h *Handler) DeleteTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	err := h.entities.DeleteTwitterHashtagConfig(guildId)
@@ -470,9 +661,18 @@ func (h *Handler) DeleteTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// CreateTwitterHashtagConfig     godoc
+// @Summary     Create twitter hashtag config
+// @Description Create twitter hashtag config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.TwitterHashtag true "Create twitter hashtag config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/twitter/hashtag [post]
 func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 	req := request.TwitterHashtag{}
 	err := c.BindJSON(&req)
@@ -488,9 +688,18 @@ func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetDefaultToken     godoc
+// @Summary     Get Default token
+// @Description Get Default token
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetDefaultTokenResponse
+// @Router      /configs/tokens/default [get]
 func (h *Handler) GetDefaultToken(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	token, err := h.entities.GetDefaultToken(guildID)
@@ -500,9 +709,18 @@ func (h *Handler) GetDefaultToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": token})
+	c.JSON(http.StatusOK, response.GetDefaultTokenResponse{Data: token})
 }
 
+// ConfigDefaultToken     godoc
+// @Summary     Config Default token
+// @Description Config Default token
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigDefaultTokenRequest true "Config default token request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/tokens/default [post]
 func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 	req := request.ConfigDefaultTokenRequest{}
 	if err := c.BindJSON(&req); err != nil {
@@ -517,9 +735,18 @@ func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// RemoveDefaultToken     godoc
+// @Summary     Remove Default token
+// @Description Remove Default token
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/tokens/default [delete]
 func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if err := h.entities.RemoveDefaultToken(guildID); err != nil {
@@ -528,9 +755,18 @@ func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// CreateDefaultCollectionSymbol     godoc
+// @Summary     Create default collection symbol
+// @Description Create default collection symbol
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigDefaultCollection true "Config Default Collection Symbol request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/default-symbol [post]
 func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 	req := request.ConfigDefaultCollection{}
 	if err := c.BindJSON(&req); err != nil {
@@ -545,5 +781,5 @@ func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }

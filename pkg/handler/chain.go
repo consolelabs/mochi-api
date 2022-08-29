@@ -4,8 +4,18 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/defipod/mochi/pkg/response"
 )
 
+// AddContract   godoc
+// @Summary     List All Chain
+// @Description List All Chain
+// @Tags        Chain
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetListAllChainsResponse
+// @Router      /chains [get]
 func (h *Handler) ListAllChain(c *gin.Context) {
 	returnChain, err := h.entities.ListAllChain()
 	if err != nil {
@@ -14,5 +24,5 @@ func (h *Handler) ListAllChain(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": returnChain})
+	c.JSON(http.StatusOK, response.GetListAllChainsResponse{Data: returnChain})
 }

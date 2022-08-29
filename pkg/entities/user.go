@@ -48,7 +48,7 @@ func (e *Entity) CreateUserIfNotExists(id, username string) error {
 	return nil
 }
 
-func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
+func (e *Entity) GetUser(discordID string) (*response.User, error) {
 	user, err := e.repo.Users.GetOne(discordID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -74,7 +74,7 @@ func (e *Entity) GetUser(discordID string) (*response.GetUserResponse, error) {
 		}
 	}
 
-	res := &response.GetUserResponse{
+	res := &response.User{
 		ID:                     user.ID,
 		Username:               user.Username,
 		InDiscordWalletAddress: &user.InDiscordWalletAddress.String,
@@ -172,7 +172,7 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 	return e.repo.GuildConfigActivity.UpsertMany(configs)
 }
 
-func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.GetTopUsersResponse, error) {
+func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.TopUser, error) {
 	offset := page * limit
 	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
 	if err != nil {
@@ -201,7 +201,7 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 		return nil, err
 	}
 
-	return &response.GetTopUsersResponse{
+	return &response.TopUser{
 		Author:      author,
 		Leaderboard: leaderboard,
 	}, nil

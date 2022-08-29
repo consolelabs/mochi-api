@@ -24,3 +24,61 @@ type TwitterHashtag struct {
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
+
+type GetGmConfigResponse struct {
+	Message string                 `json:"message"`
+	Data    *model.GuildConfigGmGn `json:"data"`
+}
+
+type GetSalesTrackerConfigResponse struct {
+	Message string                         `json:"message"`
+	Data    *model.GuildConfigSalesTracker `json:"data"`
+}
+
+type GetGuildTokensResponse struct {
+	Data []model.Token `json:"data"`
+}
+
+type GetLevelRoleConfigsResponse struct {
+	Data []model.GuildConfigLevelRole `json:"data"`
+}
+
+type ListGuildNFTRolesResponse struct {
+	Data []GuildNFTRolesResponse `json:"data"`
+}
+
+type NewGuildNFTRoleResponse struct {
+	Message string                    `json:"message"`
+	Data    *model.GuildConfigNFTRole `json:"data"`
+}
+
+type EditGuildNFTRoleResponse struct {
+	Message string                    `json:"message"`
+	Data    *model.GuildConfigNFTRole `json:"data"`
+}
+
+type GetRepostReactionConfigsResponse struct {
+	Data []model.GuildConfigRepostReaction `json:"data"`
+}
+
+type ToggleActivityConfigResponse struct {
+	Message string                     `json:"message"`
+	Data    *model.GuildConfigActivity `json:"data"`
+}
+
+type GetAllTwitterConfigResponse struct {
+	Message string                         `json:"message"`
+	Data    []model.GuildConfigTwitterFeed `json:"data"`
+}
+
+type GetTwitterHashtagConfigResponse struct {
+	Data *TwitterHashtag `json:"data"`
+}
+
+type GetAllTwitterHashtagConfigResponse struct {
+	Data []TwitterHashtag `json:"data"`
+}
+
+type GetDefaultTokenResponse struct {
+	Data *model.Token `json:"data"`
+}

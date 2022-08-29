@@ -9,6 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetDefaultRolesByGuildID     godoc
+// @Summary     Get default roles by guild id
+// @Description Get default roles by guild id
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.DefaultRoleResponse
+// @Router      /configs/default-roles [get]
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 	guildID, isExist := c.GetQuery("guild_id")
 	if !isExist {
@@ -26,6 +35,15 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
+// CreateDefaultRole     godoc
+// @Summary     Create default role
+// @Description Create default role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateDefaultRoleRequest true "Create default role request"
+// @Success     200 {object} response.DefaultRoleResponse
+// @Router      /configs/default-roles [post]
 func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	body := request.CreateDefaultRoleRequest{}
 
@@ -52,10 +70,16 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	})
 }
 
+// DeleteDefaultRole     godoc
+// @Summary     Delete default role
+// @Description Delete default role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ResponseSucess
+// @Router      /configs/default-roles [delete]
 func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
-	type DeleteResponse struct {
-		Success bool `json:"success"`
-	}
 	guildID, isExist := c.GetQuery("guild_id")
 	if !isExist {
 		h.log.Info("[handler.DeleteDefaultRoleByGuildID] - guild id empty")
@@ -68,7 +92,7 @@ func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &DeleteResponse{
+	c.JSON(http.StatusOK, response.ResponseSucess{
 		Success: true,
 	})
 }

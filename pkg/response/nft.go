@@ -161,3 +161,27 @@ type NftMetadataAttrIconResponse struct {
 type GetGuildDefaultTickerResponse struct {
 	Data *model.GuildConfigDefaultTicker `json:"data"`
 }
+
+type CreateNFTCollectionResponse struct {
+	Data *model.NFTCollection `json:"data"`
+}
+
+type GetSupportedChains struct {
+	Data []string `json:"data"`
+}
+
+type ListAllNFTCollectionsResponse struct {
+	Data []model.NFTCollection `json:"data"`
+}
+
+type GetDetailNftCollectionResponse struct {
+	Data *model.NFTCollectionDetail `json:"data"`
+}
+
+type GetAllNFTSalesTrackerResponse struct {
+	Data []NFTSalesTrackerResponse `json:"data"`
+}
+
+type GetCollectionCountResponse struct {
+	Data *NFTCollectionCount `json:"data"`
+}

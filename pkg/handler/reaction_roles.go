@@ -5,9 +5,19 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GetAllRoleReactionConfigs     godoc
+// @Summary     Get all role reaction configs
+// @Description Get all role reaction configs
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ListRoleReactionResponse
+// @Router      /configs/reaction-roles [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 	guildID, guildIDExist := c.GetQuery("guild_id")
 	if !guildIDExist {
@@ -27,6 +37,15 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 
 }
 
+// AddReactionRoleConfig     godoc
+// @Summary     Add reaction role config
+// @Description Add reaction role config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.RoleReactionUpdateRequest true "Add reaction role config request"
+// @Success     200 {object} response.RoleReactionConfigResponse
+// @Router      /configs/reaction-roles [post]
 func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
@@ -46,6 +65,15 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, config)
 }
 
+// RemoveReactionRoleConfig     godoc
+// @Summary     Remove reaction role config
+// @Description Remove reaction role config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.RoleReactionUpdateRequest true "Remove reaction role config request"
+// @Success     200 {object} response.ResponseSucess
+// @Router      /configs/reaction-roles [delete]
 func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
@@ -68,11 +96,20 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
+	c.JSON(http.StatusOK, response.ResponseSucess{
+		Success: true,
 	})
 }
 
+// FilterConfigByReaction     godoc
+// @Summary     Filter config by reaction
+// @Description Filter config by reaction
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.RoleReactionRequest true "Filter config by reaction request"
+// @Success     200 {object} response.RoleReactionResponse
+// @Router      /configs/reaction-roles/filter [post]
 func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 	var req request.RoleReactionRequest
 
