@@ -6,10 +6,21 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
+// CreateCustomCommand     godoc
+// @Summary     Create custom command
+// @Description Create custom command
+// @Tags        Custom Command
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       Request  body model.GuildCustomCommand true "Create custom command request"
+// @Success     200 {object} response.CreateCustomCommandResponse
+// @Router      /guilds/{guild_id}/custom-commands [post]
 func (h *Handler) CreateCustomCommand(c *gin.Context) {
 	var (
 		guildID = c.Param("guild_id")
@@ -43,9 +54,20 @@ func (h *Handler) CreateCustomCommand(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": customCommand})
+	c.JSON(http.StatusCreated, response.CreateCustomCommandResponse{Data: customCommand})
 }
 
+// UpdateCustomCommand     godoc
+// @Summary     Update custom command
+// @Description Update custom command
+// @Tags        Custom Command
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       command_id   path  string true  "Command ID"
+// @Param       Request  body model.GuildCustomCommand true "Update custom command request"
+// @Success     200 {object} response.UpdateCustomCommandResponse
+// @Router      /guilds/{guild_id}/custom-commands/{command_id} [put]
 func (h *Handler) UpdateCustomCommand(c *gin.Context) {
 	var (
 		guildID = c.Param("guild_id")
@@ -85,9 +107,19 @@ func (h *Handler) UpdateCustomCommand(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": customCommand})
+	c.JSON(http.StatusOK, response.UpdateCustomCommandResponse{Data: customCommand})
 }
 
+// ListCustomCommands     godoc
+// @Summary     List custom commands
+// @Description List custom commands
+// @Tags        Custom Command
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       enabled   query  string true  "Enabled"
+// @Success     200 {object} response.ListCustomCommandsResponse
+// @Router      /guilds/{guild_id}/custom-commands [get]
 func (h *Handler) ListCustomCommands(c *gin.Context) {
 	var (
 		guildID    = c.Param("guild_id")
@@ -117,9 +149,19 @@ func (h *Handler) ListCustomCommands(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": customCommands})
+	c.JSON(http.StatusOK, response.ListCustomCommandsResponse{Data: customCommands})
 }
 
+// GetCustomCommand     godoc
+// @Summary     Get custom commands
+// @Description Get custom commands
+// @Tags        Custom Command
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       command_id   path  string true  "Command ID"
+// @Success     200 {object} response.GetCustomCommandResponse
+// @Router      /guilds/{guild_id}/custom-commands/{command_id} [get]
 func (h *Handler) GetCustomCommand(c *gin.Context) {
 	var (
 		guildID = c.Param("guild_id")
@@ -149,9 +191,19 @@ func (h *Handler) GetCustomCommand(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": customCommand})
+	c.JSON(http.StatusOK, response.GetCustomCommandResponse{Data: customCommand})
 }
 
+// DeleteCustomCommand     godoc
+// @Summary     Delete custom commands
+// @Description Delete custom commands
+// @Tags        Custom Command
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       command_id   path  string true  "Command ID"
+// @Success     204
+// @Router      /guilds/{guild_id}/custom-commands/{command_id} [delete]
 func (h *Handler) DeleteCustomCommand(c *gin.Context) {
 	var (
 		guildID = c.Param("guild_id")

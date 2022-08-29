@@ -5,9 +5,19 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// HandlerGuildCustomTokenConfig     godoc
+// @Summary     Guild custom token config
+// @Description Guild custom token config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertCustomTokenConfigRequest true "Custom guild custom token config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/custom-tokens [post]
 func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	var req request.UpsertCustomTokenConfigRequest
 
@@ -44,9 +54,18 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// ListAllCustomToken     godoc
+// @Summary     List all guild custom token
+// @Description List all guild custom token
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.ListAllCustomTokenResponse
+// @Router      /guilds/custom-tokens [get]
 func (h *Handler) ListAllCustomToken(c *gin.Context) {
 	guildID := c.Param("guild_id")
 
@@ -58,5 +77,5 @@ func (h *Handler) ListAllCustomToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": returnToken})
+	c.JSON(http.StatusOK, response.ListAllCustomTokenResponse{Data: returnToken})
 }

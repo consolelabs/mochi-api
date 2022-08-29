@@ -3,10 +3,11 @@ package response
 import (
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 )
 
-type GetUserResponse struct {
+type User struct {
 	ID                     string                  `json:"id"`
 	Username               string                  `json:"username"`
 	InDiscordWalletAddress *string                 `json:"in_discord_wallet_address"`
@@ -33,7 +34,7 @@ type HandleUserActivityResponse struct {
 	LevelUp      bool      `json:"level_up"`
 }
 
-type GetTopUsersResponse struct {
+type TopUser struct {
 	Author      *model.GuildUserXP  `json:"author"`
 	Leaderboard []model.GuildUserXP `json:"leaderboard"`
 }
@@ -49,4 +50,21 @@ type GetUserProfileResponse struct {
 	Guild        *model.DiscordGuild  `json:"guild"`
 	GuildRank    int                  `json:"guild_rank"`
 	UserWallet   *model.UserWallet    `json:"user_wallet"`
+}
+
+// For swagger
+
+type GetMyInfoResponse struct {
+	Data *discordgo.User `json:"data"`
+}
+
+type GetUserResponse struct {
+	Data User `json:"data"`
+}
+
+type GetTopUsersResponse struct {
+	Data TopUser `json:"data"`
+}
+type GetUserCurrentGMStreakResponse struct {
+	Data *model.DiscordUserGMStreak `json:"data"`
 }

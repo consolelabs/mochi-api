@@ -1,0 +1,4034 @@
+basePath: /api/v1
+definitions:
+  big.Float:
+    type: object
+  discordgo.User:
+    properties:
+      accent_color:
+        description: User's banner color, encoded as an integer representation of
+          hexadecimal color code
+        type: integer
+      avatar:
+        description: |-
+          The hash of the user's avatar. Use Session.UserAvatar
+          to retrieve the avatar itself.
+        type: string
+      banner:
+        description: The hash of the user's banner image.
+        type: string
+      bot:
+        description: Whether the user is a bot.
+        type: boolean
+      discriminator:
+        description: The discriminator of the user (4 numbers after name).
+        type: string
+      email:
+        description: |-
+          The email of the user. This is only present when
+          the application possesses the email scope for the user.
+        type: string
+      flags:
+        description: |-
+          The flags on a user's account.
+          Only available when the request is authorized via a Bearer token.
+        type: integer
+      id:
+        description: The ID of the user.
+        type: string
+      locale:
+        description: The user's chosen language option.
+        type: string
+      mfa_enabled:
+        description: Whether the user has multi-factor authentication enabled.
+        type: boolean
+      premium_type:
+        description: |-
+          The type of Nitro subscription on a user's account.
+          Only available when the request is authorized via a Bearer token.
+        type: integer
+      public_flags:
+        description: |-
+          The public flags on a user's account.
+          This is a combination of bit masks; the presence of a certain flag can
+          be checked by performing a bitwise AND between this int and the flag.
+        type: integer
+      system:
+        description: Whether the user is an Official Discord System user (part of
+          the urgent message system).
+        type: boolean
+      token:
+        description: |-
+          The token of the user. This is only present for
+          the user represented by the current session.
+        type: string
+      username:
+        description: The user's username.
+        type: string
+      verified:
+        description: Whether the user's email is verified.
+        type: boolean
+    type: object
+  entities.DiscordGuild:
+    properties:
+      bot_addable:
+        type: boolean
+      bot_arrived:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner:
+        type: boolean
+      permissions:
+        example: "0"
+        type: string
+    type: object
+  entities.ListMyGuildsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entities.DiscordGuild'
+        type: array
+    type: object
+  entities.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: integer
+    type: object
+  model.Activity:
+    properties:
+      guild_default:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      xp:
+        type: integer
+    type: object
+  model.Chain:
+    properties:
+      coin_gecko_id:
+        type: string
+      currency:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      short_name:
+        type: string
+    type: object
+  model.ConfigXpLevel:
+    properties:
+      level:
+        type: integer
+      min_xp:
+        type: integer
+    type: object
+  model.DiscordGuildStat:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      nr_of_animated_emojis:
+        type: integer
+      nr_of_announcement_channels:
+        type: integer
+      nr_of_bots:
+        type: integer
+      nr_of_categories:
+        type: integer
+      nr_of_channels:
+        type: integer
+      nr_of_custom_stickers:
+        type: integer
+      nr_of_emojis:
+        type: integer
+      nr_of_members:
+        type: integer
+      nr_of_roles:
+        type: integer
+      nr_of_server_stickers:
+        type: integer
+      nr_of_stage_channels:
+        type: integer
+      nr_of_static_emojis:
+        type: integer
+      nr_of_stickers:
+        type: integer
+      nr_of_text_channels:
+        type: integer
+      nr_of_users:
+        type: integer
+      nr_of_voice_channels:
+        type: integer
+    type: object
+  model.DiscordUserGMStreak:
+    properties:
+      created_at:
+        type: string
+      discord_id:
+        type: string
+      guild_id:
+        type: string
+      last_streak_date:
+        type: string
+      streak_count:
+        type: integer
+      total_count:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.GuildConfigActivity:
+    properties:
+      active:
+        type: boolean
+      activity:
+        $ref: '#/definitions/model.Activity'
+      activity_id:
+        type: integer
+      guild_id:
+        type: string
+    type: object
+  model.GuildConfigDefaultTicker:
+    properties:
+      default_ticker:
+        type: string
+      guild_id:
+        type: string
+      query:
+        type: string
+    type: object
+  model.GuildConfigGmGn:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+    type: object
+  model.GuildConfigInviteTracker:
+    properties:
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      user_id:
+        type: string
+      webhook_url:
+        $ref: '#/definitions/model.JSONNullString'
+    type: object
+  model.GuildConfigLevelRole:
+    properties:
+      guild_id:
+        type: string
+      level:
+        type: integer
+      level_config:
+        $ref: '#/definitions/model.ConfigXpLevel'
+      role_id:
+        type: string
+    type: object
+  model.GuildConfigNFTRole:
+    properties:
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      nft_collection_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
+      token_id:
+        type: string
+    type: object
+  model.GuildConfigRepostReaction:
+    properties:
+      emoji:
+        type: string
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      quantity:
+        type: integer
+      repost_channel_id:
+        type: string
+    type: object
+  model.GuildConfigSalesTracker:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+    type: object
+  model.GuildConfigTwitterFeed:
+    properties:
+      guild_id:
+        type: string
+      twitter_access_token:
+        type: string
+      twitter_access_token_secret:
+        type: string
+      twitter_consumer_key:
+        type: string
+      twitter_consumer_secret:
+        type: string
+    type: object
+  model.GuildConfigWalletVerificationMessage:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      discord_message_id:
+        type: string
+      embedded_message:
+        items:
+          type: integer
+        type: array
+      guild_id:
+        type: string
+      verify_channel_id:
+        type: string
+    type: object
+  model.GuildCustomCommand:
+    properties:
+      actions:
+        items:
+          type: integer
+        type: array
+      channels_permissions:
+        items:
+          type: integer
+        type: array
+      cooldown:
+        type: integer
+      cooldown_duration:
+        type: integer
+      description:
+        type: string
+      enabled:
+        type: boolean
+      guild_id:
+        type: string
+      id:
+        type: string
+      roles_permissions:
+        items:
+          type: integer
+        type: array
+    type: object
+  model.JSONNullString:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
+    type: object
+  model.NFTCollection:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      erc_format:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  model.NFTCollectionDetail:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain:
+        $ref: '#/definitions/model.Chain'
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      erc_format:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  model.NewListedNFTCollection:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain:
+        type: string
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      erc_format:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  model.Token:
+    properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/model.Chain'
+      chain_id:
+        type: integer
+      coin_gecko_id:
+        type: string
+      decimal:
+        type: integer
+      discord_bot_supported:
+        type: boolean
+      guild_default:
+        type: boolean
+      id:
+        type: integer
+      is_native:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  model.WhitelistCampaign:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: integer
+    type: object
+  model.WhitelistCampaignUser:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      discord_id:
+        type: string
+      notes:
+        type: string
+      whitelist_campaign_id:
+        type: string
+    type: object
+  request.AddWhitelistCampaignUser:
+    properties:
+      address:
+        type: string
+      discord_id:
+        type: string
+      notes:
+        type: string
+      whitelist_campaign_id:
+        type: string
+    type: object
+  request.AddWhitelistCampaignUserRequest:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/request.AddWhitelistCampaignUser'
+        type: array
+    type: object
+  request.ConfigDefaultCollection:
+    properties:
+      address:
+        type: string
+      chain:
+        type: string
+      guild_id:
+        type: string
+      symbol:
+        type: string
+    type: object
+  request.ConfigDefaultTokenRequest:
+    properties:
+      guild_id:
+        type: string
+      symbol:
+        type: string
+    type: object
+  request.ConfigLevelRoleRequest:
+    properties:
+      guild_id:
+        type: string
+      level:
+        type: integer
+      role_id:
+        type: string
+    type: object
+  request.ConfigNFTRoleRequest:
+    properties:
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      nft_collection_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
+      token_id:
+        type: string
+    type: object
+  request.ConfigRepostRequest:
+    properties:
+      emoji:
+        type: string
+      guild_id:
+        type: string
+      quantity:
+        type: integer
+      repost_channel_id:
+        type: string
+    type: object
+  request.ConfigureInviteRequest:
+    properties:
+      guild_id:
+        type: string
+      log_channel:
+        type: string
+      webhook_url:
+        type: string
+    type: object
+  request.CreateDefaultRoleRequest:
+    properties:
+      guild_id:
+        type: string
+      role_id:
+        type: string
+    type: object
+  request.CreateGuildRequest:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  request.CreateNFTCollectionRequest:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain:
+        type: string
+      chain_id:
+        type: string
+      guild_id:
+        type: string
+    type: object
+  request.CreateUserRequest:
+    properties:
+      guild_id:
+        type: string
+      id:
+        type: string
+      invited_by:
+        type: string
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
+  request.CreateWhitelistCampaignRequest:
+    properties:
+      guild_id:
+        type: string
+      name:
+        type: string
+    type: object
+  request.GenerateVerificationRequest:
+    properties:
+      guild_id:
+        type: string
+      is_reverify:
+        type: boolean
+      user_discord_id:
+        type: string
+    type: object
+  request.GiftXPRequest:
+    properties:
+      admin_discord_id:
+        type: string
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      user_discord_id:
+        type: string
+      xp_amount:
+        type: integer
+    type: object
+  request.GuildConfigDefaultTickerRequest:
+    properties:
+      default_ticker:
+        type: string
+      guild_id:
+        type: string
+      query:
+        type: string
+    type: object
+  request.LoginRequest:
+    properties:
+      access_token:
+        type: string
+    type: object
+  request.NewGuildConfigWalletVerificationMessageRequest:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      discord_message_id:
+        type: string
+      embedded_message:
+        items:
+          type: integer
+        type: array
+      guild_id:
+        type: string
+      verify_channel_id:
+        type: string
+    type: object
+  request.RoleReactionRequest:
+    properties:
+      guild_id:
+        type: string
+      message_id:
+        type: string
+      reaction:
+        type: string
+    type: object
+  request.RoleReactionUpdateRequest:
+    properties:
+      guild_id:
+        type: string
+      message_id:
+        type: string
+      reaction:
+        type: string
+      role_id:
+        type: string
+    type: object
+  request.TransferRequest:
+    properties:
+      all:
+        type: boolean
+      amount:
+        type: number
+      channelId:
+        type: string
+      cryptocurrency:
+        type: string
+      each:
+        type: boolean
+      guildId:
+        type: string
+      recipients:
+        items:
+          type: string
+        type: array
+      sender:
+        type: string
+      transferType:
+        type: string
+    type: object
+  request.TwitterHashtag:
+    properties:
+      channel_id:
+        type: string
+      from_twitter:
+        items:
+          type: string
+        type: array
+      guild_id:
+        type: string
+      hashtag:
+        items:
+          type: string
+        type: array
+      rule_id:
+        type: string
+      twitter_username:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: string
+    type: object
+  request.TwitterPost:
+    properties:
+      guild_id:
+        type: string
+      tweet_id:
+        type: string
+      twitter_handle:
+        type: string
+      twitter_id:
+        type: string
+    type: object
+  request.UpdateGuildRequest:
+    properties:
+      global_xp:
+        type: string
+      log_channel:
+        type: string
+    type: object
+  request.UpsertCustomTokenConfigRequest:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      chain:
+        type: string
+      chain_id:
+        type: integer
+      coin_gecko_id:
+        type: string
+      decimals:
+        type: integer
+      discord_bot_supported:
+        type: boolean
+      guild_default:
+        type: boolean
+      guild_id:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  request.UpsertGmConfigRequest:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+    type: object
+  request.UpsertGuildTokenConfigRequest:
+    properties:
+      active:
+        type: boolean
+      guild_id:
+        type: string
+      symbol:
+        type: string
+    type: object
+  request.VerifyWalletAddressRequest:
+    properties:
+      code:
+        type: string
+      signature:
+        type: string
+      wallet_address:
+        type: string
+    type: object
+  response.CoinImage:
+    properties:
+      large:
+        type: string
+      small:
+        type: string
+      thumb:
+        type: string
+    type: object
+  response.CoinPriceHistoryResponse:
+    properties:
+      from:
+        type: string
+      prices:
+        items:
+          type: number
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+      timestamps:
+        items:
+          type: integer
+        type: array
+      to:
+        type: string
+    type: object
+  response.CollectionSuggestions:
+    properties:
+      address:
+        type: string
+      chain:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  response.CompareTokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.TokenCompareReponse'
+    type: object
+  response.ConfigureInvitesResponse:
+    properties:
+      data:
+        type: string
+    type: object
+  response.CreateCustomCommandResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildCustomCommand'
+    type: object
+  response.CreateNFTCollectionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.NFTCollection'
+    type: object
+  response.DefaultRole:
+    properties:
+      guild_id:
+        type: string
+      role_id:
+        type: string
+    type: object
+  response.DefaultRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.DefaultRole'
+      ok:
+        type: boolean
+    type: object
+  response.EditGuildNFTRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigNFTRole'
+      message:
+        type: string
+    type: object
+  response.GenerateVerificationResponse:
+    properties:
+      code:
+        type: string
+      status:
+        type: string
+    type: object
+  response.GetAllNFTSalesTrackerResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.NFTSalesTrackerResponse'
+        type: array
+    type: object
+  response.GetAllTwitterConfigResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigTwitterFeed'
+        type: array
+      message:
+        type: string
+    type: object
+  response.GetAllTwitterHashtagConfigResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.TwitterHashtag'
+        type: array
+    type: object
+  response.GetCoinResponse:
+    properties:
+      asset_platform_id:
+        type: string
+      id:
+        type: string
+      image:
+        $ref: '#/definitions/response.CoinImage'
+      market_cap_rank:
+        type: integer
+      market_data:
+        $ref: '#/definitions/response.MarketData'
+      name:
+        type: string
+      symbol:
+        type: string
+      tickers:
+        items:
+          $ref: '#/definitions/response.TickerData'
+        type: array
+    type: object
+  response.GetCoinResponseWrapper:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetCoinResponse'
+    type: object
+  response.GetCollectionCountResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTCollectionCount'
+    type: object
+  response.GetCustomCommandResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildCustomCommand'
+    type: object
+  response.GetDefaultTokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Token'
+    type: object
+  response.GetDetailNftCollectionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.NFTCollectionDetail'
+    type: object
+  response.GetGmConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigGmGn'
+      message:
+        type: string
+    type: object
+  response.GetGuildDefaultTickerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigDefaultTicker'
+    type: object
+  response.GetGuildResponse:
+    properties:
+      alias:
+        type: string
+      bot_scopes:
+        items:
+          type: string
+        type: array
+      global_xp:
+        type: boolean
+      id:
+        type: string
+      log_channel:
+        type: string
+      log_channel_id:
+        type: string
+      name:
+        type: string
+    type: object
+  response.GetGuildTokensResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Token'
+        type: array
+    type: object
+  response.GetGuildUserResponse:
+    properties:
+      guild_id:
+        type: string
+      invited_by:
+        type: string
+      nickname:
+        type: string
+      user_id:
+        type: string
+    type: object
+  response.GetGuildsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GetGuildResponse'
+        type: array
+    type: object
+  response.GetHistoricalMarketChartResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.CoinPriceHistoryResponse'
+    type: object
+  response.GetInviteTrackerConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigInviteTracker'
+      message:
+        type: string
+    type: object
+  response.GetInvitesLeaderboardResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.UserInvitesAggregation'
+        type: array
+    type: object
+  response.GetInvitesResponse:
+    properties:
+      data:
+        items:
+          type: string
+        type: array
+    type: object
+  response.GetLevelRoleConfigsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigLevelRole'
+        type: array
+    type: object
+  response.GetListAllChainsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Chain'
+        type: array
+    type: object
+  response.GetMyInfoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/discordgo.User'
+    type: object
+  response.GetRepostReactionConfigsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigRepostReaction'
+        type: array
+    type: object
+  response.GetSalesTrackerConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigSalesTracker'
+      message:
+        type: string
+    type: object
+  response.GetSupportedChains:
+    properties:
+      data:
+        items:
+          type: string
+        type: array
+    type: object
+  response.GetSupportedTokensResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Token'
+        type: array
+    type: object
+  response.GetTwitterHashtagConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.TwitterHashtag'
+    type: object
+  response.GetUserCurrentGMStreakResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.DiscordUserGMStreak'
+    type: object
+  response.GetUserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.User'
+    type: object
+  response.GiftXpHandlerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.HandleUserActivityResponse'
+    type: object
+  response.GuildNFTRolesResponse:
+    properties:
+      color:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      nft_collection:
+        $ref: '#/definitions/model.NFTCollection'
+      nft_collection_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
+      role_name:
+        type: string
+      token_id:
+        type: string
+    type: object
+  response.HandleUserActivityResponse:
+    properties:
+      action:
+        type: string
+      added_xp:
+        type: integer
+      channel_id:
+        type: string
+      current_level:
+        type: integer
+      current_xp:
+        type: integer
+      guild_id:
+        type: string
+      level_up:
+        type: boolean
+      timestamp:
+        type: string
+      user_id:
+        type: string
+    type: object
+  response.InDiscordWalletBalancesResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.UserBalancesResponse'
+      status:
+        type: string
+    type: object
+  response.InDiscordWalletTransferResponse:
+    properties:
+      amount:
+        type: number
+      cryptocurrency:
+        type: string
+      fromDiscordID:
+        type: string
+      toDiscordID:
+        type: string
+      transactionFee:
+        type: number
+      txHash:
+        type: string
+      txUrl:
+        type: string
+    type: object
+  response.InDiscordWalletTransferResponseWrapper:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.InDiscordWalletTransferResponse'
+        type: array
+      errors:
+        items:
+          type: string
+        type: array
+    type: object
+  response.InDiscordWalletWithdrawResponse:
+    properties:
+      amount:
+        type: number
+      cryptocurrency:
+        type: string
+      fromDiscordId:
+        type: string
+      toAddress:
+        type: string
+      transactionFee:
+        type: number
+      txHash:
+        type: string
+      txURL:
+        type: string
+      withdrawalAmount:
+        $ref: '#/definitions/big.Float'
+    type: object
+  response.IndexerChain:
+    properties:
+      chain_id:
+        type: integer
+      is_evm:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  response.IndexerGetNFTTokenDetailResponseWithSuggestions:
+    properties:
+      data:
+        $ref: '#/definitions/response.IndexerNFTTokenDetailData'
+      default_symbol:
+        $ref: '#/definitions/response.CollectionSuggestions'
+      suggestions:
+        items:
+          $ref: '#/definitions/response.CollectionSuggestions'
+        type: array
+    type: object
+  response.IndexerGetNFTTokensResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.IndexerNFTTokenDetailData'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.IndexerNFTCollectionTickersData:
+    properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/response.IndexerChain'
+      collection_image:
+        type: string
+      floor_price:
+        $ref: '#/definitions/response.IndexerPrice'
+      items:
+        type: integer
+      last_sale_price:
+        $ref: '#/definitions/response.IndexerPrice'
+      marketplaces:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      owners:
+        type: integer
+      tickers:
+        $ref: '#/definitions/response.IndexerTickers'
+      total_volume:
+        $ref: '#/definitions/response.IndexerPrice'
+    type: object
+  response.IndexerNFTCollectionTickersResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.IndexerNFTCollectionTickersData'
+    type: object
+  response.IndexerNFTTokenAttribute:
+    properties:
+      collection_address:
+        type: string
+      count:
+        type: integer
+      frequency:
+        type: string
+      rarity:
+        type: string
+      token_id:
+        type: string
+      trait_type:
+        type: string
+      value:
+        type: string
+    type: object
+  response.IndexerNFTTokenDetailData:
+    properties:
+      amount:
+        type: string
+      attributes:
+        items:
+          $ref: '#/definitions/response.IndexerNFTTokenAttribute'
+        type: array
+      collection_address:
+        type: string
+      description:
+        type: string
+      image:
+        type: string
+      image_cdn:
+        type: string
+      image_content_type:
+        type: string
+      metadata_id:
+        type: string
+      name:
+        type: string
+      rarity:
+        $ref: '#/definitions/response.IndexerNFTTokenRarity'
+      rarity_rank:
+        type: integer
+      rarity_score:
+        type: string
+      rarity_tier:
+        type: string
+      thumbnail_cdn:
+        type: string
+      token_id:
+        type: string
+    type: object
+  response.IndexerNFTTokenRarity:
+    properties:
+      rank:
+        type: integer
+      rarity:
+        type: string
+      score:
+        type: string
+      total:
+        type: integer
+    type: object
+  response.IndexerPrice:
+    properties:
+      amount:
+        type: string
+      token:
+        $ref: '#/definitions/response.IndexerToken'
+    type: object
+  response.IndexerTickers:
+    properties:
+      prices:
+        items:
+          $ref: '#/definitions/response.IndexerPrice'
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+      timestamps:
+        items:
+          type: integer
+        type: array
+    type: object
+  response.IndexerToken:
+    properties:
+      address:
+        type: string
+      decimals:
+        type: integer
+      is_native:
+        type: boolean
+      symbol:
+        type: string
+    type: object
+  response.InvitesAggregationResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.UserInvitesAggregation'
+    type: object
+  response.ListAllCustomTokenResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Token'
+        type: array
+    type: object
+  response.ListAllNFTCollectionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.NFTCollection'
+        type: array
+    type: object
+  response.ListCustomCommandsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildCustomCommand'
+        type: array
+    type: object
+  response.ListGuildNFTRolesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GuildNFTRolesResponse'
+        type: array
+    type: object
+  response.ListRoleReactionResponse:
+    properties:
+      configs:
+        items:
+          $ref: '#/definitions/response.RoleReactionByMessage'
+        type: array
+      guild_id:
+        type: string
+      success:
+        type: boolean
+    type: object
+  response.LogoutResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  response.MarketData:
+    properties:
+      current_price:
+        additionalProperties:
+          type: number
+        type: object
+      market_cap:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_24h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+    type: object
+  response.NFTCollectionCount:
+    properties:
+      eth_collection:
+        type: integer
+      ftm_collection:
+        type: integer
+      op_collection:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.NFTCollectionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.NFTCollection'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.NFTNewListedResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.NewListedNFTCollection'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.NFTSalesTrackerResponse:
+    properties:
+      channel_id:
+        type: string
+      contract_address:
+        type: string
+      guild_id:
+        type: string
+      platform:
+        type: string
+    type: object
+  response.NFTTradingVolume:
+    properties:
+      collection_address:
+        type: string
+      collection_chain_id:
+        type: number
+      collection_name:
+        type: string
+      collection_symbol:
+        type: string
+      token:
+        type: string
+      trading_volume:
+        type: number
+    type: object
+  response.NFTTradingVolumeResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.NFTTradingVolume'
+        type: array
+    type: object
+  response.NewGuildConfigWalletVerificationMessageResponse:
+    properties:
+      Data:
+        $ref: '#/definitions/model.GuildConfigWalletVerificationMessage'
+      status:
+        type: string
+    type: object
+  response.NewGuildNFTRoleResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigNFTRole'
+      message:
+        type: string
+    type: object
+  response.NftMetadataAttrIcon:
+    properties:
+      discord_icon:
+        type: string
+      id:
+        type: integer
+      trait_type:
+        type: string
+      unicode_icon:
+        type: string
+    type: object
+  response.NftMetadataAttrIconResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.NftMetadataAttrIcon'
+        type: array
+    type: object
+  response.NftSales:
+    properties:
+      buyer:
+        type: string
+      nft_collection_address:
+        type: string
+      nft_name:
+        type: string
+      nft_price:
+        type: number
+      nft_price_token:
+        type: string
+      nft_status:
+        type: string
+      platform:
+        type: string
+      seller:
+        type: string
+    type: object
+  response.NftSalesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.NftSales'
+        type: array
+    type: object
+  response.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  response.ResponseStatus:
+    properties:
+      Status:
+        type: string
+    type: object
+  response.ResponseSucess:
+    properties:
+      success:
+        type: boolean
+    type: object
+  response.Role:
+    properties:
+      id:
+        type: string
+      reaction:
+        type: string
+    type: object
+  response.RoleReactionByMessage:
+    properties:
+      message_id:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/response.Role'
+        type: array
+    type: object
+  response.RoleReactionConfigResponse:
+    properties:
+      guild_id:
+        type: string
+      message_id:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/response.Role'
+        type: array
+      success:
+        type: boolean
+    type: object
+  response.RoleReactionResponse:
+    properties:
+      guild_id:
+        type: string
+      message_id:
+        type: string
+      role:
+        $ref: '#/definitions/response.Role'
+    type: object
+  response.SearchCoinsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+    type: object
+  response.SearchedCoin:
+    properties:
+      id:
+        type: string
+      large:
+        type: string
+      market_cap_rank:
+        type: integer
+      name:
+        type: string
+      symbol:
+        type: string
+      thumb:
+        type: string
+    type: object
+  response.TickerData:
+    properties:
+      base:
+        type: string
+      coin_id:
+        type: string
+      last:
+        type: number
+      target:
+        type: string
+      target_coin_id:
+        type: string
+    type: object
+  response.ToggleActivityConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigActivity'
+      message:
+        type: string
+    type: object
+  response.TokenCompareReponse:
+    properties:
+      base_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      base_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      ratios:
+        items:
+          type: number
+        type: array
+      target_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      target_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+    type: object
+  response.TwitterHashtag:
+    properties:
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      from_twitter:
+        items:
+          type: string
+        type: array
+      guild_id:
+        type: string
+      hashtag:
+        items:
+          type: string
+        type: array
+      rule_id:
+        type: string
+      twitter_username:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  response.UpdateCustomCommandResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildCustomCommand'
+    type: object
+  response.User:
+    properties:
+      guild_users:
+        items:
+          $ref: '#/definitions/response.GetGuildUserResponse'
+        type: array
+      id:
+        type: string
+      in_discord_wallet_address:
+        type: string
+      in_discord_wallet_number:
+        type: integer
+      username:
+        type: string
+    type: object
+  response.UserBalancesResponse:
+    properties:
+      balances:
+        additionalProperties:
+          type: number
+        type: object
+      balances_in_usd:
+        additionalProperties:
+          type: number
+        type: object
+    type: object
+  response.UserInvitesAggregation:
+    properties:
+      fake:
+        type: integer
+      inviter_id:
+        type: string
+      left:
+        type: integer
+      regular:
+        type: integer
+    type: object
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a swagger for mochi api.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Login request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.LoginResponse'
+      summary: Login
+      tags:
+      - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LogoutResponse'
+      summary: Logout
+      tags:
+      - Auth
+  /chains:
+    get:
+      consumes:
+      - application/json
+      description: List All Chain
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetListAllChainsResponse'
+      summary: List All Chain
+      tags:
+      - Chain
+  /community/invites/:
+    get:
+      consumes:
+      - application/json
+      description: Get invites
+      parameters:
+      - description: Member ID
+        in: query
+        name: member_id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetInvitesResponse'
+      summary: Get invites
+      tags:
+      - Community
+  /community/invites/aggregation:
+    get:
+      consumes:
+      - application/json
+      description: Invites Aggregation
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: Inviter ID
+        in: query
+        name: inviter
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InvitesAggregationResponse'
+      summary: Invites Aggregation
+      tags:
+      - Community
+  /community/invites/config:
+    get:
+      consumes:
+      - application/json
+      description: Get invites tracker config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetInviteTrackerConfigResponse'
+      summary: Get invites tracker config
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Configure invites
+      parameters:
+      - description: Configure Invites request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigureInviteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ConfigureInvitesResponse'
+      summary: Configure invites
+      tags:
+      - Community
+  /community/invites/leaderboard/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get invites leaderboard
+      parameters:
+      - description: Guild ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetInvitesLeaderboardResponse'
+      summary: Get invites leaderboard
+      tags:
+      - Community
+  /configs/activities/{activity}:
+    post:
+      consumes:
+      - application/json
+      description: Toggle activity config
+      parameters:
+      - description: Activity name
+        in: path
+        name: activity
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ToggleActivityConfigResponse'
+      summary: Toggle activity config
+      tags:
+      - Config
+  /configs/custom-tokens:
+    post:
+      consumes:
+      - application/json
+      description: Guild custom token config
+      parameters:
+      - description: Custom guild custom token config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertCustomTokenConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Guild custom token config
+      tags:
+      - Config
+  /configs/default-roles:
+    delete:
+      consumes:
+      - application/json
+      description: Delete default role
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseSucess'
+      summary: Delete default role
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get default roles by guild id
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultRoleResponse'
+      summary: Get default roles by guild id
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Create default role
+      parameters:
+      - description: Create default role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDefaultRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultRoleResponse'
+      summary: Create default role
+      tags:
+      - Config
+  /configs/default-symbol:
+    post:
+      consumes:
+      - application/json
+      description: Create default collection symbol
+      parameters:
+      - description: Config Default Collection Symbol request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigDefaultCollection'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create default collection symbol
+      tags:
+      - Config
+  /configs/default-ticker:
+    get:
+      consumes:
+      - application/json
+      description: Get guild default ticker
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: Guild ticker query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildDefaultTickerResponse'
+      summary: Get guild default ticker
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Set guild default ticker
+      parameters:
+      - description: Set guild default ticker request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GuildConfigDefaultTickerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Set guild default ticker
+      tags:
+      - Config
+  /configs/gm:
+    get:
+      consumes:
+      - application/json
+      description: Get GM config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGmConfigResponse'
+      summary: Get GM config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Update or insert GM config
+      parameters:
+      - description: Upsert GM Config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGmConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update or insert GM config
+      tags:
+      - Config
+  /configs/level-roles:
+    post:
+      consumes:
+      - application/json
+      description: Config level role
+      parameters:
+      - description: Config level role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigLevelRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Level role
+      tags:
+      - Config
+  /configs/level-roles/{guild_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove level role config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove level role config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get level role config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetLevelRoleConfigsResponse'
+      summary: Get level role config
+      tags:
+      - Config
+  /configs/nft-roles:
+    get:
+      consumes:
+      - application/json
+      description: List guild nft roles
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListGuildNFTRolesResponse'
+      summary: List guild nft roles
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: New guild nft role
+      parameters:
+      - description: New NFT role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigNFTRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.NewGuildNFTRoleResponse'
+      summary: New guild nft role
+      tags:
+      - Config
+  /configs/nft-roles/{config_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove guild nft role
+      parameters:
+      - description: Config ID
+        in: path
+        name: config_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove guild nft role
+      tags:
+      - Config
+    put:
+      consumes:
+      - application/json
+      description: Edit guild nft role
+      parameters:
+      - description: Config ID
+        in: path
+        name: config_id
+        required: true
+        type: string
+      - description: Edit NFT role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigNFTRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.EditGuildNFTRoleResponse'
+      summary: Edit guild nft role
+      tags:
+      - Config
+  /configs/reaction-roles:
+    delete:
+      consumes:
+      - application/json
+      description: Remove reaction role config
+      parameters:
+      - description: Remove reaction role config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RoleReactionUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseSucess'
+      summary: Remove reaction role config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get all role reaction configs
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListRoleReactionResponse'
+      summary: Get all role reaction configs
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Add reaction role config
+      parameters:
+      - description: Add reaction role config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RoleReactionUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RoleReactionConfigResponse'
+      summary: Add reaction role config
+      tags:
+      - Config
+  /configs/reaction-roles/filter:
+    post:
+      consumes:
+      - application/json
+      description: Filter config by reaction
+      parameters:
+      - description: Filter config by reaction request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RoleReactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.RoleReactionResponse'
+      summary: Filter config by reaction
+      tags:
+      - Config
+  /configs/repost-reactions:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Respost reaction config
+      parameters:
+      - description: Remove repost reaction config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove Respost reaction config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Config Respost reaction
+      parameters:
+      - description: Config repost reaction request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Respost reaction
+      tags:
+      - Config
+  /configs/repost-reactions/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Respost reaction configs
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetRepostReactionConfigsResponse'
+      summary: Get Respost reaction configs
+      tags:
+      - Config
+  /configs/sales-tracker:
+    get:
+      consumes:
+      - application/json
+      description: Get sales tracker config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSalesTrackerConfigResponse'
+      summary: Get sales tracker config
+      tags:
+      - Config
+  /configs/tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get guild tokens
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildTokensResponse'
+      summary: Get guild tokens
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Update or insert guild token config
+      parameters:
+      - description: Upsert Guild Token Config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildTokenConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update or insert guild token config
+      tags:
+      - Config
+  /configs/tokens/default:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Default token
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove Default token
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get Default token
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetDefaultTokenResponse'
+      summary: Get Default token
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Config Default token
+      parameters:
+      - description: Config default token request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigDefaultTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Default token
+      tags:
+      - Config
+  /configs/twitter:
+    get:
+      consumes:
+      - application/json
+      description: Get all twitter config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllTwitterConfigResponse'
+      summary: Get all twitter config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Create twitter config
+      parameters:
+      - description: Create Twitter config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.GuildConfigTwitterFeed'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter config
+      tags:
+      - Config
+  /configs/twitter/hashtag:
+    get:
+      consumes:
+      - application/json
+      description: get all twitter hashtag config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllTwitterHashtagConfigResponse'
+      summary: Get all twitter hashtag config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Create twitter hashtag config
+      parameters:
+      - description: Create twitter hashtag config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TwitterHashtag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter hashtag config
+      tags:
+      - Config
+  /configs/twitter/hashtag/{guild_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete twitter hashtag config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete twitter hashtag config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: get twitter hashtag config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
+      summary: Get twitter hashtag config
+      tags:
+      - Config
+  /defi/balances:
+    get:
+      consumes:
+      - application/json
+      description: In Discord Wallet balance
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      - description: Discord ID
+        in: path
+        name: discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InDiscordWalletBalancesResponse'
+      summary: In Discord Wallet balance
+      tags:
+      - Defi
+  /defi/coins:
+    get:
+      consumes:
+      - application/json
+      description: Search coin
+      parameters:
+      - description: coin query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SearchCoinsResponse'
+      summary: Search coin
+      tags:
+      - Defi
+  /defi/coins/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get coin
+      parameters:
+      - description: Coin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCoinResponseWrapper'
+      summary: Get coin
+      tags:
+      - Defi
+  /defi/coins/compare:
+    get:
+      consumes:
+      - application/json
+      description: Compare token
+      parameters:
+      - description: base token
+        in: query
+        name: base
+        required: true
+        type: string
+      - description: target token
+        in: query
+        name: target
+        required: true
+        type: string
+      - description: compare interval
+        in: query
+        name: interval
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CompareTokenResponse'
+      summary: Compare token
+      tags:
+      - Defi
+  /defi/market-chart:
+    get:
+      consumes:
+      - application/json
+      description: Get historical market chart
+      parameters:
+      - description: Coin ID
+        in: path
+        name: coin_id
+        required: true
+        type: string
+      - description: Day
+        in: path
+        name: day
+        required: true
+        type: integer
+      - default: usd
+        description: Currency
+        in: path
+        name: currency
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetHistoricalMarketChartResponse'
+      summary: Get historical market chart
+      tags:
+      - Defi
+  /defi/tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get supported tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSupportedTokensResponse'
+      summary: Get supported tokens
+      tags:
+      - Defi
+  /defi/transfer:
+    post:
+      consumes:
+      - application/json
+      description: In Discord Wallet transfer
+      parameters:
+      - description: In Discord Wallet transfer request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InDiscordWalletTransferResponseWrapper'
+      summary: In Discord Wallet transfer
+      tags:
+      - Defi
+  /defi/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: In Discord Wallet withdraw
+      parameters:
+      - description: In Discord Wallet withdraw request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.InDiscordWalletWithdrawResponse'
+      summary: In Discord Wallet withdraw
+      tags:
+      - Defi
+  /gift/xp:
+    post:
+      consumes:
+      - application/json
+      description: Gift xp handler
+      parameters:
+      - description: Gift XP handler request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GiftXPRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GiftXpHandlerResponse'
+      summary: Gift xp handler
+      tags:
+      - Gift
+  /guilds:
+    get:
+      consumes:
+      - application/json
+      description: Get guilds
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildsResponse'
+      summary: Get guilds
+      tags:
+      - Guild
+    post:
+      consumes:
+      - application/json
+      description: Create guild
+      parameters:
+      - description: Create Guild request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateGuildRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/request.CreateGuildRequest'
+      summary: Create guild
+      tags:
+      - Guild
+  /guilds/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get guild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildResponse'
+      summary: Get guild
+      tags:
+      - Guild
+    put:
+      consumes:
+      - application/json
+      description: Update guild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Update guild request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateGuildRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update guild
+      tags:
+      - Guild
+  /guilds/{guild_id}/channels:
+    post:
+      consumes:
+      - application/json
+      description: Create guild channel
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: count_type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Create guild channel
+      tags:
+      - Guild
+  /guilds/{guild_id}/custom-commands:
+    get:
+      consumes:
+      - application/json
+      description: List custom commands
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Enabled
+        in: query
+        name: enabled
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListCustomCommandsResponse'
+      summary: List custom commands
+      tags:
+      - Custom Command
+    post:
+      consumes:
+      - application/json
+      description: Create custom command
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Create custom command request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.GuildCustomCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateCustomCommandResponse'
+      summary: Create custom command
+      tags:
+      - Custom Command
+  /guilds/{guild_id}/custom-commands/{command_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete custom commands
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Command ID
+        in: path
+        name: command_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete custom commands
+      tags:
+      - Custom Command
+    get:
+      consumes:
+      - application/json
+      description: Get custom commands
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Command ID
+        in: path
+        name: command_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCustomCommandResponse'
+      summary: Get custom commands
+      tags:
+      - Custom Command
+    put:
+      consumes:
+      - application/json
+      description: Update custom command
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      - description: Command ID
+        in: path
+        name: command_id
+        required: true
+        type: string
+      - description: Update custom command request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.GuildCustomCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateCustomCommandResponse'
+      summary: Update custom command
+      tags:
+      - Custom Command
+  /guilds/{guild_id}/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get guild stats
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.DiscordGuildStat'
+      summary: Get guild stats
+      tags:
+      - Guild
+  /guilds/custom-tokens:
+    get:
+      consumes:
+      - application/json
+      description: List all guild custom token
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListAllCustomTokenResponse'
+      summary: List all guild custom token
+      tags:
+      - Guild
+  /guilds/user-managed:
+    get:
+      consumes:
+      - application/json
+      description: Get my guild list
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ListMyGuildsResponse'
+      summary: Get my guilds list
+      tags:
+      - Guild
+  /nfts:
+    get:
+      consumes:
+      - application/json
+      description: List all nft collections
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListAllNFTCollectionsResponse'
+      summary: List all nft collections
+      tags:
+      - NFT
+  /nfts/{symbol}/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT Detail
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Token ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerGetNFTTokenDetailResponseWithSuggestions'
+      summary: Get NFT Detail
+      tags:
+      - NFT
+  /nfts/collections:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT trading volume
+      parameters:
+      - default: 0
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NFTCollectionsResponse'
+      summary: Get NFT trading volume
+      tags:
+      - NFT
+    post:
+      consumes:
+      - application/json
+      description: Create NFT Collection
+      parameters:
+      - description: Create nft collection request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateNFTCollectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateNFTCollectionResponse'
+      summary: Create NFT Collection
+      tags:
+      - NFT
+  /nfts/collections/{address}:
+    patch:
+      consumes:
+      - application/json
+      description: Update NFT Collection
+      parameters:
+      - description: Collection Address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update NFT Collection
+      tags:
+      - NFT
+  /nfts/collections/{symbol}:
+    get:
+      consumes:
+      - application/json
+      description: Create NFT Sales tracker
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
+      summary: Create NFT Sales tracker
+      tags:
+      - NFT
+  /nfts/collections/{symbol}/detail:
+    get:
+      consumes:
+      - application/json
+      description: Get detail nft collection
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetDetailNftCollectionResponse'
+      summary: Get detail nft collection
+      tags:
+      - NFT
+  /nfts/collections/{symbol}/tickers:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT collection tickers
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerNFTCollectionTickersResponse'
+      summary: Get NFT collection tickers
+      tags:
+      - NFT
+  /nfts/collections/address/{address}:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT collection by address chain
+      parameters:
+      - description: Collection Address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: Chain
+        in: query
+        name: chain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.NFTCollection'
+      summary: Get NFT collection by address chain
+      tags:
+      - NFT
+  /nfts/collections/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get collection count
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCollectionCountResponse'
+      summary: Get collection count
+      tags:
+      - NFT
+  /nfts/icons:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT metadata attribute icon
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NftMetadataAttrIconResponse'
+      summary: Get NFT metadata attribute icon
+      tags:
+      - NFT
+  /nfts/new-listed:
+    get:
+      consumes:
+      - application/json
+      description: Get new listed nft collection
+      parameters:
+      - default: 0
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Size
+        in: query
+        name: size
+        type: integer
+      - default: 7
+        description: Interval
+        in: query
+        name: interval
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NFTNewListedResponse'
+      summary: Get new listed nft collection
+      tags:
+      - NFT
+  /nfts/sales:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT sales
+      parameters:
+      - description: Collection address
+        in: query
+        name: collection-address
+        required: true
+        type: string
+      - description: Platform
+        in: query
+        name: platform
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NftSalesResponse'
+      summary: Get NFT sales
+      tags:
+      - NFT
+  /nfts/sales-tracker:
+    delete:
+      consumes:
+      - application/json
+      description: Delete NFT sales tracker
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: Contract Address
+        in: query
+        name: contract_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete NFT sales tracker
+      tags:
+      - NFT
+    get:
+      consumes:
+      - application/json
+      description: Get all nft sales tracker
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllNFTSalesTrackerResponse'
+      summary: Get all nft sales tracker
+      tags:
+      - NFT
+  /nfts/supported-chains:
+    post:
+      consumes:
+      - application/json
+      description: Get supported chains
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSupportedChains'
+      summary: Get supported chains
+      tags:
+      - NFT
+  /nfts/trading-volume:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT trading volume
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NFTTradingVolumeResponse'
+      summary: Get NFT trading volume
+      tags:
+      - NFT
+  /profiles/:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetMyInfoResponse'
+      summary: Get user profile
+      tags:
+      - Profile
+  /twitter:
+    post:
+      consumes:
+      - application/json
+      description: Create twitter post
+      parameters:
+      - description: Create twitter post request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TwitterPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter post
+      tags:
+      - Twitter
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create User
+      parameters:
+      - description: Create user request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create User
+      tags:
+      - User
+  /users/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserResponse'
+      summary: Get user
+      tags:
+      - User
+  /users/gmstreak:
+    get:
+      consumes:
+      - application/json
+      description: Get user current GM streak
+      parameters:
+      - description: Discord ID
+        in: query
+        name: discord_id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserCurrentGMStreakResponse'
+      summary: Get user current GM streak
+      tags:
+      - User
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get user info
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetMyInfoResponse'
+      summary: Get user info
+      tags:
+      - User
+  /users/top:
+    get:
+      consumes:
+      - application/json
+      description: Get top users
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - default: 0
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetMyInfoResponse'
+      summary: Get top users
+      tags:
+      - User
+  /verify:
+    post:
+      consumes:
+      - application/json
+      description: Verify wallet address
+      parameters:
+      - description: Verify wallet address request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.VerifyWalletAddressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseStatus'
+      summary: Verify wallet address
+      tags:
+      - Verification
+  /verify/config:
+    delete:
+      consumes:
+      - application/json
+      description: Delete guild config wallet verification message
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseStatus'
+      summary: Delete guild config wallet verification message
+      tags:
+      - Verification
+    post:
+      consumes:
+      - application/json
+      description: Config wallet verification message
+      parameters:
+      - description: New guild config wallet verification message request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.NewGuildConfigWalletVerificationMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+      summary: Config wallet verification message
+      tags:
+      - Verification
+    put:
+      consumes:
+      - application/json
+      description: Update guild config wallet verification message
+      parameters:
+      - description: Update guild config wallet verification message request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.NewGuildConfigWalletVerificationMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+      summary: Update guild config wallet verification message
+      tags:
+      - Verification
+  /verify/config/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get guild config wallet verification message
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+      summary: Get guild config wallet verification message
+      tags:
+      - Verification
+  /verify/generate:
+    post:
+      consumes:
+      - application/json
+      description: Generate verification
+      parameters:
+      - description: Generate verification request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GenerateVerificationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GenerateVerificationResponse'
+      summary: Generate verification
+      tags:
+      - Verification
+  /whitelist-campaigns:
+    get:
+      consumes:
+      - application/json
+      description: Get whitelist campaign
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.WhitelistCampaign'
+            type: array
+      summary: Get whitelist campaign
+      tags:
+      - Whitelist campaign
+    post:
+      consumes:
+      - application/json
+      description: Create whitelist campaign
+      parameters:
+      - description: Create whitelist campaign request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
+      summary: Create whitelist campaign
+      tags:
+      - Whitelist campaign
+  /whitelist-campaigns/{campaignId}:
+    get:
+      consumes:
+      - application/json
+      description: Get whitelist campaign by id
+      parameters:
+      - description: Campaign ID
+        in: path
+        name: campaignId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WhitelistCampaign'
+      summary: Get whitelist campaign by id
+      tags:
+      - Whitelist campaign
+  /whitelist-campaigns/users:
+    get:
+      consumes:
+      - application/json
+      description: Get whitelist campaign user
+      parameters:
+      - description: Campaign ID
+        in: query
+        name: campaign_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.WhitelistCampaignUser'
+            type: array
+      summary: Get whitelist campaign user
+      tags:
+      - Whitelist campaign
+    post:
+      consumes:
+      - application/json
+      description: Add whitelist campaign user
+      parameters:
+      - description: Add whitelist campaign user request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
+      summary: Add whitelist campaign user
+      tags:
+      - Whitelist campaign
+  /whitelist-campaigns/users/{discord_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get whitelist campaign user by discord ID
+      parameters:
+      - description: Discord ID
+        in: path
+        name: discord_id
+        required: true
+        type: string
+      - description: Campaign ID
+        in: query
+        name: campaign_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WhitelistCampaignUser'
+      summary: Get whitelist campaign user by discord ID
+      tags:
+      - Whitelist campaign
+  /whitelist-campaigns/users/csv:
+    get:
+      consumes:
+      - application/json
+      description: Get whitelist campaign users csv
+      parameters:
+      - description: Campaign ID
+        in: query
+        name: campaign_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get whitelist campaign users csv
+      tags:
+      - Whitelist campaign
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: access_token
+    type: apiKey
+swagger: "2.0"

@@ -5,9 +5,19 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GiftXpHandler     godoc
+// @Summary     Gift xp handler
+// @Description Gift xp handler
+// @Tags        Gift
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.GiftXPRequest true "Gift XP handler request"
+// @Success     200 {object} response.GiftXpHandlerResponse
+// @Router      /gift/xp [post]
 func (h *Handler) GiftXpHandler(c *gin.Context) {
 	var req request.GiftXPRequest
 
@@ -30,5 +40,5 @@ func (h *Handler) GiftXpHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "cannot create activity log"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": resp})
+	c.JSON(http.StatusOK, response.GiftXpHandlerResponse{Data: resp})
 }

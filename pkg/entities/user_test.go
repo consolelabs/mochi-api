@@ -403,7 +403,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *response.GetTopUsersResponse
+		want    *response.TopUser
 		wantErr bool
 	}{
 		{
@@ -417,7 +417,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 				limit:   5,
 				page:    0,
 			},
-			want: &response.GetTopUsersResponse{
+			want: &response.TopUser{
 				Author:      &userXP,
 				Leaderboard: leaderboard,
 			},

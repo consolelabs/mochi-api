@@ -7,9 +7,19 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// IndexUsers     godoc
+// @Summary     Create User
+// @Description Create User
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateUserRequest true "Create user request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /users [post]
 func (h *Handler) IndexUsers(c *gin.Context) {
 	var req request.CreateUserRequest
 
@@ -25,9 +35,18 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetUser     godoc
+// @Summary     Get user
+// @Description Get user
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       user_id path     string true "User ID"
+// @Success     200 {object} response.GetUserResponse
+// @Router      /users/{user_id} [get]
 func (h *Handler) GetUser(c *gin.Context) {
 	discordID := c.Param("id")
 	if discordID == "" {
@@ -51,6 +70,16 @@ func (h *Handler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
+// GetUserCurrentGMStreak     godoc
+// @Summary     Get user current GM streak
+// @Description Get user current GM streak
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       discord_id query     string true "Discord ID"
+// @Param       guild_id query     string true "Guild ID"
+// @Success     200 {object} response.GetUserCurrentGMStreakResponse
+// @Router      /users/gmstreak [get]
 func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 
 	discordID := c.Query("discord_id")
@@ -72,6 +101,15 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 	c.JSON(code, gin.H{"data": res})
 }
 
+// GetMyInfo     godoc
+// @Summary     Get user info
+// @Description Get user info
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       Authorization header   string true "Authorization"
+// @Success     200 {object} response.GetMyInfoResponse
+// @Router      /users/me [get]
 func (h *Handler) GetMyInfo(c *gin.Context) {
 	accessToken := c.GetString("discord_access_token")
 
@@ -85,6 +123,18 @@ func (h *Handler) GetMyInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": du})
 }
 
+// GetTopUsers     godoc
+// @Summary     Get top users
+// @Description Get top users
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       guild_id query     string true "Guild ID"
+// @Param       user_id query     string true "User ID"
+// @Param       page query     int false "Page" default(0)
+// @Param       limit query     int false "Limit" default(10)
+// @Success     200 {object} response.GetMyInfoResponse
+// @Router      /users/top [get]
 func (h *Handler) GetTopUsers(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -133,6 +183,16 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }
 
+// GetUserProfile     godoc
+// @Summary     Get user profile
+// @Description Get user profile
+// @Tags        Profile
+// @Accept      json
+// @Produce     json
+// @Param       guild_id query     string true "Guild ID"
+// @Param       user_id query     string true "User ID"
+// @Success     200 {object} response.GetMyInfoResponse
+// @Router      /profiles/ [get]
 func (h *Handler) GetUserProfile(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {

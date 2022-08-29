@@ -7,10 +7,20 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	_ "github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GetGuilds     godoc
+// @Summary     Get guilds
+// @Description Get guilds
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetGuildsResponse
+// @Router      /guilds [get]
 func (h *Handler) GetGuilds(c *gin.Context) {
 	guilds, err := h.entities.GetGuilds()
 	if err != nil {
@@ -22,6 +32,15 @@ func (h *Handler) GetGuilds(c *gin.Context) {
 	c.JSON(http.StatusOK, guilds)
 }
 
+// GetGuild      godoc
+// @Summary     Get guild
+// @Description Get guild
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id path     string true "Guild ID"
+// @Success     200      {object} response.GetGuildResponse
+// @Router      /guilds/{guild_id} [get]
 func (h *Handler) GetGuild(c *gin.Context) {
 	guildID := c.Param("guild_id")
 
@@ -40,6 +59,15 @@ func (h *Handler) GetGuild(c *gin.Context) {
 	c.JSON(http.StatusOK, guild)
 }
 
+// Createguild      godoc
+// @Summary     Create guild
+// @Description Create guild
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       Request body     request.CreateGuildRequest true "Create Guild request"
+// @Success     200     {object} request.CreateGuildRequest
+// @Router      /guilds [post]
 func (h *Handler) CreateGuild(c *gin.Context) {
 	body := request.CreateGuildRequest{}
 
@@ -58,6 +86,15 @@ func (h *Handler) CreateGuild(c *gin.Context) {
 	c.JSON(http.StatusOK, body)
 }
 
+// GetGuildStats      godoc
+// @Summary     Get guild stats
+// @Description Get guild stats
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id path     string true "Guild ID"
+// @Success     200      {object} model.DiscordGuildStat
+// @Router      /guilds/{guild_id}/stats [get]
 func (h *Handler) GetGuildStatsHandler(c *gin.Context) {
 	guildID := c.Param("guild_id")
 
@@ -75,6 +112,16 @@ func (h *Handler) GetGuildStatsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, guildStat)
 }
 
+// CreateGuildChannel      godoc
+// @Summary     Create guild channel
+// @Description Create guild channel
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Param       count_type query string false "Guild ID"
+// @Success     200      {string} string "ok"
+// @Router      /guilds/{guild_id}/channels [post]
 func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	log := logger.NewLogrusLogger()
 	guildID := c.Param("guild_id")
@@ -91,19 +138,38 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	c.JSON(http.StatusOK, "ok")
 }
 
+// ListMyGuilds      godoc
+// @Summary     Get my guilds list
+// @Description Get my guild list
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       Authorization header   string true "Authorization"
+// @Success     200           {object} entities.ListMyGuildsResponse
+// @Router      /guilds/user-managed [get]
 func (h *Handler) ListMyGuilds(c *gin.Context) {
 	accessToken := c.GetString("discord_access_token")
 
-	guilds, err := h.entities.ListMyDiscordGuilds(accessToken)
+	resp, err := h.entities.ListMyDiscordGuilds(accessToken)
 	if err != nil {
 		h.log.Fields(logger.Fields{"token": accessToken}).Error(err, "[handler.ListMyGuilds] - failed to list discord guilds")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": guilds})
+	c.JSON(http.StatusOK, resp)
 }
 
+// UpdateGuild      godoc
+// @Summary     Update guild
+// @Description Update guild
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id path string                     true "Guild ID"
+// @Param       Request  body request.UpdateGuildRequest true "Update guild request"
+// @Success     200        {object} response.ResponseMessage
+// @Router      /guilds/{guild_id} [put]
 func (h *Handler) UpdateGuild(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -112,10 +178,7 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 		return
 	}
 
-	var req struct {
-		GlobalXP   string `json:"global_xp"`
-		LogChannel string `json:"log_channel"`
-	}
+	var req request.UpdateGuildRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "globalXP": req.GlobalXP, "logChannel": req.LogChannel}).Error(err, "[handler.UpdateGuild] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "global_xp is required"})
@@ -135,5 +198,5 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
