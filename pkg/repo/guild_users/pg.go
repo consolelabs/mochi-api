@@ -31,3 +31,7 @@ func (pg *pg) GetGuildUsers(guildID string) ([]model.GuildUser, error) {
 	var result []model.GuildUser
 	return result, pg.db.Where("guild_id = ?", guildID).Find(&result).Error
 }
+
+func (pg *pg) Create(guildUser *model.GuildUser) error {
+	return pg.db.Create(guildUser).Error
+}

@@ -337,3 +337,85 @@ func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, erro
 
 	return "", nil
 }
+
+func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discordgo.Member) (*response.HandleInviteHistoryResponse, error) {
+	res := &response.HandleInviteHistoryResponse{}
+
+	if inviter != nil {
+		// create inviter if not exist
+		if err := e.CreateUserIfNotExists(inviter.User.ID, inviter.User.Username); err != nil {
+			e.log.Fields(logger.Fields{"userID": inviter.User.ID, "username": inviter.User.Username}).
+				Error(err, "[Entity][CreateInvite] failed to create user for inviter")
+			return nil, err
+		}
+		if err := e.CreateGuildUserIfNotExists(inviter.GuildID, inviter.User.ID, inviter.Nick); err != nil {
+			e.log.Fields(logger.Fields{"userID": inviter.User.ID, "username": inviter.User.Username}).
+				Error(err, "[Entity][CreateInvite] failed to create guild user for inviter")
+			return nil, err
+		}
+
+		totalInvites, err := e.CountInviteHistoriesByGuildUser(inviter.GuildID, inviter.User.ID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"inviterID": invitee.User.ID, "guildID": inviter.GuildID}).
+				Error(err, "[Entity][CreateInvite] failed to count inviter invites")
+			return nil, err
+		}
+
+		res.InvitesAmount = int(totalInvites)
+		res.InviterID = inviter.User.ID
+		res.IsBot = inviter.User.Bot
+	}
+
+	if invitee != nil {
+		// create invitee if not exist
+		if err := e.CreateUserIfNotExists(invitee.User.ID, invitee.User.Username); err != nil {
+			e.log.Fields(logger.Fields{"userID": invitee.User.ID, "username": invitee.User.Username}).
+				Error(err, "[Entity][CreateInvite] failed to create user for invitee")
+			return nil, err
+		}
+		if err := e.repo.GuildUsers.Create(&model.GuildUser{
+			GuildID:   invitee.GuildID,
+			UserID:    invitee.User.ID,
+			Nickname:  invitee.Nick,
+			InvitedBy: res.InviterID,
+		}); err != nil {
+			e.log.Fields(logger.Fields{
+				"guildID":         invitee.GuildID,
+				"inviteeID":       invitee.User.ID,
+				"inviteeNickname": invitee.Nick,
+				"inviterID":       res.InviterID,
+			}).Error(err, "[Entity][CreateInvite] failed to create guild user for invitee")
+			return nil, err
+		}
+
+		res.InviteeID = invitee.User.ID
+
+		// create invite history
+		inviteType := model.INVITE_TYPE_NORMAL
+		if inviter == nil {
+			inviteType = model.INVITE_TYPE_LEFT
+		}
+
+		// TODO: Can't find age of user now
+		// if time.Now().Unix()-invit < 60*60*24*3 {
+		// 	inviteType = model.INVITE_TYPE_FAKE
+		// }
+
+		if err := e.repo.InviteHistories.Create(&model.InviteHistory{
+			GuildID:   invitee.GuildID,
+			UserID:    res.InviteeID,
+			InvitedBy: res.InviterID,
+			Type:      inviteType,
+		}); err != nil {
+			e.log.Fields(logger.Fields{
+				"guildID":   invitee.GuildID,
+				"userID":    res.InviteeID,
+				"invitedBy": res.InviterID,
+				"type":      inviteType,
+			}).Error(err, "[Entity][CreateInvite] failed to create invite history")
+			return nil, err
+		}
+	}
+
+	return res, nil
+}
