@@ -15,16 +15,11 @@ func (e *Entity) CreateInviteHistory(req request.CreateInviteHistoryRequest) err
 		InvitedBy: req.Inviter,
 		Type:      req.Type,
 	}
-
-	if err := e.repo.InviteHistories.Create(inviteHistory); err != nil {
-		return fmt.Errorf("failed to create invite history: %w", err)
+	err := e.repo.InviteHistories.Create(inviteHistory)
+	if err != nil {
+		e.log.Error(err, "[entity.CreateInviteHistory] repo.InviteHistories.Create() failed")
 	}
-
-	if err := e.repo.GuildUsers.Update(req.GuildID, req.Invitee, "invited_by", req.Inviter); err != nil {
-		return fmt.Errorf("failed to update guild user: %w", err)
-	}
-
-	return nil
+	return err
 }
 
 func (e *Entity) CountInviteHistoriesByGuildUser(guildID, userID string) (int64, error) {

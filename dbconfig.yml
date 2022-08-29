@@ -18,6 +18,6 @@ prod:
 
 test:
   dialect: postgres
-  datasource: host=localhost port=25432 user=postgres password=postgres dbname=mochi_local_test sslmode=disable
+  datasource: host=localhost port=25433 user=postgres password=postgres dbname=mochi_local_test sslmode=disable
   dir: migrations/schemas
   table: migrations

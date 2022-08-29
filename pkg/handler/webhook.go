@@ -57,6 +57,7 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 	h.handleInviteTracker(c, &member)
 }
 
+// TODO: move logic to entity layer
 func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member) {
 	var response response.HandleInviteHistoryResponse
 
@@ -90,7 +91,7 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 			Username:  invitee.User.Username,
 			Nickname:  invitee.Nick,
 			GuildID:   invitee.GuildID,
-			InvitedBy: invitee.User.ID,
+			InvitedBy: inviter.User.ID,
 		}); err != nil {
 			h.log.Fields(logger.Fields{"inviteeID": invitee.User.ID, "inviteeUsrName": invitee.User.Username, "inviteeNickName": invitee.Nick, "inviteeGuildID": invitee.GuildID}).Error(err, "[handler.handleInviteTracker] - failed to create user")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

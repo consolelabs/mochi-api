@@ -29,6 +29,6 @@ services:
       POSTGRES_PASSWORD: postgres
     container_name: mochi_local_test
     ports:
-      - 25432:5432
+      - 25433:5432
     expose:
-      - 25432
+      - 25433

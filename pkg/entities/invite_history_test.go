@@ -64,6 +64,7 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
+	l := logger.NewLogrusLogger()
 
 	uInv := mock_invite_histories.NewMockStore(ctrl)
 
@@ -79,6 +80,7 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			name: "Create invite successfully",
 			fields: fields{
 				repo: r,
+				log:  l,
 			},
 			args: args{
 				request.CreateInviteHistoryRequest{
@@ -94,6 +96,7 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			name: "Case user inviter not exits in server",
 			fields: fields{
 				repo: r,
+				log:  l,
 			},
 			args: args{
 				request.CreateInviteHistoryRequest{
@@ -109,6 +112,7 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			name: "Case user invitee not exits in server",
 			fields: fields{
 				repo: r,
+				log:  l,
 			},
 			args: args{
 				request.CreateInviteHistoryRequest{
@@ -124,6 +128,7 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			name: "Case guildID not exits in server",
 			fields: fields{
 				repo: r,
+				log:  l,
 			},
 			args: args{
 				request.CreateInviteHistoryRequest{
