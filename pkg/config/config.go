@@ -74,6 +74,8 @@ type Config struct {
 	GoogleCloudBucketName     string
 	GoogleCloudProjectID      string
 	GoogleCloudServiceAccount string
+
+	ProcessorServerHost string
 }
 
 type MarketplaceBaseUrl struct {
@@ -190,6 +192,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		GoogleCloudBucketName:     v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
 		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
 		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
+
+		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
 	}
 }
 

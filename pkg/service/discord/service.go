@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -14,4 +15,5 @@ type Service interface {
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
+	NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 }
