@@ -1,17 +1,29 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http/httptest"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
+	mock_nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service"
+	mock_abi "github.com/defipod/mochi/pkg/service/abi/mocks"
+	mock_discord "github.com/defipod/mochi/pkg/service/discord/mocks"
+	"github.com/defipod/mochi/pkg/service/indexer"
 	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
+	mock_marketplace "github.com/defipod/mochi/pkg/service/marketplace/mocks"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/defipod/mochi/pkg/util/testhelper"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -208,6 +220,202 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
 			require.NoError(t, err)
 			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetNFTDetail] response mismatched")
+		})
+	}
+}
+
+func TestHandler_CreateNFTCollection(t *testing.T) {
+	cfg := config.LoadTestConfig()
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	log := logger.NewLogrusLogger()
+	s := pg.NewPostgresStore(&cfg)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	NFTCollection := mock_nftcollection.NewMockStore(ctrl)
+	repo := pg.NewRepo(db)
+	svc, _ := service.NewService(cfg, log)
+	repo.NFTCollection = NFTCollection
+
+	indexerMock := mock_indexer.NewMockService(ctrl)
+	marketplaceMock := mock_marketplace.NewMockService(ctrl)
+	abiMock := mock_abi.NewMockService(ctrl)
+	discordMock := mock_discord.NewMockService(ctrl)
+	svc.Discord = discordMock
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, indexerMock, abiMock, marketplaceMock)
+
+	marketplaceDataRabby := response.OpenseaAssetContractResponse{
+		Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+		Collection: response.OpenseaAssetContract{
+			Image:   "https://openseauserdata.com/files/061eb8949cff84d0be850fc9a566e4fe.png",
+			UrlName: "cyber-rabby",
+		},
+	}
+	tests := []struct {
+		name                     string
+		req                      request.CreateNFTCollectionRequest
+		address                  string
+		collectionExist          bool
+		wantMarketplaceOpensea   *response.OpenseaAssetContractResponse
+		wantMarketplacePaintswap *response.PaintswapCollectionResponse
+		wantMarketplaceOptimisim *response.QuixoticCollectionResponse
+		wantIndexerContract      *response.IndexerContract
+		wantName                 string
+		wantSymbol               string
+		wantImage                string
+		wantCode                 int
+		wantError                error
+		wantResponsePath         string
+	}{
+		{
+			name: "create new collection successful - with address",
+			req: request.CreateNFTCollectionRequest{
+				Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+				ChainID: "eth",
+				Chain:   "1",
+				Author:  "319132138849173505",
+				GuildID: "863278424433229854",
+			},
+			collectionExist:        false,
+			address:                "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+			wantMarketplaceOpensea: &marketplaceDataRabby,
+			wantName:               "Cyber Rabby",
+			wantSymbol:             "RABBY",
+			wantImage:              "https://openseauserdata.com/files/061eb8949cff84d0be850fc9a566e4fe.png",
+			wantCode:               200,
+			wantError:              nil,
+			wantResponsePath:       "testdata/create_nft_collection/200-success.json",
+		},
+		{
+			name: "create new collection successful - with market link",
+			req: request.CreateNFTCollectionRequest{
+				Address: "https://opensea.io/collection/cyber-rabby",
+				ChainID: "eth",
+				Chain:   "1",
+				Author:  "319132138849173505",
+				GuildID: "863278424433229854",
+			},
+			collectionExist:        false,
+			address:                "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+			wantMarketplaceOpensea: &marketplaceDataRabby,
+			wantName:               "Cyber Rabby",
+			wantSymbol:             "RABBY",
+			wantImage:              "https://openseauserdata.com/files/061eb8949cff84d0be850fc9a566e4fe.png",
+			wantCode:               200,
+			wantError:              nil,
+			wantResponsePath:       "testdata/create_nft_collection/200-success.json",
+		},
+		{
+			name: "fail to create - nft existed - not synced",
+			req: request.CreateNFTCollectionRequest{
+				Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+				ChainID: "eth",
+				Chain:   "1",
+				Author:  "319132138849173505",
+				GuildID: "863278424433229854",
+			},
+			collectionExist: true,
+			address:         "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+			wantIndexerContract: &response.IndexerContract{
+				IsSynced: false,
+			},
+			wantCode:         400,
+			wantError:        nil,
+			wantResponsePath: "testdata/create_nft_collection/400-not-sync.json",
+		},
+		{
+			name: "fail to create - nft existed - already synced",
+			req: request.CreateNFTCollectionRequest{
+				Address: "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
+				ChainID: "eth",
+				Chain:   "1",
+				Author:  "319132138849173505",
+				GuildID: "863278424433229854",
+			},
+			collectionExist: true,
+			address:         "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
+			wantIndexerContract: &response.IndexerContract{
+				IsSynced: true,
+			},
+			wantCode:         400,
+			wantError:        nil,
+			wantResponsePath: "testdata/create_nft_collection/400-insync.json",
+		},
+		{
+			name: "fail to get contract",
+			req: request.CreateNFTCollectionRequest{
+				Address: "0x09e0dF4ae51111Ca27d6B85708Cfb3F1f7cAe983",
+				ChainID: "eth",
+				Chain:   "1",
+				Author:  "319132138849173505",
+				GuildID: "863278424433229854",
+			},
+			collectionExist:  false,
+			address:          "0x09e0dF4ae51111Ca27d6B85708Cfb3F1f7cAe983",
+			wantCode:         500,
+			wantError:        errors.New("GetNFTCollections - failed to get opensea asset contract with address=0x09e0dF4ae51111Ca27d6B85708Cfb3F1f7cAe983: {success:false}"),
+			wantResponsePath: "testdata/create_nft_collection/500-cannot-find-contract.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			chainId, _ := strconv.Atoi(tt.req.Chain)
+			h := &Handler{
+				entities: entityMock,
+				log:      log,
+			}
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest("POST", "/api/v1/nfts/collections", nil)
+			util.SetRequestBody(ctx, tt.req)
+
+			marketplaceMock.EXPECT().GetOpenseaAssetContract(tt.address).Return(tt.wantMarketplaceOpensea, tt.wantError).AnyTimes()
+			marketplaceMock.EXPECT().GetCollectionFromPaintswap(tt.address).Return(tt.wantMarketplacePaintswap, tt.wantError).AnyTimes()
+			marketplaceMock.EXPECT().GetCollectionFromQuixotic(tt.address).Return(tt.wantMarketplaceOptimisim, tt.wantError).AnyTimes()
+			marketplaceMock.EXPECT().HandleMarketplaceLink(tt.req.Address, tt.req.ChainID).Return(tt.address).AnyTimes()
+
+			abiMock.EXPECT().GetNameAndSymbol(tt.address, int64(chainId)).Return(tt.wantName, tt.wantSymbol, nil).AnyTimes()
+
+			indexerMock.EXPECT().GetNFTContract(tt.address).Return(tt.wantIndexerContract, nil).AnyTimes()
+			indexerMock.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{
+				Address: tt.address,
+				ChainID: chainId,
+			}).Return(nil).AnyTimes()
+
+			discordMock.EXPECT().NotifyAddNewCollection(tt.req.GuildID, tt.wantName, tt.wantSymbol, tt.req.ChainID, tt.wantImage).AnyTimes()
+
+			if tt.collectionExist {
+				NFTCollection.EXPECT().GetByAddress(tt.address).Return(nil, nil).AnyTimes()
+			} else {
+				NFTCollection.EXPECT().GetByAddress(tt.address).Return(nil, errors.New("record not found")).AnyTimes()
+			}
+			NFTCollection.EXPECT().Create(model.NFTCollection{
+				Address:    tt.address,
+				Symbol:     tt.wantSymbol,
+				Name:       tt.wantName,
+				ChainID:    tt.req.Chain,
+				ERCFormat:  "ERC721",
+				IsVerified: true,
+				Author:     tt.req.Author,
+				Image:      tt.wantImage,
+			}).Return(&model.NFTCollection{
+				ID:         util.GetNullUUID("8aa72c1b-5dcd-467f-9486-e9826d9a18e0"),
+				Address:    tt.address,
+				Symbol:     tt.wantSymbol,
+				Name:       tt.wantName,
+				ChainID:    tt.req.Chain,
+				ERCFormat:  "ERC721",
+				IsVerified: true,
+				CreatedAt:  time.Date(2022, 8, 29, 5, 4, 3, 2, time.UTC),
+				Author:     tt.req.Author,
+				Image:      tt.wantImage,
+			}, nil).AnyTimes()
+
+			h.CreateNFTCollection(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.CreateNFTCollection] response mismatched")
 		})
 	}
 }

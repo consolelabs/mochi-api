@@ -60,7 +60,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	var req request.CreateNFTCollectionRequest
 
-	if err := req.Bind(c); err != nil {
+	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateNFTCollection] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
