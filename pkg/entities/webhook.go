@@ -205,8 +205,8 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	switch {
 	case chatDate.Before(nextStreakDate):
 		durationTilNextGoal := nextStreakDate.Sub(sentAt)
-		durationString := fmt.Sprintf("%.0f hours and %.0f minutes",
-			durationTilNextGoal.Hours(),
+		durationString := fmt.Sprintf("%d hours and %.0f minutes",
+			int(durationTilNextGoal.Hours()),
 			durationTilNextGoal.Minutes()-float64(int(durationTilNextGoal.Hours()))*60)
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, durationString, false)
 	case chatDate.Equal(nextStreakDate):
