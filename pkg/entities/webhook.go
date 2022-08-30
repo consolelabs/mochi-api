@@ -205,8 +205,8 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	switch {
 	case chatDate.Before(nextStreakDate):
 		durationTilNextGoal := nextStreakDate.Sub(sentAt)
-		durationString := fmt.Sprintf("%.0f hours and %.0f minutes",
-			durationTilNextGoal.Hours(),
+		durationString := fmt.Sprintf("%d hours and %.0f minutes",
+			int(durationTilNextGoal.Hours()),
 			durationTilNextGoal.Minutes()-float64(int(durationTilNextGoal.Hours()))*60)
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, durationString, false)
 	case chatDate.Equal(nextStreakDate):
@@ -244,6 +244,25 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
 	}
 
+	// send data to processor to calculate user's xp
+	data := model.UserTxData{
+		UserDiscordId: discordID,
+		Guild:         guildID,
+		StreakCount:   streak.StreakCount,
+		TotalCount:    streak.TotalCount,
+	}
+
+	podTownXps, err := e.svc.Processor.CreateUserTransaction(model.CreateUserTransaction{
+		Dapp:   consts.NekoBot,
+		Action: consts.GmStreak,
+		Data:   data,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user transaction: %v with err: %v", data, err)
+	}
+
+	// send message to log channel
+	_ = e.svc.Discord.NotifyGmStreak(discordID, streak.StreakCount, *podTownXps)
 	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 }
 

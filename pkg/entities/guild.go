@@ -105,13 +105,17 @@ func listDiscordGuilds(s *discordgo.Session) ([]*discordgo.UserGuild, error) {
 	return guilds, nil
 }
 
-type DiscordGuildResponse struct {
+type DiscordGuild struct {
 	discordgo.UserGuild
 	BotAddable bool `json:"bot_addable"`
 	BotArrived bool `json:"bot_arrived"`
 }
 
-func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]*DiscordGuildResponse, error) {
+type ListMyGuildsResponse struct {
+	Data []DiscordGuild `json:"data"`
+}
+
+func (e *Entity) ListMyDiscordGuilds(accessToken string) (*ListMyGuildsResponse, error) {
 	s, err := discordgo.New("Bearer " + accessToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open discord session: %v", err.Error())
@@ -133,15 +137,17 @@ func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]*DiscordGuildRespons
 		mochiArrived[g.ID] = true
 	}
 
-	res := make([]*DiscordGuildResponse, 0)
+	guilds := make([]DiscordGuild, 0)
 	for _, g := range userGuilds {
 		// Check for guilds that user has ADMINISTRATOR or MANAGE_GUILD permission
 		if (g.Permissions&0x8) == 0x8 || (g.Permissions&0x20) == 0x20 {
-			res = append(res, &DiscordGuildResponse{*g, true, mochiArrived[g.ID]})
+			guilds = append(guilds, DiscordGuild{*g, true, mochiArrived[g.ID]})
 		}
 	}
 
-	return res, nil
+	return &ListMyGuildsResponse{
+		Data: guilds,
+	}, nil
 }
 
 func (e *Entity) UpdateGuild(omit, guildID string, globalXP bool, logChannel string) error {

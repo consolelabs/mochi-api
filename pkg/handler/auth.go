@@ -4,11 +4,22 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/consts"
+	_ "github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// Login         godoc
+// @Summary     Login
+// @Description Login
+// @Tags        Auth
+// @Accept      json
+// @Produce     json
+// @Param       Request body     request.LoginRequest true "Login request"
+// @Success     200     {object} entities.LoginResponse
+// @Router      /auth/login [post]
 func (h *Handler) Login(c *gin.Context) {
 
 	var req request.LoginRequest
@@ -37,11 +48,19 @@ func (h *Handler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// Logout        godoc
+// @Summary     Logout
+// @Description Logout
+// @Tags        Auth
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.LogoutResponse
+// @Router      /auth/logout [post]
 func (h *Handler) Logout(c *gin.Context) {
 	c.SetCookie(consts.TokenCookieKey, "", -1, "/", "", false, true)
 
-	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "logged out",
+	c.JSON(http.StatusOK, response.LogoutResponse{
+		Status:  "ok",
+		Message: "logged out",
 	})
 }

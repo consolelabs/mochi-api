@@ -46,6 +46,10 @@ func ConvertMarkplaceToChainId(marketplace string) int64 {
 		return 250
 	case "looksrare":
 		return 1
+	case "x2y2":
+		return 1
+	case "nftkey":
+		return 250
 	default:
 		return 250
 	}

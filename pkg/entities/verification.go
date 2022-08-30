@@ -85,13 +85,13 @@ func (e *Entity) GetGuildConfigWalletVerificationMessage(guildId string) (*model
 	_, err := e.repo.DiscordGuilds.GetByID(guildId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[e.repo.DiscordGuilds.GetByID] - failed to get guild by id")
-		return nil, fmt.Errorf("failed to get discord guild: %v", err.Error())
+		return nil, err
 	}
 
 	res, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(guildId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[e.repo.GuildConfigWalletVerificationMessage.GetOne] - failed to get config by guild id")
-		return nil, fmt.Errorf("failed to get guild config verification: %v", err.Error())
+		return nil, err
 	}
 
 	return res, nil

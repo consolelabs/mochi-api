@@ -8,10 +8,20 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	_ "github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/gin-gonic/gin"
 )
 
+// CreateWhitelistCampaign     godoc
+// @Summary     Create whitelist campaign
+// @Description Create whitelist campaign
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateWhitelistCampaignRequest true "Create whitelist campaign request"
+// @Success     200 {object} request.CreateWhitelistCampaignRequest
+// @Router      /whitelist-campaigns [post]
 func (h *Handler) CreateWhitelistCampaign(c *gin.Context) {
 	body := request.CreateWhitelistCampaignRequest{}
 
@@ -30,6 +40,15 @@ func (h *Handler) CreateWhitelistCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, body)
 }
 
+// GetWhitelistCampaign     godoc
+// @Summary     Get whitelist campaign
+// @Description Get whitelist campaign
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} []model.WhitelistCampaign
+// @Router      /whitelist-campaigns [get]
 func (h *Handler) GetWhitelistCampaigns(c *gin.Context) {
 	guildId := c.Query("guild_id")
 	if guildId == "" {
@@ -48,6 +67,15 @@ func (h *Handler) GetWhitelistCampaigns(c *gin.Context) {
 	c.JSON(http.StatusOK, campaigns)
 }
 
+// GetWhitelistCampaignById     godoc
+// @Summary     Get whitelist campaign by id
+// @Description Get whitelist campaign by id
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       campaignId   path  string true  "Campaign ID"
+// @Success     200 {object} model.WhitelistCampaign
+// @Router      /whitelist-campaigns/{campaignId} [get]
 func (h *Handler) GetWhitelistCampaignById(c *gin.Context) {
 	campaignId := c.Param("campaignId")
 	if campaignId == "" {
@@ -71,6 +99,15 @@ func (h *Handler) GetWhitelistCampaignById(c *gin.Context) {
 	c.JSON(http.StatusOK, campaign)
 }
 
+// AddWhitelistCampaignUsers     godoc
+// @Summary     Add whitelist campaign user
+// @Description Add whitelist campaign user
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.AddWhitelistCampaignUserRequest true "Add whitelist campaign user request"
+// @Success     200 {object} request.AddWhitelistCampaignUserRequest
+// @Router      /whitelist-campaigns/users [post]
 func (h *Handler) AddWhitelistCampaignUsers(c *gin.Context) {
 	var body request.AddWhitelistCampaignUserRequest
 
@@ -89,6 +126,15 @@ func (h *Handler) AddWhitelistCampaignUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, body)
 }
 
+// GetWhitelistCampaignUsers     godoc
+// @Summary     Get whitelist campaign user
+// @Description Get whitelist campaign user
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       campaign_id   query  string true  "Campaign ID"
+// @Success     200 {object} []model.WhitelistCampaignUser
+// @Router      /whitelist-campaigns/users [get]
 func (h *Handler) GetWhitelistCampaignUsers(c *gin.Context) {
 	campaignId := c.Query("campaign_id")
 	if campaignId == "" {
@@ -107,6 +153,16 @@ func (h *Handler) GetWhitelistCampaignUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, wlUsers)
 }
 
+// GetWhitelistCampaignUserByDiscordId     godoc
+// @Summary     Get whitelist campaign user by discord ID
+// @Description Get whitelist campaign user by discord ID
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       discord_id   path  string true  "Discord ID"
+// @Param       campaign_id   query  string true  "Campaign ID"
+// @Success     200 {object} model.WhitelistCampaignUser
+// @Router      /whitelist-campaigns/users/{discord_id} [get]
 func (h *Handler) GetWhitelistCampaignUserByDiscordId(c *gin.Context) {
 	discordId := c.Param("discordId")
 	if discordId == "" {
@@ -132,6 +188,15 @@ func (h *Handler) GetWhitelistCampaignUserByDiscordId(c *gin.Context) {
 	c.JSON(http.StatusOK, wlUsers)
 }
 
+// GetWhitelistCampaignUsersCSV     godoc
+// @Summary     Get whitelist campaign users csv
+// @Description Get whitelist campaign users csv
+// @Tags        Whitelist campaign
+// @Accept      json
+// @Produce     json
+// @Param       campaign_id   query  string true  "Campaign ID"
+// @Success     200
+// @Router      /whitelist-campaigns/users/csv [get]
 func (h *Handler) GetWhitelistCampaignUsersCSV(c *gin.Context) {
 	campaignId := c.Query("campaign_id")
 	if campaignId == "" {

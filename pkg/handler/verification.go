@@ -5,9 +5,20 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
+// NewGuildConfigWalletVerificationMessage     godoc
+// @Summary     Config wallet verification message
+// @Description Config wallet verification message
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.NewGuildConfigWalletVerificationMessageRequest true "New guild config wallet verification message request"
+// @Success     200 {object} response.NewGuildConfigWalletVerificationMessageResponse
+// @Router      /verify/config [post]
 func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
 
 	var req request.NewGuildConfigWalletVerificationMessageRequest
@@ -31,12 +42,21 @@ func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"status": "ok",
-		"data":   res,
+	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
+		Status: "ok",
+		Data:   res,
 	})
 }
 
+// GetGuildConfigWalletVerificationMessage     godoc
+// @Summary     Get guild config wallet verification message
+// @Description Get guild config wallet verification message
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.NewGuildConfigWalletVerificationMessageResponse
+// @Router      /verify/config/{guild_id} [get]
 func (h *Handler) GetGuildConfigWalletVerificationMessage(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	if guildId == "" {
@@ -46,17 +66,27 @@ func (h *Handler) GetGuildConfigWalletVerificationMessage(c *gin.Context) {
 	}
 
 	res, err := h.entities.GetGuildConfigWalletVerificationMessage(guildId)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		h.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[handler.GetGuildConfigWalletVerificationMessage] - failed to get config")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"data":   res,
+	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
+		Status: "ok",
+		Data:   res,
 	})
 }
+
+// UpdateGuildConfigWalletVerificationMessage     godoc
+// @Summary     Update guild config wallet verification message
+// @Description Update guild config wallet verification message
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.NewGuildConfigWalletVerificationMessageRequest true "Update guild config wallet verification message request"
+// @Success     200 {object} response.NewGuildConfigWalletVerificationMessageResponse
+// @Router      /verify/config [put]
 func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 	var req request.NewGuildConfigWalletVerificationMessageRequest
 
@@ -79,12 +109,21 @@ func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"data":   res,
+	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
+		Status: "ok",
+		Data:   res,
 	})
 }
 
+// DeleteGuildConfigWalletVerificationMessage     godoc
+// @Summary     Delete guild config wallet verification message
+// @Description Delete guild config wallet verification message
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ResponseStatus
+// @Router      /verify/config [delete]
 func (h *Handler) DeleteGuildConfigWalletVerificationMessage(c *gin.Context) {
 
 	var guildID = c.Query("guild_id")
@@ -102,9 +141,18 @@ func (h *Handler) DeleteGuildConfigWalletVerificationMessage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	c.JSON(http.StatusOK, response.ResponseStatus{Status: "ok"})
 }
 
+// GenerateVerification     godoc
+// @Summary     Generate verification
+// @Description Generate verification
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.GenerateVerificationRequest true "Generate verification request"
+// @Success     200 {object} response.GenerateVerificationResponse
+// @Router      /verify/generate [post]
 func (h *Handler) GenerateVerification(c *gin.Context) {
 
 	var req request.GenerateVerificationRequest
@@ -132,9 +180,18 @@ func (h *Handler) GenerateVerification(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok", "code": data})
+	c.JSON(http.StatusOK, response.GenerateVerificationResponse{Status: "ok", Code: data})
 }
 
+// VerifyWalletAddress     godoc
+// @Summary     Verify wallet address
+// @Description Verify wallet address
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.VerifyWalletAddressRequest true "Verify wallet address request"
+// @Success     200 {object} response.ResponseStatus
+// @Router      /verify [post]
 func (h *Handler) VerifyWalletAddress(c *gin.Context) {
 
 	var req request.VerifyWalletAddressRequest
@@ -158,5 +215,5 @@ func (h *Handler) VerifyWalletAddress(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	c.JSON(http.StatusOK, response.ResponseStatus{Status: "ok"})
 }

@@ -1,0 +1,27 @@
+- id: 1
+  name: Ethereum Mainnet
+  rpc: https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114
+  api_base_url: https://api.etherscan.io/api?
+  api_key: sample
+  tx_base_url: https://etherscan.io/tx
+  currency: ETH
+  short_name: eth
+  coin_gecko_id: ethereum
+- id: 250
+  name: Fantom Opera
+  rpc: https://rpc.ftm.tools
+  api_base_url: https://api.ftmscan.com/api?
+  api_key: sample
+  tx_base_url: https://ftmscan.com/tx
+  currency: FTM
+  short_name: ftm
+  coin_gecko_id: fantom
+- id: 56
+  name: Binance Smart Chain Mainnet
+  rpc: https://bsc-dataseed.binance.org
+  api_base_url: https://api.bscscan.com/api?
+  api_key: sample
+  tx_base_url: https://bscscan.com/tx
+  currency: BNB
+  short_name: bsc
+  coin_gecko_id: binance-smart-chain

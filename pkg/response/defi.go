@@ -2,6 +2,8 @@ package response
 
 import (
 	"math/big"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type InDiscordWalletWithdrawResponse struct {
@@ -111,4 +113,34 @@ type HistoricalTokenPrice struct {
 	Decimals int    `json:"contract_decimals"`
 	Symbol   string `json:"contract_ticker_symbol"`
 	Address  string `json:"contract_address"`
+}
+
+type GetHistoricalMarketChartResponse struct {
+	Data *CoinPriceHistoryResponse `json:"data"`
+}
+
+type InDiscordWalletTransferResponseWrapper struct {
+	Data   []InDiscordWalletTransferResponse `json:"data"`
+	Errors []string                          `json:"errors"`
+}
+
+type InDiscordWalletBalancesResponse struct {
+	Status string                `json:"status"`
+	Data   *UserBalancesResponse `json:"data"`
+}
+
+type GetSupportedTokensResponse struct {
+	Data []model.Token `json:"data"`
+}
+
+type GetCoinResponseWrapper struct {
+	Data *GetCoinResponse `json:"data"`
+}
+
+type SearchCoinsResponse struct {
+	Data []SearchedCoin `json:"data"`
+}
+
+type CompareTokenResponse struct {
+	Data *TokenCompareReponse `json:"data"`
 }

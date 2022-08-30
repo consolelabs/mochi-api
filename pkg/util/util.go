@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
@@ -577,4 +578,18 @@ func GetStringBetweenParentheses(s string) string {
 		}
 	}
 	return s
+}
+
+func SetRequestBody(c *gin.Context, structBody interface{}) {
+	ctx := *c
+	json, err := json.Marshal(structBody)
+	if err != nil {
+		log.Error("cannot encode body")
+	}
+	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(json))
+	// 1. set new header
+	ctx.Request.Header.Set("Content-Length", strconv.Itoa(len(json)))
+	// 2. also update this field
+	ctx.Request.ContentLength = int64(len(json))
+	c = &ctx
 }

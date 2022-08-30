@@ -74,6 +74,8 @@ type Config struct {
 	GoogleCloudBucketName     string
 	GoogleCloudProjectID      string
 	GoogleCloudServiceAccount string
+
+	ProcessorServerHost string
 }
 
 type MarketplaceBaseUrl struct {
@@ -190,7 +192,38 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		GoogleCloudBucketName:     v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
 		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
 		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
+
+		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
 	}
+}
+
+// Config for testing
+func LoadTestConfig() Config {
+	cfg := Config{
+		DBUser: "postgres",
+		DBPass: "postgres",
+		DBHost: "localhost",
+		DBPort: "25432",
+		DBName: "mochi_local_test",
+
+		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
+		FantomRPC:               "sample",
+		FantomScan:              "sample",
+		FantomScanAPIKey:        "sample",
+
+		EthereumRPC:        "sample",
+		EthereumScan:       "sample",
+		EthereumScanAPIKey: "sample",
+
+		BscRPC:        "sample",
+		BscScan:       "sample",
+		BscScanAPIKey: "sample",
+
+		DiscordToken: "sample",
+
+		RedisURL: "redis://localhost:6379/0",
+	}
+	return cfg
 }
 
 // DefaultConfigLoaders is default loader list

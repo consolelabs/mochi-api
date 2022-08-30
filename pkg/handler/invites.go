@@ -5,9 +5,20 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
+// GetInvites     godoc
+// @Summary     Get invites
+// @Description Get invites
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       member_id query     string true "Member ID"
+// @Param       guild_id query     string true "Guild ID"
+// @Success     200 {object} response.GetInvitesResponse
+// @Router      /community/invites/ [get]
 func (h *Handler) GetInvites(c *gin.Context) {
 	memberID := c.Query("member_id")
 	guildID := c.Query("guild_id")
@@ -21,11 +32,20 @@ func (h *Handler) GetInvites(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": invites,
+	c.JSON(http.StatusOK, response.GetInvitesResponse{
+		Data: invites,
 	})
 }
 
+// GetInvitesLeaderboard     godoc
+// @Summary     Get invites leaderboard
+// @Description Get invites leaderboard
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       id path     string true "Guild ID"
+// @Success     200 {object} response.GetInvitesLeaderboardResponse
+// @Router      /community/invites/leaderboard/{id} [get]
 func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
 	guildID, ok := c.Params.Get("id")
 	if !ok {
@@ -45,11 +65,20 @@ func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": leaderboard,
+	c.JSON(http.StatusOK, response.GetInvitesLeaderboardResponse{
+		Data: leaderboard,
 	})
 }
 
+// GetInviteTrackerConfig     godoc
+// @Summary     Get invites tracker config
+// @Description Get invites tracker config
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       guild_id query     string true "Guild ID"
+// @Success     200 {object} response.GetInviteTrackerConfigResponse
+// @Router      /community/invites/config [get]
 func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
 	guildID, exist := c.GetQuery("guild_id")
 	if !exist {
@@ -69,12 +98,21 @@ func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data":    config,
-		"message": "OK",
+	c.JSON(http.StatusOK, response.GetInviteTrackerConfigResponse{
+		Data:    config,
+		Message: "OK",
 	})
 }
 
+// ConfigureInvites     godoc
+// @Summary     Configure invites
+// @Description Configure invites
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigureInviteRequest true "Configure Invites request"
+// @Success     200 {object} response.ConfigureInvitesResponse
+// @Router      /community/invites/config [post]
 func (h *Handler) ConfigureInvites(c *gin.Context) {
 	var req request.ConfigureInviteRequest
 	if err := req.Bind(c); err != nil {
@@ -101,11 +139,21 @@ func (h *Handler) ConfigureInvites(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": "ok",
+	c.JSON(http.StatusOK, response.ConfigureInvitesResponse{
+		Data: "ok",
 	})
 }
 
+// InvitesAggregation     godoc
+// @Summary     Invites Aggregation
+// @Description Invites Aggregation
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       guild_id query     string true "Guild ID"
+// @Param       inviter query     string true "Inviter ID"
+// @Success     200 {object} response.InvitesAggregationResponse
+// @Router      /community/invites/aggregation [get]
 func (h *Handler) InvitesAggregation(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -133,7 +181,7 @@ func (h *Handler) InvitesAggregation(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": aggregation,
+	c.JSON(http.StatusOK, response.InvitesAggregationResponse{
+		Data: aggregation,
 	})
 }

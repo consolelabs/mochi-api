@@ -1,0 +1,37 @@
+{
+  "data": {
+    "image_content_type": "",
+    "rarity_rank": 0,
+    "rarity_tier": "",
+    "attributes": null,
+    "rarity": null,
+    "metadata_id": ""
+  },
+  "suggestions": [
+    {
+      "name": "Cyber Neko",
+      "symbol": "NEKO",
+      "address": "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+      "chain": "ftm"
+    },
+    {
+      "name": "Cyber Neko Xmas Edition",
+      "symbol": "NEKO",
+      "address": "0x3b3D588A88b95fb5553Acc2533Cfc9DEfF1d96B6",
+      "chain": "ftm"
+    },
+    {
+      "name": "Sipher NEKO",
+      "symbol": "NEKO",
+      "address": "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
+      "chain": "eth"
+    },
+    {
+      "name": "Neko",
+      "symbol": "NEKO",
+      "address": "0x0A8EB54B0123778291a3CDDD2074c9CE8B2cFAE5",
+      "chain": "eth"
+    }
+  ],
+  "default_symbol": null
+}
