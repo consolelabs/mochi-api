@@ -7,6 +7,7 @@ package mock_discord
 import (
 	reflect "reflect"
 
+	model "github.com/defipod/mochi/pkg/model"
 	response "github.com/defipod/mochi/pkg/response"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -46,6 +47,20 @@ func (m *MockService) NotifyAddNewCollection(guildID, collectionName, symbol, ch
 func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyAddNewCollection", reflect.TypeOf((*MockService)(nil).NotifyAddNewCollection), guildID, collectionName, symbol, chain, image)
+}
+
+// NotifyGmStreak mocks base method.
+func (m *MockService) NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyGmStreak", userDiscordID, streakCount, podTownXps)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyGmStreak indicates an expected call of NotifyGmStreak.
+func (mr *MockServiceMockRecorder) NotifyGmStreak(userDiscordID, streakCount, podTownXps interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), userDiscordID, streakCount, podTownXps)
 }
 
 // NotifyNewGuild mocks base method.

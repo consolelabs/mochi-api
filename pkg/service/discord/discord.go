@@ -2,12 +2,14 @@ package discord
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -90,6 +92,45 @@ func (d *Discord) NotifyAddNewCollection(guildID string, collectionName string, 
 	}
 
 	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}
+
+func (d *Discord) NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
+	color, _ := strconv.ParseInt("6FC1D1", 16, 64)
+	approveIcon := ""
+	if streakCount <= 100 {
+		for i := 0; i < streakCount; i++ {
+			approveIcon += "<:approve:1013775501757780098>"
+		}
+	} else {
+		for i := 0; i < 100; i++ {
+			approveIcon += "<:approve:1013775501757780098>"
+		}
+		approveIcon += "(+" + strconv.Itoa(int(streakCount-100)) + "<:approve:1013775501757780098>)"
+	}
+
+	msgEmbed := discordgo.MessageEmbed{
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:    "Good Morning!",
+			IconURL: "https://cdn.discordapp.com/attachments/701029345795375114/1013773058068201482/mochi.jpeg",
+		},
+		Description: "<@" + userDiscordID + "> just say hi to everyone.\n\nGM streak: **" +
+			strconv.Itoa(streakCount) + "**\n\n" + approveIcon + "\n\n" +
+			"**Faction XP Update**\n<:rebelio:1013777675099316224> Rebellio EXP: **" +
+			strconv.Itoa(int(podTownXps.Data.TotalFameXps)) + "/" + strconv.Itoa(int(podTownXps.Data.NextFameXps)) +
+			"`(+" + strconv.Itoa(int(podTownXps.Data.FameXp)) + ")`" +
+			"**\n<:academia:1013777643461685328> Academy EXP: **" +
+			strconv.Itoa(int(podTownXps.Data.TotalReputationXps)) + "/" + strconv.Itoa(int(podTownXps.Data.NextReputationXps)) +
+			"**`(+" + strconv.Itoa(int(podTownXps.Data.ReputationXp)) + ")`",
+		Color:     int(color),
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
