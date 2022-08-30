@@ -667,7 +667,7 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 	}
 
 	if len(data) == 0 {
-		return &response.NFTSalesTrackerGuildResponse{GuildID: guildID}, nil
+		return nil, nil
 	}
 
 	return &response.NFTSalesTrackerGuildResponse{
