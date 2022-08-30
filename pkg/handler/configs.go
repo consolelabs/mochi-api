@@ -10,7 +10,6 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // GetGmConfig     godoc
@@ -277,24 +276,24 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.ListGuildNFTRolesResponse
+// @Success     200 {object} response.ListGuildGroupNFTRolesResponse
 // @Router      /configs/nft-roles [get]
-func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
+func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
-		h.log.Info("[handler.ListGuildNFTRoles] - guild id empty")
+		h.log.Info("[handler.ListGuildGroupNFTRoles] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
-	roles, err := h.entities.ListGuildNFTRoles(guildID)
+	roles, err := h.entities.ListGuildGroupNFTRoles(guildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildNFTRoles] - failed to list all nft roles")
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildGroupNFTRoles] - failed to list all nft roles")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ListGuildNFTRolesResponse{Data: roles})
+	c.JSON(http.StatusOK, response.ListGuildGroupNFTRolesResponse{Data: roles})
 }
 
 // NewGuildNFTRole     godoc
@@ -303,74 +302,25 @@ func (h *Handler) ListGuildNFTRoles(c *gin.Context) {
 // @Tags        Config
 // @Accept      json
 // @Produce     json
-// @Param       Request  body request.ConfigNFTRoleRequest true "New NFT role request"
-// @Success     201 {object} response.NewGuildNFTRoleResponse
+// @Param       Request  body request.ConfigGroupNFTRoleRequest true "New NFT role request"
+// @Success     200 {object} response.NewGuildGroupNFTRoleResponse
 // @Router      /configs/nft-roles [post]
-func (h *Handler) NewGuildNFTRole(c *gin.Context) {
-	var req request.ConfigNFTRoleRequest
+func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
+	var req request.ConfigGroupNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := req.Validate(); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to validate request")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	newRole, err := h.entities.NewGuildNFTRoleConfig(req)
+	newRole, err := h.entities.NewGuildGroupNFTRoleConfig(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to create nft role config")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to create nft role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.NewGuildNFTRoleResponse{Message: "OK", Data: newRole})
-}
-
-// EditGuildNFTRole     godoc
-// @Summary     Edit guild nft role
-// @Description Edit guild nft role
-// @Tags        Config
-// @Accept      json
-// @Produce     json
-// @Param       config_id  path string true "Config ID"
-// @Param       Request  body request.ConfigNFTRoleRequest true "Edit NFT role request"
-// @Success     200 {object} response.EditGuildNFTRoleResponse
-// @Router      /configs/nft-roles/{config_id} [put]
-func (h *Handler) EditGuildNFTRole(c *gin.Context) {
-
-	var req request.ConfigNFTRoleRequest
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to validate request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	id, err := uuid.Parse(c.Param("config_id"))
-	if err != nil {
-		h.log.Fields(logger.Fields{"configID": c.Param("config_id")}).Error(err, "[handler.EditGuildNFTRole] - failed to read config ID")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid config_id"})
-		return
-	}
-
-	req.ID = uuid.NullUUID{UUID: id, Valid: true}
-
-	config, err := h.entities.EditGuildNFTRoleConfig(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.EditGuildNFTRole] - failed to edit nft role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.EditGuildNFTRoleResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.NewGuildGroupNFTRoleResponse{Message: "OK", Data: newRole})
 }
 
 // RemoveGuildNFTRole     godoc
@@ -379,23 +329,40 @@ func (h *Handler) EditGuildNFTRole(c *gin.Context) {
 // @Tags        Config
 // @Accept      json
 // @Produce     json
-// @Param       config_id  path string true "Config ID"
+// @Param       config_ids  query string true "32951e68-9959-4e1d-88ca-22b442e19efe|45d06941-468b-4e5e-8b8f-d20c77c87805"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/nft-roles/{config_id} [delete]
+// @Router      /configs/nft-roles [delete]
 func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
+	configIDs := c.Query("config_ids")
 
-	configID := c.Param("config_id")
-	if configID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "config_id is required"})
-		return
+	if configIDs != "" {
+		listConfigIDs := strings.Split(configIDs, "|")
+		if err := h.entities.RemoveGuildNFTRoleConfig(listConfigIDs); err != nil {
+			h.log.Fields(logger.Fields{"configID": listConfigIDs}).Error(err, "[handler.RemoveGuildNFTRole] - failed to remove nft role config")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 	}
+}
 
-	if err := h.entities.RemoveGuildNFTRoleConfig(configID); err != nil {
-		h.log.Fields(logger.Fields{"configID": configID}).Error(err, "[handler.RemoveGuildNFTRole] - failed to remove nft role config")
+// RemoveGuildGroupNFTRole     godoc
+// @Summary     Remove guild group nft role
+// @Description Remove guild group nft role
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       group_config_id  query string true "Group config ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/nft-roles/group [delete]
+func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
+	groupConfigID := c.Query("group_config_id")
+
+	if err := h.entities.RemoveGuildGroupNFTRoleConfig(groupConfigID); err != nil {
+		h.log.Fields(logger.Fields{"configID": groupConfigID}).Error(err, "[handler.RemoveGuildGroupNFTRole] - failed to remove nft role config")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 

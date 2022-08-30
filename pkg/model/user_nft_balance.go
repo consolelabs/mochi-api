@@ -9,3 +9,8 @@ type UserNFTBalance struct {
 	TokenID         string         `json:"token_id,omitempty"`
 	Balance         int            `json:"balance"`
 }
+
+type UserNFTBalancesByGuild struct {
+	UserDiscordId string `json:"user_discord_id"`
+	TotalBalance  int64  `json:"total_balance"`
+}

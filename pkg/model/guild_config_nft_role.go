@@ -8,7 +8,7 @@ type GuildConfigNFTRole struct {
 	GuildID         string        `json:"guild_id"`
 	RoleID          string        `json:"role_id"`
 	NumberOfTokens  int           `json:"number_of_tokens"`
-	TokenID         string        `json:"token_id,omitempty"`
+	GroupID         uuid.NullUUID `json:"group_id"`
 }
 
 type MemberNFTRole struct {
