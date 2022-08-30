@@ -99,7 +99,7 @@ func (d *Discord) NotifyAddNewCollection(guildID string, collectionName string, 
 	return nil
 }
 
-func (d *Discord) NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
+func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
 	color, _ := strconv.ParseInt("6FC1D1", 16, 64)
 	approveIcon := ""
 	if streakCount <= 100 {
@@ -130,7 +130,7 @@ func (d *Discord) NotifyGmStreak(userDiscordID string, streakCount int, podTownX
 		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
 
-	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	_, err := d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("failed to send message: %w", err)
 	}
