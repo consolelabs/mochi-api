@@ -25,7 +25,7 @@ func LoadTestDB(seedPath string) *gorm.DB {
 		// initiate logger
 		l := logger.NewLogrusLogger()
 
-		conn, err = sql.Open("postgres", "host=localhost port=25432 user=postgres password=postgres dbname=mochi_local_test sslmode=disable")
+		conn, err = sql.Open("postgres", "host=localhost port=25433 user=postgres password=postgres dbname=mochi_local_test sslmode=disable")
 		if err != nil {
 			l.Fatalf(err, "failed to open database connection")
 			return

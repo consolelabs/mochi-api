@@ -47,8 +47,8 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 		user.InDiscordWalletNumber = model.JSONNullInt64{NullInt64: sql.NullInt64{Int64: int64(inDiscordWalletNumber), Valid: true}}
 		user.InDiscordWalletAddress = model.JSONNullString{NullString: sql.NullString{String: inDiscordAddress.Address.Hex(), Valid: true}}
 
-		if err := e.repo.Users.Create(user); err != nil {
-			err = fmt.Errorf("error upsert user: %v", err)
+		if err := e.repo.Users.Upsert(user); err != nil {
+			e.log.Fields(logger.Fields{"user": user}).Error(err, "[entity.generateInDiscordWallet] repo.Users.Create() failed")
 			return err
 		}
 	}
@@ -60,20 +60,30 @@ func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]respons
 	res := []response.InDiscordWalletTransferResponse{}
 	errs := []string{}
 
-	fromUser, err := e.repo.Users.GetOne(req.Sender)
+	fromUser, err := e.GetOneOrUpsertUser(req.Sender)
 	if err != nil {
-		errs = append(errs, fmt.Sprintf("user not found: %v", err))
-		return nil, errs
-	}
-	if err = e.generateInDiscordWallet(fromUser); err != nil {
-		errs = append(errs, fmt.Sprintf("cannot generate in-discord wallet: %v", err))
+		e.log.Fields(logger.Fields{"sender": req.Sender}).Error(err, "[entity.InDiscordWalletTransfer] GetOneOrUpsertUser() failed")
+		errs = append(errs, err.Error())
 		return nil, errs
 	}
 
 	toUsers, err := e.repo.Users.GetByDiscordIDs(req.Recipients)
-	if err != nil || len(toUsers) == 0 {
-		errs = append(errs, fmt.Sprintf("recipients not found: %v", err))
+	if err != nil {
+		e.log.Fields(logger.Fields{"recipients": req.Recipients}).Error(err, "[entity.InDiscordWalletTransfer] repo.Users.GetByDiscordIDs() failed")
+		errs = append(errs, err.Error())
 		return nil, errs
+	}
+	// create + generate wallet if not exists
+	if len(toUsers) == 0 {
+		for _, r := range req.Recipients {
+			u, err := e.GetOneOrUpsertUser(r)
+			if err != nil {
+				e.log.Fields(logger.Fields{"discord_id": r}).Error(err, "[entity.InDiscordWalletTransfer] GetOneOrUpsertUser() failed")
+				errs = append(errs, err.Error())
+				return nil, errs
+			}
+			toUsers = append(toUsers, *u)
+		}
 	}
 	amountEach := req.Amount / float64(len(toUsers))
 	if req.Each {
@@ -179,13 +189,9 @@ func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.In
 }
 
 func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response.InDiscordWalletWithdrawResponse, error) {
-	fromUser, err := e.repo.Users.GetOne(req.Sender)
+	fromUser, err := e.GetOneOrUpsertUser(req.Sender)
 	if err != nil {
-		err = fmt.Errorf("user not found: %v", err)
-		return nil, err
-	}
-	if err = e.generateInDiscordWallet(fromUser); err != nil {
-		err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
+		e.log.Fields(logger.Fields{"sender": req.Sender}).Error(err, "[entity.InDiscordWalletWithdraw] GetOneOrUpsertUser() failed")
 		return nil, err
 	}
 
@@ -307,10 +313,9 @@ func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Accou
 
 func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.UserBalancesResponse, error) {
 	response := &response.UserBalancesResponse{}
-
-	user, err := e.repo.Users.GetOne(discordID)
+	user, err := e.GetOneOrUpsertUser(discordID)
 	if err != nil {
-		err = fmt.Errorf("failed to get user %s: %v", discordID, err)
+		e.log.Fields(logger.Fields{"discord_id": discordID}).Error(err, "[entity.InDiscordWalletBalances] GetOneOrUpsertUser() failed")
 		return nil, err
 	}
 
@@ -318,14 +323,6 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 	if err != nil {
 		err = fmt.Errorf("failed to get global default tokens - err: %v", err)
 		return nil, err
-	}
-
-	// server does not have default tokens
-	if len(tokens) == 0 && guildID != "" {
-		if err = e.InitGuildDefaultTokenConfigs(guildID); err != nil {
-			return nil, err
-		}
-		return e.InDiscordWalletBalances(guildID, discordID)
 	}
 
 	if user.InDiscordWalletAddress.String == "" {
@@ -342,9 +339,9 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 	}
 	response.Balances = balances
 
-	var coinIDs []string
-	for _, token := range tokens {
-		coinIDs = append(coinIDs, token.CoinGeckoID)
+	coinIDs := make([]string, len(tokens))
+	for i, token := range tokens {
+		coinIDs[i] = token.CoinGeckoID
 	}
 
 	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(coinIDs, "usd")

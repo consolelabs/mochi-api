@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -190,8 +189,6 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 		omit = "global_xp"
 	}
 	globalXP := strings.EqualFold(req.GlobalXP, "true")
-	fmt.Println(omit, globalXP, req)
-
 	if err := h.entities.UpdateGuild(omit, guildID, globalXP, req.LogChannel); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "globalXP": req.GlobalXP, "logChannel": req.LogChannel}).Error(err, "[handler.UpdateGuild] - failed to update guild")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
