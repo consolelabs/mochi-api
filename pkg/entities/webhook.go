@@ -197,6 +197,15 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		if err != nil {
 			return nil, fmt.Errorf("failed to create new user gm streak: %v", err)
 		}
+
+		// // send data to processor to calculate user's xp
+		err = e.sendGmGnMessage(discordID, guildID, &newStreak)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"guildID":   guildID,
+				"discordID": discordID,
+			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+		}
 		return nil, nil
 	}
 
@@ -224,6 +233,15 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	// add new feature : GmExIncrease
 	///////
 	if streak.StreakCount < 2 {
+		// // send data to processor to calculate user's xp
+		err = e.sendGmGnMessage(discordID, guildID, streak)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"guildID":   guildID,
+				"discordID": discordID,
+			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+		}
+
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
 
@@ -245,6 +263,19 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	}
 
 	// send data to processor to calculate user's xp
+	err = e.sendGmGnMessage(discordID, guildID, streak)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID":   guildID,
+			"discordID": discordID,
+		}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+	}
+
+	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
+}
+
+func (e *Entity) sendGmGnMessage(discordID string, guildID string, streak *model.DiscordUserGMStreak) error {
+	// send data to processor to calculate user's xp
 	data := model.UserTxData{
 		UserDiscordId: discordID,
 		Guild:         guildID,
@@ -258,16 +289,32 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		Data:   data,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user transaction: %v with err: %v", data, err)
+		e.log.Fields(logger.Fields{
+			"dapp":   consts.NekoBot,
+			"action": consts.GmStreak,
+			"data":   data,
+		}).Error(err, "[Entity][sendGmGnMessage] failed to send data to Processor")
+		return err
 	}
 
 	// send message to log channel
 	guild, err := e.repo.DiscordGuilds.GetByID(guildID)
 	if err != nil {
-		return nil, err
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[Entity][sendGmGnMessage] failed to get guild data")
+		return err
 	}
-	_ = e.svc.Discord.NotifyGmStreak(guild.LogChannel, discordID, streak.StreakCount, *podTownXps)
-	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
+	err = e.svc.Discord.NotifyGmStreak(guild.LogChannel, discordID, streak.StreakCount, *podTownXps)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"channelID": guild.LogChannel,
+			"discordID": discordID,
+			"streak":    streak.StreakCount,
+		}).Error(err, "[Entity][sendGmGnMessage] failed to notify gm streak log")
+		return err
+	}
+	return nil
 }
 
 func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, authorAvatar, authorUsername, durationTilNextGoal string, newStreakRecorded bool) error {
