@@ -50,17 +50,17 @@ func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionNam
 }
 
 // NotifyGmStreak mocks base method.
-func (m *MockService) NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
+func (m *MockService) NotifyGmStreak(channelID, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyGmStreak", userDiscordID, streakCount, podTownXps)
+	ret := m.ctrl.Call(m, "NotifyGmStreak", channelID, userDiscordID, streakCount, podTownXps)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // NotifyGmStreak indicates an expected call of NotifyGmStreak.
-func (mr *MockServiceMockRecorder) NotifyGmStreak(userDiscordID, streakCount, podTownXps interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) NotifyGmStreak(channelID, userDiscordID, streakCount, podTownXps interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), userDiscordID, streakCount, podTownXps)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), channelID, userDiscordID, streakCount, podTownXps)
 }
 
 // NotifyNewGuild mocks base method.

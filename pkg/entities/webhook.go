@@ -262,7 +262,11 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	}
 
 	// send message to log channel
-	_ = e.svc.Discord.NotifyGmStreak(discordID, streak.StreakCount, *podTownXps)
+	guild, err := e.repo.DiscordGuilds.GetByID(guildID)
+	if err != nil {
+		return nil, err
+	}
+	_ = e.svc.Discord.NotifyGmStreak(guild.LogChannel, discordID, streak.StreakCount, *podTownXps)
 	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 }
 

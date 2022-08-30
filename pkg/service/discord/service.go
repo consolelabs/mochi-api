@@ -15,5 +15,5 @@ type Service interface {
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
-	NotifyGmStreak(userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
+	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 }
