@@ -31,6 +31,9 @@ func (e *marketplace) ConvertOpenseaToEthAddress(openseaMarketplace string) stri
 	splittedOpensea := strings.Split(openseaMarketplace, "/")
 	collectionSymbol := splittedOpensea[len(splittedOpensea)-1]
 	openseaCollection, _ := e.GetCollectionFromOpensea(collectionSymbol)
+	if len(openseaCollection.Collection.PrimaryAssetContracts) == 0 {
+		return "collection does not have an address"
+	}
 	return openseaCollection.Collection.PrimaryAssetContracts[0].Address
 }
 

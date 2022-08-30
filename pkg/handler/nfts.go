@@ -38,6 +38,11 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 
 	res, err := h.entities.GetNFTDetail(symbol, tokenID, guildID)
 	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			h.log.Fields(logger.Fields{"symbol": symbol, "token_id": tokenID, "guild_id": guildID}).Info("[handler.GetNFTDetail] - record not found")
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -68,8 +73,8 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 
 	data, err := h.entities.CreateNFTCollection(req)
 	if err != nil {
-		if strings.Contains(err.Error(), "Already added") {
-			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - duplicated record")
+		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
+			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

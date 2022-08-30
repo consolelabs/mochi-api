@@ -283,6 +283,10 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 
 func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
+	if address == "collection does not have an address" {
+		e.log.Infof("[e.HandleMarketplaceLink] collection %s does not have address", req.Address)
+		return nil, fmt.Errorf("Collection does not have an address")
+	}
 	checksumAddress, err := util.ConvertToChecksumAddr(address)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertToChecksumAddr] failed to convert checksum address: %v", err)
@@ -664,6 +668,10 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.GetNFTSaleSTrackerByGuildID] failed to get nft sales trackers")
 		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, nil
 	}
 
 	return &response.NFTSalesTrackerGuildResponse{
