@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	response "github.com/defipod/mochi/pkg/response"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -77,26 +78,11 @@ func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll))
 }
 
-// GetNFTSalesTrackerByContractAndGuildID mocks base method.
-func (m *MockStore) GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress string) (*model.NFTSalesTracker, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTSalesTrackerByContractAndGuildID", guildID, contractAddress)
-	ret0, _ := ret[0].(*model.NFTSalesTracker)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTSalesTrackerByContractAndGuildID indicates an expected call of GetNFTSalesTrackerByContractAndGuildID.
-func (mr *MockStoreMockRecorder) GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTSalesTrackerByContractAndGuildID", reflect.TypeOf((*MockStore)(nil).GetNFTSalesTrackerByContractAndGuildID), guildID, contractAddress)
-}
-
 // GetSalesTrackerByGuildID mocks base method.
-func (m *MockStore) GetSalesTrackerByGuildID(guildId string) ([]model.NFTSalesTracker, error) {
+func (m *MockStore) GetSalesTrackerByGuildID(guildId string) ([]response.NFTSalesTrackerData, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSalesTrackerByGuildID", guildId)
-	ret0, _ := ret[0].([]model.NFTSalesTracker)
+	ret0, _ := ret[0].([]response.NFTSalesTrackerData)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

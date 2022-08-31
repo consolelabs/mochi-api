@@ -2,6 +2,8 @@ package nft_sales_tracker
 
 import (
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -23,23 +25,60 @@ func (pg *pg) GetAll() ([]model.NFTSalesTracker, error) {
 	return data, err.Error
 }
 
-func (pg *pg) GetSalesTrackerByGuildID(guildID string) ([]model.NFTSalesTracker, error) {
-	trackers := []model.NFTSalesTracker{}
-	return trackers, pg.db.
-		Preload("GuildConfigSalesTracker").
-		Table("nft_sales_trackers").
-		Joins("JOIN guild_config_sales_trackers ON nft_sales_trackers.sales_config_id = guild_config_sales_trackers.id").
-		Where("guild_id = ?", guildID).
-		Find(&trackers).Error
-}
+func (pg *pg) GetSalesTrackerByGuildID(guildID string) (resp []response.NFTSalesTrackerData, err error) {
+	rows, err := pg.db.Raw(`
+		select 
+		nft_sales_trackers.id, 
+		contract_address,
+		platform,
+		sales_config_id,
+		guild_config_sales_trackers.guild_id,
+		guild_config_sales_trackers.channel_id,
+		nft_collections.name,
+		chains.id,
+		chains.name,
+		chains.short_name,
+		chains.coin_gecko_id,
+		chains.currency
+		from (
+			nft_sales_trackers
+			join guild_config_sales_trackers on nft_sales_trackers.sales_config_id = guild_config_sales_trackers.id
+			join nft_collections on contract_address = address
+			join chains on chains.id = chain_id::int4
+		)
+		where guild_id = ?
+	`, guildID).Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var ID uuid.NullUUID
+		var contract string
+		var platform string
+		var configID uuid.NullUUID
+		var guildID string
+		var guildChannelID string
+		var name string
+		var chainID int
+		var chainName string
+		var chainShortName string
+		var coinGeckoID string
+		var currency string
 
-func (pg *pg) GetNFTSalesTrackerByContractAndGuildID(guildID, contractAddress string) (*model.NFTSalesTracker, error) {
-	var tracker model.NFTSalesTracker
-	return &tracker, pg.db.
-		Table("nft_sales_trackers").
-		Joins("JOIN guild_config_sales_trackers ON nft_sales_trackers.sales_config_id = guild_config_sales_trackers.id").
-		Where("guild_id = ? AND contract_address = ?", guildID, contractAddress).
-		First(&tracker).Error
+		if err = rows.Scan(&ID, &contract, &platform, &configID, &guildID, &guildChannelID, &name, &chainID, &chainName, &chainShortName, &coinGeckoID, &currency); err != nil {
+			return nil, err
+		}
+		resp = append(resp, response.NFTSalesTrackerData{
+			ID:                      ID,
+			ContractAddress:         contract,
+			Platform:                platform,
+			SalesConfigID:           configID,
+			GuildConfigSalesTracker: model.GuildConfigSalesTracker{ID: configID, GuildID: guildID, ChannelID: guildChannelID},
+			Name:                    name,
+			Chain:                   model.Chain{ID: chainID, Name: chainName, ShortName: chainShortName, CoinGeckoID: coinGeckoID, Currency: currency},
+		})
+	}
+	return resp, nil
 }
 
 func (pg *pg) DeleteNFTSalesTrackerByContractAddress(contractAddress string) error {
