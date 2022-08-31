@@ -30,55 +30,55 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_GetNewListedNFTCollection(t *testing.T) {
-	cfg := config.LoadTestConfig()
-	db := testhelper.LoadTestDB("../../migrations/test_seed")
-	repo := pg.NewRepo(db)
-	log := logger.NewLogrusLogger()
-	s := pg.NewPostgresStore(&cfg)
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, nil, nil, nil)
+// func TestHandler_GetNewListedNFTCollection(t *testing.T) {
+// 	cfg := config.LoadTestConfig()
+// 	db := testhelper.LoadTestDB("../../migrations/test_seed")
+// 	repo := pg.NewRepo(db)
+// 	log := logger.NewLogrusLogger()
+// 	s := pg.NewPostgresStore(&cfg)
+// 	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, nil, nil, nil)
 
-	type fields struct {
-		entities *entities.Entity
-		log      logger.Logger
-	}
-	tests := []struct {
-		name             string
-		fields           fields
-		wantCode         int
-		wantErr          error
-		wantResponsePath string
-	}{
-		// TODO: Add test cases.
-		{
-			name: "get succesfully",
-			fields: fields{
-				entities: entityMock,
-				log:      log,
-			},
-			wantCode:         200,
-			wantErr:          nil,
-			wantResponsePath: "testdata/get_nft_recent/200.json",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			h := &Handler{
-				entities: tt.fields.entities,
-				log:      tt.fields.log,
-			}
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", "/api/v1/nfts/new-listed", nil)
+// 	type fields struct {
+// 		entities *entities.Entity
+// 		log      logger.Logger
+// 	}
+// 	tests := []struct {
+// 		name             string
+// 		fields           fields
+// 		wantCode         int
+// 		wantErr          error
+// 		wantResponsePath string
+// 	}{
+// 		// TODO: Add test cases.
+// 		{
+// 			name: "get succesfully",
+// 			fields: fields{
+// 				entities: entityMock,
+// 				log:      log,
+// 			},
+// 			wantCode:         200,
+// 			wantErr:          nil,
+// 			wantResponsePath: "testdata/get_nft_recent/200.json",
+// 		},
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			h := &Handler{
+// 				entities: tt.fields.entities,
+// 				log:      tt.fields.log,
+// 			}
+// 			w := httptest.NewRecorder()
+// 			ctx, _ := gin.CreateTestContext(w)
+// 			ctx.Request = httptest.NewRequest("GET", "/api/v1/nfts/new-listed", nil)
 
-			h.GetNewListedNFTCollection(ctx)
-			require.Equal(t, tt.wantCode, w.Code)
-			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
-			require.NoError(t, err)
-			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetChains] response mismatched")
-		})
-	}
-}
+// 			h.GetNewListedNFTCollection(ctx)
+// 			require.Equal(t, tt.wantCode, w.Code)
+// 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+// 			require.NoError(t, err)
+// 			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetChains] response mismatched")
+// 		})
+// 	}
+// }
 
 func TestHandler_GetNFTDetail(t *testing.T) {
 	cfg := config.LoadTestConfig()

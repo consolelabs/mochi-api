@@ -23,11 +23,7 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 	}
 
 	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
-	switch err {
-	case nil:
-		return nil, fmt.Errorf("this guild already have a verification config")
-	case gorm.ErrRecordNotFound:
-	default:
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, fmt.Errorf("failed to get guild config verification: %v", err.Error())
 	}
 
