@@ -152,7 +152,7 @@ func (e *Entity) GetNFTSuggestion(symbol string, tokenID string) ([]response.Col
 	if err != nil {
 		if err.Error() == "record not found" {
 			e.log.Info("[repo.NFTCollection.GetSuggestionsBySymbolorName] found no suggestions")
-			return nil, fmt.Errorf("[repo.NFTCollection.GetSuggestionsBySymbolorName] record not found")
+			return nil, fmt.Errorf("found no suggestions")
 		} else {
 			e.log.Errorf(err, "[repo.NFTCollection.GetSuggestionsBySymbolorName] failed to get nft suggestions for symbol %s", symbol)
 			return nil, fmt.Errorf("[repo.NFTCollection.GetSuggestionsBySymbolorName] failed to get nft suggestions: %s", err)
@@ -178,7 +178,7 @@ func (e *Entity) getTokenDetailFromIndexer(address string, tokenID string) (*res
 	if err != nil {
 		if err.Error() == "record not found" {
 			e.log.Errorf(err, "[indexer.GetNFTDetail] indexer: record nft not found")
-			err = fmt.Errorf("[e.GetNFTDetail] indexer: record nft not found")
+			err = fmt.Errorf("Token not found")
 		} else {
 			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
 			err = fmt.Errorf("[e.GetNFTDetail] failed to get nft from indexer: %v", err)
