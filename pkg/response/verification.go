@@ -4,7 +4,7 @@ import "github.com/defipod/mochi/pkg/model"
 
 type NewGuildConfigWalletVerificationMessageResponse struct {
 	Status string                                      `json:"status"`
-	Data   *model.GuildConfigWalletVerificationMessage `json:"Data"`
+	Data   *model.GuildConfigWalletVerificationMessage `json:"data"`
 }
 
 type GenerateVerificationResponse struct {

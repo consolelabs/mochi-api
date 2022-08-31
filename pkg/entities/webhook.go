@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -139,7 +140,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 		guildID        = message.GuildID
 		sentAt         = message.Timestamp
 		channelID      = message.ChannelID
-		isGmMessage    = message.Content == "gm" || message.Content == "gn"
+		isGmMessage    = strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content)
 	)
 
 	switch {
