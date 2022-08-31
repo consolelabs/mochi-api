@@ -6,8 +6,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/golang-jwt/jwt/v4"
-	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 )
 
@@ -28,25 +28,10 @@ func (e *Entity) Login(accessToken string) (*LoginResponse, error) {
 		return nil, fmt.Errorf("failed to get current discord user: %v", err.Error())
 	}
 
-	u, err := e.repo.Users.GetOne(du.ID)
-	switch err {
-	case nil:
-		if u.Username != du.Username {
-			u.Username = du.Username
-			err = e.repo.Users.Update(u)
-			if err != nil {
-				return nil, fmt.Errorf("failed to update user: %v", err.Error())
-			}
-		}
-	case gorm.ErrRecordNotFound:
-		if err := e.generateInDiscordWallet(&model.User{
-			ID:       du.ID,
-			Username: du.Username,
-		}); err != nil {
-			return nil, fmt.Errorf("failed to generate in-discord wallet: %v", err.Error())
-		}
-	default:
-		return nil, fmt.Errorf("failed to get user: %v", err.Error())
+	_, err = e.GetOneOrUpsertUser(du.ID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"discord_id": du.ID}).Error(err, "[entity.InDiscordWalletBalances] GetOneOrUpsertUser() failed")
+		return nil, err
 	}
 
 	expirationTime := time.Now().Add(e.cfg.JWTAccessTokenLifeSpan)

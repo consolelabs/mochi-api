@@ -109,7 +109,7 @@ func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
+	c.JSON(http.StatusOK, response.NewGuildConfigWalletVerificationMessageResponse{
 		Status: "ok",
 		Data:   res,
 	})

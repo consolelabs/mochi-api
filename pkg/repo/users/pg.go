@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type pg struct {
@@ -13,12 +14,27 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Create(user *model.User) error {
-	return pg.db.Create(user).Error
-}
+func (pg *pg) Upsert(user *model.User) error {
+	tx := pg.db.Begin()
+	onConflict := clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoNothing: true,
+	}
+	if user.InDiscordWalletAddress.String != "" {
+		onConflict.DoNothing = false
+		onConflict.DoUpdates = clause.AssignmentColumns([]string{"in_discord_wallet_address", "in_discord_wallet_number"})
+	}
+	if user.Username != "" {
+		onConflict.DoNothing = false
+		onConflict.DoUpdates = append(onConflict.DoUpdates, clause.AssignmentColumns([]string{"username"})...)
+	}
+	err := tx.Clauses(onConflict).Create(user).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 
-func (pg *pg) FirstOrCreate(user *model.User) error {
-	return pg.db.Where("id = ?", user.ID).FirstOrCreate(user).Error
+	return tx.Commit().Error
 }
 
 func (pg *pg) GetLatestWalletNumber() int {
@@ -36,8 +52,4 @@ func (pg *pg) GetOne(discordID string) (*model.User, error) {
 func (pg *pg) GetByDiscordIDs(discordIDs []string) ([]model.User, error) {
 	users := []model.User{}
 	return users, pg.db.Where("id IN (?)", discordIDs).Find(&users).Error
-}
-
-func (pg *pg) Update(u *model.User) error {
-	return pg.db.Save(u).Error
 }
