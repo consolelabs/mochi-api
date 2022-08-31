@@ -52,7 +52,7 @@ func (j *fetchDiscordUsers) Run() error {
 
 	// create users
 	for _, req := range createUserRequests {
-		if err := j.entity.CreateUserIfNotExists(req.ID, req.Username); err != nil {
+		if _, err := j.entity.GetOneOrUpsertUser(req.ID); err != nil {
 			j.log.Fields(logger.Fields{"user": req}).Error(err, "failed to create user")
 			continue
 		}

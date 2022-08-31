@@ -28,21 +28,8 @@ func (e *Entity) CreateUser(req request.CreateUserRequest) error {
 		},
 	}
 
-	if err := e.repo.Users.Create(user); err != nil {
+	if err := e.repo.Users.Upsert(user); err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
-	}
-
-	return nil
-}
-
-func (e *Entity) CreateUserIfNotExists(id, username string) error {
-	user := &model.User{
-		ID:       id,
-		Username: username,
-	}
-
-	if err := e.repo.Users.FirstOrCreate(user); err != nil {
-		return fmt.Errorf("failed to create if not exists user: %w", err)
 	}
 
 	return nil
@@ -343,14 +330,14 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 
 	if inviter != nil {
 		// create inviter if not exist
-		if err := e.CreateUserIfNotExists(inviter.User.ID, inviter.User.Username); err != nil {
+		if _, err := e.GetOneOrUpsertUser(inviter.User.ID); err != nil {
 			e.log.Fields(logger.Fields{"userID": inviter.User.ID, "username": inviter.User.Username}).
 				Error(err, "[Entity][CreateInvite] failed to create user for inviter")
 			return nil, err
 		}
 		if err := e.CreateGuildUserIfNotExists(inviter.GuildID, inviter.User.ID, inviter.Nick); err != nil {
 			e.log.Fields(logger.Fields{"userID": inviter.User.ID, "username": inviter.User.Username}).
-				Error(err, "[Entity][CreateInvite] failed to create guild user for inviter")
+				Error(err, "[Entity][CreateInvite] GetOneOrUpsertUser() failed to create guild user for inviter")
 			return nil, err
 		}
 
@@ -368,9 +355,9 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 
 	if invitee != nil {
 		// create invitee if not exist
-		if err := e.CreateUserIfNotExists(invitee.User.ID, invitee.User.Username); err != nil {
+		if _, err := e.GetOneOrUpsertUser(invitee.User.ID); err != nil {
 			e.log.Fields(logger.Fields{"userID": invitee.User.ID, "username": invitee.User.Username}).
-				Error(err, "[Entity][CreateInvite] failed to create user for invitee")
+				Error(err, "[Entity][CreateInvite] GetOneOrUpsertUser() failed to create user for invitee")
 			return nil, err
 		}
 		if err := e.repo.GuildUsers.Create(&model.GuildUser{
@@ -418,4 +405,45 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 	}
 
 	return res, nil
+}
+
+func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
+	u, err := e.repo.Users.GetOne(discordID)
+	switch err {
+	case gorm.ErrRecordNotFound:
+		u.ID = discordID
+		return e.createNewUser(u)
+	case nil:
+		return e.createNewUser(u)
+	default:
+		e.log.Fields(logger.Fields{"discord_id": discordID}).Error(err, "[entity.GetOneOrUpsertUser] repo.Users.GetOne() failed")
+		return nil, err
+	}
+}
+
+func (e *Entity) createNewUser(u *model.User) (*model.User, error) {
+	dcUser, err := e.discord.User(u.ID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"discord_id": u.ID}).Error(err, "[entity.createNewUser] discord.User() failed")
+		return nil, err
+	}
+
+	switch {
+	case u.InDiscordWalletAddress.String == "":
+		u.Username = dcUser.Username
+		if err := e.generateInDiscordWallet(u); err != nil {
+			e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.createNewUser] generateInDiscordWallet() failed")
+			return nil, err
+		}
+		return u, nil
+	case u.Username != dcUser.Username:
+		u.Username = dcUser.Username
+		if err := e.repo.Users.Upsert(u); err != nil {
+			e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.generateInDiscordWallet] repo.Users.Upsert() failed")
+			return nil, err
+		}
+		return u, nil
+	default:
+		return u, nil
+	}
 }

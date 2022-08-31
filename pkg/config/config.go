@@ -203,7 +203,7 @@ func LoadTestConfig() Config {
 		DBUser: "postgres",
 		DBPass: "postgres",
 		DBHost: "localhost",
-		DBPort: "25432",
+		DBPort: "25433",
 		DBName: "mochi_local_test",
 
 		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
