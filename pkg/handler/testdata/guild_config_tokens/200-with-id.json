@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+      "symbol": "SHIB",
+      "chain_id": 1,
+      "decimal": 18,
+      "discord_bot_supported": true,
+      "coin_gecko_id": "shiba-inu",
+      "name": "SHIBA INU",
+      "guild_default": false,
+      "is_native": false,
+      "chain": null
+    },
+    {
+      "id": 2,
+      "address": "",
+      "symbol": "FTM",
+      "chain_id": 250,
+      "decimal": 18,
+      "discord_bot_supported": true,
+      "coin_gecko_id": "fantom",
+      "name": "FANTOM",
+      "guild_default": true,
+      "is_native": true,
+      "chain": null
+    },
+    {
+      "id": 3,
+      "address": "",
+      "symbol": "ETH",
+      "chain_id": 1,
+      "decimal": 18,
+      "discord_bot_supported": true,
+      "coin_gecko_id": "ethereum",
+      "name": "Ethereum",
+      "guild_default": true,
+      "is_native": true,
+      "chain": null
+    }
+  ]
+}

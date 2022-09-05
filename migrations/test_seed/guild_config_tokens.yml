@@ -1,0 +1,12 @@
+- guild_id: "863278424433229854"
+  token_id: 1
+  active: true
+  is_default: false
+- guild_id: "863278424433229854"
+  token_id: 2
+  active: true
+  is_default: true
+- guild_id: "863278424433229854"
+  token_id: 3
+  active: true
+  is_default: true

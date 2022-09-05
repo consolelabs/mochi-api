@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "address": "",
+      "symbol": "FTM",
+      "chain_id": 250,
+      "decimal": 18,
+      "discord_bot_supported": true,
+      "coin_gecko_id": "fantom",
+      "name": "FANTOM",
+      "guild_default": true,
+      "is_native": true,
+      "chain": {
+        "id": 250,
+        "name": "Fantom Opera",
+        "short_name": "ftm",
+        "coin_gecko_id": "fantom",
+        "currency": "FTM"
+      }
+    },
+    {
+      "id": 3,
+      "address": "",
+      "symbol": "ETH",
+      "chain_id": 1,
+      "decimal": 18,
+      "discord_bot_supported": true,
+      "coin_gecko_id": "ethereum",
+      "name": "Ethereum",
+      "guild_default": true,
+      "is_native": true,
+      "chain": {
+        "id": 1,
+        "name": "Ethereum Mainnet",
+        "short_name": "eth",
+        "coin_gecko_id": "ethereum",
+        "currency": "ETH"
+      }
+    }
+  ]
+}

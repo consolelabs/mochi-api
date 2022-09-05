@@ -1,0 +1,7 @@
+- id: "863278424433229854"
+  name: "Testing Ground"
+  bot_scopes: RAW='["*"]'
+  alias: null
+  created_at: "2022-08-25 11:29:26.953609"
+  global_xp: false
+  log_channel: null
