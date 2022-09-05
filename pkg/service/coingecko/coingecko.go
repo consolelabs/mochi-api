@@ -16,7 +16,7 @@ type CoinGecko struct {
 	searchCoinURL     string
 	getCoinURL        string
 	getPriceURL       string
-	getHistoryInfo    string
+	getCoinOhlc       string
 }
 
 func NewService() Service {
@@ -25,13 +25,13 @@ func NewService() Service {
 		searchCoinURL:     "https://api.coingecko.com/api/v3/search?query=%s",
 		getCoinURL:        "https://api.coingecko.com/api/v3/coins/%s",
 		getPriceURL:       "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
-		getHistoryInfo:    "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
+		getCoinOhlc:       "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
 	}
 }
 
 func (c *CoinGecko) SearchCoins(query string) ([]response.SearchedCoin, error, int) {
 	// if query is valid coin ID then use GetCoin()
-	coin, err, _ := c.GetCoin(query)
+	coin, err, code := c.GetCoin(query)
 	if err == nil {
 		return []response.SearchedCoin{
 			{
@@ -42,13 +42,15 @@ func (c *CoinGecko) SearchCoins(query string) ([]response.SearchedCoin, error, i
 				Thumb:         coin.Image.Thumb,
 			},
 		}, nil, http.StatusOK
+	} else if code == http.StatusTooManyRequests {
+		return nil, fmt.Errorf("too many requests GetCoin(%s): %v", query, err), code
 	}
 
 	// if not valid coin ID then search coins by symbol
 	res := &response.SearchedCoinsListResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(c.searchCoinURL, query), res)
+	code, err = util.FetchData(fmt.Sprintf(c.searchCoinURL, query), res)
 	if err != nil || res == nil || len(res.Coins) == 0 {
-		return nil, fmt.Errorf("failed to search for coins by query %s: %v", query, err), statusCode
+		return nil, fmt.Errorf("failed to search for coins by query %s: %v", query, err), code
 	}
 
 	var matches []response.SearchedCoin
@@ -109,7 +111,7 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 }
 
 func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (resp [][]float32, err error, statusCode int) {
-	statusCode, err = util.FetchData(fmt.Sprintf(c.getHistoryInfo, sourceSymbol, interval), &resp)
+	statusCode, err = util.FetchData(fmt.Sprintf(c.getCoinOhlc, sourceSymbol, interval), &resp)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, err, statusCode
 	}
