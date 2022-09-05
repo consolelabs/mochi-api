@@ -526,6 +526,10 @@ func (e *Entity) CompareToken(base, target, interval, guildID string) (*response
 		res.Ratios = append(res.Ratios, ratio)
 		res.Times = append(res.Times, timeStr)
 	}
+	if size > 0 {
+		res.From = time.UnixMilli(int64(baseOhlc[0][0])).Format("January 02, 2006")
+		res.To = time.UnixMilli(int64(baseOhlc[len(baseOhlc)-1][0])).Format("January 02, 2006")
+	}
 	return res, nil
 }
 
