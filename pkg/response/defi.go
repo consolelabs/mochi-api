@@ -102,6 +102,8 @@ type TokenCompareReponse struct {
 	Times                 []string         `json:"times"`
 	BaseCoinSuggestions   []SearchedCoin   `json:"base_coin_suggestions"`
 	TargetCoinSuggestions []SearchedCoin   `json:"target_coin_suggestions"`
+	From                  string           `json:"from"`
+	To                    string           `json:"to"`
 }
 
 type HistoricalTokenPricesResponse struct {
