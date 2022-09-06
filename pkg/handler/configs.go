@@ -313,7 +313,6 @@ func (h *Handler) NewGuildNFTRole(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	if err := req.Validate(); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildNFTRole] - failed to validate request")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
