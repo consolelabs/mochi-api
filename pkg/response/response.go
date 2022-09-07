@@ -9,5 +9,5 @@ type ResponseSucess struct {
 }
 
 type ResponseStatus struct {
-	Status string `json:"Status"`
+	Status string `json:"status"`
 }
