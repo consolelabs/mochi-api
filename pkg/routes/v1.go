@@ -57,6 +57,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
+		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak)
 		userGroup.GET("/top", h.GetTopUsers)
 	}
 
@@ -171,6 +172,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
 		webhook.POST("/nft", h.WebhookNftHandler)
+		webhook.POST("/topgg", h.WebhookUpvoteTopGG)
+		webhook.POST("/discordbotlist", h.WebhookUpvoteDiscordBot)
 	}
 
 	verifyGroup := v1.Group("/verify")

@@ -180,3 +180,41 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		"repost_channel_id": chanID,
 	})
 }
+
+func (h *Handler) WebhookUpvoteTopGG(c *gin.Context) {
+	req := request.WebhookUpvoteTopGG{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.entities.WebhookUpvoteStreak(req.UserID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to add upvote streak")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}
+
+func (h *Handler) WebhookUpvoteDiscordBot(c *gin.Context) {
+	req := request.WebhookUpvoteDiscordBot{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.entities.WebhookUpvoteStreak(req.UserID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to add upvote streak")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}
