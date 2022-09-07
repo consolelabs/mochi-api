@@ -407,3 +407,46 @@ func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUs
 
 	return resp, nil
 }
+
+func (e *Entity) WebhookUpvoteStreak(userID string) error {
+	sentAt := time.Now()
+	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), sentAt.Hour(), 0, 0, 0, time.UTC)
+	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(userID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to get user upvote streak")
+		return fmt.Errorf("failed to get user's upvote streak: %v", err)
+	}
+
+	if err == gorm.ErrRecordNotFound {
+		err = e.repo.DiscordUserUpvoteStreak.UpsertOne(model.DiscordUserUpvoteStreak{
+			DiscordID:      userID,
+			StreakCount:    1,
+			TotalCount:     1,
+			LastStreakDate: chatDate,
+		})
+		if err != nil {
+			e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to create new streak")
+			return fmt.Errorf("failed to create new user upvote streak: %v", err)
+		}
+		return nil
+	}
+
+	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 12)
+
+	switch {
+	case chatDate.Before(nextStreakDate):
+		streak.StreakCount++
+	case chatDate.Equal(nextStreakDate):
+		streak.StreakCount++
+	case chatDate.After(nextStreakDate):
+		streak.StreakCount = 1
+	}
+	streak.LastStreakDate = chatDate
+	streak.TotalCount++
+
+	if err := e.repo.DiscordUserUpvoteStreak.UpsertOne(*streak); err != nil {
+		e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to upsert upvote streak")
+		return fmt.Errorf("failed to update user upvote streak: %v", err)
+	}
+	return nil
+}

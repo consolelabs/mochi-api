@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
@@ -82,6 +83,33 @@ func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.Disco
 	}
 
 	return streak, http.StatusOK, nil
+}
+
+func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUserCurrentUpvoteStreakResponse, int, error) {
+	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(discordID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetUserCurrentUpvoteStreak] fail to get user upvote streak")
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's gm streak: %v", err)
+	}
+	if err == gorm.ErrRecordNotFound {
+		e.log.Info("[e.GetUserCurrentUpvoteStreak] user upvote streak empty")
+		return nil, http.StatusBadRequest, fmt.Errorf("user has no gm streak")
+	}
+
+	expireTime := streak.LastStreakDate.Add(time.Hour * 13)
+	now := time.Now()
+	currTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), 0, 0, 0, time.UTC)
+	var resetTime float64 = 0
+	if currTime.Before(expireTime) {
+		resetTime = expireTime.Sub(currTime).Minutes()
+	}
+	return &response.GetUserCurrentUpvoteStreakResponse{
+		UserID:         streak.DiscordID,
+		ResetTime:      resetTime,
+		SteakCount:     streak.StreakCount,
+		TotalCount:     streak.TotalCount,
+		LastStreakTime: streak.LastStreakDate,
+	}, http.StatusOK, nil
 }
 
 func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {

@@ -101,6 +101,34 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 	c.JSON(code, gin.H{"data": res})
 }
 
+// GetUserCurrentUpvoteStreak     godoc
+// @Summary     Get user current upvote streak
+// @Description Get user current upvote streak
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       discord_id query     string true "Discord ID"
+// @Success     200 {object} response.GetUserCurrentUpvoteStreakResponse
+// @Router      /users/upvote-streak [get]
+func (h *Handler) GetUserCurrentUpvoteStreak(c *gin.Context) {
+
+	discordID := c.Query("discord_id")
+	if discordID == "" {
+		h.log.Infof("[handler.GetUserCurrentGMStreak] - missing params, discordID: %v", discordID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "discord_id is required"})
+		return
+	}
+
+	res, code, err := h.entities.GetUserCurrentUpvoteStreak(discordID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUserCurrentUpvoteStreak] - failed to get user current upvote streak")
+		c.JSON(code, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(code, gin.H{"data": res})
+}
+
 // GetMyInfo     godoc
 // @Summary     Get user info
 // @Description Get user info

@@ -11,6 +11,7 @@ import (
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
@@ -58,6 +59,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildCustomCommand:                   guildcustomcommand.NewPG(db),
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
+		DiscordUserUpvoteStreak:              discorduserupvotestreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
