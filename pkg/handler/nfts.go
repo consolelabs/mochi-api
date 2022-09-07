@@ -236,6 +236,10 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 
 	err := h.entities.CreateSalesTracker(req)
 	if err != nil {
+		if err.Error() == "Collection has not been added." {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to create sales tracker")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
