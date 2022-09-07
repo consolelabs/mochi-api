@@ -7,7 +7,7 @@ import (
 )
 
 type DiscordGuildStat struct {
-	ID      uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID      uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	GuildID string        `json:"guild_id"`
 
 	NrOfMembers int `json:"nr_of_members"`

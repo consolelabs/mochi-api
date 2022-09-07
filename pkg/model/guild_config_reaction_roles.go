@@ -5,7 +5,7 @@ import (
 )
 
 type GuildConfigReactionRole struct {
-	ID            uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID            uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	MessageID     string        `json:"message_id"`
 	GuildID       string        `json:"guild_id"`
 	ReactionRoles string        `json:"reaction_roles"`
