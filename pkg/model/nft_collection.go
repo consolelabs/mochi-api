@@ -7,7 +7,7 @@ import (
 )
 
 type NFTCollection struct {
-	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	Address    string        `json:"address"`
 	Name       string        `json:"name"`
 	Symbol     string        `json:"symbol"`
@@ -19,7 +19,7 @@ type NFTCollection struct {
 	Author     string        `json:"author"`
 }
 type NewListedNFTCollection struct {
-	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	Address    string        `json:"address"`
 	Name       string        `json:"name"`
 	Symbol     string        `json:"symbol"`
@@ -33,7 +33,7 @@ type NewListedNFTCollection struct {
 }
 
 type NFTCollectionDetail struct {
-	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID         uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	Address    string        `json:"address"`
 	Name       string        `json:"name"`
 	Symbol     string        `json:"symbol"`

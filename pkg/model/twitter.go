@@ -3,7 +3,7 @@ package model
 import "github.com/google/uuid"
 
 type TwitterSalesMessage struct {
-	ID                uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID                uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	IsNotifiedTwitter bool          `json:"is_notified_twitter"`
 	TokenName         string        `json:"token_name"`
 	TokenID           string        `json:"token_id"`
