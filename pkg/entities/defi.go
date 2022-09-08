@@ -565,8 +565,8 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		return nil, err
 	}
 	if len(list) == 0 {
-		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() - no data found")
-		return nil, fmt.Errorf("No items in your watchlist")
+		e.log.Fields(logger.Fields{"query": q}).Info("[entity.GetUserWatchlist] repo.UserWatchlistItem.List() - no data found")
+		return &response.GetWatchlistResponse{Data: nil}, nil
 	}
 	ids := make([]string, len(list))
 	for i, item := range list {
