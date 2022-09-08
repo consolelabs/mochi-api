@@ -3002,6 +3002,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/upvote-streak": {
+            "get": {
+                "description": "Get user current upvote streak",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user current upvote streak",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "discord_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "description": "Get user",
@@ -3645,7 +3677,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "nr_of_animated_emojis": {
                     "type": "integer"
@@ -3764,7 +3796,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 }
             }
         },
@@ -3775,7 +3807,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"
@@ -3812,7 +3844,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
@@ -3832,7 +3864,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 }
             }
         },
@@ -3954,7 +3986,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -3992,7 +4024,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -4030,7 +4062,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -4669,11 +4701,52 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CompareTokenReponseData": {
+            "type": "object",
+            "properties": {
+                "base_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
+                "base_coin_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchedCoin"
+                    }
+                },
+                "from": {
+                    "type": "string"
+                },
+                "ratios": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "target_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
+                "target_coin_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchedCoin"
+                    }
+                },
+                "times": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CompareTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.TokenCompareReponse"
+                    "$ref": "#/definitions/response.CompareTokenReponseData"
                 }
             }
         },
@@ -5080,6 +5153,26 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.DiscordUserGMStreak"
+                }
+            }
+        },
+        "response.GetUserCurrentUpvoteStreakResponse": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "last_streak_time": {
+                    "type": "string"
+                },
+                "minutes_until_reset": {
+                    "type": "number"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
                 }
             }
         },
@@ -5858,7 +5951,7 @@ const docTemplate = `{
         "response.ResponseStatus": {
             "type": "object",
             "properties": {
-                "Status": {
+                "status": {
                     "type": "string"
                 }
             }
@@ -5995,41 +6088,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TokenCompareReponse": {
-            "type": "object",
-            "properties": {
-                "base_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
-                },
-                "base_coin_suggestions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
-                    }
-                },
-                "ratios": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "target_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
-                },
-                "target_coin_suggestions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
-                    }
-                },
-                "times": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "response.TwitterHashtag": {
             "type": "object",
             "properties": {
@@ -6133,18 +6191,6 @@ const docTemplate = `{
                 },
                 "regular": {
                     "type": "integer"
-                }
-            }
-        },
-        "uuid.NullUUID": {
-            "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if UUID is not NULL",
-                    "type": "boolean"
                 }
             }
         }
