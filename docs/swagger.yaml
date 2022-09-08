@@ -449,6 +449,15 @@ definitions:
       whitelist_campaign_id:
         type: string
     type: object
+  request.AddToWatchlistRequest:
+    properties:
+      coin_gecko_id:
+        type: string
+      symbol:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.AddWhitelistCampaignUser:
     properties:
       address:
@@ -765,6 +774,18 @@ definitions:
       wallet_address:
         type: string
     type: object
+  response.AddToWatchlistResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.AddToWatchlistResponseData'
+    type: object
+  response.AddToWatchlistResponseData:
+    properties:
+      suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+    type: object
   response.CoinImage:
     properties:
       large:
@@ -772,6 +793,30 @@ definitions:
       small:
         type: string
       thumb:
+        type: string
+    type: object
+  response.CoinMarketItemData:
+    properties:
+      current_price:
+        type: number
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      price_change_percentage_7d_in_currency:
+        type: number
+      price_change_percentage_24h:
+        type: number
+      sparkline_in_7d:
+        properties:
+          price:
+            items:
+              type: number
+            type: array
+        type: object
+      symbol:
         type: string
     type: object
   response.CoinPriceHistoryResponse:
@@ -1117,6 +1162,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.User'
+    type: object
+  response.GetWatchlistResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.CoinMarketItemData'
+        type: array
     type: object
   response.GiftXpHandlerResponse:
     properties:
@@ -2883,6 +2935,76 @@ paths:
       summary: In Discord Wallet transfer
       tags:
       - Defi
+  /defi/watchlist:
+    delete:
+      consumes:
+      - application/json
+      description: Remove from user's watchlist
+      parameters:
+      - in: query
+        name: symbol
+        required: true
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's watchlist
+      tags:
+      - Defi
+    get:
+      consumes:
+      - application/json
+      description: Get user's watchlist
+      parameters:
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWatchlistResponse'
+      summary: Get user's watchlist
+      tags:
+      - Defi
+    post:
+      consumes:
+      - application/json
+      description: Add to user's watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.AddToWatchlistResponse'
+      summary: Add to user's watchlist
+      tags:
+      - Defi
   /defi/withdraw:
     post:
       consumes:
@@ -3107,7 +3229,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4069,7 +4191,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
