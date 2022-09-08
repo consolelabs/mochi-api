@@ -240,7 +240,7 @@ func (e *Entity) CalculateUserRolesPerGuild(listGroupConfigNFTRoles []model.Guil
 
 	// compare total of user's balance with guild_config_group_nft_role's threshold to decide if assigned role to user or not
 	for _, userNFTBalance := range userNFTBalances {
-		if userNFTBalance.TotalBalance > int64(largestGroupConfigNFTRole.NumberOfTokens) {
+		if userNFTBalance.TotalBalance >= int64(largestGroupConfigNFTRole.NumberOfTokens) {
 			memberNFTRole := model.MemberNFTRole{
 				UserID: userNFTBalance.UserDiscordId,
 				RoleID: largestGroupConfigNFTRole.RoleID,
