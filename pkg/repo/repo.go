@@ -38,6 +38,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
 	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
@@ -84,4 +85,5 @@ type Repo struct {
 	NFTSalesTracker                      nftsalestracker.Store
 	MochiNFTSales                        mochinftsales.Store
 	GuildConfigDefaultTicker             guildconfigdefaultticker.Store
+	UserWatchlistItem                    userwatchlistitem.Store
 }

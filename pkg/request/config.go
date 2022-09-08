@@ -72,7 +72,7 @@ type ConfigDefaultCollection struct {
 	ChainID string `json:"chain"`
 }
 
-type GetGuildDefaultTickerQuery struct {
+type GetGuildDefaultTickerRequest struct {
 	GuildID string `json:"guild_id" form:"guild_id" binding:"required"`
 	Query   string `json:"query" form:"query" binding:"required"`
 }

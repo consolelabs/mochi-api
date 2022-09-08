@@ -270,17 +270,65 @@ func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 // @Success     200 {object} response.GetGuildDefaultTickerResponse
 // @Router      /configs/default-ticker [get]
 func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
-	var q request.GetGuildDefaultTickerQuery
-	if err := c.ShouldBindQuery(&q); err != nil {
-		h.log.Error(err, "[handler.GetGuildDefaultTicker] ShouldBindQuery failed")
+	var req request.GetGuildDefaultTickerRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetGuildDefaultTicker] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res, err := h.entities.GetGuildDefaultTicker(q)
+	res, err := h.entities.GetGuildDefaultTicker(req)
 	if err != nil {
-		h.log.Error(err, "[handler.GetGuildDefaultTicker] entity.GetGuildDefaultTicker failed")
+		h.log.Error(err, "[handler.GetGuildDefaultTicker] entity.GetGuildDefaultTicker() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func (h *Handler) GetUserWatchlist(c *gin.Context) {
+	var req request.GetUserWatchlistRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.AddToWatchlist] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.entities.GetUserWatchlist(req)
+	if err != nil {
+		h.log.Error(err, "[handler.AddToWatchlist] entity.GetUserWatchlist() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (h *Handler) AddToWatchlist(c *gin.Context) {
+	var req request.AddToWatchlistRequest
+	if err := c.Bind(&req); err != nil {
+		h.log.Error(err, "[handler.AddToWatchlist] Bind() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.entities.AddToWatchlist(req)
+	if err != nil {
+		h.log.Error(err, "[handler.AddToWatchlist] entity.AddToWatchlist() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
+	var req request.RemoveFromWatchlistRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.RemoveFromWatchlist] Bind() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err := h.entities.RemoveFromWatchlist(req)
+	if err != nil {
+		h.log.Error(err, "[handler.RemoveFromWatchlist] entity.RemoveFromWatchlist() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": nil})
 }
