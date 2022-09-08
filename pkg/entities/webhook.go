@@ -195,7 +195,7 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 				"discordID": discordID,
 			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
 		}
-		return nil, nil
+		return nil, e.replyGmGn(&newStreak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
 
 	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
@@ -230,7 +230,6 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 				"discordID": discordID,
 			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
 		}
-
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
 
@@ -307,35 +306,38 @@ func (e *Entity) sendGmGnMessage(discordID string, guildID string, streak *model
 }
 
 func (e *Entity) replyGmGn(streak *model.DiscordUserGMStreak, channelID, discordID, authorAvatar, authorUsername, durationTilNextGoal string, newStreakRecorded bool) error {
-	if newStreakRecorded && streak.StreakCount >= 3 {
-		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
-			Title:       "GM / GN",
-			Description: fmt.Sprintf("<@%s>, you've said gm-gn %d days in a row :fire: and %d days in total.", discordID, streak.StreakCount, streak.TotalCount),
-			Color:       3447003,
-			Footer: &discordgo.MessageEmbedFooter{
-				Text:    authorUsername,
-				IconURL: authorAvatar,
-			},
-			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
-		})
+	if newStreakRecorded && streak.StreakCount >= 2 {
+		embed := e.composeGmGnMessageEmbed(fmt.Sprintf("<@%s>, you've said gm-gn %d days in a row :fire: and %d days in total.", discordID, streak.StreakCount, streak.TotalCount), authorUsername, authorAvatar)
+		_, err := e.discord.ChannelMessageSendEmbed(channelID, embed)
 		return err
 	}
 
 	if !newStreakRecorded && durationTilNextGoal != "" {
-		_, err := e.discord.ChannelMessageSendEmbed(channelID, &discordgo.MessageEmbed{
-			Title:       "GM / GN",
-			Description: fmt.Sprintf("<@%s>, you've already said gm-gn today. \nYou need to wait `%s` :alarm_clock: to reach your next streak goal :dart:", discordID, durationTilNextGoal),
-			Color:       3447003,
-			Footer: &discordgo.MessageEmbedFooter{
-				Text:    authorUsername,
-				IconURL: authorAvatar,
-			},
-			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
-		})
+		embed := e.composeGmGnMessageEmbed(fmt.Sprintf("<@%s>, you've already said gm-gn today. \nYou need to wait `%s` :alarm_clock: to reach your next streak goal :dart:", discordID, durationTilNextGoal), authorUsername, authorAvatar)
+		_, err := e.discord.ChannelMessageSendEmbed(channelID, embed)
+		return err
+	}
+
+	if streak.StreakCount == 1 {
+		embed := e.composeGmGnMessageEmbed(fmt.Sprintf("<@%s>, you've started a gm-gn streak :sparkles: Keep it up!", discordID), authorUsername, authorAvatar)
+		_, err := e.discord.ChannelMessageSendEmbed(channelID, embed)
 		return err
 	}
 
 	return nil
+}
+
+func (e *Entity) composeGmGnMessageEmbed(description, authorUsername, authorAvatar string) *discordgo.MessageEmbed {
+	return &discordgo.MessageEmbed{
+		Title:       "GM / GN",
+		Description: description,
+		Color:       3447003,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text:    authorUsername,
+			IconURL: authorAvatar,
+		},
+		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
+	}
 }
 
 func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
