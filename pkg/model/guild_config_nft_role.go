@@ -10,6 +10,9 @@ type GuildConfigNFTRole struct {
 }
 
 type MemberNFTRole struct {
-	UserID string `json:"user_id"`
-	RoleID string `json:"role_id"`
+	UserID             string `json:"user_id"`
+	RoleID             string `json:"role_id"`
+	TotalBalance       int64  `json:"total_balance"`
+	GroupConfigBalance int64  `json:"group_config_balance"`
+	GroupConfigID      string `json:"group_config_id"`
 }
