@@ -93,7 +93,7 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 	}
 	if err == gorm.ErrRecordNotFound {
 		e.log.Info("[e.GetUserCurrentUpvoteStreak] user upvote streak empty")
-		return nil, http.StatusBadRequest, fmt.Errorf("user has no gm streak")
+		return nil, http.StatusOK, nil
 	}
 
 	expireTime := streak.LastStreakDate.Add(time.Hour * 13)

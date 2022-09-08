@@ -866,6 +866,11 @@ definitions:
       data:
         $ref: '#/definitions/model.NFTCollection'
     type: object
+  response.CurrentUserUpvoteStreakResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+    type: object
   response.DefaultRole:
     properties:
       guild_id:
@@ -3782,7 +3787,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+            $ref: '#/definitions/response.CurrentUserUpvoteStreakResponse'
       summary: Get user current upvote streak
       tags:
       - User

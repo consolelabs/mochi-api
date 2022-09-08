@@ -108,13 +108,13 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       discord_id query     string true "Discord ID"
-// @Success     200 {object} response.GetUserCurrentUpvoteStreakResponse
+// @Success     200 {object} response.CurrentUserUpvoteStreakResponse
 // @Router      /users/upvote-streak [get]
 func (h *Handler) GetUserCurrentUpvoteStreak(c *gin.Context) {
 
 	discordID := c.Query("discord_id")
 	if discordID == "" {
-		h.log.Infof("[handler.GetUserCurrentGMStreak] - missing params, discordID: %v", discordID)
+		h.log.Infof("[handler.GetUserCurrentUpvoteStreak] - missing params, discordID: %v", discordID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "discord_id is required"})
 		return
 	}
