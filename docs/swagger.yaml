@@ -138,7 +138,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       nr_of_animated_emojis:
         type: integer
       nr_of_announcement_channels:
@@ -216,14 +216,14 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
     type: object
   model.GuildConfigInviteTracker:
     properties:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       user_id:
         type: string
       webhook_url:
@@ -247,7 +247,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       quantity:
         type: integer
       repost_channel_id:
@@ -260,7 +260,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
     type: object
   model.GuildConfigTwitterFeed:
     properties:
@@ -340,7 +340,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -365,7 +365,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -390,7 +390,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -804,10 +804,37 @@ definitions:
       symbol:
         type: string
     type: object
+  response.CompareTokenReponseData:
+    properties:
+      base_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      base_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      from:
+        type: string
+      ratios:
+        items:
+          type: number
+        type: array
+      target_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      target_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+      to:
+        type: string
+    type: object
   response.CompareTokenResponse:
     properties:
       data:
-        $ref: '#/definitions/response.TokenCompareReponse'
+        $ref: '#/definitions/response.CompareTokenReponseData'
     type: object
   response.ConfigGroupNFTRoleResponse:
     properties:
@@ -1067,6 +1094,19 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.DiscordUserGMStreak'
+    type: object
+  response.GetUserCurrentUpvoteStreakResponse:
+    properties:
+      discord_id:
+        type: string
+      last_streak_time:
+        type: string
+      minutes_until_reset:
+        type: number
+      streak_count:
+        type: integer
+      total_count:
+        type: integer
     type: object
   response.GetUserResponse:
     properties:
@@ -1571,7 +1611,7 @@ definitions:
     type: object
   response.ResponseStatus:
     properties:
-      Status:
+      status:
         type: string
     type: object
   response.ResponseSucess:
@@ -1659,29 +1699,6 @@ definitions:
       message:
         type: string
     type: object
-  response.TokenCompareReponse:
-    properties:
-      base_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
-      base_coin_suggestions:
-        items:
-          $ref: '#/definitions/response.SearchedCoin'
-        type: array
-      ratios:
-        items:
-          type: number
-        type: array
-      target_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
-      target_coin_suggestions:
-        items:
-          $ref: '#/definitions/response.SearchedCoin'
-        type: array
-      times:
-        items:
-          type: string
-        type: array
-    type: object
   response.TwitterHashtag:
     properties:
       channel_id:
@@ -1750,14 +1767,6 @@ definitions:
         type: integer
       regular:
         type: integer
-    type: object
-  uuid.NullUUID:
-    properties:
-      uuid:
-        type: string
-      valid:
-        description: Valid is true if UUID is not NULL
-        type: boolean
     type: object
 info:
   contact:
@@ -3754,6 +3763,27 @@ paths:
           schema:
             $ref: '#/definitions/response.GetMyInfoResponse'
       summary: Get top users
+      tags:
+      - User
+  /users/upvote-streak:
+    get:
+      consumes:
+      - application/json
+      description: Get user current upvote streak
+      parameters:
+      - description: Discord ID
+        in: query
+        name: discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+      summary: Get user current upvote streak
       tags:
       - User
   /verify:
