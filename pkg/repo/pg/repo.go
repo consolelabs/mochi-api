@@ -18,6 +18,7 @@ import (
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
+	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
@@ -93,5 +94,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		MochiNFTSales:                        mochinftsales.NewPG(db),
 		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
 		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
+		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 	}
 }

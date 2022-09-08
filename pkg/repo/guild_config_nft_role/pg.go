@@ -77,3 +77,15 @@ func (pg *pg) Update(config *model.GuildConfigNFTRole) error {
 func (pg *pg) Delete(id string) error {
 	return pg.db.Delete(&model.GuildConfigNFTRole{}, "id = ?", id).Error
 }
+
+func (pg *pg) Create(config model.GuildConfigNFTRole) (*model.GuildConfigNFTRole, error) {
+	return &config, pg.db.Table("guild_config_nft_roles").Create(&config).Error
+}
+
+func (pg *pg) DeleteByGroupId(groupNFTRoleId string) error {
+	return pg.db.Delete(&model.GuildConfigNFTRole{}, "group_id = ?", groupNFTRoleId).Error
+}
+
+func (pg *pg) DeleteByIds(ids []string) error {
+	return pg.db.Delete(&model.GuildConfigNFTRole{}, "id IN ?", ids).Error
+}

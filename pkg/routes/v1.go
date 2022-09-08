@@ -122,10 +122,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 		nftRoleGroup := configGroup.Group("/nft-roles")
 		{
-			nftRoleGroup.GET("", h.ListGuildNFTRoles)
-			nftRoleGroup.POST("", h.NewGuildNFTRole)
-			nftRoleGroup.PUT("/:config_id", h.EditGuildNFTRole)
-			nftRoleGroup.DELETE("/:config_id", h.RemoveGuildNFTRole)
+			nftRoleGroup.GET("", h.ListGuildGroupNFTRoles)
+			nftRoleGroup.POST("", h.NewGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/group", h.RemoveGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/", h.RemoveGuildNFTRole)
 		}
 		repostReactionGroup := configGroup.Group("/repost-reactions")
 		{

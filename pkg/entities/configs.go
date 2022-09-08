@@ -130,7 +130,7 @@ func (e *Entity) checkRoleIDInLevelRole(guildID, roleID string) error {
 }
 
 func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
-	_, err := e.repo.GuildConfigNFTRole.GetByRoleID(guildID, roleID)
+	_, err := e.repo.GuildConfigGroupNFTRole.GetByRoleID(guildID, roleID)
 	switch err {
 	case gorm.ErrRecordNotFound:
 		return nil
@@ -216,112 +216,222 @@ func (e *Entity) RemoveGuildMemberRole(guildID, userID, roleID string) error {
 	return e.discord.GuildMemberRoleRemove(guildID, userID, roleID)
 }
 
-func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigNFTRole, error) {
-	return e.repo.GuildConfigNFTRole.ListByGuildID(guildID)
+func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigGroupNFTRole, error) {
+	return e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
 }
 
-func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, error) {
-	mrs, err := e.repo.GuildConfigNFTRole.GetMemberCurrentRoles(guildID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get member current roles: %v", err.Error())
+func (e *Entity) CalculateUserRolesPerGuild(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string) ([]model.MemberNFTRole, error) {
+	memberNFTRoles := make([]model.MemberNFTRole, 0)
+	largestGroupConfigNFTRole := e.FindLargestGroupNFTConfig(listGroupConfigNFTRoles)
+	collectionIds := make([]string, 0)
+
+	for _, configNFTRole := range largestGroupConfigNFTRole.GuildConfigNFTRole {
+		collectionIds = append(collectionIds, configNFTRole.NFTCollectionID.UUID.String())
 	}
 
+	userNFTBalances, err := e.repo.UserNFTBalance.GetUserNFTBalancesByGuild(collectionIds, guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID":       guildID,
+			"collectionIDs": collectionIds,
+		}).Error(err, "[entity.CalculateUserRolesPerGuild] cannot get user nft balances by guild")
+		return nil, err
+	}
+
+	// compare total of user's balance with guild_config_group_nft_role's threshold to decide if assigned role to user or not
+	for _, userNFTBalance := range userNFTBalances {
+		if userNFTBalance.TotalBalance > int64(largestGroupConfigNFTRole.NumberOfTokens) {
+			memberNFTRole := model.MemberNFTRole{
+				UserID: userNFTBalance.UserDiscordId,
+				RoleID: largestGroupConfigNFTRole.RoleID,
+			}
+			memberNFTRoles = append(memberNFTRoles, memberNFTRole)
+		}
+	}
+	return memberNFTRoles, nil
+}
+
+func (e *Entity) FindLargestGroupNFTConfig(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole) model.GuildConfigGroupNFTRole {
+	max := listGroupConfigNFTRoles[0].NumberOfTokens
+	largestGroupNftConfig := model.GuildConfigGroupNFTRole{}
+	for i := 1; i < len(listGroupConfigNFTRoles); i++ {
+		if max < listGroupConfigNFTRoles[i].NumberOfTokens {
+			max = listGroupConfigNFTRoles[i].NumberOfTokens
+			largestGroupNftConfig = listGroupConfigNFTRoles[i]
+		}
+	}
+	return largestGroupNftConfig
+}
+
+func (e *Entity) ListMemberNFTRolesToAdd(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string) (map[[2]string]bool, error) {
+	mrs, err := e.CalculateUserRolesPerGuild(listGroupConfigNFTRoles, guildID)
+	if err != nil {
+		return nil, err
+	}
 	rolesToAdd := make(map[[2]string]bool)
 
 	for _, mr := range mrs {
 		rolesToAdd[[2]string{mr.UserID, mr.RoleID}] = true
 	}
-
 	return rolesToAdd, nil
 }
 
-func (e *Entity) NewGuildNFTRoleConfig(req request.ConfigNFTRoleRequest) (*model.GuildConfigNFTRole, error) {
+func (e *Entity) NewGuildGroupNFTRoleConfig(req request.ConfigGroupNFTRoleRequest) (*response.ConfigGroupNFTRoleResponse, error) {
 	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID}).Error(err, "[entity.NewGuildNFTRoleConfig] check roleID config failed")
 		return nil, err
 	}
 
-	nftcollection, err := e.repo.NFTCollection.GetByID(req.NFTCollectionID.UUID.String())
+	// create record guild_config_group_nft_role
+	groupConfig, err := e.repo.GuildConfigGroupNFTRole.Create(model.GuildConfigGroupNFTRole{
+		GuildID:        req.GuildID,
+		RoleID:         req.RoleID,
+		GroupName:      req.GroupName,
+		NumberOfTokens: req.NumberOfTokens,
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get nft collection: %v", err.Error())
+		e.log.Fields(logger.Fields{
+			"guildID":        req.GuildID,
+			"roleID":         req.RoleID,
+			"collectionID":   req.CollectionAddress,
+			"numberOfTokens": req.NumberOfTokens,
+		}).Error(err, "[entity.NewGuildNFTRoleConfig] cannot create config group nft role")
+		return nil, err
 	}
 
-	if nftcollection.ERCFormat == "1155" && req.TokenID == "" {
-		return nil, fmt.Errorf("token id is required for erc1155 nft collections")
-	}
+	collectionConfigs := make([]response.NFTCollectionConfig, 0)
+	for _, collection := range req.CollectionAddress {
+		nftCollection, err := e.repo.NFTCollection.GetByAddress(collection)
+		if err != nil {
+			e.log.Fields(logger.Fields{"collectionAddress": collection}).Error(err, "[entity.NewGuildNFTRoleConfig] cannot get collection")
+			return nil, err
+		}
 
-	err = e.repo.GuildConfigNFTRole.UpsertOne(&req.GuildConfigNFTRole)
-	if err != nil {
-		return nil, fmt.Errorf("failed to upsert guild config nft role: %v", err.Error())
+		// create record guild_config_nft_role
+		config, err := e.repo.GuildConfigNFTRole.Create(model.GuildConfigNFTRole{
+			NFTCollectionID: nftCollection.ID,
+			GroupID:         groupConfig.ID,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"nftCollectionId": nftCollection.ID, "groupId": groupConfig.ID}).Error(err, "[entity.NewGuildNFTRoleConfig] cannot create config nft role")
+			return nil, err
+		}
+		collectionConfigs = append(collectionConfigs, response.NFTCollectionConfig{
+			ID:           config.ID.UUID.String(),
+			CollectionID: nftCollection.ID.UUID.String(),
+			Address:      nftCollection.Address,
+			Name:         nftCollection.Name,
+			Symbol:       nftCollection.Symbol,
+			ChainID:      nftCollection.ChainID,
+			ERCFormat:    nftCollection.ERCFormat,
+			IsVerified:   nftCollection.IsVerified,
+			CreatedAt:    nftCollection.CreatedAt,
+			Image:        nftCollection.Image,
+			Author:       nftCollection.Author,
+		})
 	}
+	return &response.ConfigGroupNFTRoleResponse{
+		GuildID:              req.GuildID,
+		RoleID:               req.RoleID,
+		GroupName:            req.GroupName,
+		NFTCollectionConfigs: collectionConfigs,
+		NumberOfTokens:       req.NumberOfTokens,
+	}, nil
 
-	return &req.GuildConfigNFTRole, nil
 }
 
-func (e *Entity) EditGuildNFTRoleConfig(req request.ConfigNFTRoleRequest) (*model.GuildConfigNFTRole, error) {
-
-	nftcollection, err := e.repo.NFTCollection.GetByID(req.NFTCollectionID.UUID.String())
+func (e *Entity) RemoveGuildGroupNFTRoleConfig(id string) error {
+	err := e.repo.GuildConfigNFTRole.DeleteByGroupId(id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get nft collection: %v", err.Error())
+		e.log.Fields(logger.Fields{
+			"groupConfigNFTRole": id,
+		}).Error(err, "[entity.RemoveGuildNFTRoleConfig] cannot delete config nft role")
+		return err
 	}
-
-	if nftcollection.ERCFormat == "1155" && req.TokenID == "" {
-		return nil, fmt.Errorf("token id is required for erc1155 nft collections")
-	}
-
-	err = e.repo.GuildConfigNFTRole.Update(&req.GuildConfigNFTRole)
+	err = e.repo.GuildConfigGroupNFTRole.Delete(id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update guild config nft role: %v", err.Error())
-	}
-
-	return &req.GuildConfigNFTRole, nil
-}
-
-func (e *Entity) RemoveGuildNFTRoleConfig(id string) error {
-	err := e.repo.GuildConfigNFTRole.Delete(id)
-	if err != nil {
-		return fmt.Errorf("failed to remove guild nft role config")
+		e.log.Fields(logger.Fields{
+			"groupConfigNFTRole": id,
+		}).Error(err, "[entity.RemoveGuildNFTRoleConfig] cannot delete config group nft role")
+		return err
 	}
 	return nil
 }
 
-func (e *Entity) ListGuildNFTRoles(guildID string) ([]response.GuildNFTRolesResponse, error) {
-	roles, err := e.repo.GuildConfigNFTRole.ListByGuildID(guildID)
+func (e *Entity) RemoveGuildNFTRoleConfig(ids []string) error {
+	err := e.repo.GuildConfigNFTRole.DeleteByIds(ids)
 	if err != nil {
+		e.log.Fields(logger.Fields{
+			"ids": ids,
+		}).Error(err, "[entity.RemoveGuildNFTRoleConfig] cannot delete config group nft role")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) ListGuildGroupNFTRoles(guildID string) ([]response.ListGuildNFTRoleConfigsResponse, error) {
+	groupRoles, err := e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[entity.ListGuildGroupNFTRoles] cannot get list guild config nft role")
 		return nil, fmt.Errorf("failed to list guild nft roles: %v", err.Error())
 	}
 
 	dr, err := e.discord.GuildRoles(guildID)
 	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[entity.ListGuildGroupNFTRoles] cannot get guild roles from discord")
 		return nil, fmt.Errorf("failed to list discord guild roles: %v", err.Error())
 	}
 
-	nftCollections, err := e.repo.NFTCollection.ListByGuildID(guildID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to list nft collections: %v", err.Error())
-	}
-
-	res := make([]response.GuildNFTRolesResponse, len(roles))
-
-	for i, role := range roles {
-		roleResp := response.GuildNFTRolesResponse{
-			GuildConfigNFTRole: role,
+	res := make([]response.ListGuildNFTRoleConfigsResponse, 0)
+	for _, groupRole := range groupRoles {
+		groupRoleResp := response.ListGuildNFTRoleConfigsResponse{
+			Id:             groupRole.ID.UUID.String(),
+			GuildId:        groupRole.GuildID,
+			GroupName:      groupRole.GroupName,
+			RoleId:         groupRole.RoleID,
+			NumberOfTokens: groupRole.NumberOfTokens,
 		}
 
+		// get role name + color from discord to enrich response
 		for _, r := range dr {
-			if role.RoleID == r.ID {
-				roleResp.RoleName = r.Name
-				roleResp.Color = r.Color
+			if groupRole.RoleID == r.ID {
+				groupRoleResp.RoleName = r.Name
+				groupRoleResp.Color = r.Color
 			}
 		}
 
-		for _, nft := range nftCollections {
-			if nft.ID == role.NFTCollectionID {
-				roleResp.NFTCollection = nft
+		// get data collection from db to enrich response
+		configs := make([]response.NFTCollectionConfig, 0)
+		for _, role := range groupRole.GuildConfigNFTRole {
+			collection, err := e.repo.NFTCollection.GetByID(role.NFTCollectionID.UUID.String())
+			if err != nil {
+				e.log.Fields(logger.Fields{
+					"guildID":    guildID,
+					"collection": role.NFTCollectionID.UUID.String(),
+				}).Error(err, "[entity.ListGuildGroupNFTRoles] cannot get collection for config nft role")
+				return nil, err
 			}
+			configs = append(configs, response.NFTCollectionConfig{
+				ID:           role.ID.UUID.String(),
+				CollectionID: collection.ID.UUID.String(),
+				Address:      collection.Address,
+				Name:         collection.Name,
+				Symbol:       collection.Symbol,
+				ChainID:      collection.ChainID,
+				ERCFormat:    collection.ERCFormat,
+				IsVerified:   collection.IsVerified,
+				CreatedAt:    collection.CreatedAt,
+				Image:        collection.Image,
+				Author:       collection.Author,
+			})
 		}
-		res[i] = roleResp
+		groupRoleResp.NFTCollectionConfigs = configs
+		res = append(res, groupRoleResp)
 	}
 
 	return res, nil

@@ -9,4 +9,7 @@ type Store interface {
 	UpsertOne(config *model.GuildConfigNFTRole) error
 	Update(config *model.GuildConfigNFTRole) error
 	Delete(id string) error
+	DeleteByGroupId(groupNFTRoleId string) error
+	DeleteByIds(ids []string) error
+	Create(config model.GuildConfigNFTRole) (*model.GuildConfigNFTRole, error)
 }
