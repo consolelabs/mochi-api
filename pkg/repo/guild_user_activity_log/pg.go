@@ -18,5 +18,5 @@ func (pg *pg) CreateOne(record model.GuildUserActivityLog) error {
 }
 
 func (pg *pg) CreateOneNoGuild(record model.GuildUserActivityLog) error {
-	return pg.db.Select("UserID", "ActivityName").Create(&record).Error
+	return pg.db.Select("UserID", "ActivityName", "EarnedXP").Create(&record).Error
 }
