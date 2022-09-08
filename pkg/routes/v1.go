@@ -166,6 +166,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
 		defiGroup.GET("/coins/compare", h.CompareToken)
+
+		watchlistGroup := defiGroup.Group("/watchlist")
+		{
+			watchlistGroup.GET("", h.GetUserWatchlist)
+			watchlistGroup.POST("", h.AddToWatchlist)
+			watchlistGroup.DELETE("", h.RemoveFromWatchlist)
+		}
 	}
 
 	webhook := v1.Group("/webhook")

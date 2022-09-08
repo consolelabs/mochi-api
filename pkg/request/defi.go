@@ -56,3 +56,20 @@ func (input *TransferRequest) Bind(c *gin.Context) (err error) {
 
 	return err
 }
+
+type GetUserWatchlistRequest struct {
+	UserID string `json:"user_id" form:"user_id" binding:"required"`
+	Page   int    `json:"page" form:"page"`
+	Size   int    `json:"size" form:"size"`
+}
+
+type AddToWatchlistRequest struct {
+	UserID      string `json:"user_id"`
+	Symbol      string `json:"symbol"`
+	CoinGeckoID string `json:"coin_gecko_id"`
+}
+
+type RemoveFromWatchlistRequest struct {
+	UserID string `json:"user_id" form:"user_id" binding:"required"`
+	Symbol string `json:"symbol" form:"symbol" binding:"required"`
+}

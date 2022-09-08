@@ -42,6 +42,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
 	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
 	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
@@ -91,5 +92,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildScheduledEvent:                  guildscheduledevent.NewPG(db),
 		MochiNFTSales:                        mochinftsales.NewPG(db),
 		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
+		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
 	}
 }

@@ -12,20 +12,22 @@ import (
 )
 
 type CoinGecko struct {
-	getMarketChartURL string
-	searchCoinURL     string
-	getCoinURL        string
-	getPriceURL       string
-	getCoinOhlc       string
+	getMarketChartURL  string
+	searchCoinURL      string
+	getCoinURL         string
+	getPriceURL        string
+	getCoinOhlc        string
+	getCoinsMarketData string
 }
 
 func NewService() Service {
 	return &CoinGecko{
-		getMarketChartURL: "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d",
-		searchCoinURL:     "https://api.coingecko.com/api/v3/search?query=%s",
-		getCoinURL:        "https://api.coingecko.com/api/v3/coins/%s",
-		getPriceURL:       "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
-		getCoinOhlc:       "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
+		getMarketChartURL:  "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d",
+		searchCoinURL:      "https://api.coingecko.com/api/v3/search?query=%s",
+		getCoinURL:         "https://api.coingecko.com/api/v3/coins/%s",
+		getPriceURL:        "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
+		getCoinOhlc:        "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
+		getCoinsMarketData: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=7d",
 	}
 }
 
@@ -117,4 +119,13 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (re
 	}
 
 	return resp, nil, http.StatusOK
+}
+
+func (c *CoinGecko) GetCoinsMarketData(ids []string) ([]response.CoinMarketItemData, error, int) {
+	var res []response.CoinMarketItemData
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ",")), &res)
+	if err != nil {
+		return nil, err, statusCode
+	}
+	return res, nil, http.StatusOK
 }

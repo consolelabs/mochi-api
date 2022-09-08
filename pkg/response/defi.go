@@ -95,17 +95,6 @@ type CoinImage struct {
 
 type CoinPriceResponse map[string]map[string]float64
 
-type TokenCompareReponse struct {
-	BaseCoin              *GetCoinResponse `json:"base_coin"`
-	TargetCoin            *GetCoinResponse `json:"target_coin"`
-	Ratios                []float32        `json:"ratios"`
-	Times                 []string         `json:"times"`
-	BaseCoinSuggestions   []SearchedCoin   `json:"base_coin_suggestions"`
-	TargetCoinSuggestions []SearchedCoin   `json:"target_coin_suggestions"`
-	From                  string           `json:"from"`
-	To                    string           `json:"to"`
-}
-
 type HistoricalTokenPricesResponse struct {
 	Data []HistoricalTokenPrice `json:"data"`
 }
@@ -143,6 +132,42 @@ type SearchCoinsResponse struct {
 	Data []SearchedCoin `json:"data"`
 }
 
+type CompareTokenReponseData struct {
+	BaseCoin              *GetCoinResponse `json:"base_coin"`
+	TargetCoin            *GetCoinResponse `json:"target_coin"`
+	Ratios                []float32        `json:"ratios"`
+	Times                 []string         `json:"times"`
+	BaseCoinSuggestions   []SearchedCoin   `json:"base_coin_suggestions"`
+	TargetCoinSuggestions []SearchedCoin   `json:"target_coin_suggestions"`
+	From                  string           `json:"from"`
+	To                    string           `json:"to"`
+}
+
 type CompareTokenResponse struct {
-	Data *TokenCompareReponse `json:"data"`
+	Data *CompareTokenReponseData `json:"data"`
+}
+
+type AddToWatchlistResponseData struct {
+	Suggestions []SearchedCoin `json:"suggestions"`
+}
+
+type AddToWatchlistResponse struct {
+	Data *AddToWatchlistResponseData `json:"data"`
+}
+
+type CoinMarketItemData struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	Symbol        string  `json:"symbol"`
+	CurrentPrice  float64 `json:"current_price"`
+	Image         string  `json:"image"`
+	SparkLineIn7d struct {
+		Price []float64 `json:"price"`
+	} `json:"sparkline_in_7d"`
+	PriceChangePercentage24h          float64 `json:"price_change_percentage_24h"`
+	PriceChangePercentage7dInCurrency float64 `json:"price_change_percentage_7d_in_currency"`
+}
+
+type GetWatchlistResponse struct {
+	Data []CoinMarketItemData `json:"data"`
 }
