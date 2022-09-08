@@ -76,3 +76,7 @@ type GetUserCurrentUpvoteStreakResponse struct {
 	TotalCount     int       `json:"total_count"`
 	LastStreakTime time.Time `json:"last_streak_time"`
 }
+
+type CurrentUserUpvoteStreakResponse struct {
+	Data GetUserCurrentUpvoteStreakResponse `json:"data"`
+}

@@ -3028,7 +3028,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                            "$ref": "#/definitions/response.CurrentUserUpvoteStreakResponse"
                         }
                     }
                 }
@@ -4794,6 +4794,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.NFTCollection"
+                }
+            }
+        },
+        "response.CurrentUserUpvoteStreakResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
                 }
             }
         },
