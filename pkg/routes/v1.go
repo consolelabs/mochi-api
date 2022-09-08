@@ -57,6 +57,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
+		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
 		userGroup.GET("/top", h.GetTopUsers)
 	}
 
@@ -121,10 +122,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 		nftRoleGroup := configGroup.Group("/nft-roles")
 		{
-			nftRoleGroup.GET("", h.ListGuildNFTRoles)
-			nftRoleGroup.POST("", h.NewGuildNFTRole)
-			nftRoleGroup.PUT("/:config_id", h.EditGuildNFTRole)
-			nftRoleGroup.DELETE("/:config_id", h.RemoveGuildNFTRole)
+			nftRoleGroup.GET("", h.ListGuildGroupNFTRoles)
+			nftRoleGroup.POST("", h.NewGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/group", h.RemoveGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/", h.RemoveGuildNFTRole)
 		}
 		repostReactionGroup := configGroup.Group("/repost-reactions")
 		{
@@ -165,12 +166,21 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins/:id", h.GetCoin)
 		defiGroup.GET("/coins", h.SearchCoins)
 		defiGroup.GET("/coins/compare", h.CompareToken)
+
+		watchlistGroup := defiGroup.Group("/watchlist")
+		{
+			watchlistGroup.GET("", h.GetUserWatchlist)
+			watchlistGroup.POST("", h.AddToWatchlist)
+			watchlistGroup.DELETE("", h.RemoveFromWatchlist)
+		}
 	}
 
 	webhook := v1.Group("/webhook")
 	{
 		webhook.POST("/discord", h.HandleDiscordWebhook)
 		webhook.POST("/nft", h.WebhookNftHandler)
+		webhook.POST("/topgg", h.WebhookUpvoteTopGG)
+		webhook.POST("/discordbotlist", h.WebhookUpvoteDiscordBot)
 	}
 
 	verifyGroup := v1.Group("/verify")

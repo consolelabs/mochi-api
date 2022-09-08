@@ -737,7 +737,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListGuildNFTRolesResponse"
+                            "$ref": "#/definitions/response.ListGuildGroupNFTRolesResponse"
                         }
                     }
                 }
@@ -761,48 +761,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigNFTRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/response.NewGuildNFTRoleResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/nft-roles/{config_id}": {
-            "put": {
-                "description": "Edit guild nft role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Edit guild nft role",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Config ID",
-                        "name": "config_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Edit NFT role request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigNFTRoleRequest"
+                            "$ref": "#/definitions/request.ConfigGroupNFTRoleRequest"
                         }
                     }
                 ],
@@ -810,7 +769,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.EditGuildNFTRoleResponse"
+                            "$ref": "#/definitions/response.NewGuildGroupNFTRoleResponse"
                         }
                     }
                 }
@@ -830,9 +789,41 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Config ID",
-                        "name": "config_id",
-                        "in": "path",
+                        "description": "32951e68-9959-4e1d-88ca-22b442e19efe|45d06941-468b-4e5e-8b8f-d20c77c87805",
+                        "name": "config_ids",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/nft-roles/group": {
+            "delete": {
+                "description": "Remove guild group nft role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Remove guild group nft role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group config ID",
+                        "name": "group_config_id",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -3011,6 +3002,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/upvote-streak": {
+            "get": {
+                "description": "Get user current upvote streak",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user current upvote streak",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "discord_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CurrentUserUpvoteStreakResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "description": "Get user",
@@ -3654,7 +3677,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "nr_of_animated_emojis": {
                     "type": "integer"
@@ -3773,7 +3796,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 }
             }
         },
@@ -3784,7 +3807,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "user_id": {
                     "type": "string"
@@ -3811,29 +3834,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigNFTRole": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "nft_collection_id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "number_of_tokens": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.GuildConfigRepostReaction": {
             "type": "object",
             "properties": {
@@ -3844,7 +3844,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
@@ -3864,7 +3864,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 }
             }
         },
@@ -3986,7 +3986,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -4024,7 +4024,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -4062,7 +4062,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
+                    "type": "string"
                 },
                 "image": {
                     "type": "string"
@@ -4209,6 +4209,29 @@ const docTemplate = `{
                 }
             }
         },
+        "request.ConfigGroupNFTRoleRequest": {
+            "type": "object",
+            "properties": {
+                "collection_address": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "group_name": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "number_of_tokens": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.ConfigLevelRoleRequest": {
             "type": "object",
             "properties": {
@@ -4219,29 +4242,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.ConfigNFTRoleRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "nft_collection_id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "number_of_tokens": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "token_id": {
                     "type": "string"
                 }
             }
@@ -4701,11 +4701,75 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CompareTokenReponseData": {
+            "type": "object",
+            "properties": {
+                "base_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
+                "base_coin_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchedCoin"
+                    }
+                },
+                "from": {
+                    "type": "string"
+                },
+                "ratios": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "target_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
+                "target_coin_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchedCoin"
+                    }
+                },
+                "times": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CompareTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.TokenCompareReponse"
+                    "$ref": "#/definitions/response.CompareTokenReponseData"
+                }
+            }
+        },
+        "response.ConfigGroupNFTRoleResponse": {
+            "type": "object",
+            "properties": {
+                "group_name": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "nft_collection_configs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.NFTCollectionConfig"
+                    }
+                },
+                "number_of_tokens": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
                 }
             }
         },
@@ -4733,6 +4797,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CurrentUserUpvoteStreakResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                }
+            }
+        },
         "response.DefaultRole": {
             "type": "object",
             "properties": {
@@ -4752,17 +4824,6 @@ const docTemplate = `{
                 },
                 "ok": {
                     "type": "boolean"
-                }
-            }
-        },
-        "response.EditGuildNFTRoleResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigNFTRole"
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -5103,6 +5164,26 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserCurrentUpvoteStreakResponse": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "last_streak_time": {
+                    "type": "string"
+                },
+                "minutes_until_reset": {
+                    "type": "number"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.GetUserResponse": {
             "type": "object",
             "properties": {
@@ -5116,38 +5197,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
-                }
-            }
-        },
-        "response.GuildNFTRolesResponse": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "type": "integer"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "nft_collection": {
-                    "$ref": "#/definitions/model.NFTCollection"
-                },
-                "nft_collection_id": {
-                    "$ref": "#/definitions/uuid.NullUUID"
-                },
-                "number_of_tokens": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "role_name": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
                 }
             }
         },
@@ -5557,14 +5606,46 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ListGuildNFTRolesResponse": {
+        "response.ListGuildGroupNFTRolesResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.GuildNFTRolesResponse"
+                        "$ref": "#/definitions/response.ListGuildNFTRoleConfigsResponse"
                     }
+                }
+            }
+        },
+        "response.ListGuildNFTRoleConfigsResponse": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "integer"
+                },
+                "group_name": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "nft_collection_configs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.NFTCollectionConfig"
+                    }
+                },
+                "number_of_tokens": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "role_name": {
+                    "type": "string"
                 }
             }
         },
@@ -5628,6 +5709,44 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "number"
                     }
+                }
+            }
+        },
+        "response.NFTCollectionConfig": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "collection_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "erc_format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
                 }
             }
         },
@@ -5742,7 +5861,7 @@ const docTemplate = `{
         "response.NewGuildConfigWalletVerificationMessageResponse": {
             "type": "object",
             "properties": {
-                "Data": {
+                "data": {
                     "$ref": "#/definitions/model.GuildConfigWalletVerificationMessage"
                 },
                 "status": {
@@ -5750,11 +5869,11 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NewGuildNFTRoleResponse": {
+        "response.NewGuildGroupNFTRoleResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigNFTRole"
+                    "$ref": "#/definitions/response.ConfigGroupNFTRoleResponse"
                 },
                 "message": {
                     "type": "string"
@@ -5840,7 +5959,7 @@ const docTemplate = `{
         "response.ResponseStatus": {
             "type": "object",
             "properties": {
-                "Status": {
+                "status": {
                     "type": "string"
                 }
             }
@@ -5977,41 +6096,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TokenCompareReponse": {
-            "type": "object",
-            "properties": {
-                "base_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
-                },
-                "base_coin_suggestions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
-                    }
-                },
-                "ratios": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "target_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
-                },
-                "target_coin_suggestions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
-                    }
-                },
-                "times": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "response.TwitterHashtag": {
             "type": "object",
             "properties": {
@@ -6115,18 +6199,6 @@ const docTemplate = `{
                 },
                 "regular": {
                     "type": "integer"
-                }
-            }
-        },
-        "uuid.NullUUID": {
-            "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if UUID is not NULL",
-                    "type": "boolean"
                 }
             }
         }

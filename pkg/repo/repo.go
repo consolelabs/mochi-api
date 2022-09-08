@@ -8,12 +8,14 @@ import (
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
+	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
@@ -38,6 +40,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
 	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
@@ -45,6 +48,7 @@ import (
 
 type Repo struct {
 	DiscordUserGMStreak                  discordusergmstreak.Store
+	DiscordUserUpvoteStreak              discorduserupvotestreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
@@ -84,4 +88,6 @@ type Repo struct {
 	NFTSalesTracker                      nftsalestracker.Store
 	MochiNFTSales                        mochinftsales.Store
 	GuildConfigDefaultTicker             guildconfigdefaultticker.Store
+	UserWatchlistItem                    userwatchlistitem.Store
+	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 }

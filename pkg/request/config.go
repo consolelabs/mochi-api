@@ -1,11 +1,5 @@
 package request
 
-import (
-	"fmt"
-
-	"github.com/defipod/mochi/pkg/model"
-)
-
 type UpsertGmConfigRequest struct {
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
@@ -26,21 +20,12 @@ type ConfigLevelRoleRequest struct {
 	Level   int    `json:"level"`
 }
 
-type ConfigNFTRoleRequest struct {
-	model.GuildConfigNFTRole
-}
-
-func (cfg ConfigNFTRoleRequest) Validate() error {
-	if cfg.GuildID == "" {
-		return fmt.Errorf("guild_id is required")
-	}
-	if cfg.RoleID == "" {
-		return fmt.Errorf("role_id is required")
-	}
-	if !cfg.NFTCollectionID.Valid {
-		return fmt.Errorf("nft_collection_id is invalid")
-	}
-	return nil
+type ConfigGroupNFTRoleRequest struct {
+	GuildID           string   `json:"guild_id"`
+	RoleID            string   `json:"role_id"`
+	GroupName         string   `json:"group_name"`
+	CollectionAddress []string `json:"collection_address"`
+	NumberOfTokens    int      `json:"number_of_tokens"`
 }
 
 type ConfigRepostRequest struct {
@@ -72,7 +57,7 @@ type ConfigDefaultCollection struct {
 	ChainID string `json:"chain"`
 }
 
-type GetGuildDefaultTickerQuery struct {
+type GetGuildDefaultTickerRequest struct {
 	GuildID string `json:"guild_id" form:"guild_id" binding:"required"`
 	Query   string `json:"query" form:"query" binding:"required"`
 }

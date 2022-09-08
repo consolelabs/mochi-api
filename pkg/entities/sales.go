@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -18,7 +19,18 @@ func (e *Entity) GetNftSales(addr string, platform string) (*response.NftSalesRe
 }
 
 func (e *Entity) CreateSalesTracker(req request.NFTSalesTrackerRequest) error {
-	err := e.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
+	checkExistNFT, err := e.CheckExistNftCollection(req.ContractAddress)
+	if err != nil {
+		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
+		return err
+	}
+
+	if !checkExistNFT {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "contractAddress": req.ContractAddress}).Info("[e.CreateSalesTracker] Collection has not been added.")
+		return fmt.Errorf("Collection has not been added.")
+	}
+
+	err = e.UpsertSalesTrackerConfig(request.UpsertSalesTrackerConfigRequest{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 	})

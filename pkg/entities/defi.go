@@ -11,6 +11,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -464,7 +465,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]response.SearchedCoin, *re
 	}
 	switch len(searchResult) {
 	case 0:
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no result found")
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no data found")
 		return nil, nil, fmt.Errorf("coin %s not found", query)
 	case 1:
 		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
@@ -479,7 +480,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]response.SearchedCoin, *re
 	}
 }
 
-func (e *Entity) CompareToken(base, target, interval, guildID string) (*response.TokenCompareReponse, error) {
+func (e *Entity) CompareToken(base, target, interval, guildID string) (*response.CompareTokenReponseData, error) {
 	baseSearch, baseCoin, err := e.queryCoins(guildID, base)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guild_id": guildID, "base": base}).Error(err, "[entity.CompareToken] queryCoins failed")
@@ -493,7 +494,7 @@ func (e *Entity) CompareToken(base, target, interval, guildID string) (*response
 
 	// if multiple coins (either base or target) found then return suggestions
 	if len(baseSearch) > 1 || len(targetSearch) > 1 {
-		return &response.TokenCompareReponse{BaseCoinSuggestions: baseSearch, TargetCoinSuggestions: targetSearch}, nil
+		return &response.CompareTokenReponseData{BaseCoinSuggestions: baseSearch, TargetCoinSuggestions: targetSearch}, nil
 	}
 	baseID := baseSearch[0].ID
 	targetID := targetSearch[0].ID
@@ -510,7 +511,7 @@ func (e *Entity) CompareToken(base, target, interval, guildID string) (*response
 		return nil, err
 	}
 
-	res := &response.TokenCompareReponse{BaseCoin: baseCoin, TargetCoin: targetCoin}
+	res := &response.CompareTokenReponseData{BaseCoin: baseCoin, TargetCoin: targetCoin}
 	size := len(baseOhlc)
 	if size > len(targetOhlc) {
 		size = len(targetOhlc)
@@ -541,13 +542,79 @@ func (e *Entity) SetGuildDefaultTicker(req request.GuildConfigDefaultTickerReque
 	})
 }
 
-func (e *Entity) GetGuildDefaultTicker(q request.GetGuildDefaultTickerQuery) (*response.GetGuildDefaultTickerResponse, error) {
-	defaultTicker, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(q.GuildID, q.Query)
+func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest) (*response.GetGuildDefaultTickerResponse, error) {
+	defaultTicker, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(req.GuildID, req.Query)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"guildID": q.GuildID, "query": q.Query}).Error(err, "[entity.GetGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery failed")
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID, "query": req.Query}).Error(err, "[entity.GetGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery() failed")
 		return nil, err
 	}
 	return &response.GetGuildDefaultTickerResponse{
 		Data: defaultTicker,
 	}, nil
+}
+
+func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
+	q := userwatchlistitem.UserWatchlistQuery{
+		UserID: req.UserID,
+		Offset: req.Page * req.Size,
+		Limit:  req.Size,
+	}
+	list, err := e.repo.UserWatchlistItem.List(q)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if len(list) == 0 {
+		e.log.Fields(logger.Fields{"query": q}).Info("[entity.GetUserWatchlist] repo.UserWatchlistItem.List() - no data found")
+		return &response.GetWatchlistResponse{Data: nil}, nil
+	}
+	ids := make([]string, len(list))
+	for i, item := range list {
+		ids[i] = item.CoinGeckoID
+	}
+	data, err, code := e.svc.CoinGecko.GetCoinsMarketData(ids)
+	if err != nil {
+		e.log.Fields(logger.Fields{"ids": ids, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
+		return nil, err
+	}
+	return &response.GetWatchlistResponse{Data: data}, nil
+}
+
+func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {
+	if req.CoinGeckoID == "" {
+		coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
+		if err != nil {
+			e.log.Fields(logger.Fields{"symbol": req.Symbol, "code": code}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
+			return nil, err
+		}
+		if len(coins) > 1 {
+			return &response.AddToWatchlistResponse{
+				Data: &response.AddToWatchlistResponseData{Suggestions: coins},
+			}, nil
+		}
+		if len(coins) == 0 {
+			e.log.Fields(logger.Fields{"symbol": req.Symbol, "code": code}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() - no data found")
+			return nil, err
+		}
+		req.CoinGeckoID = coins[0].ID
+	}
+
+	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+		UserID:      req.UserID,
+		Symbol:      req.Symbol,
+		CoinGeckoID: req.CoinGeckoID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.Create() failed")
+		return nil, err
+	}
+	return &response.AddToWatchlistResponse{Data: nil}, nil
+}
+
+func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) error {
+	err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserWatchlistItem.Delete() failed")
+	}
+	return err
 }

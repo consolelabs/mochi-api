@@ -138,7 +138,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       nr_of_animated_emojis:
         type: integer
       nr_of_announcement_channels:
@@ -216,14 +216,14 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
     type: object
   model.GuildConfigInviteTracker:
     properties:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       user_id:
         type: string
       webhook_url:
@@ -240,21 +240,6 @@ definitions:
       role_id:
         type: string
     type: object
-  model.GuildConfigNFTRole:
-    properties:
-      guild_id:
-        type: string
-      id:
-        $ref: '#/definitions/uuid.NullUUID'
-      nft_collection_id:
-        $ref: '#/definitions/uuid.NullUUID'
-      number_of_tokens:
-        type: integer
-      role_id:
-        type: string
-      token_id:
-        type: string
-    type: object
   model.GuildConfigRepostReaction:
     properties:
       emoji:
@@ -262,7 +247,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       quantity:
         type: integer
       repost_channel_id:
@@ -275,7 +260,7 @@ definitions:
       guild_id:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
     type: object
   model.GuildConfigTwitterFeed:
     properties:
@@ -355,7 +340,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -380,7 +365,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -405,7 +390,7 @@ definitions:
       erc_format:
         type: string
       id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       image:
         type: string
       is_verified:
@@ -500,6 +485,21 @@ definitions:
       symbol:
         type: string
     type: object
+  request.ConfigGroupNFTRoleRequest:
+    properties:
+      collection_address:
+        items:
+          type: string
+        type: array
+      group_name:
+        type: string
+      guild_id:
+        type: string
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
+    type: object
   request.ConfigLevelRoleRequest:
     properties:
       guild_id:
@@ -507,21 +507,6 @@ definitions:
       level:
         type: integer
       role_id:
-        type: string
-    type: object
-  request.ConfigNFTRoleRequest:
-    properties:
-      guild_id:
-        type: string
-      id:
-        $ref: '#/definitions/uuid.NullUUID'
-      nft_collection_id:
-        $ref: '#/definitions/uuid.NullUUID'
-      number_of_tokens:
-        type: integer
-      role_id:
-        type: string
-      token_id:
         type: string
     type: object
   request.ConfigRepostRequest:
@@ -819,10 +804,52 @@ definitions:
       symbol:
         type: string
     type: object
+  response.CompareTokenReponseData:
+    properties:
+      base_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      base_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      from:
+        type: string
+      ratios:
+        items:
+          type: number
+        type: array
+      target_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
+      target_coin_suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+      to:
+        type: string
+    type: object
   response.CompareTokenResponse:
     properties:
       data:
-        $ref: '#/definitions/response.TokenCompareReponse'
+        $ref: '#/definitions/response.CompareTokenReponseData'
+    type: object
+  response.ConfigGroupNFTRoleResponse:
+    properties:
+      group_name:
+        type: string
+      guild_id:
+        type: string
+      nft_collection_configs:
+        items:
+          $ref: '#/definitions/response.NFTCollectionConfig'
+        type: array
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
     type: object
   response.ConfigureInvitesResponse:
     properties:
@@ -839,6 +866,11 @@ definitions:
       data:
         $ref: '#/definitions/model.NFTCollection'
     type: object
+  response.CurrentUserUpvoteStreakResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+    type: object
   response.DefaultRole:
     properties:
       guild_id:
@@ -852,13 +884,6 @@ definitions:
         $ref: '#/definitions/response.DefaultRole'
       ok:
         type: boolean
-    type: object
-  response.EditGuildNFTRoleResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigNFTRole'
-      message:
-        type: string
     type: object
   response.GenerateVerificationResponse:
     properties:
@@ -1075,6 +1100,19 @@ definitions:
       data:
         $ref: '#/definitions/model.DiscordUserGMStreak'
     type: object
+  response.GetUserCurrentUpvoteStreakResponse:
+    properties:
+      discord_id:
+        type: string
+      last_streak_time:
+        type: string
+      minutes_until_reset:
+        type: number
+      streak_count:
+        type: integer
+      total_count:
+        type: integer
+    type: object
   response.GetUserResponse:
     properties:
       data:
@@ -1084,27 +1122,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.HandleUserActivityResponse'
-    type: object
-  response.GuildNFTRolesResponse:
-    properties:
-      color:
-        type: integer
-      guild_id:
-        type: string
-      id:
-        $ref: '#/definitions/uuid.NullUUID'
-      nft_collection:
-        $ref: '#/definitions/model.NFTCollection'
-      nft_collection_id:
-        $ref: '#/definitions/uuid.NullUUID'
-      number_of_tokens:
-        type: integer
-      role_id:
-        type: string
-      role_name:
-        type: string
-      token_id:
-        type: string
     type: object
   response.HandleUserActivityResponse:
     properties:
@@ -1370,12 +1387,33 @@ definitions:
           $ref: '#/definitions/model.GuildCustomCommand'
         type: array
     type: object
-  response.ListGuildNFTRolesResponse:
+  response.ListGuildGroupNFTRolesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.GuildNFTRolesResponse'
+          $ref: '#/definitions/response.ListGuildNFTRoleConfigsResponse'
         type: array
+    type: object
+  response.ListGuildNFTRoleConfigsResponse:
+    properties:
+      color:
+        type: integer
+      group_name:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      nft_collection_configs:
+        items:
+          $ref: '#/definitions/response.NFTCollectionConfig'
+        type: array
+      number_of_tokens:
+        type: integer
+      role_id:
+        type: string
+      role_name:
+        type: string
     type: object
   response.ListRoleReactionResponse:
     properties:
@@ -1417,6 +1455,31 @@ definitions:
         additionalProperties:
           type: number
         type: object
+    type: object
+  response.NFTCollectionConfig:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain_id:
+        type: string
+      collection_id:
+        type: string
+      created_at:
+        type: string
+      erc_format:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
     type: object
   response.NFTCollectionCount:
     properties:
@@ -1490,15 +1553,15 @@ definitions:
     type: object
   response.NewGuildConfigWalletVerificationMessageResponse:
     properties:
-      Data:
+      data:
         $ref: '#/definitions/model.GuildConfigWalletVerificationMessage'
       status:
         type: string
     type: object
-  response.NewGuildNFTRoleResponse:
+  response.NewGuildGroupNFTRoleResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigNFTRole'
+        $ref: '#/definitions/response.ConfigGroupNFTRoleResponse'
       message:
         type: string
     type: object
@@ -1553,7 +1616,7 @@ definitions:
     type: object
   response.ResponseStatus:
     properties:
-      Status:
+      status:
         type: string
     type: object
   response.ResponseSucess:
@@ -1641,29 +1704,6 @@ definitions:
       message:
         type: string
     type: object
-  response.TokenCompareReponse:
-    properties:
-      base_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
-      base_coin_suggestions:
-        items:
-          $ref: '#/definitions/response.SearchedCoin'
-        type: array
-      ratios:
-        items:
-          type: number
-        type: array
-      target_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
-      target_coin_suggestions:
-        items:
-          $ref: '#/definitions/response.SearchedCoin'
-        type: array
-      times:
-        items:
-          type: string
-        type: array
-    type: object
   response.TwitterHashtag:
     properties:
       channel_id:
@@ -1732,14 +1772,6 @@ definitions:
         type: integer
       regular:
         type: integer
-    type: object
-  uuid.NullUUID:
-    properties:
-      uuid:
-        type: string
-      valid:
-        description: Valid is true if UUID is not NULL
-        type: boolean
     type: object
 info:
   contact:
@@ -2206,6 +2238,26 @@ paths:
       tags:
       - Config
   /configs/nft-roles:
+    delete:
+      consumes:
+      - application/json
+      description: Remove guild nft role
+      parameters:
+      - description: 32951e68-9959-4e1d-88ca-22b442e19efe|45d06941-468b-4e5e-8b8f-d20c77c87805
+        in: query
+        name: config_ids
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove guild nft role
+      tags:
+      - Config
     get:
       consumes:
       - application/json
@@ -2222,7 +2274,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListGuildNFTRolesResponse'
+            $ref: '#/definitions/response.ListGuildGroupNFTRolesResponse'
       summary: List guild nft roles
       tags:
       - Config
@@ -2236,26 +2288,26 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigNFTRoleRequest'
+          $ref: '#/definitions/request.ConfigGroupNFTRoleRequest'
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/response.NewGuildNFTRoleResponse'
+            $ref: '#/definitions/response.NewGuildGroupNFTRoleResponse'
       summary: New guild nft role
       tags:
       - Config
-  /configs/nft-roles/{config_id}:
+  /configs/nft-roles/group:
     delete:
       consumes:
       - application/json
-      description: Remove guild nft role
+      description: Remove guild group nft role
       parameters:
-      - description: Config ID
-        in: path
-        name: config_id
+      - description: Group config ID
+        in: query
+        name: group_config_id
         required: true
         type: string
       produces:
@@ -2265,33 +2317,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove guild nft role
-      tags:
-      - Config
-    put:
-      consumes:
-      - application/json
-      description: Edit guild nft role
-      parameters:
-      - description: Config ID
-        in: path
-        name: config_id
-        required: true
-        type: string
-      - description: Edit NFT role request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigNFTRoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.EditGuildNFTRoleResponse'
-      summary: Edit guild nft role
+      summary: Remove guild group nft role
       tags:
       - Config
   /configs/reaction-roles:
@@ -3742,6 +3768,27 @@ paths:
           schema:
             $ref: '#/definitions/response.GetMyInfoResponse'
       summary: Get top users
+      tags:
+      - User
+  /users/upvote-streak:
+    get:
+      consumes:
+      - application/json
+      description: Get user current upvote streak
+      parameters:
+      - description: Discord ID
+        in: query
+        name: discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CurrentUserUpvoteStreakResponse'
+      summary: Get user current upvote streak
       tags:
       - User
   /verify:

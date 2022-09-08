@@ -3,12 +3,10 @@ package model
 import "github.com/google/uuid"
 
 type GuildConfigNFTRole struct {
-	ID              uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
-	NFTCollectionID uuid.NullUUID `json:"nft_collection_id"`
-	GuildID         string        `json:"guild_id"`
-	RoleID          string        `json:"role_id"`
+	ID              uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
+	NFTCollectionID uuid.NullUUID `json:"nft_collection_id" swaggertype:"string"`
 	NumberOfTokens  int           `json:"number_of_tokens"`
-	TokenID         string        `json:"token_id,omitempty"`
+	GroupID         uuid.NullUUID `json:"group_id"`
 }
 
 type MemberNFTRole struct {

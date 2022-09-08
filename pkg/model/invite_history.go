@@ -13,7 +13,7 @@ const (
 )
 
 type InviteHistory struct {
-	ID        uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()"`
+	ID        uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	GuildID   string        `json:"guild_id"`
 	UserID    string        `json:"user_id"`
 	InvitedBy string        `json:"invited_by"`

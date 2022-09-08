@@ -68,3 +68,15 @@ type GetTopUsersResponse struct {
 type GetUserCurrentGMStreakResponse struct {
 	Data *model.DiscordUserGMStreak `json:"data"`
 }
+
+type GetUserCurrentUpvoteStreakResponse struct {
+	UserID         string    `json:"discord_id"`
+	ResetTime      float64   `json:"minutes_until_reset"`
+	SteakCount     int       `json:"streak_count"`
+	TotalCount     int       `json:"total_count"`
+	LastStreakTime time.Time `json:"last_streak_time"`
+}
+
+type CurrentUserUpvoteStreakResponse struct {
+	Data GetUserCurrentUpvoteStreakResponse `json:"data"`
+}

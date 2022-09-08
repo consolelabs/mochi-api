@@ -11,12 +11,14 @@ import (
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
+	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
@@ -41,6 +43,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
 	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
 	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
@@ -58,6 +61,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildCustomCommand:                   guildcustomcommand.NewPG(db),
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
+		DiscordUserUpvoteStreak:              discorduserupvotestreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
@@ -89,5 +93,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildScheduledEvent:                  guildscheduledevent.NewPG(db),
 		MochiNFTSales:                        mochinftsales.NewPG(db),
 		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
+		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
+		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 	}
 }
