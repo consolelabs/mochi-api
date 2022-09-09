@@ -5,7 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -221,98 +220,15 @@ func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigGro
 	return e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
 }
 
-func (e *Entity) CalculateUsersRolesPerGuild(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string, members []*discordgo.Member) ([]model.MemberNFTRole, error) {
-	allMemberNFTRoles := make([]model.MemberNFTRole, 0)
-	for _, member := range members {
-		memberNFTRoles := make([]model.MemberNFTRole, 0)
-		for _, groupConfigNFTRole := range listGroupConfigNFTRoles {
-			collectionIds := make([]string, 0)
-			for _, configNFTRole := range groupConfigNFTRole.GuildConfigNFTRole {
-				collectionIds = append(collectionIds, configNFTRole.NFTCollectionID.UUID.String())
-			}
-			userNFTBalance, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(collectionIds, guildID, member.User.ID)
-			if err != nil {
-				e.log.Fields(logger.Fields{
-					"guildID":       guildID,
-					"collectionIDs": collectionIds,
-				}).Error(err, "[entity.CalculateUserRolesPerGuild] cannot get user nft balances by guild")
-				return nil, err
-			}
-			if userNFTBalance != nil {
-				if userNFTBalance.TotalBalance >= int64(groupConfigNFTRole.NumberOfTokens) {
-					memberNFTRoles = append(memberNFTRoles, model.MemberNFTRole{
-						UserID:             member.User.ID,
-						RoleID:             groupConfigNFTRole.RoleID,
-						TotalBalance:       userNFTBalance.TotalBalance,
-						GroupConfigBalance: int64(groupConfigNFTRole.NumberOfTokens),
-						GroupConfigID:      groupConfigNFTRole.ID.UUID.String(),
-					})
-				}
-			}
-		}
-		tmp := e.FindLargestGroupNFTConfig(memberNFTRoles)
-		if tmp.UserID != "" {
-			allMemberNFTRoles = append(allMemberNFTRoles, tmp)
-		}
-
-	}
-	return allMemberNFTRoles, nil
-}
-
-func (e *Entity) CalculateUserRolesPerGuild(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string, member *discordgo.Member) ([]model.MemberNFTRole, error) {
-	memberNFTRoles := make([]model.MemberNFTRole, 0)
-	for _, groupConfigNFTRole := range listGroupConfigNFTRoles {
-		collectionIds := make([]string, 0)
-		for _, configNFTRole := range groupConfigNFTRole.GuildConfigNFTRole {
-			collectionIds = append(collectionIds, configNFTRole.NFTCollectionID.UUID.String())
-		}
-		userNFTBalance, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(collectionIds, guildID, member.User.ID)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"guildID":       guildID,
-				"collectionIDs": collectionIds,
-			}).Error(err, "[entity.CalculateUserRolesPerGuild] cannot get user nft balances by guild")
-			return nil, err
-		}
-		if userNFTBalance != nil {
-			if userNFTBalance.TotalBalance >= int64(groupConfigNFTRole.NumberOfTokens) {
-				memberNFTRoles = append(memberNFTRoles, model.MemberNFTRole{
-					UserID:             member.User.ID,
-					RoleID:             groupConfigNFTRole.RoleID,
-					TotalBalance:       userNFTBalance.TotalBalance,
-					GroupConfigBalance: int64(groupConfigNFTRole.NumberOfTokens),
-					GroupConfigID:      groupConfigNFTRole.ID.UUID.String(),
-				})
-			}
-		}
-	}
-	return memberNFTRoles, nil
-}
-
-func (e *Entity) FindLargestGroupNFTConfig(listMemberNFTRolesToAdd []model.MemberNFTRole) model.MemberNFTRole {
-	if len(listMemberNFTRolesToAdd) == 0 {
-		return model.MemberNFTRole{}
-	}
-	max := listMemberNFTRolesToAdd[0].GroupConfigBalance
-	largestGroupNftConfig := model.MemberNFTRole{}
-	for i := 1; i < len(listMemberNFTRolesToAdd); i++ {
-		if max < listMemberNFTRolesToAdd[i].GroupConfigBalance {
-			max = listMemberNFTRolesToAdd[i].GroupConfigBalance
-			largestGroupNftConfig = listMemberNFTRolesToAdd[i]
-		}
-	}
-	return largestGroupNftConfig
-}
-
-func (e *Entity) ListMemberNFTRolesToAdd(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string, members []*discordgo.Member) (map[[2]string]bool, error) {
-	mrs, err := e.CalculateUsersRolesPerGuild(listGroupConfigNFTRoles, guildID, members)
+func (e *Entity) ListMemberNFTRolesToAdd(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string) (map[[2]string]bool, error) {
+	mrs, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(guildID)
 	if err != nil {
 		return nil, err
 	}
 	rolesToAdd := make(map[[2]string]bool)
 
 	for _, mr := range mrs {
-		rolesToAdd[[2]string{mr.UserID, mr.RoleID}] = true
+		rolesToAdd[[2]string{mr.UserDiscordID, mr.RoleID}] = true
 	}
 	return rolesToAdd, nil
 }
