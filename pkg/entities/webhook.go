@@ -450,5 +450,33 @@ func (e *Entity) WebhookUpvoteStreak(userID string) error {
 		e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to upsert upvote streak")
 		return fmt.Errorf("failed to update user upvote streak: %v", err)
 	}
+
+	e.handleUpvoteXPBonus(streak)
+	return nil
+}
+
+func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) error {
+	tier, err := e.repo.UpvoteStreakTier.GetByUpvoteCount(streak.StreakCount)
+	if err != nil {
+		e.log.Errorf(err, "[e.handleUpvoteXPBonus] failed to get upvote tier")
+		return err
+	}
+
+	earnedXP := 0
+	fmt.Println(tier.XPPerInterval, tier.VoteInterval, streak.TotalCount, streak.TotalCount%tier.VoteInterval)
+	if streak.TotalCount%tier.VoteInterval == 0 {
+		earnedXP = tier.XPPerInterval
+	}
+	if err := e.repo.GuildUserActivityLog.CreateOneNoGuild(model.GuildUserActivityLog{
+		UserID:       streak.DiscordID,
+		ActivityName: "upvote",
+		EarnedXP:     earnedXP,
+		CreatedAt:    time.Now(),
+	}); err != nil {
+		e.log.
+			Fields(logger.Fields{"userID": streak.DiscordID}).
+			Error(err, "[Entity][handleUpvoteXPBonus] failed to create guild_user_activity_logs")
+		return err
+	}
 	return nil
 }

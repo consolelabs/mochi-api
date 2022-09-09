@@ -41,6 +41,7 @@ import (
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	"github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
+	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
@@ -70,6 +71,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
+		UpvoteStreakTier:                     upvotestreaktier.NewPG(db),
 		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
 		GuildConfigTwitterHashtag:            guildconfigtwitterhashtag.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
