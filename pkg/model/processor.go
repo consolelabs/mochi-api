@@ -47,3 +47,22 @@ type UserXps struct {
 	TotalNobilityXps   int64 `json:"total_nobility_xps"`
 	TotalReputationXps int64 `json:"total_reputation_xps"`
 }
+
+type UserFactionXps struct {
+	UserDiscordId string `json:"user_discord_id,omitempty"`
+	FameXp        int64  `json:"fame_xp"`
+	LoyaltyXp     int64  `json:"loyalty_xp"`
+	NobilityXp    int64  `json:"nobility_xp"`
+	ReputationXp  int64  `json:"reputation_xp"`
+}
+
+type UserFactionXpsMapping struct {
+	ImperialXp int64 `json:"imperial_xp"`
+	RebellioXp int64 `json:"rebellio_xp"`
+	MerchantXp int64 `json:"merchant_xp"`
+	AcademyXp  int64 `json:"academy_xp"`
+}
+
+type GetUserFactionXpsResponse struct {
+	Data UserFactionXps `json:"data"`
+}

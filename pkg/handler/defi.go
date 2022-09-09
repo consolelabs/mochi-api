@@ -285,6 +285,15 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// GetUserWatchlist     godoc
+// @Summary     Get user's watchlist
+// @Description Get user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req query request.GetUserWatchlistRequest true "request"
+// @Success     200 {object} response.GetWatchlistResponse
+// @Router      /defi/watchlist [get]
 func (h *Handler) GetUserWatchlist(c *gin.Context) {
 	var req request.GetUserWatchlistRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -301,6 +310,15 @@ func (h *Handler) GetUserWatchlist(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// AddToWatchlist     godoc
+// @Summary     Add to user's watchlist
+// @Description Add to user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req body request.AddToWatchlistRequest true "request"
+// @Success     201 {object} response.AddToWatchlistResponse
+// @Router      /defi/watchlist [post]
 func (h *Handler) AddToWatchlist(c *gin.Context) {
 	var req request.AddToWatchlistRequest
 	if err := c.Bind(&req); err != nil {
@@ -314,9 +332,18 @@ func (h *Handler) AddToWatchlist(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusCreated, res)
 }
 
+// RemoveFromWatchlist     godoc
+// @Summary     Remove from user's watchlist
+// @Description Remove from user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req query request.RemoveFromWatchlistRequest true "request"
+// @Success     200 {object} object
+// @Router      /defi/watchlist [delete]
 func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 	var req request.RemoveFromWatchlistRequest
 	if err := c.ShouldBindQuery(&req); err != nil {

@@ -36,7 +36,7 @@ func (pg *pg) Upsert(balance model.UserNFTBalance) error {
 }
 
 // user nft balances for all collections in 1 guild
-func (pg *pg) GetUserNFTBalancesByGuild(nftCollectionIds []string, guildID string) ([]model.UserNFTBalancesByGuild, error) {
+func (pg *pg) GetUserNFTBalancesByUserInGuild(nftCollectionIds []string, guildID string, userDiscordId string) (*model.UserNFTBalancesByGuild, error) {
 	var res []model.UserNFTBalancesByGuild
 	rows, err := pg.db.Raw(`
 	SELECT
@@ -54,10 +54,11 @@ func (pg *pg) GetUserNFTBalancesByGuild(nftCollectionIds []string, guildID strin
 		WHERE
 			user_wallets.guild_id = ?
 			AND user_nft_balances.balance > 0 AND user_nft_balances.nft_collection_id IN ?
+			AND user_discord_id = ?
 			) AS list_balance
 	GROUP BY
 		user_discord_id;
-	`, guildID, nftCollectionIds).Rows()
+	`, guildID, nftCollectionIds, userDiscordId).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -68,5 +69,10 @@ func (pg *pg) GetUserNFTBalancesByGuild(nftCollectionIds []string, guildID strin
 		}
 		res = append(res, tmp)
 	}
-	return res, nil
+	if len(res) > 0 {
+		return &res[0], nil
+	} else {
+		return nil, nil
+	}
+
 }

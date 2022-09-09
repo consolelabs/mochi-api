@@ -1693,6 +1693,114 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/watchlist": {
+            "get": {
+                "description": "Get user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get user's watchlist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWatchlistResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add to user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Add to user's watchlist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToWatchlistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.AddToWatchlistResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove from user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Remove from user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/withdraw": {
             "post": {
                 "description": "In Discord Wallet withdraw",
@@ -2804,7 +2912,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
+                            "$ref": "#/definitions/response.GetDataUserProfileResponse"
                         }
                     }
                 }
@@ -3667,6 +3775,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DiscordGuild": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "type": "string"
+                },
+                "bot_scopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "global_xp": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "log_channel": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildRole"
+                    }
+                }
+            }
+        },
         "model.DiscordGuildStat": {
             "type": "object",
             "properties": {
@@ -3955,6 +4098,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildRole": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.JSONNullString": {
             "type": "object",
             "properties": {
@@ -4116,6 +4273,43 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserFactionXpsMapping": {
+            "type": "object",
+            "properties": {
+                "academy_xp": {
+                    "type": "integer"
+                },
+                "imperial_xp": {
+                    "type": "integer"
+                },
+                "merchant_xp": {
+                    "type": "integer"
+                },
+                "rebellio_xp": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.UserWallet": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_type": {
+                    "$ref": "#/definitions/model.JSONNullString"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.WhitelistCampaign": {
             "type": "object",
             "properties": {
@@ -4149,6 +4343,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "whitelist_campaign_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.AddToWatchlistRequest": {
+            "type": "object",
+            "properties": {
+                "coin_gecko_id": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -4641,6 +4849,25 @@ const docTemplate = `{
                 }
             }
         },
+        "response.AddToWatchlistResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.AddToWatchlistResponseData"
+                }
+            }
+        },
+        "response.AddToWatchlistResponseData": {
+            "type": "object",
+            "properties": {
+                "suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SearchedCoin"
+                    }
+                }
+            }
+        },
         "response.CoinImage": {
             "type": "object",
             "properties": {
@@ -4651,6 +4878,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "thumb": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.CoinMarketItemData": {
+            "type": "object",
+            "properties": {
+                "current_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_change_percentage_24h": {
+                    "type": "number"
+                },
+                "price_change_percentage_7d_in_currency": {
+                    "type": "number"
+                },
+                "sparkline_in_7d": {
+                    "type": "object",
+                    "properties": {
+                        "price": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -4930,6 +5194,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetDataUserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetUserProfileResponse"
+                }
+            }
+        },
         "response.GetDefaultTokenResponse": {
             "type": "object",
             "properties": {
@@ -5184,11 +5456,60 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "about_me": {
+                    "type": "string"
+                },
+                "current_level": {
+                    "$ref": "#/definitions/model.ConfigXpLevel"
+                },
+                "guild": {
+                    "$ref": "#/definitions/model.DiscordGuild"
+                },
+                "guild_rank": {
+                    "type": "integer"
+                },
+                "guild_xp": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "next_level": {
+                    "$ref": "#/definitions/model.ConfigXpLevel"
+                },
+                "nr_of_actions": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "number"
+                },
+                "user_faction_xps": {
+                    "$ref": "#/definitions/model.UserFactionXpsMapping"
+                },
+                "user_wallet": {
+                    "$ref": "#/definitions/model.UserWallet"
+                }
+            }
+        },
         "response.GetUserResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.User"
+                }
+            }
+        },
+        "response.GetWatchlistResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinMarketItemData"
+                    }
                 }
             }
         },

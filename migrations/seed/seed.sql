@@ -7,3 +7,4 @@
 \ir user_wallets.sql
 \ir tokens.sql
 \ir guild_config_tokens.sql
+\ir upvote_streak_tiers.sql

@@ -131,6 +131,29 @@ definitions:
       min_xp:
         type: integer
     type: object
+  model.DiscordGuild:
+    properties:
+      alias:
+        type: string
+      bot_scopes:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      global_xp:
+        type: boolean
+      id:
+        type: string
+      log_channel:
+        type: string
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.GuildRole'
+        type: array
+    type: object
   model.DiscordGuildStat:
     properties:
       created_at:
@@ -319,6 +342,15 @@ definitions:
           type: integer
         type: array
     type: object
+  model.GuildRole:
+    properties:
+      guild_id:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: integer
+    type: object
   model.JSONNullString:
     properties:
       string:
@@ -425,6 +457,30 @@ definitions:
       symbol:
         type: string
     type: object
+  model.UserFactionXpsMapping:
+    properties:
+      academy_xp:
+        type: integer
+      imperial_xp:
+        type: integer
+      merchant_xp:
+        type: integer
+      rebellio_xp:
+        type: integer
+    type: object
+  model.UserWallet:
+    properties:
+      address:
+        type: string
+      chain_type:
+        $ref: '#/definitions/model.JSONNullString'
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      user_discord_id:
+        type: string
+    type: object
   model.WhitelistCampaign:
     properties:
       created_at:
@@ -447,6 +503,15 @@ definitions:
       notes:
         type: string
       whitelist_campaign_id:
+        type: string
+    type: object
+  request.AddToWatchlistRequest:
+    properties:
+      coin_gecko_id:
+        type: string
+      symbol:
+        type: string
+      user_id:
         type: string
     type: object
   request.AddWhitelistCampaignUser:
@@ -765,6 +830,18 @@ definitions:
       wallet_address:
         type: string
     type: object
+  response.AddToWatchlistResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.AddToWatchlistResponseData'
+    type: object
+  response.AddToWatchlistResponseData:
+    properties:
+      suggestions:
+        items:
+          $ref: '#/definitions/response.SearchedCoin'
+        type: array
+    type: object
   response.CoinImage:
     properties:
       large:
@@ -772,6 +849,30 @@ definitions:
       small:
         type: string
       thumb:
+        type: string
+    type: object
+  response.CoinMarketItemData:
+    properties:
+      current_price:
+        type: number
+      id:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      price_change_percentage_7d_in_currency:
+        type: number
+      price_change_percentage_24h:
+        type: number
+      sparkline_in_7d:
+        properties:
+          price:
+            items:
+              type: number
+            type: array
+        type: object
+      symbol:
         type: string
     type: object
   response.CoinPriceHistoryResponse:
@@ -951,6 +1052,11 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildCustomCommand'
     type: object
+  response.GetDataUserProfileResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetUserProfileResponse'
+    type: object
   response.GetDefaultTokenResponse:
     properties:
       data:
@@ -1113,10 +1219,42 @@ definitions:
       total_count:
         type: integer
     type: object
+  response.GetUserProfileResponse:
+    properties:
+      about_me:
+        type: string
+      current_level:
+        $ref: '#/definitions/model.ConfigXpLevel'
+      guild:
+        $ref: '#/definitions/model.DiscordGuild'
+      guild_rank:
+        type: integer
+      guild_xp:
+        type: integer
+      id:
+        type: string
+      next_level:
+        $ref: '#/definitions/model.ConfigXpLevel'
+      nr_of_actions:
+        type: integer
+      progress:
+        type: number
+      user_faction_xps:
+        $ref: '#/definitions/model.UserFactionXpsMapping'
+      user_wallet:
+        $ref: '#/definitions/model.UserWallet'
+    type: object
   response.GetUserResponse:
     properties:
       data:
         $ref: '#/definitions/response.User'
+    type: object
+  response.GetWatchlistResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.CoinMarketItemData'
+        type: array
     type: object
   response.GiftXpHandlerResponse:
     properties:
@@ -2883,6 +3021,76 @@ paths:
       summary: In Discord Wallet transfer
       tags:
       - Defi
+  /defi/watchlist:
+    delete:
+      consumes:
+      - application/json
+      description: Remove from user's watchlist
+      parameters:
+      - in: query
+        name: symbol
+        required: true
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's watchlist
+      tags:
+      - Defi
+    get:
+      consumes:
+      - application/json
+      description: Get user's watchlist
+      parameters:
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWatchlistResponse'
+      summary: Get user's watchlist
+      tags:
+      - Defi
+    post:
+      consumes:
+      - application/json
+      description: Add to user's watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.AddToWatchlistResponse'
+      summary: Add to user's watchlist
+      tags:
+      - Defi
   /defi/withdraw:
     post:
       consumes:
@@ -3618,7 +3826,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetMyInfoResponse'
+            $ref: '#/definitions/response.GetDataUserProfileResponse'
       summary: Get user profile
       tags:
       - Profile
