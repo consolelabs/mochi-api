@@ -1435,6 +1435,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/upvote-tiers": {
+            "get": {
+                "description": "Get all upvote tiers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get all upvote tiers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUpvoteTiersConfig"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/balances": {
             "get": {
                 "description": "In Discord Wallet balance",
@@ -4273,6 +4296,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UpvoteStreakTier": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "streak_required": {
+                    "type": "integer"
+                },
+                "vote_interval": {
+                    "type": "integer"
+                },
+                "xp_per_interval": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.UserFactionXpsMapping": {
             "type": "object",
             "properties": {
@@ -5425,6 +5465,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.TwitterHashtag"
+                }
+            }
+        },
+        "response.GetUpvoteTiersConfig": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UpvoteStreakTier"
+                    }
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },

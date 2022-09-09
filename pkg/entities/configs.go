@@ -37,6 +37,15 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 	return nil
 }
 
+func (e *Entity) GetUpvoteTiersConfig() ([]model.UpvoteStreakTier, error) {
+	tiers, err := e.repo.UpvoteStreakTier.GetAll()
+	if err != nil {
+		e.log.Errorf(err, "[e.GetUpvoteTiersConfig] failed to get upvote tiers")
+		return nil, err
+	}
+	return tiers, nil
+}
+
 func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
 	config, err := e.repo.GuildConfigSalesTracker.GetByGuildID(guildID)
 	if err != nil {
