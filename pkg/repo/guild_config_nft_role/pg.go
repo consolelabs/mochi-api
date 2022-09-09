@@ -34,7 +34,7 @@ order by user_discord_id, guild_config_nft_roles.nft_collection_id, guild_config
 
 	for rows.Next() {
 		ur := model.MemberNFTRole{}
-		if err := rows.Scan(&ur.UserID, &ur.RoleID); err != nil {
+		if err := rows.Scan(&ur.UserDiscordID, &ur.RoleID); err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
 		}
 		urs = append(urs, ur)

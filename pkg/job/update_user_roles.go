@@ -3,7 +3,6 @@ package job
 import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/service"
 	"gorm.io/gorm"
 )
@@ -189,21 +188,14 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
-	rolesToAdd := make(map[[2]string]bool)
-	allMemberNFTRoles := make([]model.MemberNFTRole, 0)
+	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(hrConfigs, guildID)
+	if err != nil {
+		l.Error(err, "[updateNFTRoles] entity.ListMemberNFTRolesToAdd failed")
+		return err
+	}
+
 	for _, member := range members {
 		for _, roleID := range member.Roles {
-			memberNFTRoles, err := job.entity.CalculateUserRolesPerGuild(hrConfigs, guildID, member)
-			if err != nil {
-				return nil
-			}
-			tmp := job.entity.FindLargestGroupNFTConfig(memberNFTRoles)
-			if tmp.UserID != "" {
-				allMemberNFTRoles = append(allMemberNFTRoles, tmp)
-			}
-
-			rolesToAdd[[2]string{tmp.UserID, tmp.RoleID}] = true
-
 			if isNFTRoles[roleID] {
 				if rolesToAdd[[2]string{member.User.ID, roleID}] {
 					delete(rolesToAdd, [2]string{member.User.ID, roleID})
