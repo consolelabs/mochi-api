@@ -4,5 +4,5 @@ import "github.com/defipod/mochi/pkg/model"
 
 type Store interface {
 	Upsert(balance model.UserNFTBalance) error
-	GetUserNFTBalancesByGuild(nftCollectionIds []string, guildID string) ([]model.UserNFTBalancesByGuild, error)
+	GetUserNFTBalancesByUserInGuild(nftCollectionIds []string, guildID string, userDiscordId string) (*model.UserNFTBalancesByGuild, error)
 }
