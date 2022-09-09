@@ -56,6 +56,11 @@ type NewGuildGroupNFTRoleResponse struct {
 	Data    *ConfigGroupNFTRoleResponse `json:"data"`
 }
 
+type GetUpvoteTiersConfig struct {
+	Message string                   `json:"message"`
+	Data    []model.UpvoteStreakTier `json:"data"`
+}
+
 type ConfigGroupNFTRoleResponse struct {
 	GuildID              string                `json:"guild_id"`
 	RoleID               string                `json:"role_id"`

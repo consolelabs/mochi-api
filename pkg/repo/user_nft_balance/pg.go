@@ -36,43 +36,58 @@ func (pg *pg) Upsert(balance model.UserNFTBalance) error {
 }
 
 // user nft balances for all collections in 1 guild
-func (pg *pg) GetUserNFTBalancesByUserInGuild(nftCollectionIds []string, guildID string, userDiscordId string) (*model.UserNFTBalancesByGuild, error) {
-	var res []model.UserNFTBalancesByGuild
+func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFTRole, error) {
+	var res []model.MemberNFTRole
 	rows, err := pg.db.Raw(`
-	SELECT
-		user_discord_id,
-		SUM(list_balance.balance) AS total_balance
+	SELECT DISTINCT ON (temp.user_discord_id)
+		user_discord_id, role_id
 	FROM (
 		SELECT
-			user_discord_id,
-			user_address,
-			nft_collection_id,
-			balance
-		FROM
-			user_nft_balances
-			INNER JOIN user_wallets ON user_nft_balances.user_address = user_wallets.address
-		WHERE
-			user_wallets.guild_id = ?
-			AND user_nft_balances.balance > 0 AND user_nft_balances.nft_collection_id IN ?
-			AND user_discord_id = ?
-			) AS list_balance
-	GROUP BY
-		user_discord_id;
-	`, guildID, nftCollectionIds, userDiscordId).Rows()
+			final_balance.user_discord_id AS user_discord_id,
+			sum(final_balance.balance) AS total_balance,
+			final_config.id AS group_id,
+			final_config.role_id AS role_id,
+			final_config.number_of_tokens AS number_of_tokens
+		FROM (
+			SELECT
+				bals.user_address,
+				bals.nft_collection_id,
+				wall.user_discord_id,
+				bals.balance
+			FROM
+				user_nft_balances AS bals
+				INNER JOIN user_wallets AS wall ON wall.address = bals.user_address
+			WHERE
+				wall.guild_id = ?) AS final_balance
+			INNER JOIN (
+				SELECT
+					a.id, config.nft_collection_id, a.guild_id, a.role_id, a.number_of_tokens
+				FROM
+					guild_config_nft_roles AS config
+					INNER JOIN guild_config_group_nft_roles AS a ON config.group_id = a.id
+				WHERE
+					guild_id = ?) AS final_config ON final_config.nft_collection_id = final_balance.nft_collection_id
+			GROUP BY
+				user_discord_id,
+				group_id,
+				role_id,
+				number_of_tokens) AS temp
+	WHERE
+		temp.total_balance > temp.number_of_tokens
+	ORDER BY
+		temp.user_discord_id,
+		temp.number_of_tokens DESC;
+	`, guildID, guildID).Rows()
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		tmp := model.UserNFTBalancesByGuild{}
-		if err := rows.Scan(&tmp.UserDiscordId, &tmp.TotalBalance); err != nil {
+		tmp := model.MemberNFTRole{}
+		if err := rows.Scan(&tmp.UserDiscordID, &tmp.RoleID); err != nil {
 			return nil, err
 		}
 		res = append(res, tmp)
 	}
-	if len(res) > 0 {
-		return &res[0], nil
-	} else {
-		return nil, nil
-	}
 
+	return res, nil
 }
