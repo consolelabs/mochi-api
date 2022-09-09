@@ -131,6 +131,29 @@ definitions:
       min_xp:
         type: integer
     type: object
+  model.DiscordGuild:
+    properties:
+      alias:
+        type: string
+      bot_scopes:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      global_xp:
+        type: boolean
+      id:
+        type: string
+      log_channel:
+        type: string
+      name:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.GuildRole'
+        type: array
+    type: object
   model.DiscordGuildStat:
     properties:
       created_at:
@@ -319,6 +342,15 @@ definitions:
           type: integer
         type: array
     type: object
+  model.GuildRole:
+    properties:
+      guild_id:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: integer
+    type: object
   model.JSONNullString:
     properties:
       string:
@@ -423,6 +455,30 @@ definitions:
       name:
         type: string
       symbol:
+        type: string
+    type: object
+  model.UserFactionXpsMapping:
+    properties:
+      academy_xp:
+        type: integer
+      imperial_xp:
+        type: integer
+      merchant_xp:
+        type: integer
+      rebellio_xp:
+        type: integer
+    type: object
+  model.UserWallet:
+    properties:
+      address:
+        type: string
+      chain_type:
+        $ref: '#/definitions/model.JSONNullString'
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      user_discord_id:
         type: string
     type: object
   model.WhitelistCampaign:
@@ -996,6 +1052,11 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildCustomCommand'
     type: object
+  response.GetDataUserProfileResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetUserProfileResponse'
+    type: object
   response.GetDefaultTokenResponse:
     properties:
       data:
@@ -1157,6 +1218,31 @@ definitions:
         type: integer
       total_count:
         type: integer
+    type: object
+  response.GetUserProfileResponse:
+    properties:
+      about_me:
+        type: string
+      current_level:
+        $ref: '#/definitions/model.ConfigXpLevel'
+      guild:
+        $ref: '#/definitions/model.DiscordGuild'
+      guild_rank:
+        type: integer
+      guild_xp:
+        type: integer
+      id:
+        type: string
+      next_level:
+        $ref: '#/definitions/model.ConfigXpLevel'
+      nr_of_actions:
+        type: integer
+      progress:
+        type: number
+      user_faction_xps:
+        $ref: '#/definitions/model.UserFactionXpsMapping'
+      user_wallet:
+        $ref: '#/definitions/model.UserWallet'
     type: object
   response.GetUserResponse:
     properties:
@@ -3229,7 +3315,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -3740,7 +3826,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetMyInfoResponse'
+            $ref: '#/definitions/response.GetDataUserProfileResponse'
       summary: Get user profile
       tags:
       - Profile
@@ -4191,7 +4277,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

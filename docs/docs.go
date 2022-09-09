@@ -2289,7 +2289,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2912,7 +2912,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
+                            "$ref": "#/definitions/response.GetDataUserProfileResponse"
                         }
                     }
                 }
@@ -3528,7 +3528,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -3772,6 +3772,41 @@ const docTemplate = `{
                 },
                 "min_xp": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.DiscordGuild": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "type": "string"
+                },
+                "bot_scopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "global_xp": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "log_channel": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildRole"
+                    }
                 }
             }
         },
@@ -4063,6 +4098,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildRole": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.JSONNullString": {
             "type": "object",
             "properties": {
@@ -4220,6 +4269,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserFactionXpsMapping": {
+            "type": "object",
+            "properties": {
+                "academy_xp": {
+                    "type": "integer"
+                },
+                "imperial_xp": {
+                    "type": "integer"
+                },
+                "merchant_xp": {
+                    "type": "integer"
+                },
+                "rebellio_xp": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.UserWallet": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_type": {
+                    "$ref": "#/definitions/model.JSONNullString"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "user_discord_id": {
                     "type": "string"
                 }
             }
@@ -5108,6 +5194,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetDataUserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetUserProfileResponse"
+                }
+            }
+        },
         "response.GetDefaultTokenResponse": {
             "type": "object",
             "properties": {
@@ -5359,6 +5453,44 @@ const docTemplate = `{
                 },
                 "total_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.GetUserProfileResponse": {
+            "type": "object",
+            "properties": {
+                "about_me": {
+                    "type": "string"
+                },
+                "current_level": {
+                    "$ref": "#/definitions/model.ConfigXpLevel"
+                },
+                "guild": {
+                    "$ref": "#/definitions/model.DiscordGuild"
+                },
+                "guild_rank": {
+                    "type": "integer"
+                },
+                "guild_xp": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "next_level": {
+                    "$ref": "#/definitions/model.ConfigXpLevel"
+                },
+                "nr_of_actions": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "number"
+                },
+                "user_faction_xps": {
+                    "$ref": "#/definitions/model.UserFactionXpsMapping"
+                },
+                "user_wallet": {
+                    "$ref": "#/definitions/model.UserWallet"
                 }
             }
         },

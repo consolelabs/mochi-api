@@ -219,7 +219,7 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id query     string true "Guild ID"
 // @Param       user_id query     string true "User ID"
-// @Success     200 {object} response.GetMyInfoResponse
+// @Success     200 {object} response.GetDataUserProfileResponse
 // @Router      /profiles/ [get]
 func (h *Handler) GetUserProfile(c *gin.Context) {
 	guildID := c.Query("guild_id")
