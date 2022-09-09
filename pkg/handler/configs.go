@@ -74,6 +74,24 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetUpvoteTiersConfig     godoc
+// @Summary     Get all upvote tiers
+// @Description Get all upvote tiers
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetUpvoteTiersConfig
+// @Router      /configs/upvote-tiers [get]
+func (h *Handler) GetUpvoteTiersConfig(c *gin.Context) {
+	tiers, err := h.entities.GetUpvoteTiersConfig()
+	if err != nil {
+		h.log.Error(err, "[handler.GetUpvoteTiersConfig] - failed to get upvote tiers")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.GetUpvoteTiersConfig{Message: "OK", Data: tiers})
+}
+
 // GetSalesTrackerConfig     godoc
 // @Summary     Get sales tracker config
 // @Description Get sales tracker config

@@ -457,6 +457,17 @@ definitions:
       symbol:
         type: string
     type: object
+  model.UpvoteStreakTier:
+    properties:
+      id:
+        type: integer
+      streak_required:
+        type: integer
+      vote_interval:
+        type: integer
+      xp_per_interval:
+        type: integer
+    type: object
   model.UserFactionXpsMapping:
     properties:
       academy_xp:
@@ -1200,6 +1211,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.TwitterHashtag'
+    type: object
+  response.GetUpvoteTiersConfig:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.UpvoteStreakTier'
+        type: array
+      message:
+        type: string
     type: object
   response.GetUserCurrentGMStreakResponse:
     properties:
@@ -2848,6 +2868,21 @@ paths:
           schema:
             $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
       summary: Get twitter hashtag config
+      tags:
+      - Config
+  /configs/upvote-tiers:
+    get:
+      consumes:
+      - application/json
+      description: Get all upvote tiers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUpvoteTiersConfig'
+      summary: Get all upvote tiers
       tags:
       - Config
   /defi/balances:
