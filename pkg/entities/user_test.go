@@ -21,6 +21,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	mock_discord "github.com/defipod/mochi/pkg/service/discord/mocks"
+	mock_processor "github.com/defipod/mochi/pkg/service/processor/mocks"
 	"github.com/golang/mock/gomock"
 )
 
@@ -221,9 +222,13 @@ func TestEntity_GetUserProfile(t *testing.T) {
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
+	svc, _ := service.NewService(cfg, log)
 	uXp := mock_guild_user_xp.NewMockStore(ctrl)
 	cXp := mock_config_xp_level.NewMockStore(ctrl)
 	dcG := mock_discord_guilds.NewMockStore(ctrl)
+	processor := mock_processor.NewMockService(ctrl)
+	svc.Processor = processor
 
 	r.GuildUserXP = uXp
 	r.ConfigXPLevel = cXp
@@ -246,6 +251,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 
 	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("cannot find user")).AnyTimes()
 	uXp.EXPECT().GetOne("abc", "963641551416881183").Return(nil, errors.New("cannot find guild")).AnyTimes()
+	processor.EXPECT().GetUserFactionXp("963641551416881183").Return(&model.GetUserFactionXpsResponse{}, nil).AnyTimes()
 
 	tests := []struct {
 		name    string
@@ -259,20 +265,22 @@ func TestEntity_GetUserProfile(t *testing.T) {
 			name: "test get user profile successfully",
 			fields: fields{
 				repo: r,
+				svc:  svc,
 			},
 			args: args{
 				guildID: "981128899280908299",
 				userID:  "963641551416881183",
 			},
 			want: &response.GetUserProfileResponse{
-				ID:           "963641551416881183",
-				CurrentLevel: &cXpValue,
-				NextLevel:    &cXpValue,
-				GuildXP:      0,
-				NrOfActions:  0,
-				Progress:     1,
-				Guild:        &dcGValue,
-				UserWallet:   &model.UserWallet{},
+				ID:             "963641551416881183",
+				CurrentLevel:   &cXpValue,
+				NextLevel:      &cXpValue,
+				GuildXP:        0,
+				NrOfActions:    0,
+				Progress:       1,
+				Guild:          &dcGValue,
+				UserWallet:     &model.UserWallet{},
+				UserFactionXps: &model.UserFactionXpsMapping{},
 			},
 			wantErr: false,
 		},
@@ -280,6 +288,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 			name: "case user not exist in server, cannot gift xp to this user",
 			fields: fields{
 				repo: r,
+				svc:  svc,
 			},
 			args: args{
 				guildID: "abc",
@@ -292,6 +301,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 			name: "case guild ID not exist",
 			fields: fields{
 				repo: r,
+				svc:  svc,
 			},
 			args: args{
 				guildID: "abc",
