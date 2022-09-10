@@ -13,9 +13,10 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) List(q UserWatchlistQuery) ([]model.UserWatchlistItem, error) {
+func (pg *pg) List(q UserWatchlistQuery) ([]model.UserWatchlistItem, int64, error) {
 	var items []model.UserWatchlistItem
-	db := pg.db
+	var total int64
+	db := pg.db.Table("user_watchlist_items")
 	if q.UserID != "" {
 		db = db.Where("user_id = ?", q.UserID)
 	}
@@ -25,11 +26,11 @@ func (pg *pg) List(q UserWatchlistQuery) ([]model.UserWatchlistItem, error) {
 	if q.Symbol != "" {
 		db = db.Where("symbol ILIKE ?", q.Symbol)
 	}
-	db = db.Offset(q.Offset)
+	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)
 	}
-	return items, db.Find(&items).Error
+	return items, total, db.Find(&items).Error
 }
 
 func (pg *pg) Create(item *model.UserWatchlistItem) error {

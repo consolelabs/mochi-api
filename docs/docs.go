@@ -2312,7 +2312,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3551,7 +3551,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5564,6 +5564,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.CoinMarketItemData"
                     }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
@@ -6320,6 +6323,22 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.NftSales"
                     }
+                }
+            }
+        },
+        "response.PaginationResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
