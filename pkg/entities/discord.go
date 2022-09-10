@@ -358,3 +358,11 @@ func (e *Entity) GetGuildById(guildID string) (*discordgo.Guild, error) {
 	}
 	return guild, nil
 }
+
+func (e *Entity) AddGuildMemberRole(guildID, userID, roleID string) error {
+	return e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
+}
+
+func (e *Entity) RemoveGuildMemberRole(guildID, userID, roleID string) error {
+	return e.discord.GuildMemberRoleRemove(guildID, userID, roleID)
+}

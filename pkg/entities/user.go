@@ -235,24 +235,19 @@ func (e *Entity) GetGuildMember(guildID, userID string) (*discordgo.Member, erro
 }
 
 func (e *Entity) ListGuildMembers(guildID string) ([]*discordgo.Member, error) {
-
 	var afterID string
-
 	res := make([]*discordgo.Member, 0)
 	for {
 		members, err := e.discord.GuildMembers(guildID, afterID, 100)
 		if err != nil {
 			return nil, err
 		}
-
 		res = append(res, members...)
-
 		if len(members) < 100 {
 			break
 		}
 		afterID = members[len(members)-1].User.ID
 	}
-
 	return res, nil
 }
 

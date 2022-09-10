@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 var (
@@ -142,10 +143,14 @@ func (e *Entity) initInviteTrackerCache() error {
 		if guild == nil {
 			continue
 		}
-		// logic invite reacker cache
+		// logic invite tracker cache
 		invites, err := e.discord.GuildInvites(guild.ID)
+		if util.IsAcceptableErr(err) {
+			e.log.Fields(logger.Fields{"guild_id": guild.ID}).Infof("[entity.initInviteTrackerCache] discord.GuildInvites failed: %v", err)
+			return nil
+		}
 		if err != nil {
-			return fmt.Errorf("failed to get invites for guild %s: %w", guild.ID, err)
+			return fmt.Errorf("failed to get invites for guild %s: %v", guild.ID, err)
 		}
 
 		invitesUses := make(map[string]string)

@@ -209,14 +209,6 @@ func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
 	return config.RoleID, nil
 }
 
-func (e *Entity) AddGuildMemberRole(guildID, userID, roleID string) error {
-	return e.discord.GuildMemberRoleAdd(guildID, userID, roleID)
-}
-
-func (e *Entity) RemoveGuildMemberRole(guildID, userID, roleID string) error {
-	return e.discord.GuildMemberRoleRemove(guildID, userID, roleID)
-}
-
 func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigGroupNFTRole, error) {
 	return e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
 }
