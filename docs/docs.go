@@ -1458,6 +1458,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/welcome": {
+            "get": {
+                "description": "Get welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get welcome channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Update or insert welcome channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert welcome channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertWelcomeConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete welcome channel config",
+                "parameters": [
+                    {
+                        "description": "Delete welcome channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteWelcomeConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/balances": {
             "get": {
                 "description": "In Discord Wallet balance",
@@ -2312,7 +2408,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3551,7 +3647,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -4080,6 +4176,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigWelcomeChannel": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "welcome_message": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildCustomCommand": {
             "type": "object",
             "properties": {
@@ -4598,6 +4711,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteWelcomeConfigRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.GenerateVerificationRequest": {
             "type": "object",
             "properties": {
@@ -4871,6 +4992,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertWelcomeConfigRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "welcome_message": {
                     "type": "string"
                 }
             }
@@ -5502,6 +5637,12 @@ const docTemplate = `{
                 "minutes_until_reset": {
                     "type": "number"
                 },
+                "minutes_until_reset_discordbotlist": {
+                    "type": "number"
+                },
+                "minutes_until_reset_topgg": {
+                    "type": "number"
+                },
                 "streak_count": {
                     "type": "integer"
                 },
@@ -5567,6 +5708,17 @@ const docTemplate = `{
                 },
                 "pagination": {
                     "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
+        "response.GetWelcomeChannelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigWelcomeChannel"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },

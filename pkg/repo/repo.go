@@ -27,6 +27,7 @@ import (
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
+	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
@@ -63,6 +64,7 @@ type Repo struct {
 	GuildCustomCommand                   guildcustomcommand.Store
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
+	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	DiscordUserUpvoteLog                 discorduserupvotelog.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store

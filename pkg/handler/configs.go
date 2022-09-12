@@ -74,6 +74,100 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetGmConfig     godoc
+// @Summary     Get welcome channel config
+// @Description Get welcome channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetWelcomeChannelConfigResponse
+// @Router      /configs/welcome [get]
+func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+
+	config, err := h.entities.GetWelcomeChannelConfig(guildID)
+
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to get welcome config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+}
+
+// UpsertGmConfig     godoc
+// @Summary     Update or insert welcome channel config
+// @Description Update or insert welcome channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertWelcomeConfigRequest true "Upsert welcome channel config request"
+// @Success     200 {object} response.GetWelcomeChannelConfigResponse
+// @Router      /configs/welcome [post]
+func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
+	var req request.UpsertWelcomeConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+	if req.ChannelID == "" {
+		h.log.Info("[handler.GetWelcomeChannelConfig] - channel id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+	}
+
+	config, err := h.entities.UpsertWelcomeChannelConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to upsert welcome config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+}
+
+// UpsertGmConfig     godoc
+// @Summary     Delete welcome channel config
+// @Description Delete welcome channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteWelcomeConfigRequest true "Delete welcome channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/welcome [delete]
+func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
+	var req request.DeleteWelcomeConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+
+	if err := h.entities.DeleteWelcomeChannelConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to delete welcome config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+}
+
 // GetUpvoteTiersConfig     godoc
 // @Summary     Get all upvote tiers
 // @Description Get all upvote tiers

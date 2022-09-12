@@ -315,6 +315,17 @@ definitions:
       verify_channel_id:
         type: string
     type: object
+  model.GuildConfigWelcomeChannel:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      welcome_message:
+        type: string
+    type: object
   model.GuildCustomCommand:
     properties:
       actions:
@@ -652,6 +663,11 @@ definitions:
       name:
         type: string
     type: object
+  request.DeleteWelcomeConfigRequest:
+    properties:
+      guild_id:
+        type: string
+    type: object
   request.GenerateVerificationRequest:
     properties:
       guild_id:
@@ -830,6 +846,15 @@ definitions:
       guild_id:
         type: string
       symbol:
+        type: string
+    type: object
+  request.UpsertWelcomeConfigRequest:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      welcome_message:
         type: string
     type: object
   request.VerifyWalletAddressRequest:
@@ -1234,6 +1259,10 @@ definitions:
         type: string
       minutes_until_reset:
         type: number
+      minutes_until_reset_discordbotlist:
+        type: number
+      minutes_until_reset_topgg:
+        type: number
       streak_count:
         type: integer
       total_count:
@@ -1277,6 +1306,13 @@ definitions:
         type: array
       pagination:
         $ref: '#/definitions/response.PaginationResponse'
+    type: object
+  response.GetWelcomeChannelConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigWelcomeChannel'
+      message:
+        type: string
     type: object
   response.GiftXpHandlerResponse:
     properties:
@@ -2898,6 +2934,69 @@ paths:
       summary: Get all upvote tiers
       tags:
       - Config
+  /configs/welcome:
+    delete:
+      consumes:
+      - application/json
+      description: Delete welcome channel config
+      parameters:
+      - description: Delete welcome channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteWelcomeConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete welcome channel config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get welcome channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+      summary: Get welcome channel config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Update or insert welcome channel config
+      parameters:
+      - description: Upsert welcome channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertWelcomeConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+      summary: Update or insert welcome channel config
+      tags:
+      - Config
   /defi/balances:
     get:
       consumes:
@@ -3363,7 +3462,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4325,7 +4424,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
