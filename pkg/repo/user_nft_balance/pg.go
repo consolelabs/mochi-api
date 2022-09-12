@@ -73,7 +73,7 @@ func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFT
 				role_id,
 				number_of_tokens) AS temp
 	WHERE
-		temp.total_balance > temp.number_of_tokens
+		temp.total_balance >= temp.number_of_tokens
 	ORDER BY
 		temp.user_discord_id,
 		temp.number_of_tokens DESC;
