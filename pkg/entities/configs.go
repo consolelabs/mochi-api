@@ -36,6 +36,44 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 	return nil
 }
 
+func (e *Entity) GetWelcomeChannelConfig(guildID string) (*model.GuildConfigWelcomeChannel, error) {
+	config, err := e.repo.GuildConfigWelcomeChannel.GetByGuildID(guildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func (e *Entity) UpsertWelcomeChannelConfig(req request.UpsertWelcomeConfigRequest) (*model.GuildConfigWelcomeChannel, error) {
+	if req.WelcomeMsg == "" {
+		req.WelcomeMsg = "Greetings $name :wave: Welcome to the guild! Hope you enjoy your stay."
+	}
+	config, err := e.repo.GuildConfigWelcomeChannel.UpsertOne(&model.GuildConfigWelcomeChannel{
+		GuildID:        req.GuildID,
+		ChannelID:      req.ChannelID,
+		WelcomeMessage: req.WelcomeMsg,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func (e *Entity) DeleteWelcomeChannelConfig(req request.DeleteWelcomeConfigRequest) error {
+	if err := e.repo.GuildConfigWelcomeChannel.DeleteOne(&model.GuildConfigWelcomeChannel{
+		GuildID: req.GuildID,
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (e *Entity) GetUpvoteTiersConfig() ([]model.UpvoteStreakTier, error) {
 	tiers, err := e.repo.UpvoteStreakTier.GetAll()
 	if err != nil {

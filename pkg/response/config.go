@@ -34,6 +34,11 @@ type GetGmConfigResponse struct {
 	Data    *model.GuildConfigGmGn `json:"data"`
 }
 
+type GetWelcomeChannelConfigResponse struct {
+	Message string                           `json:"message"`
+	Data    *model.GuildConfigWelcomeChannel `json:"data"`
+}
+
 type GetSalesTrackerConfigResponse struct {
 	Message string                         `json:"message"`
 	Data    *model.GuildConfigSalesTracker `json:"data"`
