@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	_ "github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -71,19 +72,47 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 		return
 	}
 
-	data, err := h.entities.CreateNFTCollection(req)
+	var data *model.NFTCollection
+	if req.ChainID == "sol" {
+		data = h.handleCreateSolanaCollection(c, req)
+	} else {
+		data = h.handleCreateEVMCollection(c, req)
+	}
+
+	if data == nil {
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateNFTCollectionResponse{Data: data})
+}
+
+func (h *Handler) handleCreateSolanaCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
+	data, err := h.entities.CreateSolanaNFTCollection(req)
 	if err != nil {
 		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
 			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+			return nil
 		}
 		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return nil
 	}
+	return data
+}
 
-	c.JSON(http.StatusOK, response.CreateNFTCollectionResponse{Data: data})
+func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
+	data, err := h.entities.CreateEVMNFTCollection(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
+			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return nil
+		}
+		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return nil
+	}
+	return data
 }
 
 // GetSupportedChains     godoc
