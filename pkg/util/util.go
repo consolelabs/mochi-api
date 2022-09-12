@@ -593,3 +593,11 @@ func SetRequestBody(c *gin.Context, structBody interface{}) {
 	ctx.Request.ContentLength = int64(len(json))
 	c = &ctx
 }
+
+func MinuteLeftUntil(startTime, endTime time.Time) float64 {
+	var minutes float64 = 0
+	if startTime.Before(endTime) {
+		minutes = endTime.Sub(startTime).Minutes()
+	}
+	return minutes
+}

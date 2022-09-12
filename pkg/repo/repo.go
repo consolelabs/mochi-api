@@ -8,6 +8,7 @@ import (
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
@@ -63,6 +64,7 @@ type Repo struct {
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
+	DiscordUserUpvoteLog                 discorduserupvotelog.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store

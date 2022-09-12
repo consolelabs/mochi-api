@@ -190,7 +190,7 @@ func (h *Handler) WebhookUpvoteTopGG(c *gin.Context) {
 		return
 	}
 
-	err = h.entities.WebhookUpvoteStreak(req.UserID)
+	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.TopGGSource)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to add upvote streak")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -209,7 +209,7 @@ func (h *Handler) WebhookUpvoteDiscordBot(c *gin.Context) {
 		return
 	}
 
-	err = h.entities.WebhookUpvoteStreak(req.UserID)
+	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.DiscordBotListSource)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to add upvote streak")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

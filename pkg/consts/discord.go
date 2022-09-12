@@ -12,4 +12,7 @@ const (
 	ServerSticker = 2
 	// message types
 	MessageTypeUserPremiumGuildSubscription = 8
+	// bot upvote types
+	TopGGSource          = "topgg"
+	DiscordBotListSource = "discordbotlist"
 )
