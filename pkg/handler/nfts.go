@@ -384,6 +384,11 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 
 	data, err := h.entities.GetNewListedNFTCollection(interval, page, size)
 	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			h.log.Info("[handler.GetNewListedNFTCollection] - no new collection")
+			c.JSON(http.StatusOK, gin.H{"data": nil})
+			return
+		}
 		h.log.Fields(logger.Fields{"page": page, "size": size, "interval": interval}).Error(err, "[handler.GetNewListedNFTCollection] - failed to get new listed NFT collection")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

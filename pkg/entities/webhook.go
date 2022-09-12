@@ -410,9 +410,9 @@ func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUs
 	return resp, nil
 }
 
-func (e *Entity) WebhookUpvoteStreak(userID string) error {
+func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 	sentAt := time.Now()
-	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), sentAt.Hour(), 0, 0, 0, time.UTC)
+	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), sentAt.Hour(), sentAt.Minute(), 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(userID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to get user upvote streak")
@@ -452,6 +452,7 @@ func (e *Entity) WebhookUpvoteStreak(userID string) error {
 	}
 
 	e.handleUpvoteXPBonus(streak)
+	e.logUserUpvote(userID, source, chatDate)
 	return nil
 }
 
@@ -463,7 +464,6 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 	}
 
 	earnedXP := 0
-	fmt.Println(tier.XPPerInterval, tier.VoteInterval, streak.TotalCount, streak.TotalCount%tier.VoteInterval)
 	if streak.TotalCount%tier.VoteInterval == 0 {
 		earnedXP = tier.XPPerInterval
 	}
@@ -476,6 +476,19 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 		e.log.
 			Fields(logger.Fields{"userID": streak.DiscordID}).
 			Error(err, "[Entity][handleUpvoteXPBonus] failed to create guild_user_activity_logs")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) logUserUpvote(userID, source string, chatTime time.Time) error {
+	err := e.repo.DiscordUserUpvoteLog.UpsertOne(model.DiscordUserUpvoteLog{
+		DiscordID:        userID,
+		Source:           source,
+		LatestUpvoteTime: chatTime,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[e.logUpvoteActivity] failed to log upvote")
 		return err
 	}
 	return nil
