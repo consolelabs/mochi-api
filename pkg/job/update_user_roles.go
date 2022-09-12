@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/util"
 	"gorm.io/gorm"
 )
 
@@ -29,13 +30,20 @@ func (job *updateUserRoles) Run() error {
 	}
 
 	for _, guild := range guilds.Data {
-		err = job.updateLevelRoles(guild.ID)
+		_, err := job.entity.GetGuildById(guild.ID)
+		if util.IsAcceptableErr(err) {
+			job.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("entity.GetGuildById - bot has no permission or access to this guild: %v", err)
+			continue
+		}
 		if err != nil {
+			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "entity.GetGuildById failed")
+			continue
+		}
+		if err := job.updateLevelRoles(guild.ID); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
 		}
 
-		err = job.updateNFTRoles(guild.ID)
-		if err != nil {
+		if err := job.updateNFTRoles(guild.ID); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
 		}
 	}
@@ -77,6 +85,13 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	rolesToRemove := make(map[string]string)
 	for _, userXP := range userXPs {
 		member, err := job.entity.GetGuildMember(guildID, userXP.UserID)
+		if util.IsAcceptableErr(err) {
+			job.log.Fields(logger.Fields{
+				"userId":  userXP.UserID,
+				"guildId": guildID,
+			}).Info("[updateLevelRoles] user is no longer guild member")
+			continue
+		}
 		if err != nil {
 			job.log.Fields(logger.Fields{
 				"userId":  userXP.UserID,
@@ -119,7 +134,16 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToRemove {
-		if err := job.entity.RemoveGuildMemberRole(guildID, userID, roleID); err != nil {
+		err := job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
+		if util.IsAcceptableErr(err) {
+			job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  userID,
+				"roleId":  roleID,
+			}).Infof("[updateLevelRoles] entity.RemoveGuildMemberRole failed: %v", err)
+			continue
+		}
+		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
 				"userId":  userID,
@@ -135,7 +159,16 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToAdd {
-		if err := job.entity.AddGuildMemberRole(guildID, userID, roleID); err != nil {
+		err := job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		if util.IsAcceptableErr(err) {
+			job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  userID,
+				"roleId":  roleID,
+			}).Infof("[updateLevelRoles] entity.AddGuildMemberRole failed: %v", err)
+			continue
+		}
+		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
 				"userId":  userID,
@@ -150,7 +183,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 		}).Info("[updateLevelRoles] entity.AddGuildMemberRole executed successfully")
 
 		// send logs to moderation channel
-		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "level-role")
+		err = job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "level-role")
 		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId":   guildID,
@@ -208,6 +241,10 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 					"roleId":  roleID,
 				})
 				err = job.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
+				if util.IsAcceptableErr(err) {
+					gMemberRoleLog.Infof("[updateNFTRoles] entity.RemoveGuildMemberRole failed: %v", err)
+					continue
+				}
 				if err != nil {
 					gMemberRoleLog.Error(err, "[updateNFTRoles] entity.RemoveGuildMemberRole failed")
 					continue
@@ -232,6 +269,10 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 			"roleId":  roleID,
 		})
 		err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		if util.IsAcceptableErr(err) {
+			gMemberRoleLog.Infof("[updateNFTRoles] entity.AddGuildMemberRole failed: %v", err)
+			continue
+		}
 		if err != nil {
 			gMemberRoleLog.Error(err, "[updateNFTRoles] entity.AddGuildMemberRole failed")
 			continue
