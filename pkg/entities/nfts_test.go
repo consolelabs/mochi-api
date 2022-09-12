@@ -1090,7 +1090,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				abi:         tt.fields.abi,
 				marketplace: tt.fields.marketplace,
 			}
-			gotNftCollection, err := e.CreateNFTCollection(tt.args.req)
+			gotNftCollection, err := e.CreateEVMNFTCollection(tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.CreateNFTCollection() error = %v, wantErr %v", err, tt.wantErr)
 				return

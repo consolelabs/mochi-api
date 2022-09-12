@@ -76,6 +76,9 @@ type Config struct {
 	GoogleCloudServiceAccount string
 
 	ProcessorServerHost string
+
+	BlockChainAPIKeyID     string
+	BlockChainAPISecretKey string
 }
 
 type MarketplaceBaseUrl struct {
@@ -193,7 +196,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
 		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
 
-		ProcessorServerHost: v.GetString("PROCESSOR_SERVER_HOST"),
+		ProcessorServerHost:    v.GetString("PROCESSOR_SERVER_HOST"),
+		BlockChainAPIKeyID:     v.GetString("BLOCKCHAIN_API_KEY_ID"),
+		BlockChainAPISecretKey: v.GetString("BLOCKCHAIN_API_SECRET_KEY"),
 	}
 }
 

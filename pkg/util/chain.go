@@ -31,6 +31,8 @@ func ConvertChainIDToChain(chain string) string {
 		return "ftm"
 	case "10":
 		return "op"
+	case "sol":
+		return "sol"
 	default:
 		return chain
 	}
