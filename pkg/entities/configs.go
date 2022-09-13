@@ -416,6 +416,8 @@ func (e *Entity) ListGuildGroupNFTRoles(guildID string) ([]response.ListGuildNFT
 				ID:           role.ID.UUID.String(),
 				CollectionID: collection.ID.UUID.String(),
 				Address:      collection.Address,
+				ExplorerUrl:  util.GetCollectionExplorerUrl(collection.Address, collection.ChainID),
+				ChainName:    util.ConvertChainIDToChain(collection.ChainID),
 				Name:         collection.Name,
 				Symbol:       collection.Symbol,
 				ChainID:      collection.ChainID,

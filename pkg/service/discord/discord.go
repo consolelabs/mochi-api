@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -15,14 +16,16 @@ import (
 )
 
 type Discord struct {
-	session            *discordgo.Session
-	log                logger.Logger
-	mochiLogChannelID  string
-	mochiSaleChannelID string
+	session                *discordgo.Session
+	log                    logger.Logger
+	mochiLogChannelID      string
+	mochiSaleChannelID     string
+	mochiActivityChannelID string
 }
 
 const (
-	mochiLogColor = 0xFCD3C1
+	mochiLogColor       = 0xFCD3C1
+	mochiUpvoteMsgColor = 0x47ffc2
 )
 
 func NewService(
@@ -35,10 +38,11 @@ func NewService(
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
 	return &Discord{
-		session:            discord,
-		log:                log,
-		mochiLogChannelID:  cfg.MochiLogChannelID,
-		mochiSaleChannelID: cfg.MochiSaleChannelID,
+		session:                discord,
+		log:                    log,
+		mochiLogChannelID:      cfg.MochiLogChannelID,
+		mochiSaleChannelID:     cfg.MochiSaleChannelID,
+		mochiActivityChannelID: cfg.MochiActivityChannelID,
 	}, nil
 }
 
@@ -270,6 +274,78 @@ func (d *Discord) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _typ
 	_, err = d.session.ChannelMessageSendEmbed(logChannelID, &msgEmbed)
 	if err != nil {
 		return fmt.Errorf("[svc.Discord.SendUpdateRolesLog] - ChannelMessageSendEmbed failed to channel %s: %s", logChannelID, err.Error())
+	}
+	return nil
+}
+
+type upvoteMsg struct {
+	Title       string
+	Description string
+	Image       string
+}
+
+func (d *Discord) SendUpvoteMessage(discordID, source string) error {
+	if discordID == "" || source == "" {
+		return nil
+	}
+	sourceName, sourceUrl := util.UpvoteSourceNameAndUrl(source)
+	presets := []upvoteMsg{
+		{
+			Title:       "Mochi appreciates it!",
+			Description: fmt.Sprintf("<@%s> just voted for Mochi on [%s](%s)", discordID, sourceName, sourceUrl),
+			Image:       "https://cdn.discordapp.com/attachments/1003381172178530494/1019165378213068840/unknown.png",
+		},
+		{
+			Title:       "Wait, what?",
+			Description: fmt.Sprintf("<@%s> voted for Mochi, is that all you needed to do to receive rewards?", discordID),
+			Image:       "https://cdn.discordapp.com/attachments/1003381172178530494/1019165378447937556/unknown.png",
+		},
+		{
+			Title:       "Promoted!",
+			Description: fmt.Sprintf("Mochi got a vote and <@%s> can now use the `$wl` command to its fullest, win-win", discordID),
+			Image:       "https://cdn.discordapp.com/attachments/1003381172178530494/1019165378720583750/unknown.png",
+		},
+		{
+			Title:       "Thank you!",
+			Description: fmt.Sprintf("Thank you <@%s> for voting Mochi, Mochi truly is one of the greatest bot", discordID),
+			Image:       "https://cdn.discordapp.com/attachments/986854719999864863/1019183908681695282/obamamochi.jpg",
+		},
+		{
+			Title:       "Imagine not voting for Mochi",
+			Description: fmt.Sprintf("Fortunately <@%s> has redeemed themselves by voting on [%s](%s)", discordID, sourceName, sourceUrl),
+			Image:       "https://cdn.discordapp.com/attachments/986854719999864863/1019184889725206528/unknown.png",
+		},
+		{
+			Title:       "Trade offer alert!",
+			Description: fmt.Sprintf("Happy to announce that <@%s> has closed a great deal on [%s](%s)", discordID, sourceName, sourceUrl),
+			Image:       "https://cdn.discordapp.com/attachments/986854719999864863/1019188156584706048/trademochi.jpg",
+		},
+		{
+			Title:       "Mochi is grateful",
+			Description: fmt.Sprintf("Thank you <@%s> for the upvote, can Mochi have another one uwu?", discordID),
+			Image:       "https://cdn.discordapp.com/attachments/986854719999864863/1019189320600530974/unknown.png",
+		},
+		{
+			Title:       "You sure that is enough?",
+			Description: fmt.Sprintf("Absolutely, an upvote is all <@%s> needs to enjoy new perks", discordID),
+			Image:       "https://cdn.discordapp.com/attachments/986854719999864863/1019190354018308146/onepls.jpg",
+		},
+	}
+	randomIndex := rand.Intn(len(presets) - 1)
+	// user can upvote without being in a guild
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       presets[randomIndex].Title,
+		Description: presets[randomIndex].Description,
+		Color:       mochiUpvoteMsgColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Image: &discordgo.MessageEmbedImage{
+			URL: presets[randomIndex].Image,
+		},
+	}
+
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiActivityChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("[svc.Discord.SendUpvoteMessage] - ChannelMessageSendEmbed failed to channel %s: %s", d.mochiActivityChannelID, err.Error())
 	}
 	return nil
 }

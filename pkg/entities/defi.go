@@ -564,13 +564,12 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
 	}
-	if len(list) == 0 {
-		e.log.Fields(logger.Fields{"query": q}).Info("[entity.GetUserWatchlist] repo.UserWatchlistItem.List() - no data found")
-		return &response.GetWatchlistResponse{Data: nil}, nil
-	}
 	ids := make([]string, len(list))
 	for i, item := range list {
 		ids[i] = item.CoinGeckoID
+	}
+	if len(ids) == 0 && req.Page == 0 {
+		ids = e.getDefaultWatchlistIDs()
 	}
 	data, err, code := e.svc.CoinGecko.GetCoinsMarketData(ids)
 	if err != nil {
@@ -584,6 +583,10 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 			Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
 		},
 	}, nil
+}
+
+func (e *Entity) getDefaultWatchlistIDs() []string {
+	return []string{"bitcoin", "ethereum", "binancecoin", "fantom", "internet-computer", "solana", "avalanche-2", "matic-network"}
 }
 
 func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {
@@ -623,4 +626,29 @@ func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) err
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserWatchlistItem.Delete() failed")
 	}
 	return err
+}
+
+func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
+	tokens, err, code := e.svc.CoinGecko.GetSupportedCoins()
+	if err != nil {
+		e.log.Fields(logger.Fields{"code": code}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() failed")
+		return 0, err
+	}
+	e.log.Infof("[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() - found %d items", len(tokens))
+
+	updatedRows := int64(0)
+	for _, token := range tokens {
+		model := model.CoingeckoSupportedTokens{
+			ID:     token.ID,
+			Name:   token.Name,
+			Symbol: token.Symbol,
+		}
+		rowsAffected, err := e.repo.CoingeckoSupportedTokens.Upsert(&model)
+		if err != nil {
+			e.log.Fields(logger.Fields{"token": token}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] repo.CoingeckoSupportedTokens.Upsert() failed")
+			continue
+		}
+		updatedRows += rowsAffected
+	}
+	return updatedRows, nil
 }

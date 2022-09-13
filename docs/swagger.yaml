@@ -1660,11 +1660,15 @@ definitions:
         type: string
       chain_id:
         type: string
+      chain_name:
+        type: string
       collection_id:
         type: string
       created_at:
         type: string
       erc_format:
+        type: string
+      explorer_url:
         type: string
       id:
         type: string

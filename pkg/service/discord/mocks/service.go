@@ -144,3 +144,17 @@ func (mr *MockServiceMockRecorder) SendUpdateRolesLog(guildID, logChannelID, use
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRolesLog", reflect.TypeOf((*MockService)(nil).SendUpdateRolesLog), guildID, logChannelID, userID, roleID, _type)
 }
+
+// SendUpvoteMessage mocks base method.
+func (m *MockService) SendUpvoteMessage(discordID, source string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendUpvoteMessage", discordID, source)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendUpvoteMessage indicates an expected call of SendUpvoteMessage.
+func (mr *MockServiceMockRecorder) SendUpvoteMessage(discordID, source interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpvoteMessage", reflect.TypeOf((*MockService)(nil).SendUpvoteMessage), discordID, source)
+}
