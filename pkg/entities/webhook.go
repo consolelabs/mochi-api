@@ -453,6 +453,7 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 
 	e.handleUpvoteXPBonus(streak)
 	e.logUserUpvote(userID, source, chatDate)
+	e.svc.Discord.SendUpvoteMessage(userID, source)
 	return nil
 }
 
