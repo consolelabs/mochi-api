@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 	"gorm.io/gorm"
 )
 
@@ -96,19 +97,37 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 		return nil, http.StatusOK, nil
 	}
 
+	var resetTime, topggTime, dcBotTime float64 = 0, 0, 0
 	expireTime := streak.LastStreakDate.Add(time.Hour * 13)
 	now := time.Now()
-	currTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), 0, 0, 0, time.UTC)
-	var resetTime float64 = 0
+	currTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, time.UTC)
 	if currTime.Before(expireTime) {
-		resetTime = expireTime.Sub(currTime).Minutes()
+		resetTime = util.MinuteLeftUntil(currTime, expireTime)
 	}
+
+	upvoteLogs, err := e.repo.DiscordUserUpvoteLog.GetByDiscordID(discordID)
+	if err != nil {
+		e.log.Info("[e.GetUserCurrentUpvoteStreak] user first time upvote")
+	}
+	for _, log := range upvoteLogs {
+		expireTime = log.LatestUpvoteTime.Add(time.Hour * 13)
+		switch log.Source {
+		case "topgg":
+			topggTime = util.MinuteLeftUntil(currTime, expireTime)
+		case "discordbotlist":
+			dcBotTime = util.MinuteLeftUntil(currTime, expireTime)
+		}
+
+	}
+
 	return &response.GetUserCurrentUpvoteStreakResponse{
-		UserID:         streak.DiscordID,
-		ResetTime:      resetTime,
-		SteakCount:     streak.StreakCount,
-		TotalCount:     streak.TotalCount,
-		LastStreakTime: streak.LastStreakDate,
+		UserID:                  streak.DiscordID,
+		ResetTime:               resetTime,
+		ResetTimeTopGG:          topggTime,
+		ResetTimeDiscordBotList: dcBotTime,
+		SteakCount:              streak.StreakCount,
+		TotalCount:              streak.TotalCount,
+		LastStreakTime:          streak.LastStreakDate,
 	}, http.StatusOK, nil
 }
 
@@ -235,24 +254,19 @@ func (e *Entity) GetGuildMember(guildID, userID string) (*discordgo.Member, erro
 }
 
 func (e *Entity) ListGuildMembers(guildID string) ([]*discordgo.Member, error) {
-
 	var afterID string
-
 	res := make([]*discordgo.Member, 0)
 	for {
 		members, err := e.discord.GuildMembers(guildID, afterID, 100)
 		if err != nil {
 			return nil, err
 		}
-
 		res = append(res, members...)
-
 		if len(members) < 100 {
 			break
 		}
 		afterID = members[len(members)-1].User.ID
 	}
-
 	return res, nil
 }
 

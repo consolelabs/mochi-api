@@ -169,5 +169,6 @@ type CoinMarketItemData struct {
 }
 
 type GetWatchlistResponse struct {
-	Data []CoinMarketItemData `json:"data"`
+	Pagination *PaginationResponse  `json:"pagination"`
+	Data       []CoinMarketItemData `json:"data"`
 }

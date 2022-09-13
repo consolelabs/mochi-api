@@ -559,7 +559,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		Offset: req.Page * req.Size,
 		Limit:  req.Size,
 	}
-	list, err := e.repo.UserWatchlistItem.List(q)
+	list, total, err := e.repo.UserWatchlistItem.List(q)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
@@ -577,7 +577,13 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		e.log.Fields(logger.Fields{"ids": ids, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
 		return nil, err
 	}
-	return &response.GetWatchlistResponse{Data: data}, nil
+	return &response.GetWatchlistResponse{
+		Data: data,
+		Pagination: &response.PaginationResponse{
+			Total:      total,
+			Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
+		},
+	}, nil
 }
 
 func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {

@@ -281,12 +281,63 @@ func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFT
 	return colData, nil
 }
 
-func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	checkExistNFT, err := e.CheckExistNftCollection(req.Address)
+	if err != nil {
+		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
+		return nil, err
+	}
+
+	if checkExistNFT {
+		return e.handleExistCollection(req)
+	}
+
+	// get solana metadata collection from blockchain api
+	solanaCollection, err := e.svc.BlockchainApi.GetSolanaCollection(req.Address)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.BlockchainApi.GetSolanaCollection] failed to get solana collection: %v", err)
+		return nil, err
+	}
+
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: req.Address,
+		ChainID: 0,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	}
+
+	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
+		Address:    req.Address,
+		Symbol:     solanaCollection.OffChainData.Symbol,
+		Name:       solanaCollection.OffChainData.Name,
+		ChainID:    "0",
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+		Author:     req.Author,
+		Image:      solanaCollection.OffChainData.Image,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+		return nil, fmt.Errorf("Cannot add collection: %v", err)
+	}
+
+	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.OffChainData.Name, solanaCollection.OffChainData.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.OffChainData.Image)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
+		return nil, fmt.Errorf("Cannot send embed message: %v", err)
+	}
+	return
+}
+
+func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
 	if address == "collection does not have an address" {
 		e.log.Infof("[e.HandleMarketplaceLink] collection %s does not have address", req.Address)
 		return nil, fmt.Errorf("Collection does not have an address")
 	}
+
 	checksumAddress, err := util.ConvertToChecksumAddr(address)
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertToChecksumAddr] failed to convert checksum address: %v", err)
@@ -300,19 +351,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}
 
 	if checkExistNFT {
-		is_sync, err := e.CheckIsSync(checksumAddress)
-		if err != nil {
-			e.log.Errorf(err, "[e.CheckIsSync] failed to check if nft is synced: %v", err)
-			return nil, err
-		}
-
-		if !is_sync {
-			e.log.Infof("[e.CheckIsSync] Already added. Nft is in sync progress")
-			return nil, fmt.Errorf("Already added. Nft is in sync progress")
-		} else {
-			e.log.Infof("[e.CheckIsSync] Already added. Nft is done with sync")
-			return nil, fmt.Errorf("Already added. Nft is done with sync")
-		}
+		return e.handleExistCollection(req)
 	}
 
 	req.Address = checksumAddress
@@ -322,23 +361,27 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
+
 	image, err := e.getImageFromMarketPlace(chainID, req.Address)
 	if err != nil {
 		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
 		return nil, err
 	}
+
 	// query name and symbol from contract
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
 		e.log.Errorf(err, "[GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", req.Address, chainID)
 		return nil, fmt.Errorf("Cannot get name and symbol of contract: %v", err)
 	}
+
 	// host image to cloud if necessary
 	image, err = e.svc.Cloud.HostImageToGCS(image, strings.ReplaceAll(name, " ", ""))
 	if err != nil {
 		e.log.Errorf(err, "[cloud.HostImageToGCS] failed to host image to GCS: %v", err)
 		return nil, err
 	}
+
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
 		Address: req.Address,
 		ChainID: chainID,
@@ -347,6 +390,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
 		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
 	}
+
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    req.Address,
 		Symbol:     symbol,
@@ -361,6 +405,7 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
+
 	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, name, symbol, util.ConvertChainIDToChain(convertedChainId), image)
 	if err != nil {
 		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
@@ -377,6 +422,22 @@ func (e *Entity) CreateNFTCollection(req request.CreateNFTCollectionRequest) (nf
 	}, e.cfg)
 
 	return
+}
+
+func (e *Entity) handleExistCollection(req request.CreateNFTCollectionRequest) (*model.NFTCollection, error) {
+	isSync, err := e.CheckIsSync(req.Address)
+	if err != nil {
+		e.log.Errorf(err, "[e.CheckIsSync] failed to check if nft is synced: %v", err)
+		return nil, err
+	}
+
+	if !isSync {
+		e.log.Infof("[e.CheckIsSync] Already added. Nft is in sync progress")
+		return nil, fmt.Errorf("Already added. Nft is in sync progress")
+	} else {
+		e.log.Infof("[e.CheckIsSync] Already added. Nft is done with sync")
+		return nil, fmt.Errorf("Already added. Nft is done with sync")
+	}
 }
 
 func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, error) {

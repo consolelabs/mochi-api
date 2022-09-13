@@ -23,6 +23,7 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 	if !isExist {
 		h.log.Info("[handler.GetDefaultRolesByGuildID] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
 	}
 
 	data, err := h.entities.GetDefaultRoleByGuildID(guildID)
@@ -84,6 +85,7 @@ func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 	if !isExist {
 		h.log.Info("[handler.DeleteDefaultRoleByGuildID] - guild id empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
 	}
 	err := h.entities.DeleteDefaultRoleConfig(guildID)
 	if err != nil {

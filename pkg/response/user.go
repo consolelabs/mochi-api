@@ -73,11 +73,13 @@ type GetUserCurrentGMStreakResponse struct {
 }
 
 type GetUserCurrentUpvoteStreakResponse struct {
-	UserID         string    `json:"discord_id"`
-	ResetTime      float64   `json:"minutes_until_reset"`
-	SteakCount     int       `json:"streak_count"`
-	TotalCount     int       `json:"total_count"`
-	LastStreakTime time.Time `json:"last_streak_time"`
+	UserID                  string    `json:"discord_id"`
+	ResetTime               float64   `json:"minutes_until_reset"`
+	ResetTimeTopGG          float64   `json:"minutes_until_reset_topgg"`
+	ResetTimeDiscordBotList float64   `json:"minutes_until_reset_discordbotlist"`
+	SteakCount              int       `json:"streak_count"`
+	TotalCount              int       `json:"total_count"`
+	LastStreakTime          time.Time `json:"last_streak_time"`
 }
 
 type CurrentUserUpvoteStreakResponse struct {
