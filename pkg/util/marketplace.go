@@ -56,6 +56,21 @@ func GetWalletUrl(marketplace string) (urlMarketPlace string) {
 	}
 }
 
+func GetCollectionExplorerUrl(address string, chainID string) string {
+	switch chainID {
+	case "1":
+		return "https://etherscan.io/address/" + address
+	case "250":
+		return "https://ftmscan.com/address/" + address
+	case "10":
+		return "https://optimistic.etherscan.io/address/" + address
+	case "56":
+		return "https://bscscan.com/address/" + address
+	default:
+		return ""
+	}
+}
+
 func GetGainEmoji(gain *big.Float) string {
 	cmp := gain.Cmp(big.NewFloat(0))
 	if cmp == 1 {

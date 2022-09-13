@@ -6254,6 +6254,9 @@ const docTemplate = `{
                 "chain_id": {
                     "type": "string"
                 },
+                "chain_name": {
+                    "type": "string"
+                },
                 "collection_id": {
                     "type": "string"
                 },
@@ -6261,6 +6264,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "erc_format": {
+                    "type": "string"
+                },
+                "explorer_url": {
                     "type": "string"
                 },
                 "id": {
