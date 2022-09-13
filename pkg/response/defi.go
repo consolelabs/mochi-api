@@ -37,10 +37,10 @@ type HistoricalMarketChartResponse struct {
 }
 
 type SearchedCoinsListResponse struct {
-	Coins []SearchedCoin `json:"coins"`
+	Coins []CoingeckoSearchedCoin `json:"coins"`
 }
 
-type SearchedCoin struct {
+type CoingeckoSearchedCoin struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`
 	Symbol        string `json:"symbol"`
@@ -128,19 +128,15 @@ type GetCoinResponseWrapper struct {
 	Data *GetCoinResponse `json:"data"`
 }
 
-type SearchCoinsResponse struct {
-	Data []SearchedCoin `json:"data"`
-}
-
 type CompareTokenReponseData struct {
-	BaseCoin              *GetCoinResponse `json:"base_coin"`
-	TargetCoin            *GetCoinResponse `json:"target_coin"`
-	Ratios                []float32        `json:"ratios"`
-	Times                 []string         `json:"times"`
-	BaseCoinSuggestions   []SearchedCoin   `json:"base_coin_suggestions"`
-	TargetCoinSuggestions []SearchedCoin   `json:"target_coin_suggestions"`
-	From                  string           `json:"from"`
-	To                    string           `json:"to"`
+	BaseCoin              *GetCoinResponse                 `json:"base_coin"`
+	TargetCoin            *GetCoinResponse                 `json:"target_coin"`
+	Ratios                []float32                        `json:"ratios"`
+	Times                 []string                         `json:"times"`
+	BaseCoinSuggestions   []model.CoingeckoSupportedTokens `json:"base_coin_suggestions"`
+	TargetCoinSuggestions []model.CoingeckoSupportedTokens `json:"target_coin_suggestions"`
+	From                  string                           `json:"from"`
+	To                    string                           `json:"to"`
 }
 
 type CompareTokenResponse struct {
@@ -148,7 +144,7 @@ type CompareTokenResponse struct {
 }
 
 type AddToWatchlistResponseData struct {
-	Suggestions []SearchedCoin `json:"suggestions"`
+	Suggestions []model.CoingeckoSupportedTokens `json:"suggestions"`
 }
 
 type AddToWatchlistResponse struct {
@@ -177,4 +173,8 @@ type CoingeckoSupportedTokenResponse struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
 	Symbol string `json:"symbol"`
+}
+
+type SearchCoinResponse struct {
+	Data []model.CoingeckoSupportedTokens `json:"data"`
 }

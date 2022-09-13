@@ -2,12 +2,13 @@ package coingeckosupportedtokens
 
 import "github.com/defipod/mochi/pkg/model"
 
-type GetQuery struct {
+type ListQuery struct {
 	ID     string
 	Symbol string
 }
 
 type Store interface {
-	Get(q GetQuery) ([]model.CoingeckoSupportedTokens, error)
+	GetOne(id string) (*model.CoingeckoSupportedTokens, error)
+	List(q ListQuery) ([]model.CoingeckoSupportedTokens, error)
 	Upsert(token *model.CoingeckoSupportedTokens) (rowsAffected int64, err error)
 }

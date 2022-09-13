@@ -14,6 +14,8 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
 	mock_chain "github.com/defipod/mochi/pkg/repo/chain/mocks"
+	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	mock_coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens/mocks"
 	mock_guild_config_token "github.com/defipod/mochi/pkg/repo/guild_config_token/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	mock_token "github.com/defipod/mochi/pkg/repo/token/mocks"
@@ -23,6 +25,7 @@ import (
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
 	mock_covalent "github.com/defipod/mochi/pkg/service/covalent/mocks"
 	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
 )
 
 func TestEntity_UpsertCustomToken(t *testing.T) {
@@ -78,6 +81,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 
 	uToken := mock_token.NewMockStore(ctrl)
 	chainMock := mock_chain.NewMockStore(ctrl)
+	cgTokensMock := mock_coingeckosupportedtokens.NewMockStore(ctrl)
 	gctMock := mock_guild_config_token.NewMockStore(ctrl)
 	cgMock := mock_coingecko.NewMockService(ctrl)
 	covalentMock := mock_covalent.NewMockService(ctrl)
@@ -85,6 +89,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 	r.Token = uToken
 	r.GuildConfigToken = gctMock
 	r.Chain = chainMock
+	r.CoingeckoSupportedTokens = cgTokensMock
 	svc.CoinGecko = cgMock
 	svc.Covalent = covalentMock
 
@@ -104,7 +109,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 			args: args{
 				request.UpsertCustomTokenConfigRequest{
 					Address: "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-					Symbol:  "CAKE",
+					Symbol:  "cake",
 					Chain:   "bsc",
 					Name:    "PancakeSwap",
 					GuildID: "980100825579917343",
@@ -118,7 +123,7 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 	token := model.Token{
 		ID:                  1,
 		Address:             "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-		Symbol:              "CAKE",
+		Symbol:              "cake",
 		ChainID:             56,
 		Decimals:            18,
 		DiscordBotSupported: true,
@@ -142,14 +147,6 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 		TokenID: token.ID,
 		Active:  true,
 	}
-
-	coins := []response.SearchedCoin{
-		{
-			ID:     token.CoinGeckoID,
-			Name:   token.Name,
-			Symbol: token.Symbol,
-		},
-	}
 	coin := response.GetCoinResponse{
 		ID:              token.CoinGeckoID,
 		Name:            token.Name,
@@ -166,15 +163,17 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 			},
 		},
 	}
+	tokens := []model.CoingeckoSupportedTokens{{ID: "pancakeswap-token", Symbol: "cake", Name: "PancakeSwap"}}
 
-	uToken.EXPECT().CreateOne(token).Return(nil).AnyTimes()
+	chainMock.EXPECT().GetByShortName(chain.ShortName).Return(&chain, nil).AnyTimes()
+	cgTokensMock.EXPECT().GetOne(token.Symbol).Return(nil, gorm.ErrRecordNotFound).AnyTimes()
+	cgTokensMock.EXPECT().List(coingeckosupportedtokens.ListQuery{Symbol: token.Symbol}).Return(tokens, nil).AnyTimes()
+	cgMock.EXPECT().GetCoin(tokens[0].ID).Return(&coin, nil, http.StatusOK).AnyTimes()
+	covalentMock.EXPECT().GetHistoricalTokenPrices(chain.ID, chain.Currency, token.Address).Return(&htp, nil, http.StatusOK).AnyTimes()
 	uToken.EXPECT().GetOneBySymbol(token.Symbol).Return(&token, nil).AnyTimes()
+	uToken.EXPECT().CreateOne(token).Return(nil).AnyTimes()
 	gctMock.EXPECT().GetByGuildIDAndTokenID(gct.GuildID, gct.TokenID).Return(nil, nil).AnyTimes()
 	gctMock.EXPECT().CreateOne(gct).Return(nil).AnyTimes()
-	chainMock.EXPECT().GetByShortName(chain.ShortName).Return(&chain, nil).AnyTimes()
-	cgMock.EXPECT().SearchCoins(token.Symbol).Return(coins, nil, http.StatusOK).AnyTimes()
-	cgMock.EXPECT().GetCoin(coins[0].ID).Return(&coin, nil, http.StatusOK).AnyTimes()
-	covalentMock.EXPECT().GetHistoricalTokenPrices(chain.ID, chain.Currency, token.Address).Return(&htp, nil, http.StatusOK).AnyTimes()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
