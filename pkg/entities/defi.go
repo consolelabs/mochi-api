@@ -564,13 +564,12 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
 	}
-	if len(list) == 0 {
-		e.log.Fields(logger.Fields{"query": q}).Info("[entity.GetUserWatchlist] repo.UserWatchlistItem.List() - no data found")
-		return &response.GetWatchlistResponse{Data: nil}, nil
-	}
 	ids := make([]string, len(list))
 	for i, item := range list {
 		ids[i] = item.CoinGeckoID
+	}
+	if len(ids) == 0 && req.Page == 0 {
+		ids = e.getDefaultWatchlistIDs()
 	}
 	data, err, code := e.svc.CoinGecko.GetCoinsMarketData(ids)
 	if err != nil {
@@ -584,6 +583,10 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 			Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
 		},
 	}, nil
+}
+
+func (e *Entity) getDefaultWatchlistIDs() []string {
+	return []string{"bitcoin", "ethereum", "binancecoin", "fantom", "internet-computer", "solana", "avalanche-2", "matic-network"}
 }
 
 func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {
