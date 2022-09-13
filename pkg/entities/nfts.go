@@ -310,8 +310,8 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    req.Address,
-		Symbol:     solanaCollection.OffChainData.Symbol,
-		Name:       solanaCollection.OffChainData.Name,
+		Symbol:     solanaCollection.Data.Symbol,
+		Name:       solanaCollection.Data.Name,
 		ChainID:    "0",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
@@ -323,7 +323,7 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
 
-	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.OffChainData.Name, solanaCollection.OffChainData.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.OffChainData.Image)
+	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.Data.Name, solanaCollection.Data.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.OffChainData.Image)
 	if err != nil {
 		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
 		return nil, fmt.Errorf("Cannot send embed message: %v", err)
