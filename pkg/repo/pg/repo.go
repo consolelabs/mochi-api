@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
+	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
@@ -101,5 +102,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
 		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
+		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
 	}
 }

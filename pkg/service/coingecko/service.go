@@ -12,4 +12,5 @@ type Service interface {
 	SearchCoins(query string) (res []response.SearchedCoin, err error, statusCode int)
 	GetHistoryCoinInfo(sourceSymbol string, interval string) (res [][]float32, err error, statusCode int)
 	GetCoinsMarketData(ids []string) (res []response.CoinMarketItemData, err error, statusCode int)
+	GetSupportedCoins() (res []response.CoingeckoSupportedTokenResponse, err error, statusCode int)
 }

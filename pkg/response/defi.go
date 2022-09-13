@@ -172,3 +172,9 @@ type GetWatchlistResponse struct {
 	Pagination *PaginationResponse  `json:"pagination"`
 	Data       []CoinMarketItemData `json:"data"`
 }
+
+type CoingeckoSupportedTokenResponse struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
+}

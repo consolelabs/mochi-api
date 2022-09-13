@@ -18,6 +18,7 @@ type CoinGecko struct {
 	getPriceURL        string
 	getCoinOhlc        string
 	getCoinsMarketData string
+	getSupportedCoins  string
 }
 
 func NewService() Service {
@@ -28,6 +29,7 @@ func NewService() Service {
 		getPriceURL:        "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
 		getCoinOhlc:        "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
 		getCoinsMarketData: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=7d",
+		getSupportedCoins:  "https://api.coingecko.com/api/v3/coins/list",
 	}
 }
 
@@ -128,4 +130,13 @@ func (c *CoinGecko) GetCoinsMarketData(ids []string) ([]response.CoinMarketItemD
 		return nil, err, statusCode
 	}
 	return res, nil, http.StatusOK
+}
+
+func (c *CoinGecko) GetSupportedCoins() ([]response.CoingeckoSupportedTokenResponse, error, int) {
+	data := make([]response.CoingeckoSupportedTokenResponse, 0)
+	statusCode, err := util.FetchData(c.getSupportedCoins, &data)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch supported coins list: %v", err), statusCode
+	}
+	return data, nil, http.StatusOK
 }

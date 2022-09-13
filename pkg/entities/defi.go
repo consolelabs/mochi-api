@@ -627,3 +627,28 @@ func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) err
 	}
 	return err
 }
+
+func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
+	tokens, err, code := e.svc.CoinGecko.GetSupportedCoins()
+	if err != nil {
+		e.log.Fields(logger.Fields{"code": code}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() failed")
+		return 0, err
+	}
+	e.log.Infof("[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() - found %d items", len(tokens))
+
+	updatedRows := int64(0)
+	for _, token := range tokens {
+		model := model.CoingeckoSupportedTokens{
+			ID:     token.ID,
+			Name:   token.Name,
+			Symbol: token.Symbol,
+		}
+		rowsAffected, err := e.repo.CoingeckoSupportedTokens.Upsert(&model)
+		if err != nil {
+			e.log.Fields(logger.Fields{"token": token}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] repo.CoingeckoSupportedTokens.Upsert() failed")
+			continue
+		}
+		updatedRows += rowsAffected
+	}
+	return updatedRows, nil
+}

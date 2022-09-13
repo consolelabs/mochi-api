@@ -114,6 +114,22 @@ func (mr *MockServiceMockRecorder) GetHistoryCoinInfo(sourceSymbol, interval int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoryCoinInfo", reflect.TypeOf((*MockService)(nil).GetHistoryCoinInfo), sourceSymbol, interval)
 }
 
+// GetSupportedCoins mocks base method.
+func (m *MockService) GetSupportedCoins() ([]response.CoingeckoSupportedTokenResponse, error, int) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSupportedCoins")
+	ret0, _ := ret[0].([]response.CoingeckoSupportedTokenResponse)
+	ret1, _ := ret[1].(error)
+	ret2, _ := ret[2].(int)
+	return ret0, ret1, ret2
+}
+
+// GetSupportedCoins indicates an expected call of GetSupportedCoins.
+func (mr *MockServiceMockRecorder) GetSupportedCoins() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedCoins", reflect.TypeOf((*MockService)(nil).GetSupportedCoins))
+}
+
 // SearchCoins mocks base method.
 func (m *MockService) SearchCoins(query string) ([]response.SearchedCoin, error, int) {
 	m.ctrl.T.Helper()
