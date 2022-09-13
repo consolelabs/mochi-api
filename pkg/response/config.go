@@ -78,6 +78,8 @@ type NFTCollectionConfig struct {
 	ID           string    `json:"id"`
 	CollectionID string    `json:"collection_id"`
 	Address      string    `json:"address"`
+	ExplorerUrl  string    `json:"explorer_url"`
+	ChainName    string    `json:"chain_name"`
 	Name         string    `json:"name"`
 	Symbol       string    `json:"symbol"`
 	ChainID      string    `json:"chain_id"`
