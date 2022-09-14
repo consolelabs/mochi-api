@@ -129,19 +129,3 @@ func (mr *MockServiceMockRecorder) GetSupportedCoins() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedCoins", reflect.TypeOf((*MockService)(nil).GetSupportedCoins))
 }
-
-// SearchCoins mocks base method.
-func (m *MockService) SearchCoins(query string) ([]response.SearchedCoin, error, int) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchCoins", query)
-	ret0, _ := ret[0].([]response.SearchedCoin)
-	ret1, _ := ret[1].(error)
-	ret2, _ := ret[2].(int)
-	return ret0, ret1, ret2
-}
-
-// SearchCoins indicates an expected call of SearchCoins.
-func (mr *MockServiceMockRecorder) SearchCoins(query interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCoins", reflect.TypeOf((*MockService)(nil).SearchCoins), query)
-}

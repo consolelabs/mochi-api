@@ -1618,7 +1618,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SearchCoinsResponse"
+                            "$ref": "#/definitions/response.SearchCoinResponse"
                         }
                     }
                 }
@@ -2408,7 +2408,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3647,7 +3647,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -3879,6 +3879,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "short_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CoingeckoSupportedTokens": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -5038,7 +5052,7 @@ const docTemplate = `{
                 "suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
                 }
             }
@@ -5149,7 +5163,7 @@ const docTemplate = `{
                 "base_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
                 },
                 "from": {
@@ -5167,7 +5181,7 @@ const docTemplate = `{
                 "target_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
                 },
                 "times": {
@@ -6583,37 +6597,14 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SearchCoinsResponse": {
+        "response.SearchCoinResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.SearchedCoin"
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
-                }
-            }
-        },
-        "response.SearchedCoin": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "large": {
-                    "type": "string"
-                },
-                "market_cap_rank": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "thumb": {
-                    "type": "string"
                 }
             }
         },

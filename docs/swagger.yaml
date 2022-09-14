@@ -124,6 +124,15 @@ definitions:
       short_name:
         type: string
     type: object
+  model.CoingeckoSupportedTokens:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
   model.ConfigXpLevel:
     properties:
       level:
@@ -875,7 +884,7 @@ definitions:
     properties:
       suggestions:
         items:
-          $ref: '#/definitions/response.SearchedCoin'
+          $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
     type: object
   response.CoinImage:
@@ -947,7 +956,7 @@ definitions:
         $ref: '#/definitions/response.GetCoinResponse'
       base_coin_suggestions:
         items:
-          $ref: '#/definitions/response.SearchedCoin'
+          $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
       from:
         type: string
@@ -959,7 +968,7 @@ definitions:
         $ref: '#/definitions/response.GetCoinResponse'
       target_coin_suggestions:
         items:
-          $ref: '#/definitions/response.SearchedCoin'
+          $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
       times:
         items:
@@ -1873,27 +1882,12 @@ definitions:
       role:
         $ref: '#/definitions/response.Role'
     type: object
-  response.SearchCoinsResponse:
+  response.SearchCoinResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.SearchedCoin'
+          $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
-    type: object
-  response.SearchedCoin:
-    properties:
-      id:
-        type: string
-      large:
-        type: string
-      market_cap_rank:
-        type: integer
-      name:
-        type: string
-      symbol:
-        type: string
-      thumb:
-        type: string
     type: object
   response.TickerData:
     properties:
@@ -3043,7 +3037,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.SearchCoinsResponse'
+            $ref: '#/definitions/response.SearchCoinResponse'
       summary: Search coin
       tags:
       - Defi
@@ -3466,7 +3460,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4428,7 +4422,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
