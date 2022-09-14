@@ -1,6 +1,9 @@
 package errors
 
-import "strconv"
+import (
+	"net/http"
+	"strconv"
+)
 
 // Error in server
 type Error struct {
@@ -10,6 +13,19 @@ type Error struct {
 
 func (e Error) Error() string {
 	return e.Message + " " + strconv.Itoa(e.Code)
+}
+
+func GetStatusCode(err error) int {
+	var code int
+	switch err {
+	case ErrRecordNotFound:
+		code = http.StatusNotFound
+	case ErrConflict:
+		code = http.StatusConflict
+	default:
+		code = http.StatusInternalServerError
+	}
+	return code
 }
 
 // NewStringError new a error with message

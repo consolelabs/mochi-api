@@ -37,6 +37,7 @@ func (pg *pg) Create(item *model.UserWatchlistItem) error {
 	return pg.db.Create(item).Error
 }
 
-func (pg *pg) Delete(userID, symbol string) error {
-	return pg.db.Where("user_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserWatchlistItem{}).Error
+func (pg *pg) Delete(userID, symbol string) (int64, error) {
+	tx := pg.db.Where("user_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserWatchlistItem{})
+	return tx.RowsAffected, tx.Error
 }

@@ -9,18 +9,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
-	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
-	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
@@ -621,12 +623,21 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		}
 		if len(coins) == 0 {
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() - no data found")
-			return nil, err
+			return nil, baseerrs.ErrRecordNotFound
 		}
 		req.CoinGeckoID = coins[0].ID
 	}
+	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+	_, total, err := e.repo.UserWatchlistItem.List(listQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if total == 1 {
+		return nil, baseerrs.ErrConflict
+	}
 
-	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
 		UserID:      req.UserID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
@@ -639,9 +650,13 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 }
 
 func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) error {
-	err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
+	rows, err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserWatchlistItem.Delete() failed")
+	}
+	if rows == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] item not found")
+		return baseerrs.ErrRecordNotFound
 	}
 	return err
 }
