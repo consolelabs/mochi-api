@@ -146,15 +146,15 @@ func (mr *MockServiceMockRecorder) SendUpdateRolesLog(guildID, logChannelID, use
 }
 
 // SendUpvoteMessage mocks base method.
-func (m *MockService) SendUpvoteMessage(discordID, source string) error {
+func (m *MockService) SendUpvoteMessage(discordID, source string, isStranger bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendUpvoteMessage", discordID, source)
+	ret := m.ctrl.Call(m, "SendUpvoteMessage", discordID, source, isStranger)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendUpvoteMessage indicates an expected call of SendUpvoteMessage.
-func (mr *MockServiceMockRecorder) SendUpvoteMessage(discordID, source interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendUpvoteMessage(discordID, source, isStranger interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpvoteMessage", reflect.TypeOf((*MockService)(nil).SendUpvoteMessage), discordID, source)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpvoteMessage", reflect.TypeOf((*MockService)(nil).SendUpvoteMessage), discordID, source, isStranger)
 }

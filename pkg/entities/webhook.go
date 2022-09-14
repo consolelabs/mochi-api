@@ -453,7 +453,13 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 
 	e.handleUpvoteXPBonus(streak)
 	e.logUserUpvote(userID, source, chatDate)
-	e.svc.Discord.SendUpvoteMessage(userID, source)
+	_, err = e.repo.Users.GetOne(userID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.WebhookUpvoteStreak] failed to get user")
+		return err
+	}
+	isStranger := err != nil
+	e.svc.Discord.SendUpvoteMessage(userID, source, isStranger)
 	return nil
 }
 
