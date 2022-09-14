@@ -6,6 +6,7 @@ type HandleInviteHistoryResponse struct {
 	InvitesAmount int    `json:"invites_amount"`
 	IsVanity      bool   `json:"is_vanity"`
 	IsBot         bool   `json:"is_bot"`
+	IsInviteeABot bool   `json:"is_invitee_a_bot"`
 }
 
 type GetInvitesLeaderboardResponse struct {

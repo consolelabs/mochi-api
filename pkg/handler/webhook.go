@@ -57,6 +57,16 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 }
 
 func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member) {
+	if invitee.User.Bot {
+		h.log.Fields(logger.Fields{"invitee": invitee}).Info("Invitee is bot")
+		c.JSON(http.StatusOK, gin.H{
+			"data": response.HandleInviteHistoryResponse{
+				IsInviteeABot: true,
+			},
+		})
+		return
+	}
+
 	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to find inviter")
