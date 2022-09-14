@@ -13,5 +13,5 @@ type UserWatchlistQuery struct {
 type Store interface {
 	List(q UserWatchlistQuery) (items []model.UserWatchlistItem, total int64, err error)
 	Create(item *model.UserWatchlistItem) error
-	Delete(userID, symbol string) error
+	Delete(userID, symbol string) (rows int64, err error)
 }

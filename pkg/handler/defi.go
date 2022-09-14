@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/defipod/mochi/pkg/logger"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/gin-gonic/gin"
 )
 
 // GetHistoricalMarketChart     godoc
@@ -336,7 +338,7 @@ func (h *Handler) AddToWatchlist(c *gin.Context) {
 	res, err := h.entities.AddToWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.AddToWatchlist] entity.AddToWatchlist() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, res)
@@ -361,7 +363,11 @@ func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 	err := h.entities.RemoveFromWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.RemoveFromWatchlist] entity.RemoveFromWatchlist() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": nil})
