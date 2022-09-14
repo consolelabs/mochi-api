@@ -9,4 +9,7 @@ var (
 
 	// ErrBadRequest internal error
 	ErrBadRequest = NewStringError("bad request", 400)
+
+	// ErrConflict
+	ErrConflict = NewStringError("conflict", 409)
 )

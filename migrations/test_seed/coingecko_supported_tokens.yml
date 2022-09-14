@@ -1,0 +1,9 @@
+- id: ethereum
+  symbol: eth
+  name: Ethereum
+- id: pancakeswap-token
+  symbol: cake
+  name: PancakeSwap
+- id: bitcoin
+  symbol: btc
+  name: Bitcoin

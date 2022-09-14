@@ -14,14 +14,19 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Get(q GetQuery) ([]model.CoingeckoSupportedTokens, error) {
+func (pg *pg) GetOne(id string) (*model.CoingeckoSupportedTokens, error) {
+	token := &model.CoingeckoSupportedTokens{}
+	return token, pg.db.Where("id = ?", id).First(token).Error
+}
+
+func (pg *pg) List(q ListQuery) ([]model.CoingeckoSupportedTokens, error) {
 	var tokens []model.CoingeckoSupportedTokens
 	db := pg.db.Table("coingecko_supported_tokens")
 	if q.ID != "" {
 		db = db.Where("id = ?", q.ID)
 	}
 	if q.Symbol != "" {
-		db = db.Where("symbol = ?", q.Symbol)
+		db = db.Where("symbol ILIKE ?", q.Symbol)
 	}
 	return tokens, db.Find(&tokens).Error
 }

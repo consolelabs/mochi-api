@@ -33,40 +33,6 @@ func NewService() Service {
 	}
 }
 
-func (c *CoinGecko) SearchCoins(query string) ([]response.SearchedCoin, error, int) {
-	// if query is valid coin ID then use GetCoin()
-	coin, err, code := c.GetCoin(query)
-	if err == nil {
-		return []response.SearchedCoin{
-			{
-				ID:            coin.ID,
-				Name:          coin.Name,
-				Symbol:        coin.Symbol,
-				MarketCapRank: coin.MarketCapRank,
-				Thumb:         coin.Image.Thumb,
-			},
-		}, nil, http.StatusOK
-	} else if code == http.StatusTooManyRequests {
-		return nil, fmt.Errorf("too many requests GetCoin(%s): %v", query, err), code
-	}
-
-	// if not valid coin ID then search coins by symbol
-	res := &response.SearchedCoinsListResponse{}
-	code, err = util.FetchData(fmt.Sprintf(c.searchCoinURL, query), res)
-	if err != nil || res == nil || len(res.Coins) == 0 {
-		return nil, fmt.Errorf("failed to search for coins by query %s: %v", query, err), code
-	}
-
-	var matches []response.SearchedCoin
-	for _, coin := range res.Coins {
-		if strings.EqualFold(query, coin.Symbol) {
-			matches = append(matches, coin)
-		}
-	}
-
-	return matches, nil, http.StatusOK
-}
-
 func (c *CoinGecko) GetHistoricalMarketData(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
 	resp := &response.HistoricalMarketChartResponse{}
 	statusCode, err := util.FetchData(fmt.Sprintf(c.getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)

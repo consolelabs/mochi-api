@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/defipod/mochi/pkg/logger"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/gin-gonic/gin"
 )
 
 // GetHistoricalMarketChart     godoc
@@ -171,17 +173,24 @@ func (h *Handler) GetCoin(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       query   query  string true  "coin query"
-// @Success     200 {object} response.SearchCoinsResponse
+// @Success     200 {object} response.SearchCoinResponse
 // @Router      /defi/coins [get]
 func (h *Handler) SearchCoins(c *gin.Context) {
-	data, err, statusCode := h.entities.SearchCoins(c)
-	if err != nil {
-		h.log.Error(err, "[handler.SearchCoins] - failed to search coin data")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
+	query := c.Query("query")
+	if query == "" {
+		h.log.Info("[handler.SearchCoins] query is required")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.SearchCoinsResponse{Data: data})
+	tokens, err := h.entities.SearchCoins(query)
+	if err != nil {
+		h.log.Error(err, "[handler.SearchCoins] entities.SearchCoins() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &response.SearchCoinResponse{Data: tokens})
 }
 
 // CompareToken     godoc
@@ -329,7 +338,7 @@ func (h *Handler) AddToWatchlist(c *gin.Context) {
 	res, err := h.entities.AddToWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.AddToWatchlist] entity.AddToWatchlist() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, res)
@@ -354,7 +363,11 @@ func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 	err := h.entities.RemoveFromWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.RemoveFromWatchlist] entity.RemoveFromWatchlist() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": nil})

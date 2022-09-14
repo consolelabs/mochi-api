@@ -85,6 +85,7 @@ gen-mock:
 	@mockgen -source=./pkg/repo/nft_collection/store.go -destination=./pkg/repo/nft_collection/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_level_role/store.go -destination=./pkg/repo/guild_config_level_role/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_wallet_verification_message/store.go -destination=./pkg/repo/guild_config_wallet_verification_message/mocks/store.go
+	@mockgen -source=./pkg/repo/coingecko_supported_tokens/store.go -destination=./pkg/repo/coingecko_supported_tokens/mocks/store.go
 
 
 setup-githook:

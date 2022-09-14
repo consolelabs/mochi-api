@@ -18,7 +18,7 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 		return fmt.Errorf("error getting chain: %v", err)
 	}
 
-	coins, err, _ := e.svc.CoinGecko.SearchCoins(req.Symbol)
+	coins, err := e.SearchCoins(req.Symbol)
 	if err != nil {
 		e.log.Error(err, "[Entity][CreateCustomToken] svc.CoinGecko.SearchCoins failed")
 		return fmt.Errorf("error seaching coin: %v", err)

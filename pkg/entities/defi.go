@@ -9,17 +9,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
-	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
@@ -382,18 +385,24 @@ func (e *Entity) GetCoinData(c *gin.Context) (*response.GetCoinResponse, error, 
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) SearchCoins(c *gin.Context) ([]response.SearchedCoin, error, int) {
-	query := c.Query("query")
-	if query == "" {
-		return nil, fmt.Errorf("query is required"), http.StatusBadRequest
+func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
+	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+		return nil, err
+	}
+	if err == nil {
+		return []model.CoingeckoSupportedTokens{*token}, nil
 	}
 
-	data, err, statusCode := e.svc.CoinGecko.SearchCoins(query)
+	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
+	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {
-		return nil, err, statusCode
+		e.log.Fields(logger.Fields{"searchQ": searchQ}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+		return nil, err
 	}
 
-	return data, nil, http.StatusOK
+	return tokens, nil
 }
 
 func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
@@ -445,7 +454,7 @@ func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.Gu
 	return gActivityConfig, nil
 }
 
-func (e *Entity) queryCoins(guildID, query string) ([]response.SearchedCoin, *response.GetCoinResponse, error) {
+func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTokens, *response.GetCoinResponse, error) {
 	config, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildID, query)
 	// if default ticker was set then return ...
 	if err == nil {
@@ -454,13 +463,14 @@ func (e *Entity) queryCoins(guildID, query string) ([]response.SearchedCoin, *re
 			e.log.Fields(logger.Fields{"default_ticker": config.DefaultTicker, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
 			return nil, nil, err
 		}
-		return []response.SearchedCoin{{ID: coin.ID, Name: coin.Name, Symbol: coin.Symbol}}, coin, nil
+		return []model.CoingeckoSupportedTokens{{ID: coin.ID, Name: coin.Name, Symbol: coin.Symbol}}, coin, nil
 	}
 
 	// ... else SearchCoins()
-	searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
+	searchResult, err := e.SearchCoins(query)
+	// searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
 	if err != nil {
-		e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
 		return nil, nil, err
 	}
 	switch len(searchResult) {
@@ -571,6 +581,15 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 	if len(ids) == 0 && req.Page == 0 {
 		ids = e.getDefaultWatchlistIDs()
 	}
+	if len(ids) == 0 {
+		return &response.GetWatchlistResponse{
+			Data: nil,
+			Pagination: &response.PaginationResponse{
+				Total:      total,
+				Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
+			},
+		}, nil
+	}
 	data, err, code := e.svc.CoinGecko.GetCoinsMarketData(ids)
 	if err != nil {
 		e.log.Fields(logger.Fields{"ids": ids, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
@@ -591,9 +610,10 @@ func (e *Entity) getDefaultWatchlistIDs() []string {
 
 func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {
 	if req.CoinGeckoID == "" {
-		coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
+		coins, err := e.SearchCoins(req.Symbol)
+		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
 		if err != nil {
-			e.log.Fields(logger.Fields{"symbol": req.Symbol, "code": code}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
+			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
 			return nil, err
 		}
 		if len(coins) > 1 {
@@ -602,13 +622,22 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			}, nil
 		}
 		if len(coins) == 0 {
-			e.log.Fields(logger.Fields{"symbol": req.Symbol, "code": code}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() - no data found")
-			return nil, err
+			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() - no data found")
+			return nil, baseerrs.ErrRecordNotFound
 		}
 		req.CoinGeckoID = coins[0].ID
 	}
+	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+	_, total, err := e.repo.UserWatchlistItem.List(listQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if total == 1 {
+		return nil, baseerrs.ErrConflict
+	}
 
-	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
 		UserID:      req.UserID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
@@ -621,9 +650,13 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 }
 
 func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) error {
-	err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
+	rows, err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserWatchlistItem.Delete() failed")
+	}
+	if rows == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] item not found")
+		return baseerrs.ErrRecordNotFound
 	}
 	return err
 }
