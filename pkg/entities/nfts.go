@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"math/big"
 	"net/http"
 	"strconv"
 
@@ -14,7 +13,6 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/contracts/erc1155"
 	"github.com/defipod/mochi/pkg/contracts/erc721"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -51,7 +49,7 @@ var (
 func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
 	suggest := []response.CollectionSuggestions{}
 	// handle query by address
-	if symbol[:2] == "0x" {
+	if len(symbol) > 1 && symbol[:2] == "0x" {
 		data, err := e.GetNFTDetailByAddress(symbol, tokenID)
 		if err != nil {
 			e.log.Errorf(err, "[e.GetNFTDetailByAddress] failed to get nft collection by address")
@@ -538,27 +536,27 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 			return int(b.Int64()), nil
 		}
 
-	case "1155", "erc1155":
-		contract1155, err := erc1155.NewErc1155(common.HexToAddress(config.Address), client)
-		if err != nil {
-			e.log.Errorf(err, "[erc1155.NewErc1155] failed to init erc1155 contract")
-			return nil, fmt.Errorf("failed to init erc1155 contract: %v", err.Error())
-		}
+	// case "1155", "erc1155":
+	// 	contract1155, err := erc1155.NewErc1155(common.HexToAddress(config.Address), client)
+	// 	if err != nil {
+	// 		e.log.Errorf(err, "[erc1155.NewErc1155] failed to init erc1155 contract")
+	// 		return nil, fmt.Errorf("failed to init erc1155 contract: %v", err.Error())
+	// 	}
 
-		tokenID, err := strconv.ParseInt(config.TokenID, 10, 64)
-		if err != nil {
-			e.log.Errorf(err, "[strconv.ParseInt] token id is not valid")
-			return nil, fmt.Errorf("token id is not valid")
-		}
+	// 	tokenID, err := strconv.ParseInt(config.TokenID, 10, 64)
+	// 	if err != nil {
+	// 		e.log.Errorf(err, "[strconv.ParseInt] token id is not valid")
+	// 		return nil, fmt.Errorf("token id is not valid")
+	// 	}
 
-		balanceOf = func(address string) (int, error) {
-			b, err := contract1155.BalanceOf(nil, common.HexToAddress(address), big.NewInt(tokenID))
-			if err != nil {
-				e.log.Errorf(err, "[contract1155.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
-				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
-			}
-			return int(b.Int64()), nil
-		}
+	// 	balanceOf = func(address string) (int, error) {
+	// 		b, err := contract1155.BalanceOf(nil, common.HexToAddress(address), big.NewInt(tokenID))
+	// 		if err != nil {
+	// 			e.log.Errorf(err, "[contract1155.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
+	// 			return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+	// 		}
+	// 		return int(b.Int64()), nil
+	// 	}
 
 	default:
 		e.log.Errorf(err, "[GetNFTBalanceFunc] erc format %s not supported", config.ERCFormat)
