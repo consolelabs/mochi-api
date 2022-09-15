@@ -54,6 +54,11 @@ func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 		return fmt.Errorf("failed to get guild info: %w", err)
 	}
 	inviteUrl := "\n" + d.generateGuildInviteLink(guild)
+	res, err := d.session.GuildWithCounts(guildID)
+	if err != nil {
+		d.log.Errorf(err, "[discord.NotifyNewGuild] - cannot get total members of guild: %s", guildID)
+		return err
+	}
 
 	postfix := "th"
 	switch count % 10 {
@@ -68,7 +73,7 @@ func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 	}
 	msgEmbed := discordgo.MessageEmbed{
 		Title:       "Mochi has joined new Guild!",
-		Description: fmt.Sprintf("**%s**, the %v%s guild.%s", guild.Name, count, postfix, inviteUrl),
+		Description: fmt.Sprintf("**%s**, the %v%s guild with %v members.%s", guild.Name, count, postfix, res.ApproximateMemberCount, inviteUrl),
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
