@@ -46,7 +46,6 @@ func (c *updateUserNFTBalances) Run() error {
 		}
 
 		for _, wa := range was {
-			c.log.Infof("start updating user nft balance of user %s", wa.Address)
 			n, err := balanceOf(wa.Address)
 			if err != nil {
 				c.log.Errorf(err, "failed to get nft %s balance of address %s", nftConfig.Name, wa.Address)
