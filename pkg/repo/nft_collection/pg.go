@@ -100,13 +100,34 @@ func (pg *pg) ListAllWithPaging(page int, size int) ([]model.NFTCollection, int6
 
 func (pg *pg) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
 	var configs []model.NFTCollectionConfig
-	return configs, pg.db.
-		Table("nft_collections").
-		Select("nft_collections.*, token_id").
-		Joins("left join guild_config_nft_roles on guild_config_nft_roles.nft_collection_id = nft_collections.id").
-		Where("not (erc_format = '1155' and token_id is null)").
-		Group("nft_collections.id, token_id").
-		Find(&configs).Error
+	rows, err := pg.db.Raw(`
+	SELECT DISTINCT ON (guild_config_nft_roles.nft_collection_id)
+		guild_config_nft_roles.nft_collection_id,
+		nft_collections.erc_format,
+		nft_collections.address,
+		nft_collections. "name",
+		nft_collections.chain_id
+	FROM
+		guild_config_nft_roles
+		INNER JOIN nft_collections ON guild_config_nft_roles.nft_collection_id = nft_collections.id
+	WHERE
+		NOT erc_format = '1155'
+	GROUP BY
+		nft_collections.id,
+		guild_config_nft_roles.id;
+	`).Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		tmp := model.NFTCollectionConfig{}
+		if err := rows.Scan(&tmp.ID, &tmp.ERCFormat, &tmp.Address, &tmp.Name, &tmp.ChainID); err != nil {
+			return nil, err
+		}
+		configs = append(configs, tmp)
+	}
+
+	return configs, nil
 }
 
 func (pg *pg) ListByGuildID(guildID string) ([]model.NFTCollection, error) {

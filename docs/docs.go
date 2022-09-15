@@ -82,6 +82,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/cache/upvote": {
+            "post": {
+                "description": "Set or overwrite an upvote message cache",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cache"
+                ],
+                "summary": "Set or overwrite an upvote message cache",
+                "parameters": [
+                    {
+                        "description": "Set upvote message cache request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SetUpvoteMessageCacheRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/chains": {
             "get": {
                 "description": "List All Chain",
@@ -2408,7 +2442,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3647,7 +3681,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -4842,6 +4876,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.SetUpvoteMessageCacheRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

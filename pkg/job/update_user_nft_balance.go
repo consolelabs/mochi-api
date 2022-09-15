@@ -38,6 +38,7 @@ func (c *updateUserNFTBalances) Run() error {
 	}
 
 	for _, nftConfig := range nftConfigs {
+		c.log.Infof("start nft config %s", nftConfig.Address)
 		balanceOf, err := c.entity.GetNFTBalanceFunc(nftConfig)
 		if err != nil {
 			c.log.Errorf(err, "failed to get nft balance function of collection %s", nftConfig.Name)
@@ -45,6 +46,7 @@ func (c *updateUserNFTBalances) Run() error {
 		}
 
 		for _, wa := range was {
+			c.log.Infof("start updating user nft balance of user %s", wa.Address)
 			n, err := balanceOf(wa.Address)
 			if err != nil {
 				c.log.Errorf(err, "failed to get nft %s balance of address %s", nftConfig.Name, wa.Address)
@@ -55,7 +57,6 @@ func (c *updateUserNFTBalances) Run() error {
 				UserAddress:     wa.Address,
 				ChainType:       wa.ChainType,
 				NFTCollectionID: nftConfig.ID,
-				TokenID:         nftConfig.TokenID,
 				Balance:         n,
 			}
 

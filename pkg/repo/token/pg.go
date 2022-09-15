@@ -21,7 +21,7 @@ func (pg *pg) GetBySymbol(symbol string, botSupported bool) (model.Token, error)
 
 func (pg *pg) GetAllSupported() ([]model.Token, error) {
 	var tokens []model.Token
-	return tokens, pg.db.Preload("Chain").Where("discord_bot_supported = TRUE").Find(&tokens).Error
+	return tokens, pg.db.Preload("Chain").Where("discord_bot_supported = TRUE").Order("id ASC").Find(&tokens).Error
 }
 
 func (pg *pg) GetByAddress(address string, chainID int) (*model.Token, error) {

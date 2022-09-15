@@ -105,6 +105,20 @@ func (mr *MockServiceMockRecorder) NotifyStealFloorPrice(price, floor, url, name
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealFloorPrice", reflect.TypeOf((*MockService)(nil).NotifyStealFloorPrice), price, floor, url, name, image)
 }
 
+// ReplyUpvoteMessage mocks base method.
+func (m *MockService) ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReplyUpvoteMessage", msg, source)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ReplyUpvoteMessage indicates an expected call of ReplyUpvoteMessage.
+func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplyUpvoteMessage", reflect.TypeOf((*MockService)(nil).ReplyUpvoteMessage), msg, source)
+}
+
 // SendGuildActivityLogs mocks base method.
 func (m *MockService) SendGuildActivityLogs(channelID, userID, title, description string) error {
 	m.ctrl.T.Helper()
