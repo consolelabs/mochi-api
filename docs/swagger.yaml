@@ -750,6 +750,17 @@ definitions:
       role_id:
         type: string
     type: object
+  request.SetUpvoteMessageCacheRequest:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      message_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.TransferRequest:
     properties:
       all:
@@ -2028,6 +2039,28 @@ paths:
       summary: Logout
       tags:
       - Auth
+  /cache/upvote:
+    post:
+      consumes:
+      - application/json
+      description: Set or overwrite an upvote message cache
+      parameters:
+      - description: Set upvote message cache request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.SetUpvoteMessageCacheRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Set or overwrite an upvote message cache
+      tags:
+      - Cache
   /chains:
     get:
       consumes:
@@ -3460,7 +3493,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4422,7 +4455,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

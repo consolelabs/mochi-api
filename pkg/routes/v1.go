@@ -242,4 +242,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		twitterGroup.POST("", h.CreateTwitterPost)
 	}
+	cacheGroup := v1.Group("/cache")
+	{
+		cacheGroup.POST("/upvote", h.SetUpvoteMessageCache)
+	}
 }

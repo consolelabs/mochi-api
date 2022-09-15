@@ -336,7 +336,7 @@ func (e *Entity) EditGuildChannel(guildID string, statChannel model.DiscordGuild
 	// }
 
 	newChannelName := util.CreateChannelName(guildStat, statChannel.CountType)
-	_, err = e.discord.ChannelEdit(statChannel.ChannelID, newChannelName)
+	_, err = e.discord.ChannelEdit(statChannel.ChannelID, &discordgo.ChannelEdit{Name: newChannelName})
 	if err != nil {
 		log.Error(err, "failed to edit channel name")
 		return err

@@ -9,6 +9,7 @@ type Cache interface {
 	Type(key string) (string, error)
 
 	Set(key string, value interface{}, expiration time.Duration) error
+	Remove(key string) error
 	GetString(key string) (string, error)
 	GetInt(key string) (int, error)
 	GetBool(key string) (bool, error)
