@@ -47,6 +47,9 @@ type NFTCollectionDetail struct {
 }
 
 type NFTCollectionConfig struct {
-	NFTCollection
-	TokenID string `json:"token_id"`
+	ID        uuid.NullUUID `json:"id"`
+	ERCFormat string        `json:"erc_format"`
+	Address   string        `json:"address"`
+	Name      string        `json:"name"`
+	ChainID   string        `json:"chain_id"`
 }
