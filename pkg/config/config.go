@@ -52,6 +52,7 @@ type Config struct {
 
 	RedisURL string
 
+	MochiGuildID           string
 	MochiLogChannelID      string
 	MochiSaleChannelID     string
 	MochiActivityChannelID string
@@ -163,6 +164,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 		RedisURL:                v.GetString("REDIS_URL"),
 
+		MochiGuildID:           v.GetString("MOCHI_GUILD_ID"),
 		MochiLogChannelID:      v.GetString("MOCHI_LOG_CHANNEL_ID"),
 		MochiSaleChannelID:     v.GetString("MOCHI_SALE_CHANNEL_ID"),
 		MochiActivityChannelID: v.GetString("MOCHI_ACTIVITY_CHANNEL_ID"),

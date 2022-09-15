@@ -55,6 +55,10 @@ func (c *redisCache) Set(key string, value interface{}, expiration time.Duration
 	return c.rdb.Set(context.Background(), key, value, expiration).Err()
 }
 
+func (c *redisCache) Remove(key string) error {
+	return c.rdb.Del(context.Background(), key).Err()
+}
+
 func (c *redisCache) GetString(key string) (string, error) {
 	res, err := c.rdb.Get(context.Background(), key).Result()
 	switch err {

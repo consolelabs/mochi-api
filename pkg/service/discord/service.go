@@ -17,4 +17,5 @@ type Service interface {
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 	SendUpvoteMessage(discordID, source string, isStranger bool) error
+	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error
 }
