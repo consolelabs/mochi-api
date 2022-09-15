@@ -72,7 +72,6 @@ func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 		postfix = "th"
 	}
 
-	tab := "				"
 	newGuildMsg := &discordgo.MessageSend{
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
@@ -88,7 +87,7 @@ func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 		Embed: &discordgo.MessageEmbed{
 			Title:       "New Guild!",
 			Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: guild.IconURL()},
-			Description: fmt.Sprintf("**Name**: `%s`\n**Members**: `%v`%s", guild.Name, res.ApproximateMemberCount, tab),
+			Description: fmt.Sprintf("**Name**: `%s`\n**Members**: `%v`", guild.Name, res.ApproximateMemberCount),
 			Color:       mochiLogColor,
 			Footer:      &discordgo.MessageEmbedFooter{Text: fmt.Sprintf("The %v%s guild", count, postfix)},
 			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
