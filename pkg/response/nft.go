@@ -33,7 +33,7 @@ type IndexerChain struct {
 }
 
 type IndexerNFTCollectionTickersResponse struct {
-	Data IndexerNFTCollectionTickersData `json:"data"`
+	Data *IndexerNFTCollectionTickersData `json:"data"`
 }
 
 type IndexerNFTCollectionTickersData struct {
