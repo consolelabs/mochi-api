@@ -897,7 +897,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListRoleReactionResponse"
+                            "$ref": "#/definitions/response.DataListRoleReactionResponse"
                         }
                     }
                 }
@@ -1126,6 +1126,70 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetSalesTrackerConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/telegram": {
+            "get": {
+                "description": "Get telegram account linked with discord ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Telegram"
+                ],
+                "summary": "Get telegram account linked with discord ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "request",
+                        "name": "telegram_username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetLinkedTelegramResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Link user's telegram with discord account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Telegram"
+                ],
+                "summary": "Link user's telegram with discord account",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.LinkUserTelegramWithDiscordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponse"
                         }
                     }
                 }
@@ -2442,7 +2506,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3681,7 +3745,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -3839,6 +3903,12 @@ const docTemplate = `{
                 },
                 "bot_arrived": {
                     "type": "boolean"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "icon": {
                     "type": "string"
@@ -4491,6 +4561,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserTelegramDiscordAssociation": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "telegram_username": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserWallet": {
             "type": "object",
             "properties": {
@@ -4811,6 +4892,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "query": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.LinkUserTelegramWithDiscordRequest": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "telegram_username": {
                     "type": "string"
                 }
             }
@@ -5309,6 +5401,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.DataListRoleReactionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.ListRoleReactionResponse"
+                }
+            }
+        },
         "response.DefaultRole": {
             "type": "object",
             "properties": {
@@ -5594,6 +5694,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigLevelRole"
                     }
+                }
+            }
+        },
+        "response.GetLinkedTelegramResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserTelegramDiscordAssociation"
                 }
             }
         },
@@ -6165,6 +6273,28 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.UserInvitesAggregation"
+                }
+            }
+        },
+        "response.LinkUserTelegramWithDiscordResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponseData"
+                }
+            }
+        },
+        "response.LinkUserTelegramWithDiscordResponseData": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "discord_username": {
+                    "type": "string"
+                },
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
