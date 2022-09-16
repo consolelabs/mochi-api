@@ -580,6 +580,7 @@ func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.Ind
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+			e.log.Infof("Nft colletion ticker not found, symbol: %s", symbol)
 			return &response.IndexerNFTCollectionTickersResponse{Data: nil}, nil
 		}
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by symbol %s", symbol)
@@ -805,6 +806,7 @@ func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model
 	collection, err := e.repo.NFTCollection.GetByAddressChainId(address, chainId)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+			e.log.Infof("Collection is not exist, address: %s", address)
 			return nil, nil
 		}
 		e.log.Errorf(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection by address %s", address)
