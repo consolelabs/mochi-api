@@ -22,6 +22,8 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/k0kubun/pp"
+	"gorm.io/gorm"
 )
 
 var (
@@ -60,6 +62,8 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 
 	// get collection
 	collections, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
+	pp.Println(collections)
+	pp.Println(err)
 	// cannot find collection => return suggested collections
 	if err != nil || len(collections) == 0 {
 		suggest, err = e.GetNFTSuggestion(symbol, tokenID)
@@ -578,6 +582,9 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &response.IndexerNFTCollectionTickersResponse{Data: nil}, nil
+		}
 		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by symbol %s", symbol)
 		return nil, err
 	}
@@ -800,6 +807,9 @@ func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
 func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model.NFTCollection, error) {
 	collection, err := e.repo.NFTCollection.GetByAddressChainId(address, chainId)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		e.log.Errorf(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection by address %s", address)
 		return nil, err
 	}
