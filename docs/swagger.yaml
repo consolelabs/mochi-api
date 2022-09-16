@@ -74,6 +74,10 @@ definitions:
         type: boolean
       bot_arrived:
         type: boolean
+      features:
+        items:
+          type: string
+        type: array
       icon:
         type: string
       id:
@@ -499,6 +503,13 @@ definitions:
       rebellio_xp:
         type: integer
     type: object
+  model.UserTelegramDiscordAssociation:
+    properties:
+      discord_id:
+        type: string
+      telegram_id:
+        type: integer
+    type: object
   model.UserWallet:
     properties:
       address:
@@ -707,6 +718,13 @@ definitions:
         type: string
       query:
         type: string
+    type: object
+  request.LinkUserTelegramWithDiscordRequest:
+    properties:
+      discord_id:
+        type: string
+      telegram_id:
+        type: integer
     type: object
   request.LoginRequest:
     properties:
@@ -1028,6 +1046,11 @@ definitions:
       data:
         $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
     type: object
+  response.DataListRoleReactionResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.ListRoleReactionResponse'
+    type: object
   response.DefaultRole:
     properties:
       guild_id:
@@ -1211,6 +1234,11 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigLevelRole'
         type: array
+    type: object
+  response.GetLinkedTelegramResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserTelegramDiscordAssociation'
     type: object
   response.GetListAllChainsResponse:
     properties:
@@ -1581,6 +1609,20 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.UserInvitesAggregation'
+    type: object
+  response.LinkUserTelegramWithDiscordResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponseData'
+    type: object
+  response.LinkUserTelegramWithDiscordResponseData:
+    properties:
+      discord_id:
+        type: string
+      discord_username:
+        type: string
+      telegram_id:
+        type: integer
     type: object
   response.ListAllCustomTokenResponse:
     properties:
@@ -2596,7 +2638,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListRoleReactionResponse'
+            $ref: '#/definitions/response.DataListRoleReactionResponse'
       summary: Get all role reaction configs
       tags:
       - Config
@@ -2728,6 +2770,48 @@ paths:
       summary: Get sales tracker config
       tags:
       - Config
+  /configs/telegram:
+    get:
+      consumes:
+      - application/json
+      description: Get telegram account linked with discord ID
+      parameters:
+      - description: request
+        in: query
+        name: telegram_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetLinkedTelegramResponse'
+      summary: Get telegram account linked with discord ID
+      tags:
+      - Telegram
+    post:
+      consumes:
+      - application/json
+      description: Link user's telegram with discord account
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.LinkUserTelegramWithDiscordRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponse'
+      summary: Link user's telegram with discord account
+      tags:
+      - Telegram
   /configs/tokens:
     get:
       consumes:
@@ -3493,7 +3577,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4455,7 +4539,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
