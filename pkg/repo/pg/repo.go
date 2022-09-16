@@ -46,6 +46,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
+	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -103,5 +104,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
+		UserTelegramDiscordAssociation:       usertelegramdiscordassociation.NewPG(db),
 	}
 }

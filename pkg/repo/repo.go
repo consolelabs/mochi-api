@@ -43,6 +43,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
+	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
@@ -98,4 +99,5 @@ type Repo struct {
 	UserWatchlistItem                    userwatchlistitem.Store
 	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
+	UserTelegramDiscordAssociation       usertelegramdiscordassociation.Store
 }
