@@ -155,6 +155,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultTickerGroup.GET("", h.GetGuildDefaultTicker)
 			defaultTickerGroup.POST("", h.SetGuildDefaultTicker)
 		}
+
+		telegramGroup := configGroup.Group("/telegram")
+		{
+			telegramGroup.GET("", h.GetLinkedTelegram)
+			telegramGroup.POST("", h.LinkUserTelegramWithDiscord)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
