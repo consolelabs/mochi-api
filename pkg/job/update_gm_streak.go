@@ -29,7 +29,7 @@ func (c *updateGMStreak) Run() error {
 	}
 	expiredStreak := []model.DiscordUserGMStreak{}
 	for _, streak := range streaks {
-		expireTime := streak.LastStreakDate.Add(time.Hour * 24)
+		expireTime := streak.LastStreakDate.Add(time.Hour * 48)
 		if time.Now().After(expireTime) {
 			streak.StreakCount = 0
 			expiredStreak = append(expiredStreak, streak)
