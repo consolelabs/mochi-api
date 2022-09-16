@@ -366,7 +366,7 @@ func (d *Discord) ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse
 	embed := util.GenerateUpvoteMessage(msg.UserID, source)
 	voteRemindStr := "\n\nCheck your progress and vote for Mochi with `$vote`"
 	if msg.GuildID != d.mochiGuildID {
-		voteRemindStr += "\n[Join Mochi server](https://discord.gg/pChSvr4q) <:threat:1019815998116859965>"
+		voteRemindStr += "\n[Join Mochi server](https://discord.gg/FUDwZ2GqnN) <:threat:1019815998116859965>"
 	}
 	msgEmbed := discordgo.MessageEmbed{
 		Title:       embed.Title,
