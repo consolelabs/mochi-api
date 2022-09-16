@@ -86,11 +86,29 @@ func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.Disco
 	return streak, http.StatusOK, nil
 }
 
+func (e *Entity) GetAllGMStreak() ([]model.DiscordUserGMStreak, error) {
+	streaks, err := e.repo.DiscordUserGMStreak.GetAll()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetAllGMStreak] fail to get all gm streaks")
+		return nil, fmt.Errorf("failed to get all gm streaks: %v", err)
+	}
+	return streaks, nil
+}
+
+func (e *Entity) UpsertBatchGMStreak(streaks []model.DiscordUserGMStreak) error {
+	err := e.repo.DiscordUserGMStreak.UpsertBatch(streaks)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.UpsertOneGMStreak] fail to get all gm streaks")
+		return fmt.Errorf("failed to upsert gm streaks: %v", err)
+	}
+	return nil
+}
+
 func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUserCurrentUpvoteStreakResponse, int, error) {
 	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(discordID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Errorf(err, "[e.GetUserCurrentUpvoteStreak] fail to get user upvote streak")
-		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's gm streak: %v", err)
+		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's upvote streak: %v", err)
 	}
 	if err == gorm.ErrRecordNotFound {
 		e.log.Info("[e.GetUserCurrentUpvoteStreak] user upvote streak empty")
@@ -129,6 +147,24 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 		TotalCount:              streak.TotalCount,
 		LastStreakTime:          streak.LastStreakDate,
 	}, http.StatusOK, nil
+}
+
+func (e *Entity) GetAllUpvoteStreak() ([]model.DiscordUserUpvoteStreak, error) {
+	streaks, err := e.repo.DiscordUserUpvoteStreak.GetAll()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetAllUpvoteStreak] fail to get all upvote streaks")
+		return nil, fmt.Errorf("failed to get all upvote streaks: %v", err)
+	}
+	return streaks, nil
+}
+
+func (e *Entity) UpsertBatchUpvoteStreak(streak []model.DiscordUserUpvoteStreak) error {
+	err := e.repo.DiscordUserUpvoteStreak.UpsertBatch(streak)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetAllUpvoteStreak] fail to get all upvote streaks")
+		return fmt.Errorf("failed to upsert upvote streaks: %v", err)
+	}
+	return nil
 }
 
 func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {

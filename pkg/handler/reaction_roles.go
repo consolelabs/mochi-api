@@ -16,7 +16,7 @@ import (
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.ListRoleReactionResponse
+// @Success     200 {object} response.DataListRoleReactionResponse
 // @Router      /configs/reaction-roles [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 	guildID, guildIDExist := c.GetQuery("guild_id")
@@ -33,7 +33,9 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, response.DataListRoleReactionResponse{
+		Data: *resp,
+	})
 
 }
 

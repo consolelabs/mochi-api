@@ -28,3 +28,7 @@ type ListRoleReactionResponse struct {
 	Configs []RoleReactionByMessage `json:"configs"`
 	Success bool                    `json:"success"`
 }
+
+type DataListRoleReactionResponse struct {
+	Data ListRoleReactionResponse `json:"data"`
+}

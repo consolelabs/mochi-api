@@ -1304,7 +1304,7 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 				rawQuery: "from=1658206545000&to=1658292945000",
 			},
 			want: &response.IndexerNFTCollectionTickersResponse{
-				Data: response.IndexerNFTCollectionTickersData{
+				Data: &response.IndexerNFTCollectionTickersData{
 					Tickers: &response.IndexerTickers{},
 					FloorPrice: &response.IndexerPrice{
 						Amount: "10",
@@ -1356,7 +1356,7 @@ func TestEntity_GetNFTCollectionTickers(t *testing.T) {
 		Address: "0x23581767a106ae21c074b2276D25e5C3e136a68h",
 	}
 	indexerTicker := &response.IndexerNFTCollectionTickersResponse{
-		Data: response.IndexerNFTCollectionTickersData{
+		Data: &response.IndexerNFTCollectionTickersData{
 			Tickers: &response.IndexerTickers{},
 			FloorPrice: &response.IndexerPrice{
 				Amount: "10",

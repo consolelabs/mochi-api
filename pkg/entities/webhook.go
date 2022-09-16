@@ -433,7 +433,7 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 		return nil
 	}
 
-	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 12)
+	nextStreakDate := streak.LastStreakDate.Add(time.Hour * 24)
 
 	switch {
 	case chatDate.Before(nextStreakDate):

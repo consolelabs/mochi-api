@@ -6,6 +6,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/util"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/request"
@@ -70,6 +71,10 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to find inviter")
+		if util.IsAcceptableErr(err) {
+			c.JSON(http.StatusOK, gin.H{"data": response.HandleInviteHistoryResponse{}})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
