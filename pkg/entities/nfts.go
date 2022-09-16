@@ -348,11 +348,11 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		return nil, err
 	}
 
+	req.Address = checksumAddress
 	if checkExistNFT {
 		return e.handleExistCollection(req)
 	}
 
-	req.Address = checksumAddress
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, err := strconv.Atoi(convertedChainId)
 	if err != nil {
