@@ -22,7 +22,6 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/k0kubun/pp"
 	"gorm.io/gorm"
 )
 
@@ -62,8 +61,6 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 
 	// get collection
 	collections, err := e.repo.NFTCollection.GetBySymbolorName(symbol)
-	pp.Println(collections)
-	pp.Println(err)
 	// cannot find collection => return suggested collections
 	if err != nil || len(collections) == 0 {
 		suggest, err = e.GetNFTSuggestion(symbol, tokenID)
