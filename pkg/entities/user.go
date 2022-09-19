@@ -69,6 +69,7 @@ func (e *Entity) GetUser(discordID string) (*response.User, error) {
 		InDiscordWalletAddress: &user.InDiscordWalletAddress.String,
 		InDiscordWalletNumber:  &user.InDiscordWalletNumber.Int64,
 		GuildUsers:             guildUsers,
+		NrOfJoin:               user.NrOfJoin,
 	}
 	return res, nil
 }
@@ -448,7 +449,8 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 
 	if invitee != nil {
 		// create invitee if not exist
-		if _, err := e.GetOneOrUpsertUser(invitee.User.ID); err != nil {
+		user, err := e.GetOneOrUpsertUser(invitee.User.ID)
+		if err != nil {
 			e.log.Fields(logger.Fields{"userID": invitee.User.ID, "username": invitee.User.Username}).
 				Error(err, "[Entity][CreateInvite] GetOneOrUpsertUser() failed to create user for invitee")
 			return nil, err
@@ -465,6 +467,15 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 				"inviteeNickname": invitee.Nick,
 				"inviterID":       res.InviterID,
 			}).Error(err, "[Entity][CreateInvite] failed to create guild user for invitee")
+			return nil, err
+		}
+		// update nr_of_join of user
+		err = e.repo.Users.UpdateNrOfJoin(invitee.User.ID, user.NrOfJoin+1)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"guildID":   invitee.GuildID,
+				"inviteeID": invitee.User.ID,
+			}).Error(err, "[Entity][CreateInvite] failed to update nr_of_join of user")
 			return nil, err
 		}
 

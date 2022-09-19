@@ -6895,6 +6895,9 @@ const docTemplate = `{
                 "in_discord_wallet_number": {
                     "type": "integer"
                 },
+                "nr_of_join": {
+                    "type": "integer"
+                },
                 "username": {
                     "type": "string"
                 }

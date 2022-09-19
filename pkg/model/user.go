@@ -5,6 +5,7 @@ type User struct {
 	Username               string         `json:"username"`
 	InDiscordWalletAddress JSONNullString `json:"in_discord_wallet_address"`
 	InDiscordWalletNumber  JSONNullInt64  `json:"in_discord_wallet_number"`
+	NrOfJoin               int64          `json:"nr_of_join"`
 
 	GuildUsers []*GuildUser `json:"guild_users"`
 }

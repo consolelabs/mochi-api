@@ -13,6 +13,7 @@ type User struct {
 	InDiscordWalletAddress *string                 `json:"in_discord_wallet_address"`
 	InDiscordWalletNumber  *int64                  `json:"in_discord_wallet_number"`
 	GuildUsers             []*GetGuildUserResponse `json:"guild_users"`
+	NrOfJoin               int64                   `json:"nr_of_join"`
 }
 
 type GetGuildUserResponse struct {
