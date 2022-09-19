@@ -2498,7 +2498,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2662,7 +2662,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.NFTCollection"
+                            "$ref": "#/definitions/response.GetNFTCollectionByAddressChainResponse"
                         }
                     }
                 }
@@ -3737,7 +3737,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5713,6 +5713,14 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "response.GetNFTCollectionByAddressChainResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.NFTCollection"
                 }
             }
         },

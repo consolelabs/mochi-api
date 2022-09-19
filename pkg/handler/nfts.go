@@ -452,7 +452,7 @@ func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
 // @Produce     json
 // @Param       address   path  string true  "Collection Address"
 // @Param       chain   query  string true  "Chain"
-// @Success     200 {object} model.NFTCollection
+// @Success     200 {object} response.GetNFTCollectionByAddressChainResponse
 // @Router      /nfts/collections/address/{address} [get]
 func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 	address := c.Param("address")
@@ -475,7 +475,7 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, &response.GetNFTCollectionByAddressChainResponse{Data: data})
 }
 
 // UpdateNFTCollection     godoc
