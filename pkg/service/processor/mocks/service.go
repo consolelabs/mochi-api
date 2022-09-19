@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	request "github.com/defipod/mochi/pkg/request"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -62,4 +63,18 @@ func (m *MockService) GetUserFactionXp(userDiscordId string) (*model.GetUserFact
 func (mr *MockServiceMockRecorder) GetUserFactionXp(userDiscordId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserFactionXp", reflect.TypeOf((*MockService)(nil).GetUserFactionXp), userDiscordId)
+}
+
+// HandleUserUpvote mocks base method.
+func (m *MockService) HandleUserUpvote(req *request.UserUpvoteProcessorRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HandleUserUpvote", req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// HandleUserUpvote indicates an expected call of HandleUserUpvote.
+func (mr *MockServiceMockRecorder) HandleUserUpvote(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HandleUserUpvote", reflect.TypeOf((*MockService)(nil).HandleUserUpvote), req)
 }
