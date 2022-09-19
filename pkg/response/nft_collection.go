@@ -24,6 +24,10 @@ type NFTNewListedResponse struct {
 }
 
 type NFTCollectionsResponse struct {
+	Data NFTCollections `json:"data"`
+}
+
+type NFTCollections struct {
 	util.Pagination
 	Data []model.NFTCollection `json:"data"`
 }
