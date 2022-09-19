@@ -1759,7 +1759,7 @@ definitions:
       total:
         type: integer
     type: object
-  response.NFTCollectionsResponse:
+  response.NFTCollections:
     properties:
       data:
         items:
@@ -1771,6 +1771,11 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  response.NFTCollectionsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTCollections'
     type: object
   response.NFTNewListedResponse:
     properties:
@@ -3582,7 +3587,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4544,7 +4549,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

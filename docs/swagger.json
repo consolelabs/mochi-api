@@ -2498,7 +2498,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3737,7 +3737,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -6498,7 +6498,7 @@
                 }
             }
         },
-        "response.NFTCollectionsResponse": {
+        "response.NFTCollections": {
             "type": "object",
             "properties": {
                 "data": {
@@ -6515,6 +6515,14 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.NFTCollectionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTCollections"
                 }
             }
         },

@@ -2506,7 +2506,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3745,7 +3745,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -6506,7 +6506,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTCollectionsResponse": {
+        "response.NFTCollections": {
             "type": "object",
             "properties": {
                 "data": {
@@ -6523,6 +6523,14 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.NFTCollectionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTCollections"
                 }
             }
         },
