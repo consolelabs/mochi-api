@@ -469,7 +469,7 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 			}).Error(err, "[Entity][CreateInvite] failed to create guild user for invitee")
 			return nil, err
 		}
-		// update nr_of_join of user
+
 		err = e.repo.Users.UpdateNrOfJoin(invitee.User.ID, user.NrOfJoin+1)
 		if err != nil {
 			e.log.Fields(logger.Fields{
