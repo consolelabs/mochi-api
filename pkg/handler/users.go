@@ -59,7 +59,7 @@ func (h *Handler) GetUser(c *gin.Context) {
 	if err != nil {
 		if err == entities.ErrRecordNotFound {
 			h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUser] - users not found")
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"data": nil})
 			return
 		}
 		h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUser] - failed to get user")
