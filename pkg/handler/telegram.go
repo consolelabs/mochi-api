@@ -9,26 +9,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetLinkedTelegramID     godoc
+// GetLinkedTelegram     godoc
 // @Summary     Get telegram account linked with discord ID
 // @Description Get telegram account linked with discord ID
 // @Tags        Telegram
 // @Accept      json
 // @Produce     json
-// @Param       telegram_id query string true "request"
+// @Param       telegram_username query string true "request"
 // @Success     200 {object} response.GetLinkedTelegramResponse
 // @Router      /configs/telegram [get]
 func (h *Handler) GetLinkedTelegram(c *gin.Context) {
-	telegramID := c.Query("telegram_id")
-	if telegramID == "" {
-		h.log.Info("[handler.GetLinkedTelegram] - telegram_id is required")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "telegram_id is required"})
+	telegramUsername := c.Query("telegram_username")
+	if telegramUsername == "" {
+		h.log.Info("[handler.GetLinkedTelegram] - telegram_username is required")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "telegram_username is required"})
 		return
 	}
-	res, err := h.entities.GetTelegramByDiscordID(telegramID)
+	res, err := h.entities.GetByTelegramUsername(telegramUsername)
 	if err != nil {
-		h.log.Error(err, "[handler.GetLinkedTelegram] entity.GetTelegramByDiscordID() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		h.log.Error(err, "[handler.GetLinkedTelegram] entity.GetByTelegramUsername() failed")
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
