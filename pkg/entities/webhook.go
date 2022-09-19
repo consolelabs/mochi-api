@@ -497,6 +497,19 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 			Error(err, "[Entity][handleUpvoteXPBonus] failed to create guild_user_activity_logs")
 		return err
 	}
+
+	if err := e.svc.Processor.HandleUserUpvote(&request.UserUpvoteProcessorRequest{
+		App:    "Neko Bot",
+		Action: "vote",
+		Data: request.UserDiscordID{
+			UserID: streak.DiscordID,
+		},
+	}); err != nil {
+		e.log.
+			Fields(logger.Fields{"userID": streak.DiscordID}).
+			Error(err, "[Entity][handleUpvoteXPBonus] service.Processor request failed")
+		return err
+	}
 	return nil
 }
 
