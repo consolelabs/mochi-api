@@ -2506,7 +2506,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2670,7 +2670,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.NFTCollection"
+                            "$ref": "#/definitions/response.GetNFTCollectionByAddressChainResponse"
                         }
                     }
                 }
@@ -3745,7 +3745,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5721,6 +5721,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "response.GetNFTCollectionByAddressChainResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.NFTCollection"
                 }
             }
         },

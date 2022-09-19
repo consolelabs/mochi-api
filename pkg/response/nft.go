@@ -185,3 +185,7 @@ type GetAllNFTSalesTrackerResponse struct {
 type GetCollectionCountResponse struct {
 	Data *NFTCollectionCount `json:"data"`
 }
+
+type GetNFTCollectionByAddressChainResponse struct {
+	Data *model.NFTCollection `json:"data"`
+}
