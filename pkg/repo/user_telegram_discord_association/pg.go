@@ -22,8 +22,8 @@ func (pg *pg) GetOneByTelegramUsername(telegramUsername string) (*model.UserTele
 func (pg *pg) Upsert(model *model.UserTelegramDiscordAssociation) error {
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "telegram_username"}},
-		DoUpdates: clause.AssignmentColumns([]string{"discord_id"}),
+		Columns:   []clause.Column{{Name: "discord_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"telegram_username"}),
 	}).Create(model).Error
 	if err != nil {
 		tx.Rollback()
