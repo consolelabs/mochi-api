@@ -30,6 +30,7 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
+	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -42,6 +43,7 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	"github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -67,6 +69,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigWelcomeChannel:            guildconfigwelcomechannel.NewPG(db),
+		GuildConfigVoteChannel:               guildconfigvotechannel.NewPG(db),
 		DiscordUserUpvoteStreak:              discorduserupvotestreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		DiscordUserUpvoteLog:                 discorduserupvotelog.NewPG(db),
@@ -105,5 +108,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
 		UserTelegramDiscordAssociation:       usertelegramdiscordassociation.NewPG(db),
+		ServersUsageStats:                    serversusagestats.NewPG(db),
 	}
 }

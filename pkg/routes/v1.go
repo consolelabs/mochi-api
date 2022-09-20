@@ -58,6 +58,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
 		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
+		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
 		userGroup.GET("/top", h.GetTopUsers)
 	}
 
@@ -83,9 +84,15 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configGroup.GET("")
 		configGroup.GET("/gm", h.GetGmConfig)
 		configGroup.POST("/gm", h.UpsertGmConfig)
+		// config welcome channel
 		configGroup.GET("/welcome", h.GetWelcomeChannelConfig)
 		configGroup.POST("/welcome", h.UpsertWelcomeChannelConfig)
 		configGroup.DELETE("/welcome", h.DeleteWelcomeChannelConfig)
+		// config vote channel
+		configGroup.GET("/upvote", h.GetVoteChannelConfig)
+		configGroup.POST("/upvote", h.UpsertVoteChannelConfig)
+		configGroup.DELETE("/upvote", h.DeleteVoteChannelConfig)
+		//
 		configGroup.GET("/upvote-tiers", h.GetUpvoteTiersConfig)
 		configGroup.GET("/sales-tracker", h.GetSalesTrackerConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
@@ -251,5 +258,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	cacheGroup := v1.Group("/cache")
 	{
 		cacheGroup.POST("/upvote", h.SetUpvoteMessageCache)
+	}
+	usageGroup := v1.Group("/usage-stats")
+	{
+		usageGroup.POST("", h.AddServersUsageStat)
 	}
 }

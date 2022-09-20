@@ -129,6 +129,34 @@ func (h *Handler) GetUserCurrentUpvoteStreak(c *gin.Context) {
 	c.JSON(code, gin.H{"data": res})
 }
 
+// GetUserUpvoteLeaderboard     godoc
+// @Summary     Get user upvote leaderboard
+// @Description Get user upvote leaderboard
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       by query     string true "streak / total"
+// @Param       guild_id query     string true "Guild ID"
+// @Success     200 {object} response.GetUserUpvoteLeaderboardResponse
+// @Router      /users/upvote-leaderboard [get]
+func (h *Handler) GetUserUpvoteLeaderboard(c *gin.Context) {
+	by := c.Query("by")
+	if by == "" {
+		by = "total"
+	}
+	guildId := c.Query("guild_id")
+	res, err := h.entities.GetUpvoteLeaderboard(by, guildId)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserUpvoteLeaderboard] - failed to get upvote leaderboard by total")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.GetUserUpvoteLeaderboardResponse{
+		Message: "ok",
+		Data:    &res,
+	})
+}
+
 // GetMyInfo     godoc
 // @Summary     Get user info
 // @Description Get user info

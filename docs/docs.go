@@ -1148,7 +1148,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "request",
-                        "name": "telegram_id",
+                        "name": "telegram_username",
                         "in": "query",
                         "required": true
                     }
@@ -1521,6 +1521,102 @@ const docTemplate = `{
                         "name": "guild_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/upvote": {
+            "get": {
+                "description": "Get vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get vote channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Update or insert vote channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete vote channel config",
+                "parameters": [
+                    {
+                        "description": "Delete vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -3327,6 +3423,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/upvote-leaderboard": {
+            "get": {
+                "description": "Get user upvote leaderboard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user upvote leaderboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "streak / total",
+                        "name": "by",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserUpvoteLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/upvote-streak": {
             "get": {
                 "description": "Get user current upvote streak",
@@ -4135,6 +4270,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DiscordUserUpvoteStreak": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "last_streak_date": {
+                    "type": "string"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigActivity": {
             "type": "object",
             "properties": {
@@ -4264,6 +4422,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "twitter_consumer_secret": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GuildConfigVoteChannel": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
                     "type": "string"
                 }
             }
@@ -4567,8 +4739,8 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
@@ -4840,6 +5012,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteVoteChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteWelcomeConfigRequest": {
             "type": "object",
             "properties": {
@@ -4902,8 +5082,8 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
@@ -5149,6 +5329,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertVoteChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 }
             }
@@ -5878,6 +6069,31 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserUpvoteLeaderboardResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiscordUserUpvoteStreak"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GetVoteChannelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigVoteChannel"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetWatchlistResponse": {
             "type": "object",
             "properties": {
@@ -6301,8 +6517,8 @@ const docTemplate = `{
                 "discord_username": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },

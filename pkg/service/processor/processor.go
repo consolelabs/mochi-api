@@ -3,6 +3,7 @@ package processor
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -94,12 +95,14 @@ func (p *processor) HandleUserUpvote(req *request.UserUpvoteProcessorRequest) er
 	if err != nil {
 		return err
 	}
+	request.Header.Add("Content-Type", "application/json")
 
 	response, err := client.Do(request)
-	if err != nil {
-		return err
+	if err != nil || response.StatusCode != 200 {
+		return fmt.Errorf("failed to handle user upvote: %s", err)
 	}
 
 	defer response.Body.Close()
+
 	return nil
 }
