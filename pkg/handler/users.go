@@ -136,6 +136,7 @@ func (h *Handler) GetUserCurrentUpvoteStreak(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       by query     string true "streak / total"
+// @Param       guild_id query     string true "Guild ID"
 // @Success     200 {object} response.GetUserUpvoteLeaderboardResponse
 // @Router      /users/upvote-leaderboard [get]
 func (h *Handler) GetUserUpvoteLeaderboard(c *gin.Context) {
@@ -143,37 +144,16 @@ func (h *Handler) GetUserUpvoteLeaderboard(c *gin.Context) {
 	if by == "" {
 		by = "total"
 	}
-
-	if by == "total" {
-		res, err := h.entities.GetUpvoteLeaderboardByTotal()
-		if err != nil {
-			h.log.Error(err, "[handler.GetUserUpvoteLeaderboard] - failed to get upvote leaderboard by total")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, response.GetUserUpvoteLeaderboardResponse{
-			Message: "ok",
-			Data:    &res,
-		})
-		return
-	}
-
-	if by == "streak" {
-		res, err := h.entities.GetUpvoteLeaderboardByStreak()
-		if err != nil {
-			h.log.Error(err, "[handler.GetUserUpvoteLeaderboard] - failed to get upvote leaderboard by streak")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, response.GetUserUpvoteLeaderboardResponse{
-			Message: "ok",
-			Data:    &res,
-		})
+	guildId := c.Query("guild_id")
+	res, err := h.entities.GetUpvoteLeaderboard(by, guildId)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserUpvoteLeaderboard] - failed to get upvote leaderboard by total")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, response.GetUserUpvoteLeaderboardResponse{
-		Message: "invalid query string",
-		Data:    nil,
+		Message: "ok",
+		Data:    &res,
 	})
 }
 

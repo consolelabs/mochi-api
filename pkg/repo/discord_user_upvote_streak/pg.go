@@ -67,3 +67,45 @@ func (pg *pg) GetTopByTotal() ([]model.DiscordUserUpvoteStreak, error) {
 	var streaks []model.DiscordUserUpvoteStreak
 	return streaks, pg.db.Table("discord_user_upvote_streaks").Order("total_count DESC").Limit(10).Find(&streaks).Error
 }
+
+func (pg *pg) GetGuildTopByStreak(guildId string) ([]model.DiscordUserUpvoteStreak, error) {
+	var res []model.DiscordUserUpvoteStreak
+	rows, err := pg.db.Raw(`
+	select * from discord_user_upvote_streaks where discord_id IN (
+		select DISTINCT user_id from guild_users where guild_id=?
+	)
+	ORDER BY streak_count DESC LIMIT 10
+	`, guildId).Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		tmp := model.DiscordUserUpvoteStreak{}
+		if err := rows.Scan(&tmp.DiscordID, &tmp.StreakCount, &tmp.TotalCount, &tmp.LastStreakDate, &tmp.CreatedAt, &tmp.UpdatedAt); err != nil {
+			return nil, err
+		}
+		res = append(res, tmp)
+	}
+	return res, nil
+}
+
+func (pg *pg) GetGuildTopByTotal(guildId string) ([]model.DiscordUserUpvoteStreak, error) {
+	var res []model.DiscordUserUpvoteStreak
+	rows, err := pg.db.Raw(`
+	select * from discord_user_upvote_streaks where discord_id IN (
+		select DISTINCT user_id from guild_users where guild_id=?
+	)
+	ORDER BY total_count DESC LIMIT 10
+	`, guildId).Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		tmp := model.DiscordUserUpvoteStreak{}
+		if err := rows.Scan(&tmp.DiscordID, &tmp.StreakCount, &tmp.TotalCount, &tmp.LastStreakDate, &tmp.CreatedAt, &tmp.UpdatedAt); err != nil {
+			return nil, err
+		}
+		res = append(res, tmp)
+	}
+	return res, nil
+}

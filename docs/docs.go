@@ -3443,6 +3443,13 @@ const docTemplate = `{
                         "name": "by",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

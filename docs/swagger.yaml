@@ -4373,6 +4373,11 @@ paths:
         name: by
         required: true
         type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
