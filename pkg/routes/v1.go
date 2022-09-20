@@ -84,9 +84,15 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configGroup.GET("")
 		configGroup.GET("/gm", h.GetGmConfig)
 		configGroup.POST("/gm", h.UpsertGmConfig)
+		// config welcome channel
 		configGroup.GET("/welcome", h.GetWelcomeChannelConfig)
 		configGroup.POST("/welcome", h.UpsertWelcomeChannelConfig)
 		configGroup.DELETE("/welcome", h.DeleteWelcomeChannelConfig)
+		// config vote channel
+		configGroup.GET("/upvote", h.GetVoteChannelConfig)
+		configGroup.POST("/upvote", h.UpsertVoteChannelConfig)
+		configGroup.DELETE("/upvote", h.DeleteVoteChannelConfig)
+		//
 		configGroup.GET("/upvote-tiers", h.GetUpvoteTiersConfig)
 		configGroup.GET("/sales-tracker", h.GetSalesTrackerConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")

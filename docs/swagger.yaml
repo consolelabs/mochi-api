@@ -326,6 +326,15 @@ definitions:
       twitter_consumer_secret:
         type: string
     type: object
+  model.GuildConfigVoteChannel:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+    type: object
   model.GuildConfigWalletVerificationMessage:
     properties:
       content:
@@ -698,6 +707,11 @@ definitions:
       name:
         type: string
     type: object
+  request.DeleteVoteChannelConfigRequest:
+    properties:
+      guild_id:
+        type: string
+    type: object
   request.DeleteWelcomeConfigRequest:
     properties:
       guild_id:
@@ -899,6 +913,13 @@ definitions:
       guild_id:
         type: string
       symbol:
+        type: string
+    type: object
+  request.UpsertVoteChannelConfigRequest:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
         type: string
     type: object
   request.UpsertWelcomeConfigRequest:
@@ -1372,6 +1393,13 @@ definitions:
         items:
           $ref: '#/definitions/model.DiscordUserUpvoteStreak'
         type: array
+      message:
+        type: string
+    type: object
+  response.GetVoteChannelConfigResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigVoteChannel'
       message:
         type: string
     type: object
@@ -3063,6 +3091,69 @@ paths:
           schema:
             $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
       summary: Get twitter hashtag config
+      tags:
+      - Config
+  /configs/upvote:
+    delete:
+      consumes:
+      - application/json
+      description: Delete vote channel config
+      parameters:
+      - description: Delete vote channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteVoteChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete vote channel config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get vote channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Get vote channel config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Update or insert vote channel config
+      parameters:
+      - description: Upsert vote channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertVoteChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Update or insert vote channel config
       tags:
       - Config
   /configs/upvote-tiers:

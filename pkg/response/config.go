@@ -39,6 +39,11 @@ type GetWelcomeChannelConfigResponse struct {
 	Data    *model.GuildConfigWelcomeChannel `json:"data"`
 }
 
+type GetVoteChannelConfigResponse struct {
+	Message string                        `json:"message"`
+	Data    *model.GuildConfigVoteChannel `json:"data"`
+}
+
 type GetSalesTrackerConfigResponse struct {
 	Message string                         `json:"message"`
 	Data    *model.GuildConfigSalesTracker `json:"data"`
