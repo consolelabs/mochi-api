@@ -1,7 +1,9 @@
 package serversusagestats
 
-import "github.com/defipod/mochi/pkg/request"
+import (
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type Store interface {
-	CreateOne(info *request.UsageInformation) error
+	CreateOne(info *model.UsageStat) error
 }
