@@ -147,8 +147,8 @@ func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakC
 			Name:    "Good Morning!",
 			IconURL: "https://cdn.discordapp.com/attachments/701029345795375114/1013773058068201482/mochi.jpeg",
 		},
-		Description: "<@" + userDiscordID + "> just say hi to everyone.\n\nGM streak: **" +
-			strconv.Itoa(streakCount) + "**\n\n" + approveIcon + "\n\n" +
+		Description: "<@" + userDiscordID + "> just said hi to everyone.\nGM streak: **" +
+			strconv.Itoa(streakCount) + "**\n" + approveIcon + "\n\n" +
 			"**Faction XP Update**\n<:rebelio:1013777675099316224> Rebellio EXP: **" +
 			strconv.Itoa(int(podTownXps.Data.TotalFameXps)) + "/" + strconv.Itoa(int(podTownXps.Data.NextFameXps)) +
 			"`(+" + strconv.Itoa(int(podTownXps.Data.FameXp)) + ")`" +
