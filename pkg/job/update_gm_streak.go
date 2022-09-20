@@ -29,7 +29,9 @@ func (c *updateGMStreak) Run() error {
 	}
 	expiredStreak := []model.DiscordUserGMStreak{}
 	for _, streak := range streaks {
-		expireTime := streak.LastStreakDate.Add(time.Hour * 48)
+		gmDate := time.Date(streak.LastStreakDate.Year(), streak.LastStreakDate.Month(), streak.LastStreakDate.Day(), 0, 0, 0, 0, time.UTC)
+		// 2 days since last gm
+		expireTime := gmDate.Add(time.Hour * 48)
 		if time.Now().After(expireTime) {
 			streak.StreakCount = 0
 			expiredStreak = append(expiredStreak, streak)

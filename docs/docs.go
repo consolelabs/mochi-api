@@ -2506,7 +2506,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -2670,7 +2670,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.NFTCollection"
+                            "$ref": "#/definitions/response.GetNFTCollectionByAddressChainResponse"
                         }
                     }
                 }
@@ -3745,7 +3745,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5724,6 +5724,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetNFTCollectionByAddressChainResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.NFTCollection"
+                }
+            }
+        },
         "response.GetRepostReactionConfigsResponse": {
             "type": "object",
             "properties": {
@@ -6885,6 +6893,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "in_discord_wallet_number": {
+                    "type": "integer"
+                },
+                "nr_of_join": {
                     "type": "integer"
                 },
                 "username": {

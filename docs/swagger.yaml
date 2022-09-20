@@ -1252,6 +1252,11 @@ definitions:
       data:
         $ref: '#/definitions/discordgo.User'
     type: object
+  response.GetNFTCollectionByAddressChainResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.NFTCollection'
+    type: object
   response.GetRepostReactionConfigsResponse:
     properties:
       data:
@@ -2005,6 +2010,8 @@ definitions:
       in_discord_wallet_address:
         type: string
       in_discord_wallet_number:
+        type: integer
+      nr_of_join:
         type: integer
       username:
         type: string
@@ -3577,7 +3584,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -3899,7 +3906,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.NFTCollection'
+            $ref: '#/definitions/response.GetNFTCollectionByAddressChainResponse'
       summary: Get NFT collection by address chain
       tags:
       - NFT
@@ -4539,7 +4546,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

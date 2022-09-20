@@ -53,3 +53,8 @@ func (pg *pg) GetByDiscordIDs(discordIDs []string) ([]model.User, error) {
 	users := []model.User{}
 	return users, pg.db.Where("id IN (?)", discordIDs).Find(&users).Error
 }
+
+func (pg *pg) UpdateNrOfJoin(discordId string, nrOfJoin int64) error {
+	u := &model.User{}
+	return pg.db.Model(u).Where("id = ?", discordId).Update("nr_of_join", nrOfJoin).Error
+}
