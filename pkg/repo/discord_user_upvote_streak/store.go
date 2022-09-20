@@ -9,4 +9,6 @@ type Store interface {
 	GetAll() ([]model.DiscordUserUpvoteStreak, error)
 	GetTopByStreak() ([]model.DiscordUserUpvoteStreak, error)
 	GetTopByTotal() ([]model.DiscordUserUpvoteStreak, error)
+	GetGuildTopByStreak(guildId string) ([]model.DiscordUserUpvoteStreak, error)
+	GetGuildTopByTotal(guildId string) ([]model.DiscordUserUpvoteStreak, error)
 }

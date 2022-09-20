@@ -150,22 +150,49 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 	}, http.StatusOK, nil
 }
 
-func (e *Entity) GetUpvoteLeaderboardByStreak() ([]model.DiscordUserUpvoteStreak, error) {
-	streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByStreak()
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Errorf(err, "[e.GetUpvoteLeaderboardByStreak] fail to get upvote leaderboard by streak")
-		return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+func (e *Entity) GetUpvoteLeaderboard(by, guildId string) ([]model.DiscordUserUpvoteStreak, error) {
+	if guildId == "" {
+		switch by {
+		case "total":
+			streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByTotal()
+			if err != nil && err != gorm.ErrRecordNotFound {
+				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote global leaderboard by total")
+				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+			}
+			return streaks, nil
+		case "streak":
+			streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByStreak()
+			if err != nil && err != gorm.ErrRecordNotFound {
+				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote global leaderboard by streak")
+				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+			}
+			return streaks, nil
+		default:
+			e.log.Infof("[e.GetUpvoteLeaderboard] invalid query string by=%s", by)
+			return nil, fmt.Errorf("invalid query string")
+		}
+	} else {
+		switch by {
+		case "total":
+			streaks, err := e.repo.DiscordUserUpvoteStreak.GetGuildTopByTotal(guildId)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote guild leaderboard by total")
+				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+			}
+			return streaks, nil
+		case "streak":
+			streaks, err := e.repo.DiscordUserUpvoteStreak.GetGuildTopByStreak(guildId)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote guild leaderboard by streak")
+				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+			}
+			return streaks, nil
+		default:
+			e.log.Infof("[e.GetUpvoteLeaderboard] invalid query string by=%s", by)
+			return nil, fmt.Errorf("invalid query string")
+		}
 	}
-	return streaks, nil
-}
 
-func (e *Entity) GetUpvoteLeaderboardByTotal() ([]model.DiscordUserUpvoteStreak, error) {
-	streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByTotal()
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Errorf(err, "[e.GetUpvoteLeaderboardByTotal] fail to get upvote leaderboard by total")
-		return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
-	}
-	return streaks, nil
 }
 
 func (e *Entity) GetAllUpvoteStreak() ([]model.DiscordUserUpvoteStreak, error) {
