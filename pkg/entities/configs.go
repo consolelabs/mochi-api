@@ -19,6 +19,7 @@ func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetGmConfig] repo.GuildConfigGmGn.GetByGuildID failed")
 		return nil, err
 	}
 
@@ -30,6 +31,7 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 	}); err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertGmConfig] repo.GuildConfigGmGn.UpsertOne failed")
 		return err
 	}
 
@@ -42,6 +44,7 @@ func (e *Entity) GetWelcomeChannelConfig(guildID string) (*model.GuildConfigWelc
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetWelcomeChannelConfig] repo.GuildConfigWelcomeChannel.GetByGuildID failed")
 		return nil, err
 	}
 
@@ -58,6 +61,7 @@ func (e *Entity) UpsertWelcomeChannelConfig(req request.UpsertWelcomeConfigReque
 		WelcomeMessage: req.WelcomeMsg,
 	})
 	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertWelcomeChannelConfig] repo.GuildConfigWelcomeChannel.UpsertOne failed")
 		return nil, err
 	}
 
@@ -68,6 +72,42 @@ func (e *Entity) DeleteWelcomeChannelConfig(req request.DeleteWelcomeConfigReque
 	if err := e.repo.GuildConfigWelcomeChannel.DeleteOne(&model.GuildConfigWelcomeChannel{
 		GuildID: req.GuildID,
 	}); err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[Entity][DeleteWelcomeChannelConfig] repo.GuildConfigWelcomeChannel.DeleteOne failed")
+		return err
+	}
+
+	return nil
+}
+
+func (e *Entity) GetVoteChannelConfig(guildID string) (*model.GuildConfigVoteChannel, error) {
+	config, err := e.repo.GuildConfigVoteChannel.GetByGuildID(guildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetVoteChannelConfig] repo.GuildConfigVoteChannel.GetByGuildID failed")
+		return nil, err
+	}
+	return config, nil
+}
+
+func (e *Entity) UpsertVoteChannelConfig(req request.UpsertVoteChannelConfigRequest) (*model.GuildConfigVoteChannel, error) {
+	config, err := e.repo.GuildConfigVoteChannel.UpsertOne(&model.GuildConfigVoteChannel{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertVoteChannelConfig] repo.GuildConfigVoteChannel.UpsertOne failed")
+		return nil, err
+	}
+	return config, nil
+}
+
+func (e *Entity) DeleteVoteChannelConfig(req request.DeleteVoteChannelConfigRequest) error {
+	if err := e.repo.GuildConfigVoteChannel.DeleteOne(&model.GuildConfigVoteChannel{
+		GuildID: req.GuildID,
+	}); err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[Entity][DeleteVoteChannelConfig] repo.GuildConfigVoteChannel.DeleteOne failed")
 		return err
 	}
 

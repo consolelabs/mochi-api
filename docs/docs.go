@@ -1533,6 +1533,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/upvote": {
+            "get": {
+                "description": "Get vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get vote channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Update or insert vote channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete vote channel config",
+                "parameters": [
+                    {
+                        "description": "Delete vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/upvote-tiers": {
             "get": {
                 "description": "Get all upvote tiers",
@@ -4323,6 +4419,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigVoteChannel": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigWalletVerificationMessage": {
             "type": "object",
             "properties": {
@@ -4895,6 +5005,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteVoteChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteWelcomeConfigRequest": {
             "type": "object",
             "properties": {
@@ -5204,6 +5322,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertVoteChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 }
             }
@@ -5941,6 +6070,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.DiscordUserUpvoteStreak"
                     }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GetVoteChannelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigVoteChannel"
                 },
                 "message": {
                     "type": "string"

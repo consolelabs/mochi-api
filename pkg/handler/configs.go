@@ -168,6 +168,100 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
+// GetGmConfig     godoc
+// @Summary     Get vote channel config
+// @Description Get vote channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetVoteChannelConfigResponse
+// @Router      /configs/upvote [get]
+func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetVoteChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+
+	config, err := h.entities.GetVoteChannelConfig(guildID)
+
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetVoteChannelConfig] - failed to get vote channel config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.GetVoteChannelConfigResponse{Message: "OK", Data: config})
+}
+
+// UpsertGmConfig     godoc
+// @Summary     Update or insert vote channel config
+// @Description Update or insert vote channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertVoteChannelConfigRequest true "Upsert vote channel config request"
+// @Success     200 {object} response.GetVoteChannelConfigResponse
+// @Router      /configs/upvote [post]
+func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
+	var req request.UpsertVoteChannelConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.UpsertVoteChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+	if req.ChannelID == "" {
+		h.log.Info("[handler.UpsertVoteChannelConfig] - channel id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+	}
+
+	config, err := h.entities.UpsertVoteChannelConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to upsert vote channel config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.GetVoteChannelConfigResponse{Message: "OK", Data: config})
+}
+
+// UpsertGmConfig     godoc
+// @Summary     Delete vote channel config
+// @Description Delete vote channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteVoteChannelConfigRequest true "Delete vote channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/upvote [delete]
+func (h *Handler) DeleteVoteChannelConfig(c *gin.Context) {
+	var req request.DeleteVoteChannelConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.DeleteVoteChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+	}
+
+	if err := h.entities.DeleteVoteChannelConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to delete vote channel config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+}
+
 // GetUpvoteTiersConfig     godoc
 // @Summary     Get all upvote tiers
 // @Description Get all upvote tiers

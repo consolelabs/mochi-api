@@ -30,6 +30,7 @@ import (
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
+	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
 	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
@@ -67,6 +68,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigWelcomeChannel:            guildconfigwelcomechannel.NewPG(db),
+		GuildConfigVoteChannel:               guildconfigvotechannel.NewPG(db),
 		DiscordUserUpvoteStreak:              discorduserupvotestreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		DiscordUserUpvoteLog:                 discorduserupvotelog.NewPG(db),
