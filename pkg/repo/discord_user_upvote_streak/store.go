@@ -7,4 +7,6 @@ type Store interface {
 	UpsertBatch(streak []model.DiscordUserUpvoteStreak) error
 	GetByDiscordID(discordID string) (*model.DiscordUserUpvoteStreak, error)
 	GetAll() ([]model.DiscordUserUpvoteStreak, error)
+	GetTopByStreak() ([]model.DiscordUserUpvoteStreak, error)
+	GetTopByTotal() ([]model.DiscordUserUpvoteStreak, error)
 }

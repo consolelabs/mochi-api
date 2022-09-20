@@ -57,3 +57,13 @@ func (pg *pg) GetAll() ([]model.DiscordUserUpvoteStreak, error) {
 	var streaks []model.DiscordUserUpvoteStreak
 	return streaks, pg.db.Table("discord_user_upvote_streaks").Find(&streaks).Error
 }
+
+func (pg *pg) GetTopByStreak() ([]model.DiscordUserUpvoteStreak, error) {
+	var streaks []model.DiscordUserUpvoteStreak
+	return streaks, pg.db.Table("discord_user_upvote_streaks").Order("streak_count DESC").Limit(10).Find(&streaks).Error
+}
+
+func (pg *pg) GetTopByTotal() ([]model.DiscordUserUpvoteStreak, error) {
+	var streaks []model.DiscordUserUpvoteStreak
+	return streaks, pg.db.Table("discord_user_upvote_streaks").Order("total_count DESC").Limit(10).Find(&streaks).Error
+}

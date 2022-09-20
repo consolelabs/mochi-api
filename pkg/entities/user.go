@@ -150,6 +150,24 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 	}, http.StatusOK, nil
 }
 
+func (e *Entity) GetUpvoteLeaderboardByStreak() ([]model.DiscordUserUpvoteStreak, error) {
+	streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByStreak()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetUpvoteLeaderboardByStreak] fail to get upvote leaderboard by streak")
+		return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+	}
+	return streaks, nil
+}
+
+func (e *Entity) GetUpvoteLeaderboardByTotal() ([]model.DiscordUserUpvoteStreak, error) {
+	streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByTotal()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetUpvoteLeaderboardByTotal] fail to get upvote leaderboard by total")
+		return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
+	}
+	return streaks, nil
+}
+
 func (e *Entity) GetAllUpvoteStreak() ([]model.DiscordUserUpvoteStreak, error) {
 	streaks, err := e.repo.DiscordUserUpvoteStreak.GetAll()
 	if err != nil && err != gorm.ErrRecordNotFound {

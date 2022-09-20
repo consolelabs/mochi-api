@@ -86,3 +86,8 @@ type GetUserCurrentUpvoteStreakResponse struct {
 type CurrentUserUpvoteStreakResponse struct {
 	Data GetUserCurrentUpvoteStreakResponse `json:"data"`
 }
+
+type GetUserUpvoteLeaderboardResponse struct {
+	Message string                           `json:"message"`
+	Data    *[]model.DiscordUserUpvoteStreak `json:"data"`
+}

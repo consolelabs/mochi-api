@@ -58,6 +58,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/:id", h.GetUser)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
 		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
+		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
 		userGroup.GET("/top", h.GetTopUsers)
 	}
 

@@ -1148,7 +1148,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "request",
-                        "name": "telegram_id",
+                        "name": "telegram_username",
                         "in": "query",
                         "required": true
                     }
@@ -3327,6 +3327,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/upvote-leaderboard": {
+            "get": {
+                "description": "Get user upvote leaderboard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user upvote leaderboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "streak / total",
+                        "name": "by",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserUpvoteLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/upvote-streak": {
             "get": {
                 "description": "Get user current upvote streak",
@@ -4135,6 +4167,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DiscordUserUpvoteStreak": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "last_streak_date": {
+                    "type": "string"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigActivity": {
             "type": "object",
             "properties": {
@@ -4567,8 +4622,8 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
@@ -4902,8 +4957,8 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
@@ -5878,6 +5933,20 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserUpvoteLeaderboardResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiscordUserUpvoteStreak"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetWatchlistResponse": {
             "type": "object",
             "properties": {
@@ -6301,8 +6370,8 @@ const docTemplate = `{
                 "discord_username": {
                     "type": "string"
                 },
-                "telegram_id": {
-                    "type": "integer"
+                "telegram_username": {
+                    "type": "string"
                 }
             }
         },
