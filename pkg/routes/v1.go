@@ -253,4 +253,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		cacheGroup.POST("/upvote", h.SetUpvoteMessageCache)
 	}
+	usageGroup := v1.Group("/usage-stats")
+	{
+		usageGroup.POST("", h.AddServersUsageStat)
+	}
 }
