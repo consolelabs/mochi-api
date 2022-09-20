@@ -40,6 +40,7 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -102,4 +103,5 @@ type Repo struct {
 	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
 	UserTelegramDiscordAssociation       usertelegramdiscordassociation.Store
+	ServersUsageStats                    serversusagestats.Store
 }
