@@ -421,6 +421,7 @@ func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, erro
 
 func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discordgo.Member) (*response.HandleInviteHistoryResponse, error) {
 	res := &response.HandleInviteHistoryResponse{}
+	var guildID string
 
 	if inviter != nil {
 		// create inviter if not exist
@@ -480,20 +481,24 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 		}
 
 		res.InviteeID = invitee.User.ID
+		res.IsInviteeABot = invitee.User.Bot
+		guildID = invitee.GuildID
+	}
 
-		// create invite history
-		inviteType := model.INVITE_TYPE_NORMAL
-		if inviter == nil {
-			inviteType = model.INVITE_TYPE_LEFT
-		}
+	// create invite history
+	inviteType := model.INVITE_TYPE_NORMAL
+	if inviter == nil {
+		inviteType = model.INVITE_TYPE_LEFT
+	}
 
-		// TODO: Can't find age of user now
-		// if time.Now().Unix()-invit < 60*60*24*3 {
-		// 	inviteType = model.INVITE_TYPE_FAKE
-		// }
+	// TODO: Can't find age of user now
+	// if time.Now().Unix()-invit < 60*60*24*3 {
+	// 	inviteType = model.INVITE_TYPE_FAKE
+	// }
 
+	if res.InviteeID != "" && res.InviterID != "" && guildID != "" {
 		if err := e.repo.InviteHistories.Create(&model.InviteHistory{
-			GuildID:   invitee.GuildID,
+			GuildID:   guildID,
 			UserID:    res.InviteeID,
 			InvitedBy: res.InviterID,
 			Type:      inviteType,
