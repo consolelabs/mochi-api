@@ -32,4 +32,5 @@ const (
 	PodVaultWithdraw    = "withdraw"
 	MarketplaceList     = "list"
 	AlphaReaction       = "alpha-reaction"
+	Vote                = "vote"
 )
