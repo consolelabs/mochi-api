@@ -157,6 +157,11 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 						Score: "",
 						Total: 6771,
 					},
+					Owner: response.IndexerNftTokenOwner{
+						OwnerAddress:      "0x5417A03667AbB6A059b3F174c1F67b1E83753046",
+						CollectionAddress: "",
+						TokenId:           "1",
+					},
 					MetadataID: "",
 				},
 			},
