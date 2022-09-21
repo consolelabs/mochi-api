@@ -6721,7 +6721,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTCollectionsResponse": {
+        "response.NFTCollectionsData": {
             "type": "object",
             "properties": {
                 "data": {
@@ -6730,14 +6730,16 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.NFTCollection"
                     }
                 },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.NFTCollectionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTCollectionsData"
                 }
             }
         },
@@ -7148,6 +7150,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "regular": {
+                    "type": "integer"
+                }
+            }
+        },
+        "util.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }

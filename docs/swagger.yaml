@@ -1811,18 +1811,19 @@ definitions:
       total:
         type: integer
     type: object
-  response.NFTCollectionsResponse:
+  response.NFTCollectionsData:
     properties:
       data:
         items:
           $ref: '#/definitions/model.NFTCollection'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
+      metadata:
+        $ref: '#/definitions/util.Pagination'
+    type: object
+  response.NFTCollectionsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTCollectionsData'
     type: object
   response.NFTNewListedResponse:
     properties:
@@ -2088,6 +2089,15 @@ definitions:
       left:
         type: integer
       regular:
+        type: integer
+    type: object
+  util.Pagination:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
         type: integer
     type: object
 info:
