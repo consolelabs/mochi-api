@@ -498,16 +498,21 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 		return err
 	}
 
-	if err := e.svc.Processor.HandleUserUpvote(&request.UserUpvoteProcessorRequest{
-		App:    "Neko Bot",
-		Action: "vote",
-		Data: request.UserDiscordID{
-			UserID: streak.DiscordID,
-		},
-	}); err != nil {
-		e.log.
-			Fields(logger.Fields{"userID": streak.DiscordID}).
-			Error(err, "[Entity][handleUpvoteXPBonus] service.Processor request failed")
+	// send data to processor to calculate user's xp
+	data := model.UserTxData{
+		UserDiscordId: streak.DiscordID,
+	}
+	_, err = e.svc.Processor.CreateUserTransaction(model.CreateUserTransaction{
+		Dapp:   consts.NekoBot,
+		Action: consts.Vote,
+		Data:   data,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"dapp":   consts.NekoBot,
+			"action": consts.Vote,
+			"data":   data,
+		}).Error(err, "[Entity][handleUpvoteXPBonus] failed to send data to Processor")
 		return err
 	}
 	return nil
