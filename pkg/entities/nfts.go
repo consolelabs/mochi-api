@@ -614,12 +614,14 @@ func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollections
 	}
 
 	return &response.NFTCollectionsResponse{
-		Pagination: util.Pagination{
-			Page:  int64(page),
-			Size:  int64(size),
-			Total: total,
+		Data: response.NFTCollectionsData{
+			Metadata: util.Pagination{
+				Page:  int64(page),
+				Size:  int64(size),
+				Total: total,
+			},
+			Data: data,
 		},
-		Data: data,
 	}, err
 }
 

@@ -1483,25 +1483,27 @@ func TestEntity_GetNFTCollections(t *testing.T) {
 				s: "2",
 			},
 			want: &response.NFTCollectionsResponse{
-				Pagination: util.Pagination{
-					Page:  int64(0),
-					Size:  int64(2),
-					Total: int64(2),
-				},
-				Data: []model.NFTCollection{
-					{
-						Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
-						Name:      "Cyber Neko",
-						Symbol:    "NEKO",
-						ChainID:   "250",
-						ERCFormat: "ERC721",
+				Data: response.NFTCollectionsData{
+					Metadata: util.Pagination{
+						Page:  int64(0),
+						Size:  int64(2),
+						Total: int64(2),
 					},
-					{
-						Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
-						Name:      "Cyber Neko",
-						Symbol:    "NEKO",
-						ChainID:   "250",
-						ERCFormat: "ERC721",
+					Data: []model.NFTCollection{
+						{
+							Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+							Name:      "Cyber Neko",
+							Symbol:    "NEKO",
+							ChainID:   "250",
+							ERCFormat: "ERC721",
+						},
+						{
+							Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+							Name:      "Cyber Neko",
+							Symbol:    "NEKO",
+							ChainID:   "250",
+							ERCFormat: "ERC721",
+						},
 					},
 				},
 			},
