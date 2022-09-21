@@ -5,7 +5,12 @@
     "rarity_tier": "",
     "attributes": null,
     "rarity": null,
-    "metadata_id": ""
+    "metadata_id": "",
+    "owner": {
+      "owner_address": "",
+      "collection_address": "",
+      "token_id": ""
+    }
   },
   "suggestions": [
     {
