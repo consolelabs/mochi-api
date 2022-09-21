@@ -202,7 +202,7 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 // @Param       base   query  string true  "base token"
 // @Param       target   query  string true  "target token"
 // @Param       interval   query  string true  "compare interval"
-// @Param       guild_id   query  string true  "Guild ID"
+// @Param       guild_id   query  string false  "Guild ID"
 // @Success     200 {object} response.CompareTokenResponse
 // @Router      /defi/coins/compare [get]
 func (h *Handler) CompareToken(c *gin.Context) {
@@ -225,11 +225,6 @@ func (h *Handler) CompareToken(c *gin.Context) {
 	if interval == "" {
 		h.log.Info("[handler.CompareToken] interval empty")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "interval is required"})
-		return
-	}
-	if guildID == "" {
-		h.log.Info("[handler.CompareToken] guild_id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
 		return
 	}
 
