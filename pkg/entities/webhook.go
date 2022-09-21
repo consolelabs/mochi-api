@@ -483,8 +483,26 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 	}
 
 	earnedXP := 0
+
+	// increase x for every x votes
 	if streak.TotalCount%tier.VoteInterval == 0 {
 		earnedXP = tier.XPPerInterval
+		// send data to processor to calculate user's xp
+		data := model.UserTxData{
+			UserDiscordId: streak.DiscordID,
+		}
+		_, err = e.svc.Processor.CreateUserTransaction(model.CreateUserTransaction{
+			Dapp:   consts.NekoBot,
+			Action: consts.Vote,
+			Data:   data,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"dapp":   consts.NekoBot,
+				"action": consts.Vote,
+				"data":   data,
+			}).Error(err, "[Entity][handleUpvoteXPBonus] failed to send data to Processor")
+		}
 	}
 	if err := e.repo.GuildUserActivityLog.CreateOneNoGuild(model.GuildUserActivityLog{
 		UserID:       streak.DiscordID,
@@ -495,24 +513,6 @@ func (e *Entity) handleUpvoteXPBonus(streak *model.DiscordUserUpvoteStreak) erro
 		e.log.
 			Fields(logger.Fields{"userID": streak.DiscordID}).
 			Error(err, "[Entity][handleUpvoteXPBonus] failed to create guild_user_activity_logs")
-		return err
-	}
-
-	// send data to processor to calculate user's xp
-	data := model.UserTxData{
-		UserDiscordId: streak.DiscordID,
-	}
-	_, err = e.svc.Processor.CreateUserTransaction(model.CreateUserTransaction{
-		Dapp:   consts.NekoBot,
-		Action: consts.Vote,
-		Data:   data,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"dapp":   consts.NekoBot,
-			"action": consts.Vote,
-			"data":   data,
-		}).Error(err, "[Entity][handleUpvoteXPBonus] failed to send data to Processor")
 		return err
 	}
 	return nil
