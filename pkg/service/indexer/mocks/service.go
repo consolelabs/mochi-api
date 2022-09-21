@@ -49,6 +49,21 @@ func (mr *MockServiceMockRecorder) CreateERC721Contract(arg0 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateERC721Contract", reflect.TypeOf((*MockService)(nil).CreateERC721Contract), arg0)
 }
 
+// GetNFTActivity mocks base method.
+func (m *MockService) GetNFTActivity(collectionAddress, tokenID, query string) (*response.IndexerGetNFTActivityResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTActivity", collectionAddress, tokenID, query)
+	ret0, _ := ret[0].(*response.IndexerGetNFTActivityResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTActivity indicates an expected call of GetNFTActivity.
+func (mr *MockServiceMockRecorder) GetNFTActivity(collectionAddress, tokenID, query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTActivity", reflect.TypeOf((*MockService)(nil).GetNFTActivity), collectionAddress, tokenID, query)
+}
+
 // GetNFTCollectionTickers mocks base method.
 func (m *MockService) GetNFTCollectionTickers(address, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	m.ctrl.T.Helper()

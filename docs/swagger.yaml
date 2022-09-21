@@ -1288,6 +1288,20 @@ definitions:
       data:
         $ref: '#/definitions/discordgo.User'
     type: object
+  response.GetNFTActivityData:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.IndexerNFTActivityData'
+        type: array
+      metadata:
+        $ref: '#/definitions/util.Pagination'
+    type: object
+  response.GetNFTActivityResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetNFTActivityData'
+    type: object
   response.GetNFTCollectionByAddressChainResponse:
     properties:
       data:
@@ -1534,6 +1548,47 @@ definitions:
       total:
         type: integer
     type: object
+  response.IndexerNFTActivityData:
+    properties:
+      chain_id:
+        type: integer
+      contract_address:
+        type: string
+      created_time:
+        type: string
+      event_type:
+        type: string
+      from_address:
+        type: string
+      id:
+        type: integer
+      last_update_time:
+        type: string
+      listing_price:
+        type: string
+      listing_price_obj:
+        $ref: '#/definitions/response.IndexerPrice'
+      listing_status:
+        type: string
+      listing_type:
+        type: string
+      payment_token:
+        type: integer
+      platform_id:
+        type: integer
+      quantity:
+        type: string
+      sold_price:
+        type: string
+      sold_price_obj:
+        $ref: '#/definitions/response.IndexerPrice'
+      to_address:
+        type: string
+      token_id:
+        type: string
+      transaction_hash:
+        type: string
+    type: object
   response.IndexerNFTCollectionTickersData:
     properties:
       address:
@@ -1605,6 +1660,8 @@ definitions:
         type: string
       name:
         type: string
+      owner:
+        $ref: '#/definitions/response.IndexerNftTokenOwner'
       rarity:
         $ref: '#/definitions/response.IndexerNFTTokenRarity'
       rarity_rank:
@@ -1628,6 +1685,15 @@ definitions:
         type: string
       total:
         type: integer
+    type: object
+  response.IndexerNftTokenOwner:
+    properties:
+      collection_address:
+        type: string
+      owner_address:
+        type: string
+      token_id:
+        type: string
     type: object
   response.IndexerPrice:
     properties:
@@ -1811,18 +1877,19 @@ definitions:
       total:
         type: integer
     type: object
-  response.NFTCollectionsResponse:
+  response.NFTCollectionsData:
     properties:
       data:
         items:
           $ref: '#/definitions/model.NFTCollection'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
+      metadata:
+        $ref: '#/definitions/util.Pagination'
+    type: object
+  response.NFTCollectionsResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTCollectionsData'
     type: object
   response.NFTNewListedResponse:
     properties:
@@ -2088,6 +2155,15 @@ definitions:
       left:
         type: integer
       regular:
+        type: integer
+    type: object
+  util.Pagination:
+    properties:
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
         type: integer
     type: object
 info:
@@ -3698,7 +3774,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -3865,6 +3941,40 @@ paths:
           schema:
             $ref: '#/definitions/response.IndexerGetNFTTokenDetailResponseWithSuggestions'
       summary: Get NFT Detail
+      tags:
+      - NFT
+  /nfts/{symbol}/{id}/activity:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT Activity
+      parameters:
+      - description: Collection address | Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      - description: Token ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: string
+      - description: Size
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetNFTActivityResponse'
+      summary: Get NFT Activity
       tags:
       - NFT
   /nfts/collections:
@@ -4686,7 +4796,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
