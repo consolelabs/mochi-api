@@ -4513,6 +4513,9 @@ const docTemplate = `{
                 },
                 "verify_channel_id": {
                     "type": "string"
+                },
+                "verify_role_id": {
+                    "type": "string"
                 }
             }
         },
@@ -5167,6 +5170,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "verify_channel_id": {
+                    "type": "string"
+                },
+                "verify_role_id": {
                     "type": "string"
                 }
             }
