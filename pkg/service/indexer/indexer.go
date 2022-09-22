@@ -347,8 +347,7 @@ func (i *indexer) GetNFTContract(address string) (*res.IndexerContract, error) {
 
 	err = json.Unmarshal([]byte(b), &contract)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, fmt.Errorf("GETNFTContract - failed to unmarshal data")
+		return nil, fmt.Errorf("GETNFTContract - failed to unmarshal data: %v", err)
 	}
 
 	return contract, nil
@@ -372,8 +371,7 @@ func (i *indexer) GetNftMetadataAttrIcon() (*res.NftMetadataAttrIconResponse, er
 	data := &res.NftMetadataAttrIconResponse{}
 	err = json.Unmarshal([]byte(b), &data)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, fmt.Errorf("GetAttributeIcon - failed to unmarshal data")
+		return nil, fmt.Errorf("GetAttributeIcon - failed to unmarshal data: %v", err)
 	}
 	return data, nil
 }

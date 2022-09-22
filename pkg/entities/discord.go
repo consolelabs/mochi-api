@@ -2,7 +2,6 @@ package entities
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -79,7 +78,7 @@ func (e *Entity) CountGuildChannels(guildID string) (int, int, int, int, int, in
 		case consts.StageChannel:
 			nr_of_stage_channels = nr_of_stage_channels + 1
 		default:
-			fmt.Println("still not handle this case")
+			e.log.Info("still not handle this case")
 		}
 	}
 	nr_of_channels = len(guildChannels) - nr_of_categories
