@@ -104,6 +104,7 @@ type IndexerNFTTokenDetailData struct {
 	Attributes        []IndexerNFTTokenAttribute `json:"attributes" gorm:"-"`
 	Rarity            *IndexerNFTTokenRarity     `json:"rarity"`
 	MetadataID        string                     `json:"metadata_id"`
+	Owner             IndexerNftTokenOwner       `json:"owner"`
 }
 
 type IndexerNFTTokenAttribute struct {
@@ -121,6 +122,12 @@ type IndexerNFTTokenRarity struct {
 	Score  string `json:"score"`
 	Total  uint64 `json:"total"`
 	Rarity string `json:"rarity,omitempty"`
+}
+
+type IndexerNftTokenOwner struct {
+	OwnerAddress      string `json:"owner_address"`
+	CollectionAddress string `json:"collection_address"`
+	TokenId           string `json:"token_id"`
 }
 
 type IndexerAttribute struct {
@@ -145,6 +152,33 @@ type IndexerContract struct {
 	Protocol        string    `json:"Protocol"`
 	GRPCAddress     string    `json:"GrpcAddress"`
 	IsSynced        bool      `json:"is_synced"`
+}
+
+type IndexerGetNFTActivityResponse struct {
+	Data []IndexerNFTActivityData `json:"data"`
+	util.Pagination
+}
+
+type IndexerNFTActivityData struct {
+	ID              int          `json:"id,omitempty"`
+	PlatformID      int          `json:"platform_id,omitempty"`
+	TokenID         string       `json:"token_id,omitempty"`
+	ContractAddress string       `json:"contract_address,omitempty"`
+	ChainID         int          `json:"chain_id,omitempty"`
+	Quantity        string       `json:"quantity,omitempty"`
+	PaymentToken    int          `json:"payment_token,omitempty"`
+	FromAddress     string       `json:"from_address,omitempty"`
+	ToAddress       string       `json:"to_address,omitempty"`
+	TransactionHash string       `json:"transaction_hash,omitempty"`
+	ListingType     string       `json:"listing_type,omitempty"`
+	ListingStatus   string       `json:"listing_status,omitempty"`
+	CreatedTime     time.Time    `json:"created_time,omitempty"`
+	LastUpdateTime  time.Time    `json:"last_update_time,omitempty"`
+	SoldPrice       string       `json:"sold_price,omitempty"`
+	ListingPrice    string       `json:"listing_price,omitempty"`
+	SoldPriceObj    IndexerPrice `json:"sold_price_obj,omitempty"`
+	ListingPriceObj IndexerPrice `json:"listing_price_obj,omitempty"`
+	EventType       string       `json:"event_type,omitempty"`
 }
 
 type NftMetadataAttrIcon struct {
@@ -188,4 +222,13 @@ type GetCollectionCountResponse struct {
 
 type GetNFTCollectionByAddressChainResponse struct {
 	Data *model.NFTCollection `json:"data"`
+}
+
+type GetNFTActivityResponse struct {
+	Data GetNFTActivityData `json:"data"`
+}
+
+type GetNFTActivityData struct {
+	Data     []IndexerNFTActivityData `json:"data"`
+	Metadata util.Pagination          `json:"metadata"`
 }

@@ -258,6 +258,45 @@ func (i *indexer) GetNFTDetail(collectionAddress, tokenID string) (*res.IndexerG
 	return data, nil
 }
 
+func (i *indexer) GetNFTActivity(collectionAddress, tokenID, query string) (*res.IndexerGetNFTActivityResponse, error) {
+
+	url := fmt.Sprintf("%s/api/v1/nft/%s/%s/activity?%s", i.cfg.IndexerServerHost, collectionAddress, tokenID, query)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNFTActivity - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTActivity - failed to filter nft activity with collectionAddress=%s, tokenID=%s, query=%s: %v", collectionAddress, tokenID, query, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.IndexerGetNFTActivityResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
+}
+
 func (i *indexer) GetNftSales(addr string, platform string) (*res.NftSalesResponse, error) {
 	data := &res.NftSalesResponse{}
 	url := "%s/api/v1/nft/sales?collection_address=%s&platform=%s"

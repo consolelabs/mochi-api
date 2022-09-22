@@ -1857,8 +1857,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Guild ID",
                         "name": "guild_id",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3187,6 +3186,57 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.IndexerGetNFTTokenDetailResponseWithSuggestions"
+                        }
+                    }
+                }
+            }
+        },
+        "/nfts/{symbol}/{id}/activity": {
+            "get": {
+                "description": "Get NFT Activity",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get NFT Activity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Collection address | Symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetNFTActivityResponse"
                         }
                     }
                 }
@@ -5915,6 +5965,28 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetNFTActivityData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.IndexerNFTActivityData"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.GetNFTActivityResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetNFTActivityData"
+                }
+            }
+        },
         "response.GetNFTCollectionByAddressChainResponse": {
             "type": "object",
             "properties": {
@@ -6296,6 +6368,68 @@ const docTemplate = `{
                 }
             }
         },
+        "response.IndexerNFTActivityData": {
+            "type": "object",
+            "properties": {
+                "chain_id": {
+                    "type": "integer"
+                },
+                "contract_address": {
+                    "type": "string"
+                },
+                "created_time": {
+                    "type": "string"
+                },
+                "event_type": {
+                    "type": "string"
+                },
+                "from_address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_update_time": {
+                    "type": "string"
+                },
+                "listing_price": {
+                    "type": "string"
+                },
+                "listing_price_obj": {
+                    "$ref": "#/definitions/response.IndexerPrice"
+                },
+                "listing_status": {
+                    "type": "string"
+                },
+                "listing_type": {
+                    "type": "string"
+                },
+                "payment_token": {
+                    "type": "integer"
+                },
+                "platform_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "sold_price": {
+                    "type": "string"
+                },
+                "sold_price_obj": {
+                    "$ref": "#/definitions/response.IndexerPrice"
+                },
+                "to_address": {
+                    "type": "string"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "transaction_hash": {
+                    "type": "string"
+                }
+            }
+        },
         "response.IndexerNFTCollectionTickersData": {
             "type": "object",
             "properties": {
@@ -6404,6 +6538,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "owner": {
+                    "$ref": "#/definitions/response.IndexerNftTokenOwner"
+                },
                 "rarity": {
                     "$ref": "#/definitions/response.IndexerNFTTokenRarity"
                 },
@@ -6438,6 +6575,20 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.IndexerNftTokenOwner": {
+            "type": "object",
+            "properties": {
+                "collection_address": {
+                    "type": "string"
+                },
+                "owner_address": {
+                    "type": "string"
+                },
+                "token_id": {
+                    "type": "string"
                 }
             }
         },
@@ -6722,7 +6873,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTCollectionsResponse": {
+        "response.NFTCollectionsData": {
             "type": "object",
             "properties": {
                 "data": {
@@ -6731,14 +6882,16 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.NFTCollection"
                     }
                 },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.NFTCollectionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTCollectionsData"
                 }
             }
         },
@@ -7149,6 +7302,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "regular": {
+                    "type": "integer"
+                }
+            }
+        },
+        "util.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }

@@ -124,6 +124,32 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 	}, nil
 }
 
+func (e *Entity) GetNFTActivity(collectionAddress, tokenID, query string) (*response.GetNFTActivityResponse, error) {
+	res, err := e.getNFTActivityFromIndexer(collectionAddress, tokenID, query)
+	if err != nil {
+		e.log.Errorf(err, "[e.getNFTActivityFromIndexer] failed to get nft indexer activity")
+		return nil, err
+	}
+
+	// empty response
+	if res == nil {
+		e.log.Infof("[indexer.GetNFTActivity] no nft data from indexer")
+		err := fmt.Errorf("no nft activity data from indexer")
+		return nil, err
+	}
+
+	return &response.GetNFTActivityResponse{
+		Data: response.GetNFTActivityData{
+			Data: res.Data,
+			Metadata: util.Pagination{
+				Page:  res.Page,
+				Size:  res.Size,
+				Total: res.Total,
+			},
+		},
+	}, nil
+}
+
 func checkIsDefaultSymbol(defaults []model.GuildConfigDefaultCollection, symbol *model.NFTCollection) bool {
 	for _, def := range defaults {
 		if def.Address == symbol.Address && def.ChainID == symbol.ChainID {
@@ -181,6 +207,21 @@ func (e *Entity) getTokenDetailFromIndexer(address string, tokenID string) (*res
 		} else {
 			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
 			err = fmt.Errorf("[e.GetNFTDetail] failed to get nft from indexer: %v", err)
+		}
+		return nil, err
+	}
+	return data, nil
+}
+
+func (e *Entity) getNFTActivityFromIndexer(collectionAddress, tokenID, query string) (*response.IndexerGetNFTActivityResponse, error) {
+	data, err := e.indexer.GetNFTActivity(collectionAddress, tokenID, query)
+	if err != nil {
+		if err.Error() == "record not found" {
+			e.log.Errorf(err, "[indexer.GetNFTActivity] indexer: record nft activity not found")
+			err = fmt.Errorf("token not found")
+		} else {
+			e.log.Errorf(err, "[indexer.GetNFTActivity] failed to get nft activity from indexer")
+			err = fmt.Errorf("[e.GetNFTActivity] failed to get nft activity from indexer: %v", err)
 		}
 		return nil, err
 	}
@@ -614,12 +655,14 @@ func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollections
 	}
 
 	return &response.NFTCollectionsResponse{
-		Pagination: util.Pagination{
-			Page:  int64(page),
-			Size:  int64(size),
-			Total: total,
+		Data: response.NFTCollectionsData{
+			Metadata: util.Pagination{
+				Page:  int64(page),
+				Size:  int64(size),
+				Total: total,
+			},
+			Data: data,
 		},
-		Data: data,
 	}, err
 }
 

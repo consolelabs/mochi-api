@@ -81,7 +81,7 @@ func (e *Entity) GetUserCurrentGMStreak(discordID, guildID string) (*model.Disco
 	}
 
 	if err == gorm.ErrRecordNotFound {
-		return nil, http.StatusBadRequest, fmt.Errorf("user has no gm streak")
+		return &model.DiscordUserGMStreak{}, http.StatusOK, nil
 	}
 
 	return streak, http.StatusOK, nil
