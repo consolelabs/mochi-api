@@ -8,9 +8,9 @@ func RetryRequest(handler func() error) error {
 	count := 0
 	err := handler()
 	for err != nil && !IsAcceptableErr(err) && count < 10 {
-		err = handler()
 		time.Sleep(time.Second)
 		count++
+		err = handler()
 	}
 	if IsAcceptableErr(err) {
 		return err
