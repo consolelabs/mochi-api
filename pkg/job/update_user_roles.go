@@ -1,6 +1,8 @@
 package job
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
@@ -159,7 +161,18 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToAdd {
+		count := 0
 		err := job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		for err != nil && !util.IsAcceptableErr(err) && count < 10 {
+			job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  userID,
+				"roleId":  roleID,
+			}).Infof("[updateLevelRoles] entity.AddGuildMemberRole failed: %v", err)
+			err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
+			time.Sleep(time.Second)
+			count++
+		}
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -168,7 +181,9 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 			}).Infof("[updateLevelRoles] entity.AddGuildMemberRole failed: %v", err)
 			continue
 		}
-		if err != nil {
+
+		// backup for case server cannot call discord more than 10 seconds
+		if err != nil && count >= 10 {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
 				"userId":  userID,
@@ -176,6 +191,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 			}).Error(err, "[updateLevelRoles] entity.AddGuildMemberRole failed")
 			continue
 		}
+
 		job.log.Fields(logger.Fields{
 			"guildId": guildID,
 			"userId":  userID,
