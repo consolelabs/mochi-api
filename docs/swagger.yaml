@@ -1207,6 +1207,13 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildConfigDefaultTicker'
     type: object
+  response.GetGuildPruneExcludeResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GuildPruneExcludeList'
+      message:
+        type: string
+    type: object
   response.GetGuildResponse:
     properties:
       alias:
@@ -1449,6 +1456,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.HandleUserActivityResponse'
+    type: object
+  response.GuildPruneExcludeList:
+    properties:
+      guild_id:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
     type: object
   response.HandleUserActivityResponse:
     properties:
@@ -3349,7 +3365,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+            $ref: '#/definitions/response.GetGuildPruneExcludeResponse'
       summary: Get prune exclusion config
       tags:
       - Config

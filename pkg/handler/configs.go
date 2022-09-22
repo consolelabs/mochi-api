@@ -963,7 +963,7 @@ func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.GetVoteChannelConfigResponse
+// @Success     200 {object} response.GetGuildPruneExcludeResponse
 // @Router      /configs/whitelist-prune [get]
 func (h *Handler) GetGuildPruneExclude(c *gin.Context) {
 	guildID := c.Query("guild_id")

@@ -1774,7 +1774,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/response.GetGuildPruneExcludeResponse"
                         }
                     }
                 }
@@ -5934,6 +5934,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetGuildPruneExcludeResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GuildPruneExcludeList"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
@@ -6310,6 +6321,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
+                }
+            }
+        },
+        "response.GuildPruneExcludeList": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
