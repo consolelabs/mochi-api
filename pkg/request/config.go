@@ -83,3 +83,8 @@ type GuildConfigDefaultTickerRequest struct {
 	Query         string `json:"query"`
 	DefaultTicker string `json:"default_ticker"`
 }
+
+type UpsertGuildPruneExcludeRequest struct {
+	GuildID string `json:"guild_id"`
+	RoleID  string `json:"role_id"`
+}

@@ -24,6 +24,7 @@ import (
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
+	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
@@ -83,6 +84,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UpvoteStreakTier:                     upvotestreaktier.NewPG(db),
 		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
 		GuildConfigTwitterHashtag:            guildconfigtwitterhashtag.NewPG(db),
+		GuildConfigPruneExclude:              guildconfigpruneexclude.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
 		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),

@@ -21,6 +21,7 @@ import (
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
+	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
@@ -73,6 +74,7 @@ type Repo struct {
 	DiscordUserUpvoteLog                 discorduserupvotelog.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
+	GuildConfigPruneExclude              guildconfigpruneexclude.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
