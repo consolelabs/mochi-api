@@ -1766,7 +1766,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/response.GetGuildPruneExcludeResponse"
                         }
                     }
                 }
@@ -5923,6 +5923,17 @@
                 }
             }
         },
+        "response.GetGuildPruneExcludeResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GuildPruneExcludeList"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
@@ -6301,6 +6312,20 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
+                }
+            }
+        },
+        "response.GuildPruneExcludeList": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
