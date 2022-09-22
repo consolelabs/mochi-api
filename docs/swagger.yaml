@@ -969,6 +969,8 @@ definitions:
         type: string
       image:
         type: string
+      is_pair:
+        type: boolean
       name:
         type: string
       price_change_percentage_7d_in_currency:
@@ -1420,11 +1422,10 @@ definitions:
   response.GetWatchlistResponse:
     properties:
       data:
+        description: Pagination *PaginationResponse  `json:"pagination"`
         items:
           $ref: '#/definitions/response.CoinMarketItemData'
         type: array
-      pagination:
-        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.GetWelcomeChannelConfigResponse:
     properties:
@@ -1994,17 +1995,6 @@ definitions:
         items:
           $ref: '#/definitions/response.NftSales'
         type: array
-    type: object
-  response.PaginationResponse:
-    properties:
-      page:
-        description: page index
-        type: integer
-      size:
-        description: page size
-        type: integer
-      total:
-        type: integer
     type: object
   response.ResponseMessage:
     properties:
@@ -3774,7 +3764,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4796,7 +4786,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

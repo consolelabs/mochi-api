@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -54,7 +53,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 	res, errs := h.entities.InDiscordWalletTransfer(req)
 	if len(errs) != 0 {
 		for _, err := range errs {
-			fmt.Println("error transfer in dcwallet:", err)
+			h.log.Infof("error transfer in dcwallet: %v", err)
 		}
 	}
 
