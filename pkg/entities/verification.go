@@ -288,9 +288,58 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 		return http.StatusInternalServerError, fmt.Errorf("failed to get user wallet: %v", err.Error())
 	}
 
+	// assign role to user if guild has config
+	err = e.VerifyWalletAssignRole(verification, req)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"req": req,
+		}).Error(err, "[entities.VerifyWalletAddress] failed to assign role")
+		return http.StatusInternalServerError, err
+	}
+
 	if err := e.repo.DiscordWalletVerification.DeleteByCode(verification.Code); err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("failed to delete verification: %v", err.Error())
 	}
 
 	return http.StatusOK, nil
+}
+
+func (e *Entity) VerifyWalletAssignRole(verification *model.DiscordWalletVerification, req request.VerifyWalletAddressRequest) error {
+	guildConfigVerification, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(verification.GuildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{
+				"guild_id": verification.GuildID,
+			}).Info("[entities.VerifyWalletAssignRole] Guild does not have config verification")
+			return nil
+		}
+		e.log.Fields(logger.Fields{
+			"guild_id": verification.GuildID,
+		}).Error(err, "[entities.VerifyWalletAssignRole] Failed to get guild config verification")
+		return err
+	}
+
+	// check guild has config role for verify wallet, if yes then assign role, if not return
+	if guildConfigVerification.VerifyRoleID != "" {
+		// assign role to user
+		err := e.discord.GuildMemberRoleAdd(verification.GuildID, verification.UserDiscordID, guildConfigVerification.VerifyRoleID)
+		if err != nil {
+			// allow acceptable error like bot not have access to assign role
+			if util.IsAcceptableErr(err) {
+				e.log.Fields(logger.Fields{
+					"guild_id":        verification.GuildID,
+					"user_discord_id": verification.UserDiscordID,
+					"verify_role_id":  guildConfigVerification.VerifyRoleID,
+				}).Infof("[entities.VerifyWalletAssignRole] Acceptable errors: %v", err)
+				return nil
+			}
+			e.log.Fields(logger.Fields{
+				"guild_id":        verification.GuildID,
+				"user_discord_id": verification.UserDiscordID,
+				"verify_role_id":  guildConfigVerification.VerifyRoleID,
+			}).Error(err, "[entities.VerifyWalletAssignRole] Failed to assign role to user")
+			return err
+		}
+	}
+	return nil
 }
