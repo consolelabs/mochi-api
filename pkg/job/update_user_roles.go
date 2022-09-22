@@ -1,8 +1,7 @@
 package job
 
 import (
-	"time"
-
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
@@ -86,12 +85,17 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	rolesToAdd := make(map[string]string)
 	rolesToRemove := make(map[string]string)
 	for _, userXP := range userXPs {
-		member, err := job.entity.GetGuildMember(guildID, userXP.UserID)
+		var member *discordgo.Member
+		var jobErr error
+		err := util.RetryRequest(func() error {
+			member, jobErr = job.entity.GetGuildMember(guildID, userXP.UserID)
+			return jobErr
+		})
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"userId":  userXP.UserID,
 				"guildId": guildID,
-			}).Info("[updateLevelRoles] user is no longer guild member")
+			}).Infof("[updateLevelRoles] user is no longer guild member: %v", err)
 			continue
 		}
 		if err != nil {
@@ -136,7 +140,9 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToRemove {
-		err := job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
+		err := util.RetryRequest(func() error {
+			return job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
+		})
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -161,18 +167,9 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToAdd {
-		count := 0
-		err := job.entity.AddGuildMemberRole(guildID, userID, roleID)
-		for err != nil && !util.IsAcceptableErr(err) && count < 10 {
-			job.log.Fields(logger.Fields{
-				"guildId": guildID,
-				"userId":  userID,
-				"roleId":  roleID,
-			}).Infof("[updateLevelRoles] entity.AddGuildMemberRole failed: %v", err)
-			err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
-			time.Sleep(time.Second)
-			count++
-		}
+		err := util.RetryRequest(func() error {
+			return job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		})
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -181,9 +178,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 			}).Infof("[updateLevelRoles] entity.AddGuildMemberRole failed: %v", err)
 			continue
 		}
-
-		// backup for case server cannot call discord more than 10 seconds
-		if err != nil && count >= 10 {
+		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
 				"userId":  userID,
