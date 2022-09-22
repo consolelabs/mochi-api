@@ -12,5 +12,6 @@ type MessageRepostHistory struct {
 	OriginMessageID string        `json:"origin_message_id"`
 	OriginChannelID string        `json:"origin_channel_id"`
 	RepostChannelID string        `json:"repost_channel_id"`
+	RepostMessageID string        `json:"repost_message_id"`
 	CreatedAt       *time.Time    `json:"created_at"`
 }

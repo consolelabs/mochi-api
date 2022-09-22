@@ -1067,6 +1067,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/repost-reactions/message-repost": {
+            "put": {
+                "description": "edit message repost",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "edit message repost",
+                "parameters": [
+                    {
+                        "description": "edit message repost request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EditMessageRepostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/repost-reactions/{guild_id}": {
             "get": {
                 "description": "Get Respost reaction configs",
@@ -5173,6 +5207,26 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.EditMessageRepostRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "origin_channel_id": {
+                    "type": "string"
+                },
+                "origin_message_id": {
+                    "type": "string"
+                },
+                "repost_channel_id": {
+                    "type": "string"
+                },
+                "repost_message_id": {
                     "type": "string"
                 }
             }
