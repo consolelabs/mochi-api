@@ -955,3 +955,82 @@ func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
+
+// GetGuildPruneExclude     godoc
+// @Summary     Get prune exclusion config
+// @Description Get prune exclusion config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetGuildPruneExcludeResponse
+// @Router      /configs/whitelist-prune [get]
+func (h *Handler) GetGuildPruneExclude(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetGuildPruneExclude] - guild id empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		return
+	}
+
+	config, err := h.entities.GetGuildPruneExclude(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildPruneExclude] - failed to get prune exclude config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.GetGuildPruneExcludeResponse{Message: "OK", Data: config})
+}
+
+// UpsertGuildPruneExclude     godoc
+// @Summary     Upsert prune exclude config
+// @Description Upsert prune exclude config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildPruneExcludeRequest true "Upsert prune exlude request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/whitelist-prune [post]
+func (h *Handler) UpsertGuildPruneExclude(c *gin.Context) {
+	req := request.UpsertGuildPruneExcludeRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpsertGuildPruneExclude] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.UpsertGuildPruneExclude(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpsertGuildPruneExclude] - failed to upsert guild prune exlude config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+}
+
+// DeleteGuildPruneExclude     godoc
+// @Summary     Delete prune exclude config
+// @Description Delete prune exclude config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildPruneExcludeRequest true "Upsert prune exlude request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/whitelist-prune [delete]
+func (h *Handler) DeleteGuildPruneExclude(c *gin.Context) {
+	req := request.UpsertGuildPruneExcludeRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.DeleteGuildPruneExclude] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.DeleteGuildPruneExclude(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.DeleteGuildPruneExclude] - failed to delete guild prune exlude config")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+}

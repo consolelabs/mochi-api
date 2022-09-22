@@ -162,11 +162,12 @@ type CoinMarketItemData struct {
 	} `json:"sparkline_in_7d"`
 	PriceChangePercentage24h          float64 `json:"price_change_percentage_24h"`
 	PriceChangePercentage7dInCurrency float64 `json:"price_change_percentage_7d_in_currency"`
+	IsPair                            bool    `json:"is_pair"`
 }
 
 type GetWatchlistResponse struct {
-	Pagination *PaginationResponse  `json:"pagination"`
-	Data       []CoinMarketItemData `json:"data"`
+	// Pagination *PaginationResponse  `json:"pagination"`
+	Data []CoinMarketItemData `json:"data"`
 }
 
 type CoingeckoSupportedTokenResponse struct {

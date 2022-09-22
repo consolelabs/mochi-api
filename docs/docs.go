@@ -1748,6 +1748,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/whitelist-prune": {
+            "get": {
+                "description": "Get prune exclusion config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get prune exclusion config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildPruneExcludeResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert prune exclude config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert prune exclude config",
+                "parameters": [
+                    {
+                        "description": "Upsert prune exlude request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete prune exclude config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete prune exclude config",
+                "parameters": [
+                    {
+                        "description": "Upsert prune exlude request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/balances": {
             "get": {
                 "description": "In Discord Wallet balance",
@@ -2601,7 +2697,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3930,7 +4026,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -4512,6 +4608,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "verify_channel_id": {
+                    "type": "string"
+                },
+                "verify_role_id": {
                     "type": "string"
                 }
             }
@@ -5168,6 +5267,9 @@ const docTemplate = `{
                 },
                 "verify_channel_id": {
                     "type": "string"
+                },
+                "verify_role_id": {
+                    "type": "string"
                 }
             }
         },
@@ -5369,6 +5471,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpsertGuildPruneExcludeRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpsertGuildTokenConfigRequest": {
             "type": "object",
             "properties": {
@@ -5466,6 +5579,9 @@ const docTemplate = `{
                 },
                 "image": {
                     "type": "string"
+                },
+                "is_pair": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
@@ -5815,6 +5931,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigDefaultTicker"
+                }
+            }
+        },
+        "response.GetGuildPruneExcludeResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GuildPruneExcludeList"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -6170,13 +6297,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
+                    "description": "Pagination *PaginationResponse  ` + "`" + `json:\"pagination\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.CoinMarketItemData"
                     }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
@@ -6196,6 +6321,20 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
+                }
+            }
+        },
+        "response.GuildPruneExcludeList": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -7053,22 +7192,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.NftSales"
                     }
-                }
-            }
-        },
-        "response.PaginationResponse": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "description": "page index",
-                    "type": "integer"
-                },
-                "size": {
-                    "description": "page size",
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },

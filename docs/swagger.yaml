@@ -351,6 +351,8 @@ definitions:
         type: string
       verify_channel_id:
         type: string
+      verify_role_id:
+        type: string
     type: object
   model.GuildConfigWelcomeChannel:
     properties:
@@ -776,6 +778,8 @@ definitions:
         type: string
       verify_channel_id:
         type: string
+      verify_role_id:
+        type: string
     type: object
   request.RoleReactionRequest:
     properties:
@@ -906,6 +910,13 @@ definitions:
       guild_id:
         type: string
     type: object
+  request.UpsertGuildPruneExcludeRequest:
+    properties:
+      guild_id:
+        type: string
+      role_id:
+        type: string
+    type: object
   request.UpsertGuildTokenConfigRequest:
     properties:
       active:
@@ -969,6 +980,8 @@ definitions:
         type: string
       image:
         type: string
+      is_pair:
+        type: boolean
       name:
         type: string
       price_change_percentage_7d_in_currency:
@@ -1193,6 +1206,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigDefaultTicker'
+    type: object
+  response.GetGuildPruneExcludeResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GuildPruneExcludeList'
+      message:
+        type: string
     type: object
   response.GetGuildResponse:
     properties:
@@ -1420,11 +1440,10 @@ definitions:
   response.GetWatchlistResponse:
     properties:
       data:
+        description: Pagination *PaginationResponse  `json:"pagination"`
         items:
           $ref: '#/definitions/response.CoinMarketItemData'
         type: array
-      pagination:
-        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.GetWelcomeChannelConfigResponse:
     properties:
@@ -1437,6 +1456,15 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.HandleUserActivityResponse'
+    type: object
+  response.GuildPruneExcludeList:
+    properties:
+      guild_id:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
     type: object
   response.HandleUserActivityResponse:
     properties:
@@ -1994,17 +2022,6 @@ definitions:
         items:
           $ref: '#/definitions/response.NftSales'
         type: array
-    type: object
-  response.PaginationResponse:
-    properties:
-      page:
-        description: page index
-        type: integer
-      size:
-        description: page size
-        type: integer
-      total:
-        type: integer
     type: object
   response.ResponseMessage:
     properties:
@@ -3310,6 +3327,69 @@ paths:
       summary: Update or insert welcome channel config
       tags:
       - Config
+  /configs/whitelist-prune:
+    delete:
+      consumes:
+      - application/json
+      description: Delete prune exclude config
+      parameters:
+      - description: Upsert prune exlude request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete prune exclude config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get prune exclusion config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildPruneExcludeResponse'
+      summary: Get prune exclusion config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Upsert prune exclude config
+      parameters:
+      - description: Upsert prune exlude request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert prune exclude config
+      tags:
+      - Config
   /defi/balances:
     get:
       consumes:
@@ -3774,7 +3854,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4796,7 +4876,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

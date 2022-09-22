@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -77,7 +76,6 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 
 	log := logger.NewLogrusLogger()
 	svc, _ := service.NewService(cfg, log)
-	fmt.Println("SVC", svc)
 
 	uToken := mock_token.NewMockStore(ctrl)
 	chainMock := mock_chain.NewMockStore(ctrl)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -569,39 +570,65 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		Offset: req.Page * req.Size,
 		Limit:  req.Size,
 	}
-	list, total, err := e.repo.UserWatchlistItem.List(q)
+	list, _, err := e.repo.UserWatchlistItem.List(q)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
 	}
-	ids := make([]string, len(list))
-	for i, item := range list {
-		ids[i] = item.CoinGeckoID
+
+	coinGeckoIds := make([]string, 0)
+	pairs := make([]string, 0)
+	for _, item := range list {
+		if strings.Contains(item.Symbol, "/") {
+			pairs = append(pairs, item.Symbol)
+		}
+		if item.CoinGeckoID == "" {
+			continue
+		}
+		coinGeckoIds = append(coinGeckoIds, item.CoinGeckoID)
 	}
-	if len(ids) == 0 && req.Page == 0 {
-		ids = e.getDefaultWatchlistIDs()
+	if len(coinGeckoIds) == 0 && len(pairs) == 0 {
+		coinGeckoIds = e.getDefaultWatchlistIDs()
 	}
-	if len(ids) == 0 {
-		return &response.GetWatchlistResponse{
-			Data: nil,
-			Pagination: &response.PaginationResponse{
-				Total:      total,
-				Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
-			},
-		}, nil
+	if len(coinGeckoIds) == 0 && len(pairs) == 0 {
+		return &response.GetWatchlistResponse{Data: nil}, nil
 	}
-	data, err, code := e.svc.CoinGecko.GetCoinsMarketData(ids)
-	if err != nil {
-		e.log.Fields(logger.Fields{"ids": ids, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
-		return nil, err
+
+	// CoinGeckoAPI | get ticker market data
+	data := make([]response.CoinMarketItemData, 0)
+	if len(coinGeckoIds) > 0 {
+		cgData, err, code := e.svc.CoinGecko.GetCoinsMarketData(coinGeckoIds)
+		if err != nil {
+			e.log.Fields(logger.Fields{"ids": coinGeckoIds, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
+			return nil, err
+		}
+		data = append(data, cgData...)
 	}
-	return &response.GetWatchlistResponse{
-		Data: data,
-		Pagination: &response.PaginationResponse{
-			Total:      total,
-			Pagination: model.Pagination{Page: int64(req.Page), Size: int64(req.Size)},
-		},
-	}, nil
+
+	// BinanceAPI | get pair market data
+	for _, pair := range pairs {
+		klineData, err, code := e.svc.Binance.GetKlinesBySymbol(pair)
+		if err != nil {
+			e.log.Fields(logger.Fields{"pair": pair, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.Binance.GetKlinesBySymbol() failed")
+			return nil, err
+		}
+		symbol := strings.Replace(pair, "/", "", 1)
+		item := response.CoinMarketItemData{
+			Name:   pair,
+			Symbol: symbol,
+			IsPair: true,
+		}
+		for _, klineItem := range klineData {
+			price, _ := strconv.ParseFloat(klineItem.OPrice, 64)
+			item.SparkLineIn7d.Price = append(item.SparkLineIn7d.Price, price)
+		}
+		latestPrice := item.SparkLineIn7d.Price[len(item.SparkLineIn7d.Price)-1]
+		oldPrice := item.SparkLineIn7d.Price[0]
+		item.CurrentPrice = latestPrice
+		item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+		data = append(data, item)
+	}
+	return &response.GetWatchlistResponse{Data: data}, nil
 }
 
 func (e *Entity) getDefaultWatchlistIDs() []string {
@@ -609,7 +636,21 @@ func (e *Entity) getDefaultWatchlistIDs() []string {
 }
 
 func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.AddToWatchlistResponse, error) {
-	if req.CoinGeckoID == "" {
+	isPair := false
+	// e.g. btc/usdt
+	if strings.Contains(req.Symbol, "/") {
+		isPair = true
+	}
+	switch {
+	case isPair:
+		// binance klines API requires symbol to be uppercase
+		req.Symbol = strings.ToUpper(req.Symbol)
+		_, err, code := e.svc.Binance.GetExchangeInfo(req.Symbol)
+		if err != nil {
+			e.log.Fields(logger.Fields{"symbol": req.Symbol, "code": code}).Error(err, "[entity.AddToWatchlist] svc.Binance.GetExchangeInfo() failed")
+			return nil, baseerrs.ErrRecordNotFound
+		}
+	case req.CoinGeckoID == "" && !isPair:
 		coins, err := e.SearchCoins(req.Symbol)
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
 		if err != nil {
@@ -627,7 +668,11 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		}
 		req.CoinGeckoID = coins[0].ID
 	}
+
 	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+	if isPair {
+		listQ.Symbol = req.Symbol
+	}
 	_, total, err := e.repo.UserWatchlistItem.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
