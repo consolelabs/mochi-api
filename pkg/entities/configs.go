@@ -659,3 +659,48 @@ func (e *Entity) CreateDefaultCollectionSymbol(req request.ConfigDefaultCollecti
 	}
 	return nil
 }
+
+func (e *Entity) GetGuildPruneExclude(guildID string) (*response.GuildPruneExcludeList, error) {
+	configs, err := e.repo.GuildConfigPruneExclude.GetByGuildID(guildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Errorf(err, "[e.GetGuildPruneExclude] failed to get prune excluded roles")
+		return nil, err
+	}
+	if len(configs) == 0 {
+		return nil, nil
+	}
+
+	roles := []string{}
+	for _, cfg := range configs {
+		roles = append(roles, cfg.RoleID)
+	}
+
+	return &response.GuildPruneExcludeList{
+		GuildID: configs[0].GuildID,
+		Roles:   roles,
+	}, nil
+}
+
+func (e *Entity) UpsertGuildPruneExclude(req request.UpsertGuildPruneExcludeRequest) error {
+	err := e.repo.GuildConfigPruneExclude.UpsertOne(&model.GuildConfigWhitelistPrune{
+		GuildID: req.GuildID,
+		RoleID:  req.RoleID,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[e.UpsertGuildPruneExclude] failed to upsert prune excluded roles: %s", err)
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) DeleteGuildPruneExclude(req request.UpsertGuildPruneExcludeRequest) error {
+	err := e.repo.GuildConfigPruneExclude.DeleteOne(&model.GuildConfigWhitelistPrune{
+		GuildID: req.GuildID,
+		RoleID:  req.RoleID,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[e.DeleteGuildPruneExclude] failed to delete prune excluded roles: %s", err)
+		return err
+	}
+	return nil
+}

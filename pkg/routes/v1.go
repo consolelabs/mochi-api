@@ -95,6 +95,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		//
 		configGroup.GET("/upvote-tiers", h.GetUpvoteTiersConfig)
 		configGroup.GET("/sales-tracker", h.GetSalesTrackerConfig)
+		// prune exclude
+		configGroup.GET("/whitelist-prune", h.GetGuildPruneExclude)
+		configGroup.POST("/whitelist-prune", h.UpsertGuildPruneExclude)
+		configGroup.DELETE("/whitelist-prune", h.DeleteGuildPruneExclude)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
 			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)

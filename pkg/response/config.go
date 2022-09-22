@@ -125,3 +125,13 @@ type GetAllTwitterHashtagConfigResponse struct {
 type GetDefaultTokenResponse struct {
 	Data *model.Token `json:"data"`
 }
+
+type GetGuildPruneExcludeResponse struct {
+	Message string                 `json:"message"`
+	Data    *GuildPruneExcludeList `json:"data"`
+}
+
+type GuildPruneExcludeList struct {
+	GuildID string   `json:"guild_id"`
+	Roles   []string `json:"roles"`
+}

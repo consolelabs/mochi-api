@@ -1740,6 +1740,102 @@
                 }
             }
         },
+        "/configs/whitelist-prune": {
+            "get": {
+                "description": "Get prune exclusion config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get prune exclusion config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert prune exclude config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert prune exclude config",
+                "parameters": [
+                    {
+                        "description": "Upsert prune exlude request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete prune exclude config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete prune exclude config",
+                "parameters": [
+                    {
+                        "description": "Upsert prune exlude request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/balances": {
             "get": {
                 "description": "In Discord Wallet balance",
@@ -5363,6 +5459,17 @@
                     "type": "string"
                 },
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertGuildPruneExcludeRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "role_id": {
                     "type": "string"
                 }
             }
