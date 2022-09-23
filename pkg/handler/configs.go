@@ -1034,3 +1034,30 @@ func (h *Handler) DeleteGuildPruneExclude(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
+
+// EditMessageRepost     godoc
+// @Summary     edit message repost
+// @Description edit message repost
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.EditMessageRepostRequest true "edit message repost request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions/message-repost [put]
+func (h *Handler) EditMessageRepost(c *gin.Context) {
+	req := request.EditMessageRepostRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.EditMessageRepost] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.entities.EditMessageRepost(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.EditMessageRepost] - fail to edit message repost")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+}

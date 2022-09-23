@@ -88,3 +88,11 @@ type UpsertGuildPruneExcludeRequest struct {
 	GuildID string `json:"guild_id"`
 	RoleID  string `json:"role_id"`
 }
+
+type EditMessageRepostRequest struct {
+	GuildID         string `json:"guild_id"`
+	OriginMessageID string `json:"origin_message_id"`
+	OriginChannelID string `json:"origin_channel_id"`
+	RepostChannelID string `json:"repost_channel_id"`
+	RepostMessageID string `json:"repost_message_id"`
+}
