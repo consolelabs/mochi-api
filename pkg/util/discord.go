@@ -81,7 +81,7 @@ func GenerateUpvoteMessage(discordID, source string) *upvoteMsg {
 	return &presets[ran]
 }
 
-// RetryRequest retry handler until it succeeds or acceptable or reaches the limit of times
+// RetryRequest retry handler until it succeeds or is acceptable or reaches the limit of times
 func RetryRequest(handler func() error, times int, interval time.Duration) error {
 	err := handler()
 	for i := 0; err != nil && !IsAcceptableErr(err) && i < times-1; i++ {
