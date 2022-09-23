@@ -1,6 +1,8 @@
 package job
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -90,7 +92,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 		err := util.RetryRequest(func() error {
 			member, jobErr = job.entity.GetGuildMember(guildID, userXP.UserID)
 			return jobErr
-		})
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"userId":  userXP.UserID,
@@ -142,7 +144,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	for userID, roleID := range rolesToRemove {
 		err := util.RetryRequest(func() error {
 			return job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
-		})
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -169,7 +171,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	for userID, roleID := range rolesToAdd {
 		err := util.RetryRequest(func() error {
 			return job.entity.AddGuildMemberRole(guildID, userID, roleID)
-		})
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
