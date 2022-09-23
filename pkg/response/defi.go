@@ -131,7 +131,7 @@ type GetCoinResponseWrapper struct {
 type CompareTokenReponseData struct {
 	BaseCoin              *GetCoinResponse                 `json:"base_coin"`
 	TargetCoin            *GetCoinResponse                 `json:"target_coin"`
-	Ratios                []float32                        `json:"ratios"`
+	Ratios                []float64                        `json:"ratios"`
 	Times                 []string                         `json:"times"`
 	BaseCoinSuggestions   []model.CoingeckoSupportedTokens `json:"base_coin_suggestions"`
 	TargetCoinSuggestions []model.CoingeckoSupportedTokens `json:"target_coin_suggestions"`
@@ -144,7 +144,8 @@ type CompareTokenResponse struct {
 }
 
 type AddToWatchlistResponseData struct {
-	Suggestions []model.CoingeckoSupportedTokens `json:"suggestions"`
+	BaseSuggestions   []model.CoingeckoSupportedTokens `json:"base_suggestions"`
+	TargetSuggestions []model.CoingeckoSupportedTokens `json:"target_suggestions"`
 }
 
 type AddToWatchlistResponse struct {

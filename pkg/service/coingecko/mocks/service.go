@@ -99,10 +99,10 @@ func (mr *MockServiceMockRecorder) GetHistoricalMarketData(req interface{}) *gom
 }
 
 // GetHistoryCoinInfo mocks base method.
-func (m *MockService) GetHistoryCoinInfo(sourceSymbol, interval string) ([][]float32, error, int) {
+func (m *MockService) GetHistoryCoinInfo(sourceSymbol, interval string) ([][]float64, error, int) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetHistoryCoinInfo", sourceSymbol, interval)
-	ret0, _ := ret[0].([][]float32)
+	ret0, _ := ret[0].([][]float64)
 	ret1, _ := ret[1].(error)
 	ret2, _ := ret[2].(int)
 	return ret0, ret1, ret2
