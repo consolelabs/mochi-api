@@ -2199,8 +2199,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.AddToWatchlistResponse"
                         }
@@ -5600,7 +5600,13 @@ const docTemplate = `{
         "response.AddToWatchlistResponseData": {
             "type": "object",
             "properties": {
-                "suggestions": {
+                "base_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                },
+                "target_suggestions": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"

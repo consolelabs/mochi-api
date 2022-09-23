@@ -971,7 +971,11 @@ definitions:
     type: object
   response.AddToWatchlistResponseData:
     properties:
-      suggestions:
+      base_suggestions:
+        items:
+          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+      target_suggestions:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
@@ -3658,8 +3662,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/response.AddToWatchlistResponse'
       summary: Add to user's watchlist

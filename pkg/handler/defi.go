@@ -320,7 +320,7 @@ func (h *Handler) GetUserWatchlist(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       req body request.AddToWatchlistRequest true "request"
-// @Success     201 {object} response.AddToWatchlistResponse
+// @Success     200 {object} response.AddToWatchlistResponse
 // @Router      /defi/watchlist [post]
 func (h *Handler) AddToWatchlist(c *gin.Context) {
 	var req request.AddToWatchlistRequest
@@ -335,7 +335,7 @@ func (h *Handler) AddToWatchlist(c *gin.Context) {
 		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, res)
+	c.JSON(http.StatusOK, res)
 }
 
 // RemoveFromWatchlist     godoc
