@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 )
 
 func isMissingPermissionsErr(msg string) bool {
@@ -78,4 +79,14 @@ func GenerateUpvoteMessage(discordID, source string) *upvoteMsg {
 	}
 	ran := rand.Intn(len(presets) - 1)
 	return &presets[ran]
+}
+
+// RetryRequest retry handler until it succeeds or is acceptable or reaches the limit of times
+func RetryRequest(handler func() error, times int, interval time.Duration) error {
+	err := handler()
+	for i := 0; err != nil && !IsAcceptableErr(err) && i < times-1; i++ {
+		time.Sleep(interval)
+		err = handler()
+	}
+	return err
 }
