@@ -80,8 +80,8 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 	return prices, nil
 }
 
-func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, interval string) (resp [][]float32, err error, statusCode int) {
-	statusCode, err = util.FetchData(fmt.Sprintf(c.getCoinOhlc, sourceSymbol, interval), &resp)
+func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [][]float64, err error, statusCode int) {
+	statusCode, err = util.FetchData(fmt.Sprintf(c.getCoinOhlc, sourceSymbol, days), &resp)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, err, statusCode
 	}

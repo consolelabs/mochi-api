@@ -2191,8 +2191,8 @@
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.AddToWatchlistResponse"
                         }
@@ -5592,7 +5592,13 @@
         "response.AddToWatchlistResponseData": {
             "type": "object",
             "properties": {
-                "suggestions": {
+                "base_suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                },
+                "target_suggestions": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
