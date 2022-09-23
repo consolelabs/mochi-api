@@ -166,16 +166,19 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		return
 	}
 
-	chanID, err := h.entities.CreateRepostReactionEvent(req)
+	repostMessage, err := h.entities.CreateRepostReactionEvent(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":            "OK",
-		"repost_channel_id": chanID,
+	c.JSON(http.StatusOK, &response.RepostReactionEventResponse{
+		Data: response.RepostReactionEventData{
+			Status:          "OK",
+			RepostChannelID: repostMessage.RepostChannelID,
+			RepostMessageID: repostMessage.RepostMessageID,
+		},
 	})
 }
 

@@ -488,22 +488,23 @@ func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildCon
 	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
 }
 
-func (e *Entity) CreateRepostReactionEvent(req request.CreateMessageRepostHistRequest) (string, error) {
+func (e *Entity) CreateRepostReactionEvent(req request.CreateMessageRepostHistRequest) (*model.MessageRepostHistory, error) {
 	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if req.ReactionCount < conf.Quantity {
-		return "", nil
+		return nil, nil
 	}
-	if isRepostable := e.IsRepostableMessage(req); !isRepostable {
-		return "", fmt.Errorf("message cannot be reposted")
-	}
-	err = e.CreateRepostMessageHist(req, conf.RepostChannelID)
+
+	req.RepostChannelID = conf.RepostChannelID
+
+	repostMsg, err := e.CreateRepostMessageHistory(req)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return conf.RepostChannelID, nil
+	repostMsg.RepostChannelID = conf.RepostChannelID
+	return repostMsg, nil
 }
 
 func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {
@@ -700,6 +701,15 @@ func (e *Entity) DeleteGuildPruneExclude(req request.UpsertGuildPruneExcludeRequ
 	})
 	if err != nil {
 		e.log.Errorf(err, "[e.DeleteGuildPruneExclude] failed to delete prune excluded roles: %s", err)
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) EditMessageRepost(req *request.EditMessageRepostRequest) error {
+	err := e.repo.MessageRepostHistory.EditMessageRepost(req)
+	if err != nil {
+		e.log.Errorf(err, "[e.EditMessageRepost] failed to edit message repost: %s", err)
 		return err
 	}
 	return nil

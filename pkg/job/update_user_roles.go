@@ -1,6 +1,9 @@
 package job
 
 import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
@@ -84,12 +87,17 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	rolesToAdd := make(map[string]string)
 	rolesToRemove := make(map[string]string)
 	for _, userXP := range userXPs {
-		member, err := job.entity.GetGuildMember(guildID, userXP.UserID)
+		var member *discordgo.Member
+		var jobErr error
+		err := util.RetryRequest(func() error {
+			member, jobErr = job.entity.GetGuildMember(guildID, userXP.UserID)
+			return jobErr
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"userId":  userXP.UserID,
 				"guildId": guildID,
-			}).Info("[updateLevelRoles] user is no longer guild member")
+			}).Infof("[updateLevelRoles] user is no longer guild member: %v", err)
 			continue
 		}
 		if err != nil {
@@ -134,7 +142,9 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToRemove {
-		err := job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
+		err := util.RetryRequest(func() error {
+			return job.entity.RemoveGuildMemberRole(guildID, userID, roleID)
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -159,7 +169,9 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 	}
 
 	for userID, roleID := range rolesToAdd {
-		err := job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		err := util.RetryRequest(func() error {
+			return job.entity.AddGuildMemberRole(guildID, userID, roleID)
+		}, 10, time.Second)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{
 				"guildId": guildID,
@@ -176,6 +188,7 @@ func (job *updateUserRoles) updateLevelRoles(guildID string) error {
 			}).Error(err, "[updateLevelRoles] entity.AddGuildMemberRole failed")
 			continue
 		}
+
 		job.log.Fields(logger.Fields{
 			"guildId": guildID,
 			"userId":  userID,
