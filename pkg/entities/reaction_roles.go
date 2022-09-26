@@ -41,6 +41,9 @@ func (e *Entity) ListAllReactionRoles(guildID string) (*response.ListRoleReactio
 func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string) (*response.RoleReactionResponse, error) {
 	config, err := e.repo.GuildConfigReactionRole.GetByMessageID(guildID, messageID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 

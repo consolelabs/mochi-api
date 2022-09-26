@@ -28,12 +28,7 @@ func (pg *pg) ListAllByGuildID(guildId string) ([]model.GuildConfigReactionRole,
 
 func (pg *pg) GetByMessageID(guildId, messageID string) (model.GuildConfigReactionRole, error) {
 	var config model.GuildConfigReactionRole
-	err := pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", guildId, messageID).First(&config).Error
-	if err != nil {
-		return config, fmt.Errorf("failed to get role configs: %w", err)
-	}
-
-	return config, nil
+	return config, pg.db.Model(&model.GuildConfigReactionRole{}).Where("guild_id = ? AND message_id = ?", guildId, messageID).First(&config).Error
 }
 
 func (pg *pg) GetByRoleID(guildID, roleID string) (*model.GuildConfigReactionRole, error) {
