@@ -150,6 +150,16 @@ func (e *Entity) GetNFTActivity(collectionAddress, tokenID, query string) (*resp
 	}, nil
 }
 
+func (e *Entity) GetNFTTokenTransactionHistory(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenTxHistoryResponse, error) {
+	res, err := e.getNftTokenTransactionHistory(collectionAddress, tokenID)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetNFTTokenTransactionHistory] failed to get nft indexer activity")
+		return nil, err
+	}
+
+	return res, nil
+}
+
 func checkIsDefaultSymbol(defaults []model.GuildConfigDefaultCollection, symbol *model.NFTCollection) bool {
 	for _, def := range defaults {
 		if def.Address == symbol.Address && def.ChainID == symbol.ChainID {
@@ -225,6 +235,16 @@ func (e *Entity) getNFTActivityFromIndexer(collectionAddress, tokenID, query str
 		}
 		return nil, err
 	}
+	return data, nil
+}
+
+func (e *Entity) getNftTokenTransactionHistory(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenTxHistoryResponse, error) {
+	data, err := e.indexer.GetNFTTokenTxHistory(collectionAddress, tokenID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"collectionAddress": collectionAddress, "tokenID": tokenID}).Errorf(err, "[indexer.GetNFTTokenTxHistory] failed to get nft token tx history from indexer")
+		return nil, err
+	}
+
 	return data, nil
 }
 

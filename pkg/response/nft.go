@@ -159,6 +159,22 @@ type IndexerGetNFTActivityResponse struct {
 	util.Pagination
 }
 
+type IndexerGetNFTTokenTxHistoryResponse struct {
+	Data []IndexerGetNftTokenTxHistory `json:"data"`
+}
+
+type IndexerGetNftTokenTxHistory struct {
+	From            string `json:"from"`
+	To              string `json:"to"`
+	TokenID         string `json:"token_id,omitempty"`
+	EventTime       int64  `json:"event_time"`
+	TransactionHash string `json:"transaction_hash"`
+	BlockNumber     int64  `json:"block_number"`
+	ContractAddress string `json:"contract_address"`
+	CreatedTime     string `json:"created_time"`
+	LastUpdatedTime string `json:"last_updated_time"`
+}
+
 type IndexerNFTActivityData struct {
 	ID              int          `json:"id,omitempty"`
 	PlatformID      int          `json:"platform_id,omitempty"`

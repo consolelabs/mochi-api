@@ -63,19 +63,19 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 // @Param       id   path  string true  "Token ID"
 // @Param       page   query  string false  "Page"
 // @Param       size   query  string false  "Size"
-// @Success     200 {object} response.GetNFTActivityResponse
+// @Success     200 {object} response.IndexerGetNFTTokenTxHistoryResponse
 // @Router      /nfts/{symbol}/{id}/activity [get]
 func (h *Handler) GetNFTActivity(c *gin.Context) {
 	collectionAddress := c.Param("symbol")
 	tokenID := c.Param("id")
-	res, err := h.entities.GetNFTActivity(collectionAddress, tokenID, c.Request.URL.RawQuery)
+	res, err := h.entities.GetNFTTokenTransactionHistory(collectionAddress, tokenID)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
-			h.log.Fields(logger.Fields{"collection_address": collectionAddress, "token_id": tokenID}).Info("[handler.GetNFTActivity] - record not found")
+			h.log.Fields(logger.Fields{"collection_address": collectionAddress, "token_id": tokenID}).Info("[handler.GetNFTTokenTransactionHistory] - record not found")
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		h.log.Fields(logger.Fields{"collection_address": collectionAddress, "id": tokenID}).Error(err, "[handler.GetNFTActivity] - failed to get NFT activity")
+		h.log.Fields(logger.Fields{"collection_address": collectionAddress, "id": tokenID}).Error(err, "[handler.GetNFTTokenTransactionHistory] - failed to get NFT activity")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

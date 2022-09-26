@@ -3366,7 +3366,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetNFTActivityResponse"
+                            "$ref": "#/definitions/response.IndexerGetNFTTokenTxHistoryResponse"
                         }
                     }
                 }
@@ -6160,28 +6160,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetNFTActivityData": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.IndexerNFTActivityData"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/util.Pagination"
-                }
-            }
-        },
-        "response.GetNFTActivityResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.GetNFTActivityData"
-                }
-            }
-        },
         "response.GetNFTCollectionByAddressChainResponse": {
             "type": "object",
             "properties": {
@@ -6555,6 +6533,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.IndexerGetNFTTokenTxHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.IndexerGetNftTokenTxHistory"
+                    }
+                }
+            }
+        },
         "response.IndexerGetNFTTokensResponse": {
             "type": "object",
             "properties": {
@@ -6575,10 +6564,10 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTActivityData": {
+        "response.IndexerGetNftTokenTxHistory": {
             "type": "object",
             "properties": {
-                "chain_id": {
+                "block_number": {
                     "type": "integer"
                 },
                 "contract_address": {
@@ -6587,46 +6576,16 @@ const docTemplate = `{
                 "created_time": {
                     "type": "string"
                 },
-                "event_type": {
-                    "type": "string"
-                },
-                "from_address": {
-                    "type": "string"
-                },
-                "id": {
+                "event_time": {
                     "type": "integer"
                 },
-                "last_update_time": {
+                "from": {
                     "type": "string"
                 },
-                "listing_price": {
+                "last_updated_time": {
                     "type": "string"
                 },
-                "listing_price_obj": {
-                    "$ref": "#/definitions/response.IndexerPrice"
-                },
-                "listing_status": {
-                    "type": "string"
-                },
-                "listing_type": {
-                    "type": "string"
-                },
-                "payment_token": {
-                    "type": "integer"
-                },
-                "platform_id": {
-                    "type": "integer"
-                },
-                "quantity": {
-                    "type": "string"
-                },
-                "sold_price": {
-                    "type": "string"
-                },
-                "sold_price_obj": {
-                    "$ref": "#/definitions/response.IndexerPrice"
-                },
-                "to_address": {
+                "to": {
                     "type": "string"
                 },
                 "token_id": {
