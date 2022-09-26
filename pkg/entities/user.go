@@ -117,7 +117,7 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 	}
 
 	var resetTime, topggTime, dcBotTime float64 = 0, 0, 0
-	expireTime := streak.LastStreakDate.Add(time.Hour * 13)
+	expireTime := streak.LastStreakDate.Add(time.Hour * 12)
 	now := time.Now()
 	currTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, time.UTC)
 	if currTime.Before(expireTime) {
@@ -129,7 +129,7 @@ func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUser
 		e.log.Info("[e.GetUserCurrentUpvoteStreak] user first time upvote")
 	}
 	for _, log := range upvoteLogs {
-		expireTime = log.LatestUpvoteTime.Add(time.Hour * 13)
+		expireTime = log.LatestUpvoteTime.Add(time.Hour * 12)
 		switch log.Source {
 		case "topgg":
 			topggTime = util.MinuteLeftUntil(currTime, expireTime)
