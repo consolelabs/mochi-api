@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (e *Entity) IsRepostableMessage(req request.CreateMessageRepostHistRequest) bool {
+func (e *Entity) IsRepostableMessage(req request.MessageReactionRequest) bool {
 	_, msgErr := e.repo.MessageRepostHistory.GetByMessageID(req.GuildID, req.MessageID)
 	_, channelErr := e.repo.GuildConfigRepostReaction.GetByRepostChannelID(req.GuildID, req.ChannelID)
 	if errors.Is(msgErr, gorm.ErrRecordNotFound) && errors.Is(channelErr, gorm.ErrRecordNotFound) {
@@ -17,7 +17,7 @@ func (e *Entity) IsRepostableMessage(req request.CreateMessageRepostHistRequest)
 	return false
 }
 
-func (e *Entity) CreateRepostMessageHistory(req request.CreateMessageRepostHistRequest) (*model.MessageRepostHistory, error) {
+func (e *Entity) CreateRepostMessageHistory(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
 	repostMsg, err := e.repo.MessageRepostHistory.GetByMessageID(req.GuildID, req.MessageID)
 	if err == nil {
 		return repostMsg, nil
