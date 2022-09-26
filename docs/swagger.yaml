@@ -1112,6 +1112,11 @@ definitions:
       data:
         $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
     type: object
+  response.DataFilterConfigByReaction:
+    properties:
+      data:
+        $ref: '#/definitions/response.RoleReactionResponse'
+    type: object
   response.DataListRoleReactionResponse:
     properties:
       data:
@@ -2850,7 +2855,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.RoleReactionResponse'
+            $ref: '#/definitions/response.DataFilterConfigByReaction'
       summary: Filter config by reaction
       tags:
       - Config
@@ -3893,7 +3898,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4915,7 +4920,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
