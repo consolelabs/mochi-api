@@ -32,3 +32,7 @@ type ListRoleReactionResponse struct {
 type DataListRoleReactionResponse struct {
 	Data ListRoleReactionResponse `json:"data"`
 }
+
+type DataFilterConfigByReaction struct {
+	Data *RoleReactionResponse `json:"data"`
+}

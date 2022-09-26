@@ -995,7 +995,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.RoleReactionResponse"
+                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
                         }
                     }
                 }
@@ -2731,7 +2731,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -4060,7 +4060,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5815,6 +5815,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                }
+            }
+        },
+        "response.DataFilterConfigByReaction": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.RoleReactionResponse"
                 }
             }
         },

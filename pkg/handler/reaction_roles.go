@@ -110,7 +110,7 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.RoleReactionRequest true "Filter config by reaction request"
-// @Success     200 {object} response.RoleReactionResponse
+// @Success     200 {object} response.DataFilterConfigByReaction
 // @Router      /configs/reaction-roles/filter [post]
 func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 	var req request.RoleReactionRequest
@@ -128,5 +128,7 @@ func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, config)
+	c.JSON(http.StatusOK, response.DataFilterConfigByReaction{
+		Data: config,
+	})
 }
