@@ -987,7 +987,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.RoleReactionResponse"
+                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
                         }
                     }
                 }
@@ -2723,7 +2723,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -4052,7 +4052,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5807,6 +5807,14 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                }
+            }
+        },
+        "response.DataFilterConfigByReaction": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.RoleReactionResponse"
                 }
             }
         },
