@@ -11,6 +11,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/response"
 	res "github.com/defipod/mochi/pkg/response"
 )
 
@@ -289,6 +290,45 @@ func (i *indexer) GetNFTActivity(collectionAddress, tokenID, query string) (*res
 		return nil, err
 	}
 	data := &res.IndexerGetNFTActivityResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
+}
+
+func (i *indexer) GetNFTTokenTxHistory(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenTxHistoryResponse, error) {
+
+	url := fmt.Sprintf("%s/api/v1/nft/%s/%s/transaction-history", i.cfg.IndexerServerHost, collectionAddress, tokenID)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNFTTokenTxHistory - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTTokenTxHistory - failed to filter nft activity with collectionAddress=%s, tokenID=%s: %v", collectionAddress, tokenID, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.IndexerGetNFTTokenTxHistoryResponse{}
 	err = json.Unmarshal(body, data)
 	if err != nil {
 		return nil, err
