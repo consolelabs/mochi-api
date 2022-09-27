@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -531,4 +532,87 @@ func (h *Handler) UpdateNFTCollection(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+}
+
+// AddNftWatchlist     godoc
+// @Summary     Add to user's nft watchlist
+// @Description Add to user's nft watchlist
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       req body request.AddNftWatchlistRequest true "request"
+// @Success     200 {object} response.NftWatchlistSuggestResponse
+// @Router      /nfts/watchlist [post]
+func (h *Handler) AddNftWatchlist(c *gin.Context) {
+	var req request.AddNftWatchlistRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.AddNftWatchlist] - failed to bind request")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+
+	res, err := h.entities.AddNftWatchlist(req)
+	if err != nil {
+		h.log.Error(err, "[handler.AddNftWatchlist] - failed to add watchlist")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
+// GetNftWatchlist     godoc
+// @Summary     Get user's nft watchlist
+// @Description Get user's nft watchlist
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       user_id   query  string true  "user_id"
+// @Param       page   query  string true  "page"
+// @Param       size   query  string true  "size"
+// @Success     200 {object} response.GetNftWatchlistResponse
+// @Router      /nfts/watchlist [get]
+func (h *Handler) GetNftWatchlist(c *gin.Context) {
+	page, _ := strconv.Atoi(c.Query("page"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	req := request.GetNftWatchlistRequest{
+		UserID: c.Query("user_id"),
+		Page:   page,
+		Size:   size,
+	}
+
+	data, err := h.entities.GetNftWatchlist(&req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetNftWatchlist] - failed to get watchlist")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
+}
+
+// DeleteNftWatchlist     godoc
+// @Summary     Remove from user's nft watchlist
+// @Description Remove from user's nft watchlist
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       symbol   query  string true  "symbol"
+// @Param       user_id   query  string true  "user_id"
+// @Success     200 {object} object
+// @Router      /nfts/watchlist [delete]
+func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
+	req := request.DeleteNftWatchlistRequest{
+		Symbol: c.Query("symbol"),
+		UserID: c.Query("user_id"),
+	}
+
+	err := h.entities.DeleteNftWatchlist(req)
+	if err != nil {
+		h.log.Error(err, "[handler.DeleteNftWatchlist] - failed to delete watchlist")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": nil})
 }

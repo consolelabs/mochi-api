@@ -16,6 +16,8 @@ import (
 	"github.com/defipod/mochi/pkg/contracts/erc721"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -924,4 +926,172 @@ func (e *Entity) UpdateNFTCollection(address string) error {
 		}
 	}
 	return nil
+}
+
+func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.NftWatchlistSuggestResponse, error) {
+	if req.CollectionAddress == "" && req.Chain == "" {
+		suggestNftCollection, collection, err := e.SuggestCollection(req)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[e.SuggestCollection] failed to get nft collection suggestion")
+			return nil, err
+		}
+
+		// case symbol has suggestion
+		if suggestNftCollection != nil && collection == nil {
+			return &response.NftWatchlistSuggestResponse{Data: suggestNftCollection}, nil
+		}
+
+		if collection != nil && suggestNftCollection == nil {
+			req.CollectionAddress = collection.Address
+			req.Chain = util.ConvertChainIDToChain(collection.ChainID)
+		}
+	}
+
+	// case has collection address + chain id / not have but suggest return 1 result
+	collection, err := e.repo.NFTCollection.GetByAddressChainId(req.CollectionAddress, util.ConvertChainToChainId(req.Chain))
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[e.AddNftWatchlist] failed to get nft collection by address and chain id")
+		return nil, err
+	}
+
+	chainID, _ := strconv.Atoi(collection.ChainID)
+	err = e.repo.UserNftWatchlistItem.Create(&model.UserNftWatchlistItem{
+		UserID:            req.UserID,
+		Symbol:            collection.Symbol,
+		CollectionAddress: collection.Address,
+		ChainId:           int64(chainID),
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[UserNftWatchlistItem.Create] failed to create user nft wl")
+		return nil, err
+	}
+
+	return &response.NftWatchlistSuggestResponse{Data: nil}, nil
+}
+
+func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*response.NftWatchlistSuggest, *model.NFTCollection, error) {
+	// get collection
+	suggest := []response.CollectionSuggestions{}
+	collections, err := e.repo.NFTCollection.GetBySymbolorName(req.CollectionSymbol)
+	// cannot find collection => return suggested collections
+	if err != nil || len(collections) == 0 {
+		suggest, err = e.GetNFTSuggestion(req.CollectionSymbol, "")
+		if err != nil {
+			e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by symbol %s", req.CollectionSymbol)
+			return nil, nil, err
+		}
+		return &response.NftWatchlistSuggest{
+			Suggestions: suggest,
+		}, nil, nil
+	}
+
+	// found multiple symbols => only suggest those
+	if len(collections) > 1 {
+		var defaultSymbol *response.CollectionSuggestions
+		// check default symbol
+		symbols, _ := e.GetDefaultCollectionSymbol(req.GuildID)
+		for _, col := range collections {
+			// if found default symbol
+			if len(symbols) != 0 && checkIsDefaultSymbol(symbols, &col) {
+				def := response.CollectionSuggestions{
+					Address: col.Address,
+					Chain:   util.ConvertChainIDToChain(col.ChainID),
+					Name:    col.Name,
+					Symbol:  col.Symbol,
+				}
+				defaultSymbol = &def
+			}
+			suggest = append(suggest, response.CollectionSuggestions{
+				Name:    col.Name,
+				Symbol:  col.Symbol,
+				Address: col.Address,
+				Chain:   util.ConvertChainIDToChain(col.ChainID),
+			})
+		}
+		return &response.NftWatchlistSuggest{
+			Suggestions:   suggest,
+			DefaultSymbol: defaultSymbol,
+		}, nil, nil
+	}
+	return nil, &collections[0], nil
+}
+
+func (e *Entity) DeleteNftWatchlist(req request.DeleteNftWatchlistRequest) error {
+	rows, err := e.repo.UserNftWatchlistItem.Delete(req.UserID, req.Symbol)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.DeleteNftWatchlist] repo.UserNftWatchlistItem.Delete() failed")
+	}
+	if rows == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.DeleteNftWatchlist] item not found")
+		return baseerrs.ErrRecordNotFound
+	}
+	return err
+}
+
+func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response.GetNftWatchlistResponse, error) {
+	q := usernftwatchlistitem.UserNftWatchlistQuery{
+		UserID: req.UserID,
+		Offset: req.Page * req.Size,
+		Limit:  req.Size,
+	}
+	list, _, err := e.repo.UserNftWatchlistItem.List(q)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+
+	res := make([]response.GetNftWatchlist, 0)
+	for _, itm := range list {
+		data, err := e.indexer.GetNFTCollectionTickersForWl(itm.CollectionAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] indexer.GetNFTCollectionTickersForWl failed")
+			return nil, err
+		}
+
+		collection, err := e.repo.NFTCollection.GetByAddressChainId(itm.CollectionAddress, strconv.Itoa(int(itm.ChainId)))
+		if err != nil {
+			e.log.Fields(logger.Fields{"CollectionAddress": itm.CollectionAddress, "ChainId": itm.ChainId}).Error(err, "[entity.GetUserWatchlist] repo.NFTCollection.GetByAddressChainId failed")
+			return nil, err
+		}
+
+		if data == nil {
+			res = append(res, response.GetNftWatchlist{
+				Symbol:                   itm.Symbol,
+				Image:                    collection.Image,
+				IsPair:                   false,
+				Name:                     collection.Name,
+				PriceChangePercentage24h: 0,
+				SparkLineIn7d: response.SparkLineIn7d{
+					Price: []float64{},
+				},
+				FloorPrice:                        0,
+				PriceChangePercentage7dInCurrency: 0,
+			})
+			continue
+		}
+
+		price := make([]float64, 0)
+		for _, ticker := range data.Data.Tickers.Prices {
+			bigFloatFloorPrice7d := util.StringWeiToEther(ticker.Amount, int(ticker.Token.Decimals))
+			floatFloorPrice7d, _ := bigFloatFloorPrice7d.Float64()
+			price = append(price, floatFloorPrice7d)
+		}
+		floatFloorPrice, _ := util.StringWeiToEther(data.Data.FloorPrice.Amount, int(data.Data.FloorPrice.Token.Decimals)).Float64()
+
+		itmRes := response.GetNftWatchlist{
+			Symbol:                   itm.Symbol,
+			Image:                    collection.Image,
+			IsPair:                   false,
+			Name:                     collection.Name,
+			PriceChangePercentage24h: 0,
+			SparkLineIn7d: response.SparkLineIn7d{
+				Price: price,
+			},
+			FloorPrice:                        floatFloorPrice,
+			PriceChangePercentage7dInCurrency: (price[len(price)-1] - price[0]) / price[0],
+			Token:                             data.Data.FloorPrice.Token,
+		}
+		res = append(res, itmRes)
+	}
+	return &response.GetNftWatchlistResponse{Data: res}, nil
 }

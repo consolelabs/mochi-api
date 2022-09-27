@@ -415,3 +415,45 @@ func (i *indexer) GetNftMetadataAttrIcon() (*res.NftMetadataAttrIconResponse, er
 	}
 	return data, nil
 }
+
+// temp for nft wl 21/4 -> 18/7 because indexer just have this
+func (i *indexer) GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTCollectionTickersResponse, error) {
+	startDate := "1650499200000"
+	endDate := "1658102400000"
+	url := fmt.Sprintf("%s/api/v1/nft/ticker/%s?from=%s&to=%s", i.cfg.IndexerServerHost, address, startDate, endDate)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	// ignore wrong response from indexer
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, nil
+		}
+
+		return nil, nil
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &res.IndexerNFTCollectionTickersResponse{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	return data, nil
+}
