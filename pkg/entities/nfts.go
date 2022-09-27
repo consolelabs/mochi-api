@@ -273,6 +273,21 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}
+
+	collection, err := e.repo.NFTCollection.GetByAddress(address)
+	if err != nil {
+		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
+		return nil, err
+	}
+
+	finalData := make([]response.NftListingMarketplace, 0)
+	if len(data.Data.Marketplace) > 0 {
+		for _, marketplace := range data.Data.Marketplace {
+			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			finalData = append(finalData, marketplace)
+		}
+		data.Data.Marketplace = finalData
+	}
 	return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
 		Data: data.Data,
 	}, nil
