@@ -105,6 +105,14 @@ type IndexerNFTTokenDetailData struct {
 	Rarity            *IndexerNFTTokenRarity     `json:"rarity"`
 	MetadataID        string                     `json:"metadata_id"`
 	Owner             IndexerNftTokenOwner       `json:"owner"`
+	Marketplace       NftListingMarketplace      `json:"marketplace"`
+}
+
+type NftListingMarketplace struct {
+	ContractAddress string `json:"contract_address"`
+	TokenId         string `json:"token_id"`
+	PlatformId      uint64 `json:"platform_id"`
+	PlatformName    string `json:"platform_name"`
 }
 
 type IndexerNFTTokenAttribute struct {

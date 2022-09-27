@@ -47,6 +47,12 @@
       "owner_address": "0x5417A03667AbB6A059b3F174c1F67b1E83753046",
       "token_id": "1",
       "collection_address": ""
+    },
+    "marketplace": {
+      "contract_address": "",
+      "platform_id": 0,
+      "platform_name": "",
+      "token_id": ""
     }
   },
   "suggestions": [],
