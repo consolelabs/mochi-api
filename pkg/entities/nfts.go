@@ -110,6 +110,15 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 		return nil, err
 	}
 
+	finalData := make([]response.NftListingMarketplace, 0)
+	if len(data.Data.Marketplace) > 0 {
+		for _, marketplace := range data.Data.Marketplace {
+			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			finalData = append(finalData, marketplace)
+		}
+		data.Data.Marketplace = finalData
+	}
+
 	// empty response
 	if data == nil {
 		e.log.Infof("[indexer.GetNFTDetail] no nft data from indexer")

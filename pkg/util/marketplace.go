@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"math/big"
 	"strings"
 )
@@ -86,5 +87,20 @@ func GetChangePnl(pnl *big.Float) string {
 		return "+"
 	} else {
 		return "-"
+	}
+}
+
+func GetTokenMarketplaceUrl(collectionAddress, collectionSymbol, tokenID, platformName string) (tokenMarketplaceUrl string) {
+	switch strings.ToLower(platformName) {
+	case "opensea":
+		return fmt.Sprintf("https://opensea.io/assets/ethereum/%s/%s", collectionAddress, tokenID)
+	case "paintswap":
+		return fmt.Sprintf("https://paintswap.finance/marketplace/assets/%s/%s", collectionAddress, tokenID)
+	case "quixotic":
+		return fmt.Sprintf("https://qx.app/asset/%s/%s", collectionAddress, tokenID)
+	case "nftkey":
+		return fmt.Sprintf("https://nftkey.app/collections/bitkillasavax/token-details/?tokenId=%s", tokenID)
+	default:
+		return ""
 	}
 }
