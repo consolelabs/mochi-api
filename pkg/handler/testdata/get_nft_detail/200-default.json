@@ -11,12 +11,7 @@
       "collection_address": "",
       "token_id": ""
     },
-    "marketplace": {
-      "contract_address": "",
-      "platform_id": 0,
-      "platform_name": "",
-      "token_id": ""
-    }
+    "marketplace": null
   },
   "suggestions": [
     {

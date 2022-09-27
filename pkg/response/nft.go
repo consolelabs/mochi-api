@@ -105,7 +105,7 @@ type IndexerNFTTokenDetailData struct {
 	Rarity            *IndexerNFTTokenRarity     `json:"rarity"`
 	MetadataID        string                     `json:"metadata_id"`
 	Owner             IndexerNftTokenOwner       `json:"owner"`
-	Marketplace       NftListingMarketplace      `json:"marketplace"`
+	Marketplace       []NftListingMarketplace    `json:"marketplace"`
 }
 
 type NftListingMarketplace struct {

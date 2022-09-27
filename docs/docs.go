@@ -6567,22 +6567,19 @@ const docTemplate = `{
         "response.IndexerGetNftTokenTxHistory": {
             "type": "object",
             "properties": {
-                "block_number": {
-                    "type": "integer"
-                },
                 "contract_address": {
                     "type": "string"
                 },
                 "created_time": {
                     "type": "string"
                 },
-                "event_time": {
-                    "type": "integer"
+                "event_type": {
+                    "type": "string"
                 },
                 "from": {
                     "type": "string"
                 },
-                "last_updated_time": {
+                "listing_status": {
                     "type": "string"
                 },
                 "to": {
@@ -6697,6 +6694,12 @@ const docTemplate = `{
                 },
                 "image_content_type": {
                     "type": "string"
+                },
+                "marketplace": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.NftListingMarketplace"
+                    }
                 },
                 "metadata_id": {
                     "type": "string"
@@ -7150,6 +7153,23 @@ const docTemplate = `{
                     "$ref": "#/definitions/response.ConfigGroupNFTRoleResponse"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.NftListingMarketplace": {
+            "type": "object",
+            "properties": {
+                "contract_address": {
+                    "type": "string"
+                },
+                "platform_id": {
+                    "type": "integer"
+                },
+                "platform_name": {
+                    "type": "string"
+                },
+                "token_id": {
                     "type": "string"
                 }
             }

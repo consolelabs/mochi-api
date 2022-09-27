@@ -48,12 +48,7 @@
       "token_id": "1",
       "collection_address": ""
     },
-    "marketplace": {
-      "contract_address": "",
-      "platform_id": 0,
-      "platform_name": "",
-      "token_id": ""
-    }
+    "marketplace": []
   },
   "suggestions": [],
   "default_symbol": null
