@@ -573,6 +573,19 @@ definitions:
       whitelist_campaign_id:
         type: string
     type: object
+  request.AddNftWatchlistRequest:
+    properties:
+      chain:
+        type: string
+      collection_address:
+        type: string
+      collection_symbol:
+        type: string
+      guild_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.AddToWatchlistRequest:
     properties:
       coin_gecko_id:
@@ -2032,6 +2045,20 @@ definitions:
         items:
           $ref: '#/definitions/response.NftSales'
         type: array
+    type: object
+  response.NftWatchlistSuggest:
+    properties:
+      default_symbol:
+        $ref: '#/definitions/response.CollectionSuggestions'
+      suggestions:
+        items:
+          $ref: '#/definitions/response.CollectionSuggestions'
+        type: array
+    type: object
+  response.NftWatchlistSuggestResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NftWatchlistSuggest'
     type: object
   response.ResponseMessage:
     properties:
@@ -4407,6 +4434,53 @@ paths:
           schema:
             $ref: '#/definitions/response.NFTTradingVolumeResponse'
       summary: Get NFT trading volume
+      tags:
+      - NFT
+  /nfts/watchlist:
+    delete:
+      consumes:
+      - application/json
+      description: Remove from user's nft watchlist
+      parameters:
+      - description: symbol
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's nft watchlist
+      tags:
+      - NFT
+    post:
+      consumes:
+      - application/json
+      description: Add to user's nft watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddNftWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NftWatchlistSuggestResponse'
+      summary: Add to user's nft watchlist
       tags:
       - NFT
   /profiles/:

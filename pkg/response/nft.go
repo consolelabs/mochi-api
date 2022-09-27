@@ -256,3 +256,12 @@ type GetNFTActivityData struct {
 	Data     []IndexerNFTActivityData `json:"data"`
 	Metadata util.Pagination          `json:"metadata"`
 }
+
+type NftWatchlistSuggestResponse struct {
+	Data *NftWatchlistSuggest `json:"data"`
+}
+
+type NftWatchlistSuggest struct {
+	Suggestions   []CollectionSuggestions `json:"suggestions"`
+	DefaultSymbol *CollectionSuggestions  `json:"default_symbol"`
+}

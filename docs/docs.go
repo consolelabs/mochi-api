@@ -3275,6 +3275,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/nfts/watchlist": {
+            "post": {
+                "description": "Add to user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Add to user's nft watchlist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddNftWatchlistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.NftWatchlistSuggestResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove from user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Remove from user's nft watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "symbol",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "user_id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts/{symbol}/{id}": {
             "get": {
                 "description": "Get NFT Detail",
@@ -4980,6 +5051,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "whitelist_campaign_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.AddNftWatchlistRequest": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "type": "string"
+                },
+                "collection_address": {
+                    "type": "string"
+                },
+                "collection_symbol": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -7242,6 +7333,28 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.NftSales"
                     }
+                }
+            }
+        },
+        "response.NftWatchlistSuggest": {
+            "type": "object",
+            "properties": {
+                "default_symbol": {
+                    "$ref": "#/definitions/response.CollectionSuggestions"
+                },
+                "suggestions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CollectionSuggestions"
+                    }
+                }
+            }
+        },
+        "response.NftWatchlistSuggestResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NftWatchlistSuggest"
                 }
             }
         },
