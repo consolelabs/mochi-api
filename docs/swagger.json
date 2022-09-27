@@ -3268,6 +3268,50 @@
             }
         },
         "/nfts/watchlist": {
+            "get": {
+                "description": "Get user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get user's nft watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user_id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetNftWatchlistResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Add to user's nft watchlist",
                 "consumes": [
@@ -6251,6 +6295,49 @@
                 }
             }
         },
+        "response.GetNftWatchlist": {
+            "type": "object",
+            "properties": {
+                "floor_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "is_pair": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_change_percentage_24h": {
+                    "type": "number"
+                },
+                "price_change_percentage_7d_in_currency": {
+                    "type": "number"
+                },
+                "sparkline_in_7d": {
+                    "$ref": "#/definitions/response.SparkLineIn7d"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GetNftWatchlistResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetNftWatchlist"
+                    }
+                }
+            }
+        },
         "response.GetRepostReactionConfigsResponse": {
             "type": "object",
             "properties": {
@@ -7440,6 +7527,17 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                }
+            }
+        },
+        "response.SparkLineIn7d": {
+            "type": "object",
+            "properties": {
+                "price": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
                     }
                 }
             }

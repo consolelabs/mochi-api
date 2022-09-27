@@ -2,6 +2,7 @@ package indexer
 
 import (
 	"github.com/defipod/mochi/pkg/response"
+	res "github.com/defipod/mochi/pkg/response"
 )
 
 type Service interface {
@@ -16,4 +17,5 @@ type Service interface {
 	GetNftSales(addr string, platform string) (*response.NftSalesResponse, error)
 	GetNFTContract(addr string) (*response.IndexerContract, error)
 	GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error)
+	GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTCollectionTickersResponse, error)
 }

@@ -17,12 +17,14 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/k0kubun/pp"
 	"gorm.io/gorm"
 )
 
@@ -1010,4 +1012,72 @@ func (e *Entity) DeleteNftWatchlist(req request.DeleteNftWatchlistRequest) error
 		return baseerrs.ErrRecordNotFound
 	}
 	return err
+}
+
+func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response.GetNftWatchlistResponse, error) {
+	q := usernftwatchlistitem.UserNftWatchlistQuery{
+		UserID: req.UserID,
+		Offset: req.Page * req.Size,
+		Limit:  req.Size,
+	}
+	list, _, err := e.repo.UserNftWatchlistItem.List(q)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+
+	res := make([]response.GetNftWatchlist, 0)
+	for _, itm := range list {
+		data, err := e.indexer.GetNFTCollectionTickersForWl(itm.CollectionAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] indexer.GetNFTCollectionTickersForWl failed")
+			return nil, err
+		}
+
+		collection, err := e.repo.NFTCollection.GetByAddressChainId(itm.CollectionAddress, strconv.Itoa(int(itm.ChainId)))
+		if err != nil {
+			e.log.Fields(logger.Fields{"CollectionAddress": itm.CollectionAddress, "ChainId": itm.ChainId}).Error(err, "[entity.GetUserWatchlist] repo.NFTCollection.GetByAddressChainId failed")
+			return nil, err
+		}
+
+		pp.Println(data)
+		if data == nil {
+			res = append(res, response.GetNftWatchlist{
+				Symbol:                   itm.Symbol,
+				Image:                    collection.Image,
+				IsPair:                   false,
+				Name:                     collection.Name,
+				PriceChangePercentage24h: 0,
+				SparkLineIn7d: response.SparkLineIn7d{
+					Price: []float64{},
+				},
+				FloorPrice:                        0,
+				PriceChangePercentage7dInCurrency: 0,
+			})
+			continue
+		}
+
+		price := make([]float64, 0)
+		for _, ticker := range data.Data.Tickers.Prices {
+			bigFloatFloorPrice7d := util.StringWeiToEther(ticker.Amount, int(ticker.Token.Decimals))
+			floatFloorPrice7d, _ := bigFloatFloorPrice7d.Float64()
+			price = append(price, floatFloorPrice7d)
+		}
+		floatFloorPrice, _ := util.StringWeiToEther(data.Data.FloorPrice.Amount, int(data.Data.FloorPrice.Token.Decimals)).Float64()
+
+		itmRes := response.GetNftWatchlist{
+			Symbol:                   itm.Symbol,
+			Image:                    collection.Image,
+			IsPair:                   false,
+			Name:                     collection.Name,
+			PriceChangePercentage24h: 0,
+			SparkLineIn7d: response.SparkLineIn7d{
+				Price: price,
+			},
+			FloorPrice:                        floatFloorPrice,
+			PriceChangePercentage7dInCurrency: (price[len(price)-1] - price[0]) / price[0],
+		}
+		res = append(res, itmRes)
+	}
+	return &response.GetNftWatchlistResponse{Data: res}, nil
 }

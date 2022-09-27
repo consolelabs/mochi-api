@@ -1348,6 +1348,34 @@ definitions:
       data:
         $ref: '#/definitions/model.NFTCollection'
     type: object
+  response.GetNftWatchlist:
+    properties:
+      floor_price:
+        type: number
+      id:
+        type: string
+      image:
+        type: string
+      is_pair:
+        type: boolean
+      name:
+        type: string
+      price_change_percentage_7d_in_currency:
+        type: number
+      price_change_percentage_24h:
+        type: number
+      sparkline_in_7d:
+        $ref: '#/definitions/response.SparkLineIn7d'
+      symbol:
+        type: string
+    type: object
+  response.GetNftWatchlistResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GetNftWatchlist'
+        type: array
+    type: object
   response.GetRepostReactionConfigsResponse:
     properties:
       data:
@@ -2118,6 +2146,13 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+    type: object
+  response.SparkLineIn7d:
+    properties:
+      price:
+        items:
+          type: number
         type: array
     type: object
   response.TickerData:
@@ -4460,6 +4495,36 @@ paths:
           schema:
             type: object
       summary: Remove from user's nft watchlist
+      tags:
+      - NFT
+    get:
+      consumes:
+      - application/json
+      description: Get user's nft watchlist
+      parameters:
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetNftWatchlistResponse'
+      summary: Get user's nft watchlist
       tags:
       - NFT
     post:
