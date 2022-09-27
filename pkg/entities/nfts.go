@@ -910,3 +910,7 @@ func (e *Entity) UpdateNFTCollection(address string) error {
 	}
 	return nil
 }
+
+// func (e *Entity) AddNftWatchlist(req *request.AddNftWatchlistRequest) error {
+
+// }

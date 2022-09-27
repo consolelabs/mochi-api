@@ -252,6 +252,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.GetNFTCollectionByAddressChain)
 		}
+
+		// watchlistGroup := defiGroup.Group("/watchlist")
+		// {
+		// 	watchlistGroup.GET("", h.GetNftWatchlist)
+		// 	watchlistGroup.POST("", h.AddNftWatchlist)
+		// 	watchlistGroup.DELETE("", h.DeleteNftWatchlist)
+		// }
 	}
 	giftGroup := v1.Group("/gift")
 	{

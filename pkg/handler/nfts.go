@@ -532,3 +532,50 @@ func (h *Handler) UpdateNFTCollection(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
 }
+
+// func (h *Handler) AddNftWatchlist(c *gin.Context) {
+// 	var req request.AddNftWatchlistRequest
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		h.log.Error(err, "[handler.AddNftWatchlist] - failed to bind request")
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+// 		return
+// 	}
+
+// 	err := h.entities.AddNftWatchlist(req)
+// 	if err != nil {
+// 		h.log.Error(err, "[handler.AddNftWatchlist] - failed to add watchlist")
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+// }
+
+// func (h *Handler) GetNftWatchlist(c *gin.Context) {
+// 	data, err := h.entities.GetNftWatchlist()
+// 	if err != nil {
+// 		h.log.Error(err, "[handler.GetNftWatchlist] - failed to get watchlist")
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, data)
+// }
+
+// func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
+// 	var req request.DeleteNftWatchlistRequest
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		h.log.Error(err, "[handler.DeleteNftWatchlist] - failed to bind request")
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+// 		return
+// 	}
+
+// 	err := h.entities.DeleteNftWatchlist(req)
+// 	if err != nil {
+// 		h.log.Error(err, "[handler.DeleteNftWatchlist] - failed to delete watchlist")
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+// }
