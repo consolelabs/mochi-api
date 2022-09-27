@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -22,21 +23,18 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 	guildID, guildIDExist := c.GetQuery("guild_id")
 	if !guildIDExist {
 		h.log.Info("[handler.GetAllRoleReactionConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	resp, err := h.entities.ListAllReactionRoles(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetAllRoleReactionConfigs] - failed to list all reaction roles")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.DataListRoleReactionResponse{
-		Data: *resp,
-	})
-
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
 
 // AddReactionRoleConfig     godoc
@@ -53,18 +51,18 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	config, err := h.entities.UpdateConfigByMessageID(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to update config my message id")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, config)
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // RemoveReactionRoleConfig     godoc
@@ -81,7 +79,7 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.RemoveReactionRoleConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -95,12 +93,11 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.RemoveReactionRoleConfig] - failed to remove reaction config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseSucess{
-		Success: true,
-	})
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{Success: true}, nil, nil, nil))
 }
 
 // FilterConfigByReaction     godoc
@@ -117,18 +114,16 @@ func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.FilterConfigByReaction] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	config, err := h.entities.GetReactionRoleByMessageID(req.GuildID, req.MessageID, req.Reaction)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "messageID": req.MessageID, "reaction": req.Reaction}).Error(err, "[handler.FilterConfigByReaction] - failed to get reaction role by message id")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.DataFilterConfigByReaction{
-		Data: config,
-	})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
