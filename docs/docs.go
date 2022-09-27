@@ -7163,6 +7163,9 @@ const docTemplate = `{
                 "contract_address": {
                     "type": "string"
                 },
+                "item_url": {
+                    "type": "string"
+                },
                 "platform_id": {
                     "type": "integer"
                 },

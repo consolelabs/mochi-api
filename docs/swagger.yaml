@@ -1980,6 +1980,8 @@ definitions:
     properties:
       contract_address:
         type: string
+      item_url:
+        type: string
       platform_id:
         type: integer
       platform_name:
