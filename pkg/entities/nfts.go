@@ -276,7 +276,7 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 
 	collection, err := e.repo.NFTCollection.GetByAddress(address)
 	if err != nil {
-		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection")
 		return nil, err
 	}
 
