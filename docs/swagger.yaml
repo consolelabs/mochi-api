@@ -1368,6 +1368,8 @@ definitions:
         $ref: '#/definitions/response.SparkLineIn7d'
       symbol:
         type: string
+      token:
+        $ref: '#/definitions/response.IndexerToken'
     type: object
   response.GetNftWatchlistResponse:
     properties:

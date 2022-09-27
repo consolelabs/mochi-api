@@ -6332,6 +6332,9 @@ const docTemplate = `{
                 },
                 "symbol": {
                     "type": "string"
+                },
+                "token": {
+                    "$ref": "#/definitions/response.IndexerToken"
                 }
             }
         },
