@@ -24,7 +24,6 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/k0kubun/pp"
 	"gorm.io/gorm"
 )
 
@@ -1040,7 +1039,6 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 			return nil, err
 		}
 
-		pp.Println(data)
 		if data == nil {
 			res = append(res, response.GetNftWatchlist{
 				Symbol:                   itm.Symbol,
@@ -1076,6 +1074,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 			},
 			FloorPrice:                        floatFloorPrice,
 			PriceChangePercentage7dInCurrency: (price[len(price)-1] - price[0]) / price[0],
+			Token:                             data.Data.FloorPrice.Token,
 		}
 		res = append(res, itmRes)
 	}

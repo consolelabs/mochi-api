@@ -13,7 +13,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	res "github.com/defipod/mochi/pkg/response"
-	"github.com/k0kubun/pp"
 )
 
 type CreateERC721ContractRequest struct {
@@ -449,7 +448,7 @@ func (i *indexer) GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTC
 	if err != nil {
 		return nil, err
 	}
-	pp.Println(string(body))
+
 	data := &res.IndexerNFTCollectionTickersResponse{}
 	err = json.Unmarshal(body, &data)
 	if err != nil {
