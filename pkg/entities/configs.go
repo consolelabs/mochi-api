@@ -488,21 +488,32 @@ func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildCon
 	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
 }
 
-func (e *Entity) CreateRepostReactionEvent(req request.CreateMessageRepostHistRequest) (*model.MessageRepostHistory, error) {
+func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
 	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "reaction": req.Reaction}).
+			Error(err, "[e.CreateRepostReactionEvent] failed to get guild config repost reaction")
 		return nil, err
+	}
+
+	if req.Reaction != conf.Emoji {
+		return nil, nil
 	}
 	if req.ReactionCount < conf.Quantity {
 		return nil, nil
 	}
 
 	req.RepostChannelID = conf.RepostChannelID
-
 	repostMsg, err := e.CreateRepostMessageHistory(req)
 	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create repost message history")
 		return nil, err
 	}
+
 	repostMsg.RepostChannelID = conf.RepostChannelID
 	return repostMsg, nil
 }

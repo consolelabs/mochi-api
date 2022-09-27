@@ -2,6 +2,7 @@ package guild_config_repost_reaction
 
 import (
 	"fmt"
+
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -28,11 +29,7 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigRepostReaction, e
 
 func (pg *pg) GetByReaction(guildID string, emoji string) (model.GuildConfigRepostReaction, error) {
 	var config model.GuildConfigRepostReaction
-	err := pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND emoji = ?", guildID, emoji).First(&config).Error
-	if err != nil {
-		return config, fmt.Errorf("failed to list repostable reaction configs: %w", err)
-	}
-	return config, nil
+	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND emoji = ?", guildID, emoji).First(&config).Error
 }
 
 func (pg *pg) GetByRepostChannelID(guildID, channelID string) (model.GuildConfigRepostReaction, error) {

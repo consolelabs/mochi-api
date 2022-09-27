@@ -40,6 +40,7 @@ import (
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
@@ -111,5 +112,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
 		UserTelegramDiscordAssociation:       usertelegramdiscordassociation.NewPG(db),
 		ServersUsageStats:                    serversusagestats.NewPG(db),
+		MessageReaction:                      messagereaction.NewPG(db),
 	}
 }
