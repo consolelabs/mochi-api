@@ -58,6 +58,7 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 
 	h := Handler{
 		entities: e,
+		log:      l,
 	}
 
 	// upsert guild

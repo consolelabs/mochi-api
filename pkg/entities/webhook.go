@@ -1,12 +1,14 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/util"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
@@ -528,5 +530,62 @@ func (e *Entity) logUserUpvote(userID, source string, chatTime time.Time) error 
 		e.log.Errorf(err, "[e.logUpvoteActivity] failed to log upvote")
 		return err
 	}
+	return nil
+}
+
+func (e Entity) RemoveAllMessageReactions(message *discordgo.Message) error {
+	cfg, err := e.repo.GuildConfigReactionRole.GetByMessageID(message.GuildID, message.ID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": message.GuildID, "messageID": message.ID}).
+			Info("[e.HandleMessageDelete] this message is not reaction role config for guild")
+		return nil
+	}
+
+	roles := []response.Role{}
+	if err := json.Unmarshal([]byte(cfg.ReactionRoles), &roles); err != nil {
+		e.log.Fields(logger.Fields{"ReactionRoles": cfg.ReactionRoles}).
+			Error(err, "[e.HandleMessageDelete] failed to unmarshal reaction roles")
+		return err
+	}
+	rolesMap := map[string]string{}
+
+	for _, role := range roles {
+		rolesMap[role.Reaction] = role.ID
+	}
+
+	msgReactions, err := e.repo.MessageReaction.GetByMessageID(message.ID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"ReactionRoles": cfg.ReactionRoles}).
+			Error(err, "[e.HandleMessageDelete] failed to get message reactions")
+		return err
+	}
+
+	for _, msgReact := range msgReactions {
+		if _, ok := rolesMap[msgReact.Reaction]; ok {
+			err := util.RetryRequest(func() error {
+				return e.RemoveGuildMemberRole(msgReact.GuildID, msgReact.UserID, rolesMap[msgReact.Reaction])
+			}, 10, time.Second)
+
+			if err != nil {
+				e.log.Fields(logger.Fields{
+					"guildID": msgReact.GuildID,
+					"userID":  msgReact.UserID,
+					"roleID":  rolesMap[msgReact.Reaction],
+				}).Infof("[e.HandleMessageDelete] failed to get message reactions %v", err)
+			}
+		}
+	}
+
+	if err := e.repo.MessageReaction.DeleteByMessageID(message.ID); err != nil {
+		e.log.Fields(logger.Fields{"messageID": message.ID}).Error(err, "[e.HandleMessageDelete] failed to delete message reactions")
+		return err
+	}
+
+	if err := e.repo.GuildConfigReactionRole.ClearMessageConfig(message.GuildID, message.ID); err != nil {
+		e.log.Fields(logger.Fields{"messageID": message.ID, "guildID": message.GuildID}).
+			Error(err, "[e.HandleMessageDelete] failed to clear message config")
+		return err
+	}
+
 	return nil
 }

@@ -26,15 +26,20 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		return
 	}
 
+	h.log.Infof("EVENT: %v", req.Event)
 	switch req.Event {
 	case request.GUILD_MEMBER_ADD:
 		h.handleGuildMemberAdd(c, req.Data)
 	case request.MESSAGE_CREATE:
 		h.handleMessageCreate(c, req.Data)
+	case request.MESSAGE_DELETE:
+		h.handleMessageDelete(c, req.Data)
 	case request.GUILD_CREATE:
 		h.handleGuildCreate(c, req.Data)
 	case request.MESSAGE_REACTION_ADD:
 		h.handleMessageReactionAdd(c, req.Data)
+	case request.MESSAGE_REACTION_REMOVE:
+		h.handleMessageReactionRemove(c, req.Data)
 	}
 }
 
@@ -151,8 +156,7 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 }
 
 func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage) {
-	var req request.CreateMessageRepostHistRequest
-
+	var req request.MessageReactionRequest
 	byteData, err := data.MarshalJSON()
 	if err != nil {
 		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to json marshal data")
@@ -166,10 +170,25 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		return
 	}
 
+	if err := h.entities.AddMessageReaction(req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create message reaction")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	repostMessage, err := h.entities.CreateRepostReactionEvent(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if repostMessage == nil {
+		c.JSON(http.StatusOK, &response.RepostReactionEventResponse{
+			Data: response.RepostReactionEventData{
+				Status: "OK",
+			},
+		})
 		return
 	}
 
@@ -178,6 +197,62 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 			Status:          "OK",
 			RepostChannelID: repostMessage.RepostChannelID,
 			RepostMessageID: repostMessage.RepostMessageID,
+		},
+	})
+}
+
+func (h *Handler) handleMessageReactionRemove(c *gin.Context, data json.RawMessage) {
+	var req request.MessageReactionRequest
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionRemove] - failed to json marshal data")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionRemove] - failed to unmarshal data")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.RemoveMessageReaction(req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionRemove] - failed to create message reaction")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &response.RepostReactionEventResponse{
+		Data: response.RepostReactionEventData{
+			Status: "OK",
+		},
+	})
+}
+
+func (h *Handler) handleMessageDelete(c *gin.Context, data json.RawMessage) {
+	message := &discordgo.Message{}
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		h.log.Error(err, "[handler.handleMessageDelete] - failed to json marshal data")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &message); err != nil {
+		h.log.Error(err, "[handler.handleMessageDelete] - failed to unmarshal data")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.entities.RemoveAllMessageReactions(message); err != nil {
+		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageDelete] - failed to handle message delete")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"status": "OK",
 		},
 	})
 }

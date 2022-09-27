@@ -1593,17 +1593,15 @@ definitions:
     type: object
   response.IndexerGetNftTokenTxHistory:
     properties:
-      block_number:
-        type: integer
       contract_address:
         type: string
       created_time:
         type: string
-      event_time:
-        type: integer
+      event_type:
+        type: string
       from:
         type: string
-      last_updated_time:
+      listing_status:
         type: string
       to:
         type: string
@@ -1679,6 +1677,10 @@ definitions:
         type: string
       image_content_type:
         type: string
+      marketplace:
+        items:
+          $ref: '#/definitions/response.NftListingMarketplace'
+        type: array
       metadata_id:
         type: string
       name:
@@ -1972,6 +1974,19 @@ definitions:
       data:
         $ref: '#/definitions/response.ConfigGroupNFTRoleResponse'
       message:
+        type: string
+    type: object
+  response.NftListingMarketplace:
+    properties:
+      contract_address:
+        type: string
+      item_url:
+        type: string
+      platform_id:
+        type: integer
+      platform_name:
+        type: string
+      token_id:
         type: string
     type: object
   response.NftMetadataAttrIcon:

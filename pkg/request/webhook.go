@@ -26,19 +26,23 @@ type WebhookUpvoteDiscordBot struct {
 }
 
 const (
-	GUILD_MEMBER_ADD     = "guildMemberAdd"
-	MESSAGE_CREATE       = "messageCreate"
-	SALES_CREATE         = "salesCreate"
-	GUILD_CREATE         = "guildCreate"
-	MESSAGE_REACTION_ADD = "messageReactionAdd"
+	GUILD_MEMBER_ADD        = "guildMemberAdd"
+	MESSAGE_CREATE          = "messageCreate"
+	MESSAGE_DELETE          = "messageDelete"
+	SALES_CREATE            = "salesCreate"
+	GUILD_CREATE            = "guildCreate"
+	MESSAGE_REACTION_ADD    = "messageReactionAdd"
+	MESSAGE_REACTION_REMOVE = "messageReactionRemove"
 )
 
 var acceptedEvents = map[string]bool{
-	GUILD_MEMBER_ADD:     true,
-	MESSAGE_CREATE:       true,
-	SALES_CREATE:         true,
-	GUILD_CREATE:         true,
-	MESSAGE_REACTION_ADD: true,
+	GUILD_MEMBER_ADD:        true,
+	MESSAGE_CREATE:          true,
+	MESSAGE_DELETE:          true,
+	SALES_CREATE:            true,
+	GUILD_CREATE:            true,
+	MESSAGE_REACTION_ADD:    true,
+	MESSAGE_REACTION_REMOVE: true,
 }
 
 func (input *HandleDiscordWebhookRequest) Bind(c *gin.Context) error {
