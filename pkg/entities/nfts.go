@@ -109,6 +109,11 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 	collection := collections[0]
 	data, err := e.getTokenDetailFromIndexer(collection.Address, tokenID)
 	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+				Data: nil,
+			}, nil
+		}
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}
@@ -286,6 +291,12 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 		}
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
+	}
+
+	if data.Data.TokenID == "" {
+		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Data: nil,
+		}, nil
 	}
 
 	finalData := make([]response.NftListingMarketplace, 0)
