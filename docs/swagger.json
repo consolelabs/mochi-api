@@ -2723,7 +2723,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4167,7 +4167,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5741,6 +5741,14 @@
                 }
             }
         },
+        "response.CoinDescription": {
+            "type": "object",
+            "properties": {
+                "en": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CoinImage": {
             "type": "object",
             "properties": {
@@ -6035,6 +6043,9 @@
             "properties": {
                 "asset_platform_id": {
                     "type": "string"
+                },
+                "description": {
+                    "$ref": "#/definitions/response.CoinDescription"
                 },
                 "id": {
                     "type": "string"

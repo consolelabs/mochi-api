@@ -2731,7 +2731,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4175,7 +4175,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5749,6 +5749,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CoinDescription": {
+            "type": "object",
+            "properties": {
+                "en": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CoinImage": {
             "type": "object",
             "properties": {
@@ -6043,6 +6051,9 @@ const docTemplate = `{
             "properties": {
                 "asset_platform_id": {
                     "type": "string"
+                },
+                "description": {
+                    "$ref": "#/definitions/response.CoinDescription"
                 },
                 "id": {
                     "type": "string"
