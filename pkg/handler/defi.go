@@ -30,7 +30,7 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetHistoricalMarketChartResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // InDiscordWalletTransfer     godoc
@@ -93,7 +93,7 @@ func (h *Handler) InDiscordWalletWithdraw(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": res})
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // InDiscordWalletBalances     godoc
@@ -140,9 +140,7 @@ func (h *Handler) GetSupportedTokens(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetSupportedTokensResponse{
-		Data: tokens,
-	})
+	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
 }
 
 // GetCoin     godoc
@@ -162,7 +160,7 @@ func (h *Handler) GetCoin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetCoinResponseWrapper{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // SearchCoins     godoc
@@ -189,7 +187,7 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, &response.SearchCoinResponse{Data: tokens})
+	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
 }
 
 // CompareToken     godoc
@@ -234,7 +232,7 @@ func (h *Handler) CompareToken(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CompareTokenResponse{Data: res})
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // SetGuildDefaultTicker     godoc
