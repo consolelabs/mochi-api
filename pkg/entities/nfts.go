@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"encoding/json"
-	"io/ioutil"
 	"strings"
 	"time"
 
@@ -71,6 +70,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 			return nil, err
 		}
 		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Data:        &response.IndexerNFTTokenDetailData{},
 			Suggestions: suggest,
 		}, nil
 	}
@@ -99,6 +99,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 			})
 		}
 		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Data:          &response.IndexerNFTTokenDetailData{},
 			Suggestions:   suggest,
 			DefaultSymbol: defaultSymbol,
 		}, nil
@@ -108,6 +109,11 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 	collection := collections[0]
 	data, err := e.getTokenDetailFromIndexer(collection.Address, tokenID)
 	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+				Data: nil,
+			}, nil
+		}
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}
@@ -130,7 +136,7 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 
 	data.Data.Image = util.StandardizeUri(data.Data.Image)
 	return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-		Data:        data.Data,
+		Data:        &data.Data,
 		Suggestions: suggest,
 	}, nil
 }
@@ -270,16 +276,27 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 		return nil, fmt.Errorf("record not found")
 	}
 
-	data, err := e.getTokenDetailFromIndexer(address, tokenID)
-	if err != nil {
-		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
-		return nil, err
-	}
-
 	collection, err := e.repo.NFTCollection.GetByAddress(address)
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] failed to get nft collection")
 		return nil, err
+	}
+
+	data, err := e.getTokenDetailFromIndexer(address, tokenID)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+				Data: nil,
+			}, nil
+		}
+		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
+		return nil, err
+	}
+
+	if data.Data.TokenID == "" {
+		return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
+			Data: nil,
+		}, nil
 	}
 
 	finalData := make([]response.NftListingMarketplace, 0)
@@ -290,8 +307,11 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 		}
 		data.Data.Marketplace = finalData
 	}
+
+	data.Data.Image = util.StandardizeUri(data.Data.Image)
+
 	return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-		Data: data.Data,
+		Data: &data.Data,
 	}, nil
 
 }
@@ -319,52 +339,6 @@ func (e *Entity) CheckIsSync(address string) (bool, error) {
 	}
 
 	return indexerContract.IsSynced, nil
-}
-
-func GetNFTCollectionFromMoralis(address, chain string, cfg config.Config) (*NFTCollectionData, error) {
-	colData := &NFTCollectionData{}
-	moralisApi := "https://deep-index.moralis.io/api/v2/nft/%s/metadata?chain=%s"
-	client := &http.Client{
-		Timeout: time.Second * 60,
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf(moralisApi, address, chain), nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("X-API-Key", cfg.MoralisXApiKey)
-	q := req.URL.Query()
-
-	req.URL.RawQuery = q.Encode()
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		mesErr := &MoralisMessageFail{}
-		mes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(mes, &mesErr)
-		if err != nil {
-			return nil, err
-		}
-		err = fmt.Errorf("%v", mesErr.Message)
-		return nil, err
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(body, &colData)
-	if err != nil {
-		return nil, err
-	}
-
-	return colData, nil
 }
 
 func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
@@ -953,8 +927,17 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[e.AddNftWatchlist] failed to get nft collection by address and chain id")
 		return nil, err
 	}
-
 	chainID, _ := strconv.Atoi(collection.ChainID)
+	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, UserID: req.UserID, ChainID: collection.ChainID}
+	_, total, err := e.repo.UserNftWatchlistItem.List(listQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddNftToWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if total == 1 {
+		return nil, baseerrs.ErrConflict
+	}
+
 	err = e.repo.UserNftWatchlistItem.Create(&model.UserNftWatchlistItem{
 		UserID:            req.UserID,
 		Symbol:            collection.Symbol,
@@ -1078,6 +1061,11 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 		}
 		floatFloorPrice, _ := util.StringWeiToEther(data.Data.FloorPrice.Amount, int(data.Data.FloorPrice.Token.Decimals)).Float64()
 
+		priceChangePercentage7dInCurrency := 0.0
+		if len(price) > 0 {
+			priceChangePercentage7dInCurrency = (price[len(price)-1] - price[0]) / price[0]
+		}
+
 		itmRes := response.GetNftWatchlist{
 			Symbol:                   itm.Symbol,
 			Image:                    collection.Image,
@@ -1088,7 +1076,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 				Price: price,
 			},
 			FloorPrice:                        floatFloorPrice,
-			PriceChangePercentage7dInCurrency: (price[len(price)-1] - price[0]) / price[0],
+			PriceChangePercentage7dInCurrency: priceChangePercentage7dInCurrency,
 			Token:                             data.Data.FloorPrice.Token,
 		}
 		res = append(res, itmRes)

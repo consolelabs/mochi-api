@@ -1134,11 +1134,27 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.RoleReactionResponse'
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.DataListRoleReactionResponse:
     properties:
       data:
         $ref: '#/definitions/response.ListRoleReactionResponse'
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.DefaultRole:
     properties:
@@ -1332,6 +1348,14 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigLevelRole'
         type: array
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.GetLinkedTelegramResponse:
     properties:
@@ -3957,7 +3981,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -5056,7 +5080,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
