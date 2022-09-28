@@ -601,7 +601,11 @@ func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
 	err := h.entities.DeleteNftWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.DeleteNftWatchlist] - failed to delete watchlist")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
