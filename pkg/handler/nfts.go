@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/gin-gonic/gin"
+	"github.com/k0kubun/pp"
 )
 
 type error interface {
@@ -33,23 +34,20 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	symbol := c.Param("symbol")
 	tokenID := c.Param("id")
 	guildID := c.Query("guild_id")
-	// to prevent error when query db
-	if guildID == "" {
-		guildID = "0"
-	}
 
+	pp.Println("check request")
+	pp.Println(symbol)
+	pp.Println(tokenID)
+	pp.Println(guildID)
 	res, err := h.entities.GetNFTDetail(symbol, tokenID, guildID)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			h.log.Fields(logger.Fields{"symbol": symbol, "token_id": tokenID, "guild_id": guildID}).Info("[handler.GetNFTDetail] - record not found")
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	res.Data.Image = util.StandardizeUri(res.Data.Image)
+
+	pp.Println("check response")
+	pp.Println(res)
 
 	c.JSON(http.StatusOK, res)
 }

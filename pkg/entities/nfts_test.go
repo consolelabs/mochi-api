@@ -634,7 +634,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				guildID: "12312123",
 			},
 			want: &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-				Data: response.IndexerNFTTokenDetailData{
+				Data: &response.IndexerNFTTokenDetailData{
 					TokenID:           "1",
 					CollectionAddress: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
 					Name:              "Cyber Rabby #1",
