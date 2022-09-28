@@ -29,10 +29,14 @@ type ApiError struct {
 }
 
 type Response[T any] struct {
-	*PaginationResponse `json:",omitempty"`
-	Data                T          `json:"data"`
-	Error               string     `json:"error,omitempty"`
-	ErrorDetails        []ApiError `json:"errors,omitempty"`
+	Data         DataResponse[T] `json:"data"`
+	Error        string          `json:"error,omitempty"`
+	ErrorDetails []ApiError      `json:"errors,omitempty"`
+}
+
+type DataResponse[T any] struct {
+	*PaginationResponse `json:"metadata,omitempty"`
+	Data                T `json:"data"`
 }
 
 type ErrorResponse struct {
@@ -46,11 +50,13 @@ type ResponseString struct {
 
 func CreateResponse[T any](data T, paging *PaginationResponse, err error, payload any) Response[T] {
 	resp := Response[T]{
-		Data: data,
+		Data: DataResponse[T]{
+			Data: data,
+		},
 	}
 
 	if paging != nil {
-		resp.PaginationResponse = paging
+		resp.Data.PaginationResponse = paging
 	}
 
 	var ve validator.ValidationErrors
