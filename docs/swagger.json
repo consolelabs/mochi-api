@@ -2723,7 +2723,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4052,7 +4052,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5606,6 +5606,14 @@
                 }
             }
         },
+        "response.CoinDescription": {
+            "type": "object",
+            "properties": {
+                "en": {
+                    "type": "string"
+                }
+            }
+        },
         "response.CoinImage": {
             "type": "object",
             "properties": {
@@ -5900,6 +5908,9 @@
             "properties": {
                 "asset_platform_id": {
                     "type": "string"
+                },
+                "description": {
+                    "$ref": "#/definitions/response.CoinDescription"
                 },
                 "id": {
                     "type": "string"
@@ -6559,22 +6570,19 @@
         "response.IndexerGetNftTokenTxHistory": {
             "type": "object",
             "properties": {
-                "block_number": {
-                    "type": "integer"
-                },
                 "contract_address": {
                     "type": "string"
                 },
                 "created_time": {
                     "type": "string"
                 },
-                "event_time": {
-                    "type": "integer"
+                "event_type": {
+                    "type": "string"
                 },
                 "from": {
                     "type": "string"
                 },
-                "last_updated_time": {
+                "listing_status": {
                     "type": "string"
                 },
                 "to": {

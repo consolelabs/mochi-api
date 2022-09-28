@@ -980,6 +980,11 @@ definitions:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
     type: object
+  response.CoinDescription:
+    properties:
+      en:
+        type: string
+    type: object
   response.CoinImage:
     properties:
       large:
@@ -1170,6 +1175,8 @@ definitions:
     properties:
       asset_platform_id:
         type: string
+      description:
+        $ref: '#/definitions/response.CoinDescription'
       id:
         type: string
       image:
@@ -1593,17 +1600,15 @@ definitions:
     type: object
   response.IndexerGetNftTokenTxHistory:
     properties:
-      block_number:
-        type: integer
       contract_address:
         type: string
       created_time:
         type: string
-      event_time:
-        type: integer
+      event_type:
+        type: string
       from:
         type: string
-      last_updated_time:
+      listing_status:
         type: string
       to:
         type: string
@@ -3871,7 +3876,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4893,7 +4898,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
