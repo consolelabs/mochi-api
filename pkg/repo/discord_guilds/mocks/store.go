@@ -34,18 +34,18 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// CreateIfNotExists mocks base method.
-func (m *MockStore) CreateIfNotExists(guild model.DiscordGuild) error {
+// CreateOrReactivate mocks base method.
+func (m *MockStore) CreateOrReactivate(guild model.DiscordGuild) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateIfNotExists", guild)
+	ret := m.ctrl.Call(m, "CreateOrReactivate", guild)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateIfNotExists indicates an expected call of CreateIfNotExists.
-func (mr *MockStoreMockRecorder) CreateIfNotExists(guild interface{}) *gomock.Call {
+// CreateOrReactivate indicates an expected call of CreateOrReactivate.
+func (mr *MockStoreMockRecorder) CreateOrReactivate(guild interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIfNotExists", reflect.TypeOf((*MockStore)(nil).CreateIfNotExists), guild)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrReactivate", reflect.TypeOf((*MockStore)(nil).CreateOrReactivate), guild)
 }
 
 // GetByID mocks base method.
@@ -79,15 +79,15 @@ func (mr *MockStoreMockRecorder) Gets() *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockStore) Update(omit string, guild model.DiscordGuild) error {
+func (m *MockStore) Update(guild *model.DiscordGuild) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", omit, guild)
+	ret := m.ctrl.Call(m, "Update", guild)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockStoreMockRecorder) Update(omit, guild interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) Update(guild interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStore)(nil).Update), omit, guild)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStore)(nil).Update), guild)
 }

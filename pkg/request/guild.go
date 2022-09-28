@@ -6,6 +6,13 @@ type CreateGuildRequest struct {
 }
 
 type UpdateGuildRequest struct {
-	GlobalXP   string `json:"global_xp"`
-	LogChannel string `json:"log_channel"`
+	GlobalXP   *bool   `json:"global_xp"`
+	LogChannel *string `json:"log_channel"`
+	Active     *bool   `json:"active"`
+}
+
+type HandleGuildDeleteRequest struct {
+	GuildID   string `json:"guild_id"`
+	GuildName string `json:"guild_name"`
+	IconURL   string `json:"icon_url"`
 }

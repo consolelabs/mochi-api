@@ -4437,6 +4437,9 @@
         "model.DiscordGuild": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -5592,8 +5595,11 @@
         "request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "global_xp": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "log_channel": {
                     "type": "string"
@@ -6176,6 +6182,9 @@
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },

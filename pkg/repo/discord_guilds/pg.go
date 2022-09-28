@@ -18,7 +18,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) Gets() ([]model.DiscordGuild, error) {
 	guilds := []model.DiscordGuild{}
-	err := pg.db.Preload("GuildConfigInviteTracker").Find(&guilds).Error
+	err := pg.db.Where("active = TRUE").Preload("GuildConfigInviteTracker").Find(&guilds).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get guilds: %w", err)
 	}
@@ -26,13 +26,13 @@ func (pg *pg) Gets() ([]model.DiscordGuild, error) {
 	return guilds, nil
 }
 
-func (pg *pg) CreateIfNotExists(guild model.DiscordGuild) error {
+func (pg *pg) CreateOrReactivate(guild model.DiscordGuild) error {
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
 		Columns: []clause.Column{
 			{Name: "id"},
 		},
-		DoNothing: true,
+		DoUpdates: clause.Assignments(map[string]interface{}{"active": true}),
 	}).Create(&guild).Error
 	if err != nil {
 		tx.Rollback()
@@ -43,13 +43,17 @@ func (pg *pg) CreateIfNotExists(guild model.DiscordGuild) error {
 
 func (pg *pg) GetByID(id string) (*model.DiscordGuild, error) {
 	var guild model.DiscordGuild
-	return &guild, pg.db.Preload("GuildConfigInviteTracker").First(&guild, "id = ?", id).Error
+	return &guild, pg.db.Preload("GuildConfigInviteTracker").Where("active = TRUE").First(&guild, "id = ?", id).Error
 }
 
 func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
 	return pg.db.Model(&model.DiscordGuild{}).Where("id = ?", guildID).Update("global_xp", globalXP).Error
 }
 
-func (pg *pg) Update(omit string, guild model.DiscordGuild) error {
-	return pg.db.Model(&guild).Where("id = ?", guild.ID).Omit(omit).Updates(map[string]interface{}{"global_xp": guild.GlobalXP, "log_channel": guild.LogChannel}).Error
+// func (pg *pg) Update(omit string, guild model.DiscordGuild) error {
+// 	return pg.db.Model(&guild).Where("id = ?", guild.ID).Omit(omit).Updates(map[string]interface{}{"global_xp": guild.GlobalXP, "log_channel": guild.LogChannel}).Error
+// }
+
+func (pg *pg) Update(guild *model.DiscordGuild) error {
+	return pg.db.Model(&guild).Where("id = ?", guild.ID).Save(guild).Error
 }

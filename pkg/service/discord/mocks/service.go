@@ -63,6 +63,20 @@ func (mr *MockServiceMockRecorder) NotifyGmStreak(channelID, userDiscordID, stre
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), channelID, userDiscordID, streakCount, podTownXps)
 }
 
+// NotifyGuildDelete mocks base method.
+func (m *MockService) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyGuildDelete", guildID, guildName, iconURL, guildsLeft)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyGuildDelete indicates an expected call of NotifyGuildDelete.
+func (mr *MockServiceMockRecorder) NotifyGuildDelete(guildID, guildName, iconURL, guildsLeft interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGuildDelete", reflect.TypeOf((*MockService)(nil).NotifyGuildDelete), guildID, guildName, iconURL, guildsLeft)
+}
+
 // NotifyNewGuild mocks base method.
 func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
 	m.ctrl.T.Helper()

@@ -388,3 +388,18 @@ func (d *Discord) ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse
 	}
 	return nil
 }
+
+func (d *Discord) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error {
+	msg := &discordgo.MessageEmbed{
+		Title:       "Time to say goodbye!",
+		Thumbnail:   &discordgo.MessageEmbedThumbnail{URL: iconURL},
+		Description: fmt.Sprintf("Mochi just left guild `%s`\nGuilds left: `%v`", guildName, guildsLeft),
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, msg)
+	if err != nil {
+		d.log.Fields(logger.Fields{"msg": msg}).Error(err, "session.ChannelMessageSendEmbed() failed")
+	}
+	return err
+}

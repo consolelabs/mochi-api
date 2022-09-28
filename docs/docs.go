@@ -4445,6 +4445,9 @@ const docTemplate = `{
         "model.DiscordGuild": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -5600,8 +5603,11 @@ const docTemplate = `{
         "request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "global_xp": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "log_channel": {
                     "type": "string"
@@ -6184,6 +6190,9 @@ const docTemplate = `{
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
