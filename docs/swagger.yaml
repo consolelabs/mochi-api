@@ -573,6 +573,19 @@ definitions:
       whitelist_campaign_id:
         type: string
     type: object
+  request.AddNftWatchlistRequest:
+    properties:
+      chain:
+        type: string
+      collection_address:
+        type: string
+      collection_symbol:
+        type: string
+      guild_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.AddToWatchlistRequest:
     properties:
       coin_gecko_id:
@@ -980,6 +993,11 @@ definitions:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
     type: object
+  response.CoinDescription:
+    properties:
+      en:
+        type: string
+    type: object
   response.CoinImage:
     properties:
       large:
@@ -1170,6 +1188,8 @@ definitions:
     properties:
       asset_platform_id:
         type: string
+      description:
+        $ref: '#/definitions/response.CoinDescription'
       id:
         type: string
       image:
@@ -1334,6 +1354,36 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.NFTCollection'
+    type: object
+  response.GetNftWatchlist:
+    properties:
+      floor_price:
+        type: number
+      id:
+        type: string
+      image:
+        type: string
+      is_pair:
+        type: boolean
+      name:
+        type: string
+      price_change_percentage_7d_in_currency:
+        type: number
+      price_change_percentage_24h:
+        type: number
+      sparkline_in_7d:
+        $ref: '#/definitions/response.SparkLineIn7d'
+      symbol:
+        type: string
+      token:
+        $ref: '#/definitions/response.IndexerToken'
+    type: object
+  response.GetNftWatchlistResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GetNftWatchlist'
+        type: array
     type: object
   response.GetRepostReactionConfigsResponse:
     properties:
@@ -2033,6 +2083,20 @@ definitions:
           $ref: '#/definitions/response.NftSales'
         type: array
     type: object
+  response.NftWatchlistSuggest:
+    properties:
+      default_symbol:
+        $ref: '#/definitions/response.CollectionSuggestions'
+      suggestions:
+        items:
+          $ref: '#/definitions/response.CollectionSuggestions'
+        type: array
+    type: object
+  response.NftWatchlistSuggestResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NftWatchlistSuggest'
+    type: object
   response.ResponseMessage:
     properties:
       message:
@@ -2091,6 +2155,13 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+    type: object
+  response.SparkLineIn7d:
+    properties:
+      price:
+        items:
+          type: number
         type: array
     type: object
   response.TickerData:
@@ -3886,7 +3957,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4409,6 +4480,83 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
+  /nfts/watchlist:
+    delete:
+      consumes:
+      - application/json
+      description: Remove from user's nft watchlist
+      parameters:
+      - description: symbol
+        in: query
+        name: symbol
+        required: true
+        type: string
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's nft watchlist
+      tags:
+      - NFT
+    get:
+      consumes:
+      - application/json
+      description: Get user's nft watchlist
+      parameters:
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: size
+        in: query
+        name: size
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetNftWatchlistResponse'
+      summary: Get user's nft watchlist
+      tags:
+      - NFT
+    post:
+      consumes:
+      - application/json
+      description: Add to user's nft watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddNftWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NftWatchlistSuggestResponse'
+      summary: Add to user's nft watchlist
+      tags:
+      - NFT
   /profiles/:
     get:
       consumes:
@@ -4908,7 +5056,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

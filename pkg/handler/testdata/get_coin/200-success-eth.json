@@ -59,6 +59,9 @@
         "coin_id": "ethereum",
         "target_coin_id": "tether"
       }
-    ]
+    ],
+    "description": {
+      "en": "eth"
+    }
   }
 }

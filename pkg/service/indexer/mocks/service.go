@@ -79,6 +79,21 @@ func (mr *MockServiceMockRecorder) GetNFTCollectionTickers(address, rawQuery int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollectionTickers", reflect.TypeOf((*MockService)(nil).GetNFTCollectionTickers), address, rawQuery)
 }
 
+// GetNFTCollectionTickersForWl mocks base method.
+func (m *MockService) GetNFTCollectionTickersForWl(address string) (*response.IndexerNFTCollectionTickersResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTCollectionTickersForWl", address)
+	ret0, _ := ret[0].(*response.IndexerNFTCollectionTickersResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTCollectionTickersForWl indicates an expected call of GetNFTCollectionTickersForWl.
+func (mr *MockServiceMockRecorder) GetNFTCollectionTickersForWl(address interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollectionTickersForWl", reflect.TypeOf((*MockService)(nil).GetNFTCollectionTickersForWl), address)
+}
+
 // GetNFTCollections mocks base method.
 func (m *MockService) GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error) {
 	m.ctrl.T.Helper()

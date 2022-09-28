@@ -256,3 +256,33 @@ type GetNFTActivityData struct {
 	Data     []IndexerNFTActivityData `json:"data"`
 	Metadata util.Pagination          `json:"metadata"`
 }
+
+type NftWatchlistSuggestResponse struct {
+	Data *NftWatchlistSuggest `json:"data"`
+}
+
+type NftWatchlistSuggest struct {
+	Suggestions   []CollectionSuggestions `json:"suggestions"`
+	DefaultSymbol *CollectionSuggestions  `json:"default_symbol"`
+}
+
+type GetNftWatchlist struct {
+	FloorPrice                        float64       `json:"floor_price"`
+	Symbol                            string        `json:"symbol"`
+	Image                             string        `json:"image"`
+	Id                                string        `json:"id"`
+	IsPair                            bool          `json:"is_pair"`
+	Name                              string        `json:"name"`
+	PriceChangePercentage24h          float64       `json:"price_change_percentage_24h"`
+	PriceChangePercentage7dInCurrency float64       `json:"price_change_percentage_7d_in_currency"`
+	SparkLineIn7d                     SparkLineIn7d `json:"sparkline_in_7d"`
+	Token                             IndexerToken  `json:"token"`
+}
+
+type SparkLineIn7d struct {
+	Price []float64 `json:"price"`
+}
+
+type GetNftWatchlistResponse struct {
+	Data []GetNftWatchlist `json:"data"`
+}

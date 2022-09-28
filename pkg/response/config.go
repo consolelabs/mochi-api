@@ -54,7 +54,8 @@ type GetGuildTokensResponse struct {
 }
 
 type GetLevelRoleConfigsResponse struct {
-	Data []model.GuildConfigLevelRole `json:"data"`
+	*PaginationResponse `json:",omitempty"`
+	Data                []model.GuildConfigLevelRole `json:"data"`
 }
 
 type ListGuildGroupNFTRolesResponse struct {
