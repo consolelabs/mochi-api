@@ -28,11 +28,17 @@ type ApiError struct {
 	Enums []string `json:"enums,omitempty"` // available options incase of field's payload is enums
 }
 
+type IDataResponse[T any] interface{}
+
 type Response[T any] struct {
-	*PaginationResponse `json:",omitempty"`
-	Data                T          `json:"data"`
-	Error               string     `json:"error,omitempty"`
-	ErrorDetails        []ApiError `json:"errors,omitempty"`
+	Data         IDataResponse[T] `json:"data"`
+	Error        string           `json:"error,omitempty"`
+	ErrorDetails []ApiError       `json:"errors,omitempty"`
+}
+
+type DataResponse[T any] struct {
+	Pagination *PaginationResponse `json:"metadata,omitempty"`
+	Data       T                   `json:"data"`
 }
 
 type ErrorResponse struct {
@@ -50,7 +56,10 @@ func CreateResponse[T any](data T, paging *PaginationResponse, err error, payloa
 	}
 
 	if paging != nil {
-		resp.PaginationResponse = paging
+		resp.Data = DataResponse[T]{
+			Data:       data,
+			Pagination: paging,
+		}
 	}
 
 	var ve validator.ValidationErrors
