@@ -76,9 +76,9 @@ type IndexerGetNFTTokenDetailResponse struct {
 	Data IndexerNFTTokenDetailData `json:"data"`
 }
 type IndexerGetNFTTokenDetailResponseWithSuggestions struct {
-	Data          IndexerNFTTokenDetailData `json:"data"`
-	Suggestions   []CollectionSuggestions   `json:"suggestions"`
-	DefaultSymbol *CollectionSuggestions    `json:"default_symbol"`
+	Data          *IndexerNFTTokenDetailData `json:"data"`
+	Suggestions   []CollectionSuggestions    `json:"suggestions"`
+	DefaultSymbol *CollectionSuggestions     `json:"default_symbol"`
 }
 
 type CollectionSuggestions struct {
