@@ -110,18 +110,11 @@ CREATE TABLE IF NOT EXISTS offchain_tip_bot_transfer_histories (
 );
 
 -- +migrate Down
-DROP TABLE IF EXISTS offchain_tip_bot_tokens;
-
-DROP TABLE IF EXISTS offchain_tip_bot_chains;
-
-DROP TABLE IF EXISTS offchain_tip_bot_tokens_chains;
-
-DROP TABLE IF EXISTS offchain_tip_bot_contracts;
-
-DROP TABLE IF EXISTS offchain_tip_bot_assign_contract;
-
-DROP TABLE IF EXISTS offchain_tip_bot_user_balances;
-
-DROP TABLE IF EXISTS offchain_tip_bot_activity_logs;
-
 DROP TABLE IF EXISTS offchain_tip_bot_transfer_histories;
+DROP TABLE IF EXISTS offchain_tip_bot_activity_logs;
+DROP TABLE IF EXISTS offchain_tip_bot_user_balances;
+DROP TABLE IF EXISTS offchain_tip_bot_assign_contract;
+DROP TABLE IF EXISTS offchain_tip_bot_contracts;
+DROP TABLE IF EXISTS offchain_tip_bot_tokens_chains;
+DROP TABLE IF EXISTS offchain_tip_bot_chains;
+DROP TABLE IF EXISTS offchain_tip_bot_tokens;
