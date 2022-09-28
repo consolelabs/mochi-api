@@ -18,4 +18,5 @@ type Service interface {
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 	SendUpvoteMessage(discordID, source string, isStranger bool) error
 	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error
+	NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error
 }

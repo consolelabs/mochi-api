@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/gin-gonic/gin"
+
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
-
-	"github.com/bwmarrin/discordgo"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/gin-gonic/gin"
 )
 
 func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
@@ -40,6 +41,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		h.handleMessageReactionAdd(c, req.Data)
 	case request.MESSAGE_REACTION_REMOVE:
 		h.handleMessageReactionRemove(c, req.Data)
+	case request.GUILD_DELETE:
+		h.handleGuildDelete(c, req.Data)
 	}
 }
 
@@ -293,4 +296,29 @@ func (h *Handler) WebhookUpvoteDiscordBot(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}
+
+func (h *Handler) handleGuildDelete(c *gin.Context, data json.RawMessage) {
+	var req request.HandleGuildDeleteRequest
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		h.log.Error(err, "[handler.handleGuildDelete] - data.MarshalJSON() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Error(err, "[handler.handleGuildDelete] - discordgo.Unmarshal() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = h.entities.DeactivateGuild(req)
+	if err != nil {
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }

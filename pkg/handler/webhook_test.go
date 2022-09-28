@@ -62,7 +62,7 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 	}
 
 	// upsert guild
-	if err := repo.DiscordGuilds.CreateIfNotExists(model.DiscordGuild{
+	if err := repo.DiscordGuilds.CreateOrReactivate(model.DiscordGuild{
 		ID:        "878692765683298344",
 		Name:      "test-server",
 		BotScopes: model.JSONArrayString{"*"},

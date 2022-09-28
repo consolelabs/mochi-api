@@ -5,6 +5,6 @@ import "github.com/defipod/mochi/pkg/model"
 type Store interface {
 	Gets() ([]model.DiscordGuild, error)
 	GetByID(id string) (*model.DiscordGuild, error)
-	CreateIfNotExists(guild model.DiscordGuild) error
-	Update(omit string, guild model.DiscordGuild) error
+	CreateOrReactivate(guild model.DiscordGuild) error
+	Update(guild *model.DiscordGuild) error
 }

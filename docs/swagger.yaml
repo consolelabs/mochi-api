@@ -146,6 +146,8 @@ definitions:
     type: object
   model.DiscordGuild:
     properties:
+      active:
+        type: boolean
       alias:
         type: string
       bot_scopes:
@@ -897,8 +899,10 @@ definitions:
     type: object
   request.UpdateGuildRequest:
     properties:
+      active:
+        type: boolean
       global_xp:
-        type: string
+        type: boolean
       log_channel:
         type: string
     type: object
@@ -1134,11 +1138,27 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.RoleReactionResponse'
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.DataListRoleReactionResponse:
     properties:
       data:
         $ref: '#/definitions/response.ListRoleReactionResponse'
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.DefaultRole:
     properties:
@@ -1258,6 +1278,8 @@ definitions:
     type: object
   response.GetGuildResponse:
     properties:
+      active:
+        type: boolean
       alias:
         type: string
       bot_scopes:
@@ -1332,6 +1354,14 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigLevelRole'
         type: array
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.GetLinkedTelegramResponse:
     properties:

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -184,13 +183,8 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 		return
 	}
 
-	omit := "log_channel"
-	if req.GlobalXP == "" {
-		omit = "global_xp"
-	}
-	globalXP := strings.EqualFold(req.GlobalXP, "true")
-	if err := h.entities.UpdateGuild(omit, guildID, globalXP, req.LogChannel); err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID, "globalXP": req.GlobalXP, "logChannel": req.LogChannel}).Error(err, "[handler.UpdateGuild] - failed to update guild")
+	if err := h.entities.UpdateGuild(guildID, req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID, "req": req}).Error(err, "[handler.UpdateGuild] - failed to update guild")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}

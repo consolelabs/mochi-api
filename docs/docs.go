@@ -4445,6 +4445,9 @@ const docTemplate = `{
         "model.DiscordGuild": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -5600,8 +5603,11 @@ const docTemplate = `{
         "request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "global_xp": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "log_channel": {
                     "type": "string"
@@ -5966,6 +5972,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.RoleReactionResponse"
+                },
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -5974,6 +5991,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.ListRoleReactionResponse"
+                },
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -6162,6 +6190,9 @@ const docTemplate = `{
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -6276,6 +6307,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigLevelRole"
                     }
+                },
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
