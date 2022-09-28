@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -379,33 +380,35 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 	var req request.ConfigLevelRoleRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if req.GuildID == "" {
 		h.log.Info("[handler.ConfigLevelRole] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.RoleID == "" {
 		h.log.Info("[handler.ConfigLevelRole] - role id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "role_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("role_id is required"), nil))
 		return
 	}
 	if req.Level == 0 {
 		h.log.Info("[handler.ConfigLevelRole] - level empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid level"), nil))
 		return
 	}
 
 	if err := h.entities.ConfigLevelRole(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to config level role")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{
+		Success: true,
+	}, nil, nil, nil))
 }
 
 // GetLevelRoleConfig     godoc
@@ -421,18 +424,18 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetLevelRoleConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	data, err := h.entities.GetGuildLevelRoleConfigs(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetLevelRoleConfigs] - failed to get guild level role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetLevelRoleConfigsResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // RemoveLevelRoleConfig     godoc
@@ -448,31 +451,31 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.RemoveLevelRoleConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	level := c.Query("level")
 	if level == "" {
 		h.log.Info("[handler.RemoveLevelRoleConfig] - level empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "level is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("level is required"), nil))
 		return
 	}
 
 	levelNr, err := strconv.Atoi(level)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "level": level}).Error(err, "[handler.RemoveLevelRoleConfig] - invalid level")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid level"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid level"), nil))
 		return
 	}
 
 	if err := h.entities.RemoveGuildLevelRoleConfig(guildID, levelNr); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "level": level}).Error(err, "[handler.RemoveLevelRoleConfig] - failed to remove guild level role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ListGuildNFTRoles     godoc
