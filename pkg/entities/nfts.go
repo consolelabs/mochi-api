@@ -927,8 +927,17 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[e.AddNftWatchlist] failed to get nft collection by address and chain id")
 		return nil, err
 	}
-
 	chainID, _ := strconv.Atoi(collection.ChainID)
+	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, UserID: req.UserID, ChainID: collection.ChainID}
+	_, total, err := e.repo.UserNftWatchlistItem.List(listQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddNftToWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if total == 1 {
+		return nil, baseerrs.ErrConflict
+	}
+
 	err = e.repo.UserNftWatchlistItem.Create(&model.UserNftWatchlistItem{
 		UserID:            req.UserID,
 		Symbol:            collection.Symbol,
@@ -1052,6 +1061,11 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 		}
 		floatFloorPrice, _ := util.StringWeiToEther(data.Data.FloorPrice.Amount, int(data.Data.FloorPrice.Token.Decimals)).Float64()
 
+		priceChangePercentage7dInCurrency := 0.0
+		if len(price) > 0 {
+			priceChangePercentage7dInCurrency = (price[len(price)-1] - price[0]) / price[0]
+		}
+
 		itmRes := response.GetNftWatchlist{
 			Symbol:                   itm.Symbol,
 			Image:                    collection.Image,
@@ -1062,7 +1076,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 				Price: price,
 			},
 			FloorPrice:                        floatFloorPrice,
-			PriceChangePercentage7dInCurrency: (price[len(price)-1] - price[0]) / price[0],
+			PriceChangePercentage7dInCurrency: priceChangePercentage7dInCurrency,
 			Token:                             data.Data.FloorPrice.Token,
 		}
 		res = append(res, itmRes)

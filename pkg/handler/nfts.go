@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	_ "github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -544,7 +545,7 @@ func (h *Handler) AddNftWatchlist(c *gin.Context) {
 	res, err := h.entities.AddNftWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.AddNftWatchlist] - failed to add watchlist")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
 
@@ -600,7 +601,11 @@ func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
 	err := h.entities.DeleteNftWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.DeleteNftWatchlist] - failed to delete watchlist")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
 
