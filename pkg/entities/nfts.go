@@ -818,11 +818,28 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 		chainId, _ := strconv.Atoi(ele.ChainID)
 		chain, err := e.repo.Chain.GetByID(chainId)
 		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				e.log.Infof("Not have chain with id: ", chainId)
+				data[i].Chain = ""
+				continue
+			}
 			e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain %d", chainId)
 			return nil, err
 		}
 		data[i].Chain = chain.Name
 	}
+
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			e.log.Info("[handler.GetNewListedNFTCollection] - no new collection")
+			return &response.NFTNewListedResponse{
+				Data: nil,
+			}, nil
+		}
+		e.log.Errorf(err, "[repo.NFTCollection.GetNewListed] failed to get recent collections")
+		return nil, err
+	}
+
 	return &response.NFTNewListedResponse{
 		Pagination: util.Pagination{
 			Page:  int64(pg),
@@ -830,7 +847,7 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 			Total: total,
 		},
 		Data: data,
-	}, err
+	}, nil
 }
 
 func (e *Entity) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {

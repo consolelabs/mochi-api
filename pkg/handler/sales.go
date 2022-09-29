@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	_ "github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +27,7 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 	data, err := h.entities.GetNftSales(addr, platform)
 	if err != nil || data == nil {
 		h.log.Fields(logger.Fields{"address": addr, "platform": platform}).Error(err, "[handler.GetNftSalesHandler] - failed to get NFT sales")
-		c.JSON(http.StatusOK, gin.H{"error": "collection not found"})
+		c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, errors.New("collection not found"), nil))
 		return
 	}
 	c.JSON(http.StatusOK, data)

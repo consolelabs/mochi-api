@@ -39,7 +39,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	res, err := h.entities.GetNFTDetail(symbol, tokenID, guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -65,11 +65,11 @@ func (h *Handler) GetNFTActivity(c *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			h.log.Fields(logger.Fields{"collection_address": collectionAddress, "token_id": tokenID}).Info("[handler.GetNFTTokenTransactionHistory] - record not found")
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 			return
 		}
 		h.log.Fields(logger.Fields{"collection_address": collectionAddress, "id": tokenID}).Error(err, "[handler.GetNFTTokenTransactionHistory] - failed to get NFT activity")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -91,7 +91,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateNFTCollection] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -113,11 +113,11 @@ func (h *Handler) handleCreateSolanaCollection(c *gin.Context, req request.Creat
 	if err != nil {
 		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
 			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 			return nil
 		}
 		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return nil
 	}
 	return data
@@ -128,11 +128,11 @@ func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNF
 	if err != nil {
 		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
 			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 			return nil
 		}
 		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return nil
 	}
 	return data
@@ -162,7 +162,7 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 	nfts, err := h.entities.ListAllNFTCollections()
 	if err != nil {
 		h.log.Error(err, "[handler.ListAllNFTCollections] - failed to list all NFT collections")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -183,14 +183,14 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 	symbol := c.Param("symbol")
 	if symbol == "" {
 		h.log.Info("[handler.GetNFTCollectionTickers] - symbol empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
 		return
 	}
 
 	res, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "query": c.Request.URL.RawQuery}).Error(err, "[handler.GetNFTCollectionTickers] - failed to get NFT collection ticker")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -210,7 +210,7 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 	nfts, err := h.entities.GetSvc().Indexer.GetNFTTradingVolume()
 	if err != nil {
 		h.log.Error(err, "[handler.GetNFTTradingVolume] - failed to get NFT trading volume from indexer")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(nfts, nil, nil, nil))
@@ -238,7 +238,7 @@ func (h *Handler) GetNFTCollections(c *gin.Context) {
 	data, err := h.entities.GetNFTCollections(page, size)
 	if err != nil {
 		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.GetNFTCollections] - failed to get NFT collections")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -257,14 +257,14 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 	symbol := c.Param("symbol")
 	if symbol == "" {
 		h.log.Info("[handler.GetNFTTokens] - symbol empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
 		return
 	}
 
 	data, err := h.entities.GetNFTTokens(symbol, c.Request.URL.RawQuery)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[handler.GetNFTTokens] - failed to get NFT tokens")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -314,14 +314,14 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 	collectionSymbol := c.Param("symbol")
 	if collectionSymbol == "" {
 		h.log.Info("[handler.GetDetailNftCollection] - symbol empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
 		return
 	}
 
 	collection, err := h.entities.GetDetailNftCollection(collectionSymbol)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": collectionSymbol}).Error(err, "[handler.GetDetailNftCollection] - failed to get detail NFT collection")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(collection, nil, nil, nil))
@@ -401,7 +401,7 @@ func (h *Handler) GetCollectionCount(c *gin.Context) {
 	data, err := h.entities.GetCollectionCount()
 	if err != nil {
 		h.log.Error(err, "[handler.GetCollectionCount] - failed to get collections count")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get collections count"})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("cannot get collections count"), nil))
 		return
 	}
 
@@ -435,13 +435,8 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 
 	data, err := h.entities.GetNewListedNFTCollection(interval, page, size)
 	if err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			h.log.Info("[handler.GetNewListedNFTCollection] - no new collection")
-			c.JSON(http.StatusOK, gin.H{"data": nil})
-			return
-		}
 		h.log.Fields(logger.Fields{"page": page, "size": size, "interval": interval}).Error(err, "[handler.GetNewListedNFTCollection] - failed to get new listed NFT collection")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, data)
@@ -459,7 +454,7 @@ func (h *Handler) GetNftMetadataAttrIcon(c *gin.Context) {
 	data, err := h.entities.GetNftMetadataAttrIcon()
 	if err != nil {
 		h.log.Error(err, "[handler.GetNftMetadataAttrIcon] - failed to get NFT metadata icons")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get icons"})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("cannot get icons"), nil))
 		return
 	}
 
@@ -480,13 +475,13 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 	address := c.Param("address")
 	if address == "" {
 		h.log.Info("[handler.GetNFTCollectionByAddressChain] - address empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("address is required"), nil))
 		return
 	}
 	inputChain := c.Query("chain")
 	if inputChain == "" {
 		h.log.Info("[handler.GetNFTCollectionByAddressChain] - input chain empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "chain is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("chain is required"), nil))
 		return
 	}
 	chainId := util.ConvertInputToChainId(inputChain)
@@ -494,7 +489,7 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 	data, err := h.entities.GetNFTCollectionByAddressChain(address, chainId)
 	if err != nil {
 		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.GetNFTCollectionByAddressChain] - failed to get NFT Collection by Address and chain")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
@@ -513,13 +508,13 @@ func (h *Handler) UpdateNFTCollection(c *gin.Context) {
 	address := c.Param("address")
 	if address == "" {
 		h.log.Info("[handler.GetNFTCollectionByAddressChain] - address empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("address is required"), nil))
 		return
 	}
 	err := h.entities.UpdateNFTCollection(address)
 	if err != nil {
 		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.UpdateNFTCollection] - failed to update collection")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
@@ -538,7 +533,7 @@ func (h *Handler) AddNftWatchlist(c *gin.Context) {
 	var req request.AddNftWatchlistRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.log.Error(err, "[handler.AddNftWatchlist] - failed to bind request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid request"), nil))
 		return
 	}
 
@@ -575,7 +570,7 @@ func (h *Handler) GetNftWatchlist(c *gin.Context) {
 	data, err := h.entities.GetNftWatchlist(&req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetNftWatchlist] - failed to get watchlist")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
