@@ -104,7 +104,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	if data == nil {
 		return
 	}
-	c.JSON(http.StatusOK, response.CreateNFTCollectionResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 func (h *Handler) handleCreateSolanaCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
@@ -146,7 +146,7 @@ func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNF
 // @Success     200 {object} response.GetSupportedChains
 // @Router      /nfts/supported-chains [post]
 func (h *Handler) GetSupportedChains(c *gin.Context) {
-	c.JSON(http.StatusOK, response.GetSupportedChains{Data: []string{"eth", "heco", "bsc", "matic", "op", "btt", "okt", "movr", "celo", "metis", "cro", "xdai", "boba", "ftm", "avax", "arb", "aurora"}})
+	c.JSON(http.StatusOK, response.CreateResponse([]string{"eth", "heco", "bsc", "matic", "op", "btt", "okt", "movr", "celo", "metis", "cro", "xdai", "boba", "ftm", "avax", "arb", "aurora"}, nil, nil, nil))
 }
 
 // ListAllNFTCollections     godoc
@@ -165,7 +165,8 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ListAllNFTCollectionsResponse{Data: nfts})
+	c.JSON(http.StatusOK, response.CreateResponse(nfts, nil, nil, nil))
+
 }
 
 // GetNFTCollectionTickers     godoc
@@ -211,7 +212,7 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": nfts})
+	c.JSON(http.StatusOK, response.CreateResponse(nfts, nil, nil, nil))
 }
 
 // GetNFTCollections     godoc
@@ -322,7 +323,7 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response.GetDetailNftCollectionResponse{Data: collection})
+	c.JSON(http.StatusOK, response.CreateResponse(collection, nil, nil, nil))
 }
 
 // GetAllNFTSalesTracker     godoc
@@ -351,8 +352,7 @@ func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
 		return
 	}
-
-	c.JSON(http.StatusOK, response.GetAllNFTSalesTrackerResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // DeleteNFTSalesTracker     godoc
@@ -405,7 +405,7 @@ func (h *Handler) GetCollectionCount(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetCollectionCountResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // GetNewListedNFTCollection     godoc
@@ -497,7 +497,7 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, &response.GetNFTCollectionByAddressChainResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // UpdateNFTCollection     godoc
