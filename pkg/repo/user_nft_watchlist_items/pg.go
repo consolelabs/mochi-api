@@ -23,6 +23,13 @@ func (pg *pg) List(q UserNftWatchlistQuery) ([]model.UserNftWatchlistItem, int64
 	if q.Symbol != "" {
 		db = db.Where("symbol ILIKE ?", q.Symbol)
 	}
+	if q.CollectionAddress != "" {
+		db = db.Where("collection_address = ?", q.CollectionAddress)
+	}
+	if q.ChainID != "" {
+		db = db.Where("chain_id = ?", q.ChainID)
+	}
+
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)

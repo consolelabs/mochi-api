@@ -928,7 +928,7 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 		return nil, err
 	}
 	chainID, _ := strconv.Atoi(collection.ChainID)
-	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, UserID: req.UserID, ChainID: collection.ChainID}
+	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, UserID: req.UserID, ChainID: collection.ChainID, Symbol: collection.Symbol}
 	_, total, err := e.repo.UserNftWatchlistItem.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddNftToWatchlist] repo.UserWatchlistItem.List() failed")
