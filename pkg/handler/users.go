@@ -26,17 +26,17 @@ func (h *Handler) IndexUsers(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.IndexUsers] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.CreateUser(req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.IndexUsers] - failed to create user")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetUser     godoc
@@ -52,7 +52,7 @@ func (h *Handler) GetUser(c *gin.Context) {
 	discordID := c.Param("id")
 	if discordID == "" {
 		h.log.Info("[handler.GetUser] - discord id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
 		return
 	}
 
@@ -60,15 +60,15 @@ func (h *Handler) GetUser(c *gin.Context) {
 	if err != nil {
 		if err == entities.ErrRecordNotFound {
 			h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUser] - users not found")
-			c.JSON(http.StatusOK, gin.H{"data": nil})
+			c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
 			return
 		}
 		h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUser] - failed to get user")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, response.CreateResponse(user, nil, nil, nil))
 }
 
 // GetUserCurrentGMStreak     godoc
@@ -168,11 +168,11 @@ func (h *Handler) GetMyInfo(c *gin.Context) {
 	du, err := h.entities.GetMyDiscordInfo(accessToken)
 	if err != nil {
 		h.log.Fields(logger.Fields{"token": accessToken}).Error(err, "[handler.GetMyInfo] - failed to get discord info")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": du})
+	c.JSON(http.StatusOK, response.CreateResponse(du, nil, nil, nil))
 }
 
 // GetTopUsers     godoc
@@ -249,23 +249,23 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetUserProfile] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	userID := c.Query("user_id")
 	if userID == "" {
 		h.log.Info("[handler.GetUserProfile] - user id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
 		return
 	}
 
 	data, err := h.entities.GetUserProfile(guildID, userID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "userID": userID}).Error(err, "[handler.GetUserProfile] - failed to get user profile")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }

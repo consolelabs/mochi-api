@@ -2424,7 +2424,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ListMyGuildsResponse"
+                            "$ref": "#/definitions/response.ListMyGuildsResponse"
                         }
                     }
                 }
@@ -2731,7 +2731,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4175,7 +4175,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -4322,50 +4322,6 @@ const docTemplate = `{
                 "verified": {
                     "description": "Whether the user's email is verified.",
                     "type": "boolean"
-                }
-            }
-        },
-        "entities.DiscordGuild": {
-            "type": "object",
-            "properties": {
-                "bot_addable": {
-                    "type": "boolean"
-                },
-                "bot_arrived": {
-                    "type": "boolean"
-                },
-                "features": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "boolean"
-                },
-                "permissions": {
-                    "type": "string",
-                    "example": "0"
-                }
-            }
-        },
-        "entities.ListMyGuildsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.DiscordGuild"
-                    }
                 }
             }
         },
@@ -6027,6 +5983,39 @@ const docTemplate = `{
                 }
             }
         },
+        "response.DiscordGuildResponse": {
+            "type": "object",
+            "properties": {
+                "bot_addable": {
+                    "type": "boolean"
+                },
+                "bot_arrived": {
+                    "type": "boolean"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "boolean"
+                },
+                "permissions": {
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
         "response.GenerateVerificationResponse": {
             "type": "object",
             "properties": {
@@ -7149,6 +7138,17 @@ const docTemplate = `{
                 },
                 "role_name": {
                     "type": "string"
+                }
+            }
+        },
+        "response.ListMyGuildsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DiscordGuildResponse"
+                    }
                 }
             }
         },

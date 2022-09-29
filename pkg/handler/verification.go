@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -20,32 +21,27 @@ import (
 // @Success     200 {object} response.NewGuildConfigWalletVerificationMessageResponse
 // @Router      /verify/config [post]
 func (h *Handler) NewGuildConfigWalletVerificationMessage(c *gin.Context) {
-
 	var req request.NewGuildConfigWalletVerificationMessageRequest
-
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildConfigWalletVerificationMessage] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := req.Validate(); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.VerifyChannelID}).Error(err, "[handler.NewGuildConfigWalletVerificationMessage] - failed to validate request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	res, err := h.entities.NewGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage)
 	if err != nil {
 		h.log.Fields(logger.Fields{"message": req.GuildConfigWalletVerificationMessage}).Error(err, "[handler.NewGuildConfigWalletVerificationMessage] - failed to create guild config wallet verification message")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
-		Status: "ok",
-		Data:   res,
-	})
+	c.JSON(http.StatusCreated, response.CreateResponse(res, nil, err, nil))
 }
 
 // GetGuildConfigWalletVerificationMessage     godoc
@@ -61,21 +57,18 @@ func (h *Handler) GetGuildConfigWalletVerificationMessage(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	if guildId == "" {
 		h.log.Info("[handler.GetGuildConfigWalletVerificationMessage] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	res, err := h.entities.GetGuildConfigWalletVerificationMessage(guildId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		h.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[handler.GetGuildConfigWalletVerificationMessage] - failed to get config")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusCreated, response.NewGuildConfigWalletVerificationMessageResponse{
-		Status: "ok",
-		Data:   res,
-	})
+	c.JSON(http.StatusCreated, response.CreateResponse(res, nil, nil, nil))
 }
 
 // UpdateGuildConfigWalletVerificationMessage     godoc
@@ -92,27 +85,24 @@ func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.UpdateGuildConfigWalletVerificationMessage] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := req.Validate(); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.VerifyChannelID}).Error(err, "[handler.UpdateGuildConfigWalletVerificationMessage] - failed to validate request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	res, err := h.entities.UpdateGuildConfigWalletVerificationMessage(req.GuildConfigWalletVerificationMessage)
 	if err != nil {
 		h.log.Fields(logger.Fields{"message": req.GuildConfigWalletVerificationMessage}).Error(err, "[handler.UpdateGuildConfigWalletVerificationMessage] - failed to update guild config wallet verification message")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.NewGuildConfigWalletVerificationMessageResponse{
-		Status: "ok",
-		Data:   res,
-	})
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // DeleteGuildConfigWalletVerificationMessage     godoc
@@ -125,23 +115,21 @@ func (h *Handler) UpdateGuildConfigWalletVerificationMessage(c *gin.Context) {
 // @Success     200 {object} response.ResponseStatus
 // @Router      /verify/config [delete]
 func (h *Handler) DeleteGuildConfigWalletVerificationMessage(c *gin.Context) {
-
 	var guildID = c.Query("guild_id")
-
 	if guildID == "" {
 		h.log.Info("[handler.DeleteGuildConfigWalletVerificationMessage] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	err := h.entities.DeleteGuildConfigWalletVerificationMessage(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.DeleteGuildConfigWalletVerificationMessage] - failed to delete guild config wallet verification message")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseStatus{Status: "ok"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseStatus{Status: "OK"}, nil, err, nil))
 }
 
 // GenerateVerification     godoc
@@ -154,18 +142,16 @@ func (h *Handler) DeleteGuildConfigWalletVerificationMessage(c *gin.Context) {
 // @Success     200 {object} response.GenerateVerificationResponse
 // @Router      /verify/generate [post]
 func (h *Handler) GenerateVerification(c *gin.Context) {
-
 	var req request.GenerateVerificationRequest
-
 	if err := req.Bind(c); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.GenerateVerification] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := req.Validate(); err != nil {
 		h.log.Fields(logger.Fields{"userDiscordID": req.UserDiscordID, "guildID": req.GuildID}).Error(err, "[handler.GenerateVerification] - failed to validate request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -180,6 +166,7 @@ func (h *Handler) GenerateVerification(c *gin.Context) {
 		return
 	}
 
+	// TODO: use response.CreateResponse() to wrap response
 	c.JSON(http.StatusOK, response.GenerateVerificationResponse{Status: "ok", Code: data})
 }
 
@@ -193,27 +180,25 @@ func (h *Handler) GenerateVerification(c *gin.Context) {
 // @Success     200 {object} response.ResponseStatus
 // @Router      /verify [post]
 func (h *Handler) VerifyWalletAddress(c *gin.Context) {
-
 	var req request.VerifyWalletAddressRequest
-
 	if err := req.Bind(c); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.VerifyWalletAddress] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := req.Validate(); err != nil {
 		h.log.Fields(logger.Fields{"wallet": req.WalletAddress, "signature": req.Signature, "code": req.Code}).Error(err, "[handler.VerifyWalletAddress] - failed to validate request")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	statusCode, err := h.entities.VerifyWalletAddress(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.VerifyWalletAddress] - failed to verify wallet address")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
+		c.JSON(statusCode, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseStatus{Status: "ok"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseStatus{Status: "ok"}, nil, nil, nil))
 }

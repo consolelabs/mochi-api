@@ -20,9 +20,9 @@ func (h *Handler) ListAllChain(c *gin.Context) {
 	returnChain, err := h.entities.ListAllChain()
 	if err != nil {
 		h.log.Error(err, "[handler.ListAllChain] - failed to list all chains")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetListAllChainsResponse{Data: returnChain})
+	c.JSON(http.StatusOK, response.CreateResponse(returnChain, nil, nil, nil))
 }

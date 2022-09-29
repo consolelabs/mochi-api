@@ -122,11 +122,10 @@ func (h *Handler) GetGuildStatsHandler(c *gin.Context) {
 // @Success     200      {string} string "ok"
 // @Router      /guilds/{guild_id}/channels [post]
 func (h *Handler) CreateGuildChannel(c *gin.Context) {
-	log := logger.NewLogrusLogger()
 	guildID := c.Param("guild_id")
 	countType := c.Query("count_type")
 
-	log.Infof("Creating stats channel for counting. GuildId: %v, CountType: %v", guildID, countType)
+	h.log.Infof("Creating stats channel for counting. GuildId: %v, CountType: %v", guildID, countType)
 
 	err := h.entities.CreateGuildChannel(guildID, countType)
 	if err != nil {
@@ -145,7 +144,7 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       Authorization header   string true "Authorization"
-// @Success     200           {object} entities.ListMyGuildsResponse
+// @Success     200           {object} response.ListMyGuildsResponse
 // @Router      /guilds/user-managed [get]
 func (h *Handler) ListMyGuilds(c *gin.Context) {
 	accessToken := c.GetString("discord_access_token")
@@ -153,11 +152,11 @@ func (h *Handler) ListMyGuilds(c *gin.Context) {
 	resp, err := h.entities.ListMyDiscordGuilds(accessToken)
 	if err != nil {
 		h.log.Fields(logger.Fields{"token": accessToken}).Error(err, "[handler.ListMyGuilds] - failed to list discord guilds")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
 
 // UpdateGuild      godoc

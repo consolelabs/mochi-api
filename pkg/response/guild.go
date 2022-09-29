@@ -1,6 +1,9 @@
 package response
 
-import "github.com/defipod/mochi/pkg/model"
+import (
+	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type GetGuildsResponse struct {
 	Data []*GetGuildResponse `json:"data"`
@@ -19,4 +22,14 @@ type GetGuildResponse struct {
 
 type ListAllCustomTokenResponse struct {
 	Data []model.Token `json:"data"`
+}
+
+type DiscordGuildResponse struct {
+	discordgo.UserGuild
+	BotAddable bool `json:"bot_addable"`
+	BotArrived bool `json:"bot_arrived"`
+}
+
+type ListMyGuildsResponse struct {
+	Data []DiscordGuildResponse `json:"data"`
 }
