@@ -2424,7 +2424,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ListMyGuildsResponse"
+                            "$ref": "#/definitions/response.ListMyGuildsResponse"
                         }
                     }
                 }
@@ -2731,7 +2731,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4175,7 +4175,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -4325,50 +4325,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.DiscordGuild": {
-            "type": "object",
-            "properties": {
-                "bot_addable": {
-                    "type": "boolean"
-                },
-                "bot_arrived": {
-                    "type": "boolean"
-                },
-                "features": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "icon": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "boolean"
-                },
-                "permissions": {
-                    "type": "string",
-                    "example": "0"
-                }
-            }
-        },
-        "entities.ListMyGuildsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.DiscordGuild"
-                    }
-                }
-            }
-        },
         "entities.LoginResponse": {
             "type": "object",
             "properties": {
@@ -4445,6 +4401,9 @@ const docTemplate = `{
         "model.DiscordGuild": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -5600,8 +5559,11 @@ const docTemplate = `{
         "request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "global_xp": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "log_channel": {
                     "type": "string"
@@ -6021,6 +5983,39 @@ const docTemplate = `{
                 }
             }
         },
+        "response.DiscordGuildResponse": {
+            "type": "object",
+            "properties": {
+                "bot_addable": {
+                    "type": "boolean"
+                },
+                "bot_arrived": {
+                    "type": "boolean"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "boolean"
+                },
+                "permissions": {
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
         "response.GenerateVerificationResponse": {
             "type": "object",
             "properties": {
@@ -6184,6 +6179,9 @@ const docTemplate = `{
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "alias": {
                     "type": "string"
                 },
@@ -7140,6 +7138,17 @@ const docTemplate = `{
                 },
                 "role_name": {
                     "type": "string"
+                }
+            }
+        },
+        "response.ListMyGuildsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DiscordGuildResponse"
+                    }
                 }
             }
         },

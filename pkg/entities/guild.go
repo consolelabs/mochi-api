@@ -5,14 +5,17 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
-	err := e.repo.DiscordGuilds.CreateIfNotExists(model.DiscordGuild{
+	err := e.repo.DiscordGuilds.CreateOrReactivate(model.DiscordGuild{
 		ID:   guild.ID,
 		Name: guild.Name,
 		BotScopes: model.JSONArrayString{
@@ -20,7 +23,7 @@ func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
 		},
 	})
 	if err != nil {
-		e.log.Errorf(err, "[e.CreateGuild] failed to create guild id = %s", guild.ID)
+		e.log.Fields(logger.Fields{"guildID": guild.ID}).Errorf(err, "[e.CreateGuild] repo.DiscordGuilds.CreateOrReactivate() failed")
 		return err
 	}
 
@@ -55,6 +58,7 @@ func (e *Entity) GetGuilds() (*response.GetGuildsResponse, error) {
 			Alias:        g.Alias,
 			LogChannelID: g.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
 			LogChannel:   g.LogChannel,
+			Active:       g.Active,
 		})
 	}
 
@@ -78,6 +82,7 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		LogChannel:   guild.LogChannel,
 		LogChannelID: guild.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
 		GlobalXP:     guild.GlobalXP,
+		Active:       true,
 	}, nil
 }
 
@@ -105,17 +110,7 @@ func listDiscordGuilds(s *discordgo.Session) ([]*discordgo.UserGuild, error) {
 	return guilds, nil
 }
 
-type DiscordGuild struct {
-	discordgo.UserGuild
-	BotAddable bool `json:"bot_addable"`
-	BotArrived bool `json:"bot_arrived"`
-}
-
-type ListMyGuildsResponse struct {
-	Data []DiscordGuild `json:"data"`
-}
-
-func (e *Entity) ListMyDiscordGuilds(accessToken string) (*ListMyGuildsResponse, error) {
+func (e *Entity) ListMyDiscordGuilds(accessToken string) ([]response.DiscordGuildResponse, error) {
 	s, err := discordgo.New("Bearer " + accessToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open discord session: %v", err.Error())
@@ -137,23 +132,59 @@ func (e *Entity) ListMyDiscordGuilds(accessToken string) (*ListMyGuildsResponse,
 		mochiArrived[g.ID] = true
 	}
 
-	guilds := make([]DiscordGuild, 0)
+	guilds := make([]response.DiscordGuildResponse, 0)
 	for _, g := range userGuilds {
 		// Check for guilds that user has ADMINISTRATOR or MANAGE_GUILD permission
 		if (g.Permissions&0x8) == 0x8 || (g.Permissions&0x20) == 0x20 {
-			guilds = append(guilds, DiscordGuild{*g, true, mochiArrived[g.ID]})
+			guilds = append(guilds, response.DiscordGuildResponse{*g, true, mochiArrived[g.ID]})
 		}
 	}
 
-	return &ListMyGuildsResponse{
-		Data: guilds,
-	}, nil
+	return guilds, nil
 }
 
-func (e *Entity) UpdateGuild(omit, guildID string, globalXP bool, logChannel string) error {
-	if err := e.repo.DiscordGuilds.Update(omit, model.DiscordGuild{ID: guildID, GlobalXP: globalXP, LogChannel: logChannel}); err != nil {
+func (e *Entity) UpdateGuild(guildID string, req request.UpdateGuildRequest) error {
+	guild, err := e.repo.DiscordGuilds.GetByID(guildID)
+	if err == gorm.ErrRecordNotFound {
+		return baseerrs.ErrRecordNotFound
+	}
+	if err != nil {
+		return err
+	}
+	if req.GlobalXP != nil {
+		guild.GlobalXP = *req.GlobalXP
+	}
+	if req.LogChannel != nil {
+		guild.LogChannel = *req.LogChannel
+	}
+	if req.Active != nil {
+		guild.Active = *req.Active
+	}
+	if err := e.repo.DiscordGuilds.Update(guild); err != nil {
 		e.log.Errorf(err, "failed to update guild %s", guildID)
 		return err
 	}
 	return nil
+}
+
+func (e *Entity) DeactivateGuild(req request.HandleGuildDeleteRequest) error {
+	active := false
+	err := e.UpdateGuild(req.GuildID, request.UpdateGuildRequest{Active: &active})
+	e.sendGuildDeactivationLog(req.GuildID, req.GuildName, req.IconURL)
+	return err
+}
+
+func (e *Entity) sendGuildDeactivationLog(guildID, guildName, iconURL string) {
+	guilds, err := e.GetGuilds()
+	var guildsLeft int
+	if err != nil {
+		e.log.Errorf(err, "e.GetGuilds() failed")
+		guildsLeft = -1
+	} else {
+		guildsLeft = len(guilds.Data)
+	}
+	err = e.svc.Discord.NotifyGuildDelete(guildID, guildName, iconURL, guildsLeft)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID, "guildName": guildName, "iconURL": iconURL}).Errorf(err, "svc.Discord.NotifyGuildDelete() failed")
+	}
 }

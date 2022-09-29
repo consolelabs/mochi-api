@@ -13,14 +13,14 @@ func (e *Entity) AddMessageReaction(req request.MessageReactionRequest) error {
 	cfg, err := e.repo.GuildConfigReactionRole.GetByMessageID(req.GuildID, req.MessageID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "messageID": req.MessageID}).
-			Info("[e.HandleMessageDelete] this message is not reaction role config for guild")
+			Info("[e.AddMessageReaction] this message is not reaction role config for guild")
 		return nil
 	}
 
 	roles := []response.Role{}
 	if err := json.Unmarshal([]byte(cfg.ReactionRoles), &roles); err != nil {
 		e.log.Fields(logger.Fields{"reactionRoles": cfg.ReactionRoles}).
-			Error(err, "[e.HandleMessageDelete] failed to unmarshal reaction roles")
+			Error(err, "[e.AddMessageReaction] failed to unmarshal reaction roles")
 		return err
 	}
 
@@ -37,7 +37,7 @@ func (e *Entity) AddMessageReaction(req request.MessageReactionRequest) error {
 					"guildID":   req.GuildID,
 					"userID":    req.UserID,
 					"reaction":  req.Reaction,
-				}).Error(err, "[e.CreateMessageReaction] failed to create message reaction")
+				}).Error(err, "[e.AddMessageReaction] failed to create message reaction")
 				return err
 			}
 
@@ -46,7 +46,7 @@ func (e *Entity) AddMessageReaction(req request.MessageReactionRequest) error {
 					"guildID": req.GuildID,
 					"userID":  req.UserID,
 					"roleID":  role.ID,
-				}).Error(err, "[e.CreateMessageReaction] failed to add guild member role")
+				}).Error(err, "[e.AddMessageReaction] failed to add guild member role")
 				return err
 			}
 		}
@@ -59,14 +59,14 @@ func (e *Entity) RemoveMessageReaction(req request.MessageReactionRequest) error
 	cfg, err := e.repo.GuildConfigReactionRole.GetByMessageID(req.GuildID, req.MessageID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "messageID": req.MessageID}).
-			Info("[e.HandleMessageDelete] this message is not reaction role config for guild")
+			Info("[e.RemoveMessageReaction] this message is not reaction role config for guild")
 		return nil
 	}
 
 	roles := []response.Role{}
 	if err := json.Unmarshal([]byte(cfg.ReactionRoles), &roles); err != nil {
 		e.log.Fields(logger.Fields{"reactionRoles": cfg.ReactionRoles}).
-			Error(err, "[e.HandleMessageDelete] failed to unmarshal reaction roles")
+			Error(err, "[e.RemoveMessageReaction] failed to unmarshal reaction roles")
 		return err
 	}
 
@@ -77,7 +77,7 @@ func (e *Entity) RemoveMessageReaction(req request.MessageReactionRequest) error
 					"messageID": req.MessageID,
 					"userID":    req.UserID,
 					"reaction":  req.Reaction,
-				}).Error(err, "[e.CreateMessageReaction] failed to delete message reaction")
+				}).Error(err, "[e.RemoveMessageReaction] failed to delete message reaction")
 				return err
 			}
 
@@ -86,7 +86,7 @@ func (e *Entity) RemoveMessageReaction(req request.MessageReactionRequest) error
 					"guildID": req.GuildID,
 					"userID":  req.UserID,
 					"roleID":  role.ID,
-				}).Error(err, "[e.CreateMessageReaction] failed to remove guild member role")
+				}).Error(err, "[e.RemoveMessageReaction] failed to remove guild member role")
 				return err
 			}
 		}

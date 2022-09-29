@@ -86,6 +86,7 @@ func TestEntity_GetGuild(t *testing.T) {
 				Name:      "a",
 				BotScopes: model.JSONArrayString{"*"},
 				GlobalXP:  false,
+				Active:    true,
 			},
 			wantErr: false,
 		},

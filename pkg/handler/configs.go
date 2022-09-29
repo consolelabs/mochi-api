@@ -26,18 +26,18 @@ func (h *Handler) GetGmConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetGmConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
-	}
-
-	config, err := h.entities.GetGmConfig(guildID)
-
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGmConfig] - failed to get gm config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetGmConfigResponse{Message: "OK", Data: config})
+	config, err := h.entities.GetGmConfig(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGmConfig] - failed to get gm config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -54,25 +54,27 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertGmConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.UpsertGmConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 	if req.ChannelID == "" {
 		h.log.Info("[handler.UpsertGmConfig] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
 	}
 
 	if err := h.entities.UpsertGmConfig(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertGmConfig] - failed to upsert gm config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetGmConfig     godoc
@@ -88,18 +90,19 @@ func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.GetWelcomeChannelConfig(guildID)
 
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to get welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -121,21 +124,23 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 	if req.ChannelID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.UpsertWelcomeChannelConfig(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to upsert welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -157,16 +162,17 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	if err := h.entities.DeleteWelcomeChannelConfig(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to delete welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetGmConfig     godoc
@@ -182,18 +188,19 @@ func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.GetVoteChannelConfig(guildID)
 
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetVoteChannelConfig] - failed to get vote channel config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetVoteChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -210,26 +217,28 @@ func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.UpsertVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 	if req.ChannelID == "" {
 		h.log.Info("[handler.UpsertVoteChannelConfig] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.UpsertVoteChannelConfig(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to upsert vote channel config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetVoteChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -246,21 +255,22 @@ func (h *Handler) DeleteVoteChannelConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.DeleteVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	if err := h.entities.DeleteVoteChannelConfig(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to delete vote channel config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetUpvoteTiersConfig     godoc
@@ -275,10 +285,11 @@ func (h *Handler) GetUpvoteTiersConfig(c *gin.Context) {
 	tiers, err := h.entities.GetUpvoteTiersConfig()
 	if err != nil {
 		h.log.Error(err, "[handler.GetUpvoteTiersConfig] - failed to get upvote tiers")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.GetUpvoteTiersConfig{Message: "OK", Data: tiers})
+
+	c.JSON(http.StatusOK, response.CreateResponse(tiers, nil, nil, nil))
 }
 
 // GetSalesTrackerConfig     godoc
@@ -502,7 +513,7 @@ func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ListGuildGroupNFTRolesResponse{Data: roles})
+	c.JSON(http.StatusOK, response.CreateResponse(roles, nil, nil, nil))
 }
 
 // NewGuildNFTRole     godoc
@@ -528,8 +539,7 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, response.NewGuildGroupNFTRoleResponse{Message: "OK", Data: newRole})
+	c.JSON(http.StatusOK, response.CreateResponse(newRole, nil, nil, nil))
 }
 
 // RemoveGuildNFTRole     godoc
@@ -551,7 +561,7 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+		c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 	}
 }
 
@@ -572,7 +582,7 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ConfigResposeReaction     godoc
@@ -588,34 +598,34 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if req.GuildID == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Emoji == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - emoji empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
 		return
 	}
 	if req.Quantity < 1 {
 		h.log.Info("[handler.ConfigRepostReaction] - quantity empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "quantity is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("quantity is required"), nil))
 		return
 	}
 	if req.RepostChannelID == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "repost_channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("repost_channel_id is required"), nil))
 		return
 	}
 
 	if err := h.entities.ConfigRepostReaction(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to add config repost reaction")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -635,18 +645,18 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetRepostReactionConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetRepostReactionConfigs] - failed to get guild repost reaction config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetRepostReactionConfigsResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // RemoveReposeReactionConfig     godoc
@@ -662,24 +672,24 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if req.GuildID == "" {
 		h.log.Info("[handler.RemoveRepostReactionConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Emoji == "" {
 		h.log.Info("[handler.RemoveRepostReactionConfig] - emoji empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
 		return
 	}
 
 	if err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to remove repost reaction config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -972,18 +982,18 @@ func (h *Handler) GetGuildPruneExclude(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetGuildPruneExclude] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	config, err := h.entities.GetGuildPruneExclude(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildPruneExclude] - failed to get prune exclude config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetGuildPruneExcludeResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }
 
 // UpsertGuildPruneExclude     godoc
@@ -999,17 +1009,17 @@ func (h *Handler) UpsertGuildPruneExclude(c *gin.Context) {
 	req := request.UpsertGuildPruneExcludeRequest{}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpsertGuildPruneExclude] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.UpsertGuildPruneExclude(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpsertGuildPruneExclude] - failed to upsert guild prune exlude config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // DeleteGuildPruneExclude     godoc
@@ -1025,17 +1035,17 @@ func (h *Handler) DeleteGuildPruneExclude(c *gin.Context) {
 	req := request.UpsertGuildPruneExcludeRequest{}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.DeleteGuildPruneExclude] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.DeleteGuildPruneExclude(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.DeleteGuildPruneExclude] - failed to delete guild prune exlude config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // EditMessageRepost     godoc

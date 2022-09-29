@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -104,7 +105,7 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	if data == nil {
 		return
 	}
-	c.JSON(http.StatusOK, response.CreateNFTCollectionResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 func (h *Handler) handleCreateSolanaCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
@@ -146,7 +147,7 @@ func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNF
 // @Success     200 {object} response.GetSupportedChains
 // @Router      /nfts/supported-chains [post]
 func (h *Handler) GetSupportedChains(c *gin.Context) {
-	c.JSON(http.StatusOK, response.GetSupportedChains{Data: []string{"eth", "heco", "bsc", "matic", "op", "btt", "okt", "movr", "celo", "metis", "cro", "xdai", "boba", "ftm", "avax", "arb", "aurora"}})
+	c.JSON(http.StatusOK, response.CreateResponse([]string{"eth", "heco", "bsc", "matic", "op", "btt", "okt", "movr", "celo", "metis", "cro", "xdai", "boba", "ftm", "avax", "arb", "aurora"}, nil, nil, nil))
 }
 
 // ListAllNFTCollections     godoc
@@ -165,7 +166,8 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ListAllNFTCollectionsResponse{Data: nfts})
+	c.JSON(http.StatusOK, response.CreateResponse(nfts, nil, nil, nil))
+
 }
 
 // GetNFTCollectionTickers     godoc
@@ -211,7 +213,7 @@ func (h *Handler) GetNFTTradingVolume(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": nfts})
+	c.JSON(http.StatusOK, response.CreateResponse(nfts, nil, nil, nil))
 }
 
 // GetNFTCollections     godoc
@@ -281,22 +283,22 @@ func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	var req request.NFTSalesTrackerRequest
 	if err := c.Bind(&req); err != nil {
 		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	err := h.entities.CreateSalesTracker(req)
 	if err != nil {
 		if err.Error() == "Collection has not been added." {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 			return
 		}
 		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to create sales tracker")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetDetailNftCollection     godoc
@@ -322,7 +324,7 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response.GetDetailNftCollectionResponse{Data: collection})
+	c.JSON(http.StatusOK, response.CreateResponse(collection, nil, nil, nil))
 }
 
 // GetAllNFTSalesTracker     godoc
@@ -339,20 +341,19 @@ func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
 		data, err := h.entities.GetNFTSaleSTrackerByGuildID(guildID)
 		if err != nil {
 			h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetNFTSaleSTrackerByGuildID] - failed to get nft sales tracker")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"data": data})
+		c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 		return
 	}
 	data, err := h.entities.GetAllNFTSalesTracker()
 	if err != nil {
 		h.log.Error(err, "[handler.GetAllNFTSalesTracker] - failed to get all NFT sales tracker")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot get info"})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("cannot get info"), nil))
 		return
 	}
-
-	c.JSON(http.StatusOK, response.GetAllNFTSalesTrackerResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // DeleteNFTSalesTracker     godoc
@@ -370,23 +371,22 @@ func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
 	contractAddress := c.Query("contract_address")
 	if guildID == "" {
 		h.log.Info("[handler.DeleteNFTSalesTracker] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild id is required"), nil))
 		return
 	}
 	if contractAddress == "" {
 		h.log.Info("[handler.DeleteNFTSalesTracker] - contract address empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "contract address is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("contract address is required"), nil))
 		return
 	}
 	err := h.entities.DeleteNFTSalesTracker(guildID, contractAddress)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
-
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetCollectionCount     godoc
@@ -405,7 +405,7 @@ func (h *Handler) GetCollectionCount(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetCollectionCountResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // GetNewListedNFTCollection     godoc
@@ -497,7 +497,7 @@ func (h *Handler) GetNFTCollectionByAddressChain(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, &response.GetNFTCollectionByAddressChainResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // UpdateNFTCollection     godoc
