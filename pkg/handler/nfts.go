@@ -439,7 +439,7 @@ func (h *Handler) GetNewListedNFTCollection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // GetNftMetadataAttrIcon     godoc

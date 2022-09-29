@@ -809,7 +809,7 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 	}, nil
 }
 
-func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListedResponse, error) {
+func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListed, error) {
 	itv, _ := strconv.Atoi(interval)
 	pg, _ := strconv.Atoi(page)
 	lim, _ := strconv.Atoi(size)
@@ -832,7 +832,7 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 	if err != nil {
 		if strings.Contains(err.Error(), "record not found") {
 			e.log.Info("[handler.GetNewListedNFTCollection] - no new collection")
-			return &response.NFTNewListedResponse{
+			return &response.NFTNewListed{
 				Data: nil,
 			}, nil
 		}
@@ -840,8 +840,8 @@ func (e *Entity) GetNewListedNFTCollection(interval string, page string, size st
 		return nil, err
 	}
 
-	return &response.NFTNewListedResponse{
-		Pagination: util.Pagination{
+	return &response.NFTNewListed{
+		Metadata: util.Pagination{
 			Page:  int64(pg),
 			Size:  int64(lim),
 			Total: total,

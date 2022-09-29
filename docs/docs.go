@@ -7298,7 +7298,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTNewListedResponse": {
+        "response.NFTNewListed": {
             "type": "object",
             "properties": {
                 "data": {
@@ -7307,14 +7307,16 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.NewListedNFTCollection"
                     }
                 },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.NFTNewListedResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTNewListed"
                 }
             }
         },
