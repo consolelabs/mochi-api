@@ -5977,9 +5977,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.DefaultRole"
-                },
-                "ok": {
-                    "type": "boolean"
                 }
             }
         },
@@ -6407,9 +6404,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigSalesTracker"
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },

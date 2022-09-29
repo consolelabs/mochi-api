@@ -552,15 +552,13 @@ func (e *Entity) SetGuildDefaultTicker(req request.GuildConfigDefaultTickerReque
 	})
 }
 
-func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest) (*response.GetGuildDefaultTickerResponse, error) {
+func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest) (*model.GuildConfigDefaultTicker, error) {
 	defaultTicker, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(req.GuildID, req.Query)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"guild_id": req.GuildID, "query": req.Query}).Error(err, "[entity.GetGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery() failed")
 		return nil, err
 	}
-	return &response.GetGuildDefaultTickerResponse{
-		Data: defaultTicker,
-	}, nil
+	return defaultTicker, nil
 }
 
 func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {

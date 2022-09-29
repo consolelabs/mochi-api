@@ -34,7 +34,7 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // CreateDefaultRole     godoc
