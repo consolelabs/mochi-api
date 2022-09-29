@@ -130,10 +130,11 @@ func (h *Handler) CreateGuildChannel(c *gin.Context) {
 	err := h.entities.CreateGuildChannel(guildID, countType)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "countType": countType}).Error(err, "[handler.CreateGuildChannel] - failed to create guild channel")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, "ok")
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ListMyGuilds      godoc
