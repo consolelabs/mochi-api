@@ -90,18 +90,18 @@ func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 	}
 
 	config, err := h.entities.GetWelcomeChannelConfig(guildID)
 
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to get welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -123,21 +123,21 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 	}
 	if req.ChannelID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
 	}
 
 	config, err := h.entities.UpsertWelcomeChannelConfig(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to upsert welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetWelcomeChannelConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // UpsertGmConfig     godoc
@@ -159,16 +159,16 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 	}
 
 	if err := h.entities.DeleteWelcomeChannelConfig(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to delete welcome config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetGmConfig     godoc
@@ -509,7 +509,7 @@ func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ListGuildGroupNFTRolesResponse{Data: roles})
+	c.JSON(http.StatusOK, response.CreateResponse(roles, nil, nil, nil))
 }
 
 // NewGuildNFTRole     godoc
@@ -535,8 +535,7 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusOK, response.NewGuildGroupNFTRoleResponse{Message: "OK", Data: newRole})
+	c.JSON(http.StatusOK, response.CreateResponse(newRole, nil, nil, nil))
 }
 
 // RemoveGuildNFTRole     godoc
@@ -558,7 +557,7 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+		c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 	}
 }
 
@@ -579,7 +578,7 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ConfigResposeReaction     godoc
@@ -595,34 +594,34 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if req.GuildID == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Emoji == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - emoji empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
 		return
 	}
 	if req.Quantity < 1 {
 		h.log.Info("[handler.ConfigRepostReaction] - quantity empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "quantity is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("quantity is required"), nil))
 		return
 	}
 	if req.RepostChannelID == "" {
 		h.log.Info("[handler.ConfigRepostReaction] - channel id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "repost_channel_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("repost_channel_id is required"), nil))
 		return
 	}
 
 	if err := h.entities.ConfigRepostReaction(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.ConfigRepostReaction] - failed to add config repost reaction")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -642,18 +641,18 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetRepostReactionConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetRepostReactionConfigs] - failed to get guild repost reaction config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetRepostReactionConfigsResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // RemoveReposeReactionConfig     godoc
@@ -669,24 +668,24 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if req.GuildID == "" {
 		h.log.Info("[handler.RemoveRepostReactionConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Emoji == "" {
 		h.log.Info("[handler.RemoveRepostReactionConfig] - emoji empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "emoji is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
 		return
 	}
 
 	if err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to remove repost reaction config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 

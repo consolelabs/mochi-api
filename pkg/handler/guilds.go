@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/entities"
@@ -46,11 +47,11 @@ func (h *Handler) GetGuild(c *gin.Context) {
 	if err != nil {
 		if err == entities.ErrRecordNotFound {
 			h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuild] - guild not exist")
-			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
 			return
 		}
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuild] - failed to get guild")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -173,22 +174,22 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.UpdateGuild] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	var req request.UpdateGuildRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "globalXP": req.GlobalXP, "logChannel": req.LogChannel}).Error(err, "[handler.UpdateGuild] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "global_xp is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("global_xp is required"), nil))
 		return
 	}
 
 	if err := h.entities.UpdateGuild(guildID, req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "req": req}).Error(err, "[handler.UpdateGuild] - failed to update guild")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
