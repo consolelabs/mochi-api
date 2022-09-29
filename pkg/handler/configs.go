@@ -91,6 +91,7 @@ func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 	if guildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.GetWelcomeChannelConfig(guildID)
@@ -124,10 +125,12 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 	if req.ChannelID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - channel id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
 	}
 
 	config, err := h.entities.UpsertWelcomeChannelConfig(req)
@@ -160,6 +163,7 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	if req.GuildID == "" {
 		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
 	}
 
 	if err := h.entities.DeleteWelcomeChannelConfig(req); err != nil {
