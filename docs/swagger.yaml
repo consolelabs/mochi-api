@@ -1996,18 +1996,19 @@ definitions:
       data:
         $ref: '#/definitions/response.NFTCollectionsData'
     type: object
-  response.NFTNewListedResponse:
+  response.NFTNewListed:
     properties:
       data:
         items:
           $ref: '#/definitions/model.NewListedNFTCollection'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
+      metadata:
+        $ref: '#/definitions/util.Pagination'
+    type: object
+  response.NFTNewListedResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTNewListed'
     type: object
   response.NFTSalesTrackerResponse:
     properties:

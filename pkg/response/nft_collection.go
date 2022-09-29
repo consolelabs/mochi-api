@@ -18,9 +18,13 @@ type NFTTradingVolumeResponse struct {
 	Data []NFTTradingVolume `json:"data"`
 }
 
+type NFTNewListed struct {
+	Metadata util.Pagination                `json:"metadata"`
+	Data     []model.NewListedNFTCollection `json:"data"`
+}
+
 type NFTNewListedResponse struct {
-	util.Pagination
-	Data []model.NewListedNFTCollection `json:"data"`
+	Data *NFTNewListed `json:"data"`
 }
 
 type NFTCollectionsResponse struct {
