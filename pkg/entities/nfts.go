@@ -1040,6 +1040,10 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 		return nil, err
 	}
 
+	if len(list) == 0 {
+		list = e.getDefaultNFTWatchlistItems()
+	}
+
 	res := make([]response.GetNftWatchlist, 0)
 	for _, itm := range list {
 		data, err := e.indexer.GetNFTCollectionTickersForWl(itm.CollectionAddress)
@@ -1099,4 +1103,11 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 		res = append(res, itmRes)
 	}
 	return &response.GetNftWatchlistResponse{Data: res}, nil
+}
+
+func (e *Entity) getDefaultNFTWatchlistItems() []model.UserNftWatchlistItem {
+	return []model.UserNftWatchlistItem{
+		{CollectionAddress: "0x7acee5d0acc520fab33b3ea25d4feef1ffebde73", Symbol: "NEKO", ChainId: 250},
+		{CollectionAddress: "0x2ab5c606a5aa2352f8072b9e2e8a213033e2c4c9", Symbol: "MGC", ChainId: 250},
+	}
 }
