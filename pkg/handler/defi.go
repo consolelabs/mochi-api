@@ -248,16 +248,16 @@ func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 	req := request.GuildConfigDefaultTickerRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		h.log.Error(err, "[handler.SetGuildDefaultTicker] c.ShouldBindJSON failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.SetGuildDefaultTicker(req); err != nil {
 		h.log.Error(err, "[handler.SetGuildDefaultTicker] entity.SetGuildDefaultTicker failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusCreated, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusCreated, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetGuildDefaultTicker     godoc
@@ -274,16 +274,16 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 	var req request.GetGuildDefaultTickerRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetGuildDefaultTicker] ShouldBindQuery() failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	res, err := h.entities.GetGuildDefaultTicker(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetGuildDefaultTicker] entity.GetGuildDefaultTicker() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // GetUserWatchlist     godoc

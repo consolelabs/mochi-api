@@ -1,3 +1,4 @@
 {
+  "data": null,
   "error": "Cannot get contract: GetNFTCollections - failed to get opensea asset contract with address=0x09e0dF4ae51111Ca27d6B85708Cfb3F1f7cAe983: {success:false}"
 }

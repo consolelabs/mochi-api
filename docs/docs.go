@@ -5977,9 +5977,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.DefaultRole"
-                },
-                "ok": {
-                    "type": "boolean"
                 }
             }
         },
@@ -6407,9 +6404,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigSalesTracker"
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -7298,7 +7292,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTNewListedResponse": {
+        "response.NFTNewListed": {
             "type": "object",
             "properties": {
                 "data": {
@@ -7307,14 +7301,16 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.NewListedNFTCollection"
                     }
                 },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.NFTNewListedResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.NFTNewListed"
                 }
             }
         },

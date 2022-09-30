@@ -571,7 +571,7 @@ func (e *Entity) GetTwitterHashtagConfig(guildId string) (*response.TwitterHasht
 	hashtag, err := e.repo.GuildConfigTwitterHashtag.GetByGuildID(guildId)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get twitter hashtag configs")
-		return nil, fmt.Errorf("failed to get twitter hashtags: %v", err.Error())
+		return nil, err
 	}
 	return &response.TwitterHashtag{
 		UserID:          hashtag.UserID,
@@ -591,7 +591,7 @@ func (e *Entity) GetAllTwitterHashtagConfig() ([]response.TwitterHashtag, error)
 	hashtags := []response.TwitterHashtag{}
 	if err != nil {
 		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get twitter hashtag configs")
-		return nil, fmt.Errorf("failed to get twitter hashtags: %v", err.Error())
+		return nil, err
 	}
 	for _, tag := range data {
 		hashtags = append(hashtags, response.TwitterHashtag{

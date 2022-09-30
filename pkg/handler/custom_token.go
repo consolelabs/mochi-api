@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -24,22 +25,22 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	// handle input validate
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.HandlerGuildCustomTokenConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.HandlerGuildCustomTokenConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Symbol == "" {
 		h.log.Info("[handler.HandlerGuildCustomTokenConfig] - symbol empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
 		return
 	}
 	if req.Address == "" {
 		h.log.Info("[handler.HandlerGuildCustomTokenConfig] - address empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Address is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("address is required"), nil))
 		return
 	}
 	if req.Chain == "" {
@@ -50,11 +51,11 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 
 	if err := h.entities.CreateCustomToken(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.HandlerGuildCustomTokenConfig] - fail to create custom token")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ListAllCustomToken     godoc

@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetGmConfig     godoc
@@ -305,18 +306,18 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetSalesTrackerConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
-	}
-
-	config, err := h.entities.GetSalesTrackerConfig(guildID)
-
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetSalesTrackerConfig] - failed to get sales tracker config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetSalesTrackerConfigResponse{Message: "OK", Data: config})
+	config, err := h.entities.GetSalesTrackerConfig(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetSalesTrackerConfig] - failed to get sales tracker config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // GetGuildtokens     godoc
@@ -334,11 +335,11 @@ func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildTokens, err := h.entities.GetGuildTokens(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildTokens] - failed to get guild tokens")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetGuildTokensResponse{Data: guildTokens})
+	c.JSON(http.StatusOK, response.CreateResponse(guildTokens, nil, nil, nil))
 }
 
 // UpsertGuildTokenConfig     godoc
@@ -355,27 +356,27 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "symbol": req.Symbol, "active": req.Active}).Error(err, "[handler.UpsertGuildTokenConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	if req.GuildID == "" {
 		h.log.Info("[handler.UpsertGuildTokenConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.Symbol == "" {
 		h.log.Info("[handler.UpsertGuildTokenConfig] - symbol empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "symbol is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
 		return
 	}
 
 	if err := h.entities.UpsertGuildTokenConfig(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "symbol": req.Symbol, "active": req.Active}).Error(err, "[handler.UpsertGuildTokenConfig] - failed to upsert guild token config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ConfigLevelRole     godoc
@@ -417,9 +418,7 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{
-		Success: true,
-	}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{Success: true}, nil, nil, nil))
 }
 
 // GetLevelRoleConfig     godoc
@@ -502,14 +501,14 @@ func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.ListGuildGroupNFTRoles] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	roles, err := h.entities.ListGuildGroupNFTRoles(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildGroupNFTRoles] - failed to list all nft roles")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -529,14 +528,14 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 	var req request.ConfigGroupNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	newRole, err := h.entities.NewGuildGroupNFTRoleConfig(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to create nft role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(newRole, nil, nil, nil))
@@ -558,7 +557,7 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 		listConfigIDs := strings.Split(configIDs, "|")
 		if err := h.entities.RemoveGuildNFTRoleConfig(listConfigIDs); err != nil {
 			h.log.Fields(logger.Fields{"configID": listConfigIDs}).Error(err, "[handler.RemoveGuildNFTRole] - failed to remove nft role config")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 			return
 		}
 		c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
@@ -579,7 +578,7 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 
 	if err := h.entities.RemoveGuildGroupNFTRoleConfig(groupConfigID); err != nil {
 		h.log.Fields(logger.Fields{"configID": groupConfigID}).Error(err, "[handler.RemoveGuildGroupNFTRole] - failed to remove nft role config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
@@ -629,7 +628,7 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetReposeReactionConfigs     godoc
@@ -693,7 +692,7 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // ToggleActivityConfig     godoc
@@ -707,7 +706,6 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 // @Success     200 {object} response.ToggleActivityConfigResponse
 // @Router      /configs/activities/{activity} [post]
 func (h *Handler) ToggleActivityConfig(c *gin.Context) {
-
 	var (
 		activityName = c.Param("activity")
 		guildID      = c.Query("guild_id")
@@ -715,24 +713,24 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 
 	if activityName == "" {
 		h.log.Info("[handler.ToggleActivityConfig] - activity name empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "activity is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("activity is required"), nil))
 		return
 	}
 
 	if guildID == "" {
 		h.log.Info("[handler.ToggleActivityConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "guild_id is required"})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	config, err := h.entities.ToggleActivityConfig(guildID, activityName)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "activity": activityName}).Error(err, "[handler.ToggleActivityConfig] - failed to toggle activity config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ToggleActivityConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // GetAllTwitterConfig     godoc
@@ -749,10 +747,10 @@ func (h *Handler) GetAllTwitterConfig(c *gin.Context) {
 	config, err := h.entities.GetAllTwitterConfig()
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetTwitterConfig] - failed to get twitter config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.GetAllTwitterConfigResponse{Message: "OK", Data: config})
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
 // CreateTwitterConfig     godoc
@@ -769,16 +767,17 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 	err := c.BindJSON(&cfg)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": cfg}).Error(err, "[handler.CreateTwitterConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
 	}
 
 	err = h.entities.CreateTwitterConfig(&cfg)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": cfg}).Error(err, "[handler.GetTwitterConfig] - failed to create twitter config")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetTwitterHashtagConfig     godoc
@@ -793,17 +792,12 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
-	if err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			h.log.Fields(logger.Fields{"guild_id": guildId}).Info("[handler.GetTwitterHashtagConfig] - hashtag config empty")
-			c.JSON(http.StatusOK, gin.H{"data": hashtags})
-			return
-		}
+	if err != nil && err != gorm.ErrRecordNotFound {
 		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.GetTwitterHashtagConfigResponse{Data: hashtags})
+	c.JSON(http.StatusOK, response.CreateResponse(hashtags, nil, nil, nil))
 }
 
 // GetAllTwitterHashtagConfig     godoc
@@ -816,17 +810,12 @@ func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 // @Router      /configs/twitter/hashtag [get]
 func (h *Handler) GetAllTwitterHashtagConfig(c *gin.Context) {
 	hashtags, err := h.entities.GetAllTwitterHashtagConfig()
-	if err != nil {
-		if strings.Contains(err.Error(), "record not found") {
-			h.log.Info("[handler.GetTwitterHashtagConfig] - hashtag config empty")
-			c.JSON(http.StatusOK, gin.H{"data": hashtags})
-			return
-		}
+	if err != nil && err != gorm.ErrRecordNotFound {
 		h.log.Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.GetAllTwitterHashtagConfigResponse{Data: hashtags})
+	c.JSON(http.StatusOK, response.CreateResponse(hashtags, nil, nil, nil))
 }
 
 // DeleteTwitterHashtagConfig     godoc
@@ -843,10 +832,10 @@ func (h *Handler) DeleteTwitterHashtagConfig(c *gin.Context) {
 	err := h.entities.DeleteTwitterHashtagConfig(guildId)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to delete")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // CreateTwitterHashtagConfig     godoc
@@ -863,17 +852,17 @@ func (h *Handler) CreateTwitterHashtagConfig(c *gin.Context) {
 	err := c.BindJSON(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateTwitterHashtagConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	err = h.entities.CreateTwitterHashtagConfig(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateTwitterHashtagConfig] - failed to create hashtag")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetDefaultToken     godoc
@@ -890,11 +879,11 @@ func (h *Handler) GetDefaultToken(c *gin.Context) {
 	token, err := h.entities.GetDefaultToken(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.ConfigDefaultToken] - failed to get default token")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.GetDefaultTokenResponse{Data: token})
+	c.JSON(http.StatusOK, response.CreateResponse(token, nil, nil, nil))
 }
 
 // ConfigDefaultToken     godoc
@@ -910,17 +899,17 @@ func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 	req := request.ConfigDefaultTokenRequest{}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.SetDefaultToken(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // RemoveDefaultToken     godoc
@@ -936,11 +925,11 @@ func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if err := h.entities.RemoveDefaultToken(guildID); err != nil {
 		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.RemoveDefaultToken] - failed to remove default token")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // CreateDefaultCollectionSymbol     godoc
@@ -956,17 +945,17 @@ func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 	req := request.ConfigDefaultCollection{}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := h.entities.CreateDefaultCollectionSymbol(req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateDefaultCollectionSymbol] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetGuildPruneExclude     godoc
@@ -1061,16 +1050,16 @@ func (h *Handler) EditMessageRepost(c *gin.Context) {
 	req := request.EditMessageRepostRequest{}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.EditMessageRepost] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	err := h.entities.EditMessageRepost(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.EditMessageRepost] - fail to edit message repost")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }

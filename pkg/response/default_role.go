@@ -7,5 +7,4 @@ type DefaultRole struct {
 
 type DefaultRoleResponse struct {
 	Data DefaultRole `json:"data"`
-	Ok   bool        `json:"ok"`
 }

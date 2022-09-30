@@ -1142,8 +1142,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.DefaultRole'
-      ok:
-        type: boolean
     type: object
   response.DiscordGuildResponse:
     properties:
@@ -1419,8 +1417,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigSalesTracker'
-      message:
-        type: string
     type: object
   response.GetSupportedChains:
     properties:
@@ -1996,18 +1992,19 @@ definitions:
       data:
         $ref: '#/definitions/response.NFTCollectionsData'
     type: object
-  response.NFTNewListedResponse:
+  response.NFTNewListed:
     properties:
       data:
         items:
           $ref: '#/definitions/model.NewListedNFTCollection'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
+      metadata:
+        $ref: '#/definitions/util.Pagination'
+    type: object
+  response.NFTNewListedResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.NFTNewListed'
     type: object
   response.NFTSalesTrackerResponse:
     properties:
