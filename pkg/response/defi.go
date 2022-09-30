@@ -173,7 +173,7 @@ type CoinMarketItemData struct {
 
 type GetWatchlistResponse struct {
 	// Pagination *PaginationResponse  `json:"pagination"`
-	Data []CoinMarketItemData `json:"data"`
+	Data []CoinMarketItemData
 }
 
 type CoingeckoSupportedTokenResponse struct {

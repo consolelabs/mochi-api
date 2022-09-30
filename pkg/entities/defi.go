@@ -561,7 +561,7 @@ func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest)
 	return defaultTicker, nil
 }
 
-func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
+func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]response.CoinMarketItemData, error) {
 	q := userwatchlistitem.UserWatchlistQuery{
 		UserID: req.UserID,
 		Offset: req.Page * req.Size,
@@ -585,7 +585,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		tickers = e.getDefaultWatchlistIDs()
 	}
 	if len(tickers) == 0 && len(pairs) == 0 {
-		return &response.GetWatchlistResponse{Data: nil}, nil
+		return nil, nil
 	}
 
 	// CoinGeckoAPI | get ticker market data
@@ -620,7 +620,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 		}
 		data = append(data, item)
 	}
-	return &response.GetWatchlistResponse{Data: data}, nil
+	return &data, nil
 }
 
 func (e *Entity) getDefaultWatchlistIDs() []string {
