@@ -7,21 +7,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRoleResponse, error) {
+func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRole, error) {
 	role, err := e.repo.GuildConfigDefaultRole.GetAllByGuildID(guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetDefaultRoleByGuildID] failed to get default role by guild id")
 		return nil, err
 	}
 
-	var res response.DefaultRoleResponse
-	res.Ok = true
-	res.Data = response.DefaultRole{
+	return &response.DefaultRole{
 		RoleID:  role.RoleID,
 		GuildID: guildID,
-	}
-
-	return &res, nil
+	}, nil
 }
 
 func (e *Entity) CreateDefaultRoleConfig(GuildID, RoleID string) error {
