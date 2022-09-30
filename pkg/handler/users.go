@@ -150,7 +150,7 @@ func (h *Handler) GetUserUpvoteLeaderboard(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusInternalServerError, response.CreateResponse(res, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // GetMyInfo     godoc
