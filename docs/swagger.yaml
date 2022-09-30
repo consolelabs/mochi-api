@@ -3984,7 +3984,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -5083,7 +5083,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
