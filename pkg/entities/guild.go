@@ -21,6 +21,7 @@ func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
 		BotScopes: model.JSONArrayString{
 			"*",
 		},
+		Active: true,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": guild.ID}).Errorf(err, "[e.CreateGuild] repo.DiscordGuilds.CreateOrReactivate() failed")
