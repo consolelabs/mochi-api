@@ -8,3 +8,4 @@
 \ir tokens.sql
 \ir guild_config_tokens.sql
 \ir upvote_streak_tiers.sql
+\ir offchain_tip_bot.sql

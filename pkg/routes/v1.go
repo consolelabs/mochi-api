@@ -18,6 +18,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		chainGroup.GET("", h.ListAllChain)
 	}
 
+	offchainTipBotGroup := v1.Group("/offchain-tip-bot")
+	{
+		offchainTipBotGroup.GET("/chains", h.OffchainTipBotListAllChains)
+		offchainTipBotGroup.POST("/assign-contract", h.OffchainTipBotCreateAssignContract)
+	}
+
 	authGroup := v1.Group("/auth")
 	{
 		authGroup.POST("/login", h.Login)
