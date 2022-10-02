@@ -26,7 +26,7 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 	data, err, statusCode := h.entities.GetHistoricalMarketChart(c)
 	if err != nil {
 		h.log.Error(err, "[handler.GetHistoricalMarketChart] - failed to get historical market chart")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
+		c.JSON(statusCode, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -46,7 +46,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 	var req request.TransferRequest
 	if err := req.Bind(c); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.InDiscordWalletTransfer] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -63,10 +63,7 @@ func (h *Handler) InDiscordWalletTransfer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.InDiscordWalletTransferResponseWrapper{
-		Data:   res,
-		Errors: errs,
-	})
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // InDiscordWalletWithdraw     godoc
@@ -121,7 +118,8 @@ func (h *Handler) InDiscordWalletBalances(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, response.InDiscordWalletBalancesResponse{Status: "ok", Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+
 }
 
 // GetSupportedTokens     godoc
@@ -308,7 +306,7 @@ func (h *Handler) GetUserWatchlist(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // AddToWatchlist     godoc
@@ -362,5 +360,5 @@ func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 		c.JSON(code, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": nil})
+	c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
 }
