@@ -18,3 +18,7 @@ type GetNftWatchlistRequest struct {
 	Page   int    `json:"page" form:"page"`
 	Size   int    `json:"size" form:"size"`
 }
+
+type GetNFTCollectionTickersRequest struct {
+	CollectionAddress string `json:"collection_address" form:"collection_address" binding:"required"`
+}

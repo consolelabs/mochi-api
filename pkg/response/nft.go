@@ -48,6 +48,9 @@ type IndexerNFTCollectionTickersData struct {
 	TotalVolume     *IndexerPrice   `json:"total_volume"`
 	FloorPrice      *IndexerPrice   `json:"floor_price"`
 	LastSalePrice   *IndexerPrice   `json:"last_sale_price"`
+	PriceChange1d   string          `json:"price_change_1d"`
+	PriceChange7d   string          `json:"price_change_7d"`
+	PriceChange30d  string          `json:"price_change_30d"`
 }
 
 type IndexerGetNFTCollectionsResponse struct {
@@ -86,6 +89,7 @@ type CollectionSuggestions struct {
 	Symbol  string `json:"symbol"`
 	Address string `json:"address"`
 	Chain   string `json:"chain"`
+	ChainId int64  `json:"chain_id"`
 }
 
 type IndexerNFTTokenDetailData struct {
@@ -285,4 +289,12 @@ type SparkLineIn7d struct {
 
 type GetNftWatchlistResponse struct {
 	Data []GetNftWatchlist `json:"data"`
+}
+
+type GetGuildDefaultNftTickerResponse struct {
+	Data *model.GuildConfigDefaultCollection `json:"data"`
+}
+
+type GetSuggestionNFTCollectionsResponse struct {
+	Data []CollectionSuggestions `json:"data"`
 }

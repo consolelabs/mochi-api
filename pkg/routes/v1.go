@@ -168,6 +168,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultTickerGroup.POST("", h.SetGuildDefaultTicker)
 		}
 
+		defaultNftTickerGroup := configGroup.Group("/default-nft-ticker")
+		{
+			defaultNftTickerGroup.GET("", h.GetGuildDefaultNftTicker)
+			defaultNftTickerGroup.POST("", h.SetGuildDefaultNftTicker)
+		}
+
 		telegramGroup := configGroup.Group("/telegram")
 		{
 			telegramGroup.GET("", h.GetLinkedTelegram)
@@ -246,10 +252,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/:symbol/detail", h.GetDetailNftCollection)
 			collectionsGroup.GET("/stats", h.GetCollectionCount)
 			collectionsGroup.GET("", h.GetNFTCollections)
+			collectionsGroup.GET("/suggestion", h.GetSuggestionNFTCollections)
 			collectionsGroup.POST("", h.CreateNFTCollection)
 			collectionsGroup.PATCH("/:address", h.UpdateNFTCollection) //to update collection images, delete after use
 			collectionsGroup.GET("/:symbol", h.GetNFTTokens)
-			collectionsGroup.GET("/:symbol/tickers", h.GetNFTCollectionTickers)
+			collectionsGroup.GET("/tickers", h.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.GetNFTCollectionByAddressChain)
 		}
 
