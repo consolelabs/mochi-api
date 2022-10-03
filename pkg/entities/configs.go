@@ -53,7 +53,12 @@ func (e *Entity) GetWelcomeChannelConfig(guildID string) (*model.GuildConfigWelc
 
 func (e *Entity) UpsertWelcomeChannelConfig(req request.UpsertWelcomeConfigRequest) (*model.GuildConfigWelcomeChannel, error) {
 	if req.WelcomeMsg == "" {
-		req.WelcomeMsg = "Greetings $name :wave: Welcome to the guild! Hope you enjoy your stay."
+		previousConfig, err := e.repo.GuildConfigWelcomeChannel.GetByGuildID(req.GuildID)
+		if err == gorm.ErrRecordNotFound {
+			req.WelcomeMsg = "Greetings $name :wave: Welcome to the guild! Hope you enjoy your stay."
+		} else {
+			req.WelcomeMsg = previousConfig.WelcomeMessage
+		}
 	}
 	config, err := e.repo.GuildConfigWelcomeChannel.UpsertOne(&model.GuildConfigWelcomeChannel{
 		GuildID:        req.GuildID,
