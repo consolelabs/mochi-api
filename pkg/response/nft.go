@@ -5,6 +5,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/util"
+	"github.com/google/uuid"
 )
 
 type IndexerPrice struct {
@@ -248,8 +249,25 @@ type GetCollectionCountResponse struct {
 	Data *NFTCollectionCount `json:"data"`
 }
 
+type GetNFTCollectionByAddressChain struct {
+	ID          uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
+	Address     string        `json:"address"`
+	Name        string        `json:"name"`
+	Symbol      string        `json:"symbol"`
+	ChainID     string        `json:"chain_id"`
+	ERCFormat   string        `json:"erc_format"`
+	IsVerified  bool          `json:"is_verified"`
+	CreatedAt   time.Time     `json:"created_at"`
+	Image       string        `json:"image"`
+	Author      string        `json:"author"`
+	Description string        `json:"description"`
+	Discord     string        `json:"discord"`
+	Twitter     string        `json:"twitter"`
+	Website     string        `json:"website"`
+}
+
 type GetNFTCollectionByAddressChainResponse struct {
-	Data *model.NFTCollection `json:"data"`
+	Data *GetNFTCollectionByAddressChain `json:"data"`
 }
 
 type GetNFTActivityResponse struct {
@@ -297,4 +315,31 @@ type GetGuildDefaultNftTickerResponse struct {
 
 type GetSuggestionNFTCollectionsResponse struct {
 	Data []CollectionSuggestions `json:"data"`
+}
+type IndexerNftCollectionMetadata struct {
+	Id                     int64       `json:"id"`
+	CollectionAddress      string      `json:"collection_address"`
+	Name                   string      `json:"name"`
+	Symbol                 string      `json:"symbol"`
+	ChainID                int64       `json:"chain_id"`
+	ERCFormat              string      `json:"erc_format"`
+	Supply                 int64       `json:"supply"`
+	IsRarityCalculated     bool        `json:"is_rarity_calculated"`
+	Image                  string      `json:"image"`
+	Description            string      `json:"description"`
+	ContractScan           string      `json:"contract_scan"`
+	Discord                string      `json:"discord"`
+	Twitter                string      `json:"twitter"`
+	Website                string      `json:"website"`
+	Owners                 int64       `json:"owners"`
+	MarketplaceCollections interface{} `json:"marketplace_collections"`
+	CreatedTime            string      `json:"created_time"`
+	LastUpdatedTime        string      `json:"last_updated_time"`
+	Chain                  interface{} `json:"chain"`
+	Stats                  interface{} `json:"stats"`
+	IsNotifySynced         bool        `json:"is_notify_synced"`
+}
+
+type IndexerNftCollectionMetadataResponse struct {
+	Data IndexerNftCollectionMetadata `json:"data"`
 }

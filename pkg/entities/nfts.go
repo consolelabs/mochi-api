@@ -884,7 +884,7 @@ func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
 	}, nil
 }
 
-func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model.NFTCollection, error) {
+func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*response.GetNFTCollectionByAddressChain, error) {
 	collection, err := e.repo.NFTCollection.GetByAddressChainId(address, chainId)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -894,9 +894,29 @@ func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*model
 		e.log.Errorf(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection by address %s", address)
 		return nil, err
 	}
-	collection.Image = util.StandardizeUri(collection.Image)
 
-	return collection, nil
+	collectionMetadata, err := e.indexer.GetNftCollectionMetadata(address, chainId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "chainId": chainId}).Error(err, "[repo.NFTCollection.GetNFTCollectionByAddress] failed to get nft collection metadata")
+		return nil, err
+	}
+
+	return &response.GetNFTCollectionByAddressChain{
+		ID:          collection.ID,
+		Address:     collection.Address,
+		Name:        collection.Name,
+		Symbol:      collection.Symbol,
+		ChainID:     collection.ChainID,
+		ERCFormat:   collection.ERCFormat,
+		IsVerified:  collection.IsVerified,
+		CreatedAt:   collection.CreatedAt,
+		Image:       util.StandardizeUri(collection.Image),
+		Author:      collection.Author,
+		Description: collectionMetadata.Data.Description,
+		Discord:     collectionMetadata.Data.Discord,
+		Twitter:     collectionMetadata.Data.Twitter,
+		Website:     collectionMetadata.Data.Website,
+	}, nil
 }
 
 func (e *Entity) UpdateNFTCollection(address string) error {

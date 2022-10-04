@@ -184,6 +184,21 @@ func (mr *MockServiceMockRecorder) GetNFTTradingVolume() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTradingVolume", reflect.TypeOf((*MockService)(nil).GetNFTTradingVolume))
 }
 
+// GetNftCollectionMetadata mocks base method.
+func (m *MockService) GetNftCollectionMetadata(collectionAddress, chainId string) (*response.IndexerNftCollectionMetadataResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNftCollectionMetadata", collectionAddress, chainId)
+	ret0, _ := ret[0].(*response.IndexerNftCollectionMetadataResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNftCollectionMetadata indicates an expected call of GetNftCollectionMetadata.
+func (mr *MockServiceMockRecorder) GetNftCollectionMetadata(collectionAddress, chainId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftCollectionMetadata", reflect.TypeOf((*MockService)(nil).GetNftCollectionMetadata), collectionAddress, chainId)
+}
+
 // GetNftMetadataAttrIcon mocks base method.
 func (m *MockService) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {
 	m.ctrl.T.Helper()

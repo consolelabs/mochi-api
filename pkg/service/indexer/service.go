@@ -18,4 +18,5 @@ type Service interface {
 	GetNFTContract(addr string) (*response.IndexerContract, error)
 	GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error)
 	GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTCollectionTickersResponse, error)
+	GetNftCollectionMetadata(collectionAddress, chainId string) (*res.IndexerNftCollectionMetadataResponse, error)
 }
