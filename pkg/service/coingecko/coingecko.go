@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -21,15 +22,16 @@ type CoinGecko struct {
 	getSupportedCoins  string
 }
 
-func NewService() Service {
+func NewService(cfg *config.Config) Service {
+	apiKey := cfg.CoinGeckoAPIKey
 	return &CoinGecko{
-		getMarketChartURL:  "https://api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d",
-		searchCoinURL:      "https://api.coingecko.com/api/v3/search?query=%s",
-		getCoinURL:         "https://api.coingecko.com/api/v3/coins/%s",
-		getPriceURL:        "https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s",
-		getCoinOhlc:        "https://api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd",
-		getCoinsMarketData: "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=7d",
-		getSupportedCoins:  "https://api.coingecko.com/api/v3/coins/list",
+		getMarketChartURL:  "https://pro-api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d&x_cg_pro_api_key=" + apiKey,
+		searchCoinURL:      "https://pro-api.coingecko.com/api/v3/search?query=%s&x_cg_pro_api_key=" + apiKey,
+		getCoinURL:         "https://pro-api.coingecko.com/api/v3/coins/%s?x_cg_pro_api_key=" + apiKey,
+		getPriceURL:        "https://pro-api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&x_cg_pro_api_key=" + apiKey,
+		getCoinOhlc:        "https://pro-api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd&x_cg_pro_api_key=" + apiKey,
+		getCoinsMarketData: "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=7d&x_cg_pro_api_key=" + apiKey,
+		getSupportedCoins:  "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
 	}
 }
 
