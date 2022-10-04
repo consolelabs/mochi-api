@@ -137,6 +137,7 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	// allow 2 gm emoji in Mochi and Pod Town
 	// allow sticker emoji in Pod Town
+	// TODO(trkhoi): set emoji and sticker when config gm
 	isGmEmoji := strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
 	isGmSticker := false
 	for _, sticker := range message.StickerItems {
