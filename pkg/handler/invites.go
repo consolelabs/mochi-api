@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetInvites     godoc
@@ -21,6 +22,7 @@ import (
 // @Success     200 {object} response.GetInvitesResponse
 // @Router      /community/invites/ [get]
 func (h *Handler) GetInvites(c *gin.Context) {
+	//TODO: add test
 	memberID := c.Query("member_id")
 	guildID := c.Query("guild_id")
 
@@ -44,8 +46,8 @@ func (h *Handler) GetInvites(c *gin.Context) {
 // @Success     200 {object} response.GetInvitesLeaderboardResponse
 // @Router      /community/invites/leaderboard/{id} [get]
 func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
-	guildID, ok := c.Params.Get("id")
-	if !ok {
+	guildID := c.Param("id")
+	if guildID == "" {
 		h.log.Info("[handler.GetInvitesLeaderboard] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
@@ -71,8 +73,8 @@ func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
 // @Success     200 {object} response.GetInviteTrackerConfigResponse
 // @Router      /community/invites/config [get]
 func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
-	guildID, exist := c.GetQuery("guild_id")
-	if !exist {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
 		h.log.Info("[handler.GetInviteTrackerConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
@@ -81,7 +83,12 @@ func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
 	config, err := h.entities.GetInviteTrackerLogChannel(guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetInviteTrackerConfig] - failed to get invite tracker log channel")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+
+		code := http.StatusInternalServerError
+		if err == gorm.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -117,7 +124,7 @@ func (h *Handler) ConfigureInvites(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse("ok", nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // InvitesAggregation     godoc
