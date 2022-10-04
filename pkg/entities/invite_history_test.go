@@ -2,6 +2,7 @@ package entities
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,12 +12,13 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
-
 	mock_invite_histories "github.com/defipod/mochi/pkg/repo/invite_histories/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
 )
 
 func TestEntity_CreateInviteHistory(t *testing.T) {
@@ -191,6 +193,175 @@ func TestEntity_CreateInviteHistory(t *testing.T) {
 			}
 			if err := e.CreateInviteHistory(tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("Entity.CreateInviteHistory() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_GetInvitesLeaderboard(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	inviteHistoriesRepo := mock_invite_histories.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		InviteHistories: inviteHistoriesRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	type res struct {
+		data []response.UserInvitesAggregation
+		err  error
+	}
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		want    []response.UserInvitesAggregation
+		wantErr bool
+	}{
+		{
+			name: "happy_case",
+			args: args{
+				guildID: "962589711841525780",
+			},
+			res: res{
+				data: []response.UserInvitesAggregation{
+					{
+						InviterID: "962592086849376266",
+						Regular:   2,
+						Fake:      0,
+						Left:      0,
+					},
+				},
+				err: nil,
+			},
+			want: []response.UserInvitesAggregation{
+				{
+					InviterID: "962592086849376266",
+					Regular:   2,
+					Fake:      0,
+					Left:      0,
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "record_not_found",
+			args: args{
+				guildID: "962589711841525123",
+			},
+			res: res{
+				data: nil,
+				err:  gorm.ErrRecordNotFound,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			inviteHistoriesRepo.EXPECT().GetInvitesLeaderboard(tt.args.guildID).Return(tt.res.data, tt.res.err).Times(1)
+
+			got, err := e.GetInvitesLeaderboard(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetInvitesLeaderboard() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != nil && tt.want != nil && !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetInvitesLeaderboard() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetUserInvitesAggregation(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	inviteHistoriesRepo := mock_invite_histories.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		InviteHistories: inviteHistoriesRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	data := response.UserInvitesAggregation{
+		InviterID: "962592086849376266",
+		Regular:   2,
+		Fake:      0,
+		Left:      0,
+	}
+	type res struct {
+		data *response.UserInvitesAggregation
+		err  error
+	}
+	type args struct {
+		guildID string
+		userID  string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		want    *response.UserInvitesAggregation
+		wantErr bool
+	}{
+		{
+			name: "happy_case",
+			args: args{
+				guildID: "962589711841525780",
+				userID:  "962592086849376266",
+			},
+			res: res{
+				data: &data,
+				err:  nil,
+			},
+			want:    &data,
+			wantErr: false,
+		},
+		{
+			name: "record_not_found",
+			args: args{
+				guildID: "962589711841525123",
+				userID:  "962592086849376123",
+			},
+			res: res{
+				data: nil,
+				err:  gorm.ErrRecordNotFound,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			inviteHistoriesRepo.EXPECT().GetUserInvitesAggregation(tt.args.guildID, tt.args.userID).Return(tt.res.data, tt.res.err).Times(1)
+
+			got, err := e.GetUserInvitesAggregation(tt.args.guildID, tt.args.userID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetUserInvitesAggregation() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetUserInvitesAggregation() = %v, want %v", got, tt.want)
 			}
 		})
 	}
