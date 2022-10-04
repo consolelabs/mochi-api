@@ -457,3 +457,43 @@ func (i *indexer) GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTC
 	defer response.Body.Close()
 	return data, nil
 }
+
+func (i *indexer) GetNftCollectionMetadata(collectionAddress, chainId string) (*res.IndexerNftCollectionMetadataResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/nft/%s/metadata", i.cfg.IndexerServerHost, collectionAddress)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("GetNftCollectionMetadata - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNftCollectionMetadata - failed to filter collection metadata with collectionAddress=%s, chainID=%s: %v", collectionAddress, chainId, errBody.String())
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &res.IndexerNftCollectionMetadataResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	return data, nil
+}
