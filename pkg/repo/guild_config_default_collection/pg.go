@@ -38,3 +38,8 @@ func (pg *pg) Upsert(config *model.GuildConfigDefaultCollection) error {
 
 	return tx.Commit().Error
 }
+
+func (pg *pg) GetOneByGuildIDAndQuery(guildID, symbol string) (*model.GuildConfigDefaultCollection, error) {
+	config := &model.GuildConfigDefaultCollection{}
+	return config, pg.db.Table("guild_config_default_collections").Where("guild_id = ? AND symbol ILIKE ?", guildID, symbol).First(config).Error
+}

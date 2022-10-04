@@ -78,10 +78,23 @@ type GetGuildDefaultTickerRequest struct {
 	Query   string `json:"query" form:"query" binding:"required"`
 }
 
+type GetGuildDefaultNftTickerRequest struct {
+	GuildID string `json:"guild_id" form:"guild_id" binding:"required"`
+	Query   string `json:"query" form:"query" binding:"required"`
+}
+
 type GuildConfigDefaultTickerRequest struct {
 	GuildID       string `json:"guild_id"`
 	Query         string `json:"query"`
 	DefaultTicker string `json:"default_ticker"`
+}
+
+type GuildConfigDefaultNftTickerRequest struct {
+	GuildID           string `json:"guild_id"`
+	Query             string `json:"query"`
+	CollectionAddress string `json:"collection_address"`
+	ChainId           int64  `json:"chain_id"`
+	Symbol            string `json:"symbol"`
 }
 
 type UpsertGuildPruneExcludeRequest struct {

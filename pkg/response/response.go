@@ -12,6 +12,10 @@ type ResponseMessage struct {
 	Message string `json:"message"`
 }
 
+type ResponseDataMessage struct {
+	Data ResponseMessage `json:"data"`
+}
+
 type ResponseSucess struct {
 	Success bool `json:"success"`
 }

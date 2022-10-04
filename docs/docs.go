@@ -386,6 +386,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/default-nft-ticker": {
+            "get": {
+                "description": "Get guild default nft ticker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get guild default nft ticker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ticker query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildDefaultNftTickerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set guild default nft ticker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Set guild default nft ticker",
+                "parameters": [
+                    {
+                        "description": "Set guild default ticker request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GuildConfigDefaultNftTickerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseDataMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/default-roles": {
             "get": {
                 "description": "Get default roles by guild id",
@@ -2924,6 +2995,84 @@ const docTemplate = `{
                 }
             }
         },
+        "/nfts/collections/suggestion": {
+            "get": {
+                "description": "Get guild suggest nft collections",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get guild suggest nft collections",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "symbol collection query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSuggestionNFTCollectionsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/nfts/collections/tickers": {
+            "get": {
+                "description": "Get NFT collection tickers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get NFT collection tickers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CollectionAddress",
+                        "name": "collection_address",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.IndexerNFTCollectionTickersResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts/collections/{address}": {
             "patch": {
                 "description": "Update NFT Collection",
@@ -3015,38 +3164,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetDetailNftCollectionResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/nfts/collections/{symbol}/tickers": {
-            "get": {
-                "description": "Get NFT collection tickers",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Get NFT collection tickers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Symbol",
-                        "name": "symbol",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.IndexerNFTCollectionTickersResponse"
                         }
                     }
                 }
@@ -4600,6 +4717,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigDefaultCollection": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigDefaultTicker": {
             "type": "object",
             "properties": {
@@ -5432,6 +5572,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.GuildConfigDefaultNftTickerRequest": {
+            "type": "object",
+            "properties": {
+                "chain_id": {
+                    "type": "integer"
+                },
+                "collection_address": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "query": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "request.GuildConfigDefaultTickerRequest": {
             "type": "object",
             "properties": {
@@ -5884,6 +6044,9 @@ const docTemplate = `{
                 "chain": {
                     "type": "string"
                 },
+                "chain_id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -6235,6 +6398,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetGuildDefaultNftTickerResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigDefaultCollection"
+                }
+            }
+        },
         "response.GetGuildDefaultTickerResponse": {
             "type": "object",
             "properties": {
@@ -6485,6 +6656,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigSalesTracker"
+                }
+            }
+        },
+        "response.GetSuggestionNFTCollectionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CollectionSuggestions"
+                    }
                 }
             }
         },
@@ -6923,6 +7105,15 @@ const docTemplate = `{
                 },
                 "owners": {
                     "type": "integer"
+                },
+                "price_change_1d": {
+                    "type": "string"
+                },
+                "price_change_30d": {
+                    "type": "string"
+                },
+                "price_change_7d": {
+                    "type": "string"
                 },
                 "tickers": {
                     "$ref": "#/definitions/response.IndexerTickers"
@@ -7575,6 +7766,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NftWatchlistSuggest"
+                }
+            }
+        },
+        "response.ResponseDataMessage": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.ResponseMessage"
                 }
             }
         },

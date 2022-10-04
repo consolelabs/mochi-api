@@ -213,11 +213,13 @@ func (e *Entity) GetNFTSuggestion(symbol string, tokenID string) ([]response.Col
 
 	res := []response.CollectionSuggestions{}
 	for _, col := range matches {
+		chainId, _ := strconv.Atoi(col.ChainID)
 		res = append(res, response.CollectionSuggestions{
 			Name:    col.Name,
 			Symbol:  col.Symbol,
 			Address: col.Address,
 			Chain:   util.ConvertChainIDToChain(col.ChainID),
+			ChainId: int64(chainId),
 		})
 	}
 
@@ -637,14 +639,14 @@ func (e *Entity) NewUserNFTBalance(balance model.UserNFTBalance) error {
 	return nil
 }
 
-func (e *Entity) GetNFTCollectionTickers(symbol, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
-	collection, err := e.repo.NFTCollection.GetBySymbol(symbol)
+func (e *Entity) GetNFTCollectionTickers(req request.GetNFTCollectionTickersRequest, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
+	collection, err := e.repo.NFTCollection.GetByAddress(req.CollectionAddress)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			e.log.Infof("Nft colletion ticker not found, symbol: %s", symbol)
+			e.log.Infof("Nft colletion ticker not found. CollectionAddress: %s", req.CollectionAddress)
 			return &response.IndexerNFTCollectionTickersResponse{Data: nil}, nil
 		}
-		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by symbol %s", symbol)
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by.  CollectionAddress: %s", req.CollectionAddress)
 		return nil, err
 	}
 
@@ -1110,4 +1112,32 @@ func (e *Entity) getDefaultNFTWatchlistItems() []model.UserNftWatchlistItem {
 		{CollectionAddress: "0x7acee5d0acc520fab33b3ea25d4feef1ffebde73", Symbol: "NEKO", ChainId: 250},
 		{CollectionAddress: "0x2ab5c606a5aa2352f8072b9e2e8a213033e2c4c9", Symbol: "MGC", ChainId: 250},
 	}
+}
+
+func (e *Entity) GetGuildDefaultNftTicker(req request.GetGuildDefaultNftTickerRequest) (*model.GuildConfigDefaultCollection, error) {
+	defaultNftTicker, err := e.repo.GuildConfigDefaultCollection.GetOneByGuildIDAndQuery(req.GuildID, req.Query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID, "query": req.Query}).Error(err, "[entity.GetGuildDefaultNftTicker] repo.GuildConfigDefaultNftTicker.GetOneByGuildIDAndQuery() failed")
+		return nil, err
+	}
+	return defaultNftTicker, nil
+}
+
+func (e *Entity) SetGuildDefaultNftTicker(req request.GuildConfigDefaultNftTickerRequest) error {
+	return e.repo.GuildConfigDefaultCollection.Upsert(&model.GuildConfigDefaultCollection{
+		GuildID: req.GuildID,
+		Address: req.CollectionAddress,
+		Symbol:  req.Symbol,
+		ChainID: fmt.Sprint(req.ChainId),
+	})
+}
+
+func (e *Entity) GetSuggestionNftCollections(query string) ([]response.CollectionSuggestions, error) {
+	collectionSuggestions, error := e.GetNFTSuggestion(strings.ToUpper(query), "")
+	if error != nil {
+		e.log.Fields(logger.Fields{"query": query}).Error(error, "[entity.GetSuggestionNftCollections] GetNFTSuggestion() failed")
+		return nil, error
+	}
+
+	return collectionSuggestions, nil
 }

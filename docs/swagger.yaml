@@ -224,6 +224,21 @@ definitions:
       guild_id:
         type: string
     type: object
+  model.GuildConfigDefaultCollection:
+    properties:
+      address:
+        type: string
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.GuildConfigDefaultTicker:
     properties:
       default_ticker:
@@ -764,6 +779,19 @@ definitions:
       xp_amount:
         type: integer
     type: object
+  request.GuildConfigDefaultNftTickerRequest:
+    properties:
+      chain_id:
+        type: integer
+      collection_address:
+        type: string
+      guild_id:
+        type: string
+      query:
+        type: string
+      symbol:
+        type: string
+    type: object
   request.GuildConfigDefaultTickerRequest:
     properties:
       default_ticker:
@@ -1057,6 +1085,8 @@ definitions:
         type: string
       chain:
         type: string
+      chain_id:
+        type: integer
       name:
         type: string
       symbol:
@@ -1284,6 +1314,11 @@ definitions:
       message:
         type: string
     type: object
+  response.GetGuildDefaultNftTickerResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigDefaultCollection'
+    type: object
   response.GetGuildDefaultTickerResponse:
     properties:
       data:
@@ -1446,6 +1481,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigSalesTracker'
+    type: object
+  response.GetSuggestionNFTCollectionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.CollectionSuggestions'
+        type: array
     type: object
   response.GetSupportedChains:
     properties:
@@ -1730,6 +1772,12 @@ definitions:
         type: string
       owners:
         type: integer
+      price_change_1d:
+        type: string
+      price_change_7d:
+        type: string
+      price_change_30d:
+        type: string
       tickers:
         $ref: '#/definitions/response.IndexerTickers'
       total_volume:
@@ -2153,6 +2201,11 @@ definitions:
       data:
         $ref: '#/definitions/response.NftWatchlistSuggest'
     type: object
+  response.ResponseDataMessage:
+    properties:
+      data:
+        $ref: '#/definitions/response.ResponseMessage'
+    type: object
   response.ResponseMessage:
     properties:
       message:
@@ -2568,6 +2621,53 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Guild custom token config
+      tags:
+      - Config
+  /configs/default-nft-ticker:
+    get:
+      consumes:
+      - application/json
+      description: Get guild default nft ticker
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: Guild ticker query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildDefaultNftTickerResponse'
+      summary: Get guild default nft ticker
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Set guild default nft ticker
+      parameters:
+      - description: Set guild default ticker request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GuildConfigDefaultNftTickerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseDataMessage'
+      summary: Set guild default nft ticker
       tags:
       - Config
   /configs/default-roles:
@@ -4326,27 +4426,6 @@ paths:
       summary: Get detail nft collection
       tags:
       - NFT
-  /nfts/collections/{symbol}/tickers:
-    get:
-      consumes:
-      - application/json
-      description: Get NFT collection tickers
-      parameters:
-      - description: Symbol
-        in: path
-        name: symbol
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.IndexerNFTCollectionTickersResponse'
-      summary: Get NFT collection tickers
-      tags:
-      - NFT
   /nfts/collections/address/{address}:
     get:
       consumes:
@@ -4386,6 +4465,58 @@ paths:
           schema:
             $ref: '#/definitions/response.GetCollectionCountResponse'
       summary: Get collection count
+      tags:
+      - NFT
+  /nfts/collections/suggestion:
+    get:
+      consumes:
+      - application/json
+      description: Get guild suggest nft collections
+      parameters:
+      - description: symbol collection query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSuggestionNFTCollectionsResponse'
+      summary: Get guild suggest nft collections
+      tags:
+      - NFT
+  /nfts/collections/tickers:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT collection tickers
+      parameters:
+      - description: CollectionAddress
+        in: query
+        name: collection_address
+        required: true
+        type: string
+      - description: from
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: to
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerNFTCollectionTickersResponse'
+      summary: Get NFT collection tickers
       tags:
       - NFT
   /nfts/icons:
