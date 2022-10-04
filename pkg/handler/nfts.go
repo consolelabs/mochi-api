@@ -176,20 +176,22 @@ func (h *Handler) ListAllNFTCollections(c *gin.Context) {
 // @Tags        NFT
 // @Accept      json
 // @Produce     json
-// @Param       symbol   path  string true  "Symbol"
+// @Param       collection_address   query  string true  "CollectionAddress"
+// @Param       from   query  string true  "from"
+// @Param       to   query  string true  "to"
 // @Success     200 {object} response.IndexerNFTCollectionTickersResponse
-// @Router      /nfts/collections/{symbol}/tickers [get]
+// @Router      /nfts/collections/tickers [get]
 func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
-	symbol := c.Param("symbol")
-	if symbol == "" {
-		h.log.Info("[handler.GetNFTCollectionTickers] - symbol empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("symbol is required"), nil))
+	var req request.GetNFTCollectionTickersRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetNFTCollectionTickers] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	res, err := h.entities.GetNFTCollectionTickers(symbol, c.Request.URL.RawQuery)
+	res, err := h.entities.GetNFTCollectionTickers(req, c.Request.URL.RawQuery)
 	if err != nil {
-		h.log.Fields(logger.Fields{"symbol": symbol, "query": c.Request.URL.RawQuery}).Error(err, "[handler.GetNFTCollectionTickers] - failed to get NFT collection ticker")
+		h.log.Fields(logger.Fields{"req": req, "query": c.Request.URL.RawQuery}).Error(err, "[handler.GetNFTCollectionTickers] - failed to get NFT collection ticker")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -605,4 +607,83 @@ func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": nil})
+}
+
+// GetGuildDefaultNftTicker     godoc
+// @Summary     Get guild default nft ticker
+// @Description Get guild default nft ticker
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Param       query   query  string true  "Guild ticker query"
+// @Success     200 {object} response.GetGuildDefaultNftTickerResponse
+// @Router      /configs/default-nft-ticker [get]
+func (h *Handler) GetGuildDefaultNftTicker(c *gin.Context) {
+	var req request.GetGuildDefaultNftTickerRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetGuildDefaultNftTicker] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.GetGuildDefaultNftTicker(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetGuildDefaultNftTicker] entity.GetGuildDefaultNftTicker() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+// SetGuildDefaultNftTicker     godoc
+// @Summary     Set guild default nft ticker
+// @Description Set guild default nft ticker
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.GuildConfigDefaultNftTickerRequest true "Set guild default ticker request"
+// @Success     200 {object} response.ResponseDataMessage
+// @Router      /configs/default-nft-ticker [post]
+func (h *Handler) SetGuildDefaultNftTicker(c *gin.Context) {
+	req := request.GuildConfigDefaultNftTickerRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.SetGuildDefaultNftTicker] c.ShouldBindJSON failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := h.entities.SetGuildDefaultNftTicker(req); err != nil {
+		h.log.Error(err, "[handler.SetGuildDefaultNFtTicker] entity.SetGuildDefaultNftTicker failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusCreated, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetSuggestionNFTCollections     godoc
+// @Summary     Get guild suggest nft collections
+// @Description Get guild suggest nft collections
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       query   query  string true  "symbol collection query"
+// @Success     200 {object} response.GetSuggestionNFTCollectionsResponse
+// @Router      /nfts/collections/suggestion [get]
+func (h *Handler) GetSuggestionNFTCollections(c *gin.Context) {
+	query := c.Query("query")
+	if query == "" {
+		h.log.Info("[handler.GetSuggestionNFTCollections] query is required")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("missing query"), nil))
+		return
+	}
+
+	collections, err := h.entities.GetSuggestionNftCollections(query)
+	if err != nil {
+		h.log.Fields(logger.Fields{"query": query}).Error(err, "[handler.GetSuggestionNFTCollections] entities.GetSuggestionNftCollections() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(collections, nil, nil, nil))
 }
