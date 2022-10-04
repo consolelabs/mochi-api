@@ -21,7 +21,7 @@ func (r *ConfigureInviteRequest) Validate() error {
 		return fmt.Errorf("log_channel is required")
 	}
 	if r.GuildID == "" {
-		return fmt.Errorf("channel is required")
+		return fmt.Errorf("guild_id is required")
 	}
 
 	return nil
