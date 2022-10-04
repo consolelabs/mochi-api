@@ -259,11 +259,11 @@ definitions:
     type: object
   model.GuildConfigInviteTracker:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       id:
-        type: string
-      user_id:
         type: string
       webhook_url:
         $ref: '#/definitions/model.JSONNullString'
@@ -1435,10 +1435,41 @@ definitions:
       data:
         $ref: '#/definitions/discordgo.User'
     type: object
+  response.GetNFTCollectionByAddressChain:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      discord:
+        type: string
+      erc_format:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+      twitter:
+        type: string
+      website:
+        type: string
+    type: object
   response.GetNFTCollectionByAddressChainResponse:
     properties:
       data:
-        $ref: '#/definitions/model.NFTCollection'
+        $ref: '#/definitions/response.GetNFTCollectionByAddressChain'
     type: object
   response.GetNftWatchlist:
     properties:

@@ -4771,13 +4771,13 @@ const docTemplate = `{
         "model.GuildConfigInviteTracker": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 },
                 "webhook_url": {
@@ -6586,11 +6586,58 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetNFTCollectionByAddressChain": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discord": {
+                    "type": "string"
+                },
+                "erc_format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "twitter": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetNFTCollectionByAddressChainResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.NFTCollection"
+                    "$ref": "#/definitions/response.GetNFTCollectionByAddressChain"
                 }
             }
         },
