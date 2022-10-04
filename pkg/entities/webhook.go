@@ -135,6 +135,16 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 }
 
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+	// allow 2 gm emoji in Mochi and Pod Town
+	// allow sticker emoji in Pod Town
+	isGmEmoji := strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
+	isGmSticker := false
+	for _, sticker := range message.StickerItems {
+		if sticker.ID == "928509218171006986" {
+			isGmSticker = true
+			break
+		}
+	}
 	var (
 		discordID      = message.Author.ID
 		authorAvatar   = message.Author.Avatar
@@ -142,7 +152,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 		guildID        = message.GuildID
 		sentAt         = message.Timestamp
 		channelID      = message.ChannelID
-		isGmMessage    = strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content)
+		isGmMessage    = strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
 	)
 
 	switch {
