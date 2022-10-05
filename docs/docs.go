@@ -7634,6 +7634,18 @@ const docTemplate = `{
                 "item_url": {
                     "type": "string"
                 },
+                "listing_price": {
+                    "type": "string"
+                },
+                "listing_status": {
+                    "type": "string"
+                },
+                "payment_token": {
+                    "type": "string"
+                },
+                "payment_token_decimals": {
+                    "type": "string"
+                },
                 "platform_id": {
                     "type": "integer"
                 },
