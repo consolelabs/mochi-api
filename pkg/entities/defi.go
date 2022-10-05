@@ -371,12 +371,7 @@ func (e *Entity) GetSupportedTokens() (tokens []model.Token, err error) {
 	return
 }
 
-func (e *Entity) GetCoinData(c *gin.Context) (*response.GetCoinResponse, error, int) {
-	coinID := c.Param("id")
-	if coinID == "" {
-		return nil, fmt.Errorf("id is required"), http.StatusBadRequest
-	}
-
+func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, int) {
 	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
 	if err != nil {
 		return nil, err, statusCode
