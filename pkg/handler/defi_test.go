@@ -10,10 +10,13 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
+	"github.com/defipod/mochi/pkg/util"
 	"github.com/defipod/mochi/pkg/util/testhelper"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -143,6 +146,240 @@ func TestHandler_GetCoin(t *testing.T) {
 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
 			require.NoError(t, err)
 			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetNFTDetail] response mismatched")
+		})
+	}
+}
+
+func TestHandler_GetUserWatchlist(t *testing.T) {
+	cfg := config.LoadTestConfig()
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	log := logger.NewLogrusLogger()
+	s := pg.NewPostgresStore(&cfg)
+	svc, _ := service.NewService(cfg, log)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	coingeckoMock := mock_coingecko.NewMockService(ctrl)
+	svc.CoinGecko = coingeckoMock
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+
+	h := &Handler{
+		entities: entityMock,
+		log:      log,
+	}
+
+	coingeckoDefaultTickers := testhelper.WatchlistCoingeckoDefaultTickers()
+	tests := []struct {
+		name                            string
+		userId                          string
+		defaultTickers                  []string
+		coinGeckoDefaultTickersResponse []response.CoinMarketItemData
+		wantError                       error
+		wantCode                        int
+		wantResponsePath                string
+	}{
+		{
+			name:                            "success - default tickers only",
+			userId:                          "319132138849173123",
+			coinGeckoDefaultTickersResponse: coingeckoDefaultTickers,
+			defaultTickers: []string{
+				"bitcoin", "ethereum", "binancecoin", "fantom", "internet-computer", "solana", "avalanche-2", "matic-network",
+			},
+			wantCode:         200,
+			wantResponsePath: "testdata/user_watchlist/get-200-ok-default.json",
+		},
+		{
+			name:   "success - custom tickers",
+			userId: "319132138849173505",
+			coinGeckoDefaultTickersResponse: []response.CoinMarketItemData{
+				{
+					ID:           "dogecoin",
+					Name:         "Dogecoin",
+					Symbol:       "doge",
+					CurrentPrice: 0.060343,
+					Image:        "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
+					SparkLineIn7d: struct {
+						Price []float64 "json:\"price\""
+					}{
+						[]float64{
+							0.06083622964800758, 0.06103991568695497, 0.061043175854199744,
+						},
+					},
+					PriceChangePercentage24h:          0.53837,
+					PriceChangePercentage7dInCurrency: -1.6547840760734636,
+					IsPair:                            false,
+				},
+			},
+			defaultTickers: []string{
+				"dogecoin",
+			},
+			wantCode:         200,
+			wantResponsePath: "testdata/user_watchlist/get-200-ok-custom.json",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/watchlist?user_id=%s", tt.userId), nil)
+			coingeckoMock.EXPECT().GetCoinsMarketData(tt.defaultTickers).Return(tt.coinGeckoDefaultTickersResponse, nil, 200).AnyTimes()
+
+			h.GetUserWatchlist(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetUserWatchlist] response mismatched")
+		})
+	}
+}
+
+func TestHandler_AddToWatchlist(t *testing.T) {
+	cfg := config.LoadTestConfig()
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	log := logger.NewLogrusLogger()
+	s := pg.NewPostgresStore(&cfg)
+	svc, _ := service.NewService(cfg, log)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	coingeckoMock := mock_coingecko.NewMockService(ctrl)
+	svc.CoinGecko = coingeckoMock
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	h := &Handler{
+		entities: entityMock,
+		log:      log,
+	}
+	tests := []struct {
+		name                     string
+		req                      request.AddToWatchlistRequest
+		coingeckoSupportedTokens []model.CoingeckoSupportedTokens
+		wantError                error
+		wantCode                 int
+		wantResponsePath         string
+	}{
+		// TODO: Add test cases.
+		{
+			name: "success - found suggestions",
+			req: request.AddToWatchlistRequest{
+				UserID: "319132138849173505",
+				Symbol: "doge",
+			},
+			coingeckoSupportedTokens: []model.CoingeckoSupportedTokens{
+				{
+					ID:     "binance-peg-dogecoin",
+					Symbol: "doge",
+					Name:   "Binance-Peg Dogecoin",
+				},
+				{
+					ID:     "dogecoin",
+					Symbol: "doge",
+					Name:   "Dogecoin",
+				},
+			},
+			wantCode:         200,
+			wantResponsePath: "testdata/user_watchlist/post-200-ok-suggest.json",
+		},
+		{
+			name: "success - found single",
+			req: request.AddToWatchlistRequest{
+				UserID: "319132138849173505",
+				Symbol: "cake",
+			},
+			coingeckoSupportedTokens: []model.CoingeckoSupportedTokens{
+				{
+					ID:     "pancakeswap-token",
+					Symbol: "cake",
+					Name:   "PancakeSwap",
+				},
+			},
+			wantCode:         200,
+			wantResponsePath: "testdata/200-data-null.json",
+		},
+		{
+			name: "failed - token not found",
+			req: request.AddToWatchlistRequest{
+				UserID: "319132138849173505",
+				Symbol: "xyzabc",
+			},
+			coingeckoSupportedTokens: []model.CoingeckoSupportedTokens{},
+			wantCode:                 404,
+			wantResponsePath:         "testdata/user_watchlist/404-not-found.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest("POST", "/api/v1/defi/watchlist", nil)
+			util.SetRequestBody(ctx, tt.req)
+
+			h.AddToWatchlist(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.AddToWatchlist] response mismatched")
+		})
+	}
+}
+
+func TestHandler_RemoveFromWatchlist(t *testing.T) {
+	cfg := config.LoadTestConfig()
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	log := logger.NewLogrusLogger()
+	s := pg.NewPostgresStore(&cfg)
+	svc, _ := service.NewService(cfg, log)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	coingeckoMock := mock_coingecko.NewMockService(ctrl)
+	svc.CoinGecko = coingeckoMock
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	h := &Handler{
+		entities: entityMock,
+		log:      log,
+	}
+	tests := []struct {
+		name             string
+		req              *request.RemoveFromWatchlistRequest
+		wantError        error
+		wantCode         int
+		wantResponsePath string
+	}{
+		// TODO: Add test cases.
+		{
+			name: "success - found and delete",
+			req: &request.RemoveFromWatchlistRequest{
+				UserID: "319132138849173555",
+				Symbol: "doge",
+			},
+			wantCode:         200,
+			wantResponsePath: "testdata/200-data-null.json",
+		},
+		{
+			name: "failed - not found",
+			req: &request.RemoveFromWatchlistRequest{
+				UserID: "319132138849173555",
+				Symbol: "dogeee",
+			},
+			wantCode:         404,
+			wantResponsePath: "testdata/user_watchlist/404-not-found.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest("DELETE", fmt.Sprintf("/api/v1/defi/watchlist?user_id=%s&symbol=%s", tt.req.UserID, tt.req.Symbol), nil)
+
+			h.RemoveFromWatchlist(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.RemoveFromWatchlist] response mismatched")
 		})
 	}
 }
