@@ -87,6 +87,8 @@ gen-mock:
 	@mockgen -source=./pkg/repo/guild_config_wallet_verification_message/store.go -destination=./pkg/repo/guild_config_wallet_verification_message/mocks/store.go
 	@mockgen -source=./pkg/repo/coingecko_supported_tokens/store.go -destination=./pkg/repo/coingecko_supported_tokens/mocks/store.go
 	@mockgen -source=./pkg/repo/user_watchlist_item/store.go -destination=./pkg/repo/user_watchlist_item/mocks/store.go
+	@mockgen -source=./pkg/repo/guild_config_gm_gn/store.go -destination=./pkg/repo/guild_config_gm_gn/mocks/store.go
+	@mockgen -source=./pkg/repo/discord_user_gm_streak/store.go -destination=./pkg/repo/discord_user_gm_streak/mocks/store.go
 
 
 setup-githook:
