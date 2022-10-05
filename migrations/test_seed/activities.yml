@@ -1,0 +1,4 @@
+- id: 1
+  name: "chat"
+  xp: 7
+  guild_default: true

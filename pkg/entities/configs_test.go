@@ -12,8 +12,10 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
+	mock_guild_config_gm_gn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn/mocks"
 	mock_guild_config_level_role "github.com/defipod/mochi/pkg/repo/guild_config_level_role/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -391,6 +393,174 @@ func TestEntity_GetUserRoleByLevel(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetUserRoleByLevel() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetGmConfig(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	guildConfigGmGn := mock_guild_config_gm_gn.NewMockStore(ctrl)
+
+	r.GuildConfigGmGn = guildConfigGmGn
+
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *model.GuildConfigGmGn
+		wantErr bool
+	}{
+		{
+			name: "Guild has config GM channel",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "552427722551459840",
+			},
+			want:    &model.GuildConfigGmGn{GuildID: "552427722551459840", ChannelID: "701029345795375114"},
+			wantErr: false,
+		},
+		{
+			name: "Guild does not have config GM channel",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "not_have_config_gm_channel",
+			},
+			want:    nil,
+			wantErr: false,
+		},
+	}
+
+	guildConfigGmGn.EXPECT().GetByGuildID("not_have_config_gm_channel").Return(nil, nil).AnyTimes()
+
+	configGmGn := model.GuildConfigGmGn{
+		GuildID:   "552427722551459840",
+		ChannelID: "701029345795375114",
+	}
+	guildConfigGmGn.EXPECT().GetByGuildID("552427722551459840").Return(&configGmGn, nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetGmConfig(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetGmConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetGmConfig() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_UpsertGmConfig(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	guildConfigGmGn := mock_guild_config_gm_gn.NewMockStore(ctrl)
+
+	r.GuildConfigGmGn = guildConfigGmGn
+
+	type args struct {
+		req request.UpsertGmConfigRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Upsert config gm successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				req: request.UpsertGmConfigRequest{
+					GuildID:   "552427722551459840",
+					ChannelID: "701029345795375114",
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	guildConfigGmGn.EXPECT().UpsertOne(&model.GuildConfigGmGn{
+		GuildID:   "552427722551459840",
+		ChannelID: "701029345795375114",
+	}).Return(nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			if err := e.UpsertGmConfig(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.UpsertGmConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

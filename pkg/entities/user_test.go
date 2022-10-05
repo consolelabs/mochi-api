@@ -14,13 +14,17 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	mock_config_xp_level "github.com/defipod/mochi/pkg/repo/config_xp_level/mocks"
 	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
+	mock_discord_user_gm_streak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak/mocks"
 	mock_guild_user_activity_log "github.com/defipod/mochi/pkg/repo/guild_user_activity_log/mocks"
 	mock_guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/abi"
 	mock_discord "github.com/defipod/mochi/pkg/service/discord/mocks"
+	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/marketplace"
 	mock_processor "github.com/defipod/mochi/pkg/service/processor/mocks"
 	"github.com/golang/mock/gomock"
 )
@@ -467,6 +471,108 @@ func TestEntity_GetTopUsers(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetTopUsers() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_GetUserCurrentGMStreak(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	discordUserGmStreak := mock_discord_user_gm_streak.NewMockStore(ctrl)
+
+	r.DiscordUserGMStreak = discordUserGmStreak
+
+	type args struct {
+		discordID string
+		guildID   string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *model.DiscordUserGMStreak
+		want1   int
+		wantErr bool
+	}{
+		{
+			name: "User has Gm streak",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID:   "552427722551459840",
+				discordID: "393034938028392449",
+			},
+			want:    &model.DiscordUserGMStreak{GuildID: "552427722551459840", DiscordID: "393034938028392449", StreakCount: 1, TotalCount: 1},
+			want1:   200,
+			wantErr: false,
+		},
+		{
+			name: "User does not have Gm streak",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID:   "552427722551459840",
+				discordID: "not_have_gm_streak",
+			},
+			want:    &model.DiscordUserGMStreak{},
+			want1:   200,
+			wantErr: false,
+		},
+	}
+
+	discordUserGmStreak.EXPECT().GetByDiscordIDGuildID("393034938028392449", "552427722551459840").Return(&model.DiscordUserGMStreak{
+		GuildID:     "552427722551459840",
+		DiscordID:   "393034938028392449",
+		StreakCount: 1,
+		TotalCount:  1,
+	}, nil).AnyTimes()
+	discordUserGmStreak.EXPECT().GetByDiscordIDGuildID("not_have_gm_streak", "552427722551459840").Return(&model.DiscordUserGMStreak{}, nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, got1, err := e.GetUserCurrentGMStreak(tt.args.discordID, tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetUserCurrentGMStreak() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetUserCurrentGMStreak() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Entity.GetUserCurrentGMStreak() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
