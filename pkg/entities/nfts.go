@@ -122,6 +122,8 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 	if len(data.Data.Marketplace) > 0 {
 		for _, marketplace := range data.Data.Marketplace {
 			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			decimals, _ := strconv.Atoi(marketplace.PaymentTokenDecimals)
+			marketplace.ListingPrice = fmt.Sprintf("%.2f", util.StringWeiToEther(marketplace.ListingPrice, decimals))
 			finalData = append(finalData, marketplace)
 		}
 		data.Data.Marketplace = finalData
@@ -305,6 +307,8 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 	if len(data.Data.Marketplace) > 0 {
 		for _, marketplace := range data.Data.Marketplace {
 			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			decimals, _ := strconv.Atoi(marketplace.PaymentTokenDecimals)
+			marketplace.ListingPrice = fmt.Sprintf("%.2f", util.StringWeiToEther(marketplace.ListingPrice, decimals))
 			finalData = append(finalData, marketplace)
 		}
 		data.Data.Marketplace = finalData
