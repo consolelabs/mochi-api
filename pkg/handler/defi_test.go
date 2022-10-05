@@ -383,3 +383,60 @@ func TestHandler_RemoveFromWatchlist(t *testing.T) {
 		})
 	}
 }
+
+func TestHandler_SearchCoins(t *testing.T) {
+	cfg := config.LoadTestConfig()
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	log := logger.NewLogrusLogger()
+	s := pg.NewPostgresStore(&cfg)
+	svc, _ := service.NewService(cfg, log)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	coingeckoMock := mock_coingecko.NewMockService(ctrl)
+	svc.CoinGecko = coingeckoMock
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	h := &Handler{
+		entities: entityMock,
+		log:      log,
+	}
+	tests := []struct {
+		name             string
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name:             "success - get one coin",
+			query:            "cake",
+			wantCode:         200,
+			wantResponsePath: "testdata/search_coin/200-ok-single.json",
+		},
+		{
+			name:             "success - get multiple coins",
+			query:            "doge",
+			wantCode:         200,
+			wantResponsePath: "testdata/search_coin/200-ok-multiple.json",
+		},
+		{
+			name:             "success - not  found",
+			query:            "cakeabc",
+			wantCode:         200,
+			wantResponsePath: "testdata/search_coin/200-empty.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/coins?query=%s", tt.query), nil)
+
+			h.SearchCoins(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.RemoveFromWatchlist] response mismatched")
+		})
+	}
+}

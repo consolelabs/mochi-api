@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -151,7 +152,14 @@ func (h *Handler) GetSupportedTokens(c *gin.Context) {
 // @Success     200 {object} response.GetCoinResponseWrapper
 // @Router      /defi/coins/{id} [get]
 func (h *Handler) GetCoin(c *gin.Context) {
-	data, err, statusCode := h.entities.GetCoinData(c)
+	coinID := c.Param("id")
+	if coinID == "" {
+		h.log.Info("[handler.GetCoin] - coin id missing")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
+		return
+	}
+
+	data, err, statusCode := h.entities.GetCoinData(coinID)
 	if err != nil {
 		h.log.Error(err, "[handler.GetCoin] - failed to get coin data")
 		c.JSON(statusCode, gin.H{"error": err.Error()})
