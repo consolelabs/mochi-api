@@ -320,7 +320,7 @@ func (h *Handler) GetUserWatchlist(c *gin.Context) {
 // @Router      /defi/watchlist [post]
 func (h *Handler) AddToWatchlist(c *gin.Context) {
 	var req request.AddToWatchlistRequest
-	if err := c.Bind(&req); err != nil {
+	if err := c.BindJSON(&req); err != nil {
 		h.log.Error(err, "[handler.AddToWatchlist] Bind() failed")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

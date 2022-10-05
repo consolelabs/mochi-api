@@ -7,3 +7,9 @@
 - id: bitcoin
   symbol: btc
   name: Bitcoin
+- id: binance-peg-dogecoin
+  symbol: doge
+  name: Binance-Peg Dogecoin
+- id: dogecoin
+  symbol: doge
+  name: Dogecoin
