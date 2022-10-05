@@ -118,6 +118,9 @@ type NftListingMarketplace struct {
 	TokenId         string `json:"token_id"`
 	PlatformId      uint64 `json:"platform_id"`
 	PlatformName    string `json:"platform_name"`
+	ListingStatus   string `json:"listing_status"`
+	ListingPrice    string `json:"listing_price"`
+	PaymentToken    string `json:"payment_token"`
 	ItemUrl         string `json:"item_url"`
 }
 
