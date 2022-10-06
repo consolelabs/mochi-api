@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	_ "github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
 )
@@ -51,7 +53,7 @@ func (h *Handler) LinkUserTelegramWithDiscord(c *gin.Context) {
 	var req request.LinkUserTelegramWithDiscordRequest
 	if err := c.Bind(&req); err != nil {
 		h.log.Error(err, "[handler.LinkUserTelegramWithDiscord] Bind() failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("discord_id and telegramusernam are required"), nil))
 		return
 	}
 	res, err := h.entities.LinkUserTelegramWithDiscord(req)
