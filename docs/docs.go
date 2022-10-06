@@ -6538,6 +6538,12 @@ const docTemplate = `{
                 "is_verified": {
                     "type": "boolean"
                 },
+                "marketplace": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
