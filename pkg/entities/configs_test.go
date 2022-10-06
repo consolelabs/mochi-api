@@ -14,8 +14,10 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	mock_guild_config_gm_gn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn/mocks"
 	mock_guild_config_level_role "github.com/defipod/mochi/pkg/repo/guild_config_level_role/mocks"
+	mock_guild_config_repost_reaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction/mocks"
 	mock_guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel/mocks"
 	mock_guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel/mocks"
+	mock_message_repost_history "github.com/defipod/mochi/pkg/repo/message_repost_history/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
@@ -1084,6 +1086,364 @@ func TestEntity_DeleteVoteChannelConfig(t *testing.T) {
 
 			if err := e.DeleteVoteChannelConfig(tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("Entity.DeleteVoteChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_GetGuildRepostReactionConfigs(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	cfgRepost := mock_guild_config_repost_reaction.NewMockStore(ctrl)
+	r.GuildConfigRepostReaction = cfgRepost
+
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []model.GuildConfigRepostReaction
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Get guild repost reaction config successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "552427722551459840",
+			},
+			want: []model.GuildConfigRepostReaction{
+				{
+					GuildID:         "552427722551459840",
+					Emoji:           "test",
+					Quantity:        1,
+					RepostChannelID: "test",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Get guild repost reaction not have config",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "not_exist",
+			},
+			want: []model.GuildConfigRepostReaction{
+				{
+					GuildID: "not_exist",
+				},
+			},
+			wantErr: false,
+		},
+	}
+
+	cfgRepost.EXPECT().GetByGuildID("552427722551459840").Return([]model.GuildConfigRepostReaction{{
+		GuildID:         "552427722551459840",
+		Emoji:           "test",
+		Quantity:        1,
+		RepostChannelID: "test",
+	},
+	}, nil).AnyTimes()
+
+	cfgRepost.EXPECT().GetByGuildID("not_exist").Return([]model.GuildConfigRepostReaction{{
+		GuildID: "not_exist",
+	},
+	}, nil).AnyTimes()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			got, err := e.GetGuildRepostReactionConfigs(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetGuildRepostReactionConfigs() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetGuildRepostReactionConfigs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_ConfigRepostReaction(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	cfgRepost := mock_guild_config_repost_reaction.NewMockStore(ctrl)
+	r.GuildConfigRepostReaction = cfgRepost
+
+	type args struct {
+		req request.ConfigRepostRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Upsert repost reaction successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				req: request.ConfigRepostRequest{
+					GuildID:         "552427722551459840",
+					Emoji:           "test",
+					Quantity:        1,
+					RepostChannelID: "test",
+				},
+			},
+		},
+	}
+
+	cfgRepost.EXPECT().UpsertOne(model.GuildConfigRepostReaction{
+		GuildID:         "552427722551459840",
+		Emoji:           "test",
+		Quantity:        1,
+		RepostChannelID: "test"}).Return(nil).AnyTimes()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			if err := e.ConfigRepostReaction(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.ConfigRepostReaction() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_RemoveGuildRepostReactionConfig(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	cfgRepost := mock_guild_config_repost_reaction.NewMockStore(ctrl)
+	r.GuildConfigRepostReaction = cfgRepost
+
+	type args struct {
+		guildID string
+		emoji   string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Remove repost reaction successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				guildID: "552427722551459840",
+				emoji:   "test",
+			},
+			wantErr: false,
+		},
+	}
+	cfgRepost.EXPECT().DeleteOne("552427722551459840", "test").Return(nil).AnyTimes()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			if err := e.RemoveGuildRepostReactionConfig(tt.args.guildID, tt.args.emoji); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.RemoveGuildRepostReactionConfig() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_EditMessageRepost(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	cfg := config.LoadTestConfig()
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	log := logger.NewLogrusLogger()
+	msgRepostHistory := mock_message_repost_history.NewMockStore(ctrl)
+	r.MessageRepostHistory = msgRepostHistory
+
+	type args struct {
+		req *request.EditMessageRepostRequest
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+		{
+			name: "Edit message repost successfully",
+			fields: fields{
+				repo: r,
+			},
+			args: args{
+				req: &request.EditMessageRepostRequest{
+					GuildID:         "552427722551459840",
+					OriginMessageID: "origin_msg",
+					RepostMessageID: "repost_msg",
+					OriginChannelID: "origin_channel",
+					RepostChannelID: "repost_channel",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Edit message repost failed",
+			fields: fields{
+				repo: r,
+				log:  log,
+			},
+			args: args{
+				req: &request.EditMessageRepostRequest{
+					GuildID:         "fail_guild_id",
+					OriginMessageID: "origin_msg",
+					RepostMessageID: "repost_msg",
+					OriginChannelID: "origin_channel",
+					RepostChannelID: "repost_channel",
+				},
+			},
+			wantErr: true,
+		},
+	}
+	msgRepostHistory.EXPECT().EditMessageRepost(&request.EditMessageRepostRequest{
+		GuildID:         "552427722551459840",
+		OriginMessageID: "origin_msg",
+		RepostMessageID: "repost_msg",
+		OriginChannelID: "origin_channel",
+		RepostChannelID: "repost_channel",
+	}).Return(nil).AnyTimes()
+	msgRepostHistory.EXPECT().EditMessageRepost(&request.EditMessageRepostRequest{
+		GuildID:         "fail_guild_id",
+		OriginMessageID: "origin_msg",
+		RepostMessageID: "repost_msg",
+		OriginChannelID: "origin_channel",
+		RepostChannelID: "repost_channel",
+	}).Return(errors.New("edit repost msg failed")).AnyTimes()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+			}
+			if err := e.EditMessageRepost(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.EditMessageRepost() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

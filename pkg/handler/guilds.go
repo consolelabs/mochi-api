@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	_ "github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -43,11 +44,17 @@ func (h *Handler) GetGuilds(c *gin.Context) {
 func (h *Handler) GetGuild(c *gin.Context) {
 	guildID := c.Param("guild_id")
 
+	if guildID == "" {
+		h.log.Info("[handler.GetGuild] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
 	guild, err := h.entities.GetGuild(guildID)
 	if err != nil {
 		if err == entities.ErrRecordNotFound {
 			h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuild] - guild not exist")
-			c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+			c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
 			return
 		}
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuild] - failed to get guild")
@@ -185,6 +192,11 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 	}
 
 	if err := h.entities.UpdateGuild(guildID, req); err != nil {
+		if err == baseerrs.ErrRecordNotFound {
+			h.log.Fields(logger.Fields{"guildID": guildID, "req": req}).Info("[handler.UpdateGuild] - guild not exist")
+			c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
+			return
+		}
 		h.log.Fields(logger.Fields{"guildID": guildID, "req": req}).Error(err, "[handler.UpdateGuild] - failed to update guild")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
