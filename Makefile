@@ -96,6 +96,8 @@ gen-mock:
 	@mockgen -source=./pkg/repo/user_telegram_discord_association/store.go -destination=./pkg/repo/user_telegram_discord_association/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_vote_channel/store.go -destination=./pkg/repo/guild_config_vote_channel/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_welcome_channel/store.go -destination=./pkg/repo/guild_config_welcome_channel/mocks/store.go
+	@mockgen -source=./pkg/repo/guild_config_repost_reaction/store.go -destination=./pkg/repo/guild_config_repost_reaction/mocks/store.go
+	@mockgen -source=./pkg/repo/message_repost_history/store.go -destination=./pkg/repo/message_repost_history/mocks/store.go
 
 
 setup-githook:
