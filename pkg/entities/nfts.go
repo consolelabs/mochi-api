@@ -122,6 +122,8 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.Indexe
 	if len(data.Data.Marketplace) > 0 {
 		for _, marketplace := range data.Data.Marketplace {
 			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			decimals, _ := strconv.Atoi(marketplace.PaymentTokenDecimals)
+			marketplace.ListingPrice = fmt.Sprintf("%.2f", util.StringWeiToEther(marketplace.ListingPrice, decimals))
 			finalData = append(finalData, marketplace)
 		}
 		data.Data.Marketplace = finalData
@@ -305,6 +307,8 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 	if len(data.Data.Marketplace) > 0 {
 		for _, marketplace := range data.Data.Marketplace {
 			marketplace.ItemUrl = util.GetTokenMarketplaceUrl(collection.Address, collection.Symbol, tokenID, marketplace.PlatformName)
+			decimals, _ := strconv.Atoi(marketplace.PaymentTokenDecimals)
+			marketplace.ListingPrice = fmt.Sprintf("%.2f", util.StringWeiToEther(marketplace.ListingPrice, decimals))
 			finalData = append(finalData, marketplace)
 		}
 		data.Data.Marketplace = finalData
@@ -901,21 +905,29 @@ func (e *Entity) GetNFTCollectionByAddressChain(address, chainId string) (*respo
 		return nil, err
 	}
 
+	marketplaces := []string{}
+	if len(collectionMetadata.Data.Marketplace) > 0 {
+		for _, itm := range collectionMetadata.Data.Marketplace {
+			marketplaces = append(marketplaces, itm.PlatformName)
+		}
+	}
+
 	return &response.GetNFTCollectionByAddressChain{
-		ID:          collection.ID,
-		Address:     collection.Address,
-		Name:        collection.Name,
-		Symbol:      collection.Symbol,
-		ChainID:     collection.ChainID,
-		ERCFormat:   collection.ERCFormat,
-		IsVerified:  collection.IsVerified,
-		CreatedAt:   collection.CreatedAt,
-		Image:       util.StandardizeUri(collection.Image),
-		Author:      collection.Author,
-		Description: collectionMetadata.Data.Description,
-		Discord:     collectionMetadata.Data.Discord,
-		Twitter:     collectionMetadata.Data.Twitter,
-		Website:     collectionMetadata.Data.Website,
+		ID:           collection.ID,
+		Address:      collection.Address,
+		Name:         collection.Name,
+		Symbol:       collection.Symbol,
+		ChainID:      collection.ChainID,
+		ERCFormat:    collection.ERCFormat,
+		IsVerified:   collection.IsVerified,
+		CreatedAt:    collection.CreatedAt,
+		Image:        util.StandardizeUri(collection.Image),
+		Author:       collection.Author,
+		Description:  collectionMetadata.Data.Description,
+		Discord:      collectionMetadata.Data.Discord,
+		Twitter:      collectionMetadata.Data.Twitter,
+		Website:      collectionMetadata.Data.Website,
+		Marketplaces: marketplaces,
 	}, nil
 }
 

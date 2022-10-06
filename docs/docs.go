@@ -6538,6 +6538,12 @@ const docTemplate = `{
                 "is_verified": {
                     "type": "boolean"
                 },
+                "marketplace": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -7632,6 +7638,18 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "item_url": {
+                    "type": "string"
+                },
+                "listing_price": {
+                    "type": "string"
+                },
+                "listing_status": {
+                    "type": "string"
+                },
+                "payment_token": {
+                    "type": "string"
+                },
+                "payment_token_decimals": {
                     "type": "string"
                 },
                 "platform_id": {

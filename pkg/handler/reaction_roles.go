@@ -20,8 +20,8 @@ import (
 // @Success     200 {object} response.DataListRoleReactionResponse
 // @Router      /configs/reaction-roles [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
-	guildID, guildIDExist := c.GetQuery("guild_id")
-	if !guildIDExist {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
 		h.log.Info("[handler.GetAllRoleReactionConfigs] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
@@ -97,7 +97,7 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{Success: true}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // FilterConfigByReaction     godoc
