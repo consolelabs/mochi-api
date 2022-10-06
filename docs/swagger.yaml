@@ -1457,6 +1457,10 @@ definitions:
         type: string
       is_verified:
         type: boolean
+      marketplace:
+        items:
+          type: string
+        type: array
       name:
         type: string
       symbol:
