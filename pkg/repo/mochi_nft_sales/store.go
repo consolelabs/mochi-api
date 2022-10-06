@@ -8,5 +8,6 @@ import (
 type Store interface {
 	CreateOne(*request.TwitterSalesMessage) error
 	GetAllUnnotified() ([]model.TwitterSalesMessage, error)
-	DeleteOne(*model.TwitterSalesMessage) error
+	GetUnnotified(offset int, limit int) ([]model.TwitterSalesMessage, int64, error)
+	DeleteOne(model.TwitterSalesMessage) error
 }

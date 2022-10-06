@@ -2,11 +2,11 @@ package twitter
 
 import (
 	"fmt"
-  "math"
-  "strconv"
 	"io/ioutil"
+	"math"
 	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/defipod/mochi/pkg/config"
@@ -46,23 +46,23 @@ func (t *twitter) preprocessTwitterImage(image string) ([]byte, string, error) {
 
 	return data, resizedImageFile, nil
 }
-func (t *twitter) SendSalesMessageToTwitter(message *model.TwitterSalesMessage, twitter *model.GuildConfigTwitterFeed) error {
+func (t *twitter) SendSalesMessageToTwitter(message model.TwitterSalesMessage, twitter model.GuildConfigTwitterFeed) error {
 	twitterApi := anaconda.NewTwitterApiWithCredentials(twitter.TwitterAccessToken, twitter.TwitterAccessTokenSecret, twitter.TwitterConsumerKey, twitter.TwitterConsumerSecret)
 	v := url.Values{}
 
 	// Twitter post UI
-  var pnl string
-  var subPnl string
-  if i, err := strconv.ParseFloat(message.Pnl, 64); err == nil {
-    if i > 0 {
-      pnl = fmt.Sprintf("Profit: $%g", math.Abs(i))
-      subPnl = fmt.Sprintf("(📈 %s%%)", message.SubPnl)
-    } else {
-      pnl = fmt.Sprintf("Loss: $%g", math.Abs(i))
-      subPnl = fmt.Sprintf("(📉 %s%%)", message.SubPnl)
-    }
-  }
-  tweetStatus := fmt.Sprintf("🛒%s\n🧾Collection: %s\n🖼Token: #%s\n\n💰Sold: %s\n🤝HODL: %s days\n\n💵%s %s\nTx: %s\nhttps://rarepepe.gg/asset/%s/%s?twitter",
+	var pnl string
+	var subPnl string
+	if i, err := strconv.ParseFloat(message.Pnl, 64); err == nil {
+		if i > 0 {
+			pnl = fmt.Sprintf("Profit: $%g", math.Abs(i))
+			subPnl = fmt.Sprintf("(📈 %s%%)", message.SubPnl)
+		} else {
+			pnl = fmt.Sprintf("Loss: $%g", math.Abs(i))
+			subPnl = fmt.Sprintf("(📉 %s%%)", message.SubPnl)
+		}
+	}
+	tweetStatus := fmt.Sprintf("🛒%s\n🧾Collection: %s\n🖼Token: #%s\n\n💰Sold: %s\n🤝HODL: %s days\n\n💵%s %s\nTx: %s\nhttps://rarepepe.gg/asset/%s/%s?twitter",
 		message.Marketplace, message.CollectionName, message.TokenID, message.Price, message.Hodl, pnl, subPnl, message.TxURL, message.CollectionAddress, message.TokenID)
 	_, err := twitterApi.PostTweet(tweetStatus, v)
 	if err != nil {

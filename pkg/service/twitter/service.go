@@ -5,5 +5,5 @@ import (
 )
 
 type Service interface {
-	SendSalesMessageToTwitter(message *model.TwitterSalesMessage, twitter *model.GuildConfigTwitterFeed) error
+	SendSalesMessageToTwitter(message model.TwitterSalesMessage, twitter model.GuildConfigTwitterFeed) error
 }

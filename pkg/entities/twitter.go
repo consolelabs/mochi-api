@@ -5,16 +5,16 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 )
 
-func (e *Entity) GetUnnotifiedSalesMessage() ([]model.TwitterSalesMessage, error) {
-	messages, err := e.repo.MochiNFTSales.GetAllUnnotified()
+func (e *Entity) GetUnnotifiedSalesMessage(offset int, limit int) ([]model.TwitterSalesMessage, int64, error) {
+	messages, total, err := e.repo.MochiNFTSales.GetUnnotified(offset, limit)
 	if err != nil {
 		e.log.Errorf(err, "[e.HandleMochiSalesMessage] failed to get mochi nft sales: %s", err)
-		return nil, err
+		return nil, total, err
 	}
-	return messages, nil
+	return messages, total, nil
 }
 
-func (e *Entity) DeleteSalesMessages(message *model.TwitterSalesMessage) error {
+func (e *Entity) DeleteSalesMessages(message model.TwitterSalesMessage) error {
 	err := e.repo.MochiNFTSales.DeleteOne(message)
 	if err != nil {
 		e.log.Errorf(err, "[e.HandleMochiSalesMessage] failed to update mochi nft sales: %s", err)
