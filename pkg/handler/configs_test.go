@@ -1,5 +1,24 @@
 package handler
 
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/util/testhelper"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
+)
+
 // import (
 // 	"fmt"
 // 	"io/ioutil"
@@ -667,3 +686,367 @@ package handler
 // 		})
 // 	}
 // }
+
+func TestHandler_GetWelcomeChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name:             "guild_is_configured",
+			query:            "guild_id=895659000996200508",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_welcome_channels/200-get-ok.json",
+		},
+		{
+			name:             "guild_id_is_empty",
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+		{
+			name:             "guild_is_not_configured",
+			query:            "guild_id=863278424433229854",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-data-null.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/welcome?%s", tt.query), nil)
+
+			h.GetWelcomeChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetWelcomeChannelConfig] response mismatched")
+		})
+	}
+}
+
+func TestHandler_UpsertWelcomeChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             request.UpsertWelcomeConfigRequest
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "update_new_msg",
+			args: request.UpsertWelcomeConfigRequest{
+				GuildID:    "895659000996200508",
+				ChannelID:  "1016919074221064256",
+				WelcomeMsg: "Welcome to the guild!",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_welcome_channels/200-upsert-new-msg.json",
+		},
+		{
+			name: "update_with_empty_msg",
+			args: request.UpsertWelcomeConfigRequest{
+				GuildID:   "895659000996200508",
+				ChannelID: "1016919074221064256",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_welcome_channels/200-upsert-new-msg.json",
+		},
+		{
+			name: "update_with_new_channel",
+			args: request.UpsertWelcomeConfigRequest{
+				GuildID:    "895659000996200508",
+				ChannelID:  "1016919074221064123",
+				WelcomeMsg: "Welcome to the guild!",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_welcome_channels/200-upsert-new-channel.json",
+		},
+		{
+			name: "no_channel_id_and_guild_id",
+			args: request.UpsertWelcomeConfigRequest{
+				WelcomeMsg: "Welcome to the guild!",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/configs/welcome", bytes.NewBuffer(body))
+
+			h.UpsertWelcomeChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.UpsertWelcomeChannelConfig] response mismatched")
+		})
+	}
+}
+
+func TestHandler_DeleteWelcomeChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             request.DeleteWelcomeConfigRequest
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "configuration_exist",
+			args: request.DeleteWelcomeConfigRequest{
+				GuildID: "895659000996200508",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+		{
+			name: "configuration_does_not_exist",
+			args: request.DeleteWelcomeConfigRequest{
+				GuildID: "863278424433229854",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+		{
+			name:             "empty_input",
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodDelete, "/api/v1/configs/welcome", bytes.NewBuffer(body))
+
+			h.DeleteWelcomeChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.DeleteWelcomeChannelConfig] response mismatched")
+		})
+	}
+}
+
+func TestHandler_GetVoteChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name:             "guild_is_configured",
+			query:            "guild_id=895659000996200508",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_vote_channels/200-get-ok.json",
+		},
+		{
+			name:             "guild_id_is_empty",
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+		{
+			name:             "guild_is_not_configured",
+			query:            "guild_id=863278424433229854",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-data-null.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/upvote?%s", tt.query), nil)
+
+			h.GetVoteChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetVoteChannelConfig] response mismatched")
+		})
+	}
+}
+
+func TestHandler_UpsertVoteChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             request.UpsertVoteChannelConfigRequest
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "update_new_channel",
+			args: request.UpsertVoteChannelConfigRequest{
+				GuildID:   "895659000996200508",
+				ChannelID: "1016919074221064123",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/guild_config_vote_channels/200-upsert-new-channel.json",
+		},
+		{
+			name:             "no_channel_id_and_guild_id",
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/configs/upvote", bytes.NewBuffer(body))
+
+			h.UpsertVoteChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.UpsertVoteChannelConfig] response mismatched")
+		})
+	}
+}
+
+func TestHandler_DeleteVoteChannelConfig(t *testing.T) {
+	db := testhelper.LoadTestDB("../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             request.DeleteWelcomeConfigRequest
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "configuration_exist",
+			args: request.DeleteWelcomeConfigRequest{
+				GuildID: "895659000996200508",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+		{
+			name: "configuration_does_not_exist",
+			args: request.DeleteWelcomeConfigRequest{
+				GuildID: "863278424433229854",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+		{
+			name:             "empty_input",
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodDelete, "/api/v1/configs/upvote", bytes.NewBuffer(body))
+
+			h.DeleteVoteChannelConfig(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.DeleteVoteChannelConfig] response mismatched")
+		})
+	}
+}
