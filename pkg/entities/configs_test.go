@@ -14,6 +14,8 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	mock_guild_config_gm_gn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn/mocks"
 	mock_guild_config_level_role "github.com/defipod/mochi/pkg/repo/guild_config_level_role/mocks"
+	mock_guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel/mocks"
+	mock_guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
@@ -21,6 +23,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -561,6 +564,526 @@ func TestEntity_UpsertGmConfig(t *testing.T) {
 			}
 			if err := e.UpsertGmConfig(tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("Entity.UpsertGmConfig() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_GetWelcomeChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcwcRepo := mock_guildconfigwelcomechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigWelcomeChannel: gcwcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	guildConfigWelcomeChannel := model.GuildConfigWelcomeChannel{
+		ID: uuid.NullUUID{
+			UUID:  uuid.New(),
+			Valid: true,
+		},
+		GuildID:        "895659000996200508",
+		ChannelID:      "1016919074221064256",
+		WelcomeMessage: "Welcome to the guild!",
+	}
+
+	type res struct {
+		data *model.GuildConfigWelcomeChannel
+		err  error
+	}
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		want    *model.GuildConfigWelcomeChannel
+		wantErr bool
+	}{
+		{
+			name: "guild_is_configured",
+			args: args{
+				guildID: "895659000996200508",
+			},
+			res: res{
+				data: &guildConfigWelcomeChannel,
+			},
+			want:    &guildConfigWelcomeChannel,
+			wantErr: false,
+		},
+		{
+			name: "guild_is_not_configured",
+			args: args{
+				guildID: "895659000996200123",
+			},
+			res: res{
+				data: nil,
+				err:  gorm.ErrRecordNotFound,
+			},
+			want:    nil,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gcwcRepo.EXPECT().GetByGuildID(tt.args.guildID).Return(tt.res.data, tt.res.err).Times(1)
+
+			got, err := e.GetWelcomeChannelConfig(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetWelcomeChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetWelcomeChannelConfig() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_UpsertWelcomeChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcwcRepo := mock_guildconfigwelcomechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigWelcomeChannel: gcwcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	guildConfigWelcomeChannel := model.GuildConfigWelcomeChannel{
+		ID: uuid.NullUUID{
+			UUID:  uuid.New(),
+			Valid: true,
+		},
+		GuildID:        "895659000996200508",
+		ChannelID:      "1016919074221064256",
+		WelcomeMessage: "Welcome to the guild!",
+	}
+	guildConfigWelcomeChannelForNewConfig := model.GuildConfigWelcomeChannel{
+		ID: uuid.NullUUID{
+			UUID:  uuid.New(),
+			Valid: true,
+		},
+		GuildID:        "895659000996200508",
+		ChannelID:      "1016919074221064256",
+		WelcomeMessage: "Greetings $name :wave: Welcome to the guild! Hope you enjoy your stay.",
+	}
+
+	type res struct {
+		data *model.GuildConfigWelcomeChannel
+		err  error
+	}
+	type args struct {
+		req request.UpsertWelcomeConfigRequest
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     []res
+		want    *model.GuildConfigWelcomeChannel
+		wantErr bool
+	}{
+		{
+			name: "update_new_msg",
+			args: args{
+				req: request.UpsertWelcomeConfigRequest{
+					GuildID:    "895659000996200508",
+					ChannelID:  "1016919074221064256",
+					WelcomeMsg: "Welcome to the guild!",
+				},
+			},
+			res: []res{
+				{
+					data: &guildConfigWelcomeChannel,
+				},
+				{},
+			},
+			want:    &guildConfigWelcomeChannel,
+			wantErr: false,
+		},
+		{
+			name: "update_with_empty_msg",
+			args: args{
+				req: request.UpsertWelcomeConfigRequest{
+					GuildID:   "895659000996200508",
+					ChannelID: "1016919074221064256",
+				},
+			},
+			res: []res{
+				{
+					data: &guildConfigWelcomeChannel,
+					err:  nil,
+				},
+				{
+					data: &guildConfigWelcomeChannel,
+					err:  nil,
+				},
+			},
+			want:    &guildConfigWelcomeChannel,
+			wantErr: false,
+		},
+		{
+			name: "create_new_config_with_empty_msg",
+			args: args{
+				req: request.UpsertWelcomeConfigRequest{
+					GuildID:   "895659000996200123",
+					ChannelID: "1016919074221064256",
+				},
+			},
+			res: []res{
+				{
+					data: &guildConfigWelcomeChannelForNewConfig,
+				},
+				{
+					err: gorm.ErrRecordNotFound,
+				},
+			},
+			want:    &guildConfigWelcomeChannelForNewConfig,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			upsertData := &model.GuildConfigWelcomeChannel{
+				GuildID:        tt.args.req.GuildID,
+				ChannelID:      tt.args.req.ChannelID,
+				WelcomeMessage: tt.args.req.WelcomeMsg,
+			}
+			if tt.args.req.WelcomeMsg == "" {
+				gcwcRepo.EXPECT().GetByGuildID(tt.args.req.GuildID).Return(tt.res[1].data, tt.res[1].err).Times(1)
+				upsertData.WelcomeMessage = "Greetings $name :wave: Welcome to the guild! Hope you enjoy your stay."
+				if tt.res[1].data != nil {
+					upsertData.WelcomeMessage = tt.res[1].data.WelcomeMessage
+				}
+			}
+			gcwcRepo.EXPECT().UpsertOne(upsertData).Return(tt.res[0].data, tt.res[0].err).Times(1)
+
+			got, err := e.UpsertWelcomeChannelConfig(tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.UpsertWelcomeChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.UpsertWelcomeChannelConfig() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_DeleteWelcomeChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcwcRepo := mock_guildconfigwelcomechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigWelcomeChannel: gcwcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	type res struct {
+		err error
+	}
+	type args struct {
+		req request.DeleteWelcomeConfigRequest
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		wantErr bool
+	}{
+		{
+			name: "guild_is_configured",
+			args: args{
+				req: request.DeleteWelcomeConfigRequest{
+					GuildID: "895659000996200508",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "guild_is_not_configured",
+			args: args{
+				req: request.DeleteWelcomeConfigRequest{
+					GuildID: "895659000996200123",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gcwcRepo.EXPECT().DeleteOne(&model.GuildConfigWelcomeChannel{
+				GuildID: tt.args.req.GuildID,
+			}).Return(tt.res.err).Times(1)
+
+			if err := e.DeleteWelcomeChannelConfig(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.DeleteWelcomeChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_GetVoteChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcvcRepo := mock_guildconfigvotechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigVoteChannel: gcvcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	guildConfigVoteChannel := model.GuildConfigVoteChannel{
+		ID: uuid.NullUUID{
+			UUID:  uuid.New(),
+			Valid: true,
+		},
+		GuildID:   "895659000996200508",
+		ChannelID: "1016919074221064256",
+	}
+
+	type res struct {
+		data *model.GuildConfigVoteChannel
+		err  error
+	}
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		want    *model.GuildConfigVoteChannel
+		wantErr bool
+	}{
+		{
+			name: "guild_is_configured",
+			args: args{
+				guildID: "895659000996200508",
+			},
+			res: res{
+				data: &guildConfigVoteChannel,
+			},
+			want:    &guildConfigVoteChannel,
+			wantErr: false,
+		},
+		{
+			name: "guild_is_not_configured",
+			args: args{
+				guildID: "895659000996200123",
+			},
+			res: res{
+				data: nil,
+				err:  gorm.ErrRecordNotFound,
+			},
+			want:    nil,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gcvcRepo.EXPECT().GetByGuildID(tt.args.guildID).Return(tt.res.data, tt.res.err).Times(1)
+
+			got, err := e.GetVoteChannelConfig(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetVoteChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetVoteChannelConfig() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_UpsertVoteChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcvcRepo := mock_guildconfigvotechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigVoteChannel: gcvcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	guildConfigVoteChannel := model.GuildConfigVoteChannel{
+		ID: uuid.NullUUID{
+			UUID:  uuid.New(),
+			Valid: true,
+		},
+		GuildID:   "895659000996200508",
+		ChannelID: "1016919074221064256",
+	}
+
+	type res struct {
+		data *model.GuildConfigVoteChannel
+		err  error
+	}
+	type args struct {
+		req request.UpsertVoteChannelConfigRequest
+	}
+	tests := []struct {
+		name    string
+		args    args
+		res     res
+		want    *model.GuildConfigVoteChannel
+		wantErr bool
+	}{
+		{
+			name: "guild_is_configured",
+			args: args{
+				req: request.UpsertVoteChannelConfigRequest{
+					GuildID:   "895659000996200508",
+					ChannelID: "1016919074221064256",
+				},
+			},
+			res: res{
+				data: &guildConfigVoteChannel,
+			},
+			want:    &guildConfigVoteChannel,
+			wantErr: false,
+		},
+		{
+			name: "guild_is_not_configured",
+			args: args{
+				req: request.UpsertVoteChannelConfigRequest{
+					GuildID:   "895659000996200123",
+					ChannelID: "1016919074221064256",
+				},
+			},
+			res: res{
+				data: &guildConfigVoteChannel,
+			},
+			want:    &guildConfigVoteChannel,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gcvcRepo.EXPECT().UpsertOne(&model.GuildConfigVoteChannel{
+				GuildID:   tt.args.req.GuildID,
+				ChannelID: tt.args.req.ChannelID,
+			}).Return(tt.res.data, tt.res.err).Times(1)
+
+			got, err := e.UpsertVoteChannelConfig(tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.UpsertVoteChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.UpsertVoteChannelConfig() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_DeleteVoteChannelConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// mock repo
+	gcvcRepo := mock_guildconfigvotechannel.NewMockStore(ctrl)
+	repo := &repo.Repo{
+		GuildConfigVoteChannel: gcvcRepo,
+	}
+
+	// create entity
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	e := &Entity{
+		cfg:  cfg,
+		log:  log,
+		repo: repo,
+	}
+
+	type res struct {
+		err error
+	}
+	type args struct {
+		req request.DeleteVoteChannelConfigRequest
+	}
+	tests := []struct {
+		name    string
+		res     res
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "guild_is_configured",
+			args: args{
+				req: request.DeleteVoteChannelConfigRequest{
+					GuildID: "895659000996200508",
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "guild_is_not_configured",
+			args: args{
+				req: request.DeleteVoteChannelConfigRequest{
+					GuildID: "895659000996200123",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gcvcRepo.EXPECT().DeleteOne(&model.GuildConfigVoteChannel{
+				GuildID: tt.args.req.GuildID,
+			}).Return(tt.res.err).Times(1)
+
+			if err := e.DeleteVoteChannelConfig(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.DeleteVoteChannelConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
