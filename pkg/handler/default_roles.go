@@ -20,8 +20,8 @@ import (
 // @Success     200 {object} response.DefaultRoleResponse
 // @Router      /configs/default-roles [get]
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
-	guildID, isExist := c.GetQuery("guild_id")
-	if !isExist {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
 		h.log.Info("[handler.GetDefaultRolesByGuildID] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
@@ -79,8 +79,8 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 // @Success     200 {object} response.ResponseSucess
 // @Router      /configs/default-roles [delete]
 func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
-	guildID, isExist := c.GetQuery("guild_id")
-	if !isExist {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
 		h.log.Info("[handler.DeleteDefaultRoleByGuildID] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
@@ -92,5 +92,5 @@ func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseSucess{Success: true}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }

@@ -214,7 +214,7 @@ func (e *Entity) checkRoleIDInLevelRole(guildID, roleID string) error {
 	case gorm.ErrRecordNotFound:
 		return nil
 	case nil:
-		return fmt.Errorf("Role has been used for level role.")
+		return fmt.Errorf("role has been used for level role")
 	default:
 		e.log.Error(err, "[entity.checkRoleIDInLevelRole] repo.GuildConfigLevelRole.GetByRoleID failed")
 		return err
@@ -227,7 +227,7 @@ func (e *Entity) checkRoleIDInNFTRole(guildID, roleID string) error {
 	case gorm.ErrRecordNotFound:
 		return nil
 	case nil:
-		return fmt.Errorf("Role has been used for NFT role.")
+		return fmt.Errorf("role has been used for NFT role")
 	default:
 		e.log.Error(err, "[entity.checkRoleIDInNFTRole] repo.GuildConfigNFTRole.GetByRoleID failed")
 		return err
@@ -243,7 +243,7 @@ func (e *Entity) checkRoleIDInReactionRole(guildID, roleID string) error {
 		for _, cfg := range configs.Configs {
 			for _, v := range cfg.Roles {
 				if v.ID == roleID {
-					return fmt.Errorf("Role has been used for reaction role.")
+					return fmt.Errorf("role has been used for reaction role")
 				}
 			}
 		}
@@ -261,34 +261,13 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 		return nil
 	case nil:
 		if roleID == defaultRole.RoleID {
-			return fmt.Errorf("Role has been used for default role.")
+			return fmt.Errorf("role has been used for default role")
 		}
 		return nil
 	default:
 		e.log.Error(err, "[entity.checkRoleIDInDefaultRole] repo.GuildConfigDefaultRole.GetAllByGuildID failed")
 		return err
 	}
-}
-
-func (e *Entity) ConfigLevelRole(req request.ConfigLevelRoleRequest) error {
-	err := e.checkRoleIDBeenConfig(req.GuildID, req.RoleID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID}).Error(err, "[entity.ConfigLevelRole] check roleID config failed")
-		return err
-	}
-	return e.repo.GuildConfigLevelRole.UpsertOne(model.GuildConfigLevelRole{
-		GuildID: req.GuildID,
-		RoleID:  req.RoleID,
-		Level:   req.Level,
-	})
-}
-
-func (e *Entity) GetGuildLevelRoleConfigs(guildID string) ([]model.GuildConfigLevelRole, error) {
-	return e.repo.GuildConfigLevelRole.GetByGuildID(guildID)
-}
-
-func (e *Entity) RemoveGuildLevelRoleConfig(guildID string, level int) error {
-	return e.repo.GuildConfigLevelRole.DeleteOne(guildID, level)
 }
 
 func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
