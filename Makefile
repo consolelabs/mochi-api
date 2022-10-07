@@ -98,6 +98,8 @@ gen-mock:
 	@mockgen -source=./pkg/repo/guild_config_welcome_channel/store.go -destination=./pkg/repo/guild_config_welcome_channel/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_repost_reaction/store.go -destination=./pkg/repo/guild_config_repost_reaction/mocks/store.go
 	@mockgen -source=./pkg/repo/message_repost_history/store.go -destination=./pkg/repo/message_repost_history/mocks/store.go
+	@mockgen -source=./pkg/repo/guild_config_default_roles/store.go -destination=./pkg/repo/guild_config_default_roles/mocks/store.go
+	@mockgen -source=./pkg/repo/guild_config_reaction_roles/store.go -destination=./pkg/repo/guild_config_reaction_roles/mocks/store.go
 
 
 setup-githook:
