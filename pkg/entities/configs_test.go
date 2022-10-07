@@ -15,10 +15,12 @@ import (
 	mock_guild_config_gm_gn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn/mocks"
 	mock_guild_config_level_role "github.com/defipod/mochi/pkg/repo/guild_config_level_role/mocks"
 	mock_guild_config_repost_reaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction/mocks"
+	mock_guild_config_token "github.com/defipod/mochi/pkg/repo/guild_config_token/mocks"
 	mock_guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel/mocks"
 	mock_guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel/mocks"
 	mock_message_repost_history "github.com/defipod/mochi/pkg/repo/message_repost_history/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	mock_token "github.com/defipod/mochi/pkg/repo/token/mocks"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
@@ -1205,6 +1207,208 @@ func TestEntity_EditMessageRepost(t *testing.T) {
 			}
 			if err := e.EditMessageRepost(tt.args.req); (err != nil) != tt.wantErr {
 				t.Errorf("Entity.EditMessageRepost() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestEntity_GetGuildTokens(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.LoadTestConfig()
+
+	log := logger.NewLogrusLogger()
+	svc, _ := service.NewService(cfg, log)
+	mockToken := mock_token.NewMockStore(ctrl)
+	mockGuildConfigToken := mock_guild_config_token.NewMockStore(ctrl)
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	r.Token = mockToken
+	r.GuildConfigToken = mockGuildConfigToken
+
+	e := &Entity{
+		repo: r,
+		log:  log,
+		svc:  svc,
+		cfg:  cfg,
+	}
+
+	defaultTokens := []model.Token{
+		{
+			ID:      1,
+			Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+			Symbol:  "btc",
+			ChainID: 1,
+			Name:    "Bitcoin",
+		},
+		{
+			ID:      2,
+			Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDEA4",
+			Symbol:  "ftm",
+			ChainID: 1,
+			Name:    "Fantom",
+		},
+	}
+
+	type args struct {
+		guildID string
+	}
+	tests := []struct {
+		name        string
+		args        args
+		guildTokens []model.GuildConfigToken
+		want        []model.Token
+		wantErr     bool
+	}{
+		{
+			name: "success - default tokens",
+			args: args{
+				guildID: "",
+			},
+			want:    defaultTokens,
+			wantErr: false,
+		},
+		{
+			name: "success - guild tokens",
+			args: args{
+				guildID: "863278424433229854",
+			},
+			guildTokens: []model.GuildConfigToken{
+				{
+					Token: &model.Token{
+						ID:      3,
+						Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebD2AA",
+						Symbol:  "Cake",
+						ChainID: 1,
+						Name:    "Pancake",
+					},
+				},
+			},
+			want: []model.Token{
+				{
+					ID:      3,
+					Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebD2AA",
+					Symbol:  "Cake",
+					ChainID: 1,
+					Name:    "Pancake",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockToken.EXPECT().GetDefaultTokens().Return(defaultTokens, nil).AnyTimes()
+			mockGuildConfigToken.EXPECT().GetByGuildID(tt.args.guildID).Return(tt.guildTokens, nil).AnyTimes()
+
+			got, err := e.GetGuildTokens(tt.args.guildID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.GetGuildTokens() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Entity.GetGuildTokens() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEntity_UpsertGuildTokenConfig(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	cfg := config.LoadTestConfig()
+
+	log := logger.NewLogrusLogger()
+	svc, _ := service.NewService(cfg, log)
+	mockToken := mock_token.NewMockStore(ctrl)
+	mockGuildConfigToken := mock_guild_config_token.NewMockStore(ctrl)
+
+	s := pg.NewPostgresStore(&cfg)
+	r := pg.NewRepo(s.DB())
+	r.Token = mockToken
+	r.GuildConfigToken = mockGuildConfigToken
+
+	e := &Entity{
+		repo: r,
+		log:  log,
+		svc:  svc,
+		cfg:  cfg,
+	}
+	type args struct {
+		req request.UpsertGuildTokenConfigRequest
+	}
+	tests := []struct {
+		name       string
+		args       args
+		tokenFound model.Token
+		tokenErr   error
+		wantErr    bool
+	}{
+		{
+			name: "success - add token",
+			args: args{
+				req: request.UpsertGuildTokenConfigRequest{
+					GuildID: "863278424433229854",
+					Symbol:  "btc",
+					Active:  true,
+				},
+			},
+			tokenFound: model.Token{
+				ID:      3,
+				Address: "0x7aCeE5D0acC520faB33acwwqa25D4FEEF1FfebD2AA",
+				Symbol:  "Bitcoin",
+				ChainID: 1,
+				Name:    "Bitcoin",
+			},
+			tokenErr: nil,
+			wantErr:  false,
+		},
+		{
+			name: "success - remove existed token",
+			args: args{
+				req: request.UpsertGuildTokenConfigRequest{
+					GuildID: "863278424433229854",
+					Symbol:  "btc",
+					Active:  false,
+				},
+			},
+			tokenFound: model.Token{
+				ID:      3,
+				Address: "0x7aCeE5D0acC520faB33acwwqa25D4FEEF1FfebD2AA",
+				Symbol:  "Bitcoin",
+				ChainID: 1,
+				Name:    "Bitcoin",
+			},
+			tokenErr: nil,
+			wantErr:  false,
+		},
+		{
+			name: "failed - remove non existed token",
+			args: args{
+				req: request.UpsertGuildTokenConfigRequest{
+					GuildID: "863278424433229854",
+					Symbol:  "abcd",
+					Active:  true,
+				},
+			},
+			tokenErr: errors.New("record not found"),
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockToken.EXPECT().GetBySymbol(tt.args.req.Symbol, true).Return(tt.tokenFound, tt.tokenErr).AnyTimes()
+			mockGuildConfigToken.EXPECT().UpsertMany([]model.GuildConfigToken{{
+				GuildID: tt.args.req.GuildID,
+				TokenID: tt.tokenFound.ID,
+				Active:  tt.args.req.Active,
+			}}).Return(nil).AnyTimes()
+
+			if err := e.UpsertGuildTokenConfig(tt.args.req); (err != nil) != tt.wantErr {
+				t.Errorf("Entity.UpsertGuildTokenConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
