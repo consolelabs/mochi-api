@@ -200,29 +200,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	cfg := config.Config{
-		DBUser: "postgres",
-		DBPass: "postgres",
-		DBHost: "localhost",
-		DBPort: "5434",
-		DBName: "mochi_local",
-
-		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
-		FantomRPC:               "https://rpc.ftm.tools",
-		FantomScan:              "https://api.ftmscan.com/api?",
-		FantomScanAPIKey:        "XEKSVDF5VWQDY5VY6ZNT6AK9QPQRH483EF",
-
-		EthereumRPC:        "https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114",
-		EthereumScan:       "https://api.etherscan.io/api?",
-		EthereumScanAPIKey: "SM5BHYSNIRZ1HEWJ1JPHVTMJS95HRA6DQF",
-
-		BscRPC:        "https://bsc-dataseed.binance.org",
-		BscScan:       "https://api.bscscan.com/api?",
-		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
-		DiscordToken:  "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
-
-		RedisURL: "redis://localhost:6379/0",
-	}
+	cfg := config.LoadTestConfig()
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())
@@ -364,29 +342,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	cfg := config.Config{
-		DBUser: "postgres",
-		DBPass: "postgres",
-		DBHost: "localhost",
-		DBPort: "5434",
-		DBName: "mochi_local",
-
-		InDiscordWalletMnemonic: "holiday frequent toy bachelor auto use style result recycle crumble glue blouse",
-		FantomRPC:               "https://rpc.ftm.tools",
-		FantomScan:              "https://api.ftmscan.com/api?",
-		FantomScanAPIKey:        "XEKSVDF5VWQDY5VY6ZNT6AK9QPQRH483EF",
-
-		EthereumRPC:        "https://mainnet.infura.io/v3/5b389eb75c514cf6b1711d70084b0114",
-		EthereumScan:       "https://api.etherscan.io/api?",
-		EthereumScanAPIKey: "SM5BHYSNIRZ1HEWJ1JPHVTMJS95HRA6DQF",
-
-		BscRPC:        "https://bsc-dataseed.binance.org",
-		BscScan:       "https://api.bscscan.com/api?",
-		BscScanAPIKey: "VTKF4RG4HP6WXQ5QTAJ8MHDDIUFYD6VZHC",
-		DiscordToken:  "OTcxNjMyNDMzMjk0MzQ4Mjg5.G5BEgF.rv-16ZuTzzqOv2W76OljymFxxnNpjVjCnOkn98",
-
-		RedisURL: "redis://localhost:6379/0",
-	}
+	cfg := config.LoadTestConfig()
 
 	s := pg.NewPostgresStore(&cfg)
 	r := pg.NewRepo(s.DB())

@@ -349,3 +349,8 @@ type IndexerNftCollectionMetadata struct {
 type IndexerNftCollectionMetadataResponse struct {
 	Data IndexerNftCollectionMetadata `json:"data"`
 }
+
+type IndexerErrorResponse struct {
+	Data  interface{} `json:"data"`
+	Error string      `json:"error"`
+}

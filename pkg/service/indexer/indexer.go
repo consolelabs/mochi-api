@@ -81,13 +81,18 @@ func (i *indexer) GetNFTCollectionTickers(address, rawQuery string) (*res.Indexe
 	}
 
 	if response.StatusCode != http.StatusOK {
-		errBody := new(bytes.Buffer)
-		_, err = errBody.ReadFrom(response.Body)
+		errBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return nil, fmt.Errorf("GetNFTCollection - failed to read response: %v", err)
+			return nil, err
 		}
 
-		err = fmt.Errorf("GetNFTCollection - failed to get nft collection info %s: %v", address, errBody.String())
+		errResponse := &res.IndexerErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Error)
 		return nil, err
 	}
 
