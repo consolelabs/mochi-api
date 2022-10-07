@@ -191,6 +191,11 @@ func (h *Handler) GetNFTCollectionTickers(c *gin.Context) {
 
 	res, err := h.entities.GetNFTCollectionTickers(req, c.Request.URL.RawQuery)
 	if err != nil {
+		if err.Error() == "record not found" {
+			h.log.Infof("[indexer.GetNFTCollectionTickers] Indexer does not have ticker for this collection. Req: %s", req)
+			c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
 		h.log.Fields(logger.Fields{"req": req, "query": c.Request.URL.RawQuery}).Error(err, "[handler.GetNFTCollectionTickers] - failed to get NFT collection ticker")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
