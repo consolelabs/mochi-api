@@ -1177,3 +1177,31 @@ func (e *Entity) GetSuggestionNftCollections(query string) ([]response.Collectio
 
 	return collectionSuggestions, nil
 }
+
+func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQuery string) (*response.IndexerNFTTokenTickersData, error) {
+	collection, err := e.repo.NFTCollection.GetByAddress(req.CollectionAddress)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			e.log.Infof("Nft colletion not found. CollectionAddress: %s", req.CollectionAddress)
+			return nil, nil
+		}
+		e.log.Errorf(err, "[repo.NFTCollection.GetBySymbol] failed to get nft collection by.  CollectionAddress: %s", req.CollectionAddress)
+		return nil, err
+	}
+
+	res, err := e.indexer.GetNFTTokenTickers(req.CollectionAddress, req.TokenID, rawQuery)
+	if err != nil {
+		if err.Error() == "record not found" {
+			e.log.Infof("[indexer.GetNFTTokenTickers] Indexer does not have ticker for this token. CollectionAddress: %s, tokenID: %s", req.CollectionAddress, req.TokenID)
+			return nil, err
+		}
+		e.log.Errorf(err, "[indexer.GetNFTTokenTickers] failed to get nft token tickers. Address: %s, TokenID: %s, query: %s", collection.Address, req.TokenID, rawQuery)
+		return nil, err
+	}
+
+	for _, ts := range res.Tickers.Timestamps {
+		time := time.UnixMilli(ts)
+		res.Tickers.Times = append(res.Tickers.Times, time.Format("01-02"))
+	}
+	return res, nil
+}
