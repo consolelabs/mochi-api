@@ -36,12 +36,12 @@ func (h *Handler) OffchainTipBotListAllChains(c *gin.Context) {
 // AddContract   godoc
 // @Summary     OffChain Tip Bot - Create an assign contract
 // @Description Create an assign contract when user want to deposit a specific token to contract
-// @Tags        OffChain, Deposit
+// @Tags        OffChain, TipBot, Deposit
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateAssignContract true "Create assign contract request"
-// @Success     200 {object} response.OffchainTipBotAssignContract
-// @Router      /offchain-tip-bots/assign-contract [post]
+// @Success     200 {object} response.GetAssignedContract
+// @Router      /offchain-tip-bot/assign-contract [post]
 func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 	body := request.CreateAssignContract{}
 
