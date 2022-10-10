@@ -3360,6 +3360,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/nfts/tickers": {
+            "get": {
+                "description": "Get NFT token tickers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get NFT token tickers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "CollectionAddress",
+                        "name": "collection_address",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token ID",
+                        "name": "token_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.IndexerGetNFTTokenTickersResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts/trading-volume": {
             "get": {
                 "description": "Get NFT trading volume",
@@ -5431,6 +5484,10 @@ const docTemplate = `{
         },
         "request.CreateDefaultRoleRequest": {
             "type": "object",
+            "required": [
+                "guild_id",
+                "role_id"
+            ],
             "properties": {
                 "guild_id": {
                     "type": "string"
@@ -5608,6 +5665,10 @@ const docTemplate = `{
         },
         "request.LinkUserTelegramWithDiscordRequest": {
             "type": "object",
+            "required": [
+                "discord_id",
+                "telegram_username"
+            ],
             "properties": {
                 "discord_id": {
                     "type": "string"
@@ -6619,7 +6680,7 @@ const docTemplate = `{
                 "is_verified": {
                     "type": "boolean"
                 },
-                "marketplace": {
+                "marketplaces": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -7066,6 +7127,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.IndexerGetNFTTokenTickersResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.IndexerNFTTokenTickersData"
+                }
+            }
+        },
         "response.IndexerGetNFTTokenTxHistoryResponse": {
             "type": "object",
             "properties": {
@@ -7286,6 +7355,56 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.IndexerNFTTokenTickersData": {
+            "type": "object",
+            "properties": {
+                "collection_address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor_price": {
+                    "$ref": "#/definitions/response.IndexerPrice"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_cdn": {
+                    "type": "string"
+                },
+                "last_sale_price": {
+                    "$ref": "#/definitions/response.IndexerPrice"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_change_1d": {
+                    "type": "string"
+                },
+                "price_change_30d": {
+                    "type": "string"
+                },
+                "price_change_7d": {
+                    "type": "string"
+                },
+                "rarity_rank": {
+                    "type": "integer"
+                },
+                "rarity_score": {
+                    "type": "string"
+                },
+                "rarity_tier": {
+                    "type": "string"
+                },
+                "tickers": {
+                    "$ref": "#/definitions/response.IndexerTickers"
+                },
+                "token_id": {
+                    "type": "string"
                 }
             }
         },

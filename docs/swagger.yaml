@@ -693,6 +693,9 @@ definitions:
         type: string
       role_id:
         type: string
+    required:
+    - guild_id
+    - role_id
     type: object
   request.CreateGuildRequest:
     properties:
@@ -807,6 +810,9 @@ definitions:
         type: string
       telegram_username:
         type: string
+    required:
+    - discord_id
+    - telegram_username
     type: object
   request.LoginRequest:
     properties:
@@ -1457,7 +1463,7 @@ definitions:
         type: string
       is_verified:
         type: boolean
-      marketplace:
+      marketplaces:
         items:
           type: string
         type: array
@@ -1746,6 +1752,11 @@ definitions:
           $ref: '#/definitions/response.CollectionSuggestions'
         type: array
     type: object
+  response.IndexerGetNFTTokenTickersResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.IndexerNFTTokenTickersData'
+    type: object
   response.IndexerGetNFTTokenTxHistoryResponse:
     properties:
       data:
@@ -1891,6 +1902,39 @@ definitions:
         type: string
       total:
         type: integer
+    type: object
+  response.IndexerNFTTokenTickersData:
+    properties:
+      collection_address:
+        type: string
+      description:
+        type: string
+      floor_price:
+        $ref: '#/definitions/response.IndexerPrice'
+      image:
+        type: string
+      image_cdn:
+        type: string
+      last_sale_price:
+        $ref: '#/definitions/response.IndexerPrice'
+      name:
+        type: string
+      price_change_1d:
+        type: string
+      price_change_7d:
+        type: string
+      price_change_30d:
+        type: string
+      rarity_rank:
+        type: integer
+      rarity_score:
+        type: string
+      rarity_tier:
+        type: string
+      tickers:
+        $ref: '#/definitions/response.IndexerTickers'
+      token_id:
+        type: string
     type: object
   response.IndexerNftTokenOwner:
     properties:
@@ -4687,6 +4731,42 @@ paths:
           schema:
             $ref: '#/definitions/response.GetSupportedChains'
       summary: Get supported chains
+      tags:
+      - NFT
+  /nfts/tickers:
+    get:
+      consumes:
+      - application/json
+      description: Get NFT token tickers
+      parameters:
+      - description: CollectionAddress
+        in: query
+        name: collection_address
+        required: true
+        type: string
+      - description: Token ID
+        in: query
+        name: token_id
+        required: true
+        type: string
+      - description: from
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: to
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerGetNFTTokenTickersResponse'
+      summary: Get NFT token tickers
       tags:
       - NFT
   /nfts/trading-volume:
