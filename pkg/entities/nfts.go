@@ -1192,10 +1192,10 @@ func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQu
 	res, err := e.indexer.GetNFTTokenTickers(req.CollectionAddress, req.TokenID, rawQuery)
 	if err != nil {
 		if err.Error() == "record not found" {
-			e.log.Infof("[indexer.GetNFTCollectionTickers] Indexer does not have ticker for this collection. CollectionAddress: %s", req.CollectionAddress)
+			e.log.Infof("[indexer.GetNFTTokenTickers] Indexer does not have ticker for this token. CollectionAddress: %s, tokenID: %s", req.CollectionAddress, req.TokenID)
 			return nil, err
 		}
-		e.log.Errorf(err, "[indexer.GetNFTCollectionTickers] failed to get nft collection tickers by %s and %s", collection.Address, rawQuery)
+		e.log.Errorf(err, "[indexer.GetNFTTokenTickers] failed to get nft token tickers. Address: %s, TokenID: %s, query: %s", collection.Address, req.TokenID, rawQuery)
 		return nil, err
 	}
 
