@@ -692,3 +692,38 @@ func (h *Handler) GetSuggestionNFTCollections(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(collections, nil, nil, nil))
 }
+
+// GetNftTokenTickers     godoc
+// @Summary     Get NFT token tickers
+// @Description Get NFT token tickers
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       collection_address   query  string true  "CollectionAddress"
+// @Param       token_id   query  string true  "Token ID"
+// @Param       from   query  string true  "from"
+// @Param       to   query  string true  "to"
+// @Success     200 {object} response.IndexerGetNFTTokenTickersResponse
+// @Router      /nfts/tickers [get]
+func (h *Handler) GetNftTokenTickers(c *gin.Context) {
+	var req request.GetNFTTokenTickersRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetNftTokenTickers] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.GetNFTTokenTickers(req, c.Request.URL.RawQuery)
+	if err != nil {
+		if err.Error() == "record not found" {
+			h.log.Infof("[entities.GetNFTTokenTickers] Indexer does not have ticker for this token. Req: %s", req)
+			c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		h.log.Fields(logger.Fields{"req": req, "query": c.Request.URL.RawQuery}).Error(err, "[entities.GetNFTTokenTickers] - failed to get NFT token ticker")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

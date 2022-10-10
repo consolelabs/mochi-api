@@ -54,6 +54,28 @@ type IndexerNFTCollectionTickersData struct {
 	PriceChange30d  string          `json:"price_change_30d"`
 }
 
+type IndexerGetNFTTokenTickersResponse struct {
+	Data IndexerNFTTokenTickersData `json:"data"`
+}
+
+type IndexerNFTTokenTickersData struct {
+	Tickers           *IndexerTickers `json:"tickers"`
+	Name              string          `json:"name"`
+	TokenId           string          `json:"token_id"`
+	CollectionAddress string          `json:"collection_address"`
+	Description       string          `json:"description"`
+	Image             string          `json:"image"`
+	ImageCDN          string          `json:"image_cdn"`
+	RarityRank        uint64          `json:"rarity_rank"`
+	RarityScore       string          `json:"rarity_score"`
+	RarityTier        string          `json:"rarity_tier"`
+	FloorPrice        *IndexerPrice   `json:"floor_price"`
+	LastSalePrice     *IndexerPrice   `json:"last_sale_price"`
+	PriceChange1d     string          `json:"price_change_1d"`
+	PriceChange7d     string          `json:"price_change_7d"`
+	PriceChange30d    string          `json:"price_change_30d"`
+}
+
 type IndexerGetNFTCollectionsResponse struct {
 	util.Pagination
 	Data []IndexerNFTCollection `json:"data"`

@@ -8,6 +8,7 @@ import (
 type Service interface {
 	CreateERC721Contract(CreateERC721ContractRequest) error
 	GetNFTCollectionTickers(address, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error)
+	GetNFTTokenTickers(address, tokenID, rawQuery string) (*res.IndexerNFTTokenTickersData, error)
 	GetNFTTradingVolume() ([]response.NFTTradingVolume, error)
 	GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error)
 	GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error)
