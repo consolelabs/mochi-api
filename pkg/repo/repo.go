@@ -42,6 +42,8 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
+	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
 	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -110,4 +112,6 @@ type Repo struct {
 	ServersUsageStats                    serversusagestats.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
+	OffchainTipBotChain                  offchaintipbotchain.Store
+	OffchainTipBotContract               offchaintipbotcontract.Store
 }
