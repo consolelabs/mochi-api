@@ -109,6 +109,51 @@ func (i *indexer) GetNFTCollectionTickers(address, rawQuery string) (*res.Indexe
 	return data, nil
 }
 
+func (i *indexer) GetNFTTokenTickers(address, tokenID, rawQuery string) (*res.IndexerNFTTokenTickersData, error) {
+	url := fmt.Sprintf("%s/api/v1/nft/ticker/%s/%s?%s", i.cfg.IndexerServerHost, address, tokenID, rawQuery)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		errResponse := &res.IndexerErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Error)
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	data := &res.IndexerGetNFTTokenTickersResponse{}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return &data.Data, nil
+}
+
 func (i *indexer) GetNFTCollections(query string) (*res.IndexerGetNFTCollectionsResponse, error) {
 
 	url := fmt.Sprintf("%s/api/v1/nft?%s", i.cfg.IndexerServerHost, query)

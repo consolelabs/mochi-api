@@ -22,3 +22,8 @@ type GetNftWatchlistRequest struct {
 type GetNFTCollectionTickersRequest struct {
 	CollectionAddress string `json:"collection_address" form:"collection_address" binding:"required"`
 }
+
+type GetNFTTokenTickersRequest struct {
+	CollectionAddress string `json:"collection_address" form:"collection_address" binding:"required"`
+	TokenID           string `json:"token_id" form:"token_id" binding:"required"`
+}
