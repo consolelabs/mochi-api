@@ -14,4 +14,7 @@ type MessageRepostHistory struct {
 	RepostChannelID string        `json:"repost_channel_id"`
 	RepostMessageID string        `json:"repost_message_id"`
 	CreatedAt       *time.Time    `json:"created_at"`
+	ReactionCount   int64         `json:"reaction_count"`
+	IsStart         bool          `json:"is_start"`
+	IsStop          bool          `json:"is_stop"`
 }
