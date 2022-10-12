@@ -145,6 +145,7 @@ type NftListingMarketplace struct {
 	PaymentToken         string `json:"payment_token"`
 	PaymentTokenDecimals string `json:"payment_token_decimals"`
 	ItemUrl              string `json:"item_url"`
+	FloorPrice           string `json:"floor_price"`
 }
 
 type IndexerNFTTokenAttribute struct {
