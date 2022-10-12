@@ -7837,6 +7837,9 @@ const docTemplate = `{
                 "contract_address": {
                     "type": "string"
                 },
+                "floor_price": {
+                    "type": "string"
+                },
                 "item_url": {
                     "type": "string"
                 },
