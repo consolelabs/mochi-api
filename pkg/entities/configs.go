@@ -476,6 +476,19 @@ func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (
 	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
+			// reaction is not match with config sb, so we check if it match with config start, stop
+			confStartStop, err := e.repo.GuildConfigRepostReaction.GetByReactionStartOrStop(req.GuildID, req.Reaction)
+			if err != nil {
+				if err == gorm.ErrRecordNotFound {
+					return nil, nil
+				}
+				return nil, err
+			}
+
+			err = e.CreateRepostReactionEventWithStartStop(req, confStartStop)
+			if err != nil {
+				return nil, err
+			}
 			return nil, nil
 		}
 
@@ -484,6 +497,7 @@ func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (
 		return nil, err
 	}
 
+	// && req.Reaction != conf.EmojiStart && req.Reaction != conf.EmojiStop
 	if req.Reaction != conf.Emoji {
 		return nil, nil
 	}
@@ -491,15 +505,84 @@ func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (
 		return nil, nil
 	}
 
-	req.RepostChannelID = conf.RepostChannelID
-	repostMsg, err := e.CreateRepostMessageHistory(req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create repost message history")
-		return nil, err
+	var repostMsgRes model.MessageRepostHistory
+	// server has start, stop config
+	if conf.EmojiStart != "" && conf.EmojiStop != "" {
+		// when has reaction start -> is_start = true and is_stop = false -> if different with this -> not allow to repost
+		msgRepostHistory, err := e.repo.MessageRepostHistory.GetByMessageID(req.GuildID, req.MessageID)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				e.log.Infof("[e.CreateRepostReactionEvent] message repost history not found")
+				return nil, nil
+			}
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create start repost message history")
+			return nil, err
+		}
+		if msgRepostHistory.IsStart && !msgRepostHistory.IsStop {
+			req.RepostChannelID = conf.RepostChannelID
+			repostMsg, err := e.CreateRepostMessageHistory(req)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create repost message history")
+				return nil, err
+			}
+
+			repostMsg.RepostChannelID = conf.RepostChannelID
+			repostMsgRes = *repostMsg
+		}
+	} else {
+		req.RepostChannelID = conf.RepostChannelID
+		repostMsg, err := e.CreateRepostMessageHistory(req)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create repost message history")
+			return nil, err
+		}
+
+		repostMsg.RepostChannelID = conf.RepostChannelID
+		repostMsgRes = *repostMsg
 	}
 
-	repostMsg.RepostChannelID = conf.RepostChannelID
-	return repostMsg, nil
+	return &repostMsgRes, nil
+}
+
+func (e *Entity) CreateRepostReactionEventWithStartStop(req request.MessageReactionRequest, conf model.GuildConfigRepostReaction) error {
+	// check emoji == start -> start to allow user react
+	if req.Reaction == conf.EmojiStart && req.ReactionCount == 1 {
+		reqStartMessageRepost := &model.MessageRepostHistory{
+			GuildID:         req.GuildID,
+			OriginChannelID: req.ChannelID,
+			OriginMessageID: req.MessageID,
+			RepostChannelID: conf.RepostChannelID,
+			ReactionCount:   0,
+			IsStart:         true,
+			IsStop:          false,
+		}
+
+		err := e.repo.MessageRepostHistory.Upsert(*reqStartMessageRepost)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create start repost message history")
+			return err
+		}
+		return nil
+	}
+
+	// check emoji == stop -> stop to allow user react
+	if req.Reaction == conf.EmojiStop && req.ReactionCount >= 1 {
+		reqStopMessageRepost := &model.MessageRepostHistory{
+			GuildID:         req.GuildID,
+			OriginChannelID: req.ChannelID,
+			OriginMessageID: req.MessageID,
+			RepostChannelID: conf.RepostChannelID,
+			IsStart:         true,
+			IsStop:          true,
+		}
+		err := e.repo.MessageRepostHistory.Upsert(*reqStopMessageRepost)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create stop repost message history")
+			return err
+		}
+		return nil
+	}
+	return nil
 }
 
 func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {

@@ -32,6 +32,9 @@ func (e *Entity) CreateRepostMessageHistory(req request.MessageReactionRequest) 
 		OriginMessageID: req.MessageID,
 		OriginChannelID: req.ChannelID,
 		RepostChannelID: req.RepostChannelID,
+		ReactionCount:   int64(req.ReactionCount),
+		IsStart:         req.IsStart,
+		IsStop:          req.IsStop,
 	}
 
 	err = e.repo.MessageRepostHistory.Upsert(*history)
