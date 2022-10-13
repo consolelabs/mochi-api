@@ -22,6 +22,9 @@ func (pg *pg) List(q ListQuery) ([]model.Quest, error) {
 	if q.Action != nil {
 		db = db.Where("action::TEXT = ?", *q.Action)
 	}
+	if q.NotAction != nil {
+		db = db.Where("action::TEXT != ?", *q.NotAction)
+	}
 	if q.Routine != nil {
 		db = db.Where("routine::TEXT = ?", *q.Routine)
 	}
