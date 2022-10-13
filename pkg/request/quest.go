@@ -7,8 +7,9 @@ import (
 )
 
 type GetUserQuestListRequest struct {
-	UserID  string             `json:"user_id" form:"user_id" binding:"required"`
-	Routine model.QuestRoutine `json:"routine" form:"routine,default=daily"`
+	UserID   string             `json:"user_id" form:"user_id" binding:"required"`
+	Routine  model.QuestRoutine `json:"routine" form:"routine,default=daily"`
+	Quantity int                `json:"quantity" form:"quantity,default=5"`
 }
 
 type GenerateUserQuestListRequest struct {
