@@ -6,7 +6,8 @@ import (
 )
 
 type ListQuery struct {
-	ID      *uuid.UUID
-	Action  *model.QuestAction
-	Routine *model.QuestRoutine
+	ID        *uuid.UUID
+	Action    *model.QuestAction
+	NotAction *model.QuestAction
+	Routine   *model.QuestRoutine
 }

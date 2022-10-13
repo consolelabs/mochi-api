@@ -3711,6 +3711,11 @@ const docTemplate = `{
                 "summary": "Get user quest list",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "name": "quantity",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "routine",
                         "in": "query"

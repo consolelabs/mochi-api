@@ -4992,6 +4992,9 @@ paths:
       description: Get user quest list
       parameters:
       - in: query
+        name: quantity
+        type: integer
+      - in: query
         name: routine
         type: string
       - in: query
