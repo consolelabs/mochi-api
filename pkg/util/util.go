@@ -601,3 +601,19 @@ func MinuteLeftUntil(startTime, endTime time.Time) float64 {
 	}
 	return minutes
 }
+
+func MinInt(n1, n2 int) int {
+	if n1 < n2 {
+		return n1
+	}
+	return n2
+}
+
+func Shuffle[T any](list []T) {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(list), func(i, j int) { list[i], list[j] = list[j], list[i] })
+}
+
+func StartOfDay(t time.Time) time.Time {
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+}

@@ -45,6 +45,14 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	"github.com/defipod/mochi/pkg/repo/quest"
+	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
+	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
+	questrewardtype "github.com/defipod/mochi/pkg/repo/quest_reward_type"
+	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
+	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
+	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
+	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	"github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -115,5 +123,13 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ServersUsageStats:                    serversusagestats.NewPG(db),
 		MessageReaction:                      messagereaction.NewPG(db),
 		UserNftWatchlistItem:                 usernftwatchlistitem.NewPG(db),
+		Quest:                                quest.NewPG(db),
+		QuestRewardType:                      questrewardtype.NewPG(db),
+		QuestUserLog:                         questuserlog.NewPG(db),
+		QuestUserList:                        questuserlist.NewPG(db),
+		QuestPass:                            questpass.NewPG(db),
+		QuestReward:                          questreward.NewPG(db),
+		QuestUserReward:                      questuserreward.NewPG(db),
+		QuestUserPass:                        questuserpass.NewPG(db),
 	}
 }
