@@ -12,4 +12,5 @@ type GuildConfigRepostReaction struct {
 	RepostChannelID string        `json:"repost_channel_id"`
 	EmojiStart      string        `json:"emoji_start"`
 	EmojiStop       string        `json:"emoji_stop"`
+	ReactionType    string        `json:"reaction_type"`
 }

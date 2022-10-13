@@ -78,6 +78,21 @@ func (mr *MockStoreMockRecorder) GetByReaction(guildID, reaction interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByReaction", reflect.TypeOf((*MockStore)(nil).GetByReaction), guildID, reaction)
 }
 
+// GetByReactionConversationStartOrStop mocks base method.
+func (m *MockStore) GetByReactionConversationStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByReactionConversationStartOrStop", guildID, emoji)
+	ret0, _ := ret[0].(model.GuildConfigRepostReaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByReactionConversationStartOrStop indicates an expected call of GetByReactionConversationStartOrStop.
+func (mr *MockStoreMockRecorder) GetByReactionConversationStartOrStop(guildID, emoji interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByReactionConversationStartOrStop", reflect.TypeOf((*MockStore)(nil).GetByReactionConversationStartOrStop), guildID, emoji)
+}
+
 // GetByReactionStartOrStop mocks base method.
 func (m *MockStore) GetByReactionStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error) {
 	m.ctrl.T.Helper()

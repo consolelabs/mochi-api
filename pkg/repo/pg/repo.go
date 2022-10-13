@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
+	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -131,5 +132,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestReward:                          questreward.NewPG(db),
 		QuestUserReward:                      questuserreward.NewPG(db),
 		QuestUserPass:                        questuserpass.NewPG(db),
+		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
 	}
 }

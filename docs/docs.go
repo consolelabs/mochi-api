@@ -4942,6 +4942,9 @@ const docTemplate = `{
                 "quantity": {
                     "type": "integer"
                 },
+                "reaction_type": {
+                    "type": "string"
+                },
                 "repost_channel_id": {
                     "type": "string"
                 }
