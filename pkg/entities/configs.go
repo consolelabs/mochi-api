@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -465,7 +466,7 @@ func (e *Entity) ConfigRepostReaction(req request.ConfigRepostRequest) error {
 		Emoji:           req.Emoji,
 		Quantity:        req.Quantity,
 		RepostChannelID: req.RepostChannelID,
-		ReactionType:    "message",
+		ReactionType:    consts.ReactionTypeMessage,
 	})
 }
 
@@ -475,7 +476,7 @@ func (e *Entity) CreateConfigRepostReactionStartStop(req request.ConfigRepostRea
 		EmojiStart:      req.EmojiStart,
 		EmojiStop:       req.EmojiStop,
 		RepostChannelID: req.RepostChannelID,
-		ReactionType:    "conversation",
+		ReactionType:    consts.ReactionTypeConversation,
 	})
 }
 

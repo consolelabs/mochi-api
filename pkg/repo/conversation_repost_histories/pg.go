@@ -32,12 +32,12 @@ func (pg *pg) Upsert(model model.ConversationRepostHistories) error {
 }
 
 func (pg *pg) Update(model *model.ConversationRepostHistories) error {
-	return pg.db.Save(model).Error
+	return pg.db.Model(&model).Where("id = ?", model.ID).Save(model).Error
 }
 
 func (pg *pg) GetByGuildAndChannel(guildID, channelID string) (*model.ConversationRepostHistories, error) {
 	var model model.ConversationRepostHistories
-	err := pg.db.Where("guild_id = ? AND origin_channel_id = ? and origin_start_message_id != '' and (origin_stop_message_id = '') IS NOT FALSE", guildID, channelID).First(&model).Error
+	err := pg.db.Where("guild_id = ? AND origin_channel_id = ? and origin_start_message_id != '' and origin_stop_message_id = ''", guildID, channelID).First(&model).Error
 	if err != nil {
 		return nil, err
 	}
