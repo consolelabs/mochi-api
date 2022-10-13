@@ -470,6 +470,50 @@ definitions:
       symbol:
         type: string
     type: object
+  model.QuestUserList:
+    properties:
+      action:
+        type: string
+      current:
+        type: integer
+      end_time:
+        type: string
+      id:
+        type: string
+      is_claimed:
+        type: boolean
+      is_completed:
+        type: boolean
+      quest_id:
+        type: string
+      routine:
+        type: string
+      start_time:
+        type: string
+      target:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  model.QuestUserReward:
+    properties:
+      claimed_at:
+        type: string
+      pass_id:
+        type: string
+      quest_id:
+        type: string
+      reward_amount:
+        type: integer
+      reward_id:
+        type: string
+      reward_type_id:
+        type: string
+      start_time:
+        type: string
+      user_id:
+        type: string
+    type: object
   model.Token:
     properties:
       address:
@@ -600,6 +644,13 @@ definitions:
         items:
           $ref: '#/definitions/request.AddWhitelistCampaignUser'
         type: array
+    type: object
+  request.ClaimQuestsRewardsRequest:
+    properties:
+      routine:
+        type: string
+      user_id:
+        type: string
     type: object
   request.ConfigDefaultCollection:
     properties:
@@ -1000,6 +1051,13 @@ definitions:
       target_suggestions:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+    type: object
+  response.ClaimQuestsRewardsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.QuestUserReward'
         type: array
     type: object
   response.CoinDescription:
@@ -1575,6 +1633,13 @@ definitions:
         $ref: '#/definitions/model.UserFactionXpsMapping'
       user_wallet:
         $ref: '#/definitions/model.UserWallet'
+    type: object
+  response.GetUserQuestListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.QuestUserList'
+        type: array
     type: object
   response.GetUserResponse:
     properties:
@@ -4171,7 +4236,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -4864,6 +4929,51 @@ paths:
       summary: Get user profile
       tags:
       - Profile
+  /quests:
+    get:
+      consumes:
+      - application/json
+      description: Get user quest list
+      parameters:
+      - in: query
+        name: routine
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserQuestListResponse'
+      summary: Get user quest list
+      tags:
+      - Quest
+  /quests/claim:
+    post:
+      consumes:
+      - application/json
+      description: Claim user quests' rewards
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.ClaimQuestsRewardsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ClaimQuestsRewardsResponse'
+      summary: Claim user quests' rewards
+      tags:
+      - Quest
   /twitter:
     post:
       consumes:
@@ -5337,7 +5447,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
