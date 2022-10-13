@@ -465,6 +465,17 @@ func (e *Entity) ConfigRepostReaction(req request.ConfigRepostRequest) error {
 		Emoji:           req.Emoji,
 		Quantity:        req.Quantity,
 		RepostChannelID: req.RepostChannelID,
+		ReactionType:    "message",
+	})
+}
+
+func (e *Entity) CreateConfigRepostReactionStartStop(req request.ConfigRepostReactionStartStop) error {
+	return e.repo.GuildConfigRepostReaction.UpsertOne(model.GuildConfigRepostReaction{
+		GuildID:         req.GuildID,
+		EmojiStart:      req.EmojiStart,
+		EmojiStop:       req.EmojiStop,
+		RepostChannelID: req.RepostChannelID,
+		ReactionType:    "conversation",
 	})
 }
 

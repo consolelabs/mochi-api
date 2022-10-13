@@ -1016,7 +1016,8 @@ func TestEntity_ConfigRepostReaction(t *testing.T) {
 		GuildID:         "552427722551459840",
 		Emoji:           "test",
 		Quantity:        1,
-		RepostChannelID: "test"}).Return(nil).AnyTimes()
+		RepostChannelID: "test",
+		ReactionType:    "message"}).Return(nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{
