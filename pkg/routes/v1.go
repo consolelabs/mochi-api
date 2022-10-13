@@ -284,4 +284,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		usageGroup.POST("", h.AddServersUsageStat)
 	}
+
+	// quests
+	questGroup := v1.Group("/quests")
+	{
+		questGroup.GET("", h.GetUserQuestList)
+		questGroup.POST("/claim", h.ClaimQuestsRewards)
+	}
 }

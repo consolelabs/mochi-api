@@ -184,7 +184,8 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, fmt.Errorf("failed to get user's gm streak: %v", err)
+		e.log.Fields(logger.Fields{"discordID": discordID, "guildID": guildID}).Error(err, "[entity.newUserGM] repo.DiscordUserGMStreak.GetByDiscordIDGuildID() failed")
+		return nil, err
 	}
 
 	if err == gorm.ErrRecordNotFound {
@@ -197,7 +198,18 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		}
 		err = e.repo.DiscordUserGMStreak.UpsertOne(newStreak)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create new user gm streak: %v", err)
+			e.log.Fields(logger.Fields{"newStreak": newStreak}).Error(err, "[entity.newUserGM] repo.DiscordUserGMStreak.UpsertOne() failed")
+			return nil, err
+		}
+
+		// handle quest logs
+		log := &model.QuestUserLog{
+			GuildID: &guildID,
+			UserID:  discordID,
+			Action:  model.QuestAction(model.GM),
+		}
+		if err := e.UpdateUserQuestProgress(log); err != nil {
+			e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.newUserGM] entity.UpdateUserQuestProgress() failed")
 		}
 
 		// // send data to processor to calculate user's xp
@@ -206,7 +218,7 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 			e.log.Fields(logger.Fields{
 				"guildID":   guildID,
 				"discordID": discordID,
-			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+			}).Error(err, "[entity.newUserGM] entity.sendGmGnMessage() failed")
 		}
 		return nil, e.replyGmGn(&newStreak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
@@ -229,7 +241,8 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 	streak.TotalCount++
 
 	if err := e.repo.DiscordUserGMStreak.UpsertOne(*streak); err != nil {
-		return nil, fmt.Errorf("failed to update user gm streak: %v", err)
+		e.log.Fields(logger.Fields{"streak": *streak}).Error(err, "[entity.newUserGM] repo.DiscordUserGMStreak.UpsertOne() failed")
+		return nil, err
 	}
 
 	// add new feature : GmExIncrease
@@ -241,11 +254,22 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 			e.log.Fields(logger.Fields{
 				"guildID":   guildID,
 				"discordID": discordID,
-			}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+			}).Error(err, "[entity.newUserGM] entity.sendGmGnMessage() failed")
 		}
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
 	}
 
+	// handle quest logs
+	log := &model.QuestUserLog{
+		GuildID: &guildID,
+		UserID:  discordID,
+		Action:  model.QuestAction(model.GM),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.newUserGM] entity.UpdateUserQuestProgress() failed")
+	}
+
+	// handle activity logs
 	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
 		GuildID:   guildID,
 		ChannelID: channelID,
@@ -259,8 +283,8 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 			"channelID": channelID,
 			"userID":    discordID,
 			"action":    "gm_streak",
-		}).Error(err, "[Entity][newUserGM] failed to handle user activity")
-		return nil, fmt.Errorf("failed to handle user activity: %v", err.Error())
+		}).Error(err, "[entity.newUserGM] entity.HandleUserActivities() failed")
+		return nil, err
 	}
 
 	// send data to processor to calculate user's xp
@@ -269,7 +293,7 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		e.log.Fields(logger.Fields{
 			"guildID":   guildID,
 			"discordID": discordID,
-		}).Error(err, "[Entity][newUserGM] failed to send GmGn message")
+		}).Error(err, "[entity.newUserGM] entity.sendGmGnMessage() failed")
 	}
 
 	return res, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
@@ -443,6 +467,14 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 			e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to create new streak")
 			return fmt.Errorf("failed to create new user upvote streak: %v", err)
 		}
+		// handle quest logs
+		log := &model.QuestUserLog{
+			UserID: userID,
+			Action: model.QuestAction(model.VOTE),
+		}
+		if err := e.UpdateUserQuestProgress(log); err != nil {
+			e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.WebhookUpvoteStreak] entity.UpdateUserQuestProgress() failed")
+		}
 		return nil
 	}
 
@@ -462,6 +494,15 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 	if err := e.repo.DiscordUserUpvoteStreak.UpsertOne(*streak); err != nil {
 		e.log.Errorf(err, "[e.WebhookUpvoteStreak] fail to upsert upvote streak")
 		return fmt.Errorf("failed to update user upvote streak: %v", err)
+	}
+
+	// handle quest logs
+	log := &model.QuestUserLog{
+		UserID: userID,
+		Action: model.QuestAction(model.VOTE),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.WebhookUpvoteStreak] entity.UpdateUserQuestProgress() failed")
 	}
 
 	e.handleUpvoteXPBonus(streak)

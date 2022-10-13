@@ -8,9 +8,10 @@ import (
 )
 
 type GetMarketChartRequest struct {
-	CoinID   string `json:"coin_id"`
-	Currency string `json:"currency"`
-	Days     int    `json:"days"`
+	CoinID    string `json:"coin_id"`
+	Currency  string `json:"currency"`
+	Days      int    `json:"days"`
+	DiscordID string `json:"discord_id"`
 }
 
 type TransferRequest struct {
@@ -33,9 +34,10 @@ func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {
 		return nil, fmt.Errorf("invalid days")
 	}
 	req := &GetMarketChartRequest{
-		CoinID:   params.Get("coin_id"),
-		Currency: params.Get("currency"),
-		Days:     days,
+		CoinID:    params.Get("coin_id"),
+		Currency:  params.Get("currency"),
+		DiscordID: params.Get("discord_id"),
+		Days:      days,
 	}
 
 	if req.CoinID == "" {
