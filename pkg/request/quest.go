@@ -22,3 +22,9 @@ type ClaimQuestsRewardsRequest struct {
 	UserID  string             `json:"user_id"`
 	Routine model.QuestRoutine `json:"routine"`
 }
+
+type UpdateQuestProgressRequest struct {
+	GuildID *string           `json:"guild_id"`
+	UserID  string            `json:"user_id"`
+	Action  model.QuestAction `json:"action"`
+}
