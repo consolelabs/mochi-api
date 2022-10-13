@@ -31,7 +31,7 @@ func (e *Entity) GetUserQuestList(req request.GetUserQuestListRequest) ([]model.
 			UserID:    req.UserID,
 			Routine:   req.Routine,
 			StartTime: startTime,
-			Quantity:  5,
+			Quantity:  req.Quantity,
 		})
 	}
 	return list, nil
@@ -155,7 +155,7 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) ([]mo
 		return nil, err
 	}
 	uRewards := make([]model.QuestUserReward, 0, len(rewards))
-	for _, r := range rewards {
+	for i, r := range rewards {
 		uRewards = append(uRewards, model.QuestUserReward{
 			UserID:       req.UserID,
 			QuestID:      r.QuestID,
@@ -164,6 +164,7 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) ([]mo
 			RewardAmount: r.RewardAmount,
 			PassID:       r.PassID,
 			StartTime:    startTime,
+			Reward:       &rewards[i],
 		})
 	}
 	err = e.repo.QuestUserReward.CreateMany(uRewards)

@@ -3001,34 +3001,6 @@
         }
       }
     },
-    "/offchain-tip-bot/assign-contract": {
-      "post": {
-        "description": "Create an assign contract when user want to deposit a specific token to contract",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "tags": ["OffChain", "TipBot", "Deposit"],
-        "summary": "OffChain Tip Bot - Create an assign contract",
-        "parameters": [
-          {
-            "description": "Create assign contract request",
-            "name": "Request",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/request.CreateAssignContract"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/response.GetAssignedContract"
-            }
-          }
-        }
-      }
-    },
     "/profiles/": {
       "get": {
         "description": "Get user profile",
@@ -3087,6 +3059,32 @@
             "description": "OK",
             "schema": {
               "$ref": "#/definitions/response.GetUserQuestListResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Update user's quest progress",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "tags": ["Quest"],
+        "summary": "Update user's quest progress",
+        "parameters": [
+          {
+            "description": "request",
+            "name": "req",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.UpdateQuestProgressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -4123,6 +4121,12 @@
         "emoji": {
           "type": "string"
         },
+        "emoji_start": {
+          "type": "string"
+        },
+        "emoji_stop": {
+          "type": "string"
+        },
         "guild_id": {
           "type": "string"
         },
@@ -4409,28 +4413,59 @@
         }
       }
     },
-    "model.OffchainTipBotAssignContract": {
+    "model.Quest": {
       "type": "object",
       "properties": {
-        "chain_id": {
+        "action": {
           "type": "string"
         },
-        "contract_id": {
-          "type": "string"
-        },
-        "expired_time": {
-          "type": "string"
+        "frequency": {
+          "type": "integer"
         },
         "id": {
           "type": "string"
         },
-        "status": {
-          "type": "integer"
-        },
-        "token_id": {
+        "routine": {
           "type": "string"
         },
-        "user_id": {
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "model.QuestReward": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "pass_id": {
+          "type": "string"
+        },
+        "quest": {
+          "$ref": "#/definitions/model.Quest"
+        },
+        "quest_id": {
+          "type": "string"
+        },
+        "reward_amount": {
+          "type": "integer"
+        },
+        "reward_type": {
+          "$ref": "#/definitions/model.QuestRewardType"
+        },
+        "reward_type_id": {
+          "type": "string"
+        }
+      }
+    },
+    "model.QuestRewardType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         }
       }
@@ -4455,6 +4490,9 @@
         },
         "is_completed": {
           "type": "boolean"
+        },
+        "quest": {
+          "$ref": "#/definitions/model.Quest"
         },
         "quest_id": {
           "type": "string"
@@ -4484,6 +4522,9 @@
         },
         "quest_id": {
           "type": "string"
+        },
+        "reward": {
+          "$ref": "#/definitions/model.QuestReward"
         },
         "reward_amount": {
           "type": "integer"
@@ -4807,17 +4848,6 @@
           "type": "string"
         },
         "webhook_url": {
-          "type": "string"
-        }
-      }
-    },
-    "request.CreateAssignContract": {
-      "type": "object",
-      "properties": {
-        "token_symbol": {
-          "type": "string"
-        },
-        "user_id": {
           "type": "string"
         }
       }
@@ -5194,6 +5224,20 @@
           "type": "boolean"
         },
         "log_channel": {
+          "type": "string"
+        }
+      }
+    },
+    "request.UpdateQuestProgressRequest": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "guild_id": {
+          "type": "string"
+        },
+        "user_id": {
           "type": "string"
         }
       }
@@ -5699,14 +5743,6 @@
           "items": {
             "$ref": "#/definitions/response.TwitterHashtag"
           }
-        }
-      }
-    },
-    "response.GetAssignedContract": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "$ref": "#/definitions/model.OffchainTipBotAssignContract"
         }
       }
     },

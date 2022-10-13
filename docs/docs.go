@@ -3766,6 +3766,38 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Update user's quest progress",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Quest"
+                ],
+                "summary": "Update user's quest progress",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateQuestProgressRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/quests/claim": {
@@ -4931,6 +4963,12 @@ const docTemplate = `{
                 "emoji": {
                     "type": "string"
                 },
+                "emoji_start": {
+                    "type": "string"
+                },
+                "emoji_stop": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -5243,6 +5281,63 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Quest": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "frequency": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "routine": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QuestReward": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "pass_id": {
+                    "type": "string"
+                },
+                "quest": {
+                    "$ref": "#/definitions/model.Quest"
+                },
+                "quest_id": {
+                    "type": "string"
+                },
+                "reward_amount": {
+                    "type": "integer"
+                },
+                "reward_type": {
+                    "$ref": "#/definitions/model.QuestRewardType"
+                },
+                "reward_type_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QuestRewardType": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "model.QuestUserList": {
             "type": "object",
             "properties": {
@@ -5263,6 +5358,9 @@ const docTemplate = `{
                 },
                 "is_completed": {
                     "type": "boolean"
+                },
+                "quest": {
+                    "$ref": "#/definitions/model.Quest"
                 },
                 "quest_id": {
                     "type": "string"
@@ -5292,6 +5390,9 @@ const docTemplate = `{
                 },
                 "quest_id": {
                     "type": "string"
+                },
+                "reward": {
+                    "$ref": "#/definitions/model.QuestReward"
                 },
                 "reward_amount": {
                     "type": "integer"
@@ -6008,6 +6109,20 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "log_channel": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdateQuestProgressRequest": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
