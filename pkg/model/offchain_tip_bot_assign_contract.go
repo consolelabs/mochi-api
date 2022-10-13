@@ -23,16 +23,9 @@ func (OffchainTipBotAssignContract) TableName() string {
 }
 
 func (o *OffchainTipBotAssignContract) BeforeCreate(tx *gorm.DB) (err error) {
-	if err := tx.First(&OffchainTipBotContract{},
-		"id = ? AND assign_status = 1",
-		o.ContractID).Error; err != nil {
+	if err := tx.First(&OffchainTipBotAssignContract{},
+		"token_id = ? AND contract_id = ? AND chain_id = ? AND expired_time > ?", o.TokenID, o.ContractID, o.ChainID, time.Now()).Error; err == nil {
 		return errors.New("contract not found or already assigned")
 	}
 	return nil
-}
-
-func (o *OffchainTipBotAssignContract) AfterCreate(tx *gorm.DB) (err error) {
-	return tx.Model(&OffchainTipBotContract{}).
-		Where("id = ?", o.ContractID).
-		Update("assign_status", 0).Error
 }
