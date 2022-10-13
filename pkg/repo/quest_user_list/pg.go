@@ -50,5 +50,6 @@ func (pg *pg) List(q ListQuery) ([]model.QuestUserList, error) {
 	if q.IsClaimed != nil {
 		db = db.Where("is_claimed = ?", *q.IsClaimed)
 	}
+	db = db.Preload("Quest")
 	return list, db.Find(&list).Error
 }

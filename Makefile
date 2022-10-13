@@ -96,6 +96,14 @@ gen-mock:
 	@mockgen -source=./pkg/repo/message_repost_history/store.go -destination=./pkg/repo/message_repost_history/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_default_roles/store.go -destination=./pkg/repo/guild_config_default_roles/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_reaction_roles/store.go -destination=./pkg/repo/guild_config_reaction_roles/mocks/store.go
+	@mockgen -source=./pkg/repo/quest/store.go -destination=./pkg/repo/quest/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_reward_type/store.go -destination=./pkg/repo/quest_reward_type/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_user_log/store.go -destination=./pkg/repo/quest_user_log/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_user_list/store.go -destination=./pkg/repo/quest_user_list/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_pass/store.go -destination=./pkg/repo/quest_pass/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_user_pass/store.go -destination=./pkg/repo/quest_user_pass/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_reward/store.go -destination=./pkg/repo/quest_reward/mocks/store.go
+	@mockgen -source=./pkg/repo/quest_user_reward/store.go -destination=./pkg/repo/quest_user_reward/mocks/store.go
 
 
 setup-githook:

@@ -16,5 +16,5 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetQuestRewards(questID []uuid.UUID) ([]model.QuestReward, error) {
 	var rewards []model.QuestReward
-	return rewards, pg.db.Where("quest_id IN ?", questID).Find(&rewards).Error
+	return rewards, pg.db.Where("quest_id IN ?", questID).Preload("Quest").Preload("RewardType").Find(&rewards).Error
 }
