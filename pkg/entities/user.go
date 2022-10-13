@@ -421,8 +421,17 @@ func (e *Entity) SendGiftXp(req request.GiftXPRequest) (*response.HandleUserActi
 		CustomXP:  int64(req.XPAmount),
 	})
 	if err != nil {
-		e.log.Errorf(err, "[SendGiftXp] - HandleUserActivities failed: %v %v %v", req.GuildID, req.UserDiscordID, req.XPAmount)
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.SendGiftXp] entity.HandleUserActivities failed)")
 		return nil, err
+	}
+	// handle quest logs
+	log := &model.QuestUserLog{
+		UserID:  req.UserDiscordID,
+		GuildID: &req.GuildID,
+		Action:  model.QuestAction(model.GIFT),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.SendGiftXp] entity.UpdateUserQuestProgress() failed")
 	}
 
 	return res, nil
