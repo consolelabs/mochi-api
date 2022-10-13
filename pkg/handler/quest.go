@@ -22,7 +22,7 @@ func (h *Handler) GetUserQuestList(c *gin.Context) {
 	var req request.GetUserQuestListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetUserQuestList] ShouldBindQuery() failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	data, err := h.entities.GetUserQuestList(req)
@@ -31,7 +31,7 @@ func (h *Handler) GetUserQuestList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, &response.GetUserQuestListResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // ClaimQuestsRewards     godoc
@@ -47,15 +47,15 @@ func (h *Handler) ClaimQuestsRewards(c *gin.Context) {
 	var req request.ClaimQuestsRewardsRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Error(err, "[handler.ClaimQuestReward] BindJSON() failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	data, err := h.entities.ClaimQuestsRewards(req)
 	if err != nil {
 		h.log.Error(err, "[handler.ClaimQuestsRewards] entity.ClaimQuestsRewards() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, &response.ClaimQuestsRewardsResponse{Data: data})
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }

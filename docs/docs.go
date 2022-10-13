@@ -2802,7 +2802,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -3732,6 +3732,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/quests": {
+            "get": {
+                "description": "Get user quest list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Quest"
+                ],
+                "summary": "Get user quest list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "routine",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserQuestListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/quests/claim": {
+            "post": {
+                "description": "Claim user quests' rewards",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Quest"
+                ],
+                "summary": "Claim user quests' rewards",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ClaimQuestsRewardsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ClaimQuestsRewardsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/twitter": {
             "post": {
                 "description": "Create twitter post",
@@ -4381,7 +4451,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5173,6 +5243,73 @@ const docTemplate = `{
                 }
             }
         },
+        "model.QuestUserList": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "current": {
+                    "type": "integer"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_claimed": {
+                    "type": "boolean"
+                },
+                "is_completed": {
+                    "type": "boolean"
+                },
+                "quest_id": {
+                    "type": "string"
+                },
+                "routine": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.QuestUserReward": {
+            "type": "object",
+            "properties": {
+                "claimed_at": {
+                    "type": "string"
+                },
+                "pass_id": {
+                    "type": "string"
+                },
+                "quest_id": {
+                    "type": "string"
+                },
+                "reward_amount": {
+                    "type": "integer"
+                },
+                "reward_id": {
+                    "type": "string"
+                },
+                "reward_type_id": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Token": {
             "type": "object",
             "properties": {
@@ -5372,6 +5509,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/request.AddWhitelistCampaignUser"
                     }
+                }
+            }
+        },
+        "request.ClaimQuestsRewardsRequest": {
+            "type": "object",
+            "properties": {
+                "routine": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -6001,6 +6149,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                }
+            }
+        },
+        "response.ClaimQuestsRewardsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.QuestUserReward"
                     }
                 }
             }
@@ -6897,6 +7056,17 @@ const docTemplate = `{
                 },
                 "user_wallet": {
                     "$ref": "#/definitions/model.UserWallet"
+                }
+            }
+        },
+        "response.GetUserQuestListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.QuestUserList"
+                    }
                 }
             }
         },
