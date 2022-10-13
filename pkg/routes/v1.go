@@ -295,6 +295,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	questGroup := v1.Group("/quests")
 	{
 		questGroup.GET("", h.GetUserQuestList)
+		questGroup.POST("", h.UpdateQuestProgress)
 		questGroup.POST("/claim", h.ClaimQuestsRewards)
 	}
 }
