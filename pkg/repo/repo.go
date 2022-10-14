@@ -5,6 +5,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
+	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -42,6 +43,14 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	"github.com/defipod/mochi/pkg/repo/quest"
+	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
+	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
+	questrewardtype "github.com/defipod/mochi/pkg/repo/quest_reward_type"
+	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
+	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
+	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
+	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -110,4 +119,13 @@ type Repo struct {
 	ServersUsageStats                    serversusagestats.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
+	ConversationRepostHistories          conversationreposthistories.Store
+	Quest                                quest.Store
+	QuestRewardType                      questrewardtype.Store
+	QuestUserLog                         questuserlog.Store
+	QuestUserList                        questuserlist.Store
+	QuestPass                            questpass.Store
+	QuestUserPass                        questuserpass.Store
+	QuestReward                          questreward.Store
+	QuestUserReward                      questuserreward.Store
 }

@@ -147,6 +147,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.GET("/:guild_id", h.GetRepostReactionConfigs)
 			repostReactionGroup.POST("", h.ConfigRepostReaction)
 			repostReactionGroup.DELETE("", h.RemoveRepostReactionConfig)
+			repostReactionGroup.POST("/start-stop", h.CreateConfigRepostReactionStartStop)
 			repostReactionGroup.PUT("/message-repost", h.EditMessageRepost)
 		}
 		activitygroup := configGroup.Group("/activities")
@@ -283,5 +284,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	usageGroup := v1.Group("/usage-stats")
 	{
 		usageGroup.POST("", h.AddServersUsageStat)
+	}
+
+	// quests
+	questGroup := v1.Group("/quests")
+	{
+		questGroup.GET("", h.GetUserQuestList)
+		questGroup.POST("", h.UpdateQuestProgress)
+		questGroup.POST("/claim", h.ClaimQuestsRewards)
 	}
 }

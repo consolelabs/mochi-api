@@ -283,12 +283,18 @@ definitions:
     properties:
       emoji:
         type: string
+      emoji_start:
+        type: string
+      emoji_stop:
+        type: string
       guild_id:
         type: string
       id:
         type: string
       quantity:
         type: integer
+      reaction_type:
+        type: string
       repost_channel_id:
         type: string
     type: object
@@ -470,6 +476,91 @@ definitions:
       symbol:
         type: string
     type: object
+  model.Quest:
+    properties:
+      action:
+        type: string
+      frequency:
+        type: integer
+      id:
+        type: string
+      routine:
+        type: string
+      title:
+        type: string
+    type: object
+  model.QuestReward:
+    properties:
+      id:
+        type: string
+      pass_id:
+        type: string
+      quest:
+        $ref: '#/definitions/model.Quest'
+      quest_id:
+        type: string
+      reward_amount:
+        type: integer
+      reward_type:
+        $ref: '#/definitions/model.QuestRewardType'
+      reward_type_id:
+        type: string
+    type: object
+  model.QuestRewardType:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  model.QuestUserList:
+    properties:
+      action:
+        type: string
+      current:
+        type: integer
+      end_time:
+        type: string
+      id:
+        type: string
+      is_claimed:
+        type: boolean
+      is_completed:
+        type: boolean
+      quest:
+        $ref: '#/definitions/model.Quest'
+      quest_id:
+        type: string
+      routine:
+        type: string
+      start_time:
+        type: string
+      target:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  model.QuestUserReward:
+    properties:
+      claimed_at:
+        type: string
+      pass_id:
+        type: string
+      quest_id:
+        type: string
+      reward:
+        $ref: '#/definitions/model.QuestReward'
+      reward_amount:
+        type: integer
+      reward_id:
+        type: string
+      reward_type_id:
+        type: string
+      start_time:
+        type: string
+      user_id:
+        type: string
+    type: object
   model.Token:
     properties:
       address:
@@ -601,6 +692,13 @@ definitions:
           $ref: '#/definitions/request.AddWhitelistCampaignUser'
         type: array
     type: object
+  request.ClaimQuestsRewardsRequest:
+    properties:
+      routine:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.ConfigDefaultCollection:
     properties:
       address:
@@ -641,6 +739,17 @@ definitions:
       level:
         type: integer
       role_id:
+        type: string
+    type: object
+  request.ConfigRepostReactionStartStop:
+    properties:
+      emoji_start:
+        type: string
+      emoji_stop:
+        type: string
+      guild_id:
+        type: string
+      repost_channel_id:
         type: string
     type: object
   request.ConfigRepostRequest:
@@ -911,6 +1020,15 @@ definitions:
       log_channel:
         type: string
     type: object
+  request.UpdateQuestProgressRequest:
+    properties:
+      action:
+        type: string
+      guild_id:
+        type: string
+      user_id:
+        type: string
+    type: object
   request.UpsertCustomTokenConfigRequest:
     properties:
       active:
@@ -1000,6 +1118,13 @@ definitions:
       target_suggestions:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+    type: object
+  response.ClaimQuestsRewardsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.QuestUserReward'
         type: array
     type: object
   response.CoinDescription:
@@ -1575,6 +1700,13 @@ definitions:
         $ref: '#/definitions/model.UserFactionXpsMapping'
       user_wallet:
         $ref: '#/definitions/model.UserWallet'
+    type: object
+  response.GetUserQuestListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.QuestUserList'
+        type: array
     type: object
   response.GetUserResponse:
     properties:
@@ -3218,6 +3350,28 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: edit message repost
+      tags:
+      - Config
+  /configs/repost-reactions/start-stop:
+    post:
+      consumes:
+      - application/json
+      description: Config Respost reaction with start stop
+      parameters:
+      - description: Config repost reaction start stop request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostReactionStartStop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Respost reaction with start stop
       tags:
       - Config
   /configs/sales-tracker:
@@ -4866,6 +5020,75 @@ paths:
       summary: Get user profile
       tags:
       - Profile
+  /quests:
+    get:
+      consumes:
+      - application/json
+      description: Get user quest list
+      parameters:
+      - in: query
+        name: quantity
+        type: integer
+      - in: query
+        name: routine
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserQuestListResponse'
+      summary: Get user quest list
+      tags:
+      - Quest
+    post:
+      consumes:
+      - application/json
+      description: Update user's quest progress
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateQuestProgressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Update user's quest progress
+      tags:
+      - Quest
+  /quests/claim:
+    post:
+      consumes:
+      - application/json
+      description: Claim user quests' rewards
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.ClaimQuestsRewardsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ClaimQuestsRewardsResponse'
+      summary: Claim user quests' rewards
+      tags:
+      - Quest
   /twitter:
     post:
       consumes:

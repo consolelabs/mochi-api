@@ -35,7 +35,14 @@ func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHi
 	if err != nil {
 		return nil, err, statusCode
 	}
-
+	// handle quest logs
+	log := &model.QuestUserLog{
+		UserID: req.DiscordID,
+		Action: model.QuestAction(model.TICKER),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.GetHistoricalMarketChart] entity.UpdateUserQuestProgress() failed")
+	}
 	return data, nil, http.StatusOK
 }
 
@@ -614,6 +621,14 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 			item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
 		}
 		data = append(data, item)
+	}
+	// handle quest logs
+	log := &model.QuestUserLog{
+		UserID: req.UserID,
+		Action: model.QuestAction(model.WATCHLIST),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.GetUserWatchlist] entity.UpdateUserQuestProgress() failed")
 	}
 	return &data, nil
 }

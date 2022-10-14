@@ -521,6 +521,56 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
+// CreateConfigRepostReactionStartStop     godoc
+// @Summary     Config Respost reaction with start stop
+// @Description Config Respost reaction with start stop
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.ConfigRepostReactionStartStop true "Config repost reaction start stop request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions/start-stop [post]
+func (h *Handler) CreateConfigRepostReactionStartStop(c *gin.Context) {
+	var req request.ConfigRepostReactionStartStop
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateConfigRepostReactionStartStop] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if req.GuildID == "" {
+		h.log.Info("[handler.CreateConfigRepostReactionStartStop] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	if req.EmojiStart == "" {
+		h.log.Info("[handler.CreateConfigRepostReactionStartStop] - emoji empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
+		return
+	}
+
+	if req.EmojiStop == "" {
+		h.log.Info("[handler.CreateConfigRepostReactionStartStop] - emoji empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("emoji is required"), nil))
+		return
+	}
+
+	if req.RepostChannelID == "" {
+		h.log.Info("[handler.CreateConfigRepostReactionStartStop] - channel id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("repost_channel_id is required"), nil))
+		return
+	}
+
+	if err := h.entities.CreateConfigRepostReactionStartStop(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateConfigRepostReactionStartStop] - failed to add config repost reaction start stop")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
 // GetReposeReactionConfigs     godoc
 // @Summary     Get Respost reaction configs
 // @Description Get Respost reaction configs

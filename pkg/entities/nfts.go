@@ -1171,13 +1171,29 @@ func (e *Entity) SetGuildDefaultNftTicker(req request.GuildConfigDefaultNftTicke
 }
 
 func (e *Entity) GetSuggestionNftCollections(query string) ([]response.CollectionSuggestions, error) {
-	collectionSuggestions, error := e.GetNFTSuggestion(strings.ToUpper(query), "")
+	// case query (symbol) has 1 collection -> return in collection
+	// has more than 1 collection -> return collectionSuggestions
+	collectionSuggestions, collection, error := e.SuggestCollection(request.AddNftWatchlistRequest{
+		CollectionSymbol: strings.ToUpper(query),
+	})
+
 	if error != nil {
 		e.log.Fields(logger.Fields{"query": query}).Error(error, "[entity.GetSuggestionNftCollections] GetNFTSuggestion() failed")
 		return nil, error
 	}
 
-	return collectionSuggestions, nil
+	if collectionSuggestions == nil {
+		chainId, _ := strconv.Atoi(collection.ChainID)
+		return []response.CollectionSuggestions{{
+			Name:    collection.Name,
+			Symbol:  collection.Symbol,
+			Address: collection.Address,
+			Chain:   util.ConvertChainToChainId(collection.ChainID),
+			ChainId: int64(chainId),
+		}}, nil
+	}
+
+	return collectionSuggestions.Suggestions, nil
 }
 
 func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQuery string) (*response.IndexerNFTTokenTickersData, error) {
