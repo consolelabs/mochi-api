@@ -178,7 +178,26 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		return
 	}
 
-	repostMessage, err := h.entities.CreateRepostReactionEvent(req)
+	// starboard repost conversation
+	repostConversation, err := h.entities.CreateRepostConversationReactionEvent(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if repostConversation != nil {
+		c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{
+			Status:               "OK",
+			RepostChannelID:      repostConversation.RepostChannelID,
+			ReactionType:         "conversation",
+			OriginStartMessageID: repostConversation.OriginStartMessageID,
+			OriginStopMessageID:  repostConversation.OriginStopMessageID,
+		}, nil, nil, nil))
+		return
+	}
+
+	// starboard repost message
+	repostMessage, err := h.entities.CreateRepostMessageReactionEvent(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

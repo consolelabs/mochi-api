@@ -29,12 +29,17 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigRepostReaction, e
 
 func (pg *pg) GetByReaction(guildID string, emoji string) (model.GuildConfigRepostReaction, error) {
 	var config model.GuildConfigRepostReaction
-	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND emoji = ?", guildID, emoji).First(&config).Error
+	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND emoji = ? AND reaction_type = ?", guildID, emoji, "message").First(&config).Error
 }
 
 func (pg *pg) GetByReactionStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error) {
 	var config model.GuildConfigRepostReaction
-	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND (emoji_start = ? OR emoji_stop = ?)", guildID, emoji, emoji).First(&config).Error
+	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND (emoji_start = ? OR emoji_stop = ?) AND reaction_type = ?", guildID, emoji, emoji, "message").First(&config).Error
+}
+
+func (pg *pg) GetByReactionConversationStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error) {
+	var config model.GuildConfigRepostReaction
+	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND (emoji_start = ? OR emoji_stop = ?) AND reaction_type = ?", guildID, emoji, emoji, "conversation").First(&config).Error
 }
 
 func (pg *pg) GetByRepostChannelID(guildID, channelID string) (model.GuildConfigRepostReaction, error) {

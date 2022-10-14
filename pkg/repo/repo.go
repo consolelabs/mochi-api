@@ -5,6 +5,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
+	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -118,6 +119,7 @@ type Repo struct {
 	ServersUsageStats                    serversusagestats.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
+	ConversationRepostHistories          conversationreposthistories.Store
 	Quest                                quest.Store
 	QuestRewardType                      questrewardtype.Store
 	QuestUserLog                         questuserlog.Store
