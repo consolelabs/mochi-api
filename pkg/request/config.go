@@ -109,3 +109,10 @@ type EditMessageRepostRequest struct {
 	RepostChannelID string `json:"repost_channel_id"`
 	RepostMessageID string `json:"repost_message_id"`
 }
+
+type ConfigRepostReactionStartStop struct {
+	GuildID         string `json:"guild_id"`
+	EmojiStart      string `json:"emoji_start"`
+	EmojiStop       string `json:"emoji_stop"`
+	RepostChannelID string `json:"repost_channel_id"`
+}

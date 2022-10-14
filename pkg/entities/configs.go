@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -465,6 +466,17 @@ func (e *Entity) ConfigRepostReaction(req request.ConfigRepostRequest) error {
 		Emoji:           req.Emoji,
 		Quantity:        req.Quantity,
 		RepostChannelID: req.RepostChannelID,
+		ReactionType:    consts.ReactionTypeMessage,
+	})
+}
+
+func (e *Entity) CreateConfigRepostReactionStartStop(req request.ConfigRepostReactionStartStop) error {
+	return e.repo.GuildConfigRepostReaction.UpsertOne(model.GuildConfigRepostReaction{
+		GuildID:         req.GuildID,
+		EmojiStart:      req.EmojiStart,
+		EmojiStop:       req.EmojiStop,
+		RepostChannelID: req.RepostChannelID,
+		ReactionType:    consts.ReactionTypeConversation,
 	})
 }
 
@@ -472,7 +484,7 @@ func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildCon
 	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
 }
 
-func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
+func (e *Entity) CreateRepostMessageReactionEvent(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
 	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -542,6 +554,65 @@ func (e *Entity) CreateRepostReactionEvent(req request.MessageReactionRequest) (
 	}
 
 	return &repostMsgRes, nil
+}
+
+func (e *Entity) CreateRepostConversationReactionEvent(req request.MessageReactionRequest) (*model.ConversationRepostHistories, error) {
+	configConversation, err := e.repo.GuildConfigRepostReaction.GetByReactionConversationStartOrStop(req.GuildID, req.Reaction)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "reaction": req.Reaction}).Error(err, "[e.CreateRepostReactionEvent] failed to get guild config repost reaction")
+		return nil, err
+	}
+
+	if req.Reaction == configConversation.EmojiStart {
+		// start conversation repost by create record with origin_start_message_id
+		err := e.repo.ConversationRepostHistories.Upsert(model.ConversationRepostHistories{
+			GuildID:              req.GuildID,
+			OriginChannelID:      req.ChannelID,
+			OriginStartMessageID: req.MessageID,
+			RepostChannelID:      configConversation.RepostChannelID,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to create conversation repost history")
+			return nil, err
+		}
+		return nil, nil
+	}
+
+	if req.Reaction == configConversation.EmojiStop {
+		// stop conversation repost by update record with origin_stop_message_id
+		// first get with channel and guild id to see if theres any started conversation
+		// - yes: get and update with stop message id
+		// - no: return nil
+		conversationRepostHistory, err := e.repo.ConversationRepostHistories.GetByGuildAndChannel(req.GuildID, req.ChannelID)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return nil, nil
+			}
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to get conversation repost history")
+			return nil, err
+		}
+
+		err = e.repo.ConversationRepostHistories.Update(&model.ConversationRepostHistories{
+			ID:                   conversationRepostHistory.ID,
+			GuildID:              req.GuildID,
+			OriginChannelID:      req.ChannelID,
+			OriginStartMessageID: conversationRepostHistory.OriginStartMessageID,
+			OriginStopMessageID:  req.MessageID,
+			RepostChannelID:      configConversation.RepostChannelID,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.CreateRepostReactionEvent] failed to stop conversation repost")
+			return nil, err
+		}
+		conversationRepostHistory.OriginStopMessageID = req.MessageID
+
+		return conversationRepostHistory, nil
+	}
+
+	return nil, nil
 }
 
 func (e *Entity) CreateRepostReactionEventWithStartStop(req request.MessageReactionRequest, conf model.GuildConfigRepostReaction) error {

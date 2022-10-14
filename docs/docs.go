@@ -1172,6 +1172,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/repost-reactions/start-stop": {
+            "post": {
+                "description": "Config Respost reaction with start stop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Config Respost reaction with start stop",
+                "parameters": [
+                    {
+                        "description": "Config repost reaction start stop request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigRepostReactionStartStop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/repost-reactions/{guild_id}": {
             "get": {
                 "description": "Get Respost reaction configs",
@@ -2802,7 +2836,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3747,6 +3781,11 @@ const docTemplate = `{
                 "summary": "Get user quest list",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "name": "quantity",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "routine",
                         "in": "query"
@@ -4483,7 +4522,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -4977,6 +5016,9 @@ const docTemplate = `{
                 },
                 "quantity": {
                     "type": "integer"
+                },
+                "reaction_type": {
+                    "type": "string"
                 },
                 "repost_channel_id": {
                     "type": "string"
@@ -5685,6 +5727,23 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ConfigRepostReactionStartStop": {
+            "type": "object",
+            "properties": {
+                "emoji_start": {
+                    "type": "string"
+                },
+                "emoji_stop": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "repost_channel_id": {
                     "type": "string"
                 }
             }
