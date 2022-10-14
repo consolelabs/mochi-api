@@ -13,4 +13,6 @@ type DiscordGuild struct {
 	GlobalXP                 bool                     `json:"global_xp"`
 	LogChannel               string                   `json:"log_channel"`
 	Active                   bool                     `json:"active"`
+	JoinedAt                 time.Time                `json:"-"`
+	LeftAt                   *time.Time               `json:"-"`
 }

@@ -2828,7 +2828,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4478,7 +4478,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -6085,6 +6085,9 @@
                 },
                 "global_xp": {
                     "type": "boolean"
+                },
+                "left_at": {
+                    "type": "string"
                 },
                 "log_channel": {
                     "type": "string"
