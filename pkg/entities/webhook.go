@@ -245,6 +245,16 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		return nil, err
 	}
 
+	// handle quest logs
+	log := &model.QuestUserLog{
+		GuildID: &guildID,
+		UserID:  discordID,
+		Action:  model.QuestAction(model.GM),
+	}
+	if err := e.UpdateUserQuestProgress(log); err != nil {
+		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.newUserGM] entity.UpdateUserQuestProgress() failed")
+	}
+
 	// add new feature : GmExIncrease
 	///////
 	if streak.StreakCount < 2 {
@@ -257,16 +267,6 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 			}).Error(err, "[entity.newUserGM] entity.sendGmGnMessage() failed")
 		}
 		return nil, e.replyGmGn(streak, channelID, discordID, authorAvatar, authorUsername, "", true)
-	}
-
-	// handle quest logs
-	log := &model.QuestUserLog{
-		GuildID: &guildID,
-		UserID:  discordID,
-		Action:  model.QuestAction(model.GM),
-	}
-	if err := e.UpdateUserQuestProgress(log); err != nil {
-		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.newUserGM] entity.UpdateUserQuestProgress() failed")
 	}
 
 	// handle activity logs

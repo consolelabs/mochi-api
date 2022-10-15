@@ -44,12 +44,18 @@ func (pg *pg) List(q ListQuery) ([]model.QuestUserList, error) {
 	if q.Routine != nil {
 		db = db.Where("routine::TEXT = ?", *q.Routine)
 	}
+	if q.Action != nil {
+		db = db.Where("action::TEXT = ?", *q.Action)
+	}
+	if q.NotAction != nil {
+		db = db.Where("action::TEXT != ?", *q.NotAction)
+	}
 	if q.IsCompleted != nil {
 		db = db.Where("is_completed = ?", *q.IsCompleted)
 	}
 	if q.IsClaimed != nil {
 		db = db.Where("is_claimed = ?", *q.IsClaimed)
 	}
-	db = db.Preload("Quest")
+	db = db.Preload("Quest").Preload("Quest.Rewards").Preload("Quest.Rewards.RewardType")
 	return list, db.Find(&list).Error
 }
