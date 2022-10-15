@@ -11,6 +11,7 @@ const (
 	GIFT      QuestAction = "gift"
 	TICKER    QuestAction = "ticker"
 	WATCHLIST QuestAction = "watchlist"
+	BONUS     QuestAction = "bonus"
 )
 
 type QuestRoutine string
