@@ -25,11 +25,12 @@ const (
 )
 
 type Quest struct {
-	ID        uuid.UUID    `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	Title     string       `json:"title"`
-	Action    QuestAction  `json:"action"`
-	Frequency int          `json:"frequency"`
-	Routine   QuestRoutine `json:"routine"`
+	ID        uuid.UUID     `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
+	Title     string        `json:"title"`
+	Action    QuestAction   `json:"action"`
+	Frequency int           `json:"frequency"`
+	Routine   QuestRoutine  `json:"routine"`
+	Rewards   []QuestReward `json:"rewards"`
 }
 
 func (Quest) TableName() string {

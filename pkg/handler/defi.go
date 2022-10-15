@@ -24,7 +24,13 @@ import (
 // @Success     200 {object} response.GetHistoricalMarketChartResponse
 // @Router      /defi/market-chart [get]
 func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
-	data, err, statusCode := h.entities.GetHistoricalMarketChart(c)
+	var req request.GetMarketChartRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetHistoricalMarketChart] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	data, err, statusCode := h.entities.GetHistoricalMarketChart(&req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetHistoricalMarketChart] - failed to get historical market chart")
 		c.JSON(statusCode, response.CreateResponse[any](nil, nil, err, nil))

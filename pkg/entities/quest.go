@@ -72,6 +72,7 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 			Routine:   req.Routine,
 			Target:    item.Frequency,
 			StartTime: req.StartTime,
+			Quest:     &item,
 		}
 		// currently only daily quest supported
 		switch req.Routine {
@@ -98,6 +99,7 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 			Routine:   bonusQuest.Routine,
 			Target:    bonusQuest.Frequency,
 			StartTime: req.StartTime,
+			Quest:     bonusQuest,
 		})
 	}
 	// save user quests list
@@ -111,66 +113,55 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 
 func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 	// bonus quest progress cannot be updated from outside
-	if log.Action == model.BONUS {
+	if log.Action == model.BONUS || log.UserID == "" {
 		return nil
 	}
-	// get quest by action (e.g. GM)
-	questQ := quest.ListQuery{Action: &log.Action}
-	quests, err := e.repo.Quest.List(questQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"questQ": questQ}).Error(err, "[entity.UpdateUserQuestProgress] repo.Quest.List() failed")
-		return err
-	}
-	if len(quests) == 0 {
-		e.log.Fields(logger.Fields{"questQ": questQ}).Info("[entity.UpdateUserQuestProgress] repo.Quest.List() returns empty")
-		return nil
-	}
-	log.QuestID = quests[0].ID
-	log.Target = quests[0].Frequency
-	// create quest log
-	if err := e.repo.QuestUserLog.CreateOne(log); err != nil {
-		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserLog.CreateOne() failed")
-		return err
-	}
-	// get user's quests list ...
 	startTime := util.StartOfDay(time.Now().UTC())
-	listQ := questuserlist.ListQuery{
-		UserID:    &log.UserID,
-		QuestID:   &log.QuestID,
-		StartTime: &startTime,
-	}
-	userQuest, err := e.repo.QuestUserList.List(listQ)
+	// check if user has the quest
+	uQuestQ := questuserlist.ListQuery{Action: &log.Action, StartTime: &startTime, UserID: &log.UserID}
+	uQuests, err := e.repo.QuestUserList.List(uQuestQ)
 	if err != nil {
-		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserList.List() failed")
+		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserList.List() failed")
 		return err
 	}
-	if len(userQuest) == 0 {
+	if len(uQuests) == 0 {
+		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Info("[entity.UpdateUserQuestProgress] repo.QuestUserList.List() returns empty")
 		return nil
 	}
-	// ... and update progress
-	userQuest[0].Current++
-	if userQuest[0].Current >= userQuest[0].Target {
-		userQuest[0].IsCompleted = true
+	for _, uQuest := range uQuests {
+		log.QuestID = uQuest.QuestID
+		log.Target = uQuest.Quest.Frequency
+		// create quest log
+		if err := e.repo.QuestUserLog.CreateOne(log); err != nil {
+			e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserLog.CreateOne() failed")
+			return err
+		}
+		// update quest progress
+		uQuest.Current++
+		if uQuest.Current >= uQuest.Target {
+			uQuest.IsCompleted = true
+		}
+		err = e.repo.QuestUserList.UpsertMany([]model.QuestUserList{uQuest})
+		if err != nil {
+			e.log.Fields(logger.Fields{"uQuest": uQuest}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserList.UpsertMany() failed")
+			return err
+		}
+		// if the quest have not been completed yet, no need to update bonus quest ...
+		if !uQuest.IsCompleted {
+			return nil
+		}
+		// ... else update bonus quest progress
+		err = e.updateUserBonusQuest(uQuest.Routine, log.UserID, startTime)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"routine":   uQuest.Routine,
+				"userID":    log.UserID,
+				"startTime": startTime,
+			}).Error(err, "[entity.UpdateUserQuestProgress] entity.updateUserBonusQuest() failed")
+			return err
+		}
 	}
-	err = e.repo.QuestUserList.UpsertMany(userQuest)
-	if err != nil {
-		e.log.Fields(logger.Fields{"userQuest": userQuest}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserList.UpsertMany() failed")
-		return err
-	}
-	// if the quest have not been completed yet, no need to update bonus quest ...
-	if !userQuest[0].IsCompleted {
-		return nil
-	}
-	// ... else update bonus quest progress
-	err = e.updateUserBonusQuest(quests[0].Routine, log.UserID, startTime)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"routine":   quests[0].Routine,
-			"userID":    log.UserID,
-			"startTime": startTime,
-		}).Error(err, "[entity.UpdateUserQuestProgress] entity.updateUserBonusQuest() failed")
-	}
-	return err
+	return nil
 }
 
 func (e *Entity) updateUserBonusQuest(routine model.QuestRoutine, userID string, startTime time.Time) error {
@@ -195,7 +186,20 @@ func (e *Entity) updateUserBonusQuest(routine model.QuestRoutine, userID string,
 	if len(userBonusQuest) == 0 {
 		return nil
 	}
-	userBonusQuest[0].Current++
+	completed := true
+	// count completed quests (excluding bonus quest)
+	completedQuestsQ := questuserlist.ListQuery{
+		UserID:      &userID,
+		StartTime:   &startTime,
+		IsCompleted: &completed,
+		NotAction:   &bonusQuest.Action,
+	}
+	completedQuests, err := e.repo.QuestUserList.List(completedQuestsQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"completedQuestsQ": completedQuestsQ}).Error(err, "[entity.updateUserBonusQuest] repo.QuestUserList.List() failed")
+		return err
+	}
+	userBonusQuest[0].Current = len(completedQuests)
 	if userBonusQuest[0].Current >= userBonusQuest[0].Target {
 		userBonusQuest[0].IsCompleted = true
 	}

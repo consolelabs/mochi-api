@@ -1,17 +1,14 @@
 package request
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 )
 
 type GetMarketChartRequest struct {
-	CoinID    string `json:"coin_id"`
-	Currency  string `json:"currency"`
-	Days      int    `json:"days"`
-	DiscordID string `json:"discord_id"`
+	CoinID    string `json:"coin_id" form:"coin_id" binding:"required"`
+	Currency  string `json:"currency" form:"currency,default=usd"`
+	Days      int    `json:"days" form:"days,default=7"`
+	DiscordID string `json:"discord_id" form:"discord_id"`
 }
 
 type TransferRequest struct {
@@ -24,30 +21,6 @@ type TransferRequest struct {
 	Each           bool     `json:"each"`
 	All            bool     `json:"all"`
 	TransferType   string   `json:"transferType"`
-}
-
-func ValidateRequest(c *gin.Context) (*GetMarketChartRequest, error) {
-	params := c.Request.URL.Query()
-
-	days, err := strconv.Atoi(params.Get("days"))
-	if err != nil {
-		return nil, fmt.Errorf("invalid days")
-	}
-	req := &GetMarketChartRequest{
-		CoinID:    params.Get("coin_id"),
-		Currency:  params.Get("currency"),
-		DiscordID: params.Get("discord_id"),
-		Days:      days,
-	}
-
-	if req.CoinID == "" {
-		return nil, fmt.Errorf("coin_id is required")
-	}
-	if req.Currency == "" {
-		req.Currency = "usd"
-	}
-
-	return req, nil
 }
 
 func (input *TransferRequest) Bind(c *gin.Context) (err error) {
