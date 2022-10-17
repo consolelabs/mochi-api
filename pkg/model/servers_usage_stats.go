@@ -8,5 +8,6 @@ type UsageStat struct {
 	GuildID   string    `json:"guild_id"`
 	Command   string    `json:"command"`
 	Args      string    `json:"args"`
+	Success   bool      `json:"success"`
 	CreatedAt time.Time `json:"created_at"`
 }
