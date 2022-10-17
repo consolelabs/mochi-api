@@ -12,6 +12,8 @@ type ListQuery struct {
 	QuestID     *uuid.UUID
 	StartTime   *time.Time
 	Routine     *model.QuestRoutine
+	Action      *model.QuestAction
+	NotAction   *model.QuestAction
 	IsCompleted *bool
 	IsClaimed   *bool
 }
