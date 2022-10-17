@@ -2,6 +2,7 @@ package entities
 
 import (
 	"math/rand"
+	"sort"
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -27,13 +28,20 @@ func (e *Entity) GetUserQuestList(req request.GetUserQuestListRequest) ([]model.
 		return nil, err
 	}
 	if len(list) == 0 {
-		return e.generateUserQuestList(request.GenerateUserQuestListRequest{
+		generateReq := request.GenerateUserQuestListRequest{
 			UserID:    req.UserID,
 			Routine:   req.Routine,
 			StartTime: startTime,
-			Quantity:  req.Quantity,
-		})
+		}
+		list, err = e.generateUserQuestList(generateReq)
+		if err != nil {
+			e.log.Fields(logger.Fields{"generateReq": generateReq}).Error(err, "[entity.GetUserQuestList] repo.generateUserQuestList() failed")
+			return nil, err
+		}
 	}
+	sort.Slice(list, func(i, j int) bool {
+		return list[i].Quest.Title < list[j].Quest.Title
+	})
 	return list, nil
 }
 
@@ -53,6 +61,9 @@ func (e *Entity) getBonusQuest(routine model.QuestRoutine) (*model.Quest, error)
 }
 
 func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest) ([]model.QuestUserList, error) {
+	if req.Quantity == 0 {
+		req.Quantity = 5
+	}
 	bonus := model.BONUS
 	quests, err := e.repo.Quest.List(quest.ListQuery{Routine: &req.Routine, NotAction: &bonus})
 	if err != nil {
@@ -69,13 +80,13 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 			UserID:    req.UserID,
 			QuestID:   item.ID,
 			Action:    item.Action,
-			Routine:   req.Routine,
+			Routine:   item.Routine,
 			Target:    item.Frequency,
 			StartTime: req.StartTime,
 			Quest:     &item,
 		}
 		// currently only daily quest supported
-		switch req.Routine {
+		switch item.Routine {
 		case model.DAILY:
 			q.EndTime = q.StartTime.Add(24 * time.Hour)
 		default:
@@ -111,12 +122,54 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 	return userQuests, nil
 }
 
+func (e *Entity) getOrGenerateUserQuests(startTime time.Time, userID string, routine model.QuestRoutine) ([]model.QuestUserList, error) {
+	uQuestQ := questuserlist.ListQuery{StartTime: &startTime, UserID: &userID, Routine: &routine}
+	uQuests, err := e.repo.QuestUserList.List(uQuestQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Error(err, "[entity.getOrGenerateUserQuests] repo.QuestUserList.List() failed")
+		return nil, err
+	}
+	if len(uQuests) > 0 {
+		return uQuests, nil
+	}
+	generateReq := request.GenerateUserQuestListRequest{
+		UserID:    userID,
+		Routine:   routine,
+		StartTime: startTime,
+	}
+	uQuests, err = e.generateUserQuestList(generateReq)
+	if err != nil {
+		e.log.Fields(logger.Fields{"generateReq": generateReq}).Error(err, "[entity.getOrGenerateUserQuests] entity.generateUserQuestList() failed")
+	}
+	sort.Slice(uQuests, func(i, j int) bool {
+		return uQuests[i].Quest.Title < uQuests[j].Quest.Title
+	})
+	return uQuests, err
+}
+
 func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 	// bonus quest progress cannot be updated from outside
 	if log.Action == model.BONUS || log.UserID == "" {
 		return nil
 	}
 	startTime := util.StartOfDay(time.Now().UTC())
+	routines, err := e.repo.Quest.GetAvailableRoutines()
+	if err != nil {
+		e.log.Error(err, "[entity.UpdateUserQuestProgress] repo.Quest.GetAvailableRoutines() failed")
+		return err
+	}
+	for _, routine := range routines {
+		// check if user quests have been generated yet ...
+		_, err := e.getOrGenerateUserQuests(startTime, log.UserID, routine)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"startTime": startTime,
+				"userID":    log.UserID,
+				"routine":   routine,
+			}).Error(err, "[entity.UpdateUserQuestProgress] entity.getOrGenerateUserQuests() failed")
+			return err
+		}
+	}
 	// check if user has the quest
 	uQuestQ := questuserlist.ListQuery{Action: &log.Action, StartTime: &startTime, UserID: &log.UserID}
 	uQuests, err := e.repo.QuestUserList.List(uQuestQ)
@@ -137,6 +190,9 @@ func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 			return err
 		}
 		// update quest progress
+		if uQuest.IsCompleted {
+			continue
+		}
 		uQuest.Current++
 		if uQuest.Current >= uQuest.Target {
 			uQuest.IsCompleted = true
