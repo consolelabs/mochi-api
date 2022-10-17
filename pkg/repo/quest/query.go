@@ -10,4 +10,5 @@ type ListQuery struct {
 	Action    *model.QuestAction
 	NotAction *model.QuestAction
 	Routine   *model.QuestRoutine
+	Sort      string
 }
