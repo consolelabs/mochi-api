@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"gorm.io/gorm"
@@ -44,4 +45,17 @@ func (e *Entity) CreateRepostMessageHistory(req request.MessageReactionRequest) 
 	}
 
 	return history, nil
+}
+
+func (e *Entity) GetMessageRepostHistory(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
+	repostMsg, err := e.repo.MessageRepostHistory.GetByMessageID(req.GuildID, req.MessageID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetMessageRepostHistory] repo.MessageRepostHistory.GetByMessageID() failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return repostMsg, nil
 }

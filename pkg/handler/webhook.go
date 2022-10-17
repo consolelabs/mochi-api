@@ -237,7 +237,22 @@ func (h *Handler) handleMessageReactionRemove(c *gin.Context, data json.RawMessa
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{Status: "OK"}, nil, nil, nil))
+	msgRepostHistory, err := h.entities.GetMessageRepostHistory(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionRemove] - failed to get repost reaction config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if msgRepostHistory == nil {
+		c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{Status: "OK"}, nil, nil, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{
+		RepostChannelID: msgRepostHistory.RepostChannelID,
+		RepostMessageID: msgRepostHistory.RepostMessageID,
+	}, nil, nil, nil))
 }
 
 func (h *Handler) handleMessageDelete(c *gin.Context, data json.RawMessage) {
@@ -261,7 +276,7 @@ func (h *Handler) handleMessageDelete(c *gin.Context, data json.RawMessage) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, err, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 func (h *Handler) WebhookUpvoteTopGG(c *gin.Context) {

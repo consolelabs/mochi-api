@@ -70,6 +70,7 @@ func (e *Entity) RemoveMessageReaction(req request.MessageReactionRequest) error
 		return err
 	}
 
+	// remove reaction roles
 	for _, role := range roles {
 		if role.Reaction == req.Reaction {
 			if err := e.repo.MessageReaction.Delete(req.MessageID, req.UserID, req.Reaction); err != nil {
