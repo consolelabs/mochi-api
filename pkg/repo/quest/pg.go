@@ -28,6 +28,14 @@ func (pg *pg) List(q ListQuery) ([]model.Quest, error) {
 	if q.Routine != nil {
 		db = db.Where("routine::TEXT = ?", *q.Routine)
 	}
-	db = db.Preload("Rewards").Preload("Rewards.RewardType")
+	if q.Sort == "" {
+		q.Sort = "title"
+	}
+	db = db.Order(q.Sort).Preload("Rewards").Preload("Rewards.RewardType")
 	return quests, db.Find(&quests).Error
+}
+
+func (pg *pg) GetAvailableRoutines() ([]model.QuestRoutine, error) {
+	var routines []model.QuestRoutine
+	return routines, pg.db.Table("quests").Distinct().Pluck("routine", &routines).Error
 }
