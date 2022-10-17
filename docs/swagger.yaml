@@ -1043,6 +1043,8 @@ definitions:
         type: boolean
       global_xp:
         type: boolean
+      left_at:
+        type: string
       log_channel:
         type: string
     type: object
@@ -4358,7 +4360,7 @@ paths:
         - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
         - Custom Command
@@ -5619,7 +5621,7 @@ paths:
         - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
         - Whitelist campaign
