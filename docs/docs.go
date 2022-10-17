@@ -2836,7 +2836,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4486,7 +4486,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -6093,6 +6093,9 @@ const docTemplate = `{
                 },
                 "global_xp": {
                     "type": "boolean"
+                },
+                "left_at": {
+                    "type": "string"
                 },
                 "log_channel": {
                     "type": "string"

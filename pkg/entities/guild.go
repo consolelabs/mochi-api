@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
@@ -161,6 +162,9 @@ func (e *Entity) UpdateGuild(guildID string, req request.UpdateGuildRequest) err
 	if req.Active != nil {
 		guild.Active = *req.Active
 	}
+	if req.LeftAt != nil {
+		guild.LeftAt = req.LeftAt
+	}
 	if err := e.repo.DiscordGuilds.Update(guild); err != nil {
 		e.log.Errorf(err, "failed to update guild %s", guildID)
 		return err
@@ -170,7 +174,8 @@ func (e *Entity) UpdateGuild(guildID string, req request.UpdateGuildRequest) err
 
 func (e *Entity) DeactivateGuild(req request.HandleGuildDeleteRequest) error {
 	active := false
-	err := e.UpdateGuild(req.GuildID, request.UpdateGuildRequest{Active: &active})
+	t := time.Now()
+	err := e.UpdateGuild(req.GuildID, request.UpdateGuildRequest{Active: &active, LeftAt: &t})
 	e.sendGuildDeactivationLog(req.GuildID, req.GuildName, req.IconURL)
 	return err
 }
