@@ -7,10 +7,11 @@ import (
 
 func (e *Entity) AddServersUsageStats(info *request.UsageInformation) error {
 	return e.repo.ServersUsageStats.CreateOne(&model.UsageStat{
-		GuildID: info.GuildID,
-		UserID:  info.UserID,
-		Command: info.Command,
-		Success: info.Success,
-		Args:    info.Args,
+		GuildID:         info.GuildID,
+		UserID:          info.UserID,
+		Command:         info.Command,
+		Success:         info.Success,
+		ExecutionTimeMs: info.ExecutionTimeMs,
+		Args:            info.Args,
 	})
 }
