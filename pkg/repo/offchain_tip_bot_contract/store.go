@@ -7,4 +7,5 @@ type Store interface {
 	GetByAddress(addr string) (model.OffchainTipBotContract, error)
 	GetByChainID(id string) ([]model.OffchainTipBotContract, error)
 	CreateAssignContract(ac *model.OffchainTipBotAssignContract) error
+	DeleteExpiredAssignContract() error
 }

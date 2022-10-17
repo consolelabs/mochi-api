@@ -63,6 +63,20 @@ CREATE TABLE IF NOT EXISTS offchain_tip_bot_assign_contract (
   FOREIGN KEY (contract_id) REFERENCES offchain_tip_bot_contracts(id)
 );
 
+CREATE TABLE IF NOT EXISTS offchain_tip_bot_assign_contract_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  token_id UUID NOT NULL,
+  chain_id UUID NOT NULL,
+  user_id text NOT NULL,
+  contract_id UUID NOT NULL,
+  status int,
+  expired_time timestamptz,
+  FOREIGN KEY (token_id) REFERENCES offchain_tip_bot_tokens(id),
+  FOREIGN KEY (chain_id) REFERENCES offchain_tip_bot_chains(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (contract_id) REFERENCES offchain_tip_bot_contracts(id)
+);
+
 CREATE TABLE IF NOT EXISTS offchain_tip_bot_user_balances (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id text NOT NULL,

@@ -29,3 +29,18 @@ func (o *OffchainTipBotAssignContract) BeforeCreate(tx *gorm.DB) (err error) {
 	}
 	return nil
 }
+
+func (o *OffchainTipBotAssignContract) AfterCreate(tx *gorm.DB) (err error) {
+	if err := tx.Create(&OffchainTipBotAssignContractLog{
+		ID:          o.ID,
+		TokenID:     o.TokenID,
+		ChainID:     o.ChainID,
+		UserID:      o.UserID,
+		ContractID:  o.ContractID,
+		Status:      o.Status,
+		ExpiredTime: o.ExpiredTime,
+	}).Error; err != nil {
+		return err
+	}
+	return nil
+}
