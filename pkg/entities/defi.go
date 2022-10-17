@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -25,12 +24,7 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) GetHistoricalMarketChart(c *gin.Context) (*response.CoinPriceHistoryResponse, error, int) {
-	req, err := request.ValidateRequest(c)
-	if err != nil {
-		return nil, err, http.StatusBadRequest
-	}
-
+func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
 	data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req)
 	if err != nil {
 		return nil, err, statusCode
