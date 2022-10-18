@@ -617,3 +617,18 @@ func Shuffle[T any](list []T) {
 func StartOfDay(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
 }
+
+func NumberPostfix(num int) string {
+	postfix := "th"
+	switch num % 10 {
+	case 1:
+		postfix = "st"
+	case 2:
+		postfix = "nd"
+	case 3:
+		postfix = "rd"
+	default:
+		postfix = "th"
+	}
+	return postfix
+}

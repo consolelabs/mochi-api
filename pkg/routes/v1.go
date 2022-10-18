@@ -99,6 +99,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configGroup.GET("/whitelist-prune", h.GetGuildPruneExclude)
 		configGroup.POST("/whitelist-prune", h.UpsertGuildPruneExclude)
 		configGroup.DELETE("/whitelist-prune", h.DeleteGuildPruneExclude)
+		// config join-leave channel
+		configGroup.GET("/join-leave", h.GetJoinLeaveChannelConfig)
+		configGroup.POST("/join-leave", h.UpsertJoinLeaveChannelConfig)
+		configGroup.DELETE("/join-leave", h.DeleteJoinLeaveChannelConfig)
 		roleReactionGroup := configGroup.Group("/reaction-roles")
 		{
 			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)

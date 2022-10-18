@@ -641,3 +641,47 @@ func (e Entity) RemoveAllMessageReactions(message *discordgo.Message) error {
 
 	return nil
 }
+
+func (e *Entity) HandleMemberRemove(req *request.MemberRemoveWebhookRequest) error {
+	jlChannel, err := e.GetJoinLeaveChannelConfig(req.GuildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[e.GetJoinLeaveChannelConfig] failed to get channel config")
+		return err
+	}
+
+	//joinleave channel not set
+	if jlChannel == nil {
+		return nil
+	}
+	err = e.svc.Discord.NotifyMemberLeave(req, jlChannel.ChannelID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[discord.NotifyMemberLeave] failed to send notification")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) HandleMemberAdd(member *discordgo.Member) error {
+	jlChannel, err := e.GetJoinLeaveChannelConfig(member.GuildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guildID": member.GuildID}).Error(err, "[e.GetJoinLeaveChannelConfig] failed to get channel config")
+		return err
+	}
+	//joinleave channel not set
+	if jlChannel == nil {
+		return nil
+	}
+
+	guild, err := e.discord.GuildWithCounts(member.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": member.GuildID}).Error(err, "[e.discord.GuildWithCounts] failed to get guild")
+		return err
+	}
+
+	err = e.svc.Discord.NotifyMemberJoin(member.User.ID, member.AvatarURL("80x80"), jlChannel.ChannelID, int64(guild.ApproximateMemberCount)) //guild.MemberCount only exists in guildCreate event
+	if err != nil {
+		e.log.Fields(logger.Fields{"member": member}).Error(err, "[discord.NotifyMemberJoin] failed to send notification")
+		return err
+	}
+	return nil
+}
