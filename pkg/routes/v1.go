@@ -284,6 +284,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	usageGroup := v1.Group("/usage-stats")
 	{
 		usageGroup.POST("", h.AddServersUsageStat)
+		usageGroup.GET("/gitbook", h.AddGitbookClick)
 	}
 
 	// quests

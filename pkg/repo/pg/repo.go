@@ -16,6 +16,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -133,5 +134,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserReward:                      questuserreward.NewPG(db),
 		QuestUserPass:                        questuserpass.NewPG(db),
 		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
+		GitbookClickCollector:                gitbookclickcollector.NewPG(db),
 	}
 }
