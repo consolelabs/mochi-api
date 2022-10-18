@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -923,7 +924,7 @@ func TestEntity_GetGuildRepostReactionConfigs(t *testing.T) {
 		},
 	}
 
-	cfgRepost.EXPECT().GetByGuildID("552427722551459840").Return([]model.GuildConfigRepostReaction{{
+	cfgRepost.EXPECT().GetByGuildIDAndReactionType("552427722551459840", consts.ReactionTypeMessage).Return([]model.GuildConfigRepostReaction{{
 		GuildID:         "552427722551459840",
 		Emoji:           "test",
 		Quantity:        1,
@@ -931,7 +932,7 @@ func TestEntity_GetGuildRepostReactionConfigs(t *testing.T) {
 	},
 	}, nil).AnyTimes()
 
-	cfgRepost.EXPECT().GetByGuildID("not_exist").Return([]model.GuildConfigRepostReaction{{
+	cfgRepost.EXPECT().GetByGuildIDAndReactionType("not_exist", consts.ReactionTypeMessage).Return([]model.GuildConfigRepostReaction{{
 		GuildID: "not_exist",
 	},
 	}, nil).AnyTimes()
@@ -951,7 +952,7 @@ func TestEntity_GetGuildRepostReactionConfigs(t *testing.T) {
 				abi:         tt.fields.abi,
 				marketplace: tt.fields.marketplace,
 			}
-			got, err := e.GetGuildRepostReactionConfigs(tt.args.guildID)
+			got, err := e.GetGuildRepostReactionConfigs(tt.args.guildID, consts.ReactionTypeMessage)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetGuildRepostReactionConfigs() error = %v, wantErr %v", err, tt.wantErr)
 				return
