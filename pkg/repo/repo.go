@@ -13,6 +13,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -130,4 +131,5 @@ type Repo struct {
 	QuestUserPass                        questuserpass.Store
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
+	GitbookClickCollector                gitbookclickcollector.Store
 }
