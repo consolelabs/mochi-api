@@ -2,6 +2,7 @@ package discord_guilds
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
@@ -32,7 +33,7 @@ func (pg *pg) CreateOrReactivate(guild model.DiscordGuild) error {
 		Columns: []clause.Column{
 			{Name: "id"},
 		},
-		DoUpdates: clause.Assignments(map[string]interface{}{"active": true}),
+		DoUpdates: clause.Assignments(map[string]interface{}{"active": true, "joined_at": time.Now(), "left_at": nil}),
 	}).Create(&guild).Error
 	if err != nil {
 		tx.Rollback()

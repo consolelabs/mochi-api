@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -77,7 +78,7 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
-// GetGmConfig     godoc
+// GetWelcomeChannelConfig     godoc
 // @Summary     Get welcome channel config
 // @Description Get welcome channel config
 // @Tags        Config
@@ -105,7 +106,7 @@ func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
-// UpsertGmConfig     godoc
+// UpsertWelcomeChannelConfig     godoc
 // @Summary     Update or insert welcome channel config
 // @Description Update or insert welcome channel config
 // @Tags        Config
@@ -143,7 +144,7 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
-// UpsertGmConfig     godoc
+// DeleteWelcomeChannelConfig     godoc
 // @Summary     Delete welcome channel config
 // @Description Delete welcome channel config
 // @Tags        Config
@@ -175,7 +176,7 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
-// GetGmConfig     godoc
+// GetVoteChannelConfig     godoc
 // @Summary     Get vote channel config
 // @Description Get vote channel config
 // @Tags        Config
@@ -203,7 +204,7 @@ func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
-// UpsertGmConfig     godoc
+// UpsertVoteChannelConfig     godoc
 // @Summary     Update or insert vote channel config
 // @Description Update or insert vote channel config
 // @Tags        Config
@@ -241,7 +242,7 @@ func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }
 
-// UpsertGmConfig     godoc
+// DeleteVoteChannelConfig     godoc
 // @Summary     Delete vote channel config
 // @Description Delete vote channel config
 // @Tags        Config
@@ -587,8 +588,19 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
+	reactionType := c.Query("reaction_type")
+	if reactionType == "" {
+		h.log.Info("[handler.GetRepostReactionConfigs] - type empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("type is required"), nil))
+		return
+	}
+	if reactionType != consts.ReactionTypeMessage && reactionType != consts.ReactionTypeConversation {
+		h.log.Fields(logger.Fields{"reaction_type": reactionType}).Info("[handler.GetRepostReactionConfigs] - reaction_type is invalid")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("reaction_type is invalid"), nil))
+		return
+	}
 
-	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
+	data, err := h.entities.GetGuildRepostReactionConfigs(guildID, reactionType)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetRepostReactionConfigs] - failed to get guild repost reaction config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
@@ -998,6 +1010,104 @@ func (h *Handler) EditMessageRepost(c *gin.Context) {
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.EditMessageRepost] - fail to edit message repost")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetJoinLeaveChannelConfig     godoc
+// @Summary     Get join-leave channel config
+// @Description Get join-leave channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetVoteChannelConfigResponse
+// @Router      /configs/join-leave [get]
+func (h *Handler) GetJoinLeaveChannelConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetJoinLeaveChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	config, err := h.entities.GetJoinLeaveChannelConfig(guildID)
+
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetJoinLeaveChannelConfig] - failed to get join-leave channel config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// UpsertJoinLeaveChannelConfig     godoc
+// @Summary     Update or insert join-leave channel config
+// @Description Update or insert join-leave channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertJoinLeaveChannelConfigRequest true "Upsert join-leave channel config request"
+// @Success     200 {object} response.GetVoteChannelConfigResponse
+// @Router      /configs/join-leave [post]
+func (h *Handler) UpsertJoinLeaveChannelConfig(c *gin.Context) {
+	var req request.UpsertJoinLeaveChannelConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertJoinLeaveChannelConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.UpsertJoinLeaveChannelConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+	if req.ChannelID == "" {
+		h.log.Info("[handler.UpsertJoinLeaveChannelConfig] - channel id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
+	}
+
+	config, err := h.entities.UpsertJoinLeaveChannelConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertJoinLeaveChannelConfig] - failed to upsert join-leave channel config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
+}
+
+// DeleteJoinLeaveChannelConfig     godoc
+// @Summary     Delete join-leave channel config
+// @Description Delete join-leave channel config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteJoinLeaveChannelConfigRequest true "Delete join-leave channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/join-leave [delete]
+func (h *Handler) DeleteJoinLeaveChannelConfig(c *gin.Context) {
+	var req request.DeleteJoinLeaveChannelConfigRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteJoinLeaveChannelConfigRequest] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.DeleteJoinLeaveChannelConfigRequest] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	if err := h.entities.DeleteJoinLeaveChannelConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteJoinLeaveChannelConfigRequest] - failed to delete join-leave channel config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 

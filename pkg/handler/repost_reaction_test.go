@@ -53,14 +53,14 @@ func TestHandler_GetRepostReactionConfigs(t *testing.T) {
 			name:             "Guild does not have repost reaction configs",
 			args:             "not_have_record",
 			wantCode:         http.StatusOK,
-			wantResponsePath: "testdata/200-data-null.json",
+			wantResponsePath: "testdata/200_data_empty_slice.json",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/repost-reactions/%s", tt.args), nil)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/repost-reactions/%s?reaction_type=message", tt.args), nil)
 			ctx.AddParam("guild_id", tt.args)
 
 			h.GetRepostReactionConfigs(ctx)

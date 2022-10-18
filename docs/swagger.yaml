@@ -484,6 +484,10 @@ definitions:
         type: integer
       id:
         type: string
+      rewards:
+        items:
+          $ref: '#/definitions/model.QuestReward'
+        type: array
       routine:
         type: string
       title:
@@ -822,6 +826,11 @@ definitions:
       name:
         type: string
     type: object
+  request.DeleteJoinLeaveChannelConfigRequest:
+    properties:
+      guild_id:
+        type: string
+    type: object
   request.DeleteVoteChannelConfigRequest:
     properties:
       guild_id:
@@ -1017,6 +1026,8 @@ definitions:
         type: boolean
       global_xp:
         type: boolean
+      left_at:
+        type: string
       log_channel:
         type: string
     type: object
@@ -1077,6 +1088,13 @@ definitions:
       guild_id:
         type: string
       symbol:
+        type: string
+    type: object
+  request.UpsertJoinLeaveChannelConfigRequest:
+    properties:
+      channel_id:
+        type: string
+      guild_id:
         type: string
     type: object
   request.UpsertVoteChannelConfigRequest:
@@ -3033,6 +3051,69 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Update or insert GM config
+      tags:
+      - Config
+  /configs/join-leave:
+    delete:
+      consumes:
+      - application/json
+      description: Delete join-leave channel config
+      parameters:
+      - description: Delete join-leave channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteJoinLeaveChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete join-leave channel config
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get join-leave channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Get join-leave channel config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Update or insert join-leave channel config
+      parameters:
+      - description: Upsert join-leave channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Update or insert join-leave channel config
       tags:
       - Config
   /configs/level-roles:
@@ -5026,9 +5107,6 @@ paths:
       - application/json
       description: Get user quest list
       parameters:
-      - in: query
-        name: quantity
-        type: integer
       - in: query
         name: routine
         type: string

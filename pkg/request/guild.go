@@ -1,14 +1,17 @@
 package request
 
+import "time"
+
 type CreateGuildRequest struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 type UpdateGuildRequest struct {
-	GlobalXP   *bool   `json:"global_xp"`
-	LogChannel *string `json:"log_channel"`
-	Active     *bool   `json:"active"`
+	GlobalXP   *bool      `json:"global_xp"`
+	LogChannel *string    `json:"log_channel"`
+	Active     *bool      `json:"active"`
+	LeftAt     *time.Time `json:"left_at"`
 }
 
 type HandleGuildDeleteRequest struct {

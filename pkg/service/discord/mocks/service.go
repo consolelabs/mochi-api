@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	request "github.com/defipod/mochi/pkg/request"
 	response "github.com/defipod/mochi/pkg/response"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -75,6 +76,34 @@ func (m *MockService) NotifyGuildDelete(guildID, guildName, iconURL string, guil
 func (mr *MockServiceMockRecorder) NotifyGuildDelete(guildID, guildName, iconURL, guildsLeft interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGuildDelete", reflect.TypeOf((*MockService)(nil).NotifyGuildDelete), guildID, guildName, iconURL, guildsLeft)
+}
+
+// NotifyMemberJoin mocks base method.
+func (m *MockService) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCount int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyMemberJoin", discordID, avatar, jlChannelID, userCount)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyMemberJoin indicates an expected call of NotifyMemberJoin.
+func (mr *MockServiceMockRecorder) NotifyMemberJoin(discordID, avatar, jlChannelID, userCount interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyMemberJoin", reflect.TypeOf((*MockService)(nil).NotifyMemberJoin), discordID, avatar, jlChannelID, userCount)
+}
+
+// NotifyMemberLeave mocks base method.
+func (m *MockService) NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlChannelId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyMemberLeave", req, jlChannelId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyMemberLeave indicates an expected call of NotifyMemberLeave.
+func (mr *MockServiceMockRecorder) NotifyMemberLeave(req, jlChannelId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyMemberLeave", reflect.TypeOf((*MockService)(nil).NotifyMemberLeave), req, jlChannelId)
 }
 
 // NotifyNewGuild mocks base method.

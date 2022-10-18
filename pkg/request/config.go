@@ -9,6 +9,12 @@ type UpsertVoteChannelConfigRequest struct {
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
 }
+
+type UpsertJoinLeaveChannelConfigRequest struct {
+	GuildID   string `json:"guild_id"`
+	ChannelID string `json:"channel_id"`
+}
+
 type UpsertWelcomeConfigRequest struct {
 	GuildID    string `json:"guild_id"`
 	ChannelID  string `json:"channel_id"`
@@ -18,6 +24,9 @@ type DeleteWelcomeConfigRequest struct {
 	GuildID string `json:"guild_id"`
 }
 type DeleteVoteChannelConfigRequest struct {
+	GuildID string `json:"guild_id"`
+}
+type DeleteJoinLeaveChannelConfigRequest struct {
 	GuildID string `json:"guild_id"`
 }
 type UpsertSalesTrackerConfigRequest struct {
