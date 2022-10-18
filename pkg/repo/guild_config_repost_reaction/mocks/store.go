@@ -63,6 +63,21 @@ func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
 }
 
+// GetByGuildIDAndReactionType mocks base method.
+func (m *MockStore) GetByGuildIDAndReactionType(guildID, reactionType string) ([]model.GuildConfigRepostReaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByGuildIDAndReactionType", guildID, reactionType)
+	ret0, _ := ret[0].([]model.GuildConfigRepostReaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByGuildIDAndReactionType indicates an expected call of GetByGuildIDAndReactionType.
+func (mr *MockStoreMockRecorder) GetByGuildIDAndReactionType(guildID, reactionType interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildIDAndReactionType", reflect.TypeOf((*MockStore)(nil).GetByGuildIDAndReactionType), guildID, reactionType)
+}
+
 // GetByReaction mocks base method.
 func (m *MockStore) GetByReaction(guildID, reaction string) (model.GuildConfigRepostReaction, error) {
 	m.ctrl.T.Helper()

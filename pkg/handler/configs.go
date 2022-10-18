@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -587,8 +588,19 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
+	reactionType := c.Query("reaction_type")
+	if reactionType == "" {
+		h.log.Info("[handler.GetRepostReactionConfigs] - type empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("type is required"), nil))
+		return
+	}
+	if reactionType != consts.ReactionTypeMessage && reactionType != consts.ReactionTypeConversation {
+		h.log.Fields(logger.Fields{"reaction_type": reactionType}).Info("[handler.GetRepostReactionConfigs] - reaction_type is invalid")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("reaction_type is invalid"), nil))
+		return
+	}
 
-	data, err := h.entities.GetGuildRepostReactionConfigs(guildID)
+	data, err := h.entities.GetGuildRepostReactionConfigs(guildID, reactionType)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetRepostReactionConfigs] - failed to get guild repost reaction config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

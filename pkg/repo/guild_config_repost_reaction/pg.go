@@ -27,6 +27,11 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildConfigRepostReaction, e
 	return configs, nil
 }
 
+func (pg *pg) GetByGuildIDAndReactionType(guildID string, reactionType string) ([]model.GuildConfigRepostReaction, error) {
+	var configs []model.GuildConfigRepostReaction
+	return configs, pg.db.Where("guild_id = ? AND reaction_type = ?", guildID, reactionType).Find(&configs).Error
+}
+
 func (pg *pg) GetByReaction(guildID string, emoji string) (model.GuildConfigRepostReaction, error) {
 	var config model.GuildConfigRepostReaction
 	return config, pg.db.Model(model.GuildConfigRepostReaction{}).Where("guild_id = ? AND emoji = ? AND reaction_type = ?", guildID, emoji, "message").First(&config).Error

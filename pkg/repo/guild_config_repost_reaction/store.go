@@ -6,6 +6,7 @@ import (
 
 type Store interface {
 	GetByGuildID(guildID string) ([]model.GuildConfigRepostReaction, error)
+	GetByGuildIDAndReactionType(guildID string, reactionType string) ([]model.GuildConfigRepostReaction, error)
 	GetByReaction(guildID string, reaction string) (model.GuildConfigRepostReaction, error)
 	GetByReactionStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error)
 	GetByReactionConversationStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error)

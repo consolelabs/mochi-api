@@ -480,8 +480,8 @@ func (e *Entity) CreateConfigRepostReactionStartStop(req request.ConfigRepostRea
 	})
 }
 
-func (e *Entity) GetGuildRepostReactionConfigs(guildID string) ([]model.GuildConfigRepostReaction, error) {
-	return e.repo.GuildConfigRepostReaction.GetByGuildID(guildID)
+func (e *Entity) GetGuildRepostReactionConfigs(guildID string, reactionType string) ([]model.GuildConfigRepostReaction, error) {
+	return e.repo.GuildConfigRepostReaction.GetByGuildIDAndReactionType(guildID, reactionType)
 }
 
 func (e *Entity) CreateRepostMessageReactionEvent(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
