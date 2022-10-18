@@ -14,10 +14,12 @@ const (
 // Config contain configuration of db for migrator
 // config var < env < command flag
 type Config struct {
-	ServiceName    string
-	BaseURL        string
-	Port           string
-	Env            string
+	ServiceName string
+	BaseURL     string
+	Port        string
+	Env         string
+	Debug       bool
+
 	AllowedOrigins string
 	DBHost         string
 	DBPort         string
@@ -132,6 +134,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BaseURL:     v.GetString("BASE_URL"),
 		ServiceName: v.GetString("SERVICE_NAME"),
 		Env:         v.GetString("ENV"),
+		Debug:       v.GetBool("DEBUG") || false,
 
 		AllowedOrigins: v.GetString("ALLOWED_ORIGINS"),
 
