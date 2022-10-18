@@ -1,6 +1,8 @@
 package offchain_tip_bot_contract
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 )
@@ -30,4 +32,9 @@ func (pg *pg) GetByChainID(id string) ([]model.OffchainTipBotContract, error) {
 
 func (pg *pg) CreateAssignContract(ac *model.OffchainTipBotAssignContract) error {
 	return pg.db.Create(ac).Error
+}
+
+func (pg *pg) GetAssignedContractByUserId(userId string) (*model.OffchainTipBotAssignContract, error) {
+	ua := &model.OffchainTipBotAssignContract{}
+	return ua, pg.db.Where("user_id = ? and expired_time > ?", userId, time.Now()).Preload("OffchainTipBotContract").First(&ua).Error
 }

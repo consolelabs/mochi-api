@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/k0kubun/pp"
 )
 
 type ResponseMessage struct {
@@ -72,6 +73,7 @@ func CreateResponse[T any](data T, paging *PaginationResponse, err error, payloa
 	}
 
 	if err != nil && errors.As(err, &ve) {
+		pp.Println("reach here")
 		errs := make([]ApiError, len(ve))
 		for i, fe := range ve {
 			var msg string
