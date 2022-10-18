@@ -5388,7 +5388,32 @@ const docTemplate = `{
                 }
             }
         },
-<<<<<<< HEAD
+        "model.OffchainTipBotAssignContract": {
+            "type": "object",
+            "properties": {
+                "chain_id": {
+                    "type": "string"
+                },
+                "contract_id": {
+                    "type": "string"
+                },
+                "expired_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
@@ -5518,27 +5543,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "start_time": {
-=======
-        "model.OffchainTipBotAssignContract": {
-            "type": "object",
-            "properties": {
-                "chain_id": {
-                    "type": "string"
-                },
-                "contract_id": {
-                    "type": "string"
-                },
-                "expired_time": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "token_id": {
->>>>>>> feat/offchain_tip_bot-assign-contract
                     "type": "string"
                 },
                 "user_id": {
