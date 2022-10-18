@@ -21,16 +21,16 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-
 	if err := req.Validate(); err != nil {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-
 	h.log.Infof("EVENT: %v", req.Event)
 	switch req.Event {
 	case request.GUILD_MEMBER_ADD:
 		h.handleGuildMemberAdd(c, req.Data)
+	case request.GUILD_MEMBER_REMOVE:
+		h.handleGuildMemberRemove(c, req.Data)
 	case request.MESSAGE_CREATE:
 		h.handleMessageCreate(c, req.Data)
 	case request.MESSAGE_DELETE:
@@ -60,8 +60,38 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+	err = h.entities.HandleMemberAdd(&member)
+	if err != nil {
+		h.log.Info("[handler.handleGuildMemberAdd] - failed to send notification")
+	}
 
 	h.handleInviteTracker(c, &member)
+
+}
+
+func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) {
+	var req request.MemberRemoveWebhookRequest
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		h.log.Info("[handler.handleGuildMemberRemove] - failed to json marshal data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Info("[handler.handleGuildMemberRemove] - failed to unmarshal data")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err = h.entities.HandleMemberRemove(&req)
+	if err != nil {
+		h.log.Error(err, "[handler.handleGuildMemberRemove] - failed to handle guild member remove")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
 }
 
 func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member) {

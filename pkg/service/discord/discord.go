@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -61,17 +62,7 @@ func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 		return err
 	}
 
-	postfix := "th"
-	switch count % 10 {
-	case 1:
-		postfix = "st"
-	case 2:
-		postfix = "nd"
-	case 3:
-		postfix = "rd"
-	default:
-		postfix = "th"
-	}
+	postfix := util.NumberPostfix(count)
 
 	newGuildMsg := &discordgo.MessageSend{
 		Components: []discordgo.MessageComponent{
@@ -402,4 +393,37 @@ func (d *Discord) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLe
 		d.log.Fields(logger.Fields{"msg": msg}).Error(err, "session.ChannelMessageSendEmbed() failed")
 	}
 	return err
+}
+
+func (d *Discord) NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlChannelID string) error {
+	msg := &discordgo.MessageEmbed{
+		Title:       "Say goodbye :wave:",
+		Description: fmt.Sprintf("%s has left the server :wave:", req.Username),
+		Color:       mochiLogColor,
+		Footer:      &discordgo.MessageEmbedFooter{Text: "Leaving", IconURL: req.Avatar},
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)
+	if err != nil {
+		d.log.Fields(logger.Fields{"req": req}).Error(err, "session.ChannelMessageSendEmbed() failed")
+		return err
+	}
+	return nil
+}
+
+func (d *Discord) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCount int64) error {
+	postfix := util.NumberPostfix(int(userCount))
+	msg := &discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("Welcome the %v%s member of your server :tada:", userCount, postfix),
+		Footer:      &discordgo.MessageEmbedFooter{Text: "Onboarding", IconURL: avatar},
+		Description: fmt.Sprintf("<@%s> has just joined your server. Give a heartwarming welcome :wave:", discordID),
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)
+	if err != nil {
+		d.log.Fields(logger.Fields{"discordID": discordID, "JLChannelID": jlChannelID}).Error(err, "session.ChannelMessageSendEmbed() failed")
+		return err
+	}
+	return nil
 }

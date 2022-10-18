@@ -35,6 +35,21 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// GetAvailableRoutines mocks base method.
+func (m *MockStore) GetAvailableRoutines() ([]model.QuestRoutine, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAvailableRoutines")
+	ret0, _ := ret[0].([]model.QuestRoutine)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAvailableRoutines indicates an expected call of GetAvailableRoutines.
+func (mr *MockStoreMockRecorder) GetAvailableRoutines() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableRoutines", reflect.TypeOf((*MockStore)(nil).GetAvailableRoutines))
+}
+
 // List mocks base method.
 func (m *MockStore) List(q quest.ListQuery) ([]model.Quest, error) {
 	m.ctrl.T.Helper()

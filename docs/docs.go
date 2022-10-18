@@ -720,6 +720,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/join-leave": {
+            "get": {
+                "description": "Get join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get join-leave channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Update or insert join-leave channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertJoinLeaveChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete join-leave channel config",
+                "parameters": [
+                    {
+                        "description": "Delete join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/level-roles": {
             "post": {
                 "description": "Config level role",
@@ -2836,7 +2932,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3745,11 +3841,6 @@ const docTemplate = `{
                 "summary": "Get user quest list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "name": "quantity",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "routine",
                         "in": "query"
@@ -4486,7 +4577,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -5273,6 +5364,12 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "rewards": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.QuestReward"
+                    }
+                },
                 "routine": {
                     "type": "string"
                 },
@@ -5794,6 +5891,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteJoinLeaveChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteVoteChannelConfigRequest": {
             "type": "object",
             "properties": {
@@ -6189,6 +6294,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertJoinLeaveChannelConfigRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 }
             }
