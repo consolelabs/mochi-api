@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS offchain_tip_bot_contracts (
   status smallint NOT NULL DEFAULT 0,
   assign_status smallint NOT NULL DEFAULT 0,
   centralize_wallet text NOT NULL,
-  sweeped_time timestamptz DEFAULT NULL,
+  sweeped_time timestamptz DEFAULT now(),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   deleted_at timestamptz DEFAULT NULL,
