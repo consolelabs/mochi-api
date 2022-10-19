@@ -16,6 +16,7 @@ type Service interface {
 	NotifyMemberJoin(discordID, avatar, jlChannelID string, userCount int64) error
 	NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlChannelId string) error
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
+	SendFeedback(req *request.UserFeedbackRequest) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
 	SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse)
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error

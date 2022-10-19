@@ -2478,6 +2478,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/feedback": {
+            "post": {
+                "description": "Post users' feedbacks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Feedback"
+                ],
+                "summary": "Post users' feedbacks",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UserFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/gift/xp": {
             "post": {
                 "description": "Gift xp handler",
@@ -6403,6 +6437,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "welcome_message": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UserFeedbackRequest": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "command": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
