@@ -75,10 +75,16 @@ func NewPostgresStore(cfg *config.Config) repo.Store {
 	if err != nil {
 		panic(err)
 	}
+
+	l := logrus.StandardLogger()
+	if cfg.Debug {
+		l.SetLevel(logrus.DebugLevel)
+	}
+
 	db, err := gorm.Open(postgres.New(
 		postgres.Config{Conn: conn}),
 		&gorm.Config{
-			Logger: newLogrusLogger(logrus.StandardLogger()),
+			Logger: newLogrusLogger(l),
 		})
 	if err != nil {
 		panic(err)

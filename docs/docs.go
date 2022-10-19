@@ -3787,6 +3787,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/offchain-tip-bot/assign-contract": {
+            "post": {
+                "description": "Create an assign contract when user want to deposit a specific token to contract",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain",
+                    "TipBot",
+                    "Deposit"
+                ],
+                "summary": "OffChain Tip Bot - Create an assign contract",
+                "parameters": [
+                    {
+                        "description": "Create assign contract request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateAssignContract"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetAssignedContract"
+                        }
+                    }
+                }
+            }
+        },
         "/profiles/": {
             "get": {
                 "description": "Get user profile",
@@ -5352,6 +5388,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.OffchainTipBotAssignContract": {
+            "type": "object",
+            "properties": {
+                "chain_id": {
+                    "type": "string"
+                },
+                "contract_id": {
+                    "type": "string"
+                },
+                "expired_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
@@ -5810,6 +5872,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "webhook_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateAssignContract": {
+            "type": "object",
+            "properties": {
+                "token_symbol": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -6733,6 +6806,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.TwitterHashtag"
                     }
+                }
+            }
+        },
+        "response.GetAssignedContract": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.OffchainTipBotAssignContract"
                 }
             }
         },
