@@ -1137,6 +1137,19 @@ definitions:
       welcome_message:
         type: string
     type: object
+  request.UserFeedbackRequest:
+    properties:
+      avatar:
+        type: string
+      command:
+        type: string
+      discord_id:
+        type: string
+      feedback:
+        type: string
+      username:
+        type: string
+    type: object
   request.VerifyWalletAddressRequest:
     properties:
       code:
@@ -4235,6 +4248,28 @@ paths:
       summary: In Discord Wallet withdraw
       tags:
       - Defi
+  /feedback:
+    post:
+      consumes:
+      - application/json
+      description: Post users' feedbacks
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserFeedbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Post users' feedbacks
+      tags:
+      - Feedback
   /gift/xp:
     post:
       consumes:
