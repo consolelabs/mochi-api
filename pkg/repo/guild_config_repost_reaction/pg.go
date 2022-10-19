@@ -60,7 +60,7 @@ func (pg *pg) UpsertOne(config model.GuildConfigRepostReaction) error {
 	tx := pg.db.Begin()
 
 	if err := tx.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "emoji"}},
+		Columns:   []clause.Column{{Name: "guild_id"}, {Name: "emoji"}, {Name: "emoji_start"}, {Name: "emoji_stop"}},
 		UpdateAll: true,
 	}).Create(&config).Error; err != nil {
 		tx.Rollback()
