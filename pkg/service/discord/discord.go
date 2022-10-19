@@ -22,6 +22,7 @@ type Discord struct {
 	mochiLogChannelID      string
 	mochiSaleChannelID     string
 	mochiActivityChannelID string
+	mochiFeedbackChannelID string
 }
 
 const (
@@ -45,6 +46,7 @@ func NewService(
 		mochiLogChannelID:      cfg.MochiLogChannelID,
 		mochiSaleChannelID:     cfg.MochiSaleChannelID,
 		mochiActivityChannelID: cfg.MochiActivityChannelID,
+		mochiFeedbackChannelID: cfg.MochiFeedbackChannelID,
 	}, nil
 }
 
@@ -423,6 +425,26 @@ func (d *Discord) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCo
 	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)
 	if err != nil {
 		d.log.Fields(logger.Fields{"discordID": discordID, "JLChannelID": jlChannelID}).Error(err, "session.ChannelMessageSendEmbed() failed")
+		return err
+	}
+	return nil
+}
+
+func (d *Discord) SendFeedback(req *request.UserFeedbackRequest) error {
+	title := "Feedback received."
+	if req.Command != "" {
+		title = fmt.Sprintf("Feedback received for command: %s", req.Command)
+	}
+	msg := &discordgo.MessageEmbed{
+		Title:       title,
+		Footer:      &discordgo.MessageEmbedFooter{Text: req.Username, IconURL: req.Avatar},
+		Description: fmt.Sprintf("<@%s> has something to say\n`%s`", req.DiscordID, req.Feedback),
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendEmbed(d.mochiFeedbackChannelID, msg)
+	if err != nil {
+		d.log.Fields(logger.Fields{"body": req}).Error(err, "session.ChannelMessageSendEmbed() failed")
 		return err
 	}
 	return nil

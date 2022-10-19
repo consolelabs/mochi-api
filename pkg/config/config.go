@@ -14,10 +14,12 @@ const (
 // Config contain configuration of db for migrator
 // config var < env < command flag
 type Config struct {
-	ServiceName    string
-	BaseURL        string
-	Port           string
-	Env            string
+	ServiceName string
+	BaseURL     string
+	Port        string
+	Env         string
+	Debug       bool
+
 	AllowedOrigins string
 	DBHost         string
 	DBPort         string
@@ -56,6 +58,7 @@ type Config struct {
 	MochiLogChannelID      string
 	MochiSaleChannelID     string
 	MochiActivityChannelID string
+	MochiFeedbackChannelID string
 
 	MoralisXApiKey string
 
@@ -132,6 +135,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BaseURL:     v.GetString("BASE_URL"),
 		ServiceName: v.GetString("SERVICE_NAME"),
 		Env:         v.GetString("ENV"),
+		Debug:       v.GetBool("DEBUG") || false,
 
 		AllowedOrigins: v.GetString("ALLOWED_ORIGINS"),
 
@@ -170,6 +174,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		MochiLogChannelID:      v.GetString("MOCHI_LOG_CHANNEL_ID"),
 		MochiSaleChannelID:     v.GetString("MOCHI_SALE_CHANNEL_ID"),
 		MochiActivityChannelID: v.GetString("MOCHI_ACTIVITY_CHANNEL_ID"),
+		MochiFeedbackChannelID: v.GetString("MOCHI_FEEDBACK_CHANNEL_ID"),
 
 		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
 

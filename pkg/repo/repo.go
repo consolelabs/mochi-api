@@ -13,6 +13,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -44,6 +45,8 @@ import (
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
+	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
+	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -130,4 +133,7 @@ type Repo struct {
 	QuestUserPass                        questuserpass.Store
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
+	GitbookClickCollector                gitbookclickcollector.Store
+	OffchainTipBotChain                  offchaintipbotchain.Store
+	OffchainTipBotContract               offchaintipbotcontract.Store
 }

@@ -162,6 +162,20 @@ func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplyUpvoteMessage", reflect.TypeOf((*MockService)(nil).ReplyUpvoteMessage), msg, source)
 }
 
+// SendFeedback mocks base method.
+func (m *MockService) SendFeedback(req *request.UserFeedbackRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendFeedback", req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendFeedback indicates an expected call of SendFeedback.
+func (mr *MockServiceMockRecorder) SendFeedback(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendFeedback", reflect.TypeOf((*MockService)(nil).SendFeedback), req)
+}
+
 // SendGuildActivityLogs mocks base method.
 func (m *MockService) SendGuildActivityLogs(channelID, userID, title, description string) error {
 	m.ctrl.T.Helper()
