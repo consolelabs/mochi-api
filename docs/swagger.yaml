@@ -480,6 +480,8 @@ definitions:
     properties:
       chain_id:
         type: string
+      contract:
+        $ref: '#/definitions/model.OffchainTipBotContract'
       contract_id:
         type: string
       expired_time:
@@ -491,6 +493,27 @@ definitions:
       token_id:
         type: string
       user_id:
+        type: string
+    type: object
+  model.OffchainTipBotContract:
+    properties:
+      assign_status:
+        type: integer
+      centralize_wallet:
+        type: string
+      chain_id:
+        type: string
+      contract_address:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: integer
+      sweeped_time:
+        type: string
+      updated_at:
         type: string
     type: object
   model.Quest:
