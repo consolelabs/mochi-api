@@ -777,6 +777,8 @@ definitions:
     properties:
       emoji:
         type: string
+      emoji_stop:
+        type: string
       guild_id:
         type: string
       quantity:
@@ -4437,7 +4439,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -5694,7 +5696,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

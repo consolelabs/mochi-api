@@ -2924,7 +2924,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4605,7 +4605,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5841,6 +5841,9 @@
             "type": "object",
             "properties": {
                 "emoji": {
+                    "type": "string"
+                },
+                "emoji_stop": {
                     "type": "string"
                 },
                 "guild_id": {

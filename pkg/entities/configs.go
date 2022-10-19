@@ -470,7 +470,7 @@ func (e *Entity) ConfigRepostReaction(req request.ConfigRepostRequest) error {
 	})
 }
 
-func (e *Entity) CreateConfigRepostReactionStartStop(req request.ConfigRepostReactionStartStop) error {
+func (e *Entity) CreateConfigRepostReactionConversation(req request.ConfigRepostReactionStartStop) error {
 	return e.repo.GuildConfigRepostReaction.UpsertOne(model.GuildConfigRepostReaction{
 		GuildID:         req.GuildID,
 		EmojiStart:      req.EmojiStart,
@@ -656,8 +656,12 @@ func (e *Entity) CreateRepostReactionEventWithStartStop(req request.MessageReact
 	return nil
 }
 
-func (e *Entity) RemoveGuildRepostReactionConfig(guildID string, emoji string) error {
-	return e.repo.GuildConfigRepostReaction.DeleteOne(guildID, emoji)
+func (e *Entity) RemoveGuildRepostReactionConfig(guildID, emoji string) error {
+	return e.repo.GuildConfigRepostReaction.DeleteConfigMessage(guildID, emoji)
+}
+
+func (e *Entity) RemoveConfigRepostReactionConversation(guildID, emojiStart, emojiStop string) error {
+	return e.repo.GuildConfigRepostReaction.DeleteConfigConversation(guildID, emojiStart, emojiStop)
 }
 
 func (e *Entity) ListActivityConfigsByName(activityName string) ([]model.GuildConfigActivity, error) {

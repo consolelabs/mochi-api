@@ -2932,7 +2932,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4613,7 +4613,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5849,6 +5849,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "emoji": {
+                    "type": "string"
+                },
+                "emoji_stop": {
                     "type": "string"
                 },
                 "guild_id": {
