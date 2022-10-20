@@ -11,6 +11,7 @@ func (e *Entity) CreateTradeOffer(req request.CreateTradeOfferRequest) (*model.T
 		fromItems = append(fromItems, model.TradeItem{
 			TokenAddress: item.TokenAddress,
 			TokenIds:     item.TokenIds,
+			IsFrom:       true,
 		})
 	}
 
