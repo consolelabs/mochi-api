@@ -54,6 +54,7 @@ import (
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
 	questrewardtype "github.com/defipod/mochi/pkg/repo/quest_reward_type"
+	queststreak "github.com/defipod/mochi/pkg/repo/quest_streak"
 	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
@@ -138,6 +139,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestReward:                          questreward.NewPG(db),
 		QuestUserReward:                      questuserreward.NewPG(db),
 		QuestUserPass:                        questuserpass.NewPG(db),
+		QuestStreak:                          queststreak.NewPG(db),
 		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
 		GitbookClickCollector:                gitbookclickcollector.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),

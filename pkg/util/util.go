@@ -632,3 +632,7 @@ func NumberPostfix(num int) string {
 	}
 	return postfix
 }
+
+func RemoveAt[T any](list []T, idx int) []T {
+	return append(list[:idx], list[idx+1:]...)
+}

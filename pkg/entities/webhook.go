@@ -448,7 +448,7 @@ func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUs
 }
 
 func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
-	sentAt := time.Now()
+	sentAt := time.Now().UTC()
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), sentAt.Hour(), sentAt.Minute(), 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(userID)
 	if err != nil && err != gorm.ErrRecordNotFound {

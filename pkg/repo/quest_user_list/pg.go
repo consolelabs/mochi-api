@@ -47,8 +47,8 @@ func (pg *pg) List(q ListQuery) ([]model.QuestUserList, error) {
 	if q.Action != nil {
 		db = db.Where("action::TEXT = ?", *q.Action)
 	}
-	if q.NotAction != nil {
-		db = db.Where("action::TEXT != ?", *q.NotAction)
+	if q.NotActions != nil && len(q.NotActions) > 0 {
+		db = db.Where("action::TEXT NOT IN ?", q.NotActions)
 	}
 	if q.IsCompleted != nil {
 		db = db.Where("is_completed = ?", *q.IsCompleted)

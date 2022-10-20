@@ -2,7 +2,6 @@ package questreward
 
 import (
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +13,11 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetQuestRewards(questID []uuid.UUID) ([]model.QuestReward, error) {
+func (pg *pg) List(q ListQuery) ([]model.QuestReward, error) {
 	var rewards []model.QuestReward
-	return rewards, pg.db.Where("quest_id IN ?", questID).Preload("Quest").Preload("RewardType").Find(&rewards).Error
+	db := pg.db
+	if q.QuestIDs != nil {
+		db = db.Where("quest_id IN ?", q.QuestIDs)
+	}
+	return rewards, db.Preload("Quest").Preload("RewardType").Find(&rewards).Error
 }
