@@ -1065,8 +1065,9 @@ func TestEntity_RemoveGuildRepostReactionConfig(t *testing.T) {
 	r.GuildConfigRepostReaction = cfgRepost
 
 	type args struct {
-		guildID string
-		emoji   string
+		guildID   string
+		emoji     string
+		emojiStop string
 	}
 	tests := []struct {
 		name    string
@@ -1081,13 +1082,14 @@ func TestEntity_RemoveGuildRepostReactionConfig(t *testing.T) {
 				repo: r,
 			},
 			args: args{
-				guildID: "552427722551459840",
-				emoji:   "test",
+				guildID:   "552427722551459840",
+				emoji:     "test",
+				emojiStop: "",
 			},
 			wantErr: false,
 		},
 	}
-	cfgRepost.EXPECT().DeleteOne("552427722551459840", "test").Return(nil).AnyTimes()
+	cfgRepost.EXPECT().DeleteConfigMessage("552427722551459840", "test").Return(nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{

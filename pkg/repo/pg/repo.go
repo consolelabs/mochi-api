@@ -60,6 +60,7 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	"github.com/defipod/mochi/pkg/repo/token"
+	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -141,5 +142,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GitbookClickCollector:                gitbookclickcollector.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
+		TradeOffer:                           tradeoffer.NewPG(db),
 	}
 }

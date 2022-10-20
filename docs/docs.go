@@ -3998,6 +3998,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/trades": {
+            "post": {
+                "description": "Create Trade Offer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trade"
+                ],
+                "summary": "Create Trade Offer",
+                "parameters": [
+                    {
+                        "description": "Create Trade Offer Request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTradeOfferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateTradeOfferResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/trades/{id}": {
+            "get": {
+                "description": "Get Trade Offer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trade"
+                ],
+                "summary": "Get Trade Offer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trade Offer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTradeOfferResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/twitter": {
             "post": {
                 "description": "Create twitter post",
@@ -5622,6 +5688,61 @@ const docTemplate = `{
                 }
             }
         },
+        "model.TradeItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "is_from": {
+                    "type": "boolean"
+                },
+                "token_address": {
+                    "type": "string"
+                },
+                "token_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "trade_offer_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.TradeOffer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "from_address": {
+                    "type": "string"
+                },
+                "from_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TradeItem"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "to_address": {
+                    "type": "string"
+                },
+                "to_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TradeItem"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UpvoteStreakTier": {
             "type": "object",
             "properties": {
@@ -5967,6 +6088,33 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateTradeOfferRequest": {
+            "type": "object",
+            "required": [
+                "from_address",
+                "to_address"
+            ],
+            "properties": {
+                "from_address": {
+                    "type": "string"
+                },
+                "from_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.TradeOfferItem"
+                    }
+                },
+                "to_address": {
+                    "type": "string"
+                },
+                "to_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.TradeOfferItem"
+                    }
+                }
+            }
+        },
         "request.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -6207,6 +6355,24 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.TradeOfferItem": {
+            "type": "object",
+            "required": [
+                "token_address",
+                "token_ids"
+            ],
+            "properties": {
+                "token_address": {
+                    "type": "string"
+                },
+                "token_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -6715,6 +6881,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.NFTCollection"
+                }
+            }
+        },
+        "response.CreateTradeOfferResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.TradeOffer"
                 }
             }
         },
@@ -7309,6 +7483,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Token"
                     }
+                }
+            }
+        },
+        "response.GetTradeOfferResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.TradeOffer"
                 }
             }
         },

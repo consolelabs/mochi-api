@@ -24,6 +24,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.POST("/assign-contract", h.OffchainTipBotCreateAssignContract)
 	}
 
+	trade := v1.Group("/trades")
+	{
+		trade.GET("/:id", h.GetTradeOffer)
+		trade.POST("", h.CreateTradeOffer)
+	}
+
 	authGroup := v1.Group("/auth")
 	{
 		authGroup.POST("/login", h.Login)
@@ -157,7 +163,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.GET("/:guild_id", h.GetRepostReactionConfigs)
 			repostReactionGroup.POST("", h.ConfigRepostReaction)
 			repostReactionGroup.DELETE("", h.RemoveRepostReactionConfig)
-			repostReactionGroup.POST("/start-stop", h.CreateConfigRepostReactionStartStop)
+			repostReactionGroup.POST("/conversation", h.CreateConfigRepostReactionConversation)
+			repostReactionGroup.DELETE("/conversation", h.RemoveConfigRepostReactionConversation)
 			repostReactionGroup.PUT("/message-repost", h.EditMessageRepost)
 		}
 		activitygroup := configGroup.Group("/activities")

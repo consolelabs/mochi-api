@@ -12,5 +12,6 @@ type Store interface {
 	GetByReactionConversationStartOrStop(guildID, emoji string) (model.GuildConfigRepostReaction, error)
 	GetByRepostChannelID(guildID string, channelID string) (model.GuildConfigRepostReaction, error)
 	UpsertOne(config model.GuildConfigRepostReaction) error
-	DeleteOne(guildID string, emoji string) error
+	DeleteConfigMessage(guildID, emoji string) error
+	DeleteConfigConversation(guildID, emojiStart, emojiStop string) error
 }
