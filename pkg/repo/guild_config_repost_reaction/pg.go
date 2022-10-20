@@ -70,6 +70,10 @@ func (pg *pg) UpsertOne(config model.GuildConfigRepostReaction) error {
 	return tx.Commit().Error
 }
 
-func (pg *pg) DeleteOne(guildID string, emoji string) error {
+func (pg *pg) DeleteConfigMessage(guildID string, emoji string) error {
 	return pg.db.Where("guild_id = ? AND emoji = ?", guildID, emoji).Delete(&model.GuildConfigRepostReaction{}).Error
+}
+
+func (pg *pg) DeleteConfigConversation(guildID, emojiStart, emojiStop string) error {
+	return pg.db.Where("guild_id = ? AND emoji_start = ? AND emoji_stop = ?", guildID, emojiStart, emojiStop).Delete(&model.GuildConfigRepostReaction{}).Error
 }

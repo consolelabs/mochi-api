@@ -34,18 +34,32 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// DeleteOne mocks base method.
-func (m *MockStore) DeleteOne(guildID, emoji string) error {
+// DeleteConfigConversation mocks base method.
+func (m *MockStore) DeleteConfigConversation(guildID, emojiStart, emojiStop string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteOne", guildID, emoji)
+	ret := m.ctrl.Call(m, "DeleteConfigConversation", guildID, emojiStart, emojiStop)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteOne indicates an expected call of DeleteOne.
-func (mr *MockStoreMockRecorder) DeleteOne(guildID, emoji interface{}) *gomock.Call {
+// DeleteConfigConversation indicates an expected call of DeleteConfigConversation.
+func (mr *MockStoreMockRecorder) DeleteConfigConversation(guildID, emojiStart, emojiStop interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOne", reflect.TypeOf((*MockStore)(nil).DeleteOne), guildID, emoji)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigConversation", reflect.TypeOf((*MockStore)(nil).DeleteConfigConversation), guildID, emojiStart, emojiStop)
+}
+
+// DeleteConfigMessage mocks base method.
+func (m *MockStore) DeleteConfigMessage(guildID, emoji string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteConfigMessage", guildID, emoji)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteConfigMessage indicates an expected call of DeleteConfigMessage.
+func (mr *MockStoreMockRecorder) DeleteConfigMessage(guildID, emoji interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConfigMessage", reflect.TypeOf((*MockStore)(nil).DeleteConfigMessage), guildID, emoji)
 }
 
 // GetByGuildID mocks base method.
