@@ -13,7 +13,7 @@ type ListQuery struct {
 	StartTime   *time.Time
 	Routine     *model.QuestRoutine
 	Action      *model.QuestAction
-	NotAction   *model.QuestAction
+	NotActions  []model.QuestAction
 	IsCompleted *bool
 	IsClaimed   *bool
 }

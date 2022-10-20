@@ -2966,7 +2966,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4713,7 +4713,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5597,6 +5597,9 @@ const docTemplate = `{
                 },
                 "is_completed": {
                     "type": "boolean"
+                },
+                "multiplier": {
+                    "type": "number"
                 },
                 "quest": {
                     "$ref": "#/definitions/model.Quest"
@@ -6670,6 +6673,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
+                    "$ref": "#/definitions/response.ClaimQuestsRewardsResponseData"
+                }
+            }
+        },
+        "response.ClaimQuestsRewardsResponseData": {
+            "type": "object",
+            "properties": {
+                "rewards": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.QuestUserReward"

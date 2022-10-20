@@ -548,6 +548,8 @@ definitions:
         type: boolean
       is_completed:
         type: boolean
+      multiplier:
+        type: number
       quest:
         $ref: '#/definitions/model.Quest'
       quest_id:
@@ -1244,6 +1246,11 @@ definitions:
   response.ClaimQuestsRewardsResponse:
     properties:
       data:
+        $ref: '#/definitions/response.ClaimQuestsRewardsResponseData'
+    type: object
+  response.ClaimQuestsRewardsResponseData:
+    properties:
+      rewards:
         items:
           $ref: '#/definitions/model.QuestUserReward'
         type: array
@@ -4548,7 +4555,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -5848,7 +5855,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

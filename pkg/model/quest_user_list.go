@@ -18,6 +18,7 @@ type QuestUserList struct {
 	IsClaimed   bool         `json:"is_claimed"`
 	StartTime   time.Time    `json:"start_time"`
 	EndTime     time.Time    `json:"end_time"`
+	Multiplier  float64      `json:"multiplier"`
 	Quest       *Quest       `json:"quest"`
 }
 
