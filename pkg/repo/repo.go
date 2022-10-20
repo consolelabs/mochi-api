@@ -47,6 +47,7 @@ import (
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
+	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -140,4 +141,5 @@ type Repo struct {
 	OffchainTipBotContract               offchaintipbotcontract.Store
 	TradeOffer                           tradeoffer.Store
 	QuestStreak                          queststreak.Store
+	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
 }

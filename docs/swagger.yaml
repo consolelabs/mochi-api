@@ -1797,6 +1797,26 @@ definitions:
       message:
         type: string
     type: object
+  response.GetUserBalances:
+    properties:
+      balances:
+        type: number
+      balances_in_usd:
+        type: number
+      id:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  response.GetUserBalancesResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GetUserBalances'
+        type: array
+    type: object
   response.GetUserCurrentGMStreakResponse:
     properties:
       data:
@@ -5247,6 +5267,27 @@ paths:
       - OffChain
       - TipBot
       - Deposit
+  /offchain-tip-bot/balances:
+    get:
+      consumes:
+      - application/json
+      description: Get offchain user bals
+      parameters:
+      - description: user ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserBalancesResponse'
+      summary: Get offchain user bals
+      tags:
+      - OffChain
   /profiles/:
     get:
       consumes:

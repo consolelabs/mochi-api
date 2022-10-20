@@ -3849,6 +3849,38 @@
                 }
             }
         },
+        "/offchain-tip-bot/balances": {
+            "get": {
+                "description": "Get offchain user bals",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "Get offchain user bals",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserBalancesResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profiles/": {
             "get": {
                 "description": "Get user profile",
@@ -7516,6 +7548,37 @@
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GetUserBalances": {
+            "type": "object",
+            "properties": {
+                "balances": {
+                    "type": "number"
+                },
+                "balances_in_usd": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GetUserBalancesResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetUserBalances"
+                    }
                 }
             }
         },

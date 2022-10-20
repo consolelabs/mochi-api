@@ -91,3 +91,31 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(ac, nil, nil, nil))
 }
+
+// GetUserBalances     godoc
+// @Summary     Get offchain user bals
+// @Description Get offchain user bals
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Param       user_id query     string true "user ID"
+// @Success     200 {object} response.GetUserBalancesResponse
+// @Router      /offchain-tip-bot/balances [get]
+func (h *Handler) GetUserBalances(c *gin.Context) {
+	userID := c.Query("user_id")
+
+	if userID == "" {
+		h.log.Info("[handler.GetUserBalances] - missing user id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
+		return
+	}
+
+	userBalances, err := h.entities.GetUserBalances(userID)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserBalances] - failed to get user balances")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(userBalances, nil, nil, nil))
+}
