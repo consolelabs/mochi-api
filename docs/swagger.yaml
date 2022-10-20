@@ -607,6 +607,42 @@ definitions:
       symbol:
         type: string
     type: object
+  model.TradeItem:
+    properties:
+      id:
+        type: string
+      is_from:
+        type: boolean
+      token_address:
+        type: string
+      token_ids:
+        items:
+          type: string
+        type: array
+      trade_offer_id:
+        type: string
+    type: object
+  model.TradeOffer:
+    properties:
+      created_at:
+        type: string
+      from_address:
+        type: string
+      from_items:
+        items:
+          $ref: '#/definitions/model.TradeItem'
+        type: array
+      id:
+        type: string
+      to_address:
+        type: string
+      to_items:
+        items:
+          $ref: '#/definitions/model.TradeItem'
+        type: array
+      updated_at:
+        type: string
+    type: object
   model.UpvoteStreakTier:
     properties:
       id:
@@ -777,8 +813,6 @@ definitions:
     properties:
       emoji:
         type: string
-      emoji_stop:
-        type: string
       guild_id:
         type: string
       quantity:
@@ -831,6 +865,24 @@ definitions:
         type: string
       guild_id:
         type: string
+    type: object
+  request.CreateTradeOfferRequest:
+    properties:
+      from_address:
+        type: string
+      from_items:
+        items:
+          $ref: '#/definitions/request.TradeOfferItem'
+        type: array
+      to_address:
+        type: string
+      to_items:
+        items:
+          $ref: '#/definitions/request.TradeOfferItem'
+        type: array
+    required:
+    - from_address
+    - to_address
     type: object
   request.CreateUserRequest:
     properties:
@@ -988,6 +1040,18 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  request.TradeOfferItem:
+    properties:
+      token_address:
+        type: string
+      token_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - token_address
+    - token_ids
     type: object
   request.TransferRequest:
     properties:
@@ -1317,6 +1381,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.NFTCollection'
+    type: object
+  response.CreateTradeOfferResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.TradeOffer'
     type: object
   response.CurrentUserUpvoteStreakResponse:
     properties:
@@ -1701,6 +1770,11 @@ definitions:
         items:
           $ref: '#/definitions/model.Token'
         type: array
+    type: object
+  response.GetTradeOfferResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.TradeOffer'
     type: object
   response.GetTwitterHashtagConfigResponse:
     properties:
@@ -4474,7 +4548,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: ""
+          description: No Content
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -5258,6 +5332,49 @@ paths:
       summary: Claim user quests' rewards
       tags:
       - Quest
+  /trades:
+    post:
+      consumes:
+      - application/json
+      description: Create Trade Offer
+      parameters:
+      - description: Create Trade Offer Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTradeOfferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateTradeOfferResponse'
+      summary: Create Trade Offer
+      tags:
+      - Trade
+  /trades/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Trade Offer
+      parameters:
+      - description: Trade Offer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTradeOfferResponse'
+      summary: Get Trade Offer
+      tags:
+      - Trade
   /twitter:
     post:
       consumes:
@@ -5731,7 +5848,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign
