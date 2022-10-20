@@ -7,5 +7,9 @@ type GetUserQuestListResponse struct {
 }
 
 type ClaimQuestsRewardsResponse struct {
-	Data []model.QuestUserReward `json:"data"`
+	Data ClaimQuestsRewardsResponseData `json:"data"`
+}
+
+type ClaimQuestsRewardsResponseData struct {
+	Rewards []model.QuestUserReward `json:"rewards"`
 }

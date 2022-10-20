@@ -51,6 +51,7 @@ import (
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
 	questrewardtype "github.com/defipod/mochi/pkg/repo/quest_reward_type"
+	queststreak "github.com/defipod/mochi/pkg/repo/quest_streak"
 	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
@@ -138,4 +139,5 @@ type Repo struct {
 	OffchainTipBotChain                  offchaintipbotchain.Store
 	OffchainTipBotContract               offchaintipbotcontract.Store
 	TradeOffer                           tradeoffer.Store
+	QuestStreak                          queststreak.Store
 }

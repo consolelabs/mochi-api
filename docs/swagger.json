@@ -2958,7 +2958,7 @@
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4705,7 +4705,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5589,6 +5589,9 @@
                 },
                 "is_completed": {
                     "type": "boolean"
+                },
+                "multiplier": {
+                    "type": "number"
                 },
                 "quest": {
                     "$ref": "#/definitions/model.Quest"
@@ -6662,6 +6665,14 @@
             "type": "object",
             "properties": {
                 "data": {
+                    "$ref": "#/definitions/response.ClaimQuestsRewardsResponseData"
+                }
+            }
+        },
+        "response.ClaimQuestsRewardsResponseData": {
+            "type": "object",
+            "properties": {
+                "rewards": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.QuestUserReward"

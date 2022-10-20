@@ -19,14 +19,14 @@ func (pg *pg) List(q ListQuery) ([]model.Quest, error) {
 	if q.ID != nil {
 		db = db.Where("id = ?", q.ID)
 	}
-	if q.Action != nil {
-		db = db.Where("action::TEXT = ?", *q.Action)
+	if q.Action != "" {
+		db = db.Where("action::TEXT = ?", q.Action)
 	}
-	if q.NotAction != nil {
-		db = db.Where("action::TEXT != ?", *q.NotAction)
+	if q.NotActions != nil && len(q.NotActions) > 0 {
+		db = db.Where("action::TEXT NOT IN ?", q.NotActions)
 	}
-	if q.Routine != nil {
-		db = db.Where("routine::TEXT = ?", *q.Routine)
+	if q.Routine != "" {
+		db = db.Where("routine::TEXT = ?", q.Routine)
 	}
 	if q.Sort == "" {
 		q.Sort = "title"
