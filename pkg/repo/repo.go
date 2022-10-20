@@ -57,6 +57,7 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
+	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -136,4 +137,5 @@ type Repo struct {
 	GitbookClickCollector                gitbookclickcollector.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
 	OffchainTipBotContract               offchaintipbotcontract.Store
+	TradeOffer                           tradeoffer.Store
 }
