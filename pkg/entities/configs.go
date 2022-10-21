@@ -485,6 +485,16 @@ func (e *Entity) GetGuildRepostReactionConfigs(guildID string, reactionType stri
 }
 
 func (e *Entity) CreateRepostMessageReactionEvent(req request.MessageReactionRequest) (*model.MessageRepostHistory, error) {
+	blacklistChannels, err := e.repo.GuildBlacklistChannelRepostConfigs.GetByGuildID(req.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[e.CreateRepostReactionEvent] failed to get blacklist channel repost config")
+		return nil, err
+	}
+	for _, v := range blacklistChannels {
+		if req.ChannelID == v.ChannelID {
+			return nil, nil
+		}
+	}
 	conf, err := e.repo.GuildConfigRepostReaction.GetByReaction(req.GuildID, req.Reaction)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -557,6 +567,16 @@ func (e *Entity) CreateRepostMessageReactionEvent(req request.MessageReactionReq
 }
 
 func (e *Entity) CreateRepostConversationReactionEvent(req request.MessageReactionRequest) (*model.ConversationRepostHistories, error) {
+	blacklistChannels, err := e.repo.GuildBlacklistChannelRepostConfigs.GetByGuildID(req.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[e.CreateRepostConversationReactionEvent] failed to get blacklist channel repost config")
+		return nil, err
+	}
+	for _, v := range blacklistChannels {
+		if req.ChannelID == v.ChannelID {
+			return nil, nil
+		}
+	}
 	configConversation, err := e.repo.GuildConfigRepostReaction.GetByReactionConversationStartOrStop(req.GuildID, req.Reaction)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -900,5 +920,33 @@ func (e *Entity) DeleteJoinLeaveChannelConfig(req request.DeleteJoinLeaveChannel
 		return err
 	}
 
+	return nil
+}
+
+func (e *Entity) CreateBlacklistChannelRepostConfig(req request.BalcklistChannelRepostConfigRequest) error {
+	if err := e.repo.GuildBlacklistChannelRepostConfigs.UpsertOne(model.GuildBlacklistChannelRepostConfig{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+	}); err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[entities.DeleteJoinLeaveChannelConfig] - failed to create blacklist channel repost config")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) GetGuildBlacklistChannelRepostConfig(guildID string) ([]model.GuildBlacklistChannelRepostConfig, error) {
+	configs, err := e.repo.GuildBlacklistChannelRepostConfigs.GetByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.DeleteJoinLeaveChannelConfig] - failed to get blacklist channel repost config")
+		return nil, err
+	}
+	return configs, nil
+}
+
+func (e *Entity) DeleteBlacklistChannelRepostConfig(req request.BalcklistChannelRepostConfigRequest) error {
+	if err := e.repo.GuildBlacklistChannelRepostConfigs.DeleteOne(req.GuildID, req.ChannelID); err != nil {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[entities.DeleteJoinLeaveChannelConfig] - failed to create blacklist channel repost config")
+		return err
+	}
 	return nil
 }

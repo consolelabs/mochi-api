@@ -125,3 +125,8 @@ type ConfigRepostReactionStartStop struct {
 	EmojiStop       string `json:"emoji_stop"`
 	RepostChannelID string `json:"repost_channel_id"`
 }
+
+type BalcklistChannelRepostConfigRequest struct {
+	GuildID   string `json:"guild_id"`
+	ChannelID string `json:"channel_id"`
+}

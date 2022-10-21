@@ -17,6 +17,7 @@ import (
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
+	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -147,5 +148,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		TradeOffer:                           tradeoffer.NewPG(db),
 		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
+		GuildBlacklistChannelRepostConfigs:   guildblacklistchannelrepostconfigs.NewPG(db),
 	}
 }
