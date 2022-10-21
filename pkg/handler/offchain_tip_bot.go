@@ -119,3 +119,25 @@ func (h *Handler) GetUserBalances(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(userBalances, nil, nil, nil))
 }
+
+// OffchainTipBotWithdraw     godoc
+// @Summary     OffChain Tip Bot - Withdraw
+// @Description OffChain Tip Bot - Withdraw
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.OffchainTipBotWithdrawResponse
+// @Router      /offchain-tip-bot/withdraw [post]
+func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
+	resp := response.OffchainTipBotWithdrawResponse{
+		FromDiscordID:  "393034938028392449",
+		ToAddress:      "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+		Amount:         3.1,
+		Cryptocurrency: "usdt",
+		TxHash:         "0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
+		TxUrl:          "https://etherscan.io/tx/0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
+		WithdrawAmount: 1.4,
+		TransactionFee: 0.0001,
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+}

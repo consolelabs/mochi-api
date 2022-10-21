@@ -1190,7 +1190,7 @@ func (h *Handler) CreateBlacklistChannelRepostConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.GetGuildBlacklistChannelRepostConfigReponse
+// @Success     200 {object} response.ResponseMessage
 // @Router      /configs/repost-reactions/blacklist-channel [get]
 func (h *Handler) GetGuildBlacklistChannelRepostConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
