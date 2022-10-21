@@ -1147,3 +1147,101 @@ func (h *Handler) DeleteJoinLeaveChannelConfig(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// CreateBlacklistChannelRepostConfig     godoc
+// @Summary     Create blacklist channel repost config
+// @Description Create blacklist channel repost config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.BalcklistChannelRepostConfigRequest true "Upsert join-leave channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions/blacklist-channel [post]
+func (h *Handler) CreateBlacklistChannelRepostConfig(c *gin.Context) {
+	var req request.BalcklistChannelRepostConfigRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateBlacklistChannelRepostConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.CreateBlacklistChannelRepostConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+	if req.ChannelID == "" {
+		h.log.Info("[handler.CreateBlacklistChannelRepostConfig] - channel id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
+	}
+	if err := h.entities.CreateBlacklistChannelRepostConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateBlacklistChannelRepostConfig] - failed to create blacklist channel repost config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetGuildBlacklistChannelRepostConfig     godoc
+// @Summary     Get guild blacklist channel repost config
+// @Description Get guild blacklist channel repost config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetGuildBlacklistChannelRepostConfigReponse
+// @Router      /configs/repost-reactions/blacklist-channel [get]
+func (h *Handler) GetGuildBlacklistChannelRepostConfig(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetGuildBlacklistChannelRepostConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	config, err := h.entities.GetGuildBlacklistChannelRepostConfig(guildID)
+
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildBlacklistChannelRepostConfig] - failed to get blacklist channel repost config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// DeleteBlacklistChannelRepostConfig     godoc
+// @Summary     Delete blacklist channel repost config
+// @Description Delete blacklist channel repost config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.BalcklistChannelRepostConfigRequest true "Delete blacklist channel repost config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/repost-reactions/blacklist-channel [delete]
+func (h *Handler) DeleteBlacklistChannelRepostConfig(c *gin.Context) {
+	var req request.BalcklistChannelRepostConfigRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.DeleteBlacklistChannelRepostConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if req.GuildID == "" {
+		h.log.Info("[handler.DeleteBlacklistChannelRepostConfig] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+	if req.ChannelID == "" {
+		h.log.Info("[handler.DeleteBlacklistChannelRepostConfig] - channel id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
+		return
+	}
+	if err := h.entities.DeleteBlacklistChannelRepostConfig(req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.DeleteBlacklistChannelRepostConfig] - failed to delete blacklist channel repost config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

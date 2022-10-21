@@ -28,6 +28,8 @@ type Discord struct {
 const (
 	mochiLogColor       = 0xFCD3C1
 	mochiUpvoteMsgColor = 0x47ffc2
+	mochiErrorColor     = 0xD94F50
+	mochiSuccessColor   = 0x5cd97d
 )
 
 func NewService(
@@ -401,7 +403,7 @@ func (d *Discord) NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlC
 	msg := &discordgo.MessageEmbed{
 		Title:       "Say goodbye :wave:",
 		Description: fmt.Sprintf("%s has left the server :wave:", req.Username),
-		Color:       mochiLogColor,
+		Color:       mochiErrorColor,
 		Footer:      &discordgo.MessageEmbedFooter{Text: "Leaving", IconURL: req.Avatar},
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
@@ -419,7 +421,7 @@ func (d *Discord) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCo
 		Title:       fmt.Sprintf("Welcome the %v%s member of your server :tada:", userCount, postfix),
 		Footer:      &discordgo.MessageEmbedFooter{Text: "Onboarding", IconURL: avatar},
 		Description: fmt.Sprintf("<@%s> has just joined your server. Give a heartwarming welcome :wave:", discordID),
-		Color:       mochiLogColor,
+		Color:       mochiSuccessColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
 	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)

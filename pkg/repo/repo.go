@@ -14,6 +14,7 @@ import (
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
+	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -47,6 +48,7 @@ import (
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
+	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -140,4 +142,6 @@ type Repo struct {
 	OffchainTipBotContract               offchaintipbotcontract.Store
 	TradeOffer                           tradeoffer.Store
 	QuestStreak                          queststreak.Store
+	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
+	GuildBlacklistChannelRepostConfigs   guildblacklistchannelrepostconfigs.Store
 }
