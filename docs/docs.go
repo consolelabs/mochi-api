@@ -5645,6 +5645,9 @@ const docTemplate = `{
                 "chain_id": {
                     "type": "string"
                 },
+                "contract": {
+                    "$ref": "#/definitions/model.OffchainTipBotContract"
+                },
                 "contract_id": {
                     "type": "string"
                 },
@@ -5661,6 +5664,38 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OffchainTipBotContract": {
+            "type": "object",
+            "properties": {
+                "assign_status": {
+                    "type": "integer"
+                },
+                "centralize_wallet": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "contract_address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "sweeped_time": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

@@ -8,7 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (err error) {
+func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
 	return e.repo.OffchainTipBotContract.CreateAssignContract(ac)
 }
 

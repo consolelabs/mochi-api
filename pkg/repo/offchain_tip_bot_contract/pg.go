@@ -30,8 +30,8 @@ func (pg *pg) GetByChainID(id string) ([]model.OffchainTipBotContract, error) {
 	return rs, pg.db.Where("chain_id = ?", id).Find(&rs).Error
 }
 
-func (pg *pg) CreateAssignContract(ac *model.OffchainTipBotAssignContract) error {
-	return pg.db.Create(ac).Error
+func (pg *pg) CreateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error) {
+	return ac, pg.db.Preload("OffchainTipBotContract").FirstOrCreate(&ac).Error
 }
 
 func (pg *pg) DeleteExpiredAssignContract() error {

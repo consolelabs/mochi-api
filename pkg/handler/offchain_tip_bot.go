@@ -83,13 +83,14 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 		}
 	}
 
-	if err := h.entities.OffchainTipBotCreateAssignContract(ac); err != nil {
+	userAssignedContract, err := h.entities.OffchainTipBotCreateAssignContract(ac)
+	if err != nil {
 		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to create assign contract")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(ac, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(userAssignedContract, nil, nil, nil))
 }
 
 // GetUserBalances     godoc
