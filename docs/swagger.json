@@ -1226,6 +1226,102 @@
                 }
             }
         },
+        "/configs/repost-reactions/blacklist-channel": {
+            "get": {
+                "description": "Get guild blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get guild blacklist channel repost config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Create blacklist channel repost config",
+                "parameters": [
+                    {
+                        "description": "Upsert join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete blacklist channel repost config",
+                "parameters": [
+                    {
+                        "description": "Delete blacklist channel repost config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/repost-reactions/message-repost": {
             "put": {
                 "description": "edit message repost",
@@ -3881,6 +3977,29 @@
                 }
             }
         },
+        "/offchain-tip-bot/withdraw": {
+            "post": {
+                "description": "OffChain Tip Bot - Withdraw",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "OffChain Tip Bot - Withdraw",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OffchainTipBotWithdrawResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profiles/": {
             "get": {
                 "description": "Get user profile",
@@ -5931,6 +6050,17 @@
                     "items": {
                         "$ref": "#/definitions/request.AddWhitelistCampaignUser"
                     }
+                }
+            }
+        },
+        "request.BalcklistChannelRepostConfigRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
                 }
             }
         },
@@ -8718,6 +8848,35 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NftWatchlistSuggest"
+                }
+            }
+        },
+        "response.OffchainTipBotWithdrawResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "cryptocurrency": {
+                    "type": "string"
+                },
+                "from_discord_id": {
+                    "type": "string"
+                },
+                "to_address": {
+                    "type": "string"
+                },
+                "transaction_fee": {
+                    "type": "number"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "tx_url": {
+                    "type": "string"
+                },
+                "withdraw_amount": {
+                    "type": "number"
                 }
             }
         },
