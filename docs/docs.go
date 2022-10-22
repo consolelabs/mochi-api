@@ -3062,7 +3062,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -3985,6 +3985,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/offchain-tip-bot/transfer": {
+            "post": {
+                "description": "API transfer token for tip, airdrop, ...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "OffChain Tip Bot - Transfer token",
+                "parameters": [
+                    {
+                        "description": "Transfer token request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OffchainTransferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OffchainTipBotTransferTokenResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/offchain-tip-bot/withdraw": {
             "post": {
                 "description": "OffChain Tip Bot - Withdraw",
@@ -4864,7 +4898,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -6506,6 +6540,47 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "verify_role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.OffchainTransferRequest": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "full_command": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "transfer_type": {
                     "type": "string"
                 }
             }
@@ -8891,6 +8966,34 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NftWatchlistSuggest"
+                }
+            }
+        },
+        "response.OffchainTipBotTransferToken": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "recipient_id": {
+                    "type": "string"
+                },
+                "sender_id": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.OffchainTipBotTransferTokenResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.OffchainTipBotTransferToken"
+                    }
                 }
             }
         },

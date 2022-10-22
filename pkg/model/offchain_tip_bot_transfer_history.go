@@ -12,7 +12,7 @@ type OffchainTipBotTransferHistory struct {
 	ReceiverID string     `json:"receiver_id"`
 	GuildID    string     `json:"guild_id"`
 	LogID      string     `json:"log_id"`
-	Status     *string    `json:"status"`
+	Status     string     `json:"status"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	DeletedAt  *time.Time `json:"-"`

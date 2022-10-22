@@ -24,6 +24,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.POST("/assign-contract", h.OffchainTipBotCreateAssignContract)
 		offchainTipBotGroup.GET("/balances", h.GetUserBalances)
 		offchainTipBotGroup.POST("/withdraw", h.OffchainTipBotWithdraw)
+		offchainTipBotGroup.POST("/transfer", h.TransferToken)
 	}
 
 	trade := v1.Group("/trades")

@@ -142,3 +142,34 @@ func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
+
+// TransferToken   godoc
+// @Summary     OffChain Tip Bot - Transfer token
+// @Description API transfer token for tip, airdrop, ...
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.OffchainTransferRequest true "Transfer token request"
+// @Success     200 {object} response.OffchainTipBotTransferTokenResponse
+// @Router      /offchain-tip-bot/transfer [post]
+func (h *Handler) TransferToken(c *gin.Context) {
+	req := request.OffchainTransferRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferToken] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	transferHistories, err := h.entities.TransferToken(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		h.log.Error(err, "[entities.TransferToken] - failed to transfer token")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
+}
