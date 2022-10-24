@@ -23,3 +23,15 @@ type TwitterPost struct {
 	TweetID       string `json:"tweet_id"`
 	GuildID       string `json:"guild_id"`
 }
+
+type AddToTwitterBlackListRequest struct {
+	GuildID         string `json:"guild_id"`
+	TwitterID       string `json:"twitter_id"`
+	TwitterUsername string `json:"twitter_username"`
+	CreatedBy       string `json:"created_by"`
+}
+
+type DeleteFromTwitterBlackListRequest struct {
+	GuildID   string `json:"guild_id" form:"guild_id" binding:"required"`
+	TwitterID string `json:"twitter_id" form:"twitter_id" binding:"required"`
+}

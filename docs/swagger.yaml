@@ -307,6 +307,19 @@ definitions:
       id:
         type: string
     type: object
+  model.GuildConfigTwitterBlacklist:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      guild_id:
+        type: string
+      twitter_id:
+        type: string
+      twitter_username:
+        type: string
+    type: object
   model.GuildConfigTwitterFeed:
     properties:
       guild_id:
@@ -745,6 +758,17 @@ definitions:
       guild_id:
         type: string
       user_id:
+        type: string
+    type: object
+  request.AddToTwitterBlackListRequest:
+    properties:
+      created_by:
+        type: string
+      guild_id:
+        type: string
+      twitter_id:
+        type: string
+      twitter_username:
         type: string
     type: object
   request.AddToWatchlistRequest:
@@ -1839,6 +1863,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.TradeOffer'
+    type: object
+  response.GetTwitterBlackListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigTwitterBlacklist'
+        type: array
     type: object
   response.GetTwitterHashtagConfigResponse:
     properties:
@@ -3965,6 +3996,70 @@ paths:
       summary: Create twitter config
       tags:
       - Config
+  /configs/twitter/blacklist:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an user from twitter watching blacklist
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: twitter_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Delete an user from twitter watching blacklist
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: get twitter blacklist
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterBlackListResponse'
+      summary: Get twitter blacklist
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Add an user to twitter watching blacklist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Add an user to twitter watching blacklist
+      tags:
+      - Config
   /configs/twitter/hashtag:
     get:
       consumes:
@@ -4732,7 +4827,7 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
+          description: ""
       summary: Delete custom commands
       tags:
       - Custom Command
@@ -6090,7 +6185,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ""
       summary: Get whitelist campaign users csv
       tags:
       - Whitelist campaign

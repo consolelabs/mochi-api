@@ -1747,6 +1747,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/twitter/blacklist": {
+            "get": {
+                "description": "get twitter blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get twitter blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add an user to twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Add an user to twitter watching blacklist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an user from twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete an user from twitter watching blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "twitter_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/twitter/hashtag": {
             "get": {
                 "description": "get all twitter hashtag config",
@@ -3062,7 +3160,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content"
+                        "description": ""
                     }
                 }
             }
@@ -4898,7 +4996,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": ""
                     }
                 }
             }
@@ -5411,6 +5509,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GuildConfigTwitterBlacklist": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "twitter_username": {
                     "type": "string"
                 }
             }
@@ -6084,6 +6202,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.AddToTwitterBlackListRequest": {
+            "type": "object",
+            "properties": {
+                "created_by": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "twitter_username": {
                     "type": "string"
                 }
             }
@@ -7774,6 +7909,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.TradeOffer"
+                }
+            }
+        },
+        "response.GetTwitterBlackListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigTwitterBlacklist"
+                    }
                 }
             }
         },
