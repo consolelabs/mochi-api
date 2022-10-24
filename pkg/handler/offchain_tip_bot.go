@@ -83,13 +83,14 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 		}
 	}
 
-	if err := h.entities.OffchainTipBotCreateAssignContract(ac); err != nil {
+	userAssignedContract, err := h.entities.OffchainTipBotCreateAssignContract(ac)
+	if err != nil {
 		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to create assign contract")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(ac, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(userAssignedContract, nil, nil, nil))
 }
 
 // GetUserBalances     godoc
@@ -118,4 +119,57 @@ func (h *Handler) GetUserBalances(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(userBalances, nil, nil, nil))
+}
+
+// OffchainTipBotWithdraw     godoc
+// @Summary     OffChain Tip Bot - Withdraw
+// @Description OffChain Tip Bot - Withdraw
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.OffchainTipBotWithdrawResponse
+// @Router      /offchain-tip-bot/withdraw [post]
+func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
+	resp := response.OffchainTipBotWithdrawResponse{
+		FromDiscordID:  "393034938028392449",
+		ToAddress:      "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+		Amount:         3.1,
+		Cryptocurrency: "usdt",
+		TxHash:         "0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
+		TxUrl:          "https://etherscan.io/tx/0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
+		WithdrawAmount: 1.4,
+		TransactionFee: 0.0001,
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+}
+
+// TransferToken   godoc
+// @Summary     OffChain Tip Bot - Transfer token
+// @Description API transfer token for tip, airdrop, ...
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.OffchainTransferRequest true "Transfer token request"
+// @Success     200 {object} response.OffchainTipBotTransferTokenResponse
+// @Router      /offchain-tip-bot/transfer [post]
+func (h *Handler) TransferToken(c *gin.Context) {
+	req := request.OffchainTransferRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferToken] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	transferHistories, err := h.entities.TransferToken(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		h.log.Error(err, "[entities.TransferToken] - failed to transfer token")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }

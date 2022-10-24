@@ -11,3 +11,14 @@ type GetUserBalances struct {
 type GetUserBalancesResponse struct {
 	Data []GetUserBalances `json:"data"`
 }
+
+type OffchainTipBotTransferToken struct {
+	SenderID    string  `json:"sender_id"`
+	RecipientID string  `json:"recipient_id"`
+	Amount      float64 `json:"amount"`
+	Symbol      string  `json:"symbol"`
+}
+
+type OffchainTipBotTransferTokenResponse struct {
+	Data []OffchainTipBotTransferToken `json:"data"`
+}

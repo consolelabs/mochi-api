@@ -8,7 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (err error) {
+func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
 	return e.repo.OffchainTipBotContract.CreateAssignContract(ac)
 }
 
@@ -31,7 +31,7 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 			ID:       coinID,
 			Name:     userBal.Token.TokenName,
 			Symbol:   userBal.Token.TokenSymbol,
-			Balances: *userBal.Amount,
+			Balances: userBal.Amount,
 		})
 
 	}
