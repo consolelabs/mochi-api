@@ -307,6 +307,19 @@ definitions:
       id:
         type: string
     type: object
+  model.GuildConfigTwitterBlacklist:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      guild_id:
+        type: string
+      twitter_id:
+        type: string
+      twitter_username:
+        type: string
+    type: object
   model.GuildConfigTwitterFeed:
     properties:
       guild_id:
@@ -747,6 +760,17 @@ definitions:
       user_id:
         type: string
     type: object
+  request.AddToTwitterBlackListRequest:
+    properties:
+      created_by:
+        type: string
+      guild_id:
+        type: string
+      twitter_id:
+        type: string
+      twitter_username:
+        type: string
+    type: object
   request.AddToWatchlistRequest:
     properties:
       coin_gecko_id:
@@ -1069,6 +1093,31 @@ definitions:
       transfer_type:
         type: string
     type: object
+  request.OffchainWithdrawRequest:
+    properties:
+      all:
+        type: boolean
+      amount:
+        type: number
+      channel_id:
+        type: string
+      duration:
+        type: integer
+      each:
+        type: boolean
+      full_command:
+        type: string
+      guild_id:
+        type: string
+      recipient:
+        type: string
+      recipient_address:
+        type: string
+      token:
+        type: string
+      transfer_type:
+        type: string
+    type: object
   request.RoleReactionRequest:
     properties:
       guild_id:
@@ -1080,6 +1129,8 @@ definitions:
     type: object
   request.RoleReactionUpdateRequest:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
@@ -1839,6 +1890,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.TradeOffer'
+    type: object
+  response.GetTwitterBlackListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigTwitterBlacklist'
+        type: array
     type: object
   response.GetTwitterHashtagConfigResponse:
     properties:
@@ -2631,13 +2689,11 @@ definitions:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
     type: object
-  response.OffchainTipBotWithdrawResponse:
+  response.OffchainTipBotWithdraw:
     properties:
       amount:
         type: number
-      cryptocurrency:
-        type: string
-      from_discord_id:
+      symbol:
         type: string
       to_address:
         type: string
@@ -2647,8 +2703,15 @@ definitions:
         type: string
       tx_url:
         type: string
+      user_discord_id:
+        type: string
       withdraw_amount:
-        type: number
+        $ref: '#/definitions/big.Float'
+    type: object
+  response.OffchainTipBotWithdrawResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.OffchainTipBotWithdraw'
     type: object
   response.ResponseDataMessage:
     properties:
@@ -2679,6 +2742,8 @@ definitions:
     type: object
   response.RoleReactionByMessage:
     properties:
+      channel_id:
+        type: string
       message_id:
         type: string
       roles:
@@ -2688,6 +2753,8 @@ definitions:
     type: object
   response.RoleReactionConfigResponse:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
@@ -2701,6 +2768,8 @@ definitions:
     type: object
   response.RoleReactionResponse:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
@@ -3963,6 +4032,70 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Create twitter config
+      tags:
+      - Config
+  /configs/twitter/blacklist:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an user from twitter watching blacklist
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: twitter_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Delete an user from twitter watching blacklist
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: get twitter blacklist
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterBlackListResponse'
+      summary: Get twitter blacklist
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Add an user to twitter watching blacklist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Add an user to twitter watching blacklist
       tags:
       - Config
   /configs/twitter/hashtag:
@@ -5422,8 +5555,6 @@ paths:
       summary: OffChain Tip Bot - Create an assign contract
       tags:
       - OffChain
-      - TipBot
-      - Deposit
   /offchain-tip-bot/balances:
     get:
       consumes:
@@ -5472,6 +5603,13 @@ paths:
       consumes:
       - application/json
       description: OffChain Tip Bot - Withdraw
+      parameters:
+      - description: Withdraw token request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.OffchainWithdrawRequest'
       produces:
       - application/json
       responses:

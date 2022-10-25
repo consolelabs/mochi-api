@@ -36,7 +36,7 @@ func (h *Handler) OffchainTipBotListAllChains(c *gin.Context) {
 // AddContract   godoc
 // @Summary     OffChain Tip Bot - Create an assign contract
 // @Description Create an assign contract when user want to deposit a specific token to contract
-// @Tags        OffChain, TipBot, Deposit
+// @Tags        OffChain
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateAssignContract true "Create assign contract request"
@@ -127,20 +127,29 @@ func (h *Handler) GetUserBalances(c *gin.Context) {
 // @Tags        OffChain
 // @Accept      json
 // @Produce     json
+// @Param       Request  body request.OffchainWithdrawRequest true "Withdraw token request"
 // @Success     200 {object} response.OffchainTipBotWithdrawResponse
 // @Router      /offchain-tip-bot/withdraw [post]
 func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
-	resp := response.OffchainTipBotWithdrawResponse{
-		FromDiscordID:  "393034938028392449",
-		ToAddress:      "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-		Amount:         3.1,
-		Cryptocurrency: "usdt",
-		TxHash:         "0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
-		TxUrl:          "https://etherscan.io/tx/0x940518031ecb2c29e6c7b6f73aa7574a8d12b897f46cca9b5d67ea111012cd5e",
-		WithdrawAmount: 1.4,
-		TransactionFee: 0.0001,
+	req := request.OffchainWithdrawRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.OffchainTipBotWithdraw] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
 	}
-	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+
+	res, err := h.entities.OffchainTipBotWithdraw(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		h.log.Error(err, "[handler.OffchainTipBotWithdraw] - failed to withdraw")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // TransferToken   godoc

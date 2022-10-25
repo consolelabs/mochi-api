@@ -52,6 +52,7 @@ func (pg *pg) ClearMessageConfig(guildID, messageID string) error {
 func (pg *pg) CreateRoleConfig(req request.RoleReactionUpdateRequest, updateJson string) error {
 	config := model.GuildConfigReactionRole{
 		MessageID:     req.MessageID,
+		ChannelID:     req.ChannelID,
 		GuildID:       req.GuildID,
 		ReactionRoles: updateJson,
 	}

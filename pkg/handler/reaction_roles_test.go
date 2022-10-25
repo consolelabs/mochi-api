@@ -94,6 +94,7 @@ func TestHandler_AddReactionRoleConfig(t *testing.T) {
 			args: request.RoleReactionUpdateRequest{
 				GuildID:   "895659000996200508",
 				MessageID: "1012576367268872234",
+				ChannelID: "",
 				Reaction:  "🍐",
 				RoleID:    "1012192448300208191",
 			},
@@ -105,6 +106,7 @@ func TestHandler_AddReactionRoleConfig(t *testing.T) {
 			args: request.RoleReactionUpdateRequest{
 				GuildID:   "863278424433229854",
 				MessageID: "1012576367268872234",
+				ChannelID: "",
 				Reaction:  "🍐",
 				RoleID:    "1012192448300208191",
 			},

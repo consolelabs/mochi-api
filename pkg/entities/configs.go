@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -949,4 +950,21 @@ func (e *Entity) DeleteBlacklistChannelRepostConfig(req request.BalcklistChannel
 		return err
 	}
 	return nil
+}
+
+func (e *Entity) AddToTwitterBlackList(req request.AddToTwitterBlackListRequest) error {
+	return e.repo.GuildConfigTwitterBlacklist.Upsert(&model.GuildConfigTwitterBlacklist{
+		GuildID:         req.GuildID,
+		TwitterUsername: req.TwitterUsername,
+		TwitterID:       req.TwitterID,
+		CreatedBy:       req.CreatedBy,
+	})
+}
+
+func (e *Entity) DeleteFromTwitterBlackList(req request.DeleteFromTwitterBlackListRequest) error {
+	return e.repo.GuildConfigTwitterBlacklist.Delete(req.GuildID, req.TwitterID)
+}
+
+func (e *Entity) GetTwitterBlackList(guildID string) ([]model.GuildConfigTwitterBlacklist, error) {
+	return e.repo.GuildConfigTwitterBlacklist.List(guildconfigtwitterblacklist.ListQuery{GuildID: guildID})
 }

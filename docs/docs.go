@@ -1747,6 +1747,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/twitter/blacklist": {
+            "get": {
+                "description": "get twitter blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get twitter blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add an user to twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Add an user to twitter watching blacklist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an user from twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete an user from twitter watching blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "twitter_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/twitter/hashtag": {
             "get": {
                 "description": "get all twitter hashtag config",
@@ -3927,9 +4025,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain",
-                    "TipBot",
-                    "Deposit"
+                    "OffChain"
                 ],
                 "summary": "OffChain Tip Bot - Create an assign contract",
                 "parameters": [
@@ -4032,6 +4128,17 @@ const docTemplate = `{
                     "OffChain"
                 ],
                 "summary": "OffChain Tip Bot - Withdraw",
+                "parameters": [
+                    {
+                        "description": "Withdraw token request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OffchainWithdrawRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5415,6 +5522,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigTwitterBlacklist": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "twitter_username": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigTwitterFeed": {
             "type": "object",
             "properties": {
@@ -6088,6 +6215,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AddToTwitterBlackListRequest": {
+            "type": "object",
+            "properties": {
+                "created_by": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "twitter_username": {
+                    "type": "string"
+                }
+            }
+        },
         "request.AddToWatchlistRequest": {
             "type": "object",
             "properties": {
@@ -6585,6 +6729,44 @@ const docTemplate = `{
                 }
             }
         },
+        "request.OffchainWithdrawRequest": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "full_command": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "recipient": {
+                    "type": "string"
+                },
+                "recipient_address": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
         "request.RoleReactionRequest": {
             "type": "object",
             "properties": {
@@ -6602,6 +6784,9 @@ const docTemplate = `{
         "request.RoleReactionUpdateRequest": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -7774,6 +7959,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.TradeOffer"
+                }
+            }
+        },
+        "response.GetTwitterBlackListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigTwitterBlacklist"
+                    }
                 }
             }
         },
@@ -8997,16 +9193,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.OffchainTipBotWithdrawResponse": {
+        "response.OffchainTipBotWithdraw": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
                 },
-                "cryptocurrency": {
-                    "type": "string"
-                },
-                "from_discord_id": {
+                "symbol": {
                     "type": "string"
                 },
                 "to_address": {
@@ -9021,8 +9214,19 @@ const docTemplate = `{
                 "tx_url": {
                     "type": "string"
                 },
+                "user_discord_id": {
+                    "type": "string"
+                },
                 "withdraw_amount": {
-                    "type": "number"
+                    "$ref": "#/definitions/big.Float"
+                }
+            }
+        },
+        "response.OffchainTipBotWithdrawResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OffchainTipBotWithdraw"
                 }
             }
         },
@@ -9072,6 +9276,9 @@ const docTemplate = `{
         "response.RoleReactionByMessage": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "message_id": {
                     "type": "string"
                 },
@@ -9086,6 +9293,9 @@ const docTemplate = `{
         "response.RoleReactionConfigResponse": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -9106,6 +9316,9 @@ const docTemplate = `{
         "response.RoleReactionResponse": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },

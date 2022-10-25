@@ -7,6 +7,7 @@ type Role struct {
 
 type RoleReactionResponse struct {
 	MessageID string `json:"message_id"`
+	ChannelID string `json:"channel_id"`
 	GuildID   string `json:"guild_id"`
 	Role      Role   `json:"role"`
 }
@@ -14,12 +15,14 @@ type RoleReactionResponse struct {
 type RoleReactionConfigResponse struct {
 	MessageID string `json:"message_id"`
 	GuildID   string `json:"guild_id"`
+	ChannelID string `json:"channel_id"`
 	Roles     []Role `json:"roles"`
 	Success   bool   `json:"success"`
 }
 
 type RoleReactionByMessage struct {
 	MessageID string `json:"message_id"`
+	ChannelID string `json:"channel_id"`
 	Roles     []Role `json:"roles"`
 }
 
