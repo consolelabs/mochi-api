@@ -3160,7 +3160,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": ""
+                        "description": "No Content"
                     }
                 }
             }
@@ -4025,9 +4025,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain",
-                    "TipBot",
-                    "Deposit"
+                    "OffChain"
                 ],
                 "summary": "OffChain Tip Bot - Create an assign contract",
                 "parameters": [
@@ -4130,6 +4128,17 @@ const docTemplate = `{
                     "OffChain"
                 ],
                 "summary": "OffChain Tip Bot - Withdraw",
+                "parameters": [
+                    {
+                        "description": "Withdraw token request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OffchainWithdrawRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4996,7 +5005,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
@@ -6710,6 +6719,44 @@ const docTemplate = `{
                     }
                 },
                 "sender": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.OffchainWithdrawRequest": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "full_command": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "recipient": {
+                    "type": "string"
+                },
+                "recipient_address": {
                     "type": "string"
                 },
                 "token": {
@@ -9143,16 +9190,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.OffchainTipBotWithdrawResponse": {
+        "response.OffchainTipBotWithdraw": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
                 },
-                "cryptocurrency": {
-                    "type": "string"
-                },
-                "from_discord_id": {
+                "symbol": {
                     "type": "string"
                 },
                 "to_address": {
@@ -9167,8 +9211,19 @@ const docTemplate = `{
                 "tx_url": {
                     "type": "string"
                 },
+                "user_discord_id": {
+                    "type": "string"
+                },
                 "withdraw_amount": {
-                    "type": "number"
+                    "$ref": "#/definitions/big.Float"
+                }
+            }
+        },
+        "response.OffchainTipBotWithdrawResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OffchainTipBotWithdraw"
                 }
             }
         },
