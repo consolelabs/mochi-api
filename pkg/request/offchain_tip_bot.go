@@ -13,3 +13,16 @@ type OffchainTransferRequest struct {
 	FullCommand  string   `json:"full_command"`
 	Duration     int      `json:"duration"`
 }
+type OffchainWithdrawRequest struct {
+	Recipient        string  `json:"recipient"`
+	RecipientAddress string  `json:"recipient_address"`
+	GuildID          string  `json:"guild_id"`
+	ChannelID        string  `json:"channel_id"`
+	Amount           float64 `json:"amount"`
+	Token            string  `json:"token"`
+	Each             bool    `json:"each"`
+	All              bool    `json:"all"`
+	TransferType     string  `json:"transfer_type"`
+	FullCommand      string  `json:"full_command"`
+	Duration         int     `json:"duration"`
+}
