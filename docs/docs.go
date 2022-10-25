@@ -6737,6 +6737,9 @@ const docTemplate = `{
         "request.RoleReactionUpdateRequest": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -9218,6 +9221,9 @@ const docTemplate = `{
         "response.RoleReactionByMessage": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "message_id": {
                     "type": "string"
                 },
@@ -9232,6 +9238,9 @@ const docTemplate = `{
         "response.RoleReactionConfigResponse": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -9252,6 +9261,9 @@ const docTemplate = `{
         "response.RoleReactionResponse": {
             "type": "object",
             "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },

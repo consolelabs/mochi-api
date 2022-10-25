@@ -26,6 +26,7 @@ func (e *Entity) ListAllReactionRoles(guildID string) (*response.ListRoleReactio
 		}
 		roleConfigs = append(roleConfigs, response.RoleReactionByMessage{
 			MessageID: c.MessageID,
+			ChannelID: c.ChannelID,
 			Roles:     roles,
 		})
 	}
@@ -63,6 +64,7 @@ func (e *Entity) GetReactionRoleByMessageID(guildID, messageID, reaction string)
 	var res = response.RoleReactionResponse{
 		GuildID:   config.GuildID,
 		MessageID: config.MessageID,
+		ChannelID: config.ChannelID,
 		Role:      filteredRole,
 	}
 	return &res, nil
@@ -97,6 +99,7 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 		return &response.RoleReactionConfigResponse{
 			MessageID: req.MessageID,
 			GuildID:   req.GuildID,
+			ChannelID: req.ChannelID,
 			Roles:     roles,
 			Success:   true,
 		}, err
@@ -135,6 +138,7 @@ func (e *Entity) UpdateConfigByMessageID(req request.RoleReactionUpdateRequest) 
 	var res = response.RoleReactionConfigResponse{
 		MessageID: config.MessageID,
 		GuildID:   config.GuildID,
+		ChannelID: config.ChannelID,
 		Roles:     roles,
 		Success:   true,
 	}

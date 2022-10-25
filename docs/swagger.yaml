@@ -1104,6 +1104,8 @@ definitions:
     type: object
   request.RoleReactionUpdateRequest:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
@@ -2710,6 +2712,8 @@ definitions:
     type: object
   response.RoleReactionByMessage:
     properties:
+      channel_id:
+        type: string
       message_id:
         type: string
       roles:
@@ -2719,6 +2723,8 @@ definitions:
     type: object
   response.RoleReactionConfigResponse:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
@@ -2732,6 +2738,8 @@ definitions:
     type: object
   response.RoleReactionResponse:
     properties:
+      channel_id:
+        type: string
       guild_id:
         type: string
       message_id:
