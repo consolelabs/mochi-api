@@ -1245,3 +1245,74 @@ func (h *Handler) DeleteBlacklistChannelRepostConfig(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// AddToTwitterBlackList     godoc
+// @Summary     Add an user to twitter watching blacklist
+// @Description Add an user to twitter watching blacklist
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       req body request.AddToTwitterBlackListRequest true "request"
+// @Success     200 {string} string "ok"
+// @Router      /configs/twitter/blacklist [post]
+func (h *Handler) AddToTwitterBlackList(c *gin.Context) {
+	var req request.AddToTwitterBlackListRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.AddToTwitterBlackList] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.AddToTwitterBlackList(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddToTwitterBlackList] entity.AddToTwitterBlackList() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// DeleteFromTwitterBlackList     godoc
+// @Summary     Delete an user from twitter watching blacklist
+// @Description Delete an user from twitter watching blacklist
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       req query request.DeleteFromTwitterBlackListRequest true "query"
+// @Success     200 {string} string "ok"
+// @Router      /configs/twitter/blacklist [delete]
+func (h *Handler) DeleteFromTwitterBlackList(c *gin.Context) {
+	var req request.DeleteFromTwitterBlackListRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.DeleteFromTwitterBlackList] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	err := h.entities.DeleteFromTwitterBlackList(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.DeleteFromTwitterBlackList] entity.DeleteFromTwitterBlackList() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetTwitterBlackList     godoc
+// @Summary     Get twitter blacklist
+// @Description get twitter blacklist
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string false  "Guild ID"
+// @Success     200 {object} response.GetTwitterBlackListResponse
+// @Router      /configs/twitter/blacklist [get]
+func (h *Handler) GetTwitterBlackList(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	data, err := h.entities.GetTwitterBlackList(guildID)
+	if err != nil {
+		h.log.Error(err, "[handler.GetTwitterBlackList] entity.GetTwitterBlackList() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

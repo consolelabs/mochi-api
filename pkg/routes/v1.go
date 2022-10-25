@@ -185,6 +185,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.DELETE("/hashtag/:guild_id", h.DeleteTwitterHashtagConfig)
 			twitterGroup.POST("/hashtag", h.CreateTwitterHashtagConfig)
 			twitterGroup.GET("/hashtag", h.GetAllTwitterHashtagConfig)
+			twitterGroup.POST("/blacklist", h.AddToTwitterBlackList)
+			twitterGroup.GET("/blacklist", h.GetTwitterBlackList)
+			twitterGroup.DELETE("/blacklist", h.DeleteFromTwitterBlackList)
 		}
 		defaultTickerGroup := configGroup.Group("/default-ticker")
 		{

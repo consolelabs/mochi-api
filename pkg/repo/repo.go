@@ -30,6 +30,7 @@ import (
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
+	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
@@ -102,6 +103,7 @@ type Repo struct {
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
 	GuildConfigTwitterHashtag            guildconfigtwitterhashtag.Store
+	GuildConfigTwitterBlacklist          guildconfigtwitterblacklist.Store
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	UpvoteStreakTier                     upvotestreaktier.Store

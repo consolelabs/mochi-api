@@ -122,6 +122,10 @@ type GetAllTwitterHashtagConfigResponse struct {
 	Data []TwitterHashtag `json:"data"`
 }
 
+type GetTwitterBlackListResponse struct {
+	Data []model.GuildConfigTwitterBlacklist `json:"data"`
+}
+
 type GetDefaultTokenResponse struct {
 	Data *model.Token `json:"data"`
 }
