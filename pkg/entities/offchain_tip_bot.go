@@ -106,6 +106,9 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 			GuildID:    req.GuildID,
 			LogID:      al.ID.String(),
 			Status:     consts.OffchainTipBotTrasferStatusSuccess,
+			Amount:     amountEachRecipient,
+			Token:      supportedToken.TokenSymbol,
+			Action:     req.TransferType,
 		})
 	}
 	transferHistories, err := e.repo.OffchainTipBotTransferHistories.CreateTransferHistories(listTransferHistories)

@@ -21,6 +21,9 @@ func NewAbi(cfg *config.Config) Service {
 }
 
 func (e *abiEntity) GetNameAndSymbol(address string, chainId int64) (name string, symbol string, err error) {
+	if chainId == 2 {
+		return "", "", nil
+	}
 	rpcUrl := e.selectRpcUrl(chainId)
 	client, err := ethclient.Dial(rpcUrl)
 	if err != nil {
