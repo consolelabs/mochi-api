@@ -6067,10 +6067,7 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
-                "from_address": {
-                    "type": "string"
-                },
-                "from_items": {
+                "have_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.TradeItem"
@@ -6079,17 +6076,17 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "to_address": {
+                "owner_address": {
                     "type": "string"
                 },
-                "to_items": {
+                "updated_at": {
+                    "type": "string"
+                },
+                "want_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.TradeItem"
                     }
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -6469,23 +6466,19 @@ const docTemplate = `{
         "request.CreateTradeOfferRequest": {
             "type": "object",
             "required": [
-                "from_address",
-                "to_address"
+                "owner_address"
             ],
             "properties": {
-                "from_address": {
-                    "type": "string"
-                },
-                "from_items": {
+                "have_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/request.TradeOfferItem"
                     }
                 },
-                "to_address": {
+                "owner_address": {
                     "type": "string"
                 },
-                "to_items": {
+                "want_items": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/request.TradeOfferItem"

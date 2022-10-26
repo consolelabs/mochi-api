@@ -664,22 +664,20 @@ definitions:
     properties:
       created_at:
         type: string
-      from_address:
-        type: string
-      from_items:
+      have_items:
         items:
           $ref: '#/definitions/model.TradeItem'
         type: array
       id:
         type: string
-      to_address:
+      owner_address:
         type: string
-      to_items:
+      updated_at:
+        type: string
+      want_items:
         items:
           $ref: '#/definitions/model.TradeItem'
         type: array
-      updated_at:
-        type: string
     type: object
   model.UpvoteStreakTier:
     properties:
@@ -924,21 +922,18 @@ definitions:
     type: object
   request.CreateTradeOfferRequest:
     properties:
-      from_address:
-        type: string
-      from_items:
+      have_items:
         items:
           $ref: '#/definitions/request.TradeOfferItem'
         type: array
-      to_address:
+      owner_address:
         type: string
-      to_items:
+      want_items:
         items:
           $ref: '#/definitions/request.TradeOfferItem'
         type: array
     required:
-    - from_address
-    - to_address
+    - owner_address
     type: object
   request.CreateUserRequest:
     properties:

@@ -7,13 +7,12 @@ import (
 )
 
 type TradeOffer struct {
-	ID          uuid.UUID   `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	FromAddress string      `json:"from_address"`
-	ToAddress   string      `json:"to_address"`
-	FromItems   []TradeItem `json:"from_items"`
-	ToItems     []TradeItem `json:"to_items"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
+	ID           uuid.UUID   `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
+	OwnerAddress string      `json:"owner_address"`
+	HaveItems    []TradeItem `json:"have_items"`
+	WantItems    []TradeItem `json:"want_items"`
+	CreatedAt    time.Time   `json:"created_at"`
+	UpdatedAt    time.Time   `json:"updated_at"`
 }
 
 func (TradeOffer) TableName() string {
