@@ -58,3 +58,9 @@ func (pg *pg) UpdateNrOfJoin(discordId string, nrOfJoin int64) error {
 	u := &model.User{}
 	return pg.db.Model(u).Where("id = ?", discordId).Update("nr_of_join", nrOfJoin).Error
 }
+
+func (pg *pg) UpdateUserIsMigrateBals(userID string) error {
+	u := &model.User{}
+	return pg.db.Model(u).Where("id = ?", userID).Update("is_migrate_bal", true).Error
+
+}

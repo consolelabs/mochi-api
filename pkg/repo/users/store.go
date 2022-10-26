@@ -8,4 +8,5 @@ type Store interface {
 	GetOne(discordID string) (*model.User, error)
 	GetByDiscordIDs(discordIDs []string) ([]model.User, error)
 	UpdateNrOfJoin(discordId string, nrOfJoin int64) error
+	UpdateUserIsMigrateBals(userID string) error
 }
