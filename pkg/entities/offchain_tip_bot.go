@@ -233,7 +233,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		GuildID:         req.GuildID,
 		ChannelID:       req.ChannelID,
 		Action:          &req.TransferType,
-		Receiver:        []string{req.Recipient},
+		Receiver:        []string{req.RecipientAddress},
 		TokenID:         offchainToken.ID.String(),
 		NumberReceivers: 1,
 		Duration:        &req.Duration,

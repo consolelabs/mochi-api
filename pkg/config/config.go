@@ -86,6 +86,8 @@ type Config struct {
 	BlockChainAPISecretKey string
 
 	CoinGeckoAPIKey string
+
+	CentralizedWalletMnemonic string
 }
 
 type MarketplaceBaseUrl struct {
@@ -212,6 +214,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BlockChainAPISecretKey: v.GetString("BLOCKCHAIN_API_SECRET_KEY"),
 
 		CoinGeckoAPIKey: v.GetString("COINGECKO_API_KEY"),
+
+		CentralizedWalletMnemonic: v.GetString("CENTRALIZED_WALLET_MNEMONIC"),
 	}
 }
 
