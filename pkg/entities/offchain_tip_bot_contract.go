@@ -49,7 +49,7 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 	return bals, nil
 }
 
-func (e *Entity) migrateBalance() error {
+func (e *Entity) MigrateBalance() error {
 	tokens, err := e.repo.Token.GetAll()
 	if err != nil {
 		e.log.Error(err, "[entities.migrateBalance] - failed to get supported tokens")
@@ -69,6 +69,9 @@ func (e *Entity) migrateBalance() error {
 		balances, _ := e.balances(user.InDiscordWalletAddress.String, tokens)
 		// migrate to tip_bot_offchain_balances
 		for symbol, balance := range balances {
+			if balance == 0 {
+				continue
+			}
 			token, err := e.repo.OffchainTipBotTokens.GetBySymbol(symbol)
 			if err != nil {
 				e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[entities.migrateBalance] - failed to get offchain tip bot token")
@@ -82,7 +85,6 @@ func (e *Entity) migrateBalance() error {
 			if err != nil {
 				e.log.Fields(logger.Fields{"userID": user.ID, "tokenID": token.ID, "balance": balance}).Error(err, "[entities.migrateBalance] - failed to add offchain tip bot balance")
 			}
-			continue
 		}
 		e.repo.Users.UpdateUserIsMigrateBals(user.ID)
 	}
