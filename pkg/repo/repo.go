@@ -44,6 +44,7 @@ import (
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
+	migratebalances "github.com/defipod/mochi/pkg/repo/migrate_balances"
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
@@ -152,4 +153,5 @@ type Repo struct {
 	OffchainTipBotTokens                 offchaintipbottokens.Store
 	OffchainTipBotActivityLogs           offchaintipbotactivitylogs.Store
 	OffchainTipBotTransferHistories      offchaintipbottransferhistories.Store
+	MigrateBalances                      migratebalances.Store
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/k0kubun/pp"
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"github.com/nanmu42/etherscan-api"
 
@@ -75,7 +76,7 @@ func (ch *Chain) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amou
 
 	switch token.IsNative {
 	case true:
-		t, amount, err = ch.transfer(fromAcc, toAcc, amount, nonce, all)
+		t, amount, err = ch.transfer(fromAcc, toAcc, amount, token, nonce, all)
 	default:
 		t, amount, err = ch.transferToken(fromAcc, toAcc, amount, token, nonce, all)
 	}
@@ -83,7 +84,7 @@ func (ch *Chain) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amou
 	return t, amount, err
 }
 
-func (ch *Chain) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Chain) transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	balance, err := ch.Balance(fromAcc.Address.Hex())
 	if err != nil {
 		return nil, 0, err
@@ -113,13 +114,23 @@ func (ch *Chain) transfer(fromAcc accounts.Account, toAcc accounts.Account, amou
 		}
 	}
 
-	gasLimit := uint64(21000)
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
 		return nil, 0, err
 	}
 
+	gasLimit := uint64(21000)
 	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
+	pp.Println("check data before execute tx in native token: ")
+	pp.Println("fromAddress: ", fromAddress.Hex())
+	pp.Println("toAddress: ", toAcc.Address.Hex())
+	pp.Println("amount: ", amount)
+	pp.Println("nonce: ", nonce)
+	pp.Println("gasLimit: ", gasLimit)
+	pp.Println("gasPrice: ", gasPrice)
+	pp.Println("balance: ", balance)
+	pp.Println("maxTxFee: ", maxTxFee)
+
 	if all {
 		if balance <= maxTxFee {
 			return nil, 0, errors.New("insufficient funds for gas")

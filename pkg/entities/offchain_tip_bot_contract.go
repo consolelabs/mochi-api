@@ -2,13 +2,14 @@ package entities
 
 import (
 	"fmt"
-	"strings"
+	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/k0kubun/pp"
 )
 
 func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
@@ -20,36 +21,37 @@ func (e *Entity) OffchainTipBotDeleteExpiredAssignContract() (err error) {
 }
 
 func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances, err error) {
-	userBals, err := e.repo.OffchainTipBotUserBalances.GetUserBalances(userID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"userID": userID}).Error(err, "[repo.OffchainTipBotUserBalances.GetUserBalances] - failed to get user balances")
-		return []response.GetUserBalances{}, err
-	}
+	// userBals, err := e.repo.OffchainTipBotUserBalances.GetUserBalances(userID)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"userID": userID}).Error(err, "[repo.OffchainTipBotUserBalances.GetUserBalances] - failed to get user balances")
+	// 	return []response.GetUserBalances{}, err
+	// }
 
-	listCoinIDs := []string{}
-	for _, userBal := range userBals {
-		coinID := strings.Replace(strings.ToLower(userBal.Token.TokenName), " ", "-", -1)
-		listCoinIDs = append(listCoinIDs, coinID)
-		bals = append(bals, response.GetUserBalances{
-			ID:       coinID,
-			Name:     userBal.Token.TokenName,
-			Symbol:   userBal.Token.TokenSymbol,
-			Balances: userBal.Amount,
-		})
+	// listCoinIDs := []string{}
+	// for _, userBal := range userBals {
+	// 	coinID := strings.Replace(strings.ToLower(userBal.Token.TokenName), " ", "-", -1)
+	// 	listCoinIDs = append(listCoinIDs, coinID)
+	// 	bals = append(bals, response.GetUserBalances{
+	// 		ID:       coinID,
+	// 		Name:     userBal.Token.TokenName,
+	// 		Symbol:   userBal.Token.TokenSymbol,
+	// 		Balances: userBal.Amount,
+	// 	})
 
-	}
+	// }
 
-	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(listCoinIDs, "usd")
-	if err != nil {
-		e.log.Fields(logger.Fields{"listCoinIDs": listCoinIDs}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
-		return []response.GetUserBalances{}, err
-	}
+	// tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(listCoinIDs, "usd")
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"listCoinIDs": listCoinIDs}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
+	// 	return []response.GetUserBalances{}, err
+	// }
 
-	for i, bal := range bals {
-		bals[i].BalancesInUSD = tokenPrices[bal.ID] * bal.Balances
-	}
+	// for i, bal := range bals {
+	// 	bals[i].BalancesInUSD = tokenPrices[bal.ID] * bal.Balances
+	// }
 
-	return bals, nil
+	e.MigrateBalance()
+	return nil, nil
 }
 
 func (e *Entity) MigrateBalance() error {
@@ -59,6 +61,7 @@ func (e *Entity) MigrateBalance() error {
 	}
 	// get user check migrate bals
 	users, _ := e.repo.Users.Get50Users()
+	fmt.Println(users)
 	for _, user := range users {
 		if user.IsMigrateBal {
 			continue
@@ -70,15 +73,54 @@ func (e *Entity) MigrateBalance() error {
 		}
 
 		balances, _ := e.balances(user.InDiscordWalletAddress.String, tokens)
+		pp.Println(balances)
 		for symbol, balance := range balances {
 			if balance == 0 {
 				continue
 			}
+
 			// get offchain_tip_bot_token
 			token, err := e.repo.OffchainTipBotTokens.GetBySymbol(symbol)
 			if err != nil {
 				e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[entities.migrateBalance] - failed to get offchain tip bot token")
 				continue
+			}
+
+			// transfer money to centralized wallet
+			tokenTransfer := model.Token{}
+			for _, t := range tokens {
+				if t.Symbol == symbol {
+					tokenTransfer = t
+					break
+				}
+			}
+
+			fromAccount, _ := e.dcwallet.GetAccountByWalletNumber(int(user.InDiscordWalletNumber.Int64))
+
+			fmt.Println("Transfer for symbol", symbol)
+			signedTx, transferredAmount, errTx := e.transfer(fromAccount,
+				accounts.Account{Address: common.HexToAddress("0x4ec16127E879464bEF6ab310084FAcEC1E4Fe465")},
+				balance,
+				tokenTransfer, -1, true)
+
+			fmt.Println("signedTx: ", signedTx)
+			fmt.Println("transferredAmount: ", transferredAmount)
+			fmt.Println(err)
+			if signedTx != nil {
+				fmt.Println(fmt.Sprintf("%s/%s", tokenTransfer.Chain.TxBaseURL, signedTx.Hash().Hex()))
+			}
+
+			// save tx
+			if errTx == nil {
+				e.repo.MigrateBalances.StoreMigrateBalances(&model.MigrateBalance{
+					Symbol:            symbol,
+					CreatedAt:         time.Now(),
+					Username:          user.Username,
+					UserDiscordID:     user.ID,
+					Txhash:            signedTx.Hash().String(),
+					Txurl:             fmt.Sprintf("%s/%s", tokenTransfer.Chain.TxBaseURL, signedTx.Hash().Hex()),
+					Transferredamount: transferredAmount,
+				})
 			}
 
 			// create offchain_tip_bot_user_balances with symbol
@@ -91,28 +133,7 @@ func (e *Entity) MigrateBalance() error {
 				e.log.Fields(logger.Fields{"userID": user.ID, "tokenID": token.ID, "balance": balance}).Error(err, "[entities.migrateBalance] - failed to add offchain tip bot balance")
 			}
 
-			// transfer money to centralized wallet
-			tokenTransfer := model.Token{}
-			for _, t := range tokens {
-				if t.Symbol == "ETH" {
-					tokenTransfer = t
-					break
-				}
-			}
-			fromAccount, _ := e.dcwallet.GetAccountByWalletNumber(int(user.InDiscordWalletNumber.Int64))
-
-			signedTx, transferredAmount, err := e.transfer(fromAccount,
-				accounts.Account{Address: common.HexToAddress("0x140dd183e18ba39bd9BE82286ea2d96fdC48117A")},
-				balance,
-				tokenTransfer, -1, true)
-
-			fmt.Println("signedTx: ", signedTx)
-			fmt.Println("transferredAmount: ", transferredAmount)
-			fmt.Println(err)
-			fmt.Println(fmt.Sprintf("%s/%s", tokenTransfer.Chain.TxBaseURL, signedTx.Hash().Hex()))
-
 		}
-		e.repo.Users.UpdateUserIsMigrateBals(user.ID)
 	}
 
 	return nil
