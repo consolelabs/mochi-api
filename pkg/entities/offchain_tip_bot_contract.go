@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/k0kubun/pp"
 )
 
 func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
@@ -69,7 +70,11 @@ func (e *Entity) MigrateBalance() error {
 			continue
 		}
 
-		balances, _ := e.balances(user.InDiscordWalletAddress.String, tokens)
+		balances, err := e.balances(user.InDiscordWalletAddress.String, tokens)
+		if err != nil {
+			pp.Println(err)
+		}
+		pp.Println(balances)
 		for symbol, balance := range balances {
 			if balance == 0 {
 				continue
@@ -87,10 +92,10 @@ func (e *Entity) MigrateBalance() error {
 			fromAccount, _ := e.dcwallet.GetAccountByWalletNumber(int(user.InDiscordWalletNumber.Int64))
 
 			fmt.Println("Transfer for symbol", symbol)
-			signedTx, transferredAmount, _ := e.transfer(fromAccount,
+			signedTx, transferredAmount, err := e.transfer(fromAccount,
 				accounts.Account{Address: common.HexToAddress("0x4ec16127E879464bEF6ab310084FAcEC1E4Fe465")},
-				balance,
-				tokenTransfer, -1, true)
+				0.01,
+				tokenTransfer, -1, false)
 
 			fmt.Println("signedTx: ", signedTx)
 			fmt.Println("transferredAmount: ", transferredAmount)

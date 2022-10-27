@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -114,50 +115,92 @@ func (ch *Chain) transfer(fromAcc accounts.Account, toAcc accounts.Account, amou
 		}
 	}
 
-	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, 0, err
-	}
-
-	gasLimit := uint64(21000)
-	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
-	pp.Println("check data before execute tx in native token: ")
-	pp.Println("fromAddress: ", fromAddress.Hex())
-	pp.Println("toAddress: ", toAcc.Address.Hex())
-	pp.Println("amount: ", amount)
-	pp.Println("nonce: ", nonce)
-	pp.Println("gasLimit: ", gasLimit)
-	pp.Println("gasPrice: ", gasPrice)
-	pp.Println("balance: ", balance)
-	pp.Println("maxTxFee: ", maxTxFee)
-
-	if all {
-		if balance <= maxTxFee {
-			return nil, 0, errors.New("insufficient funds for gas")
+	status := false
+	gl := 10000
+	priceStep := 3000
+	var signedTx *types.Transaction
+	for !status {
+		ch.log.Infof("gas limit", gl)
+		gasPrice, err := ch.client.SuggestGasPrice(context.Background())
+		if err != nil {
+			return nil, 0, err
 		}
-		amount = balance - maxTxFee
-	}
 
-	value := new(big.Int)
-	value.SetString(strconv.FormatFloat(float64(math.Pow10(18))*amount, 'f', 6, 64), 10)
+		gasLimit := uint64(gl)
+		maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
+		pp.Println("check data before execute tx in native token: ")
+		pp.Println("fromAddress: ", fromAddress.Hex())
+		pp.Println("toAddress: ", toAcc.Address.Hex())
+		pp.Println("amount: ", amount)
+		pp.Println("nonce: ", nonce)
+		pp.Println("gasLimit: ", gasLimit)
+		pp.Println("gasPrice: ", gasPrice)
+		pp.Println("balance: ", balance)
+		pp.Println("maxTxFee: ", maxTxFee)
 
-	toAddress := common.HexToAddress(toAcc.Address.Hex())
-	var data []byte
-	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+		if all {
+			if balance <= maxTxFee {
+				return nil, 0, errors.New("insufficient funds for gas")
+			}
+			amount = balance - maxTxFee
+		}
+		pp.Println("here 1")
 
-	chainID, err := ch.client.NetworkID(context.Background())
-	if err != nil {
-		return nil, 0, err
-	}
+		value := new(big.Int)
+		value.SetString(strconv.FormatFloat(float64(math.Pow10(18))*amount, 'f', 6, 64), 10)
+		pp.Println("here 2")
+		toAddress := common.HexToAddress(toAcc.Address.Hex())
+		var data []byte
+		tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+		pp.Println("here 3")
+		chainID, err := ch.client.NetworkID(context.Background())
+		if err != nil {
+			return nil, 0, err
+		}
+		pp.Println("here 4")
 
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
-	if err != nil {
-		return nil, 0, err
-	}
+		signedTx, err = types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+		if err != nil {
+			return nil, 0, err
+		}
+		pp.Println(signedTx.Hash().Hex())
+		pp.Println("here 4")
 
-	err = ch.client.SendTransaction(context.Background(), signedTx)
-	if err != nil {
-		return nil, 0, err
+		err = ch.client.SendTransaction(context.Background(), signedTx)
+		if err != nil {
+			fmt.Println(err)
+			gl += priceStep
+			continue
+			// return nil, 0, err
+		}
+		pp.Println(signedTx.Hash().Hex())
+		pp.Println("here 5")
+
+		txDetails, isPending, err := ch.client.TransactionByHash(context.Background(), signedTx.Hash())
+		if err != nil {
+			return nil, 0, err
+		}
+		pp.Println(signedTx.Hash().Hex())
+		pp.Println(txDetails.Hash().Hex())
+		pp.Println("here 6")
+
+		pp.Println("isPending: ", isPending)
+		pp.Println("err: ", err)
+		for isPending {
+			_, isPending, err = ch.client.TransactionByHash(context.Background(), txDetails.Hash())
+			pp.Println(err)
+			if err != nil {
+				return nil, 0, err
+			}
+		}
+
+		receipt, err := ch.client.TransactionReceipt(context.Background(), signedTx.Hash())
+		if err != nil || receipt.Status == 0 {
+			gl += priceStep
+			continue
+		}
+
+		status = true
 	}
 
 	return signedTx, amount, nil
