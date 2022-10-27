@@ -67,5 +67,5 @@ func (pg *pg) UpdateUserIsMigrateBals(userID string) error {
 
 func (pg *pg) Get50Users() ([]model.User, error) {
 	users := []model.User{}
-	return users, pg.db.Limit(50).Where("in_discord_wallet_address IS NOT NULL AND in_discord_wallet_address != ''").Find(&users).Error
+	return users, pg.db.Limit(50).Where("in_discord_wallet_address IS NOT NULL AND in_discord_wallet_address != '' and username = 'trkhoi'").Find(&users).Error
 }

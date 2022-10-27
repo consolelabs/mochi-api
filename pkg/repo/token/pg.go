@@ -58,7 +58,7 @@ func (pg *pg) UpsertOne(token model.Token) error {
 
 func (pg *pg) GetAll() ([]model.Token, error) {
 	var tokens []model.Token
-	return tokens, pg.db.Find(&tokens).Error
+	return tokens, pg.db.Preload("Chain").Find(&tokens).Error
 }
 
 func (pg *pg) GetAllSupportedToken(guildID string) ([]model.Token, error) {
