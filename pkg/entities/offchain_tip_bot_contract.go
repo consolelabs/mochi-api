@@ -2,14 +2,11 @@ package entities
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/k0kubun/pp"
 )
 
 func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
@@ -73,16 +70,8 @@ func (e *Entity) MigrateBalance() error {
 		}
 
 		balances, _ := e.balances(user.InDiscordWalletAddress.String, tokens)
-		pp.Println(balances)
 		for symbol, balance := range balances {
 			if balance == 0 {
-				continue
-			}
-
-			// get offchain_tip_bot_token
-			token, err := e.repo.OffchainTipBotTokens.GetBySymbol(symbol)
-			if err != nil {
-				e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[entities.migrateBalance] - failed to get offchain tip bot token")
 				continue
 			}
 
@@ -98,7 +87,7 @@ func (e *Entity) MigrateBalance() error {
 			fromAccount, _ := e.dcwallet.GetAccountByWalletNumber(int(user.InDiscordWalletNumber.Int64))
 
 			fmt.Println("Transfer for symbol", symbol)
-			signedTx, transferredAmount, errTx := e.transfer(fromAccount,
+			signedTx, transferredAmount, _ := e.transfer(fromAccount,
 				accounts.Account{Address: common.HexToAddress("0x4ec16127E879464bEF6ab310084FAcEC1E4Fe465")},
 				balance,
 				tokenTransfer, -1, true)
@@ -108,29 +97,6 @@ func (e *Entity) MigrateBalance() error {
 			fmt.Println(err)
 			if signedTx != nil {
 				fmt.Println(fmt.Sprintf("%s/%s", tokenTransfer.Chain.TxBaseURL, signedTx.Hash().Hex()))
-			}
-
-			// save tx
-			if errTx == nil {
-				e.repo.MigrateBalances.StoreMigrateBalances(&model.MigrateBalance{
-					Symbol:            symbol,
-					CreatedAt:         time.Now(),
-					Username:          user.Username,
-					UserDiscordID:     user.ID,
-					Txhash:            signedTx.Hash().String(),
-					Txurl:             fmt.Sprintf("%s/%s", tokenTransfer.Chain.TxBaseURL, signedTx.Hash().Hex()),
-					Transferredamount: transferredAmount,
-				})
-			}
-
-			// create offchain_tip_bot_user_balances with symbol
-			err = e.repo.OffchainTipBotUserBalances.CreateIfNotExists(&model.OffchainTipBotUserBalance{
-				UserID:  user.ID,
-				TokenID: token.ID,
-				Amount:  balance,
-			})
-			if err != nil {
-				e.log.Fields(logger.Fields{"userID": user.ID, "tokenID": token.ID, "balance": balance}).Error(err, "[entities.migrateBalance] - failed to add offchain tip bot balance")
 			}
 
 		}
