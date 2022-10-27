@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
-	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -121,12 +120,6 @@ func (ch *Chain) transfer(fromAcc accounts.Account, toAcc accounts.Account, amou
 	}
 
 	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
-	fmt.Println("check data: ")
-	fmt.Println("balance: ", balance)
-	fmt.Println("amount: ", amount)
-	fmt.Println("fromAddress: ", fromAddress.Hex())
-	fmt.Println("toAddress: ", toAcc.Address.Hex())
-	fmt.Println("maxTxFee", maxTxFee)
 	if all {
 		if balance <= maxTxFee {
 			return nil, 0, errors.New("insufficient funds for gas")
