@@ -20,7 +20,17 @@ func (pg *pg) List(q ListQuery) ([]model.QuestStreak, error) {
 		db = db.Where("action = ?", q.Action)
 	}
 	if q.StreakCount != 0 {
-		db = db.Where("streak_from <= ? AND (streak_to IS NULL OR streak_to >= ?)", q.StreakCount, q.StreakCount)
+		db = db.Where(
+			pg.db.Where("streak_from <= ? AND (streak_to IS NULL OR streak_to >= ?)", q.StreakCount, q.StreakCount),
+		).Or(
+			pg.db.Where("? > streak_from AND ? > streak_to", q.StreakCount, q.StreakCount),
+		)
+	}
+	if q.Sort != "" {
+		db = db.Order(q.Sort)
+	}
+	if q.Limit != 0 {
+		db = db.Limit(q.Limit)
 	}
 	return list, db.Find(&list).Error
 }
