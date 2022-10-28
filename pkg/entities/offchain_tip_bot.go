@@ -67,6 +67,15 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
+	if req.All {
+		if userBal.Amount == 0 {
+			e.repo.OffchainTipBotActivityLogs.CreateActivityLog(modelNotEnoughBalance)
+			return []response.OffchainTipBotTransferToken{}, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+		}
+		req.Amount = userBal.Amount
+		amountEachRecipient = req.Amount / float64(len(req.Recipients))
+	}
+
 	if float64(userBal.Amount) < req.Amount {
 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(modelNotEnoughBalance)
 		return []response.OffchainTipBotTransferToken{}, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
