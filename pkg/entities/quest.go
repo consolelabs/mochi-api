@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -326,7 +325,6 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) (*res
 			Reward:       &rewards[i],
 		})
 	}
-	fmt.Println(list)
 	uRewards, err = e.finalizeUserRewards(req.UserID, string(model.VOTE), uRewards, list[0].Multiplier)
 	if err != nil {
 		e.log.Fields(logger.Fields{"userID": req.UserID, "uRewards": uRewards}).Error(err, "[entity.ClaimQuestsRewards] entity.finalizeUserRewards() failed")
@@ -371,16 +369,17 @@ func (e *Entity) finalizeUserQuestList(userID string, action string, list []mode
 				e.log.Fields(logger.Fields{"userID": userID}).Error(err, "[entity.finalizeUserQuestList] repo.DiscordUserUpvoteStreak.GetByDiscordID() failed")
 				return nil, err
 			}
-			yesterday := time.Now().UTC().AddDate(0, 0, -1)
-			// streak is broken
+			startOfYesterday := util.StartOfDay(time.Now().UTC().AddDate(0, 0, -1))
 			streakCount = voteStreak.StreakCount
-			if util.StartOfDay(voteStreak.LastStreakDate).Before(yesterday) {
+			// if user didn't vote yesterday, streak is broken
+			if util.StartOfDay(voteStreak.LastStreakDate).Before(startOfYesterday) {
+				// then assign streakCount = 0 will guarantee no streak quest is found => multiplier = 1
 				streakCount = 0
 			}
 		default:
 			m = 1
 		}
-		listQ := queststreak.ListQuery{StreakCount: streakCount, Action: action}
+		listQ := queststreak.ListQuery{StreakCount: streakCount, Action: action, Sort: "streak_from DESC", Limit: 1}
 		streakQuests, err := e.repo.QuestStreak.List(listQ)
 		if err != nil {
 			e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.finalizeUserQuestList] repo.QuestStreak.List() failed")
