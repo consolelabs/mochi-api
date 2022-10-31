@@ -219,15 +219,8 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		return nil, err
 	}
 
-	// get centralize wallet account (which is only account fron mnemonic)
-	fromAccount, err := e.dcwallet.GetAccountByWalletNumber(0)
-	if err != nil {
-		err = fmt.Errorf("error getting user address: %v", err)
-		return nil, err
-	}
-
 	// execute tx
-	signedTx, transferredAmount, err := e.transfer(fromAccount,
+	signedTx, transferredAmount, err := e.transferOffchain(recipientBal.Amount,
 		accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
 		req.Amount,
 		token, -1, req.All)
