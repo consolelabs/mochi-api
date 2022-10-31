@@ -215,113 +215,6 @@ func (ch *Chain) transferToken(fromAcc accounts.Account, toAcc accounts.Account,
 		}
 	}
 
-	// tokenBalance, err := ch.scan.TokenBalance(token.Address, fromAcc.Address.Hex())
-	// if err != nil {
-	// 	return nil, 0, err
-	// }
-	// if all {
-	// 	amount, _ = new(big.Float).Quo(big.NewFloat(0).SetInt(tokenBalance.Int()), big.NewFloat(math.Pow10(18))).Float64()
-	// }
-
-	// amt := new(big.Int)
-	// amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
-
-	// if !all && tokenBalance.Int().Cmp(amt) == -1 {
-	// 	return nil, 0, errors.New("balance is not enough")
-	// }
-
-	// status := false
-	// gl := 10000
-	// priceStep := 1000
-	// var signedTx *types.Transaction
-	// for !status {
-	// 	ch.log.Infof("gas limit", gl)
-	// 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-
-	// 	gasLimit := uint64(gl)
-
-	// 	pp.Println("check data before execute tx in native token: ")
-	// 	pp.Println("fromAddress: ", fromAddress.Hex())
-	// 	pp.Println("toAddress: ", toAcc.Address.Hex())
-	// 	pp.Println("amount: ", amount)
-	// 	pp.Println("nonce: ", nonce)
-	// 	pp.Println("gasLimit: ", gasLimit)
-	// 	pp.Println("gasPrice: ", gasPrice)
-	// 	pp.Println("balance: ", tokenBalance)
-
-	// 	value := new(big.Int)
-	// 	value.SetString(strconv.FormatFloat(float64(math.Pow10(18))*amount, 'f', 6, 64), 10)
-	// 	pp.Println("here 2")
-	// 	toAddress := common.HexToAddress(toAcc.Address.Hex())
-
-	// 	// get chain
-	// 	chainID, err := ch.client.NetworkID(context.Background())
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-	// 	pp.Println("here 3")
-	// 	var data []byte
-
-	// 	// create raw transaction
-	// 	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
-	// 	pp.Println("here 4")
-
-	// 	signedTx, err = types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-	// 	pp.Println("here 5")
-
-	// 	fmt.Println(signedTx.Hash().Hex())
-	// 	pp.Println("here 6")
-	// 	// pp.Println(txDecode.Hash().Hex())
-
-	// 	err = ch.client.SendTransaction(context.Background(), signedTx)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 		// if strings.Contains(err.Error(), "insufficient funds for gas * price + value") {
-	// 		// 	return nil, 0, errors.New("This token dose not have native token, symbol:" + token.Symbol)
-	// 		// }
-	// 		gl += priceStep
-	// 		continue
-	// 	}
-	// 	pp.Println(signedTx.Hash().Hex())
-	// 	pp.Println("here 7")
-
-	// 	time.Sleep(1 * time.Second)
-	// 	txDetails, isPending, err := ch.client.TransactionByHash(context.Background(), signedTx.Hash())
-	// 	pp.Println(txDetails)
-	// 	pp.Println(isPending)
-	// 	pp.Println(err)
-	// 	if err != nil {
-	// 		return nil, 0, err
-	// 	}
-	// 	pp.Println(signedTx.Hash().Hex())
-	// 	pp.Println(txDetails.Hash().Hex())
-	// 	pp.Println("here 8")
-
-	// 	pp.Println("isPending: ", isPending)
-	// 	pp.Println("err: ", err)
-	// 	for isPending {
-	// 		_, isPending, err = ch.client.TransactionByHash(context.Background(), txDetails.Hash())
-	// 		pp.Println(err)
-	// 		if err != nil {
-	// 			return nil, 0, err
-	// 		}
-	// 	}
-
-	// 	receipt, err := ch.client.TransactionReceipt(context.Background(), signedTx.Hash())
-	// 	if err != nil || receipt.Status == 0 {
-	// 		gl += priceStep
-	// 		continue
-	// 	}
-
-	// 	status = true
-	// }
-
 	value := big.NewInt(0) // in wei (0 eth)
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
@@ -362,8 +255,9 @@ func (ch *Chain) transferToken(fromAcc accounts.Account, toAcc accounts.Account,
 
 	// --------------------------------------------
 	status := false
-	gl := 10000
+	gl := 50000
 	priceStep := 3000
+	i := 1
 	var signedTx *types.Transaction
 	pp.Println("here 1")
 	for !status {
@@ -387,38 +281,52 @@ func (ch *Chain) transferToken(fromAcc accounts.Account, toAcc accounts.Account,
 		pp.Println("here 5")
 
 		err = ch.client.SendTransaction(context.Background(), signedTx)
+
 		if err != nil {
-			gl += priceStep
+			pp.Println(err)
+			gl += priceStep * i
+			i++
+			time.Sleep(1 * time.Second)
 			continue
 		}
+
 		pp.Println(signedTx.Hash().Hex())
 		pp.Println("here 6")
 
 		txDetails, isPending, err := ch.client.TransactionByHash(context.Background(), signedTx.Hash())
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			return nil, 0, err
 		}
-		pp.Println(txDetails.Hash().Hex())
 		pp.Println("isPending: ", isPending)
 		pp.Println("err: ", err)
 		pp.Println("here 7")
 
+		if txDetails == nil {
+			txDetails = signedTx
+		}
+
+		pp.Println(txDetails.Hash().Hex())
 		for isPending {
 			_, isPending, err = ch.client.TransactionByHash(context.Background(), txDetails.Hash())
 			if err != nil {
+				if strings.Contains(err.Error(), "not found") {
+					continue
+				}
 				pp.Println(err)
 				return nil, 0, err
 			}
+			time.Sleep(1 * time.Second)
 		}
 		pp.Println("here 8")
 
 		receipt, err := ch.client.TransactionReceipt(context.Background(), signedTx.Hash())
 		pp.Println(receipt)
-		if err != nil || receipt.Status == 0 {
+		if err != nil && !strings.Contains(err.Error(), "not found") {
 			pp.Println(err)
-			gl += priceStep
+			gl += priceStep * i
 			continue
 		}
+
 		pp.Println("here 9")
 
 		status = true
