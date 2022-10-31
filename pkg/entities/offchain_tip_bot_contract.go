@@ -62,17 +62,22 @@ func (e *Entity) MigrateBalance() error {
 		if user.IsMigrateBal {
 			continue
 		}
+
+		// get account private key
+		fromAccount, _ := e.dcwallet.GetAccountByWalletNumber(int(user.InDiscordWalletNumber.Int64))
+
 		// get old balances
 		if user.InDiscordWalletAddress.String == "" {
 			e.log.Info("[entities.migrateBalance] - user has no valid wallet")
 			continue
 		}
 
-		balances, err := e.balances(user.InDiscordWalletAddress.String, tokens)
+		balances, err := e.balances(fromAccount, user.InDiscordWalletAddress.String, tokens)
 		if err != nil {
 			pp.Println(err)
 		}
 		pp.Println(balances)
+
 		// for symbol, balance := range balances {
 		// 	if balance == 0 {
 		// 		continue

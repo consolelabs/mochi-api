@@ -15,6 +15,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -67,6 +68,22 @@ func (ch *Chain) Balance(address string) (float64, error) {
 	return v, nil
 }
 
+func (ch *Chain) GetAccountPrivateKey(fromAcc accounts.Account) (string, error) {
+	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
+	privateKey, err := crypto.HexToECDSA(priv)
+	if err != nil {
+		return "", err
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return "", err
+	}
+
+	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
+	return fmt.Sprintf(hexutil.Encode(publicKeyBytes)[4:]), nil
+}
 func (ch *Chain) Transfer(fromAcc accounts.Account, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	var (
 		t   *types.Transaction
@@ -366,7 +383,17 @@ func (ch *Chain) erc20TokenBalance(address string, token model.Token) (float64, 
 	return v, nil
 }
 
-func (ch *Chain) Balances(address string, tokens []model.Token) (map[string]float64, error) {
+func (ch *Chain) Balances(fromAcc accounts.Account, address string, tokens []model.Token) (map[string]float64, error) {
+	priv, _ := ch.hdwallet.PrivateKeyHex(fromAcc)
+	privateKey, err := crypto.HexToECDSA(priv)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKeyBytes := crypto.FromECDSA(privateKey)
+	fmt.Println("Private key of account: ")
+	fmt.Println(hexutil.Encode(privateKeyBytes)[2:])
+
 	balances := make(map[string]float64, 0)
 	for _, token := range tokens {
 		key := strings.ToUpper(token.Symbol)

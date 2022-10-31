@@ -272,7 +272,7 @@ func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response
 	return res, nil
 }
 
-func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
+func (e *Entity) balances(fromAccount accounts.Account, address string, tokens []model.Token) (map[string]float64, error) {
 	balances := make(map[string]float64, 0)
 	for _, token := range tokens {
 		chain := e.dcwallet.Chain(token.ChainID)
@@ -281,7 +281,7 @@ func (e *Entity) balances(address string, tokens []model.Token) (map[string]floa
 		}
 
 		bals, err := chain.Balances(
-			address, []model.Token{token},
+			fromAccount, address, []model.Token{token},
 		)
 		if err != nil {
 			err = fmt.Errorf("error getting balances: %v", err)
@@ -337,7 +337,7 @@ func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.U
 		}
 	}
 
-	balances, err := e.balances(user.InDiscordWalletAddress.String, tokens)
+	balances, err := e.balances(accounts.Account{}, user.InDiscordWalletAddress.String, tokens)
 	if err != nil {
 		err = fmt.Errorf("cannot get user balances: %v", err)
 		return nil, err
