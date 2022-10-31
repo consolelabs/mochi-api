@@ -316,6 +316,27 @@ func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Accou
 	return signedTx, amount, nil
 }
 
+func (e *Entity) transferOffchain(balance float64, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+	chain := e.dcwallet.Chain(token.ChainID)
+	if chain == nil {
+		return nil, 0, errors.New("cryptocurrency not supported")
+	}
+	signedTx, amount, err := chain.TransferOffchain(
+		balance,
+		toAccount,
+		amount,
+		token,
+		nonce,
+		all,
+	)
+	if err != nil {
+		err = fmt.Errorf("error transfer: %v", err)
+		return nil, 0, err
+	}
+
+	return signedTx, amount, nil
+}
+
 func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.UserBalancesResponse, error) {
 	response := &response.UserBalancesResponse{}
 	user, err := e.GetOneOrUpsertUser(discordID)
