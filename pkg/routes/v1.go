@@ -75,6 +75,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
 		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
 		userGroup.GET("/top", h.GetTopUsers)
+		deviceGroup := userGroup.Group("/device")
+		{
+			deviceGroup.GET("", h.GetUserDevice)
+			deviceGroup.POST("", h.UpsertUserDevice)
+			deviceGroup.DELETE("", h.DeleteUserDevice)
+		}
 	}
 
 	communityGroup := v1.Group("/community")
@@ -205,6 +211,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			telegramGroup.GET("", h.GetLinkedTelegram)
 			telegramGroup.POST("", h.LinkUserTelegramWithDiscord)
+		}
+		tokenAlertGroup := configGroup.Group("/token-alert")
+		{
+			tokenAlertGroup.GET("", h.GetUserTokenAlert)
+			tokenAlertGroup.POST("", h.UpsertUserTokenAlert)
+			tokenAlertGroup.DELETE("", h.DeleteUserTokenAlert)
 		}
 	}
 

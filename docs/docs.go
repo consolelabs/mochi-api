@@ -1526,6 +1526,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/token-alert": {
+            "get": {
+                "description": "Get user current token alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get user current token alerts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "discord_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DiscordUserTokenAlertResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert user token alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert user token alerts",
+                "parameters": [
+                    {
+                        "description": "Upsert user token alert",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertDiscordUserAlertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user token alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete user token alerts",
+                "parameters": [
+                    {
+                        "description": "Delete user token alert",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteDiscordUserAlertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/tokens": {
             "get": {
                 "description": "Get guild tokens",
@@ -4424,6 +4520,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/device": {
+            "get": {
+                "description": "Get user current device data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user current device data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Device ID",
+                        "name": "device_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserDeviceResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert user current device data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Upsert user current device data",
+                "parameters": [
+                    {
+                        "description": "Upsert user device",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertUserDeviceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user current device data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete user current device data",
+                "parameters": [
+                    {
+                        "description": "Delete user device",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteUserDeviceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/users/gmstreak": {
             "get": {
                 "description": "Get user current GM streak",
@@ -5328,6 +5520,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DiscordUserDevice": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ios_noti_token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.DiscordUserGMStreak": {
             "type": "object",
             "properties": {
@@ -5348,6 +5557,38 @@ const docTemplate = `{
                 },
                 "total_count": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DiscordUserTokenAlert": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "device": {
+                    "$ref": "#/definitions/model.DiscordUserDevice"
+                },
+                "device_id": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "price_set": {
+                    "type": "number"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "trend": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -6517,10 +6758,32 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteDiscordUserAlertRequest": {
+            "type": "object",
+            "properties": {
+                "discord_id": {
+                    "type": "string"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "trend": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteJoinLeaveChannelConfigRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.DeleteUserDeviceRequest": {
+            "type": "object",
+            "properties": {
+                "device_id": {
                     "type": "string"
                 }
             }
@@ -6988,6 +7251,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpsertDiscordUserAlertRequest": {
+            "type": "object",
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "price_set": {
+                    "type": "number"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "trend": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpsertGmConfigRequest": {
             "type": "object",
             "properties": {
@@ -7031,6 +7314,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertUserDeviceRequest": {
+            "type": "object",
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "ios_noti_token": {
                     "type": "string"
                 }
             }
@@ -7448,6 +7742,17 @@ const docTemplate = `{
                 "permissions": {
                     "type": "string",
                     "example": "0"
+                }
+            }
+        },
+        "response.DiscordUserTokenAlertResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiscordUserTokenAlert"
+                    }
                 }
             }
         },
@@ -9465,6 +9770,17 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "number"
                     }
+                }
+            }
+        },
+        "response.UserDeviceResponse": {
+            "type": "object",
+            "properties": {
+                "device_id": {
+                    "type": "string"
+                },
+                "ios_noti_token": {
+                    "type": "string"
                 }
             }
         },

@@ -968,3 +968,34 @@ func (e *Entity) DeleteFromTwitterBlackList(req request.DeleteFromTwitterBlackLi
 func (e *Entity) GetTwitterBlackList(guildID string) ([]model.GuildConfigTwitterBlacklist, error) {
 	return e.repo.GuildConfigTwitterBlacklist.List(guildconfigtwitterblacklist.ListQuery{GuildID: guildID})
 }
+
+func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserTokenAlertResponse, error) {
+	data, err := e.repo.DiscordUserTokenAlert.GetByDiscordID(discordID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "[entities.GetUserTokenAlert] - failed to get user token alerts")
+		return nil, err
+	}
+	return &response.DiscordUserTokenAlertResponse{
+		Data: data,
+	}, err
+}
+func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest) error {
+	return e.repo.DiscordUserTokenAlert.CreateOne(&model.UpsertDiscordUserTokenAlert{
+		TokenID:   req.TokenID,
+		DiscordID: req.DiscordID,
+		PriceSet:  req.PriceSet,
+		Trend:     req.Trend,
+		DeviceID:  req.DeviceID,
+		UpdatedAt: time.Now().UTC(),
+	})
+}
+func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest) error {
+	return e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
+		TokenID:   req.TokenID,
+		DiscordID: req.DiscordID,
+		Trend:     req.Trend,
+	})
+}
