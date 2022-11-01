@@ -37,3 +37,12 @@ func (pg *pg) CreateAssignContract(ac *model.OffchainTipBotAssignContract) (*mod
 func (pg *pg) DeleteExpiredAssignContract() error {
 	return pg.db.Delete(&model.OffchainTipBotAssignContract{}, "expired_time < ?", time.Now()).Error
 }
+
+func (pg *pg) GetAll() ([]model.OffchainTipBotContract, error) {
+	var rs []model.OffchainTipBotContract
+	return rs, pg.db.Preload("OffchainTipBotChain").Find(rs).Error
+}
+
+func (pg *pg) UpdateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error) {
+	return ac, pg.db.Model(&ac).Update("sweeped_time", time.Now()).Error
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/k0kubun/pp"
 )
 
 func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
@@ -47,4 +48,17 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 	}
 
 	return bals, nil
+}
+
+func (e *Entity) SweepToken() error {
+	contract, err := e.repo.OffchainTipBotContract.GetAll()
+	if err != nil {
+		e.log.Error(err, "[repo.OffchainTipBotContract.GetAll] - failed to get all contract")
+		return err
+	}
+
+	for _, c := range contract {
+		pp.Println(c)
+	}
+	return nil
 }

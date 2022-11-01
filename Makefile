@@ -119,3 +119,6 @@ setup-githook:
 gen-swagger:
 	swag init  --parseDependency -g ./cmd/server/main.go
 	
+abigen:
+	cd pkg/contract/deposit
+	abigen --abi pkg/contract/deposit/deposit.json --pkg deposit --out pkg/contract/deposit/deposit.go

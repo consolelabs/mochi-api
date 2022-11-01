@@ -8,4 +8,6 @@ type Store interface {
 	GetByChainID(id string) ([]model.OffchainTipBotContract, error)
 	CreateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error)
 	DeleteExpiredAssignContract() error
+	UpdateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error)
+	GetAll() ([]model.OffchainTipBotContract, error)
 }

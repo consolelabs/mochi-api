@@ -13,6 +13,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
+	// v1.GET("/test", h.Test)
 	chainGroup := v1.Group("/chains")
 	{
 		chainGroup.GET("", h.ListAllChain)
