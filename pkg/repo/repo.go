@@ -9,7 +9,9 @@ import (
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
+	discorduserdevice "github.com/defipod/mochi/pkg/repo/discord_user_device"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
+	discordusertokenalert "github.com/defipod/mochi/pkg/repo/discord_user_token_alert"
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
@@ -92,6 +94,8 @@ type Repo struct {
 	GuildCustomCommand                   guildcustomcommand.Store
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
+	DiscordUserTokenAlert                discordusertokenalert.Store
+	DiscordUserDevice                    discorduserdevice.Store
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	DiscordUserUpvoteLog                 discorduserupvotelog.Store

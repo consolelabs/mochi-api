@@ -1316,3 +1316,86 @@ func (h *Handler) GetTwitterBlackList(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// GetUserTokenAlert     godoc
+// @Summary     Get user current token alerts
+// @Description Get user current token alerts
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       discord_id query     string true "Discord ID"
+// @Success     200 {object} response.DiscordUserTokenAlertResponse
+// @Router      /configs/token-alert [get]
+func (h *Handler) GetUserTokenAlert(c *gin.Context) {
+	discordID := c.Query("discord_id")
+	if discordID == "" {
+		h.log.Info("[handler.GetUserTokenAlert] - discord id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.GetUserTokenAlert(discordID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "[handler.GetUserTokenAlert] - failed to get user token alerts")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
+}
+
+// UpsertUserTokenAlert     godoc
+// @Summary     Upsert user token alerts
+// @Description Upsert user token alerts
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertDiscordUserAlertRequest true "Upsert user token alert"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/token-alert [post]
+func (h *Handler) UpsertUserTokenAlert(c *gin.Context) {
+	req := request.UpsertDiscordUserAlertRequest{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertUserTokenAlert] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+
+	err = h.entities.UpsertUserTokenAlert(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertUserTokenAlert] - failed to upsert user token alert")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// DeleteUserTokenAlert     godoc
+// @Summary     Delete user token alerts
+// @Description Delete user token alerts
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteDiscordUserAlertRequest true "Delete user token alert"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/token-alert [delete]
+func (h *Handler) DeleteUserTokenAlert(c *gin.Context) {
+	req := request.DeleteDiscordUserAlertRequest{}
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteUserTokenAlert] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+
+	err = h.entities.DeleteUserTokenAlert(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteUserTokenAlert] - failed to delete user device")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
