@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/google/uuid"
 )
 
 type GetUserQuestListRequest struct {
@@ -19,6 +20,7 @@ type GenerateUserQuestListRequest struct {
 }
 
 type ClaimQuestsRewardsRequest struct {
+	QuestID *uuid.UUID         `json:"quest_id"`
 	UserID  string             `json:"user_id"`
 	Routine model.QuestRoutine `json:"routine"`
 }

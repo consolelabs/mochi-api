@@ -292,6 +292,7 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) (*res
 		Routine:     &req.Routine,
 		IsCompleted: &completed,
 		IsClaimed:   &claimed,
+		QuestID:     req.QuestID,
 	}
 	list, err := e.repo.QuestUserList.List(listQ)
 	if err != nil {
