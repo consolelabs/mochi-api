@@ -17,6 +17,7 @@ type OffchainTipBotToken struct {
 	CreatedAt   time.Time              `json:"created_at"`
 	UpdatedAt   time.Time              `json:"updated_at"`
 	DeletedAt   *time.Time             `json:"-"`
+	CoinGeckoID string                 `json:"coin_gecko_id"`
 }
 
 func (OffchainTipBotToken) TableName() string {
