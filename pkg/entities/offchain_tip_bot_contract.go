@@ -1,8 +1,6 @@
 package entities
 
 import (
-	"strings"
-
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
@@ -25,7 +23,7 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 
 	listCoinIDs := []string{}
 	for _, userBal := range userBals {
-		coinID := strings.Replace(strings.ToLower(userBal.Token.TokenName), " ", "-", -1)
+		coinID := userBal.Token.CoinGeckoID
 		listCoinIDs = append(listCoinIDs, coinID)
 		bals = append(bals, response.GetUserBalances{
 			ID:       coinID,
