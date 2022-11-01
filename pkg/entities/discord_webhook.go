@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"errors"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -13,19 +12,16 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/util"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return e.handleNotAddedCollection(nftSale)
-		} else {
-			e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
-			return err
-		}
-
+		// if errors.Is(err, gorm.ErrRecordNotFound) {
+		// 	return e.handleNotAddedCollection(nftSale)
+		// } else {
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
+		return err
 	}
 
 	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)

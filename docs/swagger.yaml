@@ -181,6 +181,17 @@ definitions:
       nr_of_voice_channels:
         type: integer
     type: object
+  model.DiscordUserDevice:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      ios_noti_token:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.DiscordUserGMStreak:
     properties:
       created_at:
@@ -195,6 +206,29 @@ definitions:
         type: integer
       total_count:
         type: integer
+      updated_at:
+        type: string
+    type: object
+  model.DiscordUserTokenAlert:
+    properties:
+      created_at:
+        type: string
+      device:
+        $ref: '#/definitions/model.DiscordUserDevice'
+      device_id:
+        type: string
+      discord_id:
+        type: string
+      id:
+        type: string
+      is_enable:
+        type: boolean
+      price_set:
+        type: number
+      token_id:
+        type: string
+      trend:
+        type: string
       updated_at:
         type: string
     type: object
@@ -955,9 +989,19 @@ definitions:
       name:
         type: string
     type: object
+  request.DeleteDiscordUserAlertRequest:
+    properties:
+      id:
+        type: string
+    type: object
   request.DeleteJoinLeaveChannelConfigRequest:
     properties:
       guild_id:
+        type: string
+    type: object
+  request.DeleteUserDeviceRequest:
+    properties:
+      device_id:
         type: string
     type: object
   request.DeleteVoteChannelConfigRequest:
@@ -1262,6 +1306,19 @@ definitions:
       symbol:
         type: string
     type: object
+  request.UpsertDiscordUserAlertRequest:
+    properties:
+      device_id:
+        type: string
+      discord_id:
+        type: string
+      price_set:
+        type: number
+      token_id:
+        type: string
+      trend:
+        type: string
+    type: object
   request.UpsertGmConfigRequest:
     properties:
       channel_id:
@@ -1290,6 +1347,13 @@ definitions:
       channel_id:
         type: string
       guild_id:
+        type: string
+    type: object
+  request.UpsertUserDeviceRequest:
+    properties:
+      device_id:
+        type: string
+      ios_noti_token:
         type: string
     type: object
   request.UpsertVoteChannelConfigRequest:
@@ -1561,6 +1625,13 @@ definitions:
       permissions:
         example: "0"
         type: string
+    type: object
+  response.DiscordUserTokenAlertResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.DiscordUserTokenAlert'
+        type: array
     type: object
   response.GenerateVerificationResponse:
     properties:
@@ -2866,6 +2937,13 @@ definitions:
           type: number
         type: object
     type: object
+  response.UserDeviceResponse:
+    properties:
+      device_id:
+        type: string
+      ios_noti_token:
+        type: string
+    type: object
   response.UserInvitesAggregation:
     properties:
       fake:
@@ -3884,6 +3962,69 @@ paths:
       summary: Link user's telegram with discord account
       tags:
       - Telegram
+  /configs/token-alert:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user token alerts
+      parameters:
+      - description: Delete user token alert
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteDiscordUserAlertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete user token alerts
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get user current token alerts
+      parameters:
+      - description: Discord ID
+        in: query
+        name: discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DiscordUserTokenAlertResponse'
+      summary: Get user current token alerts
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Upsert user token alerts
+      parameters:
+      - description: Upsert user token alert
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertDiscordUserAlertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert user token alerts
+      tags:
+      - Config
   /configs/tokens:
     get:
       consumes:
@@ -5813,6 +5954,69 @@ paths:
           schema:
             $ref: '#/definitions/response.GetUserResponse'
       summary: Get user
+      tags:
+      - User
+  /users/device:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user current device data
+      parameters:
+      - description: Delete user device
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteUserDeviceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete user current device data
+      tags:
+      - User
+    get:
+      consumes:
+      - application/json
+      description: Get user current device data
+      parameters:
+      - description: Device ID
+        in: query
+        name: device_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserDeviceResponse'
+      summary: Get user current device data
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Upsert user current device data
+      parameters:
+      - description: Upsert user device
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertUserDeviceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert user current device data
       tags:
       - User
   /users/gmstreak:
