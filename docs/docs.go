@@ -5581,6 +5581,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "is_enable": {
+                    "type": "boolean"
+                },
                 "price_set": {
                     "type": "number"
                 },
@@ -6761,13 +6764,7 @@ const docTemplate = `{
         "request.DeleteDiscordUserAlertRequest": {
             "type": "object",
             "properties": {
-                "discord_id": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
-                },
-                "trend": {
+                "id": {
                     "type": "string"
                 }
             }

@@ -18,7 +18,7 @@ func (pg *pg) CreateOne(config *model.UpsertDiscordUserTokenAlert) error {
 	return pg.db.Table("discord_user_token_alerts").Create(&config).Error
 }
 func (pg *pg) RemoveOne(config *model.DiscordUserTokenAlert) error {
-	return pg.db.Where("token_id=? AND discord_id=? AND trend=?", config.TokenID, config.DiscordID, config.Trend).Delete(&config).Error
+	return pg.db.Where("id=?", config.ID).Delete(&config).Error
 }
 func (pg *pg) GetByDiscordID(discordId string) ([]model.DiscordUserTokenAlert, error) {
 	configs := []model.DiscordUserTokenAlert{}
