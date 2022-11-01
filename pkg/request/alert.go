@@ -18,7 +18,5 @@ type UpsertDiscordUserAlertRequest struct {
 }
 
 type DeleteDiscordUserAlertRequest struct {
-	TokenID   string `json:"token_id"`
-	DiscordID string `json:"discord_id"`
-	Trend     string `json:"trend"`
+	ID string `json:"id"`
 }

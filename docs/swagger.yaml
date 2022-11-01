@@ -221,6 +221,8 @@ definitions:
         type: string
       id:
         type: string
+      is_enable:
+        type: boolean
       price_set:
         type: number
       token_id:
@@ -989,11 +991,7 @@ definitions:
     type: object
   request.DeleteDiscordUserAlertRequest:
     properties:
-      discord_id:
-        type: string
-      token_id:
-        type: string
-      trend:
+      id:
         type: string
     type: object
   request.DeleteJoinLeaveChannelConfigRequest:

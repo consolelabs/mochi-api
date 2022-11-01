@@ -994,8 +994,6 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 }
 func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest) error {
 	return e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
-		TokenID:   req.TokenID,
-		DiscordID: req.DiscordID,
-		Trend:     req.Trend,
+		ID: util.GetNullUUID(req.ID),
 	})
 }
