@@ -625,3 +625,15 @@ func (e *Entity) UpsertUserDevice(req *request.UpsertUserDeviceRequest) error {
 func (e *Entity) DeleteUserDevice(req *request.DeleteUserDeviceRequest) error {
 	return e.repo.DiscordUserDevice.RemoveByDeviceID(req.DeviceID)
 }
+
+func (e *Entity) GetUserWalletByGuildIDAddress(guildID, address string) (*model.UserWallet, error) {
+	uw, err := e.repo.UserWallet.GetOneByGuildIDAndAddress(guildID, address)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, ErrRecordNotFound
+		}
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	return uw, nil
+}
