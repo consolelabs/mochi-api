@@ -563,6 +563,31 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.OffchainTipBotTransferHistory:
+    properties:
+      action:
+        type: string
+      amount:
+        type: number
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      log_id:
+        type: string
+      receiver_id:
+        type: string
+      sender_id:
+        type: string
+      status:
+        type: string
+      token:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.Quest:
     properties:
       action:
@@ -839,6 +864,8 @@ definitions:
     type: object
   request.ClaimQuestsRewardsRequest:
     properties:
+      quest_id:
+        type: string
       routine:
         type: string
       user_id:
@@ -1988,6 +2015,8 @@ definitions:
         type: string
       name:
         type: string
+      rate_in_usd:
+        type: number
       symbol:
         type: string
     type: object
@@ -2065,6 +2094,11 @@ definitions:
         type: array
       message:
         type: string
+    type: object
+  response.GetUserWalletByGuildIDAddressResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserWallet'
     type: object
   response.GetVoteChannelConfigResponse:
     properties:
@@ -2741,6 +2775,8 @@ definitions:
     properties:
       amount:
         type: number
+      amount_in_usd:
+        type: number
       recipient_id:
         type: string
       sender_id:
@@ -2954,6 +2990,13 @@ definitions:
         type: integer
       regular:
         type: integer
+    type: object
+  response.UserTransactionResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.OffchainTipBotTransferHistory'
+        type: array
     type: object
   util.Pagination:
     properties:
@@ -5935,15 +5978,15 @@ paths:
       summary: Create User
       tags:
       - User
-  /users/{user_id}:
+  /users/{id}/transactions:
     get:
       consumes:
       - application/json
-      description: Get user
+      description: Get user transaction
       parameters:
-      - description: User ID
+      - description: user discord ID
         in: path
-        name: user_id
+        name: id
         required: true
         type: string
       produces:
@@ -5952,8 +5995,29 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserResponse'
-      summary: Get user
+            $ref: '#/definitions/response.UserTransactionResponse'
+      summary: Get user transaction
+      tags:
+      - OffChain
+  /users/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by guild_id address
+      parameters:
+      - description: Address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserWalletByGuildIDAddressResponse'
+      summary: Get user by guild_id address
       tags:
       - User
   /users/device:

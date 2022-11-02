@@ -4811,9 +4811,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/transactions": {
+            "get": {
+                "description": "Get user transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "Get user transaction",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user discord ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserTransactionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
-                "description": "Get user",
+                "description": "Get user by guild_id address",
                 "consumes": [
                     "application/json"
                 ],
@@ -4823,12 +4855,12 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get user",
+                "summary": "Get user by guild_id address",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
+                        "description": "Address",
+                        "name": "address",
                         "in": "path",
                         "required": true
                     }
@@ -4837,7 +4869,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserResponse"
+                            "$ref": "#/definitions/response.GetUserWalletByGuildIDAddressResponse"
                         }
                     }
                 }
@@ -6105,6 +6137,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.OffchainTipBotTransferHistory": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "log_id": {
+                    "type": "string"
+                },
+                "receiver_id": {
+                    "type": "string"
+                },
+                "sender_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
@@ -6529,6 +6599,9 @@ const docTemplate = `{
         "request.ClaimQuestsRewardsRequest": {
             "type": "object",
             "properties": {
+                "quest_id": {
+                    "type": "string"
+                },
                 "routine": {
                     "type": "string"
                 },
@@ -8305,6 +8378,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "rate_in_usd": {
+                    "type": "number"
+                },
                 "symbol": {
                     "type": "string"
                 }
@@ -8423,6 +8499,14 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GetUserWalletByGuildIDAddressResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserWallet"
                 }
             }
         },
@@ -9466,6 +9550,9 @@ const docTemplate = `{
                 "amount": {
                     "type": "number"
                 },
+                "amount_in_usd": {
+                    "type": "number"
+                },
                 "recipient_id": {
                     "type": "string"
                 },
@@ -9795,6 +9882,17 @@ const docTemplate = `{
                 },
                 "regular": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.UserTransactionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
+                    }
                 }
             }
         },

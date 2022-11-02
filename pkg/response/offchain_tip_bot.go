@@ -1,6 +1,10 @@
 package response
 
-import "math/big"
+import (
+	"math/big"
+
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type GetUserBalances struct {
 	ID            string  `json:"id"`
@@ -40,4 +44,8 @@ type OffchainTipBotWithdraw struct {
 
 type OffchainTipBotWithdrawResponse struct {
 	Data OffchainTipBotWithdraw `json:"data"`
+}
+
+type UserTransactionResponse struct {
+	Data []model.OffchainTipBotTransferHistory `json:"data"`
 }
