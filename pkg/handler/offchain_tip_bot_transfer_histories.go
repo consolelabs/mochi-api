@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetUserBalances     godoc
+// GetUserTransaction     godoc
 // @Summary     Get user transaction
 // @Description Get user transaction
 // @Tags        OffChain
