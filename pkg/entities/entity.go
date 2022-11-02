@@ -94,7 +94,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		svc:         service,
 		cfg:         cfg,
 		indexer:     indexer.NewIndexer(cfg, log),
-		abi:         abi.NewAbi(&cfg),
+		abi:         abi.NewAbi(&cfg, log),
 		marketplace: marketplace.NewMarketplace(&cfg),
 	}
 

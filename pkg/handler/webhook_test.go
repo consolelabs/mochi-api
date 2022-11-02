@@ -51,7 +51,7 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 	repo := pg.NewRepo(s.DB())
 	l := logger.NewLogrusLogger()
 	indexer := indexer.NewIndexer(cfg, l)
-	abi := abi.NewAbi(&cfg)
+	abi := abi.NewAbi(&cfg, l)
 	marketplace := marketplace.NewMarketplace(&cfg)
 
 	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer, abi, marketplace)

@@ -13,7 +13,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 
-	// v1.GET("/test", h.Test)
 	chainGroup := v1.Group("/chains")
 	{
 		chainGroup.GET("", h.ListAllChain)
@@ -26,6 +25,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.GET("/balances", h.GetUserBalances)
 		offchainTipBotGroup.POST("/withdraw", h.OffchainTipBotWithdraw)
 		offchainTipBotGroup.POST("/transfer", h.TransferToken)
+
+		// deposit
+		offchainTipBotGroup.POST("/sweep-native-token", h.SweepNativeToken)
 	}
 
 	trade := v1.Group("/trades")

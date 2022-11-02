@@ -7,6 +7,7 @@ package mock_abi
 import (
 	reflect "reflect"
 
+	types "github.com/ethereum/go-ethereum/core/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -47,4 +48,19 @@ func (m *MockService) GetNameAndSymbol(address string, chainId int64) (string, s
 func (mr *MockServiceMockRecorder) GetNameAndSymbol(address, chainId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNameAndSymbol", reflect.TypeOf((*MockService)(nil).GetNameAndSymbol), address, chainId)
+}
+
+// SweepNativeToken mocks base method.
+func (m *MockService) SweepNativeToken(rpcUrl, contractAddress string) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SweepNativeToken", rpcUrl, contractAddress)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SweepNativeToken indicates an expected call of SweepNativeToken.
+func (mr *MockServiceMockRecorder) SweepNativeToken(rpcUrl, contractAddress interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SweepNativeToken", reflect.TypeOf((*MockService)(nil).SweepNativeToken), rpcUrl, contractAddress)
 }

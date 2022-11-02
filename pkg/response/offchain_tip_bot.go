@@ -39,3 +39,9 @@ type OffchainTipBotWithdraw struct {
 type OffchainTipBotWithdrawResponse struct {
 	Data OffchainTipBotWithdraw `json:"data"`
 }
+
+type OffchainTipBotSweepToken struct {
+	ContractAddress string `json:"contract_address"`
+	Symbol          string `json:"symbol"`
+	TxHash          string `json:"tx_hash"`
+}

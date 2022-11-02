@@ -26,8 +26,3 @@ func (h *Handler) ListAllChain(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(returnChain, nil, nil, nil))
 }
-
-func (h *Handler) Test(c *gin.Context) {
-
-	c.JSON(http.StatusOK, "ok")
-}

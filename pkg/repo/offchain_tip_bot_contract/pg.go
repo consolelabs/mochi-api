@@ -40,9 +40,9 @@ func (pg *pg) DeleteExpiredAssignContract() error {
 
 func (pg *pg) GetAll() ([]model.OffchainTipBotContract, error) {
 	var rs []model.OffchainTipBotContract
-	return rs, pg.db.Preload("OffchainTipBotChain").Find(rs).Error
+	return rs, pg.db.Preload("Chain").Find(&rs).Error
 }
 
-func (pg *pg) UpdateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error) {
-	return ac, pg.db.Model(&ac).Update("sweeped_time", time.Now()).Error
+func (pg *pg) UpdateContract(c *model.OffchainTipBotContract) (*model.OffchainTipBotContract, error) {
+	return c, pg.db.Model(&c).Update("sweeped_time", time.Now()).Error
 }

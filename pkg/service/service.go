@@ -47,7 +47,7 @@ func NewService(
 		Covalent:      covalent.NewService(&cfg),
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
-		Abi:           abi.NewAbi(&cfg),
+		Abi:           abi.NewAbi(&cfg, log),
 		Twitter:       twitter.NewTwitter(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
 		Processor:     processor.NewProcessor(&cfg),

@@ -182,3 +182,13 @@ func (h *Handler) TransferToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }
+
+func (h *Handler) SweepNativeToken(c *gin.Context) {
+	txs, err := h.entities.SweepNativeToken()
+	if err != nil {
+		h.log.Error(err, "[handler.SweepToken] - failed to sweep token")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(txs, nil, nil, nil))
+}

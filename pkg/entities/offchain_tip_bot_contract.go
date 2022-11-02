@@ -6,7 +6,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/k0kubun/pp"
 )
 
 func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
@@ -50,15 +49,32 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 	return bals, nil
 }
 
-func (e *Entity) SweepToken() error {
+func (e *Entity) SweepNativeToken() ([]response.OffchainTipBotSweepToken, error) {
 	contract, err := e.repo.OffchainTipBotContract.GetAll()
 	if err != nil {
 		e.log.Error(err, "[repo.OffchainTipBotContract.GetAll] - failed to get all contract")
-		return err
+		return nil, err
 	}
 
+	txs := make([]response.OffchainTipBotSweepToken, 0)
 	for _, c := range contract {
-		pp.Println(c)
+		tx, err := e.svc.Abi.SweepNativeToken(c.Chain.RPCURL, c.ContractAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"contract": c}).Error(err, "[svc.Abi.SweepNativeToken] - failed to sweep native token")
+			return nil, err
+		}
+
+		_, err = e.repo.OffchainTipBotContract.UpdateContract(&c)
+		if err != nil {
+			e.log.Fields(logger.Fields{"contract": c}).Error(err, "[repo.OffchainTipBotContract.UpdateContract] - failed to update contract")
+			return nil, err
+		}
+
+		txs = append(txs, response.OffchainTipBotSweepToken{
+			ContractAddress: c.ContractAddress,
+			Symbol:          c.Chain.ChainName,
+			TxHash:          tx.Hash().Hex(),
+		})
 	}
-	return nil
+	return txs, nil
 }
