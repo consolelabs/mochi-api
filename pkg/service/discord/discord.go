@@ -128,13 +128,13 @@ func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakC
 	approveIcon := ""
 	if streakCount <= 100 {
 		for i := 0; i < streakCount; i++ {
-			approveIcon += "<:approve:1013775501757780098>"
+			approveIcon += "<:approve:933341948402618378>"
 		}
 	} else {
 		for i := 0; i < 100; i++ {
-			approveIcon += "<:approve:1013775501757780098>"
+			approveIcon += "<:approve:933341948402618378>"
 		}
-		approveIcon += "(+" + strconv.Itoa(int(streakCount-100)) + "<:approve:1013775501757780098>)"
+		approveIcon += "(+" + strconv.Itoa(int(streakCount-100)) + "<:approve:933341948402618378>)"
 	}
 
 	msgEmbed := discordgo.MessageEmbed{
@@ -144,10 +144,10 @@ func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakC
 		},
 		Description: "<@" + userDiscordID + "> just said hi to everyone.\nGM streak: **" +
 			strconv.Itoa(streakCount) + "**\n" + approveIcon + "\n\n" +
-			"**Faction XP Update**\n<:rebelio:1013777675099316224> Rebellio EXP: **" +
+			"**Faction XP Update**\n<:rebelio:932605621914701875> Rebellio EXP: **" +
 			strconv.Itoa(int(podTownXps.Data.TotalFameXps)) + "/" + strconv.Itoa(int(podTownXps.Data.NextFameXps)) +
 			"`(+" + strconv.Itoa(int(podTownXps.Data.FameXp)) + ")`" +
-			"**\n<:academia:1013777643461685328> Academy EXP: **" +
+			"**\n<:academia:932605621730160680> Academy EXP: **" +
 			strconv.Itoa(int(podTownXps.Data.TotalReputationXps)) + "/" + strconv.Itoa(int(podTownXps.Data.NextReputationXps)) +
 			"**`(+" + strconv.Itoa(int(podTownXps.Data.ReputationXp)) + ")`",
 		Color:     int(color),
