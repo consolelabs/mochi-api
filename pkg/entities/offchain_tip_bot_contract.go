@@ -41,6 +41,7 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 	}
 
 	for i, bal := range bals {
+		bals[i].RateInUSD = tokenPrices[bal.ID]
 		bals[i].BalancesInUSD = tokenPrices[bal.ID] * bal.Balances
 	}
 

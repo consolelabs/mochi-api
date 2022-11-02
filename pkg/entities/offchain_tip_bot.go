@@ -42,6 +42,12 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
+	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{supportedToken.CoinGeckoID}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": supportedToken.CoinGeckoID}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
+		return nil, err
+	}
+
 	// check user bals, both not have record user_bals + amount in record user_bals = 0 -> return not enough bals
 	modelNotEnoughBalance := &model.OffchainTipBotActivityLog{
 		UserID:          req.Sender,
@@ -144,16 +150,17 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
-	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, transferHistories), nil
+	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
 }
 
-func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {
+func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, price float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {
 	for _, transferHistory := range transferHistories {
 		res = append(res, response.OffchainTipBotTransferToken{
 			SenderID:    transferHistory.SenderID,
 			RecipientID: transferHistory.ReceiverID,
 			Amount:      amount,
 			Symbol:      tokenSymbol,
+			AmountInUSD: amount * price,
 		})
 	}
 	return res
