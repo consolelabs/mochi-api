@@ -8,6 +8,7 @@ type GetUserBalances struct {
 	Symbol        string  `json:"symbol"`
 	Balances      float64 `json:"balances"`
 	BalancesInUSD float64 `json:"balances_in_usd"`
+	RateInUSD     float64 `json:"rate_in_usd"`
 }
 
 type GetUserBalancesResponse struct {
@@ -19,6 +20,7 @@ type OffchainTipBotTransferToken struct {
 	RecipientID string  `json:"recipient_id"`
 	Amount      float64 `json:"amount"`
 	Symbol      string  `json:"symbol"`
+	AmountInUSD float64 `json:"amount_in_usd"`
 }
 
 type OffchainTipBotTransferTokenResponse struct {
