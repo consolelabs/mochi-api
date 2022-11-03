@@ -67,3 +67,8 @@ type TotalOffchainBalances struct {
 	Amount      float64 `json:"amount"`
 	AmountInUsd float64 `json:"amount_in_usd"`
 }
+
+type TotalFeeWithdraw struct {
+	Symbol   string  `json:"symbol"`
+	TotalFee float64 `json:"total_fee"`
+}
