@@ -17,3 +17,7 @@ func (pg *pg) GetBySymbol(symbol string) (*model.OffchainTipBotToken, error) {
 	var rs model.OffchainTipBotToken
 	return &rs, pg.db.Where("token_symbol = ?", symbol).First(&rs).Error
 }
+
+func (pg *pg) GetAll() (rs []model.OffchainTipBotToken, err error) {
+	return rs, pg.db.Find(&rs).Error
+}

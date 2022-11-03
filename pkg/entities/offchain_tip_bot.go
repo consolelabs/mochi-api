@@ -291,3 +291,85 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		TransactionFee: transactionFee,
 	}, nil
 }
+
+func (e *Entity) TotalBalances() ([]response.TotalBalances, error) {
+	tokens, err := e.repo.Token.GetAll()
+	if err != nil {
+		e.log.Error(err, "[entities.migrateBalance] - failed to get supported tokens")
+		return nil, err
+	}
+	balances, err := e.balances("0x4ec16127E879464bEF6ab310084FAcEC1E4Fe465", tokens)
+	if err != nil {
+		e.log.Error(err, "[entities.migrateBalance] - failed to get balance")
+		return nil, err
+	}
+
+	totalBalances := make([]response.TotalBalances, 0)
+
+	for key, value := range balances {
+		coingeckoID := ""
+		// select coingecko id
+		for _, t := range tokens {
+			if t.Symbol == key {
+				coingeckoID = t.CoinGeckoID
+			}
+		}
+		// get coingecko price
+		var tokenPrice float64
+
+		tokenPrices, err := e.svc.CoinGecko.GetCoinPrice([]string{coingeckoID}, "usd")
+		if err != nil {
+			e.log.Fields(logger.Fields{"token": key}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
+			return nil, err
+		}
+		if len(tokenPrices) > 0 {
+			tokenPrice = tokenPrices[coingeckoID]
+		} else {
+			tokenPrice = 1.0
+		}
+
+		if value > 0 {
+			totalBalances = append(totalBalances, response.TotalBalances{
+				Symbol:      key,
+				Amount:      value,
+				AmountInUsd: value * tokenPrice,
+			})
+		}
+
+	}
+
+	return totalBalances, nil
+}
+
+func (e *Entity) TotalOffchainBalances() ([]response.TotalOffchainBalances, error) {
+	// cal exist offchain balance
+	totalOffchainBalances, err := e.repo.OffchainTipBotUserBalances.SumAmountByTokenId()
+	if err != nil {
+		e.log.Error(err, "[e.repo.TotalOffchainBalances] - failed to get total offchain balance")
+		return nil, err
+	}
+
+	mappingTotalOffchainBalances := make([]response.TotalOffchainBalances, 0)
+
+	for _, totalOffchainBalance := range totalOffchainBalances {
+		// get coingecko price
+		var tokenPrice float64
+		tokenPrices, err := e.svc.CoinGecko.GetCoinPrice([]string{totalOffchainBalance.CoinGeckoId}, "usd")
+		if err != nil {
+			e.log.Fields(logger.Fields{"token": totalOffchainBalance.CoinGeckoId}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
+			return nil, err
+		}
+		if len(tokenPrices) > 0 {
+			tokenPrice = tokenPrices[totalOffchainBalance.CoinGeckoId]
+		} else {
+			tokenPrice = 1.0
+		}
+
+		mappingTotalOffchainBalances = append(mappingTotalOffchainBalances, response.TotalOffchainBalances{
+			Symbol:      totalOffchainBalance.TokenSymbol,
+			Amount:      totalOffchainBalance.Total,
+			AmountInUsd: totalOffchainBalance.Total * tokenPrice,
+		})
+	}
+	return mappingTotalOffchainBalances, nil
+}

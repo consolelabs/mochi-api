@@ -182,3 +182,23 @@ func (h *Handler) TransferToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }
+
+func (h *Handler) TotalBalances(c *gin.Context) {
+	totalBalances, err := h.entities.TotalBalances()
+	if err != nil {
+		h.log.Error(err, "[handler.TotalBalances] - failed to get total balances")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(totalBalances, nil, nil, nil))
+}
+
+func (h *Handler) TotalOffchainBalances(c *gin.Context) {
+	totalOffchainBalances, err := h.entities.TotalOffchainBalances()
+	if err != nil {
+		h.log.Error(err, "[handler.TotalOffchainBalances] - failed to get total offchain balances")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(totalOffchainBalances, nil, nil, nil))
+}
