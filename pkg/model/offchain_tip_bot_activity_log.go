@@ -21,6 +21,8 @@ type OffchainTipBotActivityLog struct {
 	FullCommand     *string        `json:"full_command"`
 	Status          string         `json:"status"`
 	FailReason      string         `json:"fail_reason"`
+	ServiceFee      float64        `json:"service_fee"`
+	FeeAmount       float64        `json:"fee_amount"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       *time.Time     `json:"deleted_at"`

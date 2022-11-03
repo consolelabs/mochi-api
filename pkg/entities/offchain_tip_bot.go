@@ -204,6 +204,8 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		Status:          consts.OffchainTipBotTrasferStatusFail,
 		FullCommand:     &req.FullCommand,
 		FailReason:      consts.OffchainTipBotFailReasonNotEnoughBalance,
+		ServiceFee:      offchainToken.ServiceFee,
+		FeeAmount:       offchainToken.ServiceFee * req.Amount,
 	}
 	recipientBal, err := e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(req.Recipient, offchainToken.ID)
 	if err != nil {
@@ -215,7 +217,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		return nil, err
 	}
 
-	if float64(recipientBal.Amount) < req.Amount {
+	if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(modelNotEnoughBalance)
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
@@ -227,7 +229,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 	}
 
 	// execute tx
-	signedTx, transferredAmount, err := e.transferOffchain(recipientBal.Amount,
+	signedTx, transferredAmount, err := e.transferOffchain(req.Amount,
 		accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
 		req.Amount,
 		token, -1, req.All)
@@ -250,6 +252,8 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		Status:          consts.OffchainTipBotTrasferStatusSuccess,
 		FullCommand:     &req.FullCommand,
 		FailReason:      "",
+		ServiceFee:      offchainToken.ServiceFee,
+		FeeAmount:       offchainToken.ServiceFee * req.Amount,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.OffchainTipBotActivityLogs.CreateActivityLog] - failed to create activity log")
@@ -265,13 +269,15 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		Amount:     transferredAmount,
 		Token:      offchainToken.TokenSymbol,
 		Action:     req.TransferType,
+		ServiceFee: offchainToken.ServiceFee,
+		FeeAmount:  offchainToken.ServiceFee * req.Amount,
 	}})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.OffchainTipBotTransferHistories.CreateTransferHistories] - failed to create transfer histories")
 		return nil, err
 	}
 
-	err = e.repo.OffchainTipBotUserBalances.UpdateUserBalance(&model.OffchainTipBotUserBalance{UserID: req.Recipient, TokenID: offchainToken.ID, Amount: recipientBal.Amount - transferredAmount})
+	err = e.repo.OffchainTipBotUserBalances.UpdateUserBalance(&model.OffchainTipBotUserBalance{UserID: req.Recipient, TokenID: offchainToken.ID, Amount: recipientBal.Amount - transferredAmount - offchainToken.ServiceFee*req.Amount})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.OffchainTipBotUserBalances.UpdateUserBalance] - failed to update sender balance")
 		return nil, err
@@ -372,4 +378,12 @@ func (e *Entity) TotalOffchainBalances() ([]response.TotalOffchainBalances, erro
 		})
 	}
 	return mappingTotalOffchainBalances, nil
+}
+
+func (e *Entity) TotalFee() ([]response.TotalFeeWithdraw, error) {
+	return e.repo.OffchainTipBotTransferHistories.TotalFeeFromWithdraw()
+}
+
+func (e *Entity) UpdateTokenFee(req request.OffchainUpdateTokenFee) error {
+	return e.repo.OffchainTipBotTokens.UpdateTokenFee(req.Symbol, req.ServiceFee)
 }
