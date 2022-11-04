@@ -16,6 +16,8 @@ type OffchainTipBotTransferHistory struct {
 	Amount     float64    `json:"amount"`
 	Token      string     `json:"token"`
 	Action     string     `json:"action"`
+	ServiceFee float64    `json:"service_fee"`
+	FeeAmount  float64    `json:"fee_amount"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	DeletedAt  *time.Time `json:"-"`

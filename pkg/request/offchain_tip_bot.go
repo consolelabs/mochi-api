@@ -26,3 +26,8 @@ type OffchainWithdrawRequest struct {
 	FullCommand      string  `json:"full_command"`
 	Duration         int     `json:"duration"`
 }
+
+type OffchainUpdateTokenFee struct {
+	Symbol     string  `json:"symbol"`
+	ServiceFee float64 `json:"service_fee"`
+}

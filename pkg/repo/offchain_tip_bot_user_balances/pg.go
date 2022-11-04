@@ -2,6 +2,7 @@ package offchain_tip_bot_user_balances
 
 import (
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/google/uuid"
 
 	"gorm.io/gorm"
@@ -45,4 +46,38 @@ func (pg *pg) CreateIfNotExists(model *model.OffchainTipBotUserBalance) error {
 		return err
 	}
 	return tx.Commit().Error
+}
+
+func (pg *pg) SumAmountByTokenId() ([]response.TotalOffchainBalancesInDB, error) {
+	rows, err := pg.db.Raw(
+		`
+		SELECT
+			sum(bals.amount) AS total,
+			bals.token_id,
+			tokens.token_symbol,
+			tokens.coin_gecko_id
+		FROM
+			offchain_tip_bot_user_balances AS bals
+			JOIN offchain_tip_bot_tokens AS tokens ON bals.token_id = tokens.id
+		GROUP BY
+			bals.token_id,
+			tokens.token_symbol,
+			tokens.coin_gecko_id
+		`).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var totalOffchainBalances []response.TotalOffchainBalancesInDB
+	for rows.Next() {
+		t := response.TotalOffchainBalancesInDB{}
+		rows.Scan(
+			&t.Total,
+			&t.TokenId,
+			&t.TokenSymbol,
+			&t.CoinGeckoId,
+		)
+		totalOffchainBalances = append(totalOffchainBalances, t)
+	}
+	return totalOffchainBalances, nil
 }

@@ -182,3 +182,51 @@ func (h *Handler) TransferToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }
+
+func (h *Handler) TotalBalances(c *gin.Context) {
+	totalBalances, err := h.entities.TotalBalances()
+	if err != nil {
+		h.log.Error(err, "[handler.TotalBalances] - failed to get total balances")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(totalBalances, nil, nil, nil))
+}
+
+func (h *Handler) TotalOffchainBalances(c *gin.Context) {
+	totalOffchainBalances, err := h.entities.TotalOffchainBalances()
+	if err != nil {
+		h.log.Error(err, "[handler.TotalOffchainBalances] - failed to get total offchain balances")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(totalOffchainBalances, nil, nil, nil))
+}
+
+func (h *Handler) TotalFee(c *gin.Context) {
+	totalFee, err := h.entities.TotalFee()
+	if err != nil {
+		h.log.Error(err, "[handler.TotalFee] - failed to get total fee")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(totalFee, nil, nil, nil))
+}
+
+func (h *Handler) UpdateTokenFee(c *gin.Context) {
+	req := request.OffchainUpdateTokenFee{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateTokenFee] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.UpdateTokenFee(req)
+	if err != nil {
+		h.log.Error(err, "[handler.UpdateTokenFee] - failed to update token fee")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

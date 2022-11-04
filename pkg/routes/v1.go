@@ -20,6 +20,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	offchainTipBotGroup := v1.Group("/offchain-tip-bot")
 	{
+		// watch total balances
+		offchainTipBotGroup.GET("/total-balances", h.TotalBalances)
+		offchainTipBotGroup.GET("/total-offchain-balances", h.TotalOffchainBalances)
+		offchainTipBotGroup.GET("/total-fees", h.TotalFee)
+		offchainTipBotGroup.PUT("/tokens", h.UpdateTokenFee)
+
+		// offchain tip bot
 		offchainTipBotGroup.GET("/chains", h.OffchainTipBotListAllChains)
 		offchainTipBotGroup.POST("/assign-contract", h.OffchainTipBotCreateAssignContract)
 		offchainTipBotGroup.GET("/balances", h.GetUserBalances)
@@ -71,9 +78,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("me", middleware.AuthGuard(cfg), h.GetMyInfo)
 		userGroup.POST("", h.IndexUsers)
 		userGroup.GET("/:id", h.GetUser)
+		userGroup.GET("/wallets/:address", h.GetUserWalletByGuildIDAddress)
 		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
 		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
 		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
+		userGroup.GET("/:id/transactions", h.GetUserTransaction)
 		userGroup.GET("/top", h.GetTopUsers)
 		deviceGroup := userGroup.Group("/device")
 		{
