@@ -9,14 +9,8 @@ import (
 )
 
 func (e *Entity) HandleUserFeedback(req *request.UserFeedbackRequest) error {
-	err := e.svc.Discord.SendFeedback(req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.HandleUserFeedback] e.svc.Discord.SendFeedback failed")
-		return err
-	}
-
 	// store feedback
-	err = e.repo.UserFeedback.CreateOne(&model.UserFeedback{
+	feedback, err := e.repo.UserFeedback.CreateOne(&model.UserFeedback{
 		DiscordID: req.DiscordID,
 		Command:   req.Command,
 		Feedback:  req.Feedback,
@@ -24,6 +18,13 @@ func (e *Entity) HandleUserFeedback(req *request.UserFeedbackRequest) error {
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.HandleUserFeedback] e.repo.UserFeedback.CreateOne failed")
+		return err
+	}
+
+	// send feedback to channel
+	err = e.svc.Discord.SendFeedback(req, feedback.ID.UUID.String())
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.HandleUserFeedback] e.svc.Discord.SendFeedback failed")
 		return err
 	}
 	return nil
