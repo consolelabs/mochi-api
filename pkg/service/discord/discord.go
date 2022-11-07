@@ -432,19 +432,32 @@ func (d *Discord) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCo
 	return nil
 }
 
-func (d *Discord) SendFeedback(req *request.UserFeedbackRequest) error {
+func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
 	title := "Feedback received."
 	if req.Command != "" {
 		title = fmt.Sprintf("Feedback received for command: %s", req.Command)
 	}
-	msg := &discordgo.MessageEmbed{
-		Title:       title,
-		Footer:      &discordgo.MessageEmbedFooter{Text: req.Username, IconURL: req.Avatar},
-		Description: fmt.Sprintf("<@%s> has something to say\n`%s`", req.DiscordID, req.Feedback),
-		Color:       mochiLogColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	msg := &discordgo.MessageSend{
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label:    "Set in progress",
+						Style:    1,
+						CustomID: feedbackID,
+					},
+				},
+			},
+		},
+		Embed: &discordgo.MessageEmbed{
+			Title:       title,
+			Footer:      &discordgo.MessageEmbedFooter{Text: req.Username, IconURL: req.Avatar},
+			Description: fmt.Sprintf("<@%s> has something to say\n`%s`", req.DiscordID, req.Feedback),
+			Color:       mochiLogColor,
+			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		},
 	}
-	_, err := d.session.ChannelMessageSendEmbed(d.mochiFeedbackChannelID, msg)
+	_, err := d.session.ChannelMessageSendComplex(d.mochiFeedbackChannelID, msg)
 	if err != nil {
 		d.log.Fields(logger.Fields{"body": req}).Error(err, "session.ChannelMessageSendEmbed() failed")
 		return err
