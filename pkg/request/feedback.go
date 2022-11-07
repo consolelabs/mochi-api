@@ -7,3 +7,8 @@ type UserFeedbackRequest struct {
 	Command   string `json:"command"`
 	Feedback  string `json:"feedback"`
 }
+
+type UpdateUserFeedbackRequest struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
+}

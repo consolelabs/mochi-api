@@ -163,17 +163,17 @@ func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *
 }
 
 // SendFeedback mocks base method.
-func (m *MockService) SendFeedback(req *request.UserFeedbackRequest) error {
+func (m *MockService) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendFeedback", req)
+	ret := m.ctrl.Call(m, "SendFeedback", req, feedbackID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendFeedback indicates an expected call of SendFeedback.
-func (mr *MockServiceMockRecorder) SendFeedback(req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendFeedback(req, feedbackID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendFeedback", reflect.TypeOf((*MockService)(nil).SendFeedback), req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendFeedback", reflect.TypeOf((*MockService)(nil).SendFeedback), req, feedbackID)
 }
 
 // SendGuildActivityLogs mocks base method.
