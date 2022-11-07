@@ -69,6 +69,7 @@ import (
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
+	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
@@ -98,6 +99,7 @@ type Repo struct {
 	DiscordUserDevice                    discorduserdevice.Store
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
+	UserFeedback                         userfeedback.Store
 	DiscordUserUpvoteLog                 discorduserupvotelog.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store

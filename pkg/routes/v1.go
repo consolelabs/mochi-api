@@ -336,6 +336,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	feedbackGroup := v1.Group("/feedback")
 	{
 		feedbackGroup.POST("", h.HandleUserFeedback)
+		feedbackGroup.PUT("", h.UpdateUserFeedback)
+		feedbackGroup.GET("", h.GetAllUserFeedback)
 	}
 	// quests
 	questGroup := v1.Group("/quests")
