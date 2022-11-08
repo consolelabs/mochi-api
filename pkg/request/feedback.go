@@ -2,6 +2,7 @@ package request
 
 type UserFeedbackRequest struct {
 	DiscordID string `json:"discord_id"`
+	MessageID string `json:"message_id"`
 	Username  string `json:"username"`
 	Avatar    string `json:"avatar"`
 	Command   string `json:"command"`

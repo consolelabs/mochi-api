@@ -14,6 +14,7 @@ func (e *Entity) HandleUserFeedback(req *request.UserFeedbackRequest) error {
 		DiscordID: req.DiscordID,
 		Command:   req.Command,
 		Feedback:  req.Feedback,
+		MessageID: req.MessageID,
 		Status:    "none",
 	})
 	if err != nil {
@@ -30,13 +31,13 @@ func (e *Entity) HandleUserFeedback(req *request.UserFeedbackRequest) error {
 	return nil
 }
 
-func (e *Entity) UpdateUserFeedback(req *request.UpdateUserFeedbackRequest) error {
-	err := e.repo.UserFeedback.UpdateStatusByID(req.ID, req.Status)
+func (e *Entity) UpdateUserFeedback(req *request.UpdateUserFeedbackRequest) (*model.UserFeedback, error) {
+	feedback, err := e.repo.UserFeedback.UpdateStatusByID(req.ID, req.Status)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateUserFeedback] e.repo.UserFeedback.UpdateStatusByID failed")
-		return err
+		return nil, err
 	}
-	return nil
+	return feedback, nil
 }
 
 func (e *Entity) GetAllUserFeedback(filter string, value string) (feedbacks []model.UserFeedback, err error) {
