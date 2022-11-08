@@ -66,7 +66,7 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.UpdateUserFeedbackResponse{Data: data}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // GetAllUserFeedback     godoc
@@ -92,7 +92,5 @@ func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.UserFeedbackResponse{
-		Data: data,
-	}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
