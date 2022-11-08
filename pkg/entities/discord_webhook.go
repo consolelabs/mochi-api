@@ -10,27 +10,27 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) error {
-	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
-	if err != nil {
-		// if errors.Is(err, gorm.ErrRecordNotFound) {
-		// 	return e.handleNotAddedCollection(nftSale)
-		// } else {
-		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
-		return err
-	}
+type nftTokenModel struct {
+	RarityDisplay   string
+	MarketplaceLink string
+	Price           *big.Float
+	LastPrice       *big.Float
+	Pnl             *big.Float
+	SubPnlDisplay   string
+	SubPnlPer       *big.Float
+	Name            string
+	RarityRate      string
+	RankDisplay     string
+	Image           string
+	Marketplace     string
+	TokenID         string
+}
 
-	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
-	if err != nil {
-		e.log.Infof("[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
-		return err
-	}
-	indexerToken := indexerTokenRes.Data
-
+func (e *Entity) createNftTokenModel(nftSale request.HandleNftWebhookRequest, collection *model.NFTCollection, indexerTokenRes *response.IndexerGetNFTTokenDetailResponse) (*nftTokenModel, error) {
 	// calculate last price, price, pnl, sub pnl
 	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
 	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
@@ -43,6 +43,41 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 	if util.FormatCryptoPrice(*lastPrice) != "0" {
 		subPnlDisplay = " `" + util.GetChangePnl(pnl) + " " + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer)) + "%`"
 	}
+
+	// handle marketplace
+	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
+	marketplaceLink := ""
+	if strings.ToLower(nftSale.Marketplace) == "opensea" {
+		res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
+		if err != nil {
+			e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
+			return nil, fmt.Errorf("cannot get opensea data. Error: %v", err)
+		}
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
+	} else {
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
+	}
+
+	// case indexer not have data in nft_token -> return
+	if indexerTokenRes == nil {
+		return &nftTokenModel{
+			RarityDisplay:   "N/A",
+			MarketplaceLink: marketplaceLink,
+			RankDisplay:     "N/A",
+			Price:           price,
+			LastPrice:       lastPrice,
+			Pnl:             pnl,
+			SubPnlDisplay:   subPnlDisplay,
+			SubPnlPer:       subPnlPer,
+			Name:            collection.Name + " #" + nftSale.TokenId,
+			RarityRate:      "N/A",
+			Image:           "",
+			Marketplace:     marketplace,
+			TokenID:         nftSale.TokenId,
+		}, nil
+	}
+
+	indexerToken := indexerTokenRes.Data
 
 	// handle rarity, rank
 	rankDisplay := ""
@@ -71,41 +106,63 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		}
 	}
 
-	// handle marketplace
-	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
-	marketplaceLink := ""
-	if strings.ToLower(nftSale.Marketplace) == "opensea" {
-		res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
-		if err != nil {
-			e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
-			return fmt.Errorf("cannot get opensea data. Error: %v", err)
-		}
-		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
-	} else {
-		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
-	}
-
 	// handle image
 	image := indexerToken.ImageCDN
 	if image == "" {
 		image = indexerToken.Image
 	}
 
+	return &nftTokenModel{
+		RarityDisplay:   rarityDisplay,
+		MarketplaceLink: marketplaceLink,
+		Price:           price,
+		RankDisplay:     rankDisplay,
+		LastPrice:       lastPrice,
+		Pnl:             pnl,
+		SubPnlDisplay:   subPnlDisplay,
+		SubPnlPer:       subPnlPer,
+		Name:            indexerToken.Name,
+		RarityRate:      rarityRate,
+		Image:           image,
+		Marketplace:     marketplace,
+		TokenID:         nftSale.TokenId,
+	}, nil
+}
+
+func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) error {
+	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.CollectionAddress)
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.CollectionAddress)
+		return err
+	}
+
+	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.CollectionAddress, nftSale.TokenId)
+	if err != nil {
+		e.log.Infof("[indexer.GetNFTDetail] cannot get token from indexer by address %s and token %s", nftSale.CollectionAddress, nftSale.TokenId)
+	}
+
+	// create nft model for both case indexer has data or not
+	nftToken, err := e.createNftTokenModel(nftSale, collection, indexerTokenRes)
+	if err != nil {
+		e.log.Errorf(err, "[createNftTokenModel] cannot create nft token model")
+		return err
+	}
+
 	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
-			Value:  rarityDisplay,
+			Value:  nftToken.RarityDisplay,
 			Inline: true,
 		},
 		{
 
 			Name:   "Rank",
-			Value:  rankDisplay,
+			Value:  nftToken.RankDisplay,
 			Inline: true,
 		},
 		{
 			Name:   "Marketplace",
-			Value:  marketplaceLink,
+			Value:  nftToken.MarketplaceLink,
 			Inline: true,
 		},
 		{
@@ -130,18 +187,18 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		},
 		{
 			Name:   "Price",
-			Value:  util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			Value:  util.FormatCryptoPrice(*nftToken.Price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 		{
 			Name:   "Last Price",
-			Value:  util.FormatCryptoPrice(*lastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
+			Value:  util.FormatCryptoPrice(*nftToken.LastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
 			Inline: true,
 		},
 		{
 			Name: "PnL",
 			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
-			Value:  util.GetGainEmoji(pnl) + util.FormatCryptoPrice(*pnl) + subPnlDisplay,
+			Value:  util.GetGainEmoji(nftToken.Pnl) + util.FormatCryptoPrice(*nftToken.Pnl) + nftToken.SubPnlDisplay,
 			Inline: true,
 		},
 	}
@@ -152,10 +209,10 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 			IconURL: collection.Image,
 		},
 		Fields:      data,
-		Description: indexerToken.Name + " sold!",
-		Color:       int(util.RarityColors(rarityRate)),
+		Description: nftToken.Name + " sold!",
+		Color:       int(util.RarityColors(nftToken.RarityRate)),
 		Image: &discordgo.MessageEmbedImage{
-			URL: util.StandardizeUri(image),
+			URL: util.StandardizeUri(nftToken.Image),
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
 	}}
@@ -165,88 +222,36 @@ func (e *Entity) SendNftSalesToChannel(nftSale request.HandleNftWebhookRequest) 
 		if saleChannel.ContractAddress == "*" || nftSale.CollectionAddress == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, nftToken.Name)
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
 			sub := ""
-			if util.FormatCryptoPrice(*lastPrice) != "0" {
-				sub = util.GetChangePnl(pnl) + fmt.Sprintf("%.2f", subPnlPer.Abs(subPnlPer))
+			if util.FormatCryptoPrice(*nftToken.LastPrice) != "0" {
+				sub = util.GetChangePnl(nftToken.Pnl) + fmt.Sprintf("%.2f", nftToken.SubPnlPer.Abs(nftToken.SubPnlPer))
 			}
 			// add sales message to database
 			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
-				TokenName:         indexerToken.Name,
+				TokenName:         nftToken.Name,
 				CollectionName:    collection.Name,
-				Price:             util.FormatCryptoPrice(*price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+				Price:             util.FormatCryptoPrice(*nftToken.Price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 				SellerAddress:     util.ShortenAddress(nftSale.From),
 				BuyerAddress:      util.ShortenAddress(nftSale.To),
-				Marketplace:       marketplace,
-				MarketplaceURL:    util.GetStringBetweenParentheses(marketplaceLink),
-				Image:             image,
+				Marketplace:       nftToken.Marketplace,
+				MarketplaceURL:    util.GetStringBetweenParentheses(nftToken.MarketplaceLink),
+				Image:             nftToken.Image,
 				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
 				CollectionAddress: collection.Address,
-				TokenID:           indexerToken.TokenID,
+				TokenID:           nftToken.TokenID,
 				SubPnl:            sub,
-				Pnl:               util.FormatCryptoPrice(*pnl),
+				Pnl:               util.FormatCryptoPrice(*nftToken.Pnl),
 				Hodl:              strconv.Itoa(util.SecondsToDays(nftSale.Hodl)),
 			})
 			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, indexerToken.Name)
+				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, nftToken.Name)
 				return fmt.Errorf("cannot handle mochi sales msg. Error: %v", err)
 			}
 		}
-	}
-	return nil
-}
-
-// temporary skip add collection if has any issue
-func (e *Entity) handleNotAddedCollection(nftSale request.HandleNftWebhookRequest) error {
-	// convert marketplace to chain id
-	chainID := util.ConvertMarkplaceToChainId(nftSale.Marketplace)
-
-	// query name and symbol from contract
-	name, symbol, err := e.abi.GetNameAndSymbol(nftSale.CollectionAddress, int64(chainID))
-	if err != nil {
-		// e.log.Errorf(err, "[e.abi.GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", nftSale.CollectionAddress, chainID)
-		return nil
-	}
-
-	// get image from marketplace
-	image, err := e.getImageFromMarketPlace(int(chainID), nftSale.CollectionAddress)
-	if err != nil {
-		// e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
-		return nil
-	}
-
-	// add indexer
-	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: nftSale.CollectionAddress,
-		ChainID: int(chainID),
-	})
-	if err != nil && err.Error() != "block number not synced yet, TODO: add to queue and try later" {
-		// e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
-		return nil
-	}
-	// add collection
-	_, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    nftSale.CollectionAddress,
-		Symbol:     symbol,
-		Name:       name,
-		ChainID:    strconv.Itoa(int(chainID)),
-		ERCFormat:  "ERC721",
-		IsVerified: true,
-		Image:      image,
-	})
-	if err != nil {
-		// e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
-		return nil
-	}
-
-	// notify added collection
-	err = e.svc.Discord.NotifyAddNewCollection("962589711841525780", name, symbol, util.ConvertChainIDToChain(strconv.Itoa(int(chainID))), image)
-	if err != nil {
-		// e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
-		return nil
 	}
 	return nil
 }
