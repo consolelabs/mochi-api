@@ -36,15 +36,15 @@ func (h *Handler) HandleUserFeedback(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
-// HandleUserFeedback     godoc
-// @Summary     Post users' feedbacks
-// @Description Post users' feedbacks
+// UpdateUserFeedback     godoc
+// @Summary     Update users' feedbacks
+// @Description Update users' feedbacks
 // @Tags        Feedback
 // @Accept      json
 // @Produce     json
-// @Param       req body request.UserFeedbackRequest true "request"
-// @Success     200 {object} response.ResponseMessage
-// @Router      /feedback [post]
+// @Param       req body request.UpdateUserFeedbackRequest true "request"
+// @Success     200 {object} response.UpdateUserFeedbackResponse
+// @Router      /feedback [put]
 func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 	var req request.UpdateUserFeedbackRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -59,14 +59,14 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 		return
 	}
 
-	err := h.entities.UpdateUserFeedback(&req)
+	data, err := h.entities.UpdateUserFeedback(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.UpdateUserFeedback] - failed to update feedback")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 // GetAllUserFeedback     godoc
@@ -75,7 +75,8 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // @Tags        Feedback
 // @Accept      json
 // @Produce     json
-// @Param       filter query true "filter by"
+// @Param       filter query string true "filter by"
+// @Param       value query string true "filtered value"
 // @Success     200 {object} response.UserFeedbackResponse
 // @Router      /feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
@@ -91,7 +92,5 @@ func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(response.UserFeedbackResponse{
-		Data: data,
-	}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }

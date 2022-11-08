@@ -2769,6 +2769,75 @@ const docTemplate = `{
             }
         },
         "/feedback": {
+            "get": {
+                "description": "Get users' feedbacks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Feedback"
+                ],
+                "summary": "Get users' feedbacks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter by",
+                        "name": "filter",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "filtered value",
+                        "name": "value",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserFeedbackResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update users' feedbacks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Feedback"
+                ],
+                "summary": "Update users' feedbacks",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateUserFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UpdateUserFeedbackResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Post users' feedbacks",
                 "consumes": [
@@ -6149,6 +6218,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "fee_amount": {
+                    "type": "number"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -6163,6 +6235,9 @@ const docTemplate = `{
                 },
                 "sender_id": {
                     "type": "string"
+                },
+                "service_fee": {
+                    "type": "number"
                 },
                 "status": {
                     "type": "string"
@@ -6435,6 +6510,38 @@ const docTemplate = `{
                 },
                 "rebellio_xp": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.UserFeedback": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "completed_at": {
+                    "type": "string"
+                },
+                "confirmed_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "feedback": {
+                    "type": "string"
+                },
+                "id": {
+                    "$ref": "#/definitions/uuid.NullUUID"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -7280,6 +7387,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateUserFeedbackRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpsertCustomTokenConfigRequest": {
             "type": "object",
             "properties": {
@@ -7437,6 +7555,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "feedback": {
+                    "type": "string"
+                },
+                "message_id": {
                     "type": "string"
                 },
                 "username": {
@@ -9814,6 +9935,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.UpdateUserFeedbackResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserFeedback"
+                }
+            }
+        },
         "response.User": {
             "type": "object",
             "properties": {
@@ -9868,6 +9997,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.UserFeedbackResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserFeedback"
+                    }
+                }
+            }
+        },
         "response.UserInvitesAggregation": {
             "type": "object",
             "properties": {
@@ -9907,6 +10047,18 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "uuid.NullUUID": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if UUID is not NULL",
+                    "type": "boolean"
                 }
             }
         }

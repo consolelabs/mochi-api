@@ -442,9 +442,9 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{
 					discordgo.Button{
-						Label:    "Set in progress",
-						Style:    1,
-						CustomID: feedbackID,
+						Label:    "In progress",
+						Style:    2,
+						CustomID: fmt.Sprintf("handle-feedback-set-in-progress_%s", feedbackID),
 					},
 				},
 			},

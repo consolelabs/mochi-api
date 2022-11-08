@@ -571,6 +571,8 @@ definitions:
         type: number
       created_at:
         type: string
+      fee_amount:
+        type: number
       guild_id:
         type: string
       id:
@@ -581,6 +583,8 @@ definitions:
         type: string
       sender_id:
         type: string
+      service_fee:
+        type: number
       status:
         type: string
       token:
@@ -759,6 +763,27 @@ definitions:
         type: integer
       rebellio_xp:
         type: integer
+    type: object
+  model.UserFeedback:
+    properties:
+      command:
+        type: string
+      completed_at:
+        type: string
+      confirmed_at:
+        type: string
+      created_at:
+        type: string
+      discord_id:
+        type: string
+      feedback:
+        type: string
+      id:
+        $ref: '#/definitions/uuid.NullUUID'
+      message_id:
+        type: string
+      status:
+        type: string
     type: object
   model.UserTelegramDiscordAssociation:
     properties:
@@ -1306,6 +1331,13 @@ definitions:
       user_id:
         type: string
     type: object
+  request.UpdateUserFeedbackRequest:
+    properties:
+      id:
+        type: string
+      status:
+        type: string
+    type: object
   request.UpsertCustomTokenConfigRequest:
     properties:
       active:
@@ -1408,6 +1440,8 @@ definitions:
       discord_id:
         type: string
       feedback:
+        type: string
+      message_id:
         type: string
       username:
         type: string
@@ -2945,6 +2979,11 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildCustomCommand'
     type: object
+  response.UpdateUserFeedbackResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserFeedback'
+    type: object
   response.User:
     properties:
       guild_users:
@@ -2980,6 +3019,13 @@ definitions:
       ios_noti_token:
         type: string
     type: object
+  response.UserFeedbackResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.UserFeedback'
+        type: array
+    type: object
   response.UserInvitesAggregation:
     properties:
       fake:
@@ -3006,6 +3052,14 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
     type: object
 info:
   contact:
@@ -4821,6 +4875,31 @@ paths:
       tags:
       - Defi
   /feedback:
+    get:
+      consumes:
+      - application/json
+      description: Get users' feedbacks
+      parameters:
+      - description: filter by
+        in: query
+        name: filter
+        required: true
+        type: string
+      - description: filtered value
+        in: query
+        name: value
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserFeedbackResponse'
+      summary: Get users' feedbacks
+      tags:
+      - Feedback
     post:
       consumes:
       - application/json
@@ -4840,6 +4919,27 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Post users' feedbacks
+      tags:
+      - Feedback
+    put:
+      consumes:
+      - application/json
+      description: Update users' feedbacks
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserFeedbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateUserFeedbackResponse'
+      summary: Update users' feedbacks
       tags:
       - Feedback
   /gift/xp:
