@@ -9,5 +9,5 @@ type Store interface {
 	GetAllByStatus(status string) ([]model.UserFeedback, error)
 	GetAllByCommand(command string) ([]model.UserFeedback, error)
 	GetAllByDiscordID(id string) ([]model.UserFeedback, error)
-	UpdateStatusByID(id string, status string) error
+	UpdateStatusByID(id string, status string) (*model.UserFeedback, error)
 }

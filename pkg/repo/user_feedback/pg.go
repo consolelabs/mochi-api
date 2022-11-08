@@ -5,8 +5,10 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type pg struct {
@@ -34,6 +36,7 @@ func (pg *pg) GetAllByDiscordID(id string) ([]model.UserFeedback, error) {
 	var fb = []model.UserFeedback{}
 	return fb, pg.db.Where("discord_id=?", id).Find(&fb).Error
 }
-func (pg *pg) UpdateStatusByID(id string, status string) error {
-	return pg.db.Table("user_feedbacks").Where("id=?", id).Updates(map[string]interface{}{"status": status, fmt.Sprintf("%s_at", status): time.Now().UTC()}).Error
+func (pg *pg) UpdateStatusByID(id string, status string) (*model.UserFeedback, error) {
+	fb := model.UserFeedback{ID: util.GetNullUUID(id)}
+	return &fb, pg.db.Table("user_feedbacks").Model(&fb).Clauses(clause.Returning{}).Where("id=?", id).Updates(map[string]interface{}{"status": status, fmt.Sprintf("%s_at", status): time.Now().UTC()}).Error
 }
