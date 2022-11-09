@@ -2786,15 +2786,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "filter by",
                         "name": "filter",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "description": "filtered value",
                         "name": "value",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
