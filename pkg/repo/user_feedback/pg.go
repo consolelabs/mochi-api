@@ -24,6 +24,10 @@ func NewPG(db *gorm.DB) Store {
 func (pg *pg) CreateOne(feedback *model.UserFeedback) (*model.UserFeedback, error) {
 	return feedback, pg.db.Create(&feedback).Error
 }
+func (pg *pg) GetAll() ([]model.UserFeedback, error) {
+	var fb = []model.UserFeedback{}
+	return fb, pg.db.Find(&fb).Error
+}
 func (pg *pg) GetAllByStatus(status string) ([]model.UserFeedback, error) {
 	var fb = []model.UserFeedback{}
 	return fb, pg.db.Where("status=?", status).Find(&fb).Error

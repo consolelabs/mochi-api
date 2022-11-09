@@ -81,9 +81,6 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // @Router      /feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 	filter := c.Query("filter")
-	if filter != "command" && filter != "status" && filter != "discord_id" {
-		filter = "status"
-	}
 	value := c.Query("value")
 	data, err := h.entities.GetAllUserFeedback(filter, value)
 	if err != nil {
