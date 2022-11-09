@@ -4883,12 +4883,10 @@ paths:
       - description: filter by
         in: query
         name: filter
-        required: true
         type: string
       - description: filtered value
         in: query
         name: value
-        required: true
         type: string
       produces:
       - application/json

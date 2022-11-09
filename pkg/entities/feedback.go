@@ -69,6 +69,12 @@ func (e *Entity) GetAllUserFeedback(filter string, value string) (feedbacks []mo
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get by status")
 			return nil, err
 		}
+	default:
+		feedbacks, err = e.repo.UserFeedback.GetAll()
+		if err != nil {
+			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get all")
+			return nil, err
+		}
 	}
 
 	return feedbacks, nil

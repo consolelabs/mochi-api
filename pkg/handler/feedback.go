@@ -75,15 +75,12 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // @Tags        Feedback
 // @Accept      json
 // @Produce     json
-// @Param       filter query string true "filter by"
-// @Param       value query string true "filtered value"
+// @Param       filter query string false "filter by"
+// @Param       value query string false "filtered value"
 // @Success     200 {object} response.UserFeedbackResponse
 // @Router      /feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 	filter := c.Query("filter")
-	if filter != "command" && filter != "status" && filter != "discord_id" {
-		filter = "status"
-	}
 	value := c.Query("value")
 	data, err := h.entities.GetAllUserFeedback(filter, value)
 	if err != nil {
