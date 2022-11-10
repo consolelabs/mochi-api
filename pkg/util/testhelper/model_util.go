@@ -20,6 +20,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          0.33071,
 			PriceChangePercentage7dInCurrency: 2.281861441149524,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "ethereum",
@@ -37,6 +38,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          0.30844,
 			PriceChangePercentage7dInCurrency: 0.6174474468422891,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "binancecoin",
@@ -54,6 +56,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          1.16908,
 			PriceChangePercentage7dInCurrency: 4.332244779295762,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "solana",
@@ -71,6 +74,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          0.41472,
 			PriceChangePercentage7dInCurrency: 1.103904029633381,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "matic-network",
@@ -88,6 +92,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          0.81771,
 			PriceChangePercentage7dInCurrency: 4.725445455130517,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "avalanche-2",
@@ -105,6 +110,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          0.35013,
 			PriceChangePercentage7dInCurrency: -2.6628978539310992,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "internet-computer",
@@ -122,6 +128,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          -0.39209,
 			PriceChangePercentage7dInCurrency: 1.6237690910330411,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 		{
 			ID:           "fantom",
@@ -139,6 +146,7 @@ func WatchlistCoingeckoDefaultTickers() []response.CoinMarketItemData {
 			PriceChangePercentage24h:          -0.01195,
 			PriceChangePercentage7dInCurrency: -1.428104703485673,
 			IsPair:                            false,
+			IsDefault:                         true,
 		},
 	}
 }

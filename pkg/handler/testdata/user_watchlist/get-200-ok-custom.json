@@ -13,7 +13,8 @@
       },
       "price_change_percentage_24h": 0.53837,
       "price_change_percentage_7d_in_currency": -1.6547840760734636,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": false
     }
   ]
 }
