@@ -592,6 +592,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 
 	tickers := make([]string, 0)
 	pairs := make([]model.UserWatchlistItem, 0)
+	isDefault := false
 	for _, item := range list {
 		if strings.Contains(item.Symbol, "/") {
 			pairs = append(pairs, item)
@@ -600,6 +601,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 	}
 	if len(tickers) == 0 && len(pairs) == 0 {
 		tickers = e.getDefaultWatchlistIDs()
+		isDefault = true
 	}
 	if len(tickers) == 0 && len(pairs) == 0 {
 		return nil, nil
@@ -636,6 +638,9 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 			item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
 		}
 		data = append(data, item)
+	}
+	for i := range data {
+		data[i].IsDefault = isDefault
 	}
 	// handle quest logs
 	log := &model.QuestUserLog{

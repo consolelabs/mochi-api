@@ -169,6 +169,7 @@ type CoinMarketItemData struct {
 	PriceChangePercentage24h          float64 `json:"price_change_percentage_24h"`
 	PriceChangePercentage7dInCurrency float64 `json:"price_change_percentage_7d_in_currency"`
 	IsPair                            bool    `json:"is_pair"`
+	IsDefault                         bool    `json:"is_default"`
 }
 
 type GetWatchlistResponse struct {
