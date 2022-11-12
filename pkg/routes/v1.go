@@ -346,4 +346,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		questGroup.POST("/progress", h.UpdateQuestProgress)
 		questGroup.POST("/claim", h.ClaimQuestsRewards)
 	}
+
+	fiatGroup := v1.Group("/fiat")
+	{
+		fiatGroup.GET("/historical-exchange-rates", h.GetFiatHistoricalExchangeRates)
+	}
 }
