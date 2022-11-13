@@ -216,6 +216,21 @@ func TestHandler_TransferToken(t *testing.T) {
 			wantCode:         http.StatusBadRequest,
 			wantResponsePath: "testdata/offchain_tip_bot/400-token-not-support.json",
 		},
+		{
+			name: "user not have balance",
+			req: request.OffchainTransferRequest{
+				Sender:       "929673422198411304",
+				Recipients:   []string{"381469582176813056"},
+				GuildID:      "462663954813157376",
+				ChannelID:    "1003381172178530494",
+				Amount:       3,
+				Token:        "CAKE",
+				FullCommand:  "tip <@381469582176813056> 3 cake",
+				TransferType: "tip",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/offchain_tip_bot/400-insufficient-bal.json",
+		},
 	}
 
 	coinPrice := map[string]float64{
