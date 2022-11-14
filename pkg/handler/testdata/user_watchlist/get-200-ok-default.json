@@ -11,7 +11,8 @@
       },
       "price_change_percentage_24h": 0.33071,
       "price_change_percentage_7d_in_currency": 2.281861441149524,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "ethereum",
@@ -24,7 +25,8 @@
       },
       "price_change_percentage_24h": 0.30844,
       "price_change_percentage_7d_in_currency": 0.6174474468422891,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "binancecoin",
@@ -37,7 +39,8 @@
       },
       "price_change_percentage_24h": 1.16908,
       "price_change_percentage_7d_in_currency": 4.332244779295762,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "solana",
@@ -50,7 +53,8 @@
       },
       "price_change_percentage_24h": 0.41472,
       "price_change_percentage_7d_in_currency": 1.103904029633381,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "matic-network",
@@ -63,7 +67,8 @@
       },
       "price_change_percentage_24h": 0.81771,
       "price_change_percentage_7d_in_currency": 4.725445455130517,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "avalanche-2",
@@ -76,7 +81,8 @@
       },
       "price_change_percentage_24h": 0.35013,
       "price_change_percentage_7d_in_currency": -2.6628978539310992,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "internet-computer",
@@ -89,7 +95,8 @@
       },
       "price_change_percentage_24h": -0.39209,
       "price_change_percentage_7d_in_currency": 1.6237690910330411,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     },
     {
       "id": "fantom",
@@ -102,7 +109,8 @@
       },
       "price_change_percentage_24h": -0.01195,
       "price_change_percentage_7d_in_currency": -1.428104703485673,
-      "is_pair": false
+      "is_pair": false,
+      "is_default": true
     }
   ]
 }

@@ -7655,6 +7655,9 @@ const docTemplate = `{
                 "image": {
                     "type": "string"
                 },
+                "is_default": {
+                    "type": "boolean"
+                },
                 "is_pair": {
                     "type": "boolean"
                 },
