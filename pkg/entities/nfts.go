@@ -429,11 +429,15 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		e.log.Errorf(err, "[util.ConvertChainToChainId] failed to convert chain to chainId: %v", err)
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
-
+	colNolFound := false
 	image, err := e.getImageFromMarketPlace(chainID, req.Address)
 	if err != nil {
 		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
-		return nil, err
+		colNolFound = strings.Contains(err.Error(), "Collection not found") && strings.Contains(err.Error(), "paintswap")
+		// if the error not related to collection not found should return
+		if !colNolFound {
+			return nil, err
+		}
 	}
 
 	// query name and symbol from contract
@@ -442,12 +446,14 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		e.log.Errorf(err, "[GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", req.Address, chainID)
 		return nil, fmt.Errorf("Cannot get name and symbol of contract: %v", err)
 	}
-
-	// host image to cloud if necessary
-	image, err = e.svc.Cloud.HostImageToGCS(image, strings.ReplaceAll(name, " ", ""))
-	if err != nil {
-		e.log.Errorf(err, "[cloud.HostImageToGCS] failed to host image to GCS: %v", err)
-		return nil, err
+	// check if collection not found in paintswap then skip get from paintswap
+	if !colNolFound {
+		// host image to cloud if necessary
+		image, err = e.svc.Cloud.HostImageToGCS(image, strings.ReplaceAll(name, " ", ""))
+		if err != nil {
+			e.log.Errorf(err, "[cloud.HostImageToGCS] failed to host image to GCS: %v", err)
+			return nil, err
+		}
 	}
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
@@ -521,7 +527,7 @@ func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, e
 		collection, err := e.marketplace.GetCollectionFromPaintswap(address)
 		if err != nil {
 			e.log.Errorf(err, "[GetCollectionFromPaintswap] cannot get collection: %s | chainId %d", address, chainID)
-			return "", fmt.Errorf("Cannot get collection: %v", err)
+			return "", fmt.Errorf("Cannot get collection from paintswap: %v", err)
 		}
 		return collection.Collection.Image, nil
 	}

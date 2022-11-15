@@ -48,3 +48,9 @@ type RemoveFromWatchlistRequest struct {
 	UserID string `json:"user_id" form:"user_id" binding:"required"`
 	Symbol string `json:"symbol" form:"symbol" binding:"required"`
 }
+
+type GetFiatHistoricalExchangeRatesRequest struct {
+	Days   int    `json:"days" form:"days,default=7" binding:"min=7,max=365"`
+	Base   string `json:"base" form:"base" binding:"required"`
+	Target string `json:"target" form:"target,default=usd"`
+}

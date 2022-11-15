@@ -186,3 +186,11 @@ type CoingeckoSupportedTokenResponse struct {
 type SearchCoinResponse struct {
 	Data []model.CoingeckoSupportedTokens `json:"data"`
 }
+
+type GetFiatHistoricalExchangeRatesResponse struct {
+	LatestRate float64   `json:"latest_rate"`
+	Rates      []float64 `json:"rates"`
+	Times      []string  `json:"times"`
+	From       string    `json:"from"`
+	To         string    `json:"to"`
+}

@@ -2709,17 +2709,24 @@ const docTemplate = `{
                 "tags": [
                     "Defi"
                 ],
-                "summary": "Remove from user's watchlist",
+                "summary": "Get historical market chart",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "symbol",
+                        "name": "base",
                         "in": "query",
                         "required": true
                     },
                     {
+                        "maximum": 365,
+                        "minimum": 7,
+                        "type": "integer",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "name": "user_id",
+                        "name": "target",
                         "in": "query",
                         "required": true
                     }
@@ -2728,7 +2735,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/response.GetFiatHistoricalExchangeRatesResponse"
                         }
                     }
                 }
@@ -4172,7 +4179,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokenTxHistoryResponse"
+                            "$ref": "#/definitions/response.GetNFTActivityResponse"
                         }
                     }
                 }
@@ -8086,6 +8093,32 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetFiatHistoricalExchangeRatesResponse": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "latest_rate": {
+                    "type": "number"
+                },
+                "rates": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "times": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "to": {
+                    "type": "string"
+                }
+            }
+        },
         "response.GetGmConfigResponse": {
             "type": "object",
             "properties": {
@@ -8282,6 +8315,28 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/discordgo.User"
+                }
+            }
+        },
+        "response.GetNFTActivityData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.IndexerNFTActivityData"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/util.Pagination"
+                }
+            }
+        },
+        "response.GetNFTActivityResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetNFTActivityData"
                 }
             }
         },
@@ -8845,17 +8900,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerGetNFTTokenTxHistoryResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.IndexerGetNftTokenTxHistory"
-                    }
-                }
-            }
-        },
         "response.IndexerGetNFTTokensResponse": {
             "type": "object",
             "properties": {
@@ -8876,9 +8920,12 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerGetNftTokenTxHistory": {
+        "response.IndexerNFTActivityData": {
             "type": "object",
             "properties": {
+                "chain_id": {
+                    "type": "integer"
+                },
                 "contract_address": {
                     "type": "string"
                 },
@@ -8888,13 +8935,43 @@ const docTemplate = `{
                 "event_type": {
                     "type": "string"
                 },
-                "from": {
+                "from_address": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_update_time": {
+                    "type": "string"
+                },
+                "listing_price": {
+                    "type": "string"
+                },
+                "listing_price_obj": {
+                    "$ref": "#/definitions/response.IndexerPrice"
                 },
                 "listing_status": {
                     "type": "string"
                 },
-                "to": {
+                "listing_type": {
+                    "type": "string"
+                },
+                "payment_token": {
+                    "type": "integer"
+                },
+                "platform_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "string"
+                },
+                "sold_price": {
+                    "type": "string"
+                },
+                "sold_price_obj": {
+                    "$ref": "#/definitions/response.IndexerPrice"
+                },
+                "to_address": {
                     "type": "string"
                 },
                 "token_id": {

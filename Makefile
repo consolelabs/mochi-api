@@ -108,6 +108,12 @@ gen-mock:
 	@mockgen -source=./pkg/repo/quest_user_pass/store.go -destination=./pkg/repo/quest_user_pass/mocks/store.go
 	@mockgen -source=./pkg/repo/quest_reward/store.go -destination=./pkg/repo/quest_reward/mocks/store.go
 	@mockgen -source=./pkg/repo/quest_user_reward/store.go -destination=./pkg/repo/quest_user_reward/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_chain/store.go -destination=./pkg/repo/offchain_tip_bot_chain/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_tokens/store.go -destination=./pkg/repo/offchain_tip_bot_tokens/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_contract/store.go -destination=./pkg/repo/offchain_tip_bot_contract/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_activity_logs/store.go -destination=./pkg/repo/offchain_tip_activity_logs/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_user_balances/store.go -destination=./pkg/repo/offchain_tip_user_balances/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_transfer_histories/store.go -destination=./pkg/repo/offchain_tip_transfer_histories/mocks/store.go
 
 
 setup-githook:
