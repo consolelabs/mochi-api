@@ -810,6 +810,28 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 	}
 
 	if len(data) == 0 {
+		// Check for * address -> track all collections
+		// TODO: upddate this to pagination
+		data, err := e.repo.NFTSalesTracker.GetStarTrackerByGuildID(guildID)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.repo.GetStarTrackerByGuildID] failed to get * trackers")
+			return nil, err
+		}
+		fmt.Println(data)
+		if data != nil && data.GuildConfigSalesTracker.ID.Valid == true {
+			return &response.NFTSalesTrackerGuildResponse{
+				ID:        util.GetNullUUID(data.SalesConfigID),
+				GuildID:   guildID,
+				ChannelID: data.GuildConfigSalesTracker.ChannelID,
+				Collection: []response.NFTSalesTrackerData{
+					{
+						ContractAddress: "*",
+						Platform:        data.Platform,
+						Name:            "All Collections",
+					},
+				},
+			}, nil
+		}
 		return nil, nil
 	}
 

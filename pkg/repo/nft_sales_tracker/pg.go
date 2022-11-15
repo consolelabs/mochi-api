@@ -84,3 +84,9 @@ func (pg *pg) GetSalesTrackerByGuildID(guildID string) (resp []response.NFTSales
 func (pg *pg) DeleteNFTSalesTrackerByContractAddress(contractAddress string) error {
 	return pg.db.Where("contract_address = ?", contractAddress).Delete(&model.NFTSalesTracker{}).Error
 }
+
+func (pg *pg) GetStarTrackerByGuildID(guildId string) (*model.NFTSalesTracker, error) {
+	data := model.NFTSalesTracker{}
+	err := pg.db.Table("nft_sales_trackers").Preload("GuildConfigSalesTracker", "guild_id=?", guildId).Where("contract_address='*'").First(&data)
+	return &data, err.Error
+}
