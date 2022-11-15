@@ -1784,6 +1784,23 @@ definitions:
       data:
         $ref: '#/definitions/model.NFTCollectionDetail'
     type: object
+  response.GetFiatHistoricalExchangeRatesResponse:
+    properties:
+      from:
+        type: string
+      latest_rate:
+        type: number
+      rates:
+        items:
+          type: number
+        type: array
+      times:
+        items:
+          type: string
+        type: array
+      to:
+        type: string
+    type: object
   response.GetGmConfigResponse:
     properties:
       data:
@@ -4791,11 +4808,16 @@ paths:
       description: Remove from user's watchlist
       parameters:
       - in: query
-        name: symbol
+        name: base
         required: true
         type: string
       - in: query
-        name: user_id
+        maximum: 365
+        minimum: 7
+        name: days
+        type: integer
+      - in: query
+        name: target
         required: true
         type: string
       produces:
@@ -4804,8 +4826,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: object
-      summary: Remove from user's watchlist
+            $ref: '#/definitions/response.GetFiatHistoricalExchangeRatesResponse'
+      summary: Get historical market chart
       tags:
       - Defi
     get:

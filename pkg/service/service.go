@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service/abi"
+	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/service/binance"
 	blockchainapi "github.com/defipod/mochi/pkg/service/blockchain_api"
 	"github.com/defipod/mochi/pkg/service/cloud"
@@ -30,6 +31,7 @@ type Service struct {
 	Processor     processor.Service
 	BlockchainApi blockchainapi.Service
 	Binance       binance.Service
+	APILayer      apilayer.Service
 }
 
 func NewService(
@@ -53,5 +55,6 @@ func NewService(
 		Processor:     processor.NewProcessor(&cfg),
 		BlockchainApi: blockchainapi.NewService(&cfg),
 		Binance:       binance.NewService(),
+		APILayer:      apilayer.NewService(&cfg),
 	}, nil
 }

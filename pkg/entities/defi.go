@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -757,4 +759,44 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 		updatedRows += rowsAffected
 	}
 	return updatedRows, nil
+}
+
+func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
+	endDate := time.Now()
+	startDate := endDate.AddDate(0, 0, -req.Days+1)
+	endDateStr := endDate.Format("2006-01-02")
+	startDateStr := startDate.Format("2006-01-02")
+	// get latest rate
+	latestQ := apilayer.GetLatestExchangeRateQuery{Base: req.Base, Target: req.Target}
+	latestData, code, err := e.svc.APILayer.GetLatestExchangeRate(latestQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"latestQ": latestQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetLatestExchangeRate() failed")
+		return nil, err
+	}
+
+	// get historical rates - chart data
+	historicalQ := apilayer.GetHistoricalExchangeRateQuery{StartDate: startDateStr, EndDate: endDateStr, Base: req.Base, Target: req.Target}
+	historicalData, code, err := e.svc.APILayer.GetHistoricalExchangeRate(historicalQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"historicalQ": historicalQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetHistoricalExchangeRate() failed")
+		return nil, err
+	}
+
+	times := make([]string, 0)
+	for k := range historicalData.Rates {
+		times = append(times, k)
+	}
+	sort.Strings(times)
+	rates := make([]float64, 0)
+	for i, k := range times {
+		rates = append(rates, historicalData.Rates[k][strings.ToUpper(req.Target)])
+		times[i] = k[5:]
+	}
+	return &response.GetFiatHistoricalExchangeRatesResponse{
+		LatestRate: latestData.Rates[strings.ToUpper(req.Target)],
+		Times:      times,
+		Rates:      rates,
+		From:       startDate.Format("January 02, 2006"),
+		To:         endDate.Format("January 02, 2006"),
+	}, nil
 }

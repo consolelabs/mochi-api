@@ -2709,17 +2709,24 @@ const docTemplate = `{
                 "tags": [
                     "Defi"
                 ],
-                "summary": "Remove from user's watchlist",
+                "summary": "Get historical market chart",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "symbol",
+                        "name": "base",
                         "in": "query",
                         "required": true
                     },
                     {
+                        "maximum": 365,
+                        "minimum": 7,
+                        "type": "integer",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "name": "user_id",
+                        "name": "target",
                         "in": "query",
                         "required": true
                     }
@@ -2728,7 +2735,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object"
+                            "$ref": "#/definitions/response.GetFiatHistoricalExchangeRatesResponse"
                         }
                     }
                 }
@@ -8083,6 +8090,32 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.NFTCollectionDetail"
+                }
+            }
+        },
+        "response.GetFiatHistoricalExchangeRatesResponse": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "latest_rate": {
+                    "type": "number"
+                },
+                "rates": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "times": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "to": {
+                    "type": "string"
                 }
             }
         },

@@ -619,7 +619,7 @@ func StartOfDay(t time.Time) time.Time {
 }
 
 func NumberPostfix(num int) string {
-	postfix := "th"
+	var postfix string
 	switch num % 10 {
 	case 1:
 		postfix = "st"
@@ -635,4 +635,36 @@ func NumberPostfix(num int) string {
 
 func RemoveAt[T any](list []T, idx int) []T {
 	return append(list[:idx], list[idx+1:]...)
+}
+
+type SendRequestQuery struct {
+	Method    string // default = GET
+	URL       string
+	ParseForm interface{}
+	Headers   map[string]string
+	Body      io.Reader
+}
+
+func SendRequest(q SendRequestQuery) (int, error) {
+	if q.Method == "" {
+		q.Method = http.MethodGet
+	}
+	client := &http.Client{Timeout: time.Second * 30}
+	req, _ := http.NewRequest(q.Method, q.URL, q.Body)
+	for k, v := range q.Headers {
+		req.Header.Set(k, v)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+	defer res.Body.Close()
+
+	statusCode := res.StatusCode
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return statusCode, err
+	}
+
+	return statusCode, json.Unmarshal(bytes, q.ParseForm)
 }

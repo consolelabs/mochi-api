@@ -376,3 +376,28 @@ func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
 }
+
+// GetFiatHistoricalExchangeRates     godoc
+// @Summary     Get historical market chart
+// @Description Remove from user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req query request.GetFiatHistoricalExchangeRatesRequest true "request"
+// @Success     200 {object} response.GetFiatHistoricalExchangeRatesResponse
+// @Router      /defi/watchlist [delete]
+func (h *Handler) GetFiatHistoricalExchangeRates(c *gin.Context) {
+	var req request.GetFiatHistoricalExchangeRatesRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetFiatHistoricalExchangeRates] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.entities.GetFiatHistoricalExchangeRates(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetFiatHistoricalExchangeRates] entity.GetFiatHistoricalExchangeRates() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
