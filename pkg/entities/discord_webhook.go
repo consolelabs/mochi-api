@@ -48,12 +48,15 @@ func (e *Entity) createNftTokenModel(nftSale request.HandleNftWebhookRequest, co
 	marketplace := strings.ToUpper(string(nftSale.Marketplace[0])) + nftSale.Marketplace[1:]
 	marketplaceLink := ""
 	if strings.ToLower(nftSale.Marketplace) == "opensea" {
-		res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
-		if err != nil {
-			e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
-			return nil, fmt.Errorf("cannot get opensea data. Error: %v", err)
-		}
-		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + res.Collection.UrlName + ")"
+		// TODO(trkhoi): renew expired opensea api key
+		// res, err := e.marketplace.GetOpenseaAssetContract(nftSale.CollectionAddress)
+		// if err != nil {
+		// 	e.log.Errorf(err, "[marketplace.GetOpenseaAssetContrace] cannot get opensea data")
+		// 	return nil, fmt.Errorf("cannot get opensea data. Error: %v", err)
+		// }
+		// res.Collection.UrlName
+
+		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + "test_opensea" + ")"
 	} else {
 		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.CollectionAddress) + ")"
 	}
