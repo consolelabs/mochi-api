@@ -92,3 +92,18 @@ func (mr *MockStoreMockRecorder) GetSalesTrackerByGuildID(guildId interface{}) *
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSalesTrackerByGuildID", reflect.TypeOf((*MockStore)(nil).GetSalesTrackerByGuildID), guildId)
 }
+
+// GetStarTrackerByGuildID mocks base method.
+func (m *MockStore) GetStarTrackerByGuildID(guildId string) (*model.NFTSalesTracker, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStarTrackerByGuildID", guildId)
+	ret0, _ := ret[0].(*model.NFTSalesTracker)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStarTrackerByGuildID indicates an expected call of GetStarTrackerByGuildID.
+func (mr *MockStoreMockRecorder) GetStarTrackerByGuildID(guildId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStarTrackerByGuildID", reflect.TypeOf((*MockStore)(nil).GetStarTrackerByGuildID), guildId)
+}
