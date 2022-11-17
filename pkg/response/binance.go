@@ -22,3 +22,19 @@ type GetKlinesDataResponse struct {
 	QuoteAssetVolume string
 	NumOfTrades      int64
 }
+
+type WebsocketKlinesDataResponse struct {
+	Symbol string              `json:"s"`
+	Data   WebsocketKlinesData `json:"k"`
+}
+
+type WebsocketKlinesData struct {
+	Symbol           string `json:"s"`
+	OPrice           string `json:"o"`
+	HPrice           string `json:"h"`
+	LPrice           string `json:"l"`
+	CPrice           string `json:"c"`
+	Volume           string `json:"v"`
+	QuoteAssetVolume string `json:"q"`
+	NumOfTrades      int64  `json:"n"`
+}

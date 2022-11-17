@@ -80,6 +80,10 @@ type Config struct {
 	GoogleCloudProjectID      string
 	GoogleCloudServiceAccount string
 
+	AppleKeyID   string
+	AppleTeamID  string
+	AppleAuthKey string
+
 	ProcessorServerHost string
 
 	BlockChainAPIKeyID     string
@@ -210,6 +214,10 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		GoogleCloudBucketName:     v.GetString("GOOGLE_CLOUD_BUCKET_NAME"),
 		GoogleCloudProjectID:      v.GetString("GOOGLE_CLOUD_PROJECT_ID"),
 		GoogleCloudServiceAccount: v.GetString("GCP_SERVICE_ACCOUNT"),
+
+		AppleKeyID:   v.GetString("APPLE_KEY_ID"),
+		AppleTeamID:  v.GetString("APPLE_TEAM_ID"),
+		AppleAuthKey: v.GetString("APPLE_AUTH_KEY"),
 
 		ProcessorServerHost:    v.GetString("PROCESSOR_SERVER_HOST"),
 		BlockChainAPIKeyID:     v.GetString("BLOCKCHAIN_API_KEY_ID"),
