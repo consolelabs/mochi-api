@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -23,7 +22,6 @@ import (
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -801,41 +799,43 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
-	endDate := time.Now()
-	startDate := endDate.AddDate(0, 0, -req.Days+1)
-	endDateStr := endDate.Format("2006-01-02")
-	startDateStr := startDate.Format("2006-01-02")
-	// get latest rate
-	latestQ := apilayer.GetLatestExchangeRateQuery{Base: req.Base, Target: req.Target}
-	latestData, code, err := e.svc.APILayer.GetLatestExchangeRate(latestQ)
+	interval := "d"
+	if req.Days > 1 {
+		interval = "w"
+	}
+	fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(req.Base, req.Target, interval, 10)
 	if err != nil {
-		e.log.Fields(logger.Fields{"latestQ": latestQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetLatestExchangeRate() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart failed")
 		return nil, err
 	}
 
-	// get historical rates - chart data
-	historicalQ := apilayer.GetHistoricalExchangeRateQuery{StartDate: startDateStr, EndDate: endDateStr, Base: req.Base, Target: req.Target}
-	historicalData, code, err := e.svc.APILayer.GetHistoricalExchangeRate(historicalQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"historicalQ": historicalQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetHistoricalExchangeRate() failed")
+	fiatRate := []float64{}
+	times := []time.Time{}
+	for _, v := range fiatData.Data {
+		// get price array
+		cPrice, _ := strconv.ParseFloat(v.ClosePrice, 64)
+		fiatRate = append(fiatRate, cPrice)
+		// get time array
+		t := time.Unix(0, int64(v.OpenTime)*int64(time.Millisecond))
+		times = append(times, t)
+	}
+	if len(fiatRate) == 0 || len(times) == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart returned no data")
 		return nil, err
 	}
+	lastestPrice := fiatRate[len(fiatRate)-1]
 
-	times := make([]string, 0)
-	for k := range historicalData.Rates {
-		times = append(times, k)
+	timeStr := []string{}
+	for _, t := range times {
+		date := strconv.Itoa(int(t.Month())) + "-" + strconv.Itoa(t.Day()) //"12-30" format
+		timeStr = append(timeStr, date)
 	}
-	sort.Strings(times)
-	rates := make([]float64, 0)
-	for i, k := range times {
-		rates = append(rates, historicalData.Rates[k][strings.ToUpper(req.Target)])
-		times[i] = k[5:]
-	}
+
 	return &response.GetFiatHistoricalExchangeRatesResponse{
-		LatestRate: latestData.Rates[strings.ToUpper(req.Target)],
-		Times:      times,
-		Rates:      rates,
-		From:       startDate.Format("January 02, 2006"),
-		To:         endDate.Format("January 02, 2006"),
+		LatestRate: lastestPrice,
+		Times:      timeStr,
+		Rates:      fiatRate,
+		From:       times[0].Format("January 02, 2006"),
+		To:         times[len(times)-1].Format("January 02, 2006"),
 	}, nil
 }
