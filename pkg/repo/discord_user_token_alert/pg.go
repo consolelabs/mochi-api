@@ -28,3 +28,7 @@ func (pg *pg) GetByDeviceID(deviceId string) ([]model.DiscordUserTokenAlert, err
 	configs := []model.DiscordUserTokenAlert{}
 	return configs, pg.db.Preload("DiscordUserDevice").Where("device_id=?", deviceId).Find(&configs).Error
 }
+func (pg *pg) GetAll() ([]model.DiscordUserTokenAlert, error) {
+	configs := []model.DiscordUserTokenAlert{}
+	return configs, pg.db.Preload("DiscordUserDevice").Find(&configs).Error
+}

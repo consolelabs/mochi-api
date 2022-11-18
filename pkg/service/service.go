@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/apilayer"
+	"github.com/defipod/mochi/pkg/service/apns"
 	"github.com/defipod/mochi/pkg/service/binance"
 	blockchainapi "github.com/defipod/mochi/pkg/service/blockchain_api"
 	"github.com/defipod/mochi/pkg/service/cloud"
@@ -26,6 +27,7 @@ type Service struct {
 	Discord       discord.Service
 	Indexer       indexer.Service
 	Abi           abi.Service
+	Apns          apns.Service
 	Twitter       twitter.Service
 	Cloud         cloud.Service
 	Processor     processor.Service
@@ -50,6 +52,7 @@ func NewService(
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
 		Abi:           abi.NewAbi(&cfg),
+		Apns:          apns.NewService(&cfg),
 		Twitter:       twitter.NewTwitter(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
 		Processor:     processor.NewProcessor(&cfg),

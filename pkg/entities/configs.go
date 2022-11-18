@@ -982,6 +982,21 @@ func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserToken
 		Data: data,
 	}, err
 }
+
+func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse, error) {
+	data, err := e.repo.DiscordUserTokenAlert.GetAll()
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Error(err, "[entities.GetAllUserTokenAlert] - failed to get all user token alerts")
+		return nil, err
+	}
+	return &response.DiscordUserTokenAlertResponse{
+		Data: data,
+	}, err
+}
+
 func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest) error {
 	return e.repo.DiscordUserTokenAlert.CreateOne(&model.UpsertDiscordUserTokenAlert{
 		TokenID:   req.TokenID,

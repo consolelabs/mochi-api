@@ -9,4 +9,5 @@ type Store interface {
 	RemoveOne(config *model.DiscordUserTokenAlert) error
 	GetByDiscordID(discordId string) ([]model.DiscordUserTokenAlert, error)
 	GetByDeviceID(deviceId string) ([]model.DiscordUserTokenAlert, error)
+	GetAll() ([]model.DiscordUserTokenAlert, error)
 }
