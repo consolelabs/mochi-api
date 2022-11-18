@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,7 +22,6 @@ import (
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -622,22 +621,52 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 
 	for _, pair := range pairs {
 		queries := strings.Split(pair.CoinGeckoID, "/")
-		comparisonData, err := e.CompareToken(queries[0], queries[1], "7", "")
-		if err != nil {
-			e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] entity.CompareToken() failed")
-			return nil, err
-		}
-		item := response.CoinMarketItemData{
-			Symbol: pair.Symbol,
-			IsPair: true,
-			Image:  fmt.Sprintf("%s||%s", comparisonData.BaseCoin.Image.Small, comparisonData.TargetCoin.Image.Small),
-		}
-		item.SparkLineIn7d.Price = comparisonData.Ratios
-		if len(comparisonData.Ratios) > 0 {
-			latestPrice := item.SparkLineIn7d.Price[len(item.SparkLineIn7d.Price)-1]
-			oldPrice := item.SparkLineIn7d.Price[0]
-			item.CurrentPrice = latestPrice
-			item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+		item := response.CoinMarketItemData{}
+		// process fiat data
+		if pair.IsFiat {
+			fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(queries[0], queries[1], "w", 10)
+			if err != nil {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart failed")
+				return nil, err
+			}
+			fiatRate := []float64{}
+			for _, v := range fiatData.Data {
+				cPrice, _ := strconv.ParseFloat(v.ClosePrice, 64)
+				fiatRate = append(fiatRate, cPrice)
+			}
+			if len(fiatRate) == 0 {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart returned no data")
+				return nil, err
+			}
+
+			lastestPrice := fiatRate[len(fiatRate)-1]
+			oldPrice := fiatRate[0]
+			if oldPrice == 0 {
+				item.PriceChangePercentage7dInCurrency = 100
+			} else {
+				item.PriceChangePercentage7dInCurrency = (lastestPrice - oldPrice) / oldPrice * 100
+			}
+			item.Symbol = pair.Symbol
+			item.IsPair = true
+			item.SparkLineIn7d.Price = fiatRate
+			item.CurrentPrice = lastestPrice
+		} else {
+			comparisonData, err := e.CompareToken(queries[0], queries[1], "7", "")
+			if err != nil {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] entity.CompareToken() failed")
+				return nil, err
+			}
+
+			item.Symbol = pair.Symbol
+			item.IsPair = true
+			item.Image = fmt.Sprintf("%s||%s", comparisonData.BaseCoin.Image.Small, comparisonData.TargetCoin.Image.Small)
+			item.SparkLineIn7d.Price = comparisonData.Ratios
+			if len(comparisonData.Ratios) > 0 {
+				latestPrice := item.SparkLineIn7d.Price[len(item.SparkLineIn7d.Price)-1]
+				oldPrice := item.SparkLineIn7d.Price[0]
+				item.CurrentPrice = latestPrice
+				item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+			}
 		}
 		data = append(data, item)
 	}
@@ -666,6 +695,9 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		isPair = true
 	}
 	switch {
+	case req.IsFiat:
+		req.CoinGeckoID = req.Symbol
+
 	case isPair && req.CoinGeckoID == "":
 		queries := strings.Split(req.Symbol, "/")
 		data, err := e.CompareToken(queries[0], queries[1], "7", "")
@@ -683,6 +715,7 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			}, nil
 		}
 		req.CoinGeckoID = fmt.Sprintf("%s/%s", data.BaseCoin.ID, data.TargetCoin.ID)
+
 	case !isPair && req.CoinGeckoID == "":
 		tokens, err := e.SearchCoins(req.Symbol)
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
@@ -700,22 +733,26 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			return nil, baseerrs.ErrRecordNotFound
 		}
 		req.CoinGeckoID = tokens[0].ID
+
 	}
 
-	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
-	_, total, err := e.repo.UserWatchlistItem.List(listQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
-		return nil, err
-	}
-	if total == 1 {
-		return nil, baseerrs.ErrConflict
+	if !req.IsFiat {
+		listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+		_, total, err := e.repo.UserWatchlistItem.List(listQ)
+		if err != nil {
+			e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+			return nil, err
+		}
+		if total == 1 {
+			return nil, baseerrs.ErrConflict
+		}
 	}
 
-	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
 		UserID:      req.UserID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
+		IsFiat:      req.IsFiat,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.Create() failed")
@@ -762,41 +799,43 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
-	endDate := time.Now()
-	startDate := endDate.AddDate(0, 0, -req.Days+1)
-	endDateStr := endDate.Format("2006-01-02")
-	startDateStr := startDate.Format("2006-01-02")
-	// get latest rate
-	latestQ := apilayer.GetLatestExchangeRateQuery{Base: req.Base, Target: req.Target}
-	latestData, code, err := e.svc.APILayer.GetLatestExchangeRate(latestQ)
+	interval := "d"
+	if req.Days > 1 {
+		interval = "w"
+	}
+	fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(req.Base, req.Target, interval, 10)
 	if err != nil {
-		e.log.Fields(logger.Fields{"latestQ": latestQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetLatestExchangeRate() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart failed")
 		return nil, err
 	}
 
-	// get historical rates - chart data
-	historicalQ := apilayer.GetHistoricalExchangeRateQuery{StartDate: startDateStr, EndDate: endDateStr, Base: req.Base, Target: req.Target}
-	historicalData, code, err := e.svc.APILayer.GetHistoricalExchangeRate(historicalQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"historicalQ": historicalQ, "code": code}).Error(err, "[entity.GetFiatHistoricalExchangeRates] svc.APILayer.GetHistoricalExchangeRate() failed")
+	fiatRate := []float64{}
+	times := []time.Time{}
+	for _, v := range fiatData.Data {
+		// get price array
+		cPrice, _ := strconv.ParseFloat(v.ClosePrice, 64)
+		fiatRate = append(fiatRate, cPrice)
+		// get time array
+		t := time.Unix(0, int64(v.OpenTime)*int64(time.Millisecond))
+		times = append(times, t)
+	}
+	if len(fiatRate) == 0 || len(times) == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart returned no data")
 		return nil, err
 	}
+	lastestPrice := fiatRate[len(fiatRate)-1]
 
-	times := make([]string, 0)
-	for k := range historicalData.Rates {
-		times = append(times, k)
+	timeStr := []string{}
+	for _, t := range times {
+		date := strconv.Itoa(int(t.Month())) + "-" + strconv.Itoa(t.Day()) //"12-30" format
+		timeStr = append(timeStr, date)
 	}
-	sort.Strings(times)
-	rates := make([]float64, 0)
-	for i, k := range times {
-		rates = append(rates, historicalData.Rates[k][strings.ToUpper(req.Target)])
-		times[i] = k[5:]
-	}
+
 	return &response.GetFiatHistoricalExchangeRatesResponse{
-		LatestRate: latestData.Rates[strings.ToUpper(req.Target)],
-		Times:      times,
-		Rates:      rates,
-		From:       startDate.Format("January 02, 2006"),
-		To:         endDate.Format("January 02, 2006"),
+		LatestRate: lastestPrice,
+		Times:      timeStr,
+		Rates:      fiatRate,
+		From:       times[0].Format("January 02, 2006"),
+		To:         times[len(times)-1].Format("January 02, 2006"),
 	}, nil
 }

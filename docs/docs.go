@@ -2727,8 +2727,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "target",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -6660,6 +6659,9 @@ const docTemplate = `{
             "properties": {
                 "coin_gecko_id": {
                     "type": "string"
+                },
+                "is_fiat": {
+                    "type": "boolean"
                 },
                 "symbol": {
                     "type": "string"

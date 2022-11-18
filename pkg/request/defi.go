@@ -42,6 +42,7 @@ type AddToWatchlistRequest struct {
 	UserID      string `json:"user_id"`
 	Symbol      string `json:"symbol"`
 	CoinGeckoID string `json:"coin_gecko_id"`
+	IsFiat      bool   `json:"is_fiat"`
 }
 
 type RemoveFromWatchlistRequest struct {
