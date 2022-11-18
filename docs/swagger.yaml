@@ -857,6 +857,8 @@ definitions:
     properties:
       coin_gecko_id:
         type: string
+      is_fiat:
+        type: boolean
       symbol:
         type: string
       user_id:
@@ -4847,7 +4849,6 @@ paths:
         type: integer
       - in: query
         name: target
-        required: true
         type: string
       produces:
       - application/json

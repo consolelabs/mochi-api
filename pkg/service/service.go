@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
 	"github.com/defipod/mochi/pkg/service/twitter"
 )
@@ -30,6 +31,7 @@ type Service struct {
 	Cloud         cloud.Service
 	Processor     processor.Service
 	BlockchainApi blockchainapi.Service
+	Nghenhan      nghenhan.Service
 	Binance       binance.Service
 	APILayer      apilayer.Service
 }
@@ -52,6 +54,7 @@ func NewService(
 		Abi:           abi.NewAbi(&cfg),
 		Twitter:       twitter.NewTwitter(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
+		Nghenhan:      nghenhan.NewService(),
 		Processor:     processor.NewProcessor(&cfg),
 		BlockchainApi: blockchainapi.NewService(&cfg),
 		Binance:       binance.NewService(),

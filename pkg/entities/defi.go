@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -622,22 +623,52 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 
 	for _, pair := range pairs {
 		queries := strings.Split(pair.CoinGeckoID, "/")
-		comparisonData, err := e.CompareToken(queries[0], queries[1], "7", "")
-		if err != nil {
-			e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] entity.CompareToken() failed")
-			return nil, err
-		}
-		item := response.CoinMarketItemData{
-			Symbol: pair.Symbol,
-			IsPair: true,
-			Image:  fmt.Sprintf("%s||%s", comparisonData.BaseCoin.Image.Small, comparisonData.TargetCoin.Image.Small),
-		}
-		item.SparkLineIn7d.Price = comparisonData.Ratios
-		if len(comparisonData.Ratios) > 0 {
-			latestPrice := item.SparkLineIn7d.Price[len(item.SparkLineIn7d.Price)-1]
-			oldPrice := item.SparkLineIn7d.Price[0]
-			item.CurrentPrice = latestPrice
-			item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+		item := response.CoinMarketItemData{}
+		// process fiat data
+		if pair.IsFiat {
+			fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(queries[0], queries[1], "w", 10)
+			if err != nil {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart failed")
+				return nil, err
+			}
+			fiatRate := []float64{}
+			for _, v := range fiatData.Data {
+				cPrice, _ := strconv.ParseFloat(v.ClosePrice, 64)
+				fiatRate = append(fiatRate, cPrice)
+			}
+			if len(fiatRate) == 0 {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart returned no data")
+				return nil, err
+			}
+
+			lastestPrice := fiatRate[len(fiatRate)-1]
+			oldPrice := fiatRate[0]
+			if oldPrice == 0 {
+				item.PriceChangePercentage7dInCurrency = 100
+			} else {
+				item.PriceChangePercentage7dInCurrency = (lastestPrice - oldPrice) / oldPrice * 100
+			}
+			item.Symbol = pair.Symbol
+			item.IsPair = true
+			item.SparkLineIn7d.Price = fiatRate
+			item.CurrentPrice = lastestPrice
+		} else {
+			comparisonData, err := e.CompareToken(queries[0], queries[1], "7", "")
+			if err != nil {
+				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] entity.CompareToken() failed")
+				return nil, err
+			}
+
+			item.Symbol = pair.Symbol
+			item.IsPair = true
+			item.Image = fmt.Sprintf("%s||%s", comparisonData.BaseCoin.Image.Small, comparisonData.TargetCoin.Image.Small)
+			item.SparkLineIn7d.Price = comparisonData.Ratios
+			if len(comparisonData.Ratios) > 0 {
+				latestPrice := item.SparkLineIn7d.Price[len(item.SparkLineIn7d.Price)-1]
+				oldPrice := item.SparkLineIn7d.Price[0]
+				item.CurrentPrice = latestPrice
+				item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+			}
 		}
 		data = append(data, item)
 	}
@@ -666,6 +697,9 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		isPair = true
 	}
 	switch {
+	case req.IsFiat:
+		req.CoinGeckoID = req.Symbol
+
 	case isPair && req.CoinGeckoID == "":
 		queries := strings.Split(req.Symbol, "/")
 		data, err := e.CompareToken(queries[0], queries[1], "7", "")
@@ -683,6 +717,7 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			}, nil
 		}
 		req.CoinGeckoID = fmt.Sprintf("%s/%s", data.BaseCoin.ID, data.TargetCoin.ID)
+
 	case !isPair && req.CoinGeckoID == "":
 		tokens, err := e.SearchCoins(req.Symbol)
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
@@ -700,22 +735,26 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			return nil, baseerrs.ErrRecordNotFound
 		}
 		req.CoinGeckoID = tokens[0].ID
+
 	}
 
-	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
-	_, total, err := e.repo.UserWatchlistItem.List(listQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
-		return nil, err
-	}
-	if total == 1 {
-		return nil, baseerrs.ErrConflict
+	if !req.IsFiat {
+		listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+		_, total, err := e.repo.UserWatchlistItem.List(listQ)
+		if err != nil {
+			e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+			return nil, err
+		}
+		if total == 1 {
+			return nil, baseerrs.ErrConflict
+		}
 	}
 
-	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
 		UserID:      req.UserID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
+		IsFiat:      req.IsFiat,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.Create() failed")
