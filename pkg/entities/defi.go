@@ -797,9 +797,10 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
+	since := time.Now().AddDate(0, 0, -req.Days).UnixMilli()
 	interval := "h"
 	limit := req.Days * 24
-	if req.Days >= 90 {
+	if req.Days > 90 {
 		interval = "d"
 		limit = req.Days
 	}
@@ -809,32 +810,35 @@ func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExc
 		return nil, err
 	}
 
-	fiatRate := []float64{}
+	rates := []float64{}
 	times := []time.Time{}
 	for _, v := range fiatData.Data {
+		if v.OpenTime < int(since) {
+			continue
+		}
 		// get price array
 		cPrice, _ := strconv.ParseFloat(v.ClosePrice, 64)
-		fiatRate = append(fiatRate, cPrice)
+		rates = append(rates, cPrice)
 		// get time array
 		t := time.Unix(0, int64(v.OpenTime)*int64(time.Millisecond))
 		times = append(times, t)
 	}
-	if len(fiatRate) == 0 || len(times) == 0 {
+	if len(rates) == 0 || len(times) == 0 {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart returned no data")
 		return nil, err
 	}
-	lastestPrice := fiatRate[len(fiatRate)-1]
+	latest := rates[len(rates)-1]
 
-	timeStr := []string{}
+	labels := []string{}
 	for _, t := range times {
-		date := strconv.Itoa(int(t.Month())) + "-" + strconv.Itoa(t.Day()) //"12-30" format
-		timeStr = append(timeStr, date)
+		date := t.Format("01-02")
+		labels = append(labels, date)
 	}
 
 	return &response.GetFiatHistoricalExchangeRatesResponse{
-		LatestRate: lastestPrice,
-		Times:      timeStr,
-		Rates:      fiatRate,
+		LatestRate: latest,
+		Times:      labels,
+		Rates:      rates,
 		From:       times[0].Format("January 02, 2006"),
 		To:         times[len(times)-1].Format("January 02, 2006"),
 	}, nil
