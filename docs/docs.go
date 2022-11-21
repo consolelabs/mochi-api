@@ -2727,8 +2727,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "target",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3362,6 +3361,44 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.DiscordGuildStat"
+                        }
+                    }
+                }
+            }
+        },
+        "/metrics": {
+            "get": {
+                "description": "API to get stats of collections, users, servers, ...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Metric"
+                ],
+                "summary": "Metric",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "total_servers | active_users | nft_collections",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "case active_users",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataMetric"
                         }
                     }
                 }
@@ -6661,6 +6698,9 @@ const docTemplate = `{
                 "coin_gecko_id": {
                     "type": "string"
                 },
+                "is_fiat": {
+                    "type": "boolean"
+                },
                 "symbol": {
                     "type": "string"
                 },
@@ -7453,6 +7493,12 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
+                "is_enable": {
+                    "type": "boolean"
+                },
                 "price_set": {
                     "type": "number"
                 },
@@ -7889,6 +7935,14 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.DataMetric": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.Metric"
                 }
             }
         },
@@ -9440,6 +9494,23 @@ const docTemplate = `{
                 }
             }
         },
+        "response.Metric": {
+            "type": "object",
+            "properties": {
+                "nft_collections": {
+                    "type": "integer"
+                },
+                "server_active_users": {
+                    "type": "integer"
+                },
+                "total_active_users": {
+                    "type": "integer"
+                },
+                "total_servers": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.NFTCollectionConfig": {
             "type": "object",
             "properties": {
@@ -10083,6 +10154,15 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.UserFeedback"
                     }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

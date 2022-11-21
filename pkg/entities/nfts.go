@@ -1251,3 +1251,7 @@ func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQu
 	}
 	return res, nil
 }
+
+func (e *Entity) TotalNftCollection() (int64, error) {
+	return e.repo.NFTCollection.TotalNftCollection()
+}

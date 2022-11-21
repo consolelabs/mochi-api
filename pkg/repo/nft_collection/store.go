@@ -19,4 +19,5 @@ type Store interface {
 	ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error)
 	ListByGuildID(guildID string) ([]model.NFTCollection, error)
 	UpdateImage(address string, image string) error
+	TotalNftCollection() (count int64, err error)
 }

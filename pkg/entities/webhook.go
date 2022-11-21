@@ -141,7 +141,7 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 	isGmEmoji := strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
 	isGmSticker := false
 	for _, sticker := range message.StickerItems {
-		if sticker.ID == "928509218171006986" {
+		if (sticker.ID == "928509218171006986" || sticker.ID == "1039136044836200549") {
 			isGmSticker = true
 			break
 		}
