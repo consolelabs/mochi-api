@@ -444,7 +444,7 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 					discordgo.Button{
 						Label:    "In progress",
 						Style:    2,
-						CustomID: fmt.Sprintf("handle-feedback-set-in-progress_%s", feedbackID),
+						CustomID: fmt.Sprintf("feedback_handle-set-in-progress_%s", feedbackID),
 					},
 				},
 			},
