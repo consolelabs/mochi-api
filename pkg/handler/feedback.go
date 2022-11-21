@@ -82,7 +82,9 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 	filter := c.Query("filter")
 	value := c.Query("value")
-	data, err := h.entities.GetAllUserFeedback(filter, value)
+	page := c.Query("page")
+	size := c.Query("size")
+	data, err := h.entities.GetAllUserFeedback(filter, value, page, size)
 	if err != nil {
 		h.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[handler.GetAllUserFeedback] - failed to get feedback")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

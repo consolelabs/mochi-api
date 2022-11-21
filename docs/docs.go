@@ -7455,6 +7455,12 @@ const docTemplate = `{
                 "discord_id": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "string"
+                },
+                "is_enable": {
+                    "type": "boolean"
+                },
                 "price_set": {
                     "type": "number"
                 },
@@ -10085,6 +10091,15 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.UserFeedback"
                     }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
