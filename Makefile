@@ -41,6 +41,7 @@ air:
 	air -c .air.toml
 	
 test:
+	make migrate-test
 	@PROJECT_PATH=$(shell pwd) go test -cover ./...
 
 migrate-test:
