@@ -1373,6 +1373,10 @@ definitions:
         type: string
       discord_id:
         type: string
+      id:
+        type: string
+      is_enable:
+        type: boolean
       price_set:
         type: number
       token_id:
@@ -3075,6 +3079,12 @@ definitions:
         items:
           $ref: '#/definitions/model.UserFeedback'
         type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
     type: object
   response.UserInvitesAggregation:
     properties:

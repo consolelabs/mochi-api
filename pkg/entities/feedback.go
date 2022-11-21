@@ -2,10 +2,12 @@ package entities
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 func (e *Entity) HandleUserFeedback(req *request.UserFeedbackRequest) error {
@@ -40,43 +42,54 @@ func (e *Entity) UpdateUserFeedback(req *request.UpdateUserFeedbackRequest) (*mo
 	return feedback, nil
 }
 
-func (e *Entity) GetAllUserFeedback(filter string, value string) (feedbacks []model.UserFeedback, err error) {
+func (e *Entity) GetAllUserFeedback(filter, value, pg, sz string) (res *response.UserFeedbackResponse, err error) {
+	var totalRecord int64
+	var feedbacks []model.UserFeedback
+	if pg == "" {
+		pg = "0"
+	}
+	if sz == "" {
+		sz = "10"
+	}
+	page, _ := strconv.Atoi(pg)
+	size, _ := strconv.Atoi(sz)
+
 	switch filter {
 	case "command":
-		feedbacks, err = e.repo.UserFeedback.GetAllByCommand(value)
+		feedbacks, totalRecord, err = e.repo.UserFeedback.GetAllByCommand(value, page, size)
 		if err != nil {
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get by command")
 			return nil, err
 		}
 	case "status":
 		if value != "none" && value != "confirmed" && value != "completed" {
-			err = fmt.Errorf("invalid status")
+			err := fmt.Errorf("invalid status")
 			return nil, err
 		}
-		feedbacks, err = e.repo.UserFeedback.GetAllByStatus(value)
+		feedbacks, totalRecord, err = e.repo.UserFeedback.GetAllByStatus(value, page, size)
 		if err != nil {
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get by status")
 			return nil, err
 		}
 	case "discord_id":
 		if value == "" {
-			err = fmt.Errorf("discord id empty")
+			err := fmt.Errorf("discord id empty")
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get by discord id")
 			return nil, err
 		}
-		feedbacks, err = e.repo.UserFeedback.GetAllByDiscordID(value)
+		feedbacks, totalRecord, err = e.repo.UserFeedback.GetAllByDiscordID(value, page, size)
 		if err != nil {
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get by status")
 			return nil, err
 		}
 	default:
-		feedbacks, err = e.repo.UserFeedback.GetAll()
+		feedbacks, totalRecord, err = e.repo.UserFeedback.GetAll(page, size)
 		if err != nil {
 			e.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[entity.GetAllUserFeedback] failed to get all")
 			return nil, err
 		}
 	}
 
-	return feedbacks, nil
+	return &response.UserFeedbackResponse{Page: page, Size: size, Total: totalRecord, Data: feedbacks}, nil
 
 }
