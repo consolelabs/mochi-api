@@ -736,19 +736,17 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 
 	}
 
-	if !req.IsFiat {
-		listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
-		_, total, err := e.repo.UserWatchlistItem.List(listQ)
-		if err != nil {
-			e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
-			return nil, err
-		}
-		if total == 1 {
-			return nil, baseerrs.ErrConflict
-		}
+	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+	_, total, err := e.repo.UserWatchlistItem.List(listQ)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+		return nil, err
+	}
+	if total == 1 {
+		return nil, baseerrs.ErrConflict
 	}
 
-	err := e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
+	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
 		UserID:      req.UserID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
@@ -803,6 +801,7 @@ func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExc
 	if req.Days > 1 {
 		interval = "w"
 	}
+
 	fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(req.Base, req.Target, interval, 10)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart failed")
