@@ -998,7 +998,8 @@ func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse
 }
 
 func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest) error {
-	return e.repo.DiscordUserTokenAlert.CreateOne(&model.UpsertDiscordUserTokenAlert{
+	err := e.repo.DiscordUserTokenAlert.UpsertOne(&model.UpsertDiscordUserTokenAlert{
+		ID:        util.GetNullUUID(req.ID),
 		TokenID:   req.TokenID,
 		DiscordID: req.DiscordID,
 		PriceSet:  req.PriceSet,
@@ -1006,6 +1007,11 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 		DeviceID:  req.DeviceID,
 		UpdatedAt: time.Now().UTC(),
 	})
+	if err != nil {
+		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to create user token alert")
+		return err
+	}
+	return nil
 }
 func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest) error {
 	return e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{

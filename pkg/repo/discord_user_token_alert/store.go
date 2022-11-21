@@ -5,7 +5,7 @@ import (
 )
 
 type Store interface {
-	CreateOne(config *model.UpsertDiscordUserTokenAlert) error
+	UpsertOne(config *model.UpsertDiscordUserTokenAlert) error
 	RemoveOne(config *model.DiscordUserTokenAlert) error
 	GetByDiscordID(discordId string) ([]model.DiscordUserTokenAlert, error)
 	GetByDeviceID(deviceId string) ([]model.DiscordUserTokenAlert, error)
