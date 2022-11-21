@@ -3,6 +3,7 @@ package discord_user_token_alert
 import (
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type pg struct {
@@ -14,8 +15,19 @@ func NewPG(db *gorm.DB) Store {
 		db: db,
 	}
 }
-func (pg *pg) CreateOne(config *model.UpsertDiscordUserTokenAlert) error {
-	return pg.db.Table("discord_user_token_alerts").Create(&config).Error
+func (pg *pg) UpsertOne(config *model.UpsertDiscordUserTokenAlert) error {
+	tx := pg.db.Table("discord_user_token_alerts").Begin()
+
+	// update on conflict
+	err := tx.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns([]string{"token_id", "price_set", "trend", "is_enable", "updated_at"}),
+	}).Create(&config).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 func (pg *pg) RemoveOne(config *model.DiscordUserTokenAlert) error {
 	return pg.db.Where("id=?", config.ID).Delete(&config).Error

@@ -552,6 +552,9 @@ func GetNullUUID(id string) uuid.NullUUID {
 	if err != nil {
 		log.Error("uuid invalid")
 	}
+	if id == "" {
+		return uuid.NullUUID{Valid: false}
+	}
 	nullid := uuid.NullUUID{UUID: uid, Valid: true}
 	return nullid
 }
