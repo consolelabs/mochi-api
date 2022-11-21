@@ -232,6 +232,21 @@ func (mr *MockStoreMockRecorder) ListByGuildID(guildID interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByGuildID", reflect.TypeOf((*MockStore)(nil).ListByGuildID), guildID)
 }
 
+// TotalNftCollection mocks base method.
+func (m *MockStore) TotalNftCollection() (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "TotalNftCollection")
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// TotalNftCollection indicates an expected call of TotalNftCollection.
+func (mr *MockStoreMockRecorder) TotalNftCollection() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalNftCollection", reflect.TypeOf((*MockStore)(nil).TotalNftCollection))
+}
+
 // UpdateImage mocks base method.
 func (m *MockStore) UpdateImage(address, image string) error {
 	m.ctrl.T.Helper()

@@ -1661,6 +1661,11 @@ definitions:
       total:
         type: integer
     type: object
+  response.DataMetric:
+    properties:
+      data:
+        $ref: '#/definitions/response.Metric'
+    type: object
   response.DefaultRole:
     properties:
       guild_id:
@@ -2662,6 +2667,17 @@ definitions:
         additionalProperties:
           type: number
         type: object
+    type: object
+  response.Metric:
+    properties:
+      nft_collections:
+        type: integer
+      server_active_users:
+        type: integer
+      total_active_users:
+        type: integer
+      total_servers:
+        type: integer
     type: object
   response.NFTCollectionConfig:
     properties:
@@ -5329,6 +5345,31 @@ paths:
       summary: Get my guilds list
       tags:
       - Guild
+  /metrics:
+    get:
+      consumes:
+      - application/json
+      description: API to get stats of collections, users, servers, ...
+      parameters:
+      - description: total_servers | active_users | nft_collections
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: case active_users
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DataMetric'
+      summary: Metric
+      tags:
+      - Metric
   /nfts:
     get:
       consumes:

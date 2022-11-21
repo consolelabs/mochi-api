@@ -3366,6 +3366,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/metrics": {
+            "get": {
+                "description": "API to get stats of collections, users, servers, ...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Metric"
+                ],
+                "summary": "Metric",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "total_servers | active_users | nft_collections",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "case active_users",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataMetric"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts": {
             "get": {
                 "description": "List all nft collections",
@@ -7900,6 +7938,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.DataMetric": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.Metric"
+                }
+            }
+        },
         "response.DefaultRole": {
             "type": "object",
             "properties": {
@@ -9445,6 +9491,23 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "number"
                     }
+                }
+            }
+        },
+        "response.Metric": {
+            "type": "object",
+            "properties": {
+                "nft_collections": {
+                    "type": "integer"
+                },
+                "server_active_users": {
+                    "type": "integer"
+                },
+                "total_active_users": {
+                    "type": "integer"
+                },
+                "total_servers": {
+                    "type": "integer"
                 }
             }
         },

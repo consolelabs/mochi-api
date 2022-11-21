@@ -18,6 +18,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		chainGroup.GET("", h.ListAllChain)
 	}
 
+	metricGroup := v1.Group("/metrics")
+	{
+		metricGroup.GET("", h.MetricByProperties)
+	}
+
 	offchainTipBotGroup := v1.Group("/offchain-tip-bot")
 	{
 		// watch total balances
