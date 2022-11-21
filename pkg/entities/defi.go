@@ -624,7 +624,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*[]respo
 		item := response.CoinMarketItemData{}
 		// process fiat data
 		if pair.IsFiat {
-			fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(queries[0], queries[1], "w", 10)
+			fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(queries[0], queries[1], "h", 168)
 			if err != nil {
 				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart failed")
 				return nil, err
@@ -797,12 +797,13 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
-	interval := "d"
-	if req.Days > 1 {
-		interval = "w"
+	interval := "h"
+	limit := req.Days * 24
+	if req.Days >= 90 {
+		interval = "d"
+		limit = req.Days
 	}
-
-	fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(req.Base, req.Target, interval, 10)
+	fiatData, err := e.svc.Nghenhan.GetFiatHistoricalChart(req.Base, req.Target, interval, limit)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetFiatHistoricalExchangeRates] Nghenhan.GetFiatHistoricalChart failed")
 		return nil, err
