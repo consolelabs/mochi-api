@@ -3382,7 +3382,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "total_servers | active_users | nft_collections",
+                        "description": "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage",
                         "name": "q",
                         "in": "query",
                         "required": true

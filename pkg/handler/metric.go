@@ -14,7 +14,7 @@ import (
 // @Tags        Metric
 // @Accept      json
 // @Produce     json
-// @Param       q   query  string true  "total_servers | active_users | nft_collections"
+// @Param       q   query  string true  "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage"
 // @Param       guild_id   query  string false  "case active_users"
 // @Success     200 {object} response.DataMetric
 // @Router      /metrics [get]

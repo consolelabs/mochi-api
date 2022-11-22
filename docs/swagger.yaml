@@ -5371,7 +5371,8 @@ paths:
       - application/json
       description: API to get stats of collections, users, servers, ...
       parameters:
-      - description: total_servers | active_users | nft_collections
+      - description: total_servers | active_users | nft_collections | verified_wallets
+          | supported_tokens | command_usage
         in: query
         name: q
         required: true
