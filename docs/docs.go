@@ -9503,10 +9503,40 @@ const docTemplate = `{
                 "server_active_users": {
                     "type": "integer"
                 },
+                "server_command_usage": {
+                    "type": "integer"
+                },
+                "server_token": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "server_token_supported": {
+                    "type": "integer"
+                },
+                "server_verified_wallets": {
+                    "type": "integer"
+                },
                 "total_active_users": {
                     "type": "integer"
                 },
+                "total_command_usage": {
+                    "type": "integer"
+                },
                 "total_servers": {
+                    "type": "integer"
+                },
+                "total_token": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "total_token_supported": {
+                    "type": "integer"
+                },
+                "total_verified_wallets": {
                     "type": "integer"
                 }
             }
