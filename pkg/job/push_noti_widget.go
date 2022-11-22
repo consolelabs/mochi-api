@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/gorilla/websocket"
@@ -38,6 +40,9 @@ func (b *binanceWebsocket) Run() error {
 		log.Error("failed to connect to websocket")
 		return err
 	}
+	conn.SetPongHandler(func(appData string) error {
+		return conn.WriteControl(websocket.PingMessage, []byte(appData), time.Now().Add(5*time.Second))
+	})
 
 	data, err := b.entity.GetAllUserTokenAlert()
 	if err != nil {
@@ -50,23 +55,34 @@ func (b *binanceWebsocket) Run() error {
 		_, message, _ := conn.ReadMessage()
 		var trade response.WebsocketKlinesDataResponse
 		json.Unmarshal(message, &trade)
-		go checkAndNotify(&trade, userAlerts, b.entity)
+		go b.checkAndNotify(&trade, &userAlerts, b.entity)
 	}
 }
 
-func checkAndNotify(trade *response.WebsocketKlinesDataResponse, userAlerts []model.DiscordUserTokenAlert, e *entities.Entity) {
+func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataResponse, userAlerts *[]model.DiscordUserTokenAlert, e *entities.Entity) {
 	openPrice, _ := strconv.ParseFloat(trade.Data.OPrice, 64)
 	closePrice, _ := strconv.ParseFloat(trade.Data.CPrice, 64)
-	for _, alert := range userAlerts {
+	for i, alert := range *userAlerts {
 		direction := "down"
 		if openPrice-closePrice < 0 {
 			direction = "up"
 		}
 		//same symbol and same up-down trend
-		if strings.ToUpper(alert.TokenID) == strings.ToUpper(trade.Symbol[0:len(trade.Symbol)-4]) && alert.Trend == direction {
+		if alert.IsEnable && strings.ToUpper(alert.TokenID) == strings.ToUpper(trade.Symbol[0:len(trade.Symbol)-4]) && alert.Trend == direction {
 			// if up trend => current price is higher or equal to alert price and reverse
 			if (direction == "up" && alert.PriceSet <= closePrice) || (direction == "down" && alert.PriceSet >= closePrice) {
-				e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend)
+				// disable alert after push noti
+				go b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
+					ID:        alert.ID.UUID.String(),
+					IsEnable:  false,
+					TokenID:   alert.TokenID,
+					DiscordID: alert.DiscordID,
+					PriceSet:  alert.PriceSet,
+					Trend:     alert.Trend,
+					DeviceID:  alert.DiscordUserDevice.ID,
+				})
+				(*userAlerts)[i].IsEnable = false
+				e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.TokenID))
 			}
 		}
 	}
