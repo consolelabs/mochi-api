@@ -63,6 +63,21 @@ func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
 
+// GetNonLeftGuilds mocks base method.
+func (m *MockStore) GetNonLeftGuilds() ([]model.DiscordGuild, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNonLeftGuilds")
+	ret0, _ := ret[0].([]model.DiscordGuild)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNonLeftGuilds indicates an expected call of GetNonLeftGuilds.
+func (mr *MockStoreMockRecorder) GetNonLeftGuilds() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNonLeftGuilds", reflect.TypeOf((*MockStore)(nil).GetNonLeftGuilds))
+}
+
 // Gets mocks base method.
 func (m *MockStore) Gets() ([]model.DiscordGuild, error) {
 	m.ctrl.T.Helper()

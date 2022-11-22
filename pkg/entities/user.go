@@ -639,7 +639,7 @@ func (e *Entity) GetUserWalletByGuildIDAddress(guildID, address string) (*model.
 }
 
 func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
-	discordGuilds, err := e.repo.DiscordGuilds.Gets()
+	discordGuilds, err := e.repo.DiscordGuilds.GetNonLeftGuilds()
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalActiveUsers] - cannot get discord guilds")
 		return nil, err
@@ -648,15 +648,13 @@ func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
 	totalMembersAllGuilds := make([]response.MetricActiveUser, 0)
 	for _, guild := range discordGuilds {
 		var guildActiveUsers int64
-		// break bc in db we havent deleted server kicked Mochi, when err here means cannot get members in server
-		// TODO(trkhoi): when Mochi goodbye server, we should delete it in db. Clean up db
+
 		guildInfo, err := e.discord.GuildWithCounts(guild.ID)
 		if err != nil {
 			e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalActiveUsers] - failed to get total active users of current guild")
-			guildActiveUsers = 0
-		} else {
-			guildActiveUsers = int64(guildInfo.ApproximateMemberCount)
+			return nil, err
 		}
+		guildActiveUsers += int64(guildInfo.ApproximateMemberCount)
 
 		totalMembersAllGuilds = append(totalMembersAllGuilds, response.MetricActiveUser{
 			GuildId:     guild.ID,

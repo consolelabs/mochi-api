@@ -196,21 +196,11 @@ func (e *Entity) sendGuildDeactivationLog(guildID, guildName, iconURL string) {
 }
 
 func (e *Entity) TotalServers() (*response.Metric, error) {
-	discordGuilds, err := e.repo.DiscordGuilds.Gets()
+	discordGuilds, err := e.repo.DiscordGuilds.GetNonLeftGuilds()
 	if err != nil {
 		e.log.Error(err, "[entities.TotalServers] - cannot get total servers")
 		return nil, err
 	}
 
-	// break bc in db we havent deleted server kicked Mochi, when err here means cannot get members in server
-	// TODO(trkhoi): when Mochi goodbye server, we should delete it in db. Clean up db
-	var totalServers int64
-	for _, guild := range discordGuilds {
-		_, err := e.discord.GuildWithCounts(guild.ID)
-		if err != nil {
-			continue
-		}
-		totalServers++
-	}
-	return &response.Metric{TotalServers: totalServers}, nil
+	return &response.Metric{TotalServers: int64(len(discordGuilds))}, nil
 }

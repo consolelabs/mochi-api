@@ -51,10 +51,10 @@ func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
 	return pg.db.Model(&model.DiscordGuild{}).Where("id = ?", guildID).Update("global_xp", globalXP).Error
 }
 
-// func (pg *pg) Update(omit string, guild model.DiscordGuild) error {
-// 	return pg.db.Model(&guild).Where("id = ?", guild.ID).Omit(omit).Updates(map[string]interface{}{"global_xp": guild.GlobalXP, "log_channel": guild.LogChannel}).Error
-// }
-
 func (pg *pg) Update(guild *model.DiscordGuild) error {
 	return pg.db.Model(&guild).Where("id = ?", guild.ID).Save(guild).Error
+}
+
+func (pg *pg) GetNonLeftGuilds() (guilds []model.DiscordGuild, err error) {
+	return guilds, pg.db.Where("active = TRUE AND left_at IS NULL").Find(&guilds).Error
 }
