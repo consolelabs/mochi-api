@@ -43,3 +43,11 @@ func (pg *pg) GetByValidCode(code string) (*model.DiscordWalletVerification, err
 func (pg *pg) DeleteByCode(code string) error {
 	return pg.db.Where("code = ?", code).Delete(&model.DiscordWalletVerification{}).Error
 }
+
+func (pg *pg) TotalVerifiedWallets() (count int64, err error) {
+	return count, pg.db.Table("discord_wallet_verifications").Count(&count).Error
+}
+
+func (pg *pg) TotalVerifiedWalletsByGuildID(guildId string) (count int64, err error) {
+	return count, pg.db.Table("discord_wallet_verifications").Where("guild_id = ?", guildId).Count(&count).Error
+}

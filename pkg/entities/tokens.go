@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 )
 
@@ -92,7 +93,7 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 }
 
 func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token, err error) {
-	returnToken, err = e.repo.Token.GetAllSupportedToken(guildID)
+	returnToken, err = e.repo.Token.GetSupportedTokenByGuildId(guildID)
 	if err != nil {
 		return returnToken, err
 	}
@@ -158,4 +159,35 @@ func (e *Entity) RemoveDefaultToken(guildID string) error {
 	}
 
 	return nil
+}
+
+func (e *Entity) TotalSupportedTokens(guildId string) (*response.Metric, error) {
+	totalSupportedTokens, err := e.repo.Token.GetAllSupported()
+	if err != nil {
+		e.log.Error(err, "[Entity][TotalSupportedTokens] repo.Token.GetAllSupported failed")
+		return nil, err
+	}
+
+	serverSupportedTokens, err := e.repo.Token.GetSupportedTokenByGuildId(guildId)
+	if err != nil {
+		e.log.Error(err, "[Entity][TotalSupportedTokens] repo.Token.GetSupportedTokenByGuildId failed")
+		return nil, err
+	}
+
+	serverToken := make([]string, 0)
+	for _, token := range serverSupportedTokens {
+		serverToken = append(serverToken, token.Symbol)
+	}
+
+	totalToken := make([]string, 0)
+	for _, token := range totalSupportedTokens {
+		totalToken = append(totalToken, token.Symbol)
+	}
+
+	return &response.Metric{
+		ServerTokenSupported: int64(len(serverSupportedTokens)),
+		TotalTokenSupported:  int64(len(totalSupportedTokens)),
+		ServerToken:          serverToken,
+		TotalToken:           totalToken,
+	}, nil
 }

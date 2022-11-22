@@ -10,7 +10,7 @@ type Store interface {
 	CreateOne(token *model.Token) error
 	UpsertOne(token model.Token) error
 	GetAll() ([]model.Token, error)
-	GetAllSupportedToken(guildID string) ([]model.Token, error)
+	GetSupportedTokenByGuildId(guildID string) ([]model.Token, error)
 	GetOneBySymbol(symbol string) (*model.Token, error)
 	GetDefaultTokenByGuildID(guildID string) (model.Token, error)
 }
