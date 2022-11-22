@@ -7,4 +7,5 @@ type Store interface {
 	GetByID(id string) (*model.DiscordGuild, error)
 	CreateOrReactivate(guild model.DiscordGuild) error
 	Update(guild *model.DiscordGuild) error
+	GetNonLeftGuilds() (guilds []model.DiscordGuild, err error)
 }
