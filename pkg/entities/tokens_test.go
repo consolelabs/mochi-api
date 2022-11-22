@@ -283,7 +283,7 @@ func TestEntity_ListAllCustomToken(t *testing.T) {
 		},
 	}
 
-	uToken.EXPECT().GetAllSupportedToken("1234").Return(resList, nil).AnyTimes()
+	uToken.EXPECT().GetSupportedTokenByGuildId("1234").Return(resList, nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{

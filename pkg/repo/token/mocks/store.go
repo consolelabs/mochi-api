@@ -78,21 +78,6 @@ func (mr *MockStoreMockRecorder) GetAllSupported() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupported", reflect.TypeOf((*MockStore)(nil).GetAllSupported))
 }
 
-// GetAllSupportedToken mocks base method.
-func (m *MockStore) GetAllSupportedToken(guildID string) ([]model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllSupportedToken", guildID)
-	ret0, _ := ret[0].([]model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAllSupportedToken indicates an expected call of GetAllSupportedToken.
-func (mr *MockStoreMockRecorder) GetAllSupportedToken(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupportedToken", reflect.TypeOf((*MockStore)(nil).GetAllSupportedToken), guildID)
-}
-
 // GetByAddress mocks base method.
 func (m *MockStore) GetByAddress(address string, chainID int) (*model.Token, error) {
 	m.ctrl.T.Helper()
@@ -166,6 +151,21 @@ func (m *MockStore) GetOneBySymbol(symbol string) (*model.Token, error) {
 func (mr *MockStoreMockRecorder) GetOneBySymbol(symbol interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneBySymbol", reflect.TypeOf((*MockStore)(nil).GetOneBySymbol), symbol)
+}
+
+// GetSupportedTokenByGuildId mocks base method.
+func (m *MockStore) GetSupportedTokenByGuildId(guildID string) ([]model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSupportedTokenByGuildId", guildID)
+	ret0, _ := ret[0].([]model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSupportedTokenByGuildId indicates an expected call of GetSupportedTokenByGuildId.
+func (mr *MockStoreMockRecorder) GetSupportedTokenByGuildId(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedTokenByGuildId", reflect.TypeOf((*MockStore)(nil).GetSupportedTokenByGuildId), guildID)
 }
 
 // UpsertOne mocks base method.

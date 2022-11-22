@@ -676,3 +676,21 @@ func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
 		ServerActiveUsers: currentGuildActiveUser,
 	}, nil
 }
+
+func (e *Entity) TotalVerifiedWallets(guildId string) (*response.Metric, error) {
+	totalVerfiedWallets, err := e.repo.DiscordWalletVerification.TotalVerifiedWallets()
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalVerifiedWallets] - cannot get total verified wallets")
+		return nil, err
+	}
+	guildVerifiedWallets, err := e.repo.DiscordWalletVerification.TotalVerifiedWalletsByGuildID(guildId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalVerifiedWallets] - cannot get total verified wallets by guild id")
+		return nil, err
+	}
+
+	return &response.Metric{
+		TotalVerifiedWallets:  totalVerfiedWallets,
+		ServerVerifiedWallets: guildVerifiedWallets,
+	}, nil
+}

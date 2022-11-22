@@ -61,7 +61,7 @@ func (pg *pg) GetAll() ([]model.Token, error) {
 	return tokens, pg.db.Find(&tokens).Error
 }
 
-func (pg *pg) GetAllSupportedToken(guildID string) ([]model.Token, error) {
+func (pg *pg) GetSupportedTokenByGuildId(guildID string) ([]model.Token, error) {
 	var tokens []model.Token
 	return tokens, pg.db.
 		Table("tokens").

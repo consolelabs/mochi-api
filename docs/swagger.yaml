@@ -2674,9 +2674,29 @@ definitions:
         type: integer
       server_active_users:
         type: integer
+      server_command_usage:
+        type: integer
+      server_token:
+        items:
+          type: string
+        type: array
+      server_token_supported:
+        type: integer
+      server_verified_wallets:
+        type: integer
       total_active_users:
         type: integer
+      total_command_usage:
+        type: integer
       total_servers:
+        type: integer
+      total_token:
+        items:
+          type: string
+        type: array
+      total_token_supported:
+        type: integer
+      total_verified_wallets:
         type: integer
     type: object
   response.NFTCollectionConfig:
@@ -5351,7 +5371,8 @@ paths:
       - application/json
       description: API to get stats of collections, users, servers, ...
       parameters:
-      - description: total_servers | active_users | nft_collections
+      - description: total_servers | active_users | nft_collections | verified_wallets
+          | supported_tokens | command_usage
         in: query
         name: q
         required: true

@@ -3,6 +3,7 @@ package entities
 import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 )
 
@@ -32,4 +33,23 @@ func (e *Entity) AddGitbookClick(url, cmd, action string) error {
 	}
 	info.CountClicks = info.CountClicks + 1
 	return e.repo.GitbookClickCollector.UpsertOne(info)
+}
+
+func (e *Entity) TotalCommandUsage(guildId string) (*response.Metric, error) {
+	totalUsage, err := e.repo.ServersUsageStats.TotalUsage()
+	if err != nil {
+		e.log.Error(err, "[entities.TotalCommandUsage] - failed to get total usage")
+		return nil, err
+	}
+
+	serverUsage, err := e.repo.ServersUsageStats.TotalUsageByGuildId(guildId)
+	if err != nil {
+		e.log.Error(err, "[entities.TotalCommandUsage] - failed to get server usage")
+		return nil, err
+	}
+
+	return &response.Metric{
+		TotalCommandUsage:  totalUsage,
+		ServerCommandUsage: serverUsage,
+	}, nil
 }
