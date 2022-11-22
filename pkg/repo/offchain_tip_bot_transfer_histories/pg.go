@@ -1,6 +1,8 @@
 package offchain_tip_bot_transfer_histories
 
 import (
+	"reflect"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
@@ -50,4 +52,52 @@ func (pg *pg) TotalFeeFromWithdraw() ([]response.TotalFeeWithdraw, error) {
 		totalFeeWithdraw = append(totalFeeWithdraw, t)
 	}
 	return totalFeeWithdraw, nil
+}
+
+func (pg *pg) GetTransactionsByQuery(senderId, receiverId, token string) ([]response.Transactions, error) {
+	var transferHistories []response.Transactions
+	rows, err := pg.db.Raw(
+		`
+		SELECT
+			offchain_tip_bot_transfer_histories.id,
+			sender_id,
+			receiver_id,
+			offchain_tip_bot_transfer_histories.guild_id,
+			log_id,
+			offchain_tip_bot_transfer_histories.status,
+			offchain_tip_bot_transfer_histories.amount,
+			offchain_tip_bot_transfer_histories.token,
+			offchain_tip_bot_transfer_histories.action,
+			offchain_tip_bot_transfer_histories.service_fee,
+			offchain_tip_bot_transfer_histories.fee_amount,
+			offchain_tip_bot_transfer_histories.created_at,
+			offchain_tip_bot_transfer_histories.updated_at,
+			full_command
+		FROM
+			offchain_tip_bot_transfer_histories
+			LEFT JOIN offchain_tip_bot_activity_logs ON offchain_tip_bot_transfer_histories.log_id = offchain_tip_bot_activity_logs.id
+		WHERE (sender_id = ?
+			OR receiver_id = ?)
+		AND token = ? AND offchain_tip_bot_transfer_histories.status = 'success'
+		`, senderId, receiverId, token).Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		transaction := response.Transactions{}
+		s := reflect.ValueOf(&transaction).Elem()
+		numCols := s.NumField()
+		columns := make([]interface{}, numCols)
+		for i := 0; i < numCols; i++ {
+			field := s.Field(i)
+			columns[i] = field.Addr().Interface()
+		}
+		err := rows.Scan(columns...)
+		if err != nil {
+			return nil, err
+		}
+		transferHistories = append(transferHistories, transaction)
+	}
+	return transferHistories, nil
 }

@@ -65,6 +65,21 @@ func (mr *MockStoreMockRecorder) GetByUserDiscordId(userDiscordId interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserDiscordId", reflect.TypeOf((*MockStore)(nil).GetByUserDiscordId), userDiscordId)
 }
 
+// GetTransactionsByQuery mocks base method.
+func (m *MockStore) GetTransactionsByQuery(receiverId, senderId, token string) ([]response.Transactions, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTransactionsByQuery", receiverId, senderId, token)
+	ret0, _ := ret[0].([]response.Transactions)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTransactionsByQuery indicates an expected call of GetTransactionsByQuery.
+func (mr *MockStoreMockRecorder) GetTransactionsByQuery(receiverId, senderId, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsByQuery", reflect.TypeOf((*MockStore)(nil).GetTransactionsByQuery), receiverId, senderId, token)
+}
+
 // TotalFeeFromWithdraw mocks base method.
 func (m *MockStore) TotalFeeFromWithdraw() ([]response.TotalFeeWithdraw, error) {
 	m.ctrl.T.Helper()
