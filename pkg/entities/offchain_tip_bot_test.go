@@ -11,7 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	mock_offchain_tip_activity_logs "github.com/defipod/mochi/pkg/repo/offchain_tip_activity_logs/mocks"
 	mock_offchain_tip_bot_tokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens/mocks"
-	mock_offchain_tip_transfer_histories "github.com/defipod/mochi/pkg/repo/offchain_tip_transfer_histories/mocks"
+	mock_offchain_tip_transfer_histories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories/mocks"
 	mock_offchain_tip_bot_user_balances "github.com/defipod/mochi/pkg/repo/offchain_tip_user_balances/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"

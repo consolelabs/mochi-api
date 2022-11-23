@@ -44,3 +44,7 @@ func (pg *pg) GetAll() ([]model.DiscordUserTokenAlert, error) {
 	configs := []model.DiscordUserTokenAlert{}
 	return configs, pg.db.Preload("DiscordUserDevice").Find(&configs).Error
 }
+func (pg *pg) GetAllActive() ([]model.DiscordUserTokenAlert, error) {
+	configs := []model.DiscordUserTokenAlert{}
+	return configs, pg.db.Preload("DiscordUserDevice").Where("is_enable=true").Find(&configs).Error
+}

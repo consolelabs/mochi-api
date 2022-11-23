@@ -286,9 +286,15 @@ definitions:
     properties:
       channel_id:
         type: string
+      emoji:
+        type: string
       guild_id:
         type: string
       id:
+        type: string
+      msg:
+        type: string
+      sticker:
         type: string
     type: object
   model.GuildConfigInviteTracker:
@@ -1388,7 +1394,13 @@ definitions:
     properties:
       channel_id:
         type: string
+      emoji:
+        type: string
       guild_id:
+        type: string
+      msg:
+        type: string
+      sticker:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -3036,6 +3048,13 @@ definitions:
         $ref: '#/definitions/model.GuildConfigActivity'
       message:
         type: string
+    type: object
+  response.TransactionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.TransactionsResponse'
+        type: array
     type: object
   response.TwitterHashtag:
     properties:
@@ -5977,6 +5996,35 @@ paths:
           schema:
             $ref: '#/definitions/response.GetUserBalancesResponse'
       summary: Get offchain user bals
+      tags:
+      - OffChain
+  /offchain-tip-bot/transactions:
+    get:
+      consumes:
+      - application/json
+      description: Get transactions by query
+      parameters:
+      - description: sender ID
+        in: query
+        name: sender_id
+        type: string
+      - description: receiver ID
+        in: query
+        name: receiver_id
+        type: string
+      - description: token
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TransactionsResponse'
+      summary: Get transactions by query
       tags:
       - OffChain
   /offchain-tip-bot/transfer:

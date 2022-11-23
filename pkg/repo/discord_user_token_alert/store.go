@@ -10,4 +10,5 @@ type Store interface {
 	GetByDiscordID(discordId string) ([]model.DiscordUserTokenAlert, error)
 	GetByDeviceID(deviceId string) ([]model.DiscordUserTokenAlert, error)
 	GetAll() ([]model.DiscordUserTokenAlert, error)
+	GetAllActive() ([]model.DiscordUserTokenAlert, error)
 }

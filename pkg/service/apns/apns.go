@@ -27,23 +27,29 @@ func NewService(cfg *config.Config) Service {
 		KeyID:   cfg.AppleKeyID,
 		TeamID:  cfg.AppleTeamID,
 	}
-	c := apns2.NewTokenClient(token).Development()
+	c := apns2.NewTokenClient(token).Production()
 	return &APNSClient{
 		client: c,
 	}
 }
 
-func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, trend string) error {
+func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, trend string, token string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
+	msg := fmt.Sprintf("%s has fallen to %v", token, price)
+	if trend == "up" {
+		msg = fmt.Sprintf("%s has reached %v", token, price)
+	}
 	notification := &apns2.Notification{
 		DeviceToken: pushToken,
-		Topic:       "console.mochi.alert",
-		Payload:     []byte(fmt.Sprintf(`{"aps":{"alert":"Price alert: %v %s"}}`, price, trend)),
+		Topic:       "so.console.mochi",
+		Payload:     []byte(fmt.Sprintf(`{"aps":{"alert":"%s"}}`, msg)),
 	}
-	_, err := f.client.PushWithContext(ctx, notification)
-	if err != nil {
-		return fmt.Errorf("failed to push notification: %s", err)
+
+	res, err := f.client.PushWithContext(ctx, notification)
+	if err != nil || !res.Sent() {
+		return fmt.Errorf("failed to push err: %s | apns err: %s", err, res.Reason)
 	}
 	return nil
 }

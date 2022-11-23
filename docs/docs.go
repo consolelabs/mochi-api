@@ -4288,6 +4288,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/offchain-tip-bot/transactions": {
+            "get": {
+                "description": "Get transactions by query",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "Get transactions by query",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sender ID",
+                        "name": "sender_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "receiver ID",
+                        "name": "receiver_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TransactionsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/offchain-tip-bot/transfer": {
             "post": {
                 "description": "API transfer token for tip, airdrop, ...",
@@ -5824,10 +5868,19 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }
@@ -7516,7 +7569,16 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }
@@ -10062,6 +10124,17 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.TransactionsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.TransactionsResponse"
+                    }
                 }
             }
         },

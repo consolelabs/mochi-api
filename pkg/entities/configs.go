@@ -32,6 +32,9 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 	if err := e.repo.GuildConfigGmGn.UpsertOne(&model.GuildConfigGmGn{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
+		Msg:       req.Msg,
+		Emoji:     req.Emoji,
+		Sticker:   req.Sticker,
 	}); err != nil {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertGmConfig] repo.GuildConfigGmGn.UpsertOne failed")
 		return err
@@ -984,7 +987,7 @@ func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserToken
 }
 
 func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse, error) {
-	data, err := e.repo.DiscordUserTokenAlert.GetAll()
+	data, err := e.repo.DiscordUserTokenAlert.GetAllActive()
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
@@ -1003,6 +1006,7 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 		TokenID:   req.TokenID,
 		DiscordID: req.DiscordID,
 		PriceSet:  req.PriceSet,
+		IsEnable:  req.IsEnable,
 		Trend:     req.Trend,
 		DeviceID:  req.DeviceID,
 		UpdatedAt: time.Now().UTC(),
