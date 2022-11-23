@@ -135,13 +135,16 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 }
 
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
-	// allow 2 gm emoji in Mochi and Pod Town
-	// allow sticker emoji in Pod Town
-	// TODO(trkhoi): set emoji and sticker when config gm
-	isGmEmoji := strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
+	// TODO(trkhoi): temp keep hardcode of Pod Town emoji, remove when it has been added to the database
+	guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(message.GuildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	isGmEmoji := strings.EqualFold(guildConfigGm.Emoji, message.Content) || strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
 	isGmSticker := false
 	for _, sticker := range message.StickerItems {
-		if (sticker.ID == "928509218171006986" || sticker.ID == "1039136044836200549") {
+		if sticker.ID == guildConfigGm.Sticker || sticker.ID == "928509218171006986" || sticker.ID == "1039136044836200549" {
 			isGmSticker = true
 			break
 		}
@@ -153,15 +156,11 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 		guildID        = message.GuildID
 		sentAt         = message.Timestamp
 		channelID      = message.ChannelID
-		isGmMessage    = strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
+		isGmMessage    = strings.EqualFold(guildConfigGm.Msg, message.Content) || strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
 	)
 
 	switch {
 	case isGmMessage:
-		guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(guildID)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			return nil, err
-		}
 		if guildConfigGm.ChannelID != channelID {
 			// do nothing if not gm channel
 			return nil, nil
