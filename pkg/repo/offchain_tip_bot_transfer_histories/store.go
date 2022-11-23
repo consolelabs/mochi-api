@@ -9,4 +9,5 @@ type Store interface {
 	CreateTransferHistories(transferHistories []model.OffchainTipBotTransferHistory) ([]model.OffchainTipBotTransferHistory, error)
 	GetByUserDiscordId(userDiscordId string) (transferHistories []model.OffchainTipBotTransferHistory, err error)
 	TotalFeeFromWithdraw() ([]response.TotalFeeWithdraw, error)
+	GetTransactionsByQuery(receiverId, senderId, token string) ([]response.Transactions, error)
 }
