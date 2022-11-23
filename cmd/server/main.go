@@ -21,6 +21,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/routes"
+	"github.com/defipod/mochi/pkg/service/vault"
 )
 
 // @title          Swagger API
@@ -43,8 +44,19 @@ import (
 func main() {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 	log := logger.NewLogrusLogger()
+
+	// *** vault ***
+	vault, err := vault.New(&cfg)
+	if err != nil {
+		log.Error(err, "failted to init vault")
+	}
+
+	if vault != nil {
+		cfg = *vault.LoadConfig()
+	}
+
 	// *** entities ***
-	err := entities.Init(cfg, log)
+	err = entities.Init(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init entities")
 	}

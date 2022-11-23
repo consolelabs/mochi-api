@@ -94,6 +94,8 @@ type Config struct {
 	CentralizedWalletPrivateKey string
 
 	APILayerAPIKey string
+
+	Vault Vault
 }
 
 type MarketplaceBaseUrl struct {
@@ -111,6 +113,12 @@ type RpcUrl struct {
 	Ftm string
 	Opt string
 	Bsc string
+}
+
+type Vault struct {
+	Address string
+	Token   string
+	Path    string
 }
 
 // GetCORS in config
@@ -228,6 +236,12 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CentralizedWalletPrivateKey: v.GetString("CENTRALIZED_WALLET_PRIVATE_KEY"),
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
+
+		Vault: Vault{
+			Address: v.GetString("VAULT_ADDR"),
+			Token:   v.GetString("VAULT_TOKEN"),
+			Path:    v.GetString("VAULT_PATH"),
+		},
 	}
 }
 
