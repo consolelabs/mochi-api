@@ -3,6 +3,9 @@ package request
 type UpsertGmConfigRequest struct {
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
+	Msg       string `json:"msg"`
+	Emoji     string `json:"emoji"`
+	Sticker   string `json:"sticker"`
 }
 
 type UpsertVoteChannelConfigRequest struct {

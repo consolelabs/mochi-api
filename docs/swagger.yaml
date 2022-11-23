@@ -286,9 +286,15 @@ definitions:
     properties:
       channel_id:
         type: string
+      emoji:
+        type: string
       guild_id:
         type: string
       id:
+        type: string
+      msg:
+        type: string
+      sticker:
         type: string
     type: object
   model.GuildConfigInviteTracker:
@@ -1388,7 +1394,13 @@ definitions:
     properties:
       channel_id:
         type: string
+      emoji:
+        type: string
       guild_id:
+        type: string
+      msg:
+        type: string
+      sticker:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:

@@ -5860,10 +5860,19 @@
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }
@@ -7552,7 +7561,16 @@
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }

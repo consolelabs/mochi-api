@@ -32,6 +32,9 @@ func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
 	if err := e.repo.GuildConfigGmGn.UpsertOne(&model.GuildConfigGmGn{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
+		Msg:       req.Msg,
+		Emoji:     req.Emoji,
+		Sticker:   req.Sticker,
 	}); err != nil {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertGmConfig] repo.GuildConfigGmGn.UpsertOne failed")
 		return err

@@ -5868,10 +5868,19 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }
@@ -7560,7 +7569,16 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "emoji": {
+                    "type": "string"
+                },
                 "guild_id": {
+                    "type": "string"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "sticker": {
                     "type": "string"
                 }
             }
