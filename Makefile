@@ -42,6 +42,7 @@ air:
 	
 test:
 	make migrate-test
+	make gen-mock
 	@PROJECT_PATH=$(shell pwd) go test -cover ./...
 
 migrate-test:

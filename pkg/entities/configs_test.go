@@ -308,7 +308,7 @@ func TestEntity_UpsertGmConfig(t *testing.T) {
 		},
 	}
 
-	guildConfigGmGn.EXPECT().UpsertOne(&model.GuildConfigGmGn{
+	guildConfigGmGn.EXPECT().CreateOne(&model.GuildConfigGmGn{
 		GuildID:   "552427722551459840",
 		ChannelID: "701029345795375114",
 	}).Return(nil).AnyTimes()

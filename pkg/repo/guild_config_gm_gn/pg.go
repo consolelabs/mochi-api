@@ -14,6 +14,11 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
+func (pg *pg) GetAllByGuildID(guildID string) ([]model.GuildConfigGmGn, error) {
+	config := []model.GuildConfigGmGn{}
+	return config, pg.db.Table("guild_config_gm_gn").Where("guild_id = ?", guildID).Find(&config).Error
+}
+
 func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigGmGn, error) {
 	config := &model.GuildConfigGmGn{}
 	return config, pg.db.Table("guild_config_gm_gn").Where("guild_id = ?", guildID).First(config).Error
@@ -33,4 +38,8 @@ func (pg *pg) UpsertOne(config *model.GuildConfigGmGn) error {
 	}
 
 	return tx.Commit().Error
+}
+
+func (pg *pg) CreateOne(config *model.GuildConfigGmGn) error {
+	return pg.db.Table("guild_config_gm_gn").Create(&config).Error
 }

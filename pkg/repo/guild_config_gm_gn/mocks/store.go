@@ -34,6 +34,35 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// CreateOne mocks base method.
+func (m *MockStore) CreateOne(config *model.GuildConfigGmGn) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOne", config)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOne indicates an expected call of CreateOne.
+func (mr *MockStoreMockRecorder) CreateOne(config interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), config)
+}
+
+// GetAllByGuildID mocks base method.
+func (m *MockStore) GetAllByGuildID(guildID string) ([]model.GuildConfigGmGn, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllByGuildID", guildID)
+	ret0, _ := ret[0].([]model.GuildConfigGmGn)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllByGuildID indicates an expected call of GetAllByGuildID.
+func (mr *MockStoreMockRecorder) GetAllByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllByGuildID", reflect.TypeOf((*MockStore)(nil).GetAllByGuildID), guildID)
+}
+
 // GetByGuildID mocks base method.
 func (m *MockStore) GetByGuildID(guildID string) (*model.GuildConfigGmGn, error) {
 	m.ctrl.T.Helper()
