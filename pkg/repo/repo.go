@@ -68,6 +68,7 @@ import (
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
+	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -119,6 +120,7 @@ type Repo struct {
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store
 	TwitterPost                          twitterpost.Store
+	TwitterPostStreak                    twitterpoststreak.Store
 	GuildConfigActivity                  guildconfigactivity.Store
 	ConfigXPLevel                        configxplevel.Store
 	GuildUserActivityLog                 guilduseractivitylog.Store

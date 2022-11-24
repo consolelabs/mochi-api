@@ -1,9 +1,9 @@
 package twitterpost
 
 import (
-	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type Store interface {
-	CreateOne(*request.TwitterPost) error
+	CreateOne(*model.TwitterPost) error
 }

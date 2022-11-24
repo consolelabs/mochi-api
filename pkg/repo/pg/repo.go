@@ -71,6 +71,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
+	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -121,6 +122,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		WhitelistCampaignUsers:               whitelistcampaignusers.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
 		TwitterPost:                          twitterpost.NewPG(db),
+		TwitterPostStreak:                    twitterpoststreak.NewPG(db),
 		NFTSalesTracker:                      nftsalestracker.NewPG(db),
 		UserFeedback:                         userfeedback.NewPG(db),
 		Activity:                             activity.NewPG(db),

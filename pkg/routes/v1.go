@@ -329,6 +329,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	twitterGroup := v1.Group("/twitter")
 	{
 		twitterGroup.POST("", h.CreateTwitterPost)
+		twitterGroup.GET("/top", h.GetTwitterLeaderboard)
 	}
 	cacheGroup := v1.Group("/cache")
 	{
