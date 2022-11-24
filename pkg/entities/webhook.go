@@ -136,15 +136,23 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	// TODO(trkhoi): temp keep hardcode of Pod Town emoji, remove when it has been added to the database
-	guildConfigGm, err := e.repo.GuildConfigGmGn.GetByGuildID(message.GuildID)
+	guildConfigGms, err := e.repo.GuildConfigGmGn.GetAllByGuildID(message.GuildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	isGmEmoji := strings.EqualFold(guildConfigGm.Emoji, message.Content) || strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
+	// temp keep this, remove asap
+	stickerID := ""
+	if len(message.StickerItems) != 0 {
+		stickerID = message.StickerItems[0].ID
+	}
+
+	isMatchMsg, isMatchEmoji, isMatchSticker := util.IsMatchConfig(message.Content, stickerID, guildConfigGms)
+
+	isGmEmoji := isMatchEmoji || strings.EqualFold("<:gm:967285238306840576>", message.Content) || strings.EqualFold("<:gm:930840080761880626>", message.Content)
 	isGmSticker := false
 	for _, sticker := range message.StickerItems {
-		if sticker.ID == guildConfigGm.Sticker || sticker.ID == "928509218171006986" || sticker.ID == "1039136044836200549" {
+		if isMatchSticker || sticker.ID == "928509218171006986" || sticker.ID == "1039136044836200549" {
 			isGmSticker = true
 			break
 		}
@@ -156,12 +164,12 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 		guildID        = message.GuildID
 		sentAt         = message.Timestamp
 		channelID      = message.ChannelID
-		isGmMessage    = strings.EqualFold(guildConfigGm.Msg, message.Content) || strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
+		isGmMessage    = isMatchMsg || strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
 	)
 
 	switch {
 	case isGmMessage:
-		if guildConfigGm.ChannelID != channelID {
+		if !util.IsMatchChannel(channelID, guildConfigGms) {
 			// do nothing if not gm channel
 			return nil, nil
 		}
