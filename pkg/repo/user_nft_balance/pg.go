@@ -47,13 +47,15 @@ func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFT
 			sum(final_balance.balance) AS total_balance,
 			final_config.id AS group_id,
 			final_config.role_id AS role_id,
-			final_config.number_of_tokens AS number_of_tokens
+			final_config.number_of_tokens AS number_of_tokens,
+			final_balance.staking_nekos AS staking_nekos
 		FROM (
 			SELECT
 				bals.user_address,
 				bals.nft_collection_id,
 				wall.user_discord_id,
-				bals.balance
+				bals.balance,
+				bals.staking_nekos
 			FROM
 				user_nft_balances AS bals
 				INNER JOIN user_wallets AS wall ON wall.address = bals.user_address
@@ -71,9 +73,10 @@ func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFT
 				user_discord_id,
 				group_id,
 				role_id,
-				number_of_tokens) AS temp
+				number_of_tokens,
+				staking_nekos) AS temp
 	WHERE
-		temp.total_balance >= temp.number_of_tokens
+		COALESCE(temp.total_balance, 0) + COALESCE(temp.staking_nekos, 0) >= temp.number_of_tokens
 	ORDER BY
 		temp.user_discord_id,
 		temp.number_of_tokens DESC;
