@@ -11,7 +11,6 @@ type GuildConfigGroupNFTRole struct {
 	GroupName          string               `json:"group_name"`
 	GuildID            string               `json:"guild_id"`
 	RoleID             string               `json:"role_id"`
-	ChannelID          string               `json:"channel_id"`
 	NumberOfTokens     int                  `json:"number_of_tokens"`
 	CreatedAt          time.Time            `json:"created_at"`
 	UpdatedAt          time.Time            `json:"updated_at"`
