@@ -823,7 +823,6 @@ func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSales
 			e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.repo.GetStarTrackerByGuildID] failed to get * trackers")
 			return nil, err
 		}
-		fmt.Println(data)
 		if data != nil && data.GuildConfigSalesTracker.ID.Valid == true {
 			return &response.NFTSalesTrackerGuildResponse{
 				ID:        util.GetNullUUID(data.SalesConfigID),

@@ -233,6 +233,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenAlertGroup.POST("", h.UpsertUserTokenAlert)
 			tokenAlertGroup.DELETE("", h.DeleteUserTokenAlert)
 		}
+		monikerGroup := configGroup.Group("/monikers")
+		{
+			monikerGroup.POST("", h.UpsertMonikerConfig)
+			monikerGroup.GET("/:guild_id", h.GetMonikerByGuildID)
+			monikerGroup.DELETE("", h.DeleteMonikerConfig)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")

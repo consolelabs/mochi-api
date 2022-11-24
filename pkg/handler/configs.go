@@ -1399,3 +1399,78 @@ func (h *Handler) DeleteUserTokenAlert(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// UpsertMonikerConfig     godoc
+// @Summary     Upsert moniker config
+// @Description Upsert moniker config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertMonikerConfigRequest true "Upsert moniker config"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/monikers [post]
+func (h *Handler) UpsertMonikerConfig(c *gin.Context) {
+	var req request.UpsertMonikerConfigRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertMonikerConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+	err := h.entities.UpsertMonikerConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertMonikerConfig] - failed to upsert moniker config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetMonikerByGuildID     godoc
+// @Summary     Get moniker configs
+// @Description Get moniker configs
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.MonikerConfigResponse
+// @Router      /configs/monikers/{guild_id} [get]
+func (h *Handler) GetMonikerByGuildID(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetMonikerByGuildID] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+	configs, err := h.entities.GetMonikerByGuildID(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetMonikerByGuildID] - failed to get user token alerts")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(configs, nil, nil, nil))
+}
+
+// DeleteMonikerConfig     godoc
+// @Summary     Delete moniker config
+// @Description Delete moniker config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteMonikerConfigRequest true "Delete moinker config"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/monikers [delete]
+func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
+	var req request.DeleteMonikerConfigRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteMonikerConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+	err := h.entities.DeleteMonikerConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteMonikerConfig] - failed to delete moniker config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
