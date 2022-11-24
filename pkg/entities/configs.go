@@ -1022,3 +1022,51 @@ func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest
 		ID: util.GetNullUUID(req.ID),
 	})
 }
+
+func (e *Entity) UpsertMonikerConfig(req request.UpsertMonikerConfigRequest) error {
+	token, err := e.repo.OffchainTipBotTokens.GetBySymbol(req.Token)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entities.UpsertMonikerConfig] - failed to get user token")
+		return err
+	}
+	return e.repo.MonikerConfig.UpsertOne(model.MonikerConfig{
+		Moniker: req.Moniker,
+		Plural:  req.Plural,
+		TokenID: token.ID,
+		Amount:  req.Amount,
+		GuildID: req.GuildID,
+	})
+}
+
+func (e *Entity) GetMonikerByGuildID(guildID string) ([]response.MonikerConfigData, error) {
+	configs, err := e.repo.MonikerConfig.GetByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetMonikerByGuildID] - failed to get moniker configs")
+		return nil, err
+	}
+	tokenLst := []string{}
+	checkMap := make(map[string]bool)
+	for _, item := range configs {
+		if _, value := checkMap[item.Token.CoinGeckoID]; !value {
+			checkMap[item.Token.TokenSymbol] = true
+			tokenLst = append(tokenLst, item.Token.CoinGeckoID)
+		}
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice(tokenLst, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": tokenLst}).Error(err, "[entities.GetMonikerByGuildID] - failed to get coin price")
+		return nil, err
+	}
+	res := []response.MonikerConfigData{}
+	for _, item := range configs {
+		var tmp response.MonikerConfigData
+		tmp.Moniker = item
+		tmp.Value = item.Amount * prices[item.Token.CoinGeckoID]
+		res = append(res, tmp)
+	}
+	return res, nil
+}
+
+func (e *Entity) DeleteMonikerConfig(req request.DeleteMonikerConfigRequest) error {
+	return e.repo.MonikerConfig.DeleteOne(req.GuildID, req.Moniker)
+}
