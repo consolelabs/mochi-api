@@ -2,13 +2,13 @@ package job
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/ethereum/go-ethereum/log"
@@ -40,50 +40,54 @@ func (b *binanceWebsocket) Run() error {
 		log.Error("failed to connect to websocket")
 		return err
 	}
-	conn.SetPongHandler(func(appData string) error {
-		return conn.WriteControl(websocket.PingMessage, []byte(appData), time.Now().Add(5*time.Second))
-	})
 
-	data, err := b.entity.GetAllUserTokenAlert()
-	if err != nil {
-		log.Error("failed to get users alert")
-		return err
-	}
-	userAlerts := data.Data
+	// binance will send ping message
+	conn.SetPingHandler(func(appData string) error {
+		return conn.WriteControl(websocket.PongMessage, []byte(appData), time.Now().Add(5*time.Second))
+	})
 
 	for {
 		_, message, _ := conn.ReadMessage()
 		var trade response.WebsocketKlinesDataResponse
 		json.Unmarshal(message, &trade)
-		go b.checkAndNotify(&trade, &userAlerts, b.entity)
+		go b.checkAndNotify(&trade, b.entity)
 	}
 }
 
-func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataResponse, userAlerts *[]model.DiscordUserTokenAlert, e *entities.Entity) {
+func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataResponse, e *entities.Entity) {
 	openPrice, _ := strconv.ParseFloat(trade.Data.OPrice, 64)
 	closePrice, _ := strconv.ParseFloat(trade.Data.CPrice, 64)
-	for i, alert := range *userAlerts {
-		direction := "down"
-		if openPrice-closePrice < 0 {
-			direction = "up"
+	tokenSymbol := trade.Symbol[0 : len(trade.Symbol)-4]
+	alertCache := []string{}
+	direction := "up"
+	if openPrice-closePrice < 0 {
+		alertCache = b.entity.GetTokenAlertZCache(strings.ToLower(tokenSymbol), direction, "0", trade.Data.CPrice)
+	} else {
+		direction = "down"
+		alertCache = b.entity.GetTokenAlertZCache(strings.ToLower(tokenSymbol), direction, trade.Data.CPrice, "inf")
+	}
+	for _, id := range alertCache {
+		alert, err := b.entity.GetUserTokenAlertByID(id)
+		if err != nil || alert == nil {
+			log.Error(fmt.Sprintf("failed to get users alert id: %s", id))
+			continue
 		}
-		//same symbol and same up-down trend
-		if alert.IsEnable && strings.ToUpper(alert.TokenID) == strings.ToUpper(trade.Symbol[0:len(trade.Symbol)-4]) && alert.Trend == direction {
-			// if up trend => current price is higher or equal to alert price and reverse
-			if (direction == "up" && alert.PriceSet <= closePrice) || (direction == "down" && alert.PriceSet >= closePrice) {
-				// disable alert after push noti
-				go b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
-					ID:        alert.ID.UUID.String(),
-					IsEnable:  false,
-					TokenID:   alert.TokenID,
-					DiscordID: alert.DiscordID,
-					PriceSet:  alert.PriceSet,
-					Trend:     alert.Trend,
-					DeviceID:  alert.DiscordUserDevice.ID,
-				})
-				(*userAlerts)[i].IsEnable = false
-				e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.TokenID))
-			}
+		// if up trend => current price is higher or equal to alert price and reverse
+		if alert.IsEnable {
+			// disable alert after push noti
+			b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
+				ID:        alert.ID.UUID.String(),
+				IsEnable:  false,
+				TokenID:   alert.TokenID,
+				DiscordID: alert.DiscordID,
+				PriceSet:  alert.PriceSet,
+				Trend:     alert.Trend,
+				DeviceID:  alert.DiscordUserDevice.ID,
+			})
+			e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.TokenID))
+			// remove cache after use
+			b.entity.DeleteTokenAlertZCache(tokenSymbol, direction, id)
 		}
+
 	}
 }

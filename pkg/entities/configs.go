@@ -986,6 +986,18 @@ func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserToken
 	}, err
 }
 
+func (e *Entity) GetUserTokenAlertByID(id string) (*model.DiscordUserTokenAlert, error) {
+	data, err := e.repo.DiscordUserTokenAlert.GetByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Fields(logger.Fields{"id": id}).Error(err, "[entities.GetUserTokenAlert] - failed to get user token alerts by id")
+		return nil, err
+	}
+	return data, err
+}
+
 func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse, error) {
 	data, err := e.repo.DiscordUserTokenAlert.GetAllActive()
 	if err != nil {
@@ -1001,7 +1013,7 @@ func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse
 }
 
 func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest) error {
-	err := e.repo.DiscordUserTokenAlert.UpsertOne(&model.UpsertDiscordUserTokenAlert{
+	alert, err := e.repo.DiscordUserTokenAlert.UpsertOne(&model.UpsertDiscordUserTokenAlert{
 		ID:        util.GetNullUUID(req.ID),
 		TokenID:   req.TokenID,
 		DiscordID: req.DiscordID,
@@ -1015,12 +1027,29 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to create user token alert")
 		return err
 	}
+
+	// alert_<tokenID>_<up/down> : <alertID> - <price>
+	err = e.cache.ZSet(fmt.Sprintf("alert_%s_%s", req.TokenID, req.Trend), alert.ID.UUID.String(), req.PriceSet)
+	if err != nil {
+		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to cache alert")
+		return err
+	}
 	return nil
 }
 func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest) error {
-	return e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
+	alert, err := e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
 		ID: util.GetNullUUID(req.ID),
 	})
+	if err != nil {
+		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to delete user token alert")
+		return err
+	}
+	err = e.cache.ZRemove(fmt.Sprintf("alert_%s_%s", alert.TokenID, alert.Trend), alert.ID.UUID.String())
+	if err != nil {
+		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to remove cache")
+		return err
+	}
+	return nil
 }
 
 func (e *Entity) UpsertMonikerConfig(req request.UpsertMonikerConfigRequest) error {
