@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -150,7 +152,52 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
+	e.NotifyTipFromPlatforms(req, amountEachRecipient)
+
 	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
+}
+
+func (e *Entity) NotifyTipFromPlatforms(req request.OffchainTransferRequest, amountEachRecipient float64) {
+	// TODO(trkhoi): handle for all platforms
+	if req.Platform == "telegram" {
+		// send DM to all recipients
+		for _, recipient := range req.Recipients {
+			dmChannel, err := e.discord.UserChannelCreate(recipient)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req, "recipient": recipient}).Error(err, "[discord.UserChannelCreate] - failed to create DM channel")
+				return
+			}
+
+			msgTip := []*discordgo.MessageEmbed{
+				{
+					Thumbnail: &discordgo.MessageEmbedThumbnail{
+						URL: "https://i.imgur.com/qj7iPqz.png",
+					},
+					Author: &discordgo.MessageEmbedAuthor{
+						IconURL: "https://cdn.discordapp.com/emojis/942088817391849543.png?size=240&quality=lossless",
+						Name:    fmt.Sprintf("Tips from %s", req.Platform),
+					},
+					Description: fmt.Sprintf(" has sent you %f %s", amountEachRecipient, req.Token),
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: fmt.Sprintf("Type /feedback to report•Mochi Bot • %s", time.Now().Format("2006-01-02 15:04:05")),
+					},
+					Color: 0x9fffe4,
+				},
+				{
+					Description: "You can now link telegram with your discord account to receive tips directly to your discord wallet. Type $telegram config <telegram_username>` to link your account",
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: fmt.Sprintf("Type /feedback to report•Mochi Bot • %s", time.Now().Format("2006-01-02 15:04:05")),
+					},
+					Color: 0x9fffe4,
+				},
+			}
+			_, err = e.discord.ChannelMessageSendEmbeds(dmChannel.ID, msgTip)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req, "recipient": recipient}).Error(err, "[discord.ChannelMessageSendEmbeds] - failed to send DM to recipient")
+				return
+			}
+		}
+	}
 }
 
 func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, price float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {
