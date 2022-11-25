@@ -1494,7 +1494,7 @@ func (h *Handler) GetGuildDefaultCurrency(c *gin.Context) {
 
 	data, err := h.entities.GetGuildDefaultCurrency(guildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetDefaultRolesByGuildID] - failed to get default roles")
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildDefaultCurrency] - failed to get default currency")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -1503,8 +1503,8 @@ func (h *Handler) GetGuildDefaultCurrency(c *gin.Context) {
 }
 
 // UpsertGuildDefaultCurrency     godoc
-// @Summary     Upsert default currency by guild id
-// @Description Upsert default currency by guild id
+// @Summary     Upsert default currency
+// @Description Upsert default currency
 // @Tags        Config
 // @Accept      json
 // @Produce     json
@@ -1530,8 +1530,8 @@ func (h *Handler) UpsertGuildDefaultCurrency(c *gin.Context) {
 }
 
 // DeleteGuildDefaultCurrency     godoc
-// @Summary     Delete default currency by guild id
-// @Description Delete default currency by guild id
+// @Summary     Delete default currency
+// @Description Delete default currency
 // @Tags        Config
 // @Accept      json
 // @Produce     json

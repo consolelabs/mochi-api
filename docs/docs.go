@@ -418,7 +418,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Upsert default currency by guild id",
+                "description": "Upsert default currency",
                 "consumes": [
                     "application/json"
                 ],
@@ -428,7 +428,7 @@ const docTemplate = `{
                 "tags": [
                     "Config"
                 ],
-                "summary": "Upsert default currency by guild id",
+                "summary": "Upsert default currency",
                 "parameters": [
                     {
                         "description": "Upsert default currency config",
@@ -450,7 +450,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete default currency by guild id",
+                "description": "Delete default currency",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,7 +460,7 @@ const docTemplate = `{
                 "tags": [
                     "Config"
                 ],
-                "summary": "Delete default currency by guild id",
+                "summary": "Delete default currency",
                 "parameters": [
                     {
                         "description": "Delete default currency config",
@@ -6009,6 +6009,9 @@ const docTemplate = `{
                 "price_set": {
                     "type": "number"
                 },
+                "symbol": {
+                    "type": "string"
+                },
                 "token_id": {
                     "type": "string"
                 },
@@ -7597,6 +7600,9 @@ const docTemplate = `{
                 "guild_id": {
                     "type": "string"
                 },
+                "platform": {
+                    "type": "string"
+                },
                 "recipients": {
                     "type": "array",
                     "items": {
@@ -7911,6 +7917,9 @@ const docTemplate = `{
                 },
                 "price_set": {
                     "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
                 },
                 "token_id": {
                     "type": "string"

@@ -410,7 +410,7 @@
                 }
             },
             "post": {
-                "description": "Upsert default currency by guild id",
+                "description": "Upsert default currency",
                 "consumes": [
                     "application/json"
                 ],
@@ -420,7 +420,7 @@
                 "tags": [
                     "Config"
                 ],
-                "summary": "Upsert default currency by guild id",
+                "summary": "Upsert default currency",
                 "parameters": [
                     {
                         "description": "Upsert default currency config",
@@ -442,7 +442,7 @@
                 }
             },
             "delete": {
-                "description": "Delete default currency by guild id",
+                "description": "Delete default currency",
                 "consumes": [
                     "application/json"
                 ],
@@ -452,7 +452,7 @@
                 "tags": [
                     "Config"
                 ],
-                "summary": "Delete default currency by guild id",
+                "summary": "Delete default currency",
                 "parameters": [
                     {
                         "description": "Delete default currency config",
@@ -6001,6 +6001,9 @@
                 "price_set": {
                     "type": "number"
                 },
+                "symbol": {
+                    "type": "string"
+                },
                 "token_id": {
                     "type": "string"
                 },
@@ -7589,6 +7592,9 @@
                 "guild_id": {
                     "type": "string"
                 },
+                "platform": {
+                    "type": "string"
+                },
                 "recipients": {
                     "type": "array",
                     "items": {
@@ -7903,6 +7909,9 @@
                 },
                 "price_set": {
                     "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
                 },
                 "token_id": {
                     "type": "string"
