@@ -22,6 +22,7 @@ type TwitterPost struct {
 	TwitterHandle string `json:"twitter_handle"`
 	TweetID       string `json:"tweet_id"`
 	GuildID       string `json:"guild_id"`
+	Content       string `json:"content"`
 }
 
 type AddToTwitterBlackListRequest struct {
@@ -34,4 +35,9 @@ type AddToTwitterBlackListRequest struct {
 type DeleteFromTwitterBlackListRequest struct {
 	GuildID   string `json:"guild_id" form:"guild_id" binding:"required"`
 	TwitterID string `json:"twitter_id" form:"twitter_id" binding:"required"`
+}
+
+type GetTwitterLeaderboardRequest struct {
+	GuildID string `json:"guild_id" form:"guild_id" binding:"required"`
+	PaginationRequest
 }

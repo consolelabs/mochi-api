@@ -378,6 +378,102 @@
                 }
             }
         },
+        "/configs/default-currency": {
+            "get": {
+                "description": "Get default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get default currency by guild id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildConfigDefaultCurrencyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert default currency by guild id",
+                "parameters": [
+                    {
+                        "description": "Upsert default currency config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildDefaultCurrencyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete default currency by guild id",
+                "parameters": [
+                    {
+                        "description": "Delete default currency config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GuildIDRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/default-nft-ticker": {
             "get": {
                 "description": "Get guild default nft ticker",
@@ -4731,6 +4827,47 @@
                 }
             }
         },
+        "/twitter/top": {
+            "get": {
+                "description": "Create twitter post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Twitter"
+                ],
+                "summary": "Create twitter post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create User",
@@ -6731,6 +6868,35 @@
                 }
             }
         },
+        "model.TwitterPostStreak": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "last_streak_date": {
+                    "type": "string"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "twitter_handle": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UpvoteStreakTier": {
             "type": "object",
             "properties": {
@@ -7339,6 +7505,14 @@
                 }
             }
         },
+        "request.GuildIDRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.LinkUserTelegramWithDiscordRequest": {
             "type": "object",
             "required": [
@@ -7612,6 +7786,9 @@
         "request.TwitterPost": {
             "type": "object",
             "properties": {
+                "content": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -7751,6 +7928,17 @@
                     "type": "string"
                 },
                 "sticker": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertGuildDefaultCurrencyRequest": {
+            "type": "object",
+            "properties": {
+                "Symbol": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 }
             }
@@ -8840,6 +9028,28 @@
                 }
             }
         },
+        "response.GetTwitterLeaderboardResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetTwitterLeaderboardResponseData"
+                }
+            }
+        },
+        "response.GetTwitterLeaderboardResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TwitterPostStreak"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
         "response.GetUpvoteTiersConfig": {
             "type": "object",
             "properties": {
@@ -9040,6 +9250,23 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
+                }
+            }
+        },
+        "response.GuildConfigDefaultCurrencyResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "tip_bot_token": {
+                    "$ref": "#/definitions/model.OffchainTipBotToken"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -10191,6 +10418,22 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.OffchainTipBotWithdraw"
+                }
+            }
+        },
+        "response.PaginationResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

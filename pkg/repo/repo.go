@@ -19,6 +19,7 @@ import (
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
+	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
@@ -69,6 +70,7 @@ import (
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
+	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -109,6 +111,7 @@ type Repo struct {
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
+	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
 	GuildConfigTwitterHashtag            guildconfigtwitterhashtag.Store
 	GuildConfigTwitterBlacklist          guildconfigtwitterblacklist.Store
 	DiscordGuildStats                    discordguildstats.Store
@@ -120,6 +123,7 @@ type Repo struct {
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store
 	TwitterPost                          twitterpost.Store
+	TwitterPostStreak                    twitterpoststreak.Store
 	GuildConfigActivity                  guildconfigactivity.Store
 	ConfigXPLevel                        configxplevel.Store
 	GuildUserActivityLog                 guilduseractivitylog.Store

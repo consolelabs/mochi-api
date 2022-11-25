@@ -792,6 +792,25 @@ definitions:
           $ref: '#/definitions/model.TradeItem'
         type: array
     type: object
+  model.TwitterPostStreak:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      last_streak_date:
+        type: string
+      streak_count:
+        type: integer
+      total_count:
+        type: integer
+      twitter_handle:
+        type: string
+      twitter_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.UpvoteStreakTier:
     properties:
       id:
@@ -1185,6 +1204,11 @@ definitions:
       query:
         type: string
     type: object
+  request.GuildIDRequest:
+    properties:
+      guild_id:
+        type: string
+    type: object
   request.LinkUserTelegramWithDiscordRequest:
     properties:
       discord_id:
@@ -1364,6 +1388,8 @@ definitions:
     type: object
   request.TwitterPost:
     properties:
+      content:
+        type: string
       guild_id:
         type: string
       tweet_id:
@@ -1455,6 +1481,13 @@ definitions:
       msg:
         type: string
       sticker:
+        type: string
+    type: object
+  request.UpsertGuildDefaultCurrencyRequest:
+    properties:
+      Symbol:
+        type: string
+      guild_id:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -2158,6 +2191,20 @@ definitions:
       data:
         $ref: '#/definitions/response.TwitterHashtag'
     type: object
+  response.GetTwitterLeaderboardResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetTwitterLeaderboardResponseData'
+    type: object
+  response.GetTwitterLeaderboardResponseData:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.TwitterPostStreak'
+        type: array
+      metadata:
+        $ref: '#/definitions/response.PaginationResponse'
+    type: object
   response.GetUpvoteTiersConfig:
     properties:
       data:
@@ -2288,6 +2335,17 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.HandleUserActivityResponse'
+    type: object
+  response.GuildConfigDefaultCurrencyResponse:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      tip_bot_token:
+        $ref: '#/definitions/model.OffchainTipBotToken'
+      updated_at:
+        type: string
     type: object
   response.GuildPruneExcludeList:
     properties:
@@ -3037,6 +3095,17 @@ definitions:
       data:
         $ref: '#/definitions/response.OffchainTipBotWithdraw'
     type: object
+  response.PaginationResponse:
+    properties:
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
+    type: object
   response.ResponseDataMessage:
     properties:
       data:
@@ -3510,6 +3579,69 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Guild custom token config
+      tags:
+      - Config
+  /configs/default-currency:
+    delete:
+      consumes:
+      - application/json
+      description: Delete default currency by guild id
+      parameters:
+      - description: Delete default currency config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GuildIDRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete default currency by guild id
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get default currency by guild id
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GuildConfigDefaultCurrencyResponse'
+      summary: Get default currency by guild id
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Upsert default currency by guild id
+      parameters:
+      - description: Upsert default currency config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildDefaultCurrencyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert default currency by guild id
       tags:
       - Config
   /configs/default-nft-ticker:
@@ -6375,6 +6507,32 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter post
+      tags:
+      - Twitter
+  /twitter/top:
+    get:
+      consumes:
+      - application/json
+      description: Create twitter post
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
       summary: Create twitter post
       tags:
       - Twitter
