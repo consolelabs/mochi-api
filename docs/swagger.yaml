@@ -792,6 +792,25 @@ definitions:
           $ref: '#/definitions/model.TradeItem'
         type: array
     type: object
+  model.TwitterPostStreak:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      last_streak_date:
+        type: string
+      streak_count:
+        type: integer
+      total_count:
+        type: integer
+      twitter_handle:
+        type: string
+      twitter_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.UpvoteStreakTier:
     properties:
       id:
@@ -1369,6 +1388,8 @@ definitions:
     type: object
   request.TwitterPost:
     properties:
+      content:
+        type: string
       guild_id:
         type: string
       tweet_id:
@@ -2169,6 +2190,20 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.TwitterHashtag'
+    type: object
+  response.GetTwitterLeaderboardResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GetTwitterLeaderboardResponseData'
+    type: object
+  response.GetTwitterLeaderboardResponseData:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.TwitterPostStreak'
+        type: array
+      metadata:
+        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.GetUpvoteTiersConfig:
     properties:
@@ -3059,6 +3094,17 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.OffchainTipBotWithdraw'
+    type: object
+  response.PaginationResponse:
+    properties:
+      page:
+        description: page index
+        type: integer
+      size:
+        description: page size
+        type: integer
+      total:
+        type: integer
     type: object
   response.ResponseDataMessage:
     properties:
@@ -6461,6 +6507,32 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter post
+      tags:
+      - Twitter
+  /twitter/top:
+    get:
+      consumes:
+      - application/json
+      description: Create twitter post
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
       summary: Create twitter post
       tags:
       - Twitter

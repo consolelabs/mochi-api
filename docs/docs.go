@@ -4835,6 +4835,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/twitter/top": {
+            "get": {
+                "description": "Create twitter post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Twitter"
+                ],
+                "summary": "Create twitter post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create User",
@@ -6835,6 +6876,35 @@ const docTemplate = `{
                 }
             }
         },
+        "model.TwitterPostStreak": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "last_streak_date": {
+                    "type": "string"
+                },
+                "streak_count": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "twitter_handle": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UpvoteStreakTier": {
             "type": "object",
             "properties": {
@@ -7724,6 +7794,9 @@ const docTemplate = `{
         "request.TwitterPost": {
             "type": "object",
             "properties": {
+                "content": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -8960,6 +9033,28 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.TwitterHashtag"
+                }
+            }
+        },
+        "response.GetTwitterLeaderboardResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GetTwitterLeaderboardResponseData"
+                }
+            }
+        },
+        "response.GetTwitterLeaderboardResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TwitterPostStreak"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
@@ -10331,6 +10426,22 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.OffchainTipBotWithdraw"
+                }
+            }
+        },
+        "response.PaginationResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "page index",
+                    "type": "integer"
+                },
+                "size": {
+                    "description": "page size",
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
