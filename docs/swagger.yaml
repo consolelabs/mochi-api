@@ -456,6 +456,27 @@ definitions:
         description: Valid is true if String is not NULL
         type: boolean
     type: object
+  model.MonikerConfig:
+    properties:
+      amount:
+        type: number
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      moniker:
+        type: string
+      plural:
+        type: string
+      token:
+        $ref: '#/definitions/model.OffchainTipBotToken'
+      token_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.NFTCollection:
     properties:
       address:
@@ -565,6 +586,29 @@ definitions:
       status:
         type: integer
       sweeped_time:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.OffchainTipBotToken:
+    properties:
+      coin_gecko_id:
+        type: string
+      created_at:
+        type: string
+      icon:
+        type: string
+      id:
+        type: string
+      service_fee:
+        type: number
+      status:
+        type: integer
+      token_id:
+        type: string
+      token_name:
+        type: string
+      token_symbol:
         type: string
       updated_at:
         type: string
@@ -1059,6 +1103,16 @@ definitions:
       guild_id:
         type: string
     type: object
+  request.DeleteMonikerConfigRequest:
+    properties:
+      guild_id:
+        type: string
+      moniker:
+        type: string
+    required:
+    - guild_id
+    - moniker
+    type: object
   request.DeleteUserDeviceRequest:
     properties:
       device_id:
@@ -1425,6 +1479,24 @@ definitions:
         type: string
       guild_id:
         type: string
+    type: object
+  request.UpsertMonikerConfigRequest:
+    properties:
+      amount:
+        type: number
+      guild_id:
+        type: string
+      moniker:
+        type: string
+      plural:
+        type: string
+      token:
+        type: string
+    required:
+    - amount
+    - guild_id
+    - moniker
+    - token
     type: object
   request.UpsertUserDeviceRequest:
     properties:
@@ -2711,6 +2783,20 @@ definitions:
       total_verified_wallets:
         type: integer
     type: object
+  response.MonikerConfigData:
+    properties:
+      moniker:
+        $ref: '#/definitions/model.MonikerConfig'
+      value:
+        type: number
+    type: object
+  response.MonikerConfigResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.MonikerConfigData'
+        type: array
+    type: object
   response.NFTCollectionConfig:
     properties:
       address:
@@ -3770,6 +3856,70 @@ paths:
           schema:
             $ref: '#/definitions/response.GetLevelRoleConfigsResponse'
       summary: Get level role config
+      tags:
+      - Config
+  /configs/monikers:
+    delete:
+      consumes:
+      - application/json
+      description: Delete moniker config
+      parameters:
+      - description: Delete moinker config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteMonikerConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete moniker config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Upsert moniker config
+      parameters:
+      - description: Upsert moniker config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertMonikerConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert moniker config
+      tags:
+      - Config
+  /configs/monikers/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get moniker configs
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MonikerConfigResponse'
+      summary: Get moniker configs
       tags:
       - Config
   /configs/nft-roles:

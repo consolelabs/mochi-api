@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -150,7 +152,79 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
+	e.NotifyTipFromPlatforms(req, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID])
+
 	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
+}
+
+func (e *Entity) NotifyTipFromPlatforms(req request.OffchainTransferRequest, amountEachRecipient float64, price float64) {
+	// TODO(trkhoi): handle for all platforms
+	if req.Platform == "telegram" {
+		// send DM to all recipients
+		for _, recipient := range req.Recipients {
+			recipientBals, err := e.GetUserBalances(recipient)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req, "recipient": recipient}).Error(err, "[repo.OffchainTipBotUserBalances.GetUserBalances] - failed to get user balances")
+				return
+			}
+
+			dmChannel, err := e.discord.UserChannelCreate(recipient)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req, "recipient": recipient}).Error(err, "[discord.UserChannelCreate] - failed to create DM channel")
+				return
+			}
+
+			balsEmbed := make([]*discordgo.MessageEmbedField, 0)
+
+			for _, bal := range recipientBals {
+				balsEmbed = append(balsEmbed, &discordgo.MessageEmbedField{
+					Name:   bal.Name,
+					Inline: true,
+					Value:  fmt.Sprintf("%s %.2f %s `$%.2f`", util.GetEmojiToken(bal.Symbol), bal.Balances, bal.Symbol, bal.BalancesInUSD),
+				})
+			}
+
+			msgTip := []*discordgo.MessageEmbed{
+				{
+					Thumbnail: &discordgo.MessageEmbedThumbnail{
+						URL: "https://i.imgur.com/qj7iPqz.png",
+					},
+					Author: &discordgo.MessageEmbedAuthor{
+						IconURL: "https://cdn.discordapp.com/emojis/942088817391849543.png?size=240&quality=lossless",
+						Name:    fmt.Sprintf("Tips from %s", req.Platform),
+					},
+					Description: fmt.Sprintf("<@!%s> has sent you **%.2f %s** (\u2248 $%.2f)", req.Sender, amountEachRecipient, strings.ToUpper(req.Token), amountEachRecipient*price),
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: fmt.Sprintf("Type /feedback to report•Mochi Bot • %s", time.Now().Format("2006-01-02 15:04:05")),
+					},
+					Color: 0x9fffe4,
+				},
+				{
+					Author: &discordgo.MessageEmbedAuthor{
+						IconURL: "https://cdn.discordapp.com/emojis/933342303546929203.png?size=240&quality=lossless",
+						Name:    "Your balances",
+					},
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: fmt.Sprintf("Type /feedback to report•Mochi Bot • %s", time.Now().Format("2006-01-02 15:04:05")),
+					},
+					Color:  0x9fffe4,
+					Fields: balsEmbed,
+				},
+				{
+					Description: "You can now link telegram with your discord account. Type `$telegram config <telegram_username>` to link your account",
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: fmt.Sprintf("Type /feedback to report•Mochi Bot • %s", time.Now().Format("2006-01-02 15:04:05")),
+					},
+					Color: 0x9fffe4,
+				},
+			}
+			_, err = e.discord.ChannelMessageSendEmbeds(dmChannel.ID, msgTip)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req, "recipient": recipient}).Error(err, "[discord.ChannelMessageSendEmbeds] - failed to send DM to recipient")
+				return
+			}
+		}
+	}
 }
 
 func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, price float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {

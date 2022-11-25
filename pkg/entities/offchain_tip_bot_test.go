@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -9,10 +8,10 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	mock_offchain_tip_activity_logs "github.com/defipod/mochi/pkg/repo/offchain_tip_activity_logs/mocks"
+	mock_offchain_tip_activity_logs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs/mocks"
 	mock_offchain_tip_bot_tokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens/mocks"
 	mock_offchain_tip_transfer_histories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories/mocks"
-	mock_offchain_tip_bot_user_balances "github.com/defipod/mochi/pkg/repo/offchain_tip_user_balances/mocks"
+	mock_offchain_tip_bot_user_balances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -503,7 +502,6 @@ func TestEntity_TransferToken(t *testing.T) {
 			}
 
 			got, err := e.TransferToken(tt.req)
-			fmt.Println(err)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.TransferToken() error = %v, wantErr %v", err, tt.wantErr)
 				return

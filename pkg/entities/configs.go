@@ -986,6 +986,18 @@ func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserToken
 	}, err
 }
 
+func (e *Entity) GetUserTokenAlertByID(id string) (*model.DiscordUserTokenAlert, error) {
+	data, err := e.repo.DiscordUserTokenAlert.GetByID(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		e.log.Fields(logger.Fields{"id": id}).Error(err, "[entities.GetUserTokenAlert] - failed to get user token alerts by id")
+		return nil, err
+	}
+	return data, err
+}
+
 func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse, error) {
 	data, err := e.repo.DiscordUserTokenAlert.GetAllActive()
 	if err != nil {
@@ -1001,7 +1013,7 @@ func (e *Entity) GetAllUserTokenAlert() (*response.DiscordUserTokenAlertResponse
 }
 
 func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest) error {
-	err := e.repo.DiscordUserTokenAlert.UpsertOne(&model.UpsertDiscordUserTokenAlert{
+	alert, err := e.repo.DiscordUserTokenAlert.UpsertOne(&model.UpsertDiscordUserTokenAlert{
 		ID:        util.GetNullUUID(req.ID),
 		TokenID:   req.TokenID,
 		DiscordID: req.DiscordID,
@@ -1015,10 +1027,75 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to create user token alert")
 		return err
 	}
+
+	// alert_<tokenID>_<up/down> : <alertID> - <price>
+	err = e.cache.ZSet(fmt.Sprintf("alert_%s_%s", req.TokenID, req.Trend), alert.ID.UUID.String(), req.PriceSet)
+	if err != nil {
+		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to cache alert")
+		return err
+	}
 	return nil
 }
 func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest) error {
-	return e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
+	alert, err := e.repo.DiscordUserTokenAlert.RemoveOne(&model.DiscordUserTokenAlert{
 		ID: util.GetNullUUID(req.ID),
 	})
+	if err != nil {
+		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to delete user token alert")
+		return err
+	}
+	err = e.cache.ZRemove(fmt.Sprintf("alert_%s_%s", alert.TokenID, alert.Trend), alert.ID.UUID.String())
+	if err != nil {
+		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to remove cache")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) UpsertMonikerConfig(req request.UpsertMonikerConfigRequest) error {
+	token, err := e.repo.OffchainTipBotTokens.GetBySymbol(req.Token)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entities.UpsertMonikerConfig] - failed to get user token")
+		return err
+	}
+	return e.repo.MonikerConfig.UpsertOne(model.MonikerConfig{
+		Moniker: req.Moniker,
+		Plural:  req.Plural,
+		TokenID: token.ID,
+		Amount:  req.Amount,
+		GuildID: req.GuildID,
+	})
+}
+
+func (e *Entity) GetMonikerByGuildID(guildID string) ([]response.MonikerConfigData, error) {
+	configs, err := e.repo.MonikerConfig.GetByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetMonikerByGuildID] - failed to get moniker configs")
+		return nil, err
+	}
+	tokenLst := []string{}
+	checkMap := make(map[string]bool)
+	for _, item := range configs {
+		if _, value := checkMap[item.Token.CoinGeckoID]; !value {
+			checkMap[item.Token.TokenSymbol] = true
+			tokenLst = append(tokenLst, item.Token.CoinGeckoID)
+		}
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice(tokenLst, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": tokenLst}).Error(err, "[entities.GetMonikerByGuildID] - failed to get coin price")
+		return nil, err
+	}
+	res := []response.MonikerConfigData{}
+	for _, item := range configs {
+		var tmp response.MonikerConfigData
+		tmp.Moniker = item
+		tmp.Value = item.Amount * prices[item.Token.CoinGeckoID]
+		res = append(res, tmp)
+	}
+	return res, nil
+}
+
+func (e *Entity) DeleteMonikerConfig(req request.DeleteMonikerConfigRequest) error {
+	return e.repo.MonikerConfig.DeleteOne(req.GuildID, req.Moniker)
 }

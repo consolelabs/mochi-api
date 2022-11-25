@@ -58,3 +58,11 @@ func (e *Entity) RemoveUpvoteMessageCache(userID string) error {
 	}
 	return nil
 }
+
+func (e *Entity) GetTokenAlertZCache(symbol, trend, min, max string) []string {
+	return e.cache.GetStringSorted(fmt.Sprintf("alert_%s_%s", symbol, trend), min, max)
+}
+
+func (e *Entity) DeleteTokenAlertZCache(symbol, trend, value string) error {
+	return e.cache.ZRemove(fmt.Sprintf("alert_%s_%s", symbol, trend), value)
+}

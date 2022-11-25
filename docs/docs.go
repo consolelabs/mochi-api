@@ -912,6 +912,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/monikers": {
+            "post": {
+                "description": "Upsert moniker config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert moniker config",
+                "parameters": [
+                    {
+                        "description": "Upsert moniker config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertMonikerConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete moniker config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete moniker config",
+                "parameters": [
+                    {
+                        "description": "Delete moinker config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteMonikerConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/monikers/{guild_id}": {
+            "get": {
+                "description": "Get moniker configs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get moniker configs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MonikerConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/nft-roles": {
             "get": {
                 "description": "List guild nft roles",
@@ -6129,6 +6227,38 @@ const docTemplate = `{
                 }
             }
         },
+        "model.MonikerConfig": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "moniker": {
+                    "type": "string"
+                },
+                "plural": {
+                    "type": "string"
+                },
+                "token": {
+                    "$ref": "#/definitions/model.OffchainTipBotToken"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.NFTCollection": {
             "type": "object",
             "properties": {
@@ -6294,6 +6424,41 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "sweeped_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OffchainTipBotToken": {
+            "type": "object",
+            "properties": {
+                "coin_gecko_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "service_fee": {
+                    "type": "number"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "token_id": {
+                    "type": "string"
+                },
+                "token_name": {
+                    "type": "string"
+                },
+                "token_symbol": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -7055,6 +7220,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DeleteMonikerConfigRequest": {
+            "type": "object",
+            "required": [
+                "guild_id",
+                "moniker"
+            ],
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "moniker": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteUserDeviceRequest": {
             "type": "object",
             "properties": {
@@ -7615,6 +7795,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertMonikerConfigRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "guild_id",
+                "moniker",
+                "token"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "moniker": {
+                    "type": "string"
+                },
+                "plural": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
@@ -9600,6 +9806,28 @@ const docTemplate = `{
                 },
                 "total_verified_wallets": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.MonikerConfigData": {
+            "type": "object",
+            "properties": {
+                "moniker": {
+                    "$ref": "#/definitions/model.MonikerConfig"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "response.MonikerConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.MonikerConfigData"
+                    }
                 }
             }
         },
