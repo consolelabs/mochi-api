@@ -55,8 +55,19 @@ func (c *redisCache) Set(key string, value interface{}, expiration time.Duration
 	return c.rdb.Set(context.Background(), key, value, expiration).Err()
 }
 
+func (c *redisCache) ZSet(key string, value interface{}, score float64) error {
+	return c.rdb.ZAdd(context.Background(), key, &redis.Z{
+		Score:  score,
+		Member: value,
+	}).Err()
+}
+
 func (c *redisCache) Remove(key string) error {
 	return c.rdb.Del(context.Background(), key).Err()
+}
+
+func (c *redisCache) ZRemove(key string, value interface{}) error {
+	return c.rdb.ZRem(context.Background(), key, value).Err()
 }
 
 func (c *redisCache) GetString(key string) (string, error) {
@@ -69,6 +80,13 @@ func (c *redisCache) GetString(key string) (string, error) {
 	default:
 		return "", err
 	}
+}
+
+func (c *redisCache) GetStringSorted(key, min, max string) []string {
+	return c.rdb.ZRangeByScore(context.Background(), key, &redis.ZRangeBy{
+		Min: min,
+		Max: max,
+	}).Val()
 }
 
 func (c *redisCache) GetInt(key string) (int, error) {

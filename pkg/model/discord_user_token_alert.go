@@ -26,7 +26,7 @@ type UpsertDiscordUserTokenAlert struct {
 	PriceSet  float64       `json:"price_set"`
 	Trend     string        `json:"trend"`
 	DeviceID  string        `json:"device_id"`
-	IsEnable  bool          `json:"is_enable" gorm:"default:true"`
+	IsEnable  bool          `json:"is_enable"`
 	CreatedAt time.Time     `json:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at"`
 }

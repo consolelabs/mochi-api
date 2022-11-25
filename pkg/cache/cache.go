@@ -9,8 +9,12 @@ type Cache interface {
 	Type(key string) (string, error)
 
 	Set(key string, value interface{}, expiration time.Duration) error
+	ZSet(key string, value interface{}, score float64) error
+
 	Remove(key string) error
+	ZRemove(key string, value interface{}) error
 	GetString(key string) (string, error)
+	GetStringSorted(key, min, max string) []string
 	GetInt(key string) (int, error)
 	GetBool(key string) (bool, error)
 
