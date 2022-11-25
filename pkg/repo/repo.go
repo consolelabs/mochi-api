@@ -19,6 +19,7 @@ import (
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
+	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
@@ -109,6 +110,7 @@ type Repo struct {
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
+	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
 	GuildConfigTwitterHashtag            guildconfigtwitterhashtag.Store
 	GuildConfigTwitterBlacklist          guildconfigtwitterblacklist.Store
 	DiscordGuildStats                    discordguildstats.Store

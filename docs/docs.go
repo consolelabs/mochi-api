@@ -386,6 +386,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/default-currency": {
+            "get": {
+                "description": "Get default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get default currency by guild id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildConfigDefaultCurrencyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Upsert default currency by guild id",
+                "parameters": [
+                    {
+                        "description": "Upsert default currency config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildDefaultCurrencyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete default currency by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Delete default currency by guild id",
+                "parameters": [
+                    {
+                        "description": "Delete default currency config",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GuildIDRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/default-nft-ticker": {
             "get": {
                 "description": "Get guild default nft ticker",
@@ -7347,6 +7443,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.GuildIDRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.LinkUserTelegramWithDiscordRequest": {
             "type": "object",
             "required": [
@@ -7759,6 +7863,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sticker": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertGuildDefaultCurrencyRequest": {
+            "type": "object",
+            "properties": {
+                "Symbol": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 }
             }
@@ -9048,6 +9163,23 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.HandleUserActivityResponse"
+                }
+            }
+        },
+        "response.GuildConfigDefaultCurrencyResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "tip_bot_token": {
+                    "$ref": "#/definitions/model.OffchainTipBotToken"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },

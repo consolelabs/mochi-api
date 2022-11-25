@@ -139,3 +139,10 @@ type GuildPruneExcludeList struct {
 	GuildID string   `json:"guild_id"`
 	Roles   []string `json:"roles"`
 }
+
+type GuildConfigDefaultCurrencyResponse struct {
+	GuildID     string                     `json:"guild_id"`
+	TipBotToken *model.OffchainTipBotToken `json:"tip_bot_token"`
+	UpdatedAt   time.Time                  `json:"updated_at"`
+	CreatedAt   time.Time                  `json:"created_at"`
+}

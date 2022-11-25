@@ -153,6 +153,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultRoleGroup.POST("", h.CreateDefaultRole)
 			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
 		}
+		defaultCurrencyGroup := configGroup.Group("/default-currency")
+		{
+			defaultCurrencyGroup.GET("", h.GetGuildDefaultCurrency)
+			defaultCurrencyGroup.POST("", h.UpsertGuildDefaultCurrency)
+			defaultCurrencyGroup.DELETE("", h.DeleteGuildDefaultCurrency)
+		}
 		defaultSymbolGroup := configGroup.Group("/default-symbol")
 		{
 			defaultSymbolGroup.POST("", h.CreateDefaultCollectionSymbol)
