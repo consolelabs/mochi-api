@@ -1474,3 +1474,84 @@ func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// GetGuildDefaultCurrency     godoc
+// @Summary     Get default currency by guild id
+// @Description Get default currency by guild id
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GuildConfigDefaultCurrencyResponse
+// @Router      /configs/default-currency [get]
+func (h *Handler) GetGuildDefaultCurrency(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetGuildDefaultCurrency] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.GetGuildDefaultCurrency(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetDefaultRolesByGuildID] - failed to get default roles")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// UpsertGuildDefaultCurrency     godoc
+// @Summary     Upsert default currency by guild id
+// @Description Upsert default currency by guild id
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildDefaultCurrencyRequest true "Upsert default currency config"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/default-currency [post]
+func (h *Handler) UpsertGuildDefaultCurrency(c *gin.Context) {
+	var req request.UpsertGuildDefaultCurrencyRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildDefaultCurrency] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+
+	err := h.entities.UpsertGuildDefaultCurrency(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildDefaultCurrency] - failed to upsert default currency")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// DeleteGuildDefaultCurrency     godoc
+// @Summary     Delete default currency by guild id
+// @Description Delete default currency by guild id
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.GuildIDRequest true "Delete default currency config"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/default-currency [delete]
+func (h *Handler) DeleteGuildDefaultCurrency(c *gin.Context) {
+	var req request.GuildIDRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteGuildDefaultCurrency] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+
+	err := h.entities.DeleteGuildDefaultCurrency(req.GuildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteGuildDefaultCurrency] - failed to delete default currency")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

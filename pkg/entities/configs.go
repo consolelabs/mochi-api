@@ -1070,3 +1070,45 @@ func (e *Entity) GetMonikerByGuildID(guildID string) ([]response.MonikerConfigDa
 func (e *Entity) DeleteMonikerConfig(req request.DeleteMonikerConfigRequest) error {
 	return e.repo.MonikerConfig.DeleteOne(req.GuildID, req.Moniker)
 }
+
+func (e *Entity) GetGuildDefaultCurrency(guildID string) (*response.GuildConfigDefaultCurrencyResponse, error) {
+	data, err := e.repo.GuildConfigDefaultCurrency.GetByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetGuildDefaultCurrency] - failed to get default currency")
+		return nil, err
+	}
+	return &response.GuildConfigDefaultCurrencyResponse{
+		GuildID:     data.GuildID,
+		TipBotToken: &data.TipBotToken,
+		UpdatedAt:   data.UpdatedAt,
+		CreatedAt:   data.CreatedAt,
+	}, err
+}
+
+func (e *Entity) UpsertGuildDefaultCurrency(req request.UpsertGuildDefaultCurrencyRequest) error {
+	token, err := e.repo.OffchainTipBotTokens.GetBySymbol(strings.ToUpper(req.Symbol))
+	if err != nil {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.UpsertGuildDefaultCurrency] - failed to get tip bot token")
+		return fmt.Errorf("token symbol not found")
+	}
+
+	err = e.repo.GuildConfigDefaultCurrency.Upsert(&model.UpsertGuildConfigDefaultCurrency{
+		GuildID:       req.GuildID,
+		TipBotTokenID: token.ID.String(),
+		UpdatedAt:     time.Now().UTC(),
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.UpsertGuildDefaultCurrency] - failed to upsert default currency")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) DeleteGuildDefaultCurrency(guildID string) error {
+	err := e.repo.GuildConfigDefaultCurrency.DeleteByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.DeleteGuildDefaultCurrency] - failed to upsert default currency")
+		return err
+	}
+	return nil
+}

@@ -133,3 +133,8 @@ type BalcklistChannelRepostConfigRequest struct {
 	GuildID   string `json:"guild_id"`
 	ChannelID string `json:"channel_id"`
 }
+
+type UpsertGuildDefaultCurrencyRequest struct {
+	GuildID string `json:"guild_id"`
+	Symbol  string `json:"Symbol"`
+}
