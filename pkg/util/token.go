@@ -56,8 +56,12 @@ var tokenEmoji = map[string]string{
 	"MKR":    "1037985596964081696",
 	"ANC":    "1037985575334051901",
 	"BRUSH":  "1037985582162378783",
+	"ICY":    ":ice_cube:",
 }
 
 func GetEmojiToken(token string) string {
+	if strings.ToUpper(token) == "ICY" {
+		return tokenEmoji["ICY"]
+	}
 	return fmt.Sprintf("<:%s:%s>", token, tokenEmoji[strings.ToUpper(token)])
 }
