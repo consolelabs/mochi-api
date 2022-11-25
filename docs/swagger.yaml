@@ -1185,6 +1185,11 @@ definitions:
       query:
         type: string
     type: object
+  request.GuildIDRequest:
+    properties:
+      guild_id:
+        type: string
+    type: object
   request.LinkUserTelegramWithDiscordRequest:
     properties:
       discord_id:
@@ -1455,6 +1460,13 @@ definitions:
       msg:
         type: string
       sticker:
+        type: string
+    type: object
+  request.UpsertGuildDefaultCurrencyRequest:
+    properties:
+      Symbol:
+        type: string
+      guild_id:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -2288,6 +2300,17 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.HandleUserActivityResponse'
+    type: object
+  response.GuildConfigDefaultCurrencyResponse:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      tip_bot_token:
+        $ref: '#/definitions/model.OffchainTipBotToken'
+      updated_at:
+        type: string
     type: object
   response.GuildPruneExcludeList:
     properties:
@@ -3510,6 +3533,69 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Guild custom token config
+      tags:
+      - Config
+  /configs/default-currency:
+    delete:
+      consumes:
+      - application/json
+      description: Delete default currency by guild id
+      parameters:
+      - description: Delete default currency config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GuildIDRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete default currency by guild id
+      tags:
+      - Config
+    get:
+      consumes:
+      - application/json
+      description: Get default currency by guild id
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GuildConfigDefaultCurrencyResponse'
+      summary: Get default currency by guild id
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Upsert default currency by guild id
+      parameters:
+      - description: Upsert default currency config
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildDefaultCurrencyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert default currency by guild id
       tags:
       - Config
   /configs/default-nft-ticker:
