@@ -56,6 +56,8 @@ var tokenEmoji = map[string]string{
 	"MKR":    "1037985596964081696",
 	"ANC":    "1037985575334051901",
 	"BRUSH":  "1037985582162378783",
+	"ICY":    ":ice_cube:",
+	"CARROT": ":carrot:",
 }
 
 func GetEmojiToken(token string) string {
