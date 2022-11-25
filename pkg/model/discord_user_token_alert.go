@@ -9,6 +9,7 @@ import (
 type DiscordUserTokenAlert struct {
 	ID                uuid.NullUUID      `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	TokenID           string             `json:"token_id"`
+	Symbol            string             `json:"symbol"`
 	DiscordID         string             `json:"discord_id"`
 	PriceSet          float64            `json:"price_set"`
 	Trend             string             `json:"trend"`
@@ -22,6 +23,7 @@ type DiscordUserTokenAlert struct {
 type UpsertDiscordUserTokenAlert struct {
 	ID        uuid.NullUUID `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
 	TokenID   string        `json:"token_id"`
+	Symbol    string        `json:"symbol"`
 	DiscordID string        `json:"discord_id"`
 	PriceSet  float64       `json:"price_set"`
 	Trend     string        `json:"trend"`

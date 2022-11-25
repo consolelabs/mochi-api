@@ -225,6 +225,8 @@ definitions:
         type: boolean
       price_set:
         type: number
+      symbol:
+        type: string
       token_id:
         type: string
       trend:
@@ -1259,6 +1261,8 @@ definitions:
         type: string
       guild_id:
         type: string
+      platform:
+        type: string
       recipients:
         items:
           type: string
@@ -1465,6 +1469,8 @@ definitions:
         type: boolean
       price_set:
         type: number
+      symbol:
+        type: string
       token_id:
         type: string
       trend:
@@ -3585,7 +3591,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete default currency by guild id
+      description: Delete default currency
       parameters:
       - description: Delete default currency config
         in: body
@@ -3600,7 +3606,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete default currency by guild id
+      summary: Delete default currency
       tags:
       - Config
     get:
@@ -3626,7 +3632,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Upsert default currency by guild id
+      description: Upsert default currency
       parameters:
       - description: Upsert default currency config
         in: body
@@ -3641,7 +3647,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert default currency by guild id
+      summary: Upsert default currency
       tags:
       - Config
   /configs/default-nft-ticker:
