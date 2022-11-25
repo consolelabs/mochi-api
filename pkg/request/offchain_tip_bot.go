@@ -3,6 +3,7 @@ package request
 type OffchainTransferRequest struct {
 	Sender       string   `json:"sender"`
 	Recipients   []string `json:"recipients"`
+	Platform     string   `json:"platform"`
 	GuildID      string   `json:"guild_id"`
 	ChannelID    string   `json:"channel_id"`
 	Amount       float64  `json:"amount"`
