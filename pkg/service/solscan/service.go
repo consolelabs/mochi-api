@@ -1,4 +1,4 @@
-package blockchainapi
+package solscan
 
 import "github.com/defipod/mochi/pkg/model"
 

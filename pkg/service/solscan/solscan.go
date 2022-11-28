@@ -1,7 +1,8 @@
-package blockchainapi
+package solscan
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -9,28 +10,24 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 )
 
-type blockchainapi struct {
+type solscan struct {
 	config *config.Config
 }
 
 func NewService(cfg *config.Config) Service {
-	return &blockchainapi{
+	return &solscan{
 		config: cfg,
 	}
 }
 
-var blockChainAPIBaseURL = "https://api.blockchainapi.com/v1/solana/nft/mainnet-beta/"
+var solscanBaseURL = "https://api.solscan.io/collection/id"
 
-func (s *blockchainapi) GetSolanaCollection(address string) (*model.SolanaCollectionMetadata, error) {
+func (s *solscan) GetSolanaCollection(collectionId string) (*model.SolanaCollectionMetadata, error) {
 	var client = &http.Client{}
-	req, err := http.NewRequest("GET", blockChainAPIBaseURL+address, nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s?collectionId=%s", solscanBaseURL, collectionId), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("APIKeyID", s.config.BlockChainAPIKeyID)
-	req.Header.Add("APISecretKey", s.config.BlockChainAPISecretKey)
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -44,9 +41,10 @@ func (s *blockchainapi) GetSolanaCollection(address string) (*model.SolanaCollec
 	}
 
 	res := &model.SolanaCollectionMetadata{}
-	err = json.Unmarshal(resBody, res)
+	err = json.Unmarshal(resBody, &res)
 	if err != nil {
 		return nil, err
 	}
+
 	return res, nil
 }
