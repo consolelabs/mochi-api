@@ -10613,7 +10613,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.TransactionsResponse"
+                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
                     }
                 }
             }

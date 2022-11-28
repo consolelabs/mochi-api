@@ -66,10 +66,10 @@ func (mr *MockStoreMockRecorder) GetByUserDiscordId(userDiscordId interface{}) *
 }
 
 // GetTransactionsByQuery mocks base method.
-func (m *MockStore) GetTransactionsByQuery(receiverId, senderId, token string) ([]response.Transactions, error) {
+func (m *MockStore) GetTransactionsByQuery(receiverId, senderId, token string) ([]model.OffchainTipBotTransferHistory, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTransactionsByQuery", receiverId, senderId, token)
-	ret0, _ := ret[0].([]response.Transactions)
+	ret0, _ := ret[0].([]model.OffchainTipBotTransferHistory)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
