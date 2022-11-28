@@ -53,10 +53,6 @@ func (h *Handler) GetTransactionsByQuery(c *gin.Context) {
 		return
 	}
 	token := c.Query("token")
-	if token == "" {
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("token is required"), nil))
-		return
-	}
 	transactions, err := h.entities.GetTransactionsByQuery(senderId, receiverId, token)
 	if err != nil {
 		h.log.Error(err, "[handler.GetUserTransactionsByQuery] - failed to get transactions")

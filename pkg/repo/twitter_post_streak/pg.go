@@ -19,7 +19,7 @@ func NewPG(db *gorm.DB) Store {
 func (pg *pg) List(q ListQuery) ([]model.TwitterPostStreak, int64, error) {
 	var streaks []model.TwitterPostStreak
 	var total int64
-	db := pg.db
+	db := pg.db.Table("twitter_post_streaks")
 	if q.GuildID != "" {
 		db = db.Where("guild_id = ?", q.GuildID)
 	}
@@ -39,7 +39,7 @@ func (pg *pg) List(q ListQuery) ([]model.TwitterPostStreak, int64, error) {
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)
 	}
-	return streaks, total, pg.db.Find(&streaks).Error
+	return streaks, total, db.Find(&streaks).Error
 }
 
 func (pg *pg) UpsertOne(streak *model.TwitterPostStreak) error {
