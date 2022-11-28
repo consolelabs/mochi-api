@@ -888,7 +888,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 				ERCFormat:  "ERC721",
 				IsVerified: true,
 				CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
-				Image:      "/Imagelink",
+				Image:      "",
 				Author:     "catngh",
 			},
 			wantErr: false,
@@ -990,7 +990,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ChainID:    "250",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
-		Image:      "/Imagelink",
+		Image:      "",
 		Author:     "catngh",
 	}
 	returnedValidCollection := model.NFTCollection{
@@ -1002,7 +1002,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
-		Image:      "/Imagelink",
+		Image:      "",
 		Author:     "catngh",
 	}
 	nftReturnedByCheckExist := &model.NFTCollection{
@@ -1014,7 +1014,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		CreatedAt:  time.Date(2022, 7, 1, 1, 2, 3, 4, time.UTC),
-		Image:      "/Imagelink",
+		Image:      "",
 		Author:     "catngh",
 	}
 	syncedContract := &response.IndexerContract{
@@ -1034,7 +1034,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	}
 	paintswapCollection := &response.PaintswapCollectionResponse{
 		Collection: response.PaintswapCollection{
-			Image: "/Imagelink",
+			Image: "",
 		},
 	}
 	// ########## Case 1: SUCCESSFUL
@@ -1047,7 +1047,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250}).Return(nil).AnyTimes()
 	mockMarketplace.EXPECT().GetCollectionFromPaintswap("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(paintswapCollection, nil) //marketplace call for get image
 	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
-	mockDiscord.EXPECT().NotifyAddNewCollection("863278424433229854", "Cyber Rabby", "rabby", "ftm", "/Imagelink").Return(nil).AnyTimes()
+	mockDiscord.EXPECT().NotifyAddNewCollection("863278424433229854", "Cyber Rabby", "rabby", "ftm", "").Return(nil).AnyTimes()
 	//####################
 
 	// ########## Case 2: FAIL - duplicated entry

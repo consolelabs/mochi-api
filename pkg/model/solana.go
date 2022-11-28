@@ -1,17 +1,18 @@
 package model
 
 type SolanaCollectionMetadata struct {
-	OffChainData SolanaOffchainData `json:"off_chain_data"`
-	Data         SolanaData         `json:"data"`
+	Success bool        `json:"success"`
+	Data    SolscanData `json:"data"`
 }
 
-type SolanaOffchainData struct {
-	Image  string `json:"image"`
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
+type SolscanData struct {
+	Success bool                 `json:"success"`
+	Data    SolanaCollectionInfo `json:"data"`
 }
 
-type SolanaData struct {
-	Name   string `json:"name"`
-	Symbol string `json:"symbol"`
+type SolanaCollectionInfo struct {
+	Avatar       string `json:"avatar"`
+	Collection   string `json:"collection"`
+	Symbol       string `json:"symbol"`
+	CollectionId string `json:"collectionId"`
 }

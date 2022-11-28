@@ -21,7 +21,7 @@ func (pg *pg) UpsertOne(config *model.UpsertDiscordUserTokenAlert) (*model.Upser
 	// update on conflict
 	err := tx.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"token_id", "price_set", "trend", "is_enable", "updated_at"}),
+		DoUpdates: clause.AssignmentColumns([]string{"token_id", "symbol", "price_set", "trend", "is_enable", "updated_at"}),
 	}).Create(&config).Error
 	if err != nil {
 		tx.Rollback()

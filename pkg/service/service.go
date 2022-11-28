@@ -9,7 +9,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/service/apns"
 	"github.com/defipod/mochi/pkg/service/binance"
-	blockchainapi "github.com/defipod/mochi/pkg/service/blockchain_api"
 	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/covalent"
@@ -17,25 +16,26 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
+	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/twitter"
 )
 
 // import "github.com/defipod/api/pkg/service/binance"
 
 type Service struct {
-	CoinGecko     coingecko.Service
-	Covalent      covalent.Service
-	Discord       discord.Service
-	Indexer       indexer.Service
-	Abi           abi.Service
-	Apns          apns.Service
-	Twitter       twitter.Service
-	Cloud         cloud.Service
-	Processor     processor.Service
-	BlockchainApi blockchainapi.Service
-	Nghenhan      nghenhan.Service
-	Binance       binance.Service
-	APILayer      apilayer.Service
+	CoinGecko coingecko.Service
+	Covalent  covalent.Service
+	Discord   discord.Service
+	Indexer   indexer.Service
+	Abi       abi.Service
+	Apns      apns.Service
+	Twitter   twitter.Service
+	Cloud     cloud.Service
+	Processor processor.Service
+	Solscan   solscan.Service
+	Nghenhan  nghenhan.Service
+	Binance   binance.Service
+	APILayer  apilayer.Service
 }
 
 func NewService(
@@ -49,18 +49,18 @@ func NewService(
 	}
 
 	return &Service{
-		CoinGecko:     coingecko.NewService(&cfg),
-		Covalent:      covalent.NewService(&cfg),
-		Discord:       discordSvc,
-		Indexer:       indexer.NewIndexer(cfg, log),
-		Abi:           abi.NewAbi(&cfg),
-		Apns:          apns.NewService(&cfg),
-		Twitter:       twitter.NewTwitter(&cfg),
-		Cloud:         cloud.NewCloudClient(&cfg, log),
-		Nghenhan:      nghenhan.NewService(),
-		Processor:     processor.NewProcessor(&cfg),
-		BlockchainApi: blockchainapi.NewService(&cfg),
-		Binance:       binance.NewService(),
-		APILayer:      apilayer.NewService(&cfg),
+		CoinGecko: coingecko.NewService(&cfg),
+		Covalent:  covalent.NewService(&cfg),
+		Discord:   discordSvc,
+		Indexer:   indexer.NewIndexer(cfg, log),
+		Abi:       abi.NewAbi(&cfg),
+		Apns:      apns.NewService(&cfg),
+		Twitter:   twitter.NewTwitter(&cfg),
+		Cloud:     cloud.NewCloudClient(&cfg, log),
+		Nghenhan:  nghenhan.NewService(),
+		Processor: processor.NewProcessor(&cfg),
+		Solscan:   solscan.NewService(&cfg),
+		Binance:   binance.NewService(),
+		APILayer:  apilayer.NewService(&cfg),
 	}, nil
 }

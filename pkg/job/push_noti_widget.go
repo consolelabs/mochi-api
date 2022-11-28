@@ -57,7 +57,7 @@ func (b *binanceWebsocket) Run() error {
 func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataResponse, e *entities.Entity) {
 	openPrice, _ := strconv.ParseFloat(trade.Data.OPrice, 64)
 	closePrice, _ := strconv.ParseFloat(trade.Data.CPrice, 64)
-	tokenSymbol := trade.Symbol[0 : len(trade.Symbol)-4]
+	tokenSymbol := trade.Symbol[0 : len(trade.Symbol)-4] //format: <symbol>USDT
 	alertCache := []string{}
 	direction := "up"
 	if openPrice-closePrice < 0 {
@@ -79,6 +79,7 @@ func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataRes
 				ID:        alert.ID.UUID.String(),
 				IsEnable:  false,
 				TokenID:   alert.TokenID,
+				Symbol:    alert.Symbol,
 				DiscordID: alert.DiscordID,
 				PriceSet:  alert.PriceSet,
 				Trend:     alert.Trend,

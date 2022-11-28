@@ -1017,6 +1017,7 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 		ID:        util.GetNullUUID(req.ID),
 		TokenID:   req.TokenID,
 		DiscordID: req.DiscordID,
+		Symbol:    req.Symbol,
 		PriceSet:  req.PriceSet,
 		IsEnable:  req.IsEnable,
 		Trend:     req.Trend,
@@ -1029,7 +1030,7 @@ func (e *Entity) UpsertUserTokenAlert(req *request.UpsertDiscordUserAlertRequest
 	}
 
 	// alert_<tokenID>_<up/down> : <alertID> - <price>
-	err = e.cache.ZSet(fmt.Sprintf("alert_%s_%s", req.TokenID, req.Trend), alert.ID.UUID.String(), req.PriceSet)
+	err = e.cache.ZSet(fmt.Sprintf("alert_%s_%s", req.Symbol, req.Trend), alert.ID.UUID.String(), req.PriceSet)
 	if err != nil {
 		e.log.Error(err, "[entities.UpsertUserTokenAlert] - failed to cache alert")
 		return err
@@ -1044,7 +1045,7 @@ func (e *Entity) DeleteUserTokenAlert(req *request.DeleteDiscordUserAlertRequest
 		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to delete user token alert")
 		return err
 	}
-	err = e.cache.ZRemove(fmt.Sprintf("alert_%s_%s", alert.TokenID, alert.Trend), alert.ID.UUID.String())
+	err = e.cache.ZRemove(fmt.Sprintf("alert_%s_%s", alert.Symbol, alert.Trend), alert.ID.UUID.String())
 	if err != nil {
 		e.log.Error(err, "[entities.DeleteUserTokenAlert] - failed to remove cache")
 		return err
