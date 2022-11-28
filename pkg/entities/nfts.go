@@ -361,14 +361,14 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	// get solana metadata collection from blockchain api
-	solanaCollection, err := e.svc.BlockchainApi.GetSolanaCollection(req.Address)
+	solanaCollection, err := e.svc.Solscan.GetSolanaCollection(req.Address)
 	if err != nil {
-		e.log.Errorf(err, "[e.svc.BlockchainApi.GetSolanaCollection] failed to get solana collection: %v", err)
+		e.log.Errorf(err, "[e.svc.Solscan.GetSolanaCollection] failed to get solana collection: %v", err)
 		return nil, err
 	}
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: req.Address,
+		Address: solanaCollection.Data.Data.CollectionId,
 		ChainID: 0,
 	})
 	if err != nil {
@@ -377,21 +377,21 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    req.Address,
-		Symbol:     solanaCollection.Data.Symbol,
-		Name:       solanaCollection.Data.Name,
+		Address:    solanaCollection.Data.Data.CollectionId,
+		Symbol:     solanaCollection.Data.Data.Symbol,
+		Name:       solanaCollection.Data.Data.Collection,
 		ChainID:    "0",
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		Author:     req.Author,
-		Image:      solanaCollection.OffChainData.Image,
+		Image:      solanaCollection.Data.Data.Avatar,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
 
-	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.Data.Name, solanaCollection.Data.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.OffChainData.Image)
+	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.Data.Data.Collection, solanaCollection.Data.Data.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.Data.Data.Avatar)
 	if err != nil {
 		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
 		return nil, fmt.Errorf("Cannot send embed message: %v", err)
@@ -430,6 +430,7 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		return nil, fmt.Errorf("Failed to convert chain to chainId: %v", err)
 	}
 	colNolFound := false
+
 	image, err := e.getImageFromMarketPlace(chainID, req.Address)
 	if err != nil {
 		e.log.Errorf(err, "[e.getImageFromMarketPlace] failed to get image from market place: %v", err)
@@ -516,12 +517,13 @@ func (e *Entity) handleExistCollection(req request.CreateNFTCollectionRequest) (
 
 func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, error) {
 	if chainID == 1 {
-		collection, err := e.marketplace.GetOpenseaAssetContract(address)
-		if err != nil {
-			e.log.Errorf(err, "[GetOpenseaAssetContract] cannot get contract: %s | chainId %d", address, chainID)
-			return "", fmt.Errorf("Cannot get contract: %v", err)
-		}
-		return collection.Collection.Image, nil
+		// TODO(trkhoi): opensea api key is expired, get new one
+		// collection, err := e.marketplace.GetOpenseaAssetContract(address)
+		// if err != nil {
+		// 	e.log.Errorf(err, "[GetOpenseaAssetContract] cannot get contract: %s | chainId %d", address, chainID)
+		// 	return "", fmt.Errorf("Cannot get contract: %v", err)
+		// }
+		return "", nil
 	}
 	if chainID == 250 {
 		collection, err := e.marketplace.GetCollectionFromPaintswap(address)
