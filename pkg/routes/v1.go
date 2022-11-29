@@ -38,6 +38,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.POST("/withdraw", h.OffchainTipBotWithdraw)
 		offchainTipBotGroup.POST("/transfer", h.TransferToken)
 		offchainTipBotGroup.GET("/transactions", h.GetTransactionsByQuery)
+
+		// config channel notify
+		configNotify := offchainTipBotGroup.Group("/config-notify")
+		{
+			configNotify.POST("/", h.CreateConfigNotify)
+			configNotify.GET("/", h.ListConfigNotify)
+			configNotify.DELETE("/:id", h.DeleteConfigNotify)
+		}
 	}
 
 	trade := v1.Group("/trades")

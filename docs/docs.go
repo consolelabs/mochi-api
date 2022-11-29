@@ -4482,6 +4482,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/offchain-tip-bot/config-notify": {
+            "get": {
+                "description": "API get list config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "guild id",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListConfigNotifyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "API config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "description": "config notify request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTipConfigNotify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/offchain-tip-bot/config-notify/{id}": {
+            "delete": {
+                "description": "API delete config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of config notify",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/offchain-tip-bot/transactions": {
             "get": {
                 "description": "Get transactions by query",
@@ -6539,6 +6635,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.OffchainTipBotConfigNotify": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.OffchainTipBotContract": {
             "type": "object",
             "properties": {
@@ -7315,6 +7434,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateTipConfigNotify": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
@@ -9866,6 +9999,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.NFTCollection"
+                    }
+                }
+            }
+        },
+        "response.ListConfigNotifyResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OffchainTipBotConfigNotify"
                     }
                 }
             }
