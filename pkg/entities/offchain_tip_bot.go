@@ -152,9 +152,39 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		return nil, err
 	}
 
+	// notify tip to channel
+	e.sendLogNotify(req, amountEachRecipient)
+
+	// notify tip to other platform: twitter, telegram, ...
 	e.NotifyTipFromPlatforms(req, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID])
 
 	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
+}
+
+func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRecipient float64) {
+	if req.TransferType == consts.OffchainTipBotTransferTypeTip {
+		// Do not return error here, just log it
+		configNotifyChannels, err := e.repo.OffchainTipBotConfigNotify.GetByGuildID(req.GuildID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[repo.OffchainTipBotConfigNotify.GetByGuildID] - failed to get config notify channels")
+		}
+
+		for _, configNotifyChannel := range configNotifyChannels {
+			if strings.EqualFold(req.Token, configNotifyChannel.Token) || configNotifyChannel.Token == "*" {
+				var recipients []string
+				for _, recipient := range req.Recipients {
+					recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
+				}
+				recipientsStr := strings.Join(recipients, ", ")
+				description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+
+				err := e.svc.Discord.SendGuildActivityLogs(configNotifyChannel.ChannelID, req.Sender, strings.ToUpper(req.TransferType), description)
+				if err != nil {
+					e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelID}).Error(err, "[discord.ChannelMessageSendEmbed] - failed to send message to channel")
+				}
+			}
+		}
+	}
 }
 
 func (e *Entity) NotifyTipFromPlatforms(req request.OffchainTransferRequest, amountEachRecipient float64, price float64) {
