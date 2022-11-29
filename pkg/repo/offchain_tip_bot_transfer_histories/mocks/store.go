@@ -65,6 +65,36 @@ func (mr *MockStoreMockRecorder) GetByUserDiscordId(userDiscordId interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByUserDiscordId", reflect.TypeOf((*MockStore)(nil).GetByUserDiscordId), userDiscordId)
 }
 
+// GetTotalTransactionByGuild mocks base method.
+func (m *MockStore) GetTotalTransactionByGuild(guildId string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalTransactionByGuild", guildId)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTotalTransactionByGuild indicates an expected call of GetTotalTransactionByGuild.
+func (mr *MockStoreMockRecorder) GetTotalTransactionByGuild(guildId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalTransactionByGuild", reflect.TypeOf((*MockStore)(nil).GetTotalTransactionByGuild), guildId)
+}
+
+// GetTotalTransactionByGuildAndToken mocks base method.
+func (m *MockStore) GetTotalTransactionByGuildAndToken(guildId, token string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalTransactionByGuildAndToken", guildId, token)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTotalTransactionByGuildAndToken indicates an expected call of GetTotalTransactionByGuildAndToken.
+func (mr *MockStoreMockRecorder) GetTotalTransactionByGuildAndToken(guildId, token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalTransactionByGuildAndToken", reflect.TypeOf((*MockStore)(nil).GetTotalTransactionByGuildAndToken), guildId, token)
+}
+
 // GetTransactionsByQuery mocks base method.
 func (m *MockStore) GetTransactionsByQuery(receiverId, senderId, token string) ([]model.OffchainTipBotTransferHistory, error) {
 	m.ctrl.T.Helper()
