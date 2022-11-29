@@ -1,6 +1,8 @@
 package offchain_tip_bot_transfer_histories
 
 import (
+	"strings"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
@@ -59,4 +61,12 @@ func (pg *pg) GetTransactionsByQuery(senderId, receiverId, token string) ([]mode
 		db = db.Where("token = ?", token)
 	}
 	return transferHistories, db.Find(&transferHistories).Error
+}
+
+func (pg *pg) GetTotalTransactionByGuildAndToken(guildId, token string) (count int64, err error) {
+	return count, pg.db.Model(&model.OffchainTipBotTransferHistory{}).Where("guild_id = ? and token = ? and status = ?", guildId, strings.ToUpper(token), "success").Count(&count).Error
+}
+
+func (pg *pg) GetTotalTransactionByGuild(guildId string) (count int64, err error) {
+	return count, pg.db.Model(&model.OffchainTipBotTransferHistory{}).Where("guild_id = ? and status = ?", guildId, "success").Count(&count).Error
 }
