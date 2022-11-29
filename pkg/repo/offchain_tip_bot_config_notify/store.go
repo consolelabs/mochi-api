@@ -4,4 +4,6 @@ import "github.com/defipod/mochi/pkg/model"
 
 type Store interface {
 	GetByGuildID(guildID string) (rs []model.OffchainTipBotConfigNotify, err error)
+	Create(config *model.OffchainTipBotConfigNotify) error
+	Delete(id string) error
 }
