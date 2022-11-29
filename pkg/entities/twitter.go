@@ -76,15 +76,14 @@ func (e *Entity) updateTwitterPostStreak(req *request.TwitterPost) error {
 	currentStreak := streaks[0]
 	nextStreakDate := util.StartOfDay(currentStreak.LastStreakDate.Add(time.Hour * 24))
 	switch {
-	// today == last streak date => already update streak today => skip
-	case currentStreak.LastStreakDate.Equal(today):
-		return nil
-		// today - last streak date = 1 day => streak maintains
+	// today - last streak date = 1 day => streak maintains
 	case nextStreakDate.Equal(today):
 		currentStreak.StreakCount++
 		// today - last streak date > 1 day => broken streak => reset
 	case nextStreakDate.Before(today):
 		currentStreak.StreakCount = 1
+	default:
+		break
 	}
 	currentStreak.LastStreakDate = today
 	currentStreak.TotalCount++
