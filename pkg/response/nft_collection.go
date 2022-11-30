@@ -39,9 +39,6 @@ type NFTCollectionsData struct {
 type NFTCollectionCount struct {
 	Total int                       `json:"total"`
 	Data  []NFTChainCollectionCount `json:"data"`
-	// ETHCount int `json:"eth_collection"`
-	// FTMCount int `json:"ftm_collection"`
-	// OPCount  int `json:"op_collection"`
 }
 
 type NFTChainCollectionCount struct {
