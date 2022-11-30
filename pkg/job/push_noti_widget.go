@@ -2,7 +2,6 @@ package job
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -11,7 +10,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/gorilla/websocket"
 )
 
@@ -37,13 +35,13 @@ func (b *binanceWebsocket) Run() error {
 	conn, _, err := websocket.DefaultDialer.Dial("wss://stream.binance.com:9443/ws/bnbusdt@kline_1m/btcusdt@kline_1m/ethusdt@kline_1m/ftmusdt@kline_1m/avaxusdt@kline_1m/maticusdt@kline_1m/solusdt@kline_1m/icpusdt@kline_1m", nil)
 	defer conn.Close()
 	if err != nil {
-		log.Error("failed to connect to websocket")
+		b.log.Error(err, "failed to connect to websocket")
 		return err
 	}
 
 	// binance will send ping message
 	conn.SetPingHandler(func(appData string) error {
-		log.Info("ping frame responded")
+		b.log.Info("ping frame responded")
 		return conn.WriteControl(websocket.PongMessage, []byte(appData), time.Now().Add(5*time.Second))
 	})
 
@@ -70,12 +68,12 @@ func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataRes
 	for _, id := range alertCache {
 		alert, err := b.entity.GetUserTokenAlertByID(id)
 		if err != nil || alert == nil {
-			log.Error(fmt.Sprintf("failed to get users alert id: %s", id))
+			b.log.Errorf(err, "failed to get users alert id: %s", id)
 			continue
 		}
 		// if up trend => current price is higher or equal to alert price and reverse
 		if alert.IsEnable {
-			log.Info(fmt.Sprintf("sending alert to id: %s", id))
+			b.log.Infof("sending alert to id: %s", id)
 			// disable alert after push noti
 			err := b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
 				ID:        alert.ID.UUID.String(),
@@ -88,20 +86,20 @@ func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataRes
 				DeviceID:  alert.DiscordUserDevice.ID,
 			})
 			if err != nil {
-				log.Error(fmt.Sprintf("failed to update alert: %s | id: %s", err.Error(), id))
+				b.log.Errorf(err, "failed to update alert id: %s", id)
 			}
 
 			res, err := e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.Symbol))
 			if err != nil {
-				log.Error(fmt.Sprintf("failed to push notification: %s | id: %s", err.Error(), id))
+				b.log.Errorf(err, "failed to push notification id: %s", id)
 			}
 			if res.Sent() {
-				log.Info(fmt.Sprintf("successfully sent alert to token: %s", alert.DiscordUserDevice.IosNotiToken))
+				b.log.Infof("successfully sent alert to token: %s", alert.DiscordUserDevice.IosNotiToken)
 			}
 			// remove cache after use
 			err = b.entity.DeleteTokenAlertZCache(tokenSymbol, direction, id)
 			if err != nil {
-				log.Error(fmt.Sprintf("failed to remove cache: %s | id: %s", err.Error(), id))
+				b.log.Errorf(err, "failed to remove cache id: %s", id)
 			}
 		}
 
