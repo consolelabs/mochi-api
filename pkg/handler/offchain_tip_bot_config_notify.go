@@ -30,7 +30,7 @@ func (h *Handler) CreateConfigNotify(c *gin.Context) {
 	err := h.entities.CreateConfigNotify(req)
 	if err != nil {
 		h.log.Error(err, "[handler.CreateConfigNotify] - failed to create config notify")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
