@@ -43,6 +43,7 @@ func (b *binanceWebsocket) Run() error {
 
 	// binance will send ping message
 	conn.SetPingHandler(func(appData string) error {
+		log.Info("ping frame responded")
 		return conn.WriteControl(websocket.PongMessage, []byte(appData), time.Now().Add(5*time.Second))
 	})
 
@@ -74,8 +75,9 @@ func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataRes
 		}
 		// if up trend => current price is higher or equal to alert price and reverse
 		if alert.IsEnable {
+			log.Info(fmt.Sprintf("sending alert to id: %s", id))
 			// disable alert after push noti
-			b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
+			err := b.entity.UpsertUserTokenAlert(&request.UpsertDiscordUserAlertRequest{
 				ID:        alert.ID.UUID.String(),
 				IsEnable:  false,
 				TokenID:   alert.TokenID,
@@ -85,9 +87,22 @@ func (b *binanceWebsocket) checkAndNotify(trade *response.WebsocketKlinesDataRes
 				Trend:     alert.Trend,
 				DeviceID:  alert.DiscordUserDevice.ID,
 			})
-			e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.TokenID))
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to update alert: %s | id: %s", err.Error(), id))
+			}
+
+			res, err := e.GetSvc().Apns.PushNotificationToIos(alert.DiscordUserDevice.IosNotiToken, alert.PriceSet, alert.Trend, strings.ToUpper(alert.Symbol))
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to push notification: %s | id: %s", err.Error(), id))
+			}
+			if res.Sent() {
+				log.Info(fmt.Sprintf("successfully sent alert to token: %s", alert.DiscordUserDevice.IosNotiToken))
+			}
 			// remove cache after use
-			b.entity.DeleteTokenAlertZCache(tokenSymbol, direction, id)
+			err = b.entity.DeleteTokenAlertZCache(tokenSymbol, direction, id)
+			if err != nil {
+				log.Error(fmt.Sprintf("failed to remove cache: %s | id: %s", err.Error(), id))
+			}
 		}
 
 	}

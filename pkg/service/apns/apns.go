@@ -11,9 +11,6 @@ import (
 	"github.com/sideshow/apns2/token"
 )
 
-//firebase "firebase.google.com/go"
-//"github.com/appleboy/go-fcm"
-
 type APNSClient struct {
 	client *apns2.Client
 }
@@ -33,7 +30,7 @@ func NewService(cfg *config.Config) Service {
 	}
 }
 
-func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, trend string, token string) error {
+func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, trend string, token string) (*apns2.Response, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -48,8 +45,11 @@ func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, tren
 	}
 
 	res, err := f.client.PushWithContext(ctx, notification)
-	if err != nil || !res.Sent() {
-		return fmt.Errorf("failed to push err: %s | apns err: %s", err, res.Reason)
+	if err != nil {
+		return res, err
 	}
-	return nil
+	if !res.Sent() {
+		return res, fmt.Errorf(res.Reason)
+	}
+	return res, nil
 }
