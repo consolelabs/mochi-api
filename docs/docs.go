@@ -6635,29 +6635,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotConfigNotify": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.OffchainTipBotContract": {
             "type": "object",
             "properties": {
@@ -8458,6 +8435,32 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ConfigNotifyResponse": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "total_transaction": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "response.ConfigureInvitesResponse": {
             "type": "object",
             "properties": {
@@ -10009,7 +10012,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotConfigNotify"
+                        "$ref": "#/definitions/response.ConfigNotifyResponse"
                     }
                 }
             }
@@ -10211,6 +10214,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.NFTChainCollectionCount": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "$ref": "#/definitions/model.Chain"
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.NFTCollectionConfig": {
             "type": "object",
             "properties": {
@@ -10258,14 +10272,11 @@ const docTemplate = `{
         "response.NFTCollectionCount": {
             "type": "object",
             "properties": {
-                "eth_collection": {
-                    "type": "integer"
-                },
-                "ftm_collection": {
-                    "type": "integer"
-                },
-                "op_collection": {
-                    "type": "integer"
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.NFTChainCollectionCount"
+                    }
                 },
                 "total": {
                     "type": "integer"
