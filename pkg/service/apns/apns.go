@@ -34,14 +34,15 @@ func (f *APNSClient) PushNotificationToIos(pushToken string, price float64, tren
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	msg := fmt.Sprintf("%s has fallen to %v", token, price)
+	formatedPrice := fmt.Sprintf("%.2f", price)
+	msg := fmt.Sprintf("%s has fallen to %s", token, formatedPrice)
 	if trend == "up" {
-		msg = fmt.Sprintf("%s has reached %v", token, price)
+		msg = fmt.Sprintf("%s has reached %s", token, formatedPrice)
 	}
 	notification := &apns2.Notification{
 		DeviceToken: pushToken,
 		Topic:       "so.console.mochi",
-		Payload:     []byte(fmt.Sprintf(`{"aps":{"alert":"%s"}}`, msg)),
+		Payload:     []byte(fmt.Sprintf(`{"aps":{"alert":{"title":"Price Alert", "body":"%s"}, "sound":"default"}}`, msg)),
 	}
 
 	res, err := f.client.PushWithContext(ctx, notification)
