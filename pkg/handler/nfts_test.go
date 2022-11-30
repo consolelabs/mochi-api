@@ -387,6 +387,8 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 			indexerMock.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{
 				Address: tt.address,
 				ChainID: chainId,
+				Name:    "Cyber Rabby",
+				Symbol:  "RABBY",
 			}).Return(nil).AnyTimes()
 
 			discordMock.EXPECT().NotifyAddNewCollection(tt.req.GuildID, tt.wantName, tt.wantSymbol, tt.req.ChainID, tt.wantImage).AnyTimes()
