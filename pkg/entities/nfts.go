@@ -460,6 +460,8 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
 		Address: req.Address,
 		ChainID: chainID,
+		Name:    name,
+		Symbol:  symbol,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
