@@ -13,6 +13,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
+	mock_chain "github.com/defipod/mochi/pkg/repo/chain/mocks"
 	mock_guild_config_sales_tracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker/mocks"
 	mock_nft_collection "github.com/defipod/mochi/pkg/repo/nft_collection/mocks"
 	mock_nft_sales_tracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker/mocks"
@@ -1606,7 +1607,9 @@ func TestEntity_GetCollectionCount(t *testing.T) {
 	log := logger.NewLogrusLogger()
 
 	nftCollection := mock_nft_collection.NewMockStore(ctrl)
+	chainMock := mock_chain.NewMockStore(ctrl)
 	r.NFTCollection = nftCollection
+	r.Chain = chainMock
 	tests := []struct {
 		name    string
 		fields  fields
@@ -1621,14 +1624,43 @@ func TestEntity_GetCollectionCount(t *testing.T) {
 				log:  log,
 			},
 			want: &response.NFTCollectionCount{
-				Total:    10,
-				ETHCount: 4,
-				FTMCount: 3,
-				OPCount:  3,
+				Total: 10,
+				Data: []response.NFTChainCollectionCount{
+					{
+						Chain: model.Chain{
+							ID: 1,
+						},
+						Count: 4,
+					},
+					{
+						Chain: model.Chain{
+							ID: 250,
+						},
+						Count: 3,
+					},
+					{
+						Chain: model.Chain{
+							ID: 10,
+						},
+						Count: 3,
+					},
+				},
 			},
 			wantErr: false,
 		},
 	}
+	chains := []model.Chain{
+		{
+			ID: 1,
+		},
+		{
+			ID: 250,
+		},
+		{
+			ID: 10,
+		},
+	}
+	chainMock.EXPECT().GetAll().Return(chains, nil).AnyTimes()
 	nftCollection.EXPECT().GetByChain(1).Return(nil, 4, nil).AnyTimes()
 	nftCollection.EXPECT().GetByChain(250).Return(nil, 3, nil).AnyTimes()
 	nftCollection.EXPECT().GetByChain(10).Return(nil, 3, nil).AnyTimes()

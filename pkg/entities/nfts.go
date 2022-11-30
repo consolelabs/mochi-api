@@ -904,26 +904,25 @@ func (e *Entity) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse
 }
 
 func (e *Entity) GetCollectionCount() (*response.NFTCollectionCount, error) {
-	_, nr_of_eth, err := e.repo.NFTCollection.GetByChain(1)
+	chains, err := e.repo.Chain.GetAll()
 	if err != nil {
-		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of ETH collections")
+		e.log.Errorf(err, "[e.GetCollectionCount] - cannot get all chain")
 		return nil, err
 	}
-	_, nr_of_ftm, err := e.repo.NFTCollection.GetByChain(250)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of FTM collections")
-		return nil, err
-	}
-	_, nr_of_op, err := e.repo.NFTCollection.GetByChain(10)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetCollectionCount] cannot count number of OP collections")
-		return nil, err
+	total := 0
+	data := []response.NFTChainCollectionCount{}
+	for _, chain := range chains {
+		_, nr, err := e.repo.NFTCollection.GetByChain(chain.ID)
+		if err != nil {
+			e.log.Errorf(err, fmt.Sprintf("[e.GetCollectionCount] - cannot count number of %s collections", chain.Currency))
+			return nil, err
+		}
+		total += nr
+		data = append(data, response.NFTChainCollectionCount{Chain: chain, Count: nr})
 	}
 	return &response.NFTCollectionCount{
-		Total:    nr_of_eth + nr_of_ftm + nr_of_op,
-		ETHCount: nr_of_eth,
-		FTMCount: nr_of_ftm,
-		OPCount:  nr_of_op,
+		Total: total,
+		Data:  data,
 	}, nil
 }
 
