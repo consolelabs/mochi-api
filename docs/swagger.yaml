@@ -571,21 +571,6 @@ definitions:
       user_id:
         type: string
     type: object
-  model.OffchainTipBotConfigNotify:
-    properties:
-      channel_id:
-        type: string
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      token:
-        type: string
-      updated_at:
-        type: string
-    type: object
   model.OffchainTipBotContract:
     properties:
       assign_status:
@@ -1757,6 +1742,23 @@ definitions:
       role_id:
         type: string
     type: object
+  response.ConfigNotifyResponse:
+    properties:
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      token:
+        type: string
+      total_transaction:
+        type: integer
+      updated_at:
+        type: string
+    type: object
   response.ConfigureInvitesResponse:
     properties:
       data:
@@ -2761,7 +2763,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.OffchainTipBotConfigNotify'
+          $ref: '#/definitions/response.ConfigNotifyResponse'
         type: array
     type: object
   response.ListCustomCommandsResponse:
@@ -2892,6 +2894,13 @@ definitions:
           $ref: '#/definitions/response.MonikerConfigData'
         type: array
     type: object
+  response.NFTChainCollectionCount:
+    properties:
+      chain:
+        $ref: '#/definitions/model.Chain'
+      count:
+        type: integer
+    type: object
   response.NFTCollectionConfig:
     properties:
       address:
@@ -2923,12 +2932,10 @@ definitions:
     type: object
   response.NFTCollectionCount:
     properties:
-      eth_collection:
-        type: integer
-      ftm_collection:
-        type: integer
-      op_collection:
-        type: integer
+      data:
+        items:
+          $ref: '#/definitions/response.NFTChainCollectionCount'
+        type: array
       total:
         type: integer
     type: object
