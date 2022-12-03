@@ -7,8 +7,10 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+
 	"gorm.io/gorm"
 )
 
@@ -124,6 +126,10 @@ func (e *Entity) SetDefaultToken(req request.ConfigDefaultTokenRequest) error {
 	}
 
 	token, err := e.repo.Token.GetBySymbol(req.Symbol, true)
+	if err == gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[Entity][SetDefaultToken] repo.Token.GetBySymbol failed")
+		return baseerrs.ErrRecordNotFound
+	}
 	if err != nil {
 		e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[Entity][SetDefaultToken] repo.Token.GetBySymbol failed")
 		return err

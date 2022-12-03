@@ -115,7 +115,7 @@ func TestHandler_RemoveRepostReactionConfig(t *testing.T) {
 			name: "Remove successfully",
 			args: request.ConfigRepostRequest{
 				GuildID:         "552427722551459840",
-				Emoji:           "test",
+				Emoji:           "<:approve:1013775827051237486>",
 				Quantity:        1,
 				RepostChannelID: "test",
 			},
