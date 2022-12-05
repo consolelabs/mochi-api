@@ -14,7 +14,7 @@ type OffchainTransferRequest struct {
 	FullCommand  string   `json:"full_command"`
 	Duration     int      `json:"duration"`
 	Message      string   `json:"message"`
-	Imgae        string   `json:"image"`
+	Image        string   `json:"image"`
 }
 type OffchainWithdrawRequest struct {
 	Recipient        string  `json:"recipient"`
