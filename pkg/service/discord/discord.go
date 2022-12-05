@@ -492,7 +492,7 @@ func (d *Discord) SendTipActivityLogs(channelID, userID, title, description, ima
 
 	_, err := d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
 	if err != nil {
-		return fmt.Errorf("[SendGuildActivityLogs] - ChannelMessageSendEmbed failed - channel %s: %s", channelID, err.Error())
+		return fmt.Errorf("[SendTipActivityLogs] - ChannelMessageSendEmbed failed - channel %s: %s", channelID, err.Error())
 	}
 
 	return nil
