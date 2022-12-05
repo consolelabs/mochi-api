@@ -176,9 +176,16 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 					recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
 				}
 				recipientsStr := strings.Join(recipients, ", ")
-				description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+				descriptionFormat := "<@%s> has sent %s **%g %s** at <#%s>"
+				if len(req.Recipients) > 1 {
+					descriptionFormat = "<@%s> has sent %s **%g %s** each at <#%s>"
+				}
+				description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+				if req.Message != "" {
+					description += fmt.Sprintf(" with messge **%s**", req.Message)
+				}
 
-				err := e.svc.Discord.SendGuildActivityLogs(configNotifyChannel.ChannelID, req.Sender, strings.ToUpper(req.TransferType), description)
+				err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, strings.ToUpper(req.TransferType), description, req.Imgae)
 				if err != nil {
 					e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelID}).Error(err, "[discord.ChannelMessageSendEmbed] - failed to send message to channel")
 				}

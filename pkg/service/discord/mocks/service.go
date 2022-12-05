@@ -202,6 +202,20 @@ func (mr *MockServiceMockRecorder) SendLevelUpMessage(logChannelID, role, uActiv
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), logChannelID, role, uActivity)
 }
 
+// SendTipActivityLogs mocks base method.
+func (m *MockService) SendTipActivityLogs(channelID, userID, title, description, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, title, description, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendTipActivityLogs indicates an expected call of SendTipActivityLogs.
+func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, title, description, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, title, description, image)
+}
+
 // SendUpdateRolesLog mocks base method.
 func (m *MockService) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error {
 	m.ctrl.T.Helper()

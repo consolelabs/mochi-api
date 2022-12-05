@@ -23,4 +23,5 @@ type Service interface {
 	SendUpvoteMessage(discordID, source string, isStranger bool) error
 	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error
 	NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error
+	SendTipActivityLogs(channelID, userID, title, description, image string) error
 }
