@@ -1089,6 +1089,10 @@ func TestEntity_RemoveGuildRepostReactionConfig(t *testing.T) {
 			wantErr: false,
 		},
 	}
+	cfgRepost.EXPECT().GetByReaction("552427722551459840", "test").Return(model.GuildConfigRepostReaction{
+		GuildID: "552427722551459840",
+		Emoji:   "1022412798585737226",
+	}, nil).AnyTimes()
 	cfgRepost.EXPECT().DeleteConfigMessage("552427722551459840", "test").Return(nil).AnyTimes()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

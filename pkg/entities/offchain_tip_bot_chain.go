@@ -8,6 +8,7 @@ import (
 func (e *Entity) OffchainTipBotListAllChains(f offchaintipbotchain.Filter) (returnChain []model.OffchainTipBotChain, err error) {
 	returnChain, err = e.repo.OffchainTipBotChain.GetAll(f)
 	if err != nil {
+		e.log.Error(err, "[entity.OffchainTipBotListAllChains] repo.OffchainTipBotChain.GetAll() failed")
 		return returnChain, err
 	}
 
