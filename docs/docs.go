@@ -7710,6 +7710,12 @@ const docTemplate = `{
                 "guild_id": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
                 "platform": {
                     "type": "string"
                 },

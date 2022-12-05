@@ -13,6 +13,8 @@ type OffchainTransferRequest struct {
 	TransferType string   `json:"transfer_type"`
 	FullCommand  string   `json:"full_command"`
 	Duration     int      `json:"duration"`
+	Message      string   `json:"message"`
+	Image        string   `json:"image"`
 }
 type OffchainWithdrawRequest struct {
 	Recipient        string  `json:"recipient"`
