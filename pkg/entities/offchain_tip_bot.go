@@ -190,7 +190,6 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 				if req.Message != "" {
 					description += fmt.Sprintf(" with messge\n\n  <:conversation:1032608818930139249> **%s**", req.Message)
 				}
-				description += "\n\n👉 You can say thank to your friend by $tip <:lol:906040361166716968>"
 				title := fmt.Sprintf("<:tip:933384794627248128> %s <:tip:933384794627248128>", strings.ToUpper(req.TransferType))
 
 				err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, title, description, req.Image)
