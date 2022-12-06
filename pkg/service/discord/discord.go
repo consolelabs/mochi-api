@@ -483,7 +483,7 @@ func (d *Discord) SendTipActivityLogs(channelID, userID, title, description, ima
 			URL: dcUser.AvatarURL(""),
 		},
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: "👉 You can say thank to your friend by $tip <:lol:906040361166716968>",
+			Text: "👉 You can say thank to your friend by $tip",
 		},
 	}
 	if image != "" {
