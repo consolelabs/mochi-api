@@ -19,7 +19,7 @@ func ConvertChainToChainId(chain string) string {
 	case "quixotic":
 		return "10"
 	case "apt":
-		return "99999999"
+		return "9999"
 	default:
 		return chain
 	}
