@@ -464,3 +464,32 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 	}
 	return nil
 }
+
+func (d *Discord) SendTipActivityLogs(channelID, userID, title, description, image string) error {
+	if channelID == "" {
+		return nil
+	}
+	dcUser, err := d.session.User(userID)
+	if err != nil {
+		d.log.Errorf(err, "[SendTipActivityLogs] - get discord user failed %s", userID)
+		return err
+	}
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       title,
+		Description: description,
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: dcUser.AvatarURL(""),
+		},
+	}
+	if image != "" {
+		msgEmbed.Image = &discordgo.MessageEmbedImage{URL: image}
+	}
+	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("[SendTipActivityLogs] - ChannelMessageSendEmbed failed - channel %s: %s", channelID, err.Error())
+	}
+
+	return nil
+}

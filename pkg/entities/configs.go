@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -681,6 +682,10 @@ func (e *Entity) CreateRepostReactionEventWithStartStop(req request.MessageReact
 }
 
 func (e *Entity) RemoveGuildRepostReactionConfig(guildID, emoji string) error {
+	_, err := e.repo.GuildConfigRepostReaction.GetByReaction(guildID, emoji)
+	if err == gorm.ErrRecordNotFound {
+		return baseerrs.ErrRecordNotFound
+	}
 	return e.repo.GuildConfigRepostReaction.DeleteConfigMessage(guildID, emoji)
 }
 
