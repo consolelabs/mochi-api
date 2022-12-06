@@ -21,12 +21,17 @@ init:
 	@while ! docker exec mochi-postgres pg_isready > /dev/null; do \
 		sleep 1; \
 	done
+	make migrate-up
+	make seed-db
+
+init-test:
+	docker-compose up -d postgres postgres_test
+	@echo "Waiting for database connection..."
 	@while ! docker exec $(POSTGRES_TEST_CONTAINER) pg_isready > /dev/null; do \
 		sleep 1; \
 	done
-	make migrate-up
 	make migrate-test
-	make seed-db
+
 
 remove-infras:
 	docker-compose down --remove-orphans
