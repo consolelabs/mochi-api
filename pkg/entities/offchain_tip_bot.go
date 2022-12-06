@@ -334,6 +334,9 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Recipient}).Error(err, "[repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID] - failed to get user balance")
 		return nil, err
 	}
+	if req.All {
+		req.Amount = recipientBal.Amount * (1 - offchainToken.ServiceFee)
+	}
 
 	if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(modelNotEnoughBalance)
