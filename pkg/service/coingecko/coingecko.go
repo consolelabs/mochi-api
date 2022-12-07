@@ -78,6 +78,9 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 	for k, v := range *resp {
 		prices[k] = v[currency]
 	}
+	if strings.Contains(coinIDsArg, "icy") && currency == "usd" {
+		prices["icy"] = 1.5
+	}
 
 	return prices, nil
 }

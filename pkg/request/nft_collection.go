@@ -14,6 +14,8 @@ type CreateNFTCollectionRequest struct {
 	Author              string `json:"author"`
 	GuildID             string `json:"guild_id"`
 	IsReportDataFailure bool   `json:"is_report_data_failure"`
+	ChannelID           string `json:"channel_id"`
+	MessageID           string `json:"message_id"`
 }
 
 func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {

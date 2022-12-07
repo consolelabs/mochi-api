@@ -50,6 +50,20 @@ func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionNam
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyAddNewCollection", reflect.TypeOf((*MockService)(nil).NotifyAddNewCollection), guildID, collectionName, symbol, chain, image)
 }
 
+// NotifyCompleteCollectionIntegration mocks base method.
+func (m *MockService) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyCompleteCollectionIntegration", guildID, collectionName, symbol, chain, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyCompleteCollectionIntegration indicates an expected call of NotifyCompleteCollectionIntegration.
+func (mr *MockServiceMockRecorder) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionIntegration", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionIntegration), guildID, collectionName, symbol, chain, image)
+}
+
 // NotifyGmStreak mocks base method.
 func (m *MockService) NotifyGmStreak(channelID, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
 	m.ctrl.T.Helper()
@@ -200,6 +214,20 @@ func (m *MockService) SendLevelUpMessage(logChannelID, role string, uActivity *r
 func (mr *MockServiceMockRecorder) SendLevelUpMessage(logChannelID, role, uActivity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), logChannelID, role, uActivity)
+}
+
+// SendTipActivityLogs mocks base method.
+func (m *MockService) SendTipActivityLogs(channelID, userID, title, description, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, title, description, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendTipActivityLogs indicates an expected call of SendTipActivityLogs.
+func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, title, description, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, title, description, image)
 }
 
 // SendUpdateRolesLog mocks base method.

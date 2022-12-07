@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -672,7 +673,13 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 		return
 	}
 
-	if err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji); err != nil {
+	err := h.entities.RemoveGuildRepostReactionConfig(req.GuildID, req.Emoji)
+	if err == baseerrs.ErrRecordNotFound {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] repost reaction config not found")
+		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "emoji": req.Emoji, "quantity": req.Quantity, "channel": req.RepostChannelID}).Error(err, "[handler.RemoveRepostReactionConfig] - failed to remove repost reaction config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
@@ -889,7 +896,13 @@ func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 		return
 	}
 
-	if err := h.entities.SetDefaultToken(req); err != nil {
+	err := h.entities.SetDefaultToken(req)
+	if err == baseerrs.ErrRecordNotFound {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
+		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ConfigDefaultToken] - failed to set default token")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return

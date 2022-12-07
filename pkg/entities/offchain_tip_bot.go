@@ -37,6 +37,8 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 				Status:          consts.OffchainTipBotTrasferStatusFail,
 				FullCommand:     &req.FullCommand,
 				FailReason:      consts.OffchainTipBotFailReasonTokenNotSupported,
+				Image:           req.Image,
+				Message:         req.Message,
 			})
 			return []response.OffchainTipBotTransferToken{}, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
 		}
@@ -64,6 +66,8 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		Status:          consts.OffchainTipBotTrasferStatusFail,
 		FullCommand:     &req.FullCommand,
 		FailReason:      consts.OffchainTipBotFailReasonNotEnoughBalance,
+		Image:           req.Image,
+		Message:         req.Message,
 	}
 	userBal, err := e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(req.Sender, supportedToken.ID)
 	if err != nil {
@@ -112,6 +116,8 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 		Status:          consts.OffchainTipBotTrasferStatusSuccess,
 		FullCommand:     &req.FullCommand,
 		FailReason:      "",
+		Image:           req.Image,
+		Message:         req.Message,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.OffchainTipBotActivityLogs.CreateActivityLog] - failed to create activity log")
@@ -176,9 +182,17 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 					recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
 				}
 				recipientsStr := strings.Join(recipients, ", ")
-				description := fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+				descriptionFormat := "<@%s> has sent %s **%g %s** at <#%s>"
+				if len(req.Recipients) > 1 {
+					descriptionFormat = "<@%s> has sent %s **%g %s** each at <#%s>"
+				}
+				description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+				if req.Message != "" {
+					description += fmt.Sprintf(" with messge\n\n  <:conversation:1032608818930139249> **%s**", req.Message)
+				}
+				title := fmt.Sprintf("<:tip:933384794627248128> %s <:tip:933384794627248128>", strings.ToUpper(req.TransferType))
 
-				err := e.svc.Discord.SendGuildActivityLogs(configNotifyChannel.ChannelID, req.Sender, strings.ToUpper(req.TransferType), description)
+				err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, title, description, req.Image)
 				if err != nil {
 					e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelID}).Error(err, "[discord.ChannelMessageSendEmbed] - failed to send message to channel")
 				}

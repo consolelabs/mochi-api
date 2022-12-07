@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -57,6 +58,11 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 			IsContractAvailable: true,
 		},
 	)
+	if err == gorm.ErrRecordNotFound {
+		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to list chains")
+		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 	if err != nil {
 		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to list chains")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

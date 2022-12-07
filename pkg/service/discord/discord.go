@@ -464,3 +464,60 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 	}
 	return nil
 }
+
+func (d *Discord) SendTipActivityLogs(channelID, userID, title, description, image string) error {
+	if channelID == "" {
+		return nil
+	}
+	dcUser, err := d.session.User(userID)
+	if err != nil {
+		d.log.Errorf(err, "[SendTipActivityLogs] - get discord user failed %s", userID)
+		return err
+	}
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       title,
+		Description: description,
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: dcUser.AvatarURL(""),
+		},
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "👉 You can say thank to your friend by $tip",
+		},
+	}
+	if image != "" {
+		msgEmbed.Image = &discordgo.MessageEmbedImage{URL: image}
+	}
+	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("[SendTipActivityLogs] - ChannelMessageSendEmbed failed - channel %s: %s", channelID, err.Error())
+	}
+
+	return nil
+}
+
+func (d *Discord) NotifyCompleteCollectionIntegration(guildID string, collectionName string, symbol string, chain string, image string) error {
+	// get guild info
+	guild, err := d.session.Guild(guildID)
+	if err != nil {
+		return fmt.Errorf("failed to get guild info: %w", err)
+	}
+
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("Collection %s has been completely integration", collectionName),
+		Description: fmt.Sprintf("**Guild: ** %s\n**Symbol: ** %s\n**Chain: ** %s", guild.Name, symbol, chain),
+		Color:       mochiLogColor,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}

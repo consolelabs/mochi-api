@@ -21,7 +21,7 @@ func NewAbi(cfg *config.Config) Service {
 }
 
 func (e *abiEntity) GetNameAndSymbol(address string, chainId int64) (name string, symbol string, err error) {
-	if chainId == 99999999 {
+	if chainId == 9999 {
 		return "", "", nil
 	}
 	rpcUrl := e.selectRpcUrl(chainId)

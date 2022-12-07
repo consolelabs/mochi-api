@@ -7,9 +7,11 @@ import (
 )
 
 type Service interface {
+	// mochi logs
 	NotifyAddNewCollection(guildID string, collectionName string, symbol string, chain string, image string) error
 	NotifyStealFloorPrice(price float64, floor float64, url string, name string, image string) error
 	NotifyStealAveragePrice(price float64, floor float64, url string, name string, image string) error
+	NotifyCompleteCollectionIntegration(guildID string, collectionName string, symbol string, chain string, image string) error
 
 	// moderation logs
 	NotifyNewGuild(newGuildID string, count int) error
@@ -23,4 +25,5 @@ type Service interface {
 	SendUpvoteMessage(discordID, source string, isStranger bool) error
 	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error
 	NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error
+	SendTipActivityLogs(channelID, userID, title, description, image string) error
 }

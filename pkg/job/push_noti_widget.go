@@ -49,7 +49,9 @@ func (b *binanceWebsocket) Run() error {
 		_, message, _ := conn.ReadMessage()
 		var trade response.WebsocketKlinesDataResponse
 		json.Unmarshal(message, &trade)
-		go b.checkAndNotify(&trade, b.entity)
+		if len(trade.Symbol) > 4 {
+			go b.checkAndNotify(&trade, b.entity)
+		}
 	}
 }
 
