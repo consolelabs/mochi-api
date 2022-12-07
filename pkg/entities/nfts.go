@@ -51,7 +51,8 @@ var (
 func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string) (*response.IndexerGetNFTTokenDetailResponseWithSuggestions, error) {
 	suggest := []response.CollectionSuggestions{}
 	// handle query by address
-	if len(symbol) > 1 && symbol[:2] == "0x" {
+	// TODO(trkhoi): find way to detect non-evem address
+	if (len(symbol) > 1 && symbol[:2] == "0x") || (len(symbol) > 20) {
 		data, err := e.GetNFTDetailByAddress(symbol, tokenID)
 		if err != nil {
 			e.log.Errorf(err, "[e.GetNFTDetailByAddress] failed to get nft collection by address")
