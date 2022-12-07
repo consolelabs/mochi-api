@@ -493,3 +493,28 @@ func (d *Discord) SendTipActivityLogs(channelID, userID, title, description, ima
 
 	return nil
 }
+
+func (d *Discord) NotifyCompleteCollectionIntegration(guildID string, collectionName string, symbol string, chain string, image string) error {
+	// get guild info
+	guild, err := d.session.Guild(guildID)
+	if err != nil {
+		return fmt.Errorf("failed to get guild info: %w", err)
+	}
+
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("Collection %s has been completely integration", collectionName),
+		Description: fmt.Sprintf("**Guild: ** %s\n**Symbol: ** %s\n**Chain: ** %s", guild.Name, symbol, chain),
+		Color:       mochiLogColor,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		return fmt.Errorf("failed to send message: %w", err)
+	}
+
+	return nil
+}

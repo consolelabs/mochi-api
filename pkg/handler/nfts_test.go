@@ -389,6 +389,7 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 				ChainID: chainId,
 				Name:    "Cyber Rabby",
 				Symbol:  "RABBY",
+				GuildID: tt.req.GuildID,
 			}).Return(nil).AnyTimes()
 
 			discordMock.EXPECT().NotifyAddNewCollection(tt.req.GuildID, tt.wantName, tt.wantSymbol, tt.req.ChainID, tt.wantImage).AnyTimes()
