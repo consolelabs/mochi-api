@@ -39,7 +39,6 @@ func (pg *pg) DeleteOne(guildID, moniker string) error {
 	return pg.db.Where("guild_id = ? AND moniker = ?", guildID, moniker).Delete(&model.MonikerConfig{}).Error
 }
 
-func (pg *pg) GetDefaultMoniker() ([]model.MonikerConfig, error) {
-	var configs []model.MonikerConfig
+func (pg *pg) GetDefaultMoniker() (configs []model.MonikerConfig, err error) {
 	return configs, pg.db.Preload("Token").Where("guild_id = ?", "*").Find(&configs).Error
 }

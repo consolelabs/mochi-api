@@ -1093,11 +1093,11 @@ func (e *Entity) GetMonikerByGuildID(guildID string) ([]response.MonikerConfigDa
 		return nil, err
 	}
 	res := []response.MonikerConfigData{}
-	for _, item := range configs {
-		var tmp response.MonikerConfigData
-		tmp.Moniker = item
-		tmp.Value = item.Amount * prices[item.Token.CoinGeckoID]
-		res = append(res, tmp)
+	for _, config := range configs {
+		var configData response.MonikerConfigData
+		configData.Moniker = config
+		configData.Value = config.Amount * prices[config.Token.CoinGeckoID]
+		res = append(res, configData)
 	}
 	return res, nil
 }
@@ -1112,6 +1112,7 @@ func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
 		e.log.Error(err, "[entities.GetDefaultMoniker] - failed to get moniker default configs")
 		return nil, err
 	}
+
 	tokenLst := []string{}
 	checkMap := make(map[string]bool)
 	for _, item := range configs {
@@ -1125,12 +1126,13 @@ func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
 		e.log.Fields(logger.Fields{"token": tokenLst}).Error(err, "[entities.GetDefaultMoniker] - failed to get coin price")
 		return nil, err
 	}
+
 	res := []response.MonikerConfigData{}
-	for _, item := range configs {
-		var tmp response.MonikerConfigData
-		tmp.Moniker = item
-		tmp.Value = item.Amount * prices[item.Token.CoinGeckoID]
-		res = append(res, tmp)
+	for _, config := range configs {
+		var configData response.MonikerConfigData
+		configData.Moniker = config
+		configData.Value = config.Amount * prices[config.Token.CoinGeckoID]
+		res = append(res, configData)
 	}
 	return res, nil
 }
