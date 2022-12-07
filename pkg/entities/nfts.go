@@ -379,14 +379,15 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    solanaCollection.Data.Data.CollectionId,
-		Symbol:     solanaCollection.Data.Data.Symbol,
-		Name:       solanaCollection.Data.Data.Collection,
-		ChainID:    "0",
-		ERCFormat:  "ERC721",
-		IsVerified: true,
-		Author:     req.Author,
-		Image:      solanaCollection.Data.Data.Avatar,
+		Address:             solanaCollection.Data.Data.CollectionId,
+		Symbol:              solanaCollection.Data.Data.Symbol,
+		Name:                solanaCollection.Data.Data.Collection,
+		ChainID:             "0",
+		ERCFormat:           "ERC721",
+		IsVerified:          true,
+		IsReportDataFailure: req.IsReportDataFailure,
+		Author:              req.Author,
+		Image:               solanaCollection.Data.Data.Avatar,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
@@ -471,14 +472,15 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    req.Address,
-		Symbol:     symbol,
-		Name:       name,
-		ChainID:    convertedChainId,
-		ERCFormat:  "ERC721",
-		IsVerified: true,
-		Author:     req.Author,
-		Image:      image,
+		Address:             req.Address,
+		Symbol:              symbol,
+		Name:                name,
+		ChainID:             convertedChainId,
+		ERCFormat:           "ERC721",
+		IsVerified:          true,
+		IsReportDataFailure: req.IsReportDataFailure,
+		Author:              req.Author,
+		Image:               image,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)

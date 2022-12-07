@@ -1,14 +1,15 @@
 {
-  "data": {
-    "id": "8aa72c1b-5dcd-467f-9486-e9826d9a18e0",
-    "address": "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
-    "symbol": "RABBY",
-    "name": "Cyber Rabby",
-    "chain_id": "1",
-    "erc_format": "ERC721",
-    "is_verified": true,
-    "created_at": "2022-08-29T05:04:03.000000002Z",
-    "author": "319132138849173505",
-    "image": ""
-  }
+    "data": {
+        "id": "8aa72c1b-5dcd-467f-9486-e9826d9a18e0",
+        "address": "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+        "symbol": "RABBY",
+        "name": "Cyber Rabby",
+        "chain_id": "1",
+        "erc_format": "ERC721",
+        "is_verified": true,
+        "is_report_data_failure": false,
+        "created_at": "2022-08-29T05:04:03.000000002Z",
+        "author": "319132138849173505",
+        "image": ""
+    }
 }
