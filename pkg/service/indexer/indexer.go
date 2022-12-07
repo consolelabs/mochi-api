@@ -16,10 +16,13 @@ import (
 )
 
 type CreateERC721ContractRequest struct {
-	Address string `json:"address"`
-	ChainID int    `json:"chain_id"`
-	Name    string `json:"name"`
-	Symbol  string `json:"symbol"`
+	Address   string `json:"address"`
+	ChainID   int    `json:"chain_id"`
+	Name      string `json:"name"`
+	Symbol    string `json:"symbol"`
+	GuildID   string `json:"guild_id"`
+	ChannelID string `json:"channel_id"`
+	MessageID string `json:"message_id"`
 }
 
 type indexer struct {

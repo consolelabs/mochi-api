@@ -7,9 +7,11 @@ import (
 )
 
 type Service interface {
+	// mochi logs
 	NotifyAddNewCollection(guildID string, collectionName string, symbol string, chain string, image string) error
 	NotifyStealFloorPrice(price float64, floor float64, url string, name string, image string) error
 	NotifyStealAveragePrice(price float64, floor float64, url string, name string, image string) error
+	NotifyCompleteCollectionIntegration(guildID string, collectionName string, symbol string, chain string, image string) error
 
 	// moderation logs
 	NotifyNewGuild(newGuildID string, count int) error
