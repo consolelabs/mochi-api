@@ -1106,6 +1106,35 @@ func (e *Entity) DeleteMonikerConfig(req request.DeleteMonikerConfigRequest) err
 	return e.repo.MonikerConfig.DeleteOne(req.GuildID, req.Moniker)
 }
 
+func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
+	configs, err := e.repo.MonikerConfig.GetDefaultMoniker()
+	if err != nil {
+		e.log.Error(err, "[entities.GetDefaultMoniker] - failed to get moniker default configs")
+		return nil, err
+	}
+	tokenLst := []string{}
+	checkMap := make(map[string]bool)
+	for _, item := range configs {
+		if _, value := checkMap[item.Token.CoinGeckoID]; !value {
+			checkMap[item.Token.TokenSymbol] = true
+			tokenLst = append(tokenLst, item.Token.CoinGeckoID)
+		}
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice(tokenLst, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": tokenLst}).Error(err, "[entities.GetDefaultMoniker] - failed to get coin price")
+		return nil, err
+	}
+	res := []response.MonikerConfigData{}
+	for _, item := range configs {
+		var tmp response.MonikerConfigData
+		tmp.Moniker = item
+		tmp.Value = item.Amount * prices[item.Token.CoinGeckoID]
+		res = append(res, tmp)
+	}
+	return res, nil
+}
+
 func (e *Entity) GetGuildDefaultCurrency(guildID string) (*response.GuildConfigDefaultCurrencyResponse, error) {
 	data, err := e.repo.GuildConfigDefaultCurrency.GetByGuildID(guildID)
 	if err != nil {

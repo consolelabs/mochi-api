@@ -1456,7 +1456,7 @@ func (h *Handler) GetMonikerByGuildID(c *gin.Context) {
 	}
 	configs, err := h.entities.GetMonikerByGuildID(guildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetMonikerByGuildID] - failed to get user token alerts")
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetMonikerByGuildID] - failed to guild moniker")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -1486,6 +1486,16 @@ func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+func (h *Handler) GetDefaultMoniker(c *gin.Context) {
+	configs, err := h.entities.GetDefaultMoniker()
+	if err != nil {
+		h.log.Error(err, "[handler.GetDefaultMoniker] - failed to get default moniker")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(configs, nil, nil, nil))
 }
 
 // GetGuildDefaultCurrency     godoc
