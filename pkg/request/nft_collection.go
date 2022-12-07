@@ -8,11 +8,13 @@ import (
 )
 
 type CreateNFTCollectionRequest struct {
-	Address string `json:"address"`
-	Chain   string `json:"chain"`
-	ChainID string `json:"chain_id"`
-	Author  string `json:"author"`
-	GuildID string `json:"guild_id"`
+	Address   string `json:"address"`
+	Chain     string `json:"chain"`
+	ChainID   string `json:"chain_id"`
+	Author    string `json:"author"`
+	GuildID   string `json:"guild_id"`
+	ChannelID string `json:"channel_id"`
+	MessageID string `json:"message_id"`
 }
 
 func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {

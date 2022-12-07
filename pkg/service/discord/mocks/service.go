@@ -50,6 +50,20 @@ func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionNam
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyAddNewCollection", reflect.TypeOf((*MockService)(nil).NotifyAddNewCollection), guildID, collectionName, symbol, chain, image)
 }
 
+// NotifyCompleteCollectionIntegration mocks base method.
+func (m *MockService) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyCompleteCollectionIntegration", guildID, collectionName, symbol, chain, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyCompleteCollectionIntegration indicates an expected call of NotifyCompleteCollectionIntegration.
+func (mr *MockServiceMockRecorder) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionIntegration", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionIntegration), guildID, collectionName, symbol, chain, image)
+}
+
 // NotifyGmStreak mocks base method.
 func (m *MockService) NotifyGmStreak(channelID, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
 	m.ctrl.T.Helper()

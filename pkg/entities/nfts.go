@@ -369,10 +369,13 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: solanaCollection.Data.Data.CollectionId,
-		ChainID: 0,
-		Name:    solanaCollection.Data.Data.Collection,
-		Symbol:  solanaCollection.Data.Data.Symbol,
+		Address:   solanaCollection.Data.Data.CollectionId,
+		ChainID:   0,
+		Name:      solanaCollection.Data.Data.Collection,
+		Symbol:    solanaCollection.Data.Data.Symbol,
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		MessageID: req.MessageID,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
@@ -461,10 +464,13 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	}
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: req.Address,
-		ChainID: chainID,
-		Name:    name,
-		Symbol:  symbol,
+		Address:   req.Address,
+		ChainID:   chainID,
+		Name:      name,
+		Symbol:    symbol,
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		MessageID: req.MessageID,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
