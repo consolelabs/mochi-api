@@ -1495,7 +1495,7 @@ func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.MonikerConfigResponse
-// @Router      /configs/monikers/{guild_id} [get]
+// @Router      /configs/monikers/default [get]
 func (h *Handler) GetDefaultMoniker(c *gin.Context) {
 	configs, err := h.entities.GetDefaultMoniker()
 	if err != nil {

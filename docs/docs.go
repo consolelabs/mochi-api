@@ -1074,7 +1074,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/monikers/{guild_id}": {
+        "/configs/monikers/default": {
             "get": {
                 "description": "Get default moniker",
                 "consumes": [
@@ -1087,6 +1087,38 @@ const docTemplate = `{
                     "Config"
                 ],
                 "summary": "Get default moniker",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MonikerConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/monikers/{guild_id}": {
+            "get": {
+                "description": "Get moniker configs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get moniker configs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
