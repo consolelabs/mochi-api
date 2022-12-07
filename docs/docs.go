@@ -1076,7 +1076,7 @@ const docTemplate = `{
         },
         "/configs/monikers/{guild_id}": {
             "get": {
-                "description": "Get moniker configs",
+                "description": "Get default moniker",
                 "consumes": [
                     "application/json"
                 ],
@@ -1086,16 +1086,7 @@ const docTemplate = `{
                 "tags": [
                     "Config"
                 ],
-                "summary": "Get moniker configs",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Get default moniker",
                 "responses": {
                     "200": {
                         "description": "OK",

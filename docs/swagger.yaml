@@ -4089,13 +4089,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get moniker configs
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
+      description: Get default moniker
       produces:
       - application/json
       responses:
@@ -4103,7 +4097,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.MonikerConfigResponse'
-      summary: Get moniker configs
+      summary: Get default moniker
       tags:
       - Config
   /configs/nft-roles:

@@ -1488,6 +1488,14 @@ func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
+// GetDefaultMoniker     godoc
+// @Summary     Get default moniker
+// @Description Get default moniker
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.MonikerConfigResponse
+// @Router      /configs/monikers/{guild_id} [get]
 func (h *Handler) GetDefaultMoniker(c *gin.Context) {
 	configs, err := h.entities.GetDefaultMoniker()
 	if err != nil {
