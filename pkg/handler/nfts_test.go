@@ -276,11 +276,12 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 		{
 			name: "create new collection successful - with address",
 			req: request.CreateNFTCollectionRequest{
-				Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
-				ChainID: "eth",
-				Chain:   "1",
-				Author:  "319132138849173505",
-				GuildID: "863278424433229854",
+				Address:   "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
+				ChainID:   "eth",
+				Chain:     "1",
+				Author:    "319132138849173505",
+				GuildID:   "863278424433229854",
+				MessageID: "1050355847173259294",
 			},
 			collectionExist:        false,
 			address:                "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
@@ -295,11 +296,12 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 		{
 			name: "create new collection successful - with market link",
 			req: request.CreateNFTCollectionRequest{
-				Address: "https://opensea.io/collection/cyber-rabby",
-				ChainID: "eth",
-				Chain:   "1",
-				Author:  "319132138849173505",
-				GuildID: "863278424433229854",
+				Address:   "https://opensea.io/collection/cyber-rabby",
+				ChainID:   "eth",
+				Chain:     "1",
+				Author:    "319132138849173505",
+				GuildID:   "863278424433229854",
+				MessageID: "1050355845600382976",
 			},
 			collectionExist:        false,
 			address:                "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",
@@ -314,11 +316,12 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 		{
 			name: "fail to create - nft existed - not synced",
 			req: request.CreateNFTCollectionRequest{
-				Address: "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
-				ChainID: "eth",
-				Chain:   "1",
-				Author:  "319132138849173505",
-				GuildID: "863278424433229854",
+				Address:   "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
+				ChainID:   "eth",
+				Chain:     "1",
+				Author:    "319132138849173505",
+				GuildID:   "863278424433229854",
+				MessageID: "1050355667854180352",
 			},
 			collectionExist: true,
 			address:         "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73",
@@ -332,11 +335,12 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 		{
 			name: "fail to create - nft existed - already synced",
 			req: request.CreateNFTCollectionRequest{
-				Address: "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
-				ChainID: "eth",
-				Chain:   "1",
-				Author:  "319132138849173505",
-				GuildID: "863278424433229854",
+				Address:   "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
+				ChainID:   "eth",
+				Chain:     "1",
+				Author:    "319132138849173505",
+				GuildID:   "863278424433229854",
+				MessageID: "1050355039966867456",
 			},
 			collectionExist: true,
 			address:         "0x09E0dF4aE51111CA27d6B85708CFB3f1F7cAE982",
@@ -389,7 +393,6 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 				ChainID: chainId,
 				Name:    "Cyber Rabby",
 				Symbol:  "RABBY",
-				GuildID: tt.req.GuildID,
 			}).Return(nil).AnyTimes()
 
 			discordMock.EXPECT().NotifyAddNewCollection(tt.req.GuildID, tt.wantName, tt.wantSymbol, tt.req.ChainID, tt.wantImage).AnyTimes()

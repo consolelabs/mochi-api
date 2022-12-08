@@ -501,12 +501,13 @@ func (d *Discord) NotifyCompleteCollectionIntegration(guildID string, collection
 	// get guild info
 	guild, err := d.session.Guild(guildID)
 	if err != nil {
-		return fmt.Errorf("failed to get guild info: %w", err)
+		d.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[discord.NotifyCompleteCollectionIntegration] d.session.Guild() failed")
+		return err
 	}
 
 	msgEmbed := discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("Collection %s has been completely integration", collectionName),
-		Description: fmt.Sprintf("**Guild: ** %s\n**Symbol: ** %s\n**Chain: ** %s", guild.Name, symbol, chain),
+		Title:       fmt.Sprintf("Collection %s integrated", collectionName),
+		Description: fmt.Sprintf("**Guild: ** `%s`\n**Symbol: ** `%s`\n**Chain: ** `%s`", guild.Name, symbol, chain),
 		Color:       mochiLogColor,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: image,
@@ -516,8 +517,32 @@ func (d *Discord) NotifyCompleteCollectionIntegration(guildID string, collection
 
 	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
 	if err != nil {
-		return fmt.Errorf("failed to send message: %w", err)
+		d.log.Error(err, "[discord.NotifyCompleteCollectionIntegration] d.session.ChannelMessageSendEmbed() failed")
+	}
+	return err
+}
+
+func (d *Discord) NotifyCompleteCollectionSync(guildID string, collectionName string, symbol string, chain string, image string) error {
+	// get guild info
+	guild, err := d.session.Guild(guildID)
+	if err != nil {
+		d.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[discord.NotifyCompleteCollectionSync] d.session.Guild() failed")
+		return err
 	}
 
-	return nil
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("Collection %s synced", collectionName),
+		Description: fmt.Sprintf("**Guild: ** `%s`\n**Symbol: ** `%s`\n**Chain: ** `%s`", guild.Name, symbol, chain),
+		Color:       mochiLogColor,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+
+	_, err = d.session.ChannelMessageSendEmbed(d.mochiLogChannelID, &msgEmbed)
+	if err != nil {
+		d.log.Error(err, "[discord.NotifyCompleteCollectionSync] d.session.ChannelMessageSendEmbed() failed")
+	}
+	return err
 }

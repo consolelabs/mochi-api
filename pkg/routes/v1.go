@@ -382,5 +382,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	dataWebhookGroup := v1.Group("/data-webhook")
 	{
 		dataWebhookGroup.POST("/notify-nft-integration", h.NotifyNftCollectionIntegration)
+		dataWebhookGroup.POST("/notify-nft-sync", h.NotifyNftCollectionSync)
 	}
 }
