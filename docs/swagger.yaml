@@ -1076,7 +1076,11 @@ definitions:
         type: string
       chain_id:
         type: string
+      channel_id:
+        type: string
       guild_id:
+        type: string
+      message_id:
         type: string
     type: object
   request.CreateTipConfigNotify:
@@ -4100,6 +4104,21 @@ paths:
           schema:
             $ref: '#/definitions/response.MonikerConfigResponse'
       summary: Get moniker configs
+      tags:
+      - Config
+  /configs/monikers/default:
+    get:
+      consumes:
+      - application/json
+      description: Get default moniker
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MonikerConfigResponse'
+      summary: Get default moniker
       tags:
       - Config
   /configs/nft-roles:

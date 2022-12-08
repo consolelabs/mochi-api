@@ -252,6 +252,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			monikerGroup.POST("", h.UpsertMonikerConfig)
 			monikerGroup.GET("/:guild_id", h.GetMonikerByGuildID)
 			monikerGroup.DELETE("", h.DeleteMonikerConfig)
+			monikerGroup.GET("/default", h.GetDefaultMoniker)
 		}
 	}
 
