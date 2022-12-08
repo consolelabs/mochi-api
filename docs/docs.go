@@ -1074,6 +1074,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/configs/monikers/default": {
+            "get": {
+                "description": "Get default moniker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Get default moniker",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MonikerConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/monikers/{guild_id}": {
             "get": {
                 "description": "Get moniker configs",
@@ -7410,7 +7433,13 @@ const docTemplate = `{
                 "chain_id": {
                     "type": "string"
                 },
+                "channel_id": {
+                    "type": "string"
+                },
                 "guild_id": {
+                    "type": "string"
+                },
+                "message_id": {
                     "type": "string"
                 }
             }

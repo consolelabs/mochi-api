@@ -1,0 +1,6 @@
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('tea', '*', '4b463ac8-fde3-43c3-a094-a9af2b552494', 1)
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('beer', '*', '4b463ac8-fde3-43c3-a094-a9af2b552494', 2)
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('coffee', '*', '61388b7c-5505-4fdf-8084-077422369a93', 1)
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('cake', '*', '61388b7c-5505-4fdf-8084-077422369a93', 2)
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('pizza', '*', 'ba1f04c4-f455-42a8-8910-90a1236de9f9', 0.01)
+INSERT INTO public.moniker_configs (moniker, guild_id, token_id, amount) VALUES('Diamond', '*', '6c4b78ab-48bf-47d4-b50f-55be43117bb1', 0.0001)
