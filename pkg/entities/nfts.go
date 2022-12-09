@@ -545,12 +545,14 @@ func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, e
 		return collection.Collection.Image, nil
 	}
 	if chainID == 10 {
-		collection, err := e.marketplace.GetCollectionFromQuixotic(address)
-		if err != nil {
-			e.log.Errorf(err, "[GetCollectionFromQuixotic] cannot get collection: %s | chainId %d", address, chainID)
-			return "", fmt.Errorf("Cannot get collection: %v", err)
-		}
-		return collection.ImageUrl, nil
+		// TODO: get image, alchemy response does not include image
+		// collection, err := e.marketplace.GetCollectionFromQuixotic(address)
+		// if err != nil {
+		// 	e.log.Errorf(err, "[GetCollectionFromQuixotic] cannot get collection: %s | chainId %d", address, chainID)
+		// 	return "", fmt.Errorf("Cannot get collection: %v", err)
+		// }
+		// return collection.ImageUrl, nil
+		return "", nil
 	}
 
 	return "", nil
