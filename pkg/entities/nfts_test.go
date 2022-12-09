@@ -1045,7 +1045,7 @@ func TestEntity_CreateNFTCollection(t *testing.T) {
 	//---collection not existed so skip sync check
 	//---convert chain to chain id
 	mockAbi.EXPECT().GetNameAndSymbol("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", int64(250)).Return("Cyber Rabby", "rabby", nil).AnyTimes()
-	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250, Name: "Cyber Rabby", Symbol: "rabby", GuildID: "863278424433229854"}).Return(nil).AnyTimes()
+	mockIndexer.EXPECT().CreateERC721Contract(indexer.CreateERC721ContractRequest{Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA", ChainID: 250, Name: "Cyber Rabby", Symbol: "rabby"}).Return(nil).AnyTimes()
 	mockMarketplace.EXPECT().GetCollectionFromPaintswap("0x7D1070fdbF0eF8752a9627a79b00221b53F231fA").Return(paintswapCollection, nil) //marketplace call for get image
 	nftCollection.EXPECT().Create(validCollection).Return(&returnedValidCollection, nil).AnyTimes()
 	mockDiscord.EXPECT().NotifyAddNewCollection("863278424433229854", "Cyber Rabby", "rabby", "ftm", "").Return(nil).AnyTimes()

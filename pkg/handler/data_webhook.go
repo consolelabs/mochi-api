@@ -9,11 +9,35 @@ import (
 )
 
 func (h *Handler) NotifyNftCollectionIntegration(c *gin.Context) {
-	req := request.SendCollectionIntegrationLogsRequest{}
+	req := request.NotifyCompleteNftIntegrationRequest{}
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Error(err, "[handler.SendCollectionIntegrationLogs] c.BindJSON() failed")
+		h.log.Error(err, "[handler.NotifyNftCollectionIntegration] c.BindJSON() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	h.entities.NotifyNftCollectionIntegration(req)
+
+	err := h.entities.NotifyNftCollectionIntegration(req)
+	if err != nil {
+		h.log.Error(err, "[handler.NotifyNftCollectionIntegration] entity.NotifyNftCollectionIntegration() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+}
+
+func (h *Handler) NotifyNftCollectionSync(c *gin.Context) {
+	req := request.NotifyCompleteNftSyncRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.NotifyNftCollectionSync] c.BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.NotifyNftCollectionSync(req)
+	if err != nil {
+		h.log.Error(err, "[handler.NotifyNftCollectionSync] entity.NotifyNftCollectionSync() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
 }
