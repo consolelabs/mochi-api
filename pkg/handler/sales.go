@@ -34,7 +34,7 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 }
 
 func (h *Handler) WebhookNftHandler(c *gin.Context) {
-	var req request.HandleNftWebhookRequest
+	var req request.NotifySaleMarketplaceRequest
 	if err := c.Bind(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookNftSaleHandler] - failed to read JSON")
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
@@ -44,8 +44,6 @@ func (h *Handler) WebhookNftHandler(c *gin.Context) {
 	switch req.Event {
 	case "sales":
 		h.handleNftSales(c, req)
-	case "notify_done_sync":
-		h.handleNofityDoneSync(c, req)
 	}
 }
 
@@ -77,8 +75,8 @@ func (h *Handler) WebhookNftHandler(c *gin.Context) {
 //             },
 //             "hold": 440000000
 // }
-func (h *Handler) handleNftSales(c *gin.Context, req request.HandleNftWebhookRequest) {
-	err := h.entities.SendNftSalesToChannel(req)
+func (h *Handler) handleNftSales(c *gin.Context, req request.NotifySaleMarketplaceRequest) {
+	err := h.entities.NotifySaleMarketplace(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleNftSales] - failed to send NFT sales to channel")
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
