@@ -373,8 +373,6 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		ChainID:   0,
 		Name:      solanaCollection.Data.Data.Collection,
 		Symbol:    solanaCollection.Data.Data.Symbol,
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
 		MessageID: req.MessageID,
 	})
 	if err != nil {
@@ -463,14 +461,25 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		}
 	}
 
-	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address:   req.Address,
-		ChainID:   chainID,
-		Name:      name,
-		Symbol:    symbol,
+	// store nft add request
+	history := model.NftAddRequestHistory{
+		Address:   address,
+		ChainID:   int64(chainID),
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 		MessageID: req.MessageID,
+	}
+	err = e.repo.NftAddRequestHistory.UpsertOne(history)
+	if err != nil {
+		e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	}
+
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address: req.Address,
+		ChainID: chainID,
+		Name:    name,
+		Symbol:  symbol,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
@@ -545,12 +554,14 @@ func (e *Entity) getImageFromMarketPlace(chainID int, address string) (string, e
 		return collection.Collection.Image, nil
 	}
 	if chainID == 10 {
-		collection, err := e.marketplace.GetCollectionFromQuixotic(address)
-		if err != nil {
-			e.log.Errorf(err, "[GetCollectionFromQuixotic] cannot get collection: %s | chainId %d", address, chainID)
-			return "", fmt.Errorf("Cannot get collection: %v", err)
-		}
-		return collection.ImageUrl, nil
+		// TODO: get image, alchemy response does not include image
+		// collection, err := e.marketplace.GetCollectionFromQuixotic(address)
+		// if err != nil {
+		// 	e.log.Errorf(err, "[GetCollectionFromQuixotic] cannot get collection: %s | chainId %d", address, chainID)
+		// 	return "", fmt.Errorf("Cannot get collection: %v", err)
+		// }
+		// return collection.ImageUrl, nil
+		return "", nil
 	}
 
 	return "", nil

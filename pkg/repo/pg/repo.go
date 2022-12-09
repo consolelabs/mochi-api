@@ -52,6 +52,7 @@ import (
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
+	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
 	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
@@ -171,5 +172,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigTwitterBlacklist:          guildconfigtwitterblacklist.NewPG(db),
 		MonikerConfig:                        monikerconfig.NewPG(db),
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
+		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
 	}
 }
