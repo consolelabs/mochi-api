@@ -145,6 +145,45 @@ func (e *marketplace) GetCollectionFromQuixotic(collectionSymbol string) (*res.Q
 	return data, nil
 }
 
+func (e *marketplace) GetCollectionFromAlchemy(collectionSymbol string) (*res.AlchemyCollectionResponse, error) {
+	url := fmt.Sprintf("%s/nft/v2/%s/getContractMetadata?contractAddress=%s", e.config.MarketplaceBaseUrl.Alchemy, e.config.MarketplaceApiKey.Alchemy, collectionSymbol)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody := new(bytes.Buffer)
+		_, err = errBody.ReadFrom(response.Body)
+		if err != nil {
+			return nil, fmt.Errorf("quixoticGetCollection - failed to read response: %v", err)
+		}
+
+		err = fmt.Errorf("GetNFTCollections - failed to get quixotic collections with symbol=%s: %v", collectionSymbol, errBody.String())
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	data := &res.AlchemyCollectionResponse{}
+	err = json.Unmarshal(body, data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (e *marketplace) GetCollectionFromPaintswap(address string) (*res.PaintswapCollectionResponse, error) {
 	url := fmt.Sprintf("%s/v2/collections/%s", e.config.MarketplaceBaseUrl.Painswap, address)
 	request, err := http.NewRequest("GET", url, nil)

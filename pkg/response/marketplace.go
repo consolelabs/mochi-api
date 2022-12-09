@@ -63,3 +63,17 @@ type PaintswapCollectionStat struct {
 	FloorPrice   string `json:"floor"`
 	AveragePrice string `json:"averagePrice"`
 }
+
+type AlchemyContractMetaData struct {
+	Name                string `json:"name"`
+	Symbol              string `json:"symbol"`
+	TotalSupply         string `json:"totalSupply"`
+	TokenType           string `json:"tokenType"`
+	ContractDeployer    string `json:"contractDeployer"`
+	DeployedBlockNumber int64  `json:"deployedBlockNumber"`
+}
+
+type AlchemyCollectionResponse struct {
+	Address          string                  `json:"address"`
+	ContractMetadata AlchemyContractMetaData `json:"contractMetadata"`
+}
