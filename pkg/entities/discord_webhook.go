@@ -36,7 +36,14 @@ func (e *Entity) createNftTokenModel(nftSale request.HandleNftWebhookRequest, co
 	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
 	pnl := new(big.Float)
 	pnl = pnl.Sub(price, lastPrice)
-	subPnl := new(big.Float).Quo(pnl, lastPrice)
+
+	subPnl := new(big.Float)
+	if lastPrice.Cmp(big.NewFloat(0)) == 0 {
+		subPnl = big.NewFloat(0)
+	} else {
+		subPnl = new(big.Float).Quo(pnl, lastPrice)
+	}
+
 	subPnlPer := subPnl.Mul(subPnl, big.NewFloat(100))
 
 	subPnlDisplay := ""
