@@ -100,13 +100,11 @@ type MarketplaceBaseUrl struct {
 	Opensea  string
 	Quixotic string
 	Painswap string
-	Alchemy  string
 }
 
 type MarketplaceApiKey struct {
 	Opensea  string
 	Quixotic string
-	Alchemy  string
 }
 type RpcUrl struct {
 	Eth string
@@ -203,12 +201,10 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Opensea:  v.GetString("OPENSEA_BASE_URL"),
 			Quixotic: v.GetString("QUIXOTIC_BASE_URL"),
 			Painswap: v.GetString("PAINTSWAP_BASE_URL"),
-			Alchemy:  v.GetString("ALCHEMY_BASE_URL"),
 		},
 		MarketplaceApiKey: MarketplaceApiKey{
 			Opensea:  v.GetString("OPENSEA_API_KEY"),
 			Quixotic: v.GetString("QUIXOTIC_API_KEY"),
-			Alchemy:  v.GetString("ALCHEMY_API_KEY"),
 		},
 		TwitterAccessToken:       v.GetString("TWITTER_ACCESS_TOKEN"),
 		TwitterAccessTokenSecret: v.GetString("TWITTER_ACCESS_TOKEN_SECRET"),
