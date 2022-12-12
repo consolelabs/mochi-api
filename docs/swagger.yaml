@@ -1617,6 +1617,13 @@ definitions:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
     type: object
+  response.AllTipBotTokensResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.OffchainTipBotToken'
+        type: array
+    type: object
   response.ClaimQuestsRewardsResponse:
     properties:
       data:
@@ -6408,6 +6415,21 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: OffChain Tip Bot - Config notify
+      tags:
+      - OffChain
+  /offchain-tip-bot/tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get all offchain tip bot tokens
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.AllTipBotTokensResponse'
+      summary: Get all offchain tip bot tokens
       tags:
       - OffChain
   /offchain-tip-bot/transactions:

@@ -29,7 +29,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.GET("/total-balances", h.TotalBalances)
 		offchainTipBotGroup.GET("/total-offchain-balances", h.TotalOffchainBalances)
 		offchainTipBotGroup.GET("/total-fees", h.TotalFee)
-		offchainTipBotGroup.PUT("/tokens", h.UpdateTokenFee)
+		offchainTipBotTokensGroup := offchainTipBotGroup.Group("/tokens")
+		{
+			offchainTipBotTokensGroup.GET("", h.GetAllTipBotTokens)
+			offchainTipBotTokensGroup.PUT("", h.UpdateTokenFee)
+		}
 
 		// offchain tip bot
 		offchainTipBotGroup.GET("/chains", h.OffchainTipBotListAllChains)
