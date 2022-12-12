@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -25,7 +27,6 @@ import (
 	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/golang/mock/gomock"
 )
 
 func TestEntity_CreateNFTSalesTracker(t *testing.T) {
@@ -1077,32 +1078,32 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 // 	// failed convert to checksum and return error
 // 	// ####################
 
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			e := &Entity{
-// 				repo:        tt.fields.repo,
-// 				store:       tt.fields.store,
-// 				log:         tt.fields.log,
-// 				dcwallet:    tt.fields.dcwallet,
-// 				discord:     tt.fields.discord,
-// 				cache:       tt.fields.cache,
-// 				svc:         tt.fields.svc,
-// 				cfg:         tt.fields.cfg,
-// 				indexer:     tt.fields.indexer,
-// 				abi:         tt.fields.abi,
-// 				marketplace: tt.fields.marketplace,
-// 			}
-// 			gotNftCollection, err := e.CreateEVMNFTCollection(tt.args.req)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("Entity.CreateNFTCollection() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(gotNftCollection, tt.wantNftCollection) {
-// 				t.Errorf("Entity.CreateNFTCollection() = %v, want %v", gotNftCollection, tt.wantNftCollection)
-// 			}
-// 		})
-// 	}
-// }
+//		for _, tt := range tests {
+//			t.Run(tt.name, func(t *testing.T) {
+//				e := &Entity{
+//					repo:        tt.fields.repo,
+//					store:       tt.fields.store,
+//					log:         tt.fields.log,
+//					dcwallet:    tt.fields.dcwallet,
+//					discord:     tt.fields.discord,
+//					cache:       tt.fields.cache,
+//					svc:         tt.fields.svc,
+//					cfg:         tt.fields.cfg,
+//					indexer:     tt.fields.indexer,
+//					abi:         tt.fields.abi,
+//					marketplace: tt.fields.marketplace,
+//				}
+//				gotNftCollection, err := e.CreateEVMNFTCollection(tt.args.req)
+//				if (err != nil) != tt.wantErr {
+//					t.Errorf("Entity.CreateNFTCollection() error = %v, wantErr %v", err, tt.wantErr)
+//					return
+//				}
+//				if !reflect.DeepEqual(gotNftCollection, tt.wantNftCollection) {
+//					t.Errorf("Entity.CreateNFTCollection() = %v, want %v", gotNftCollection, tt.wantNftCollection)
+//				}
+//			})
+//		}
+//	}
 func TestEntity_CheckIsSync(t *testing.T) {
 	type fields struct {
 		repo        *repo.Repo

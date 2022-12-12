@@ -1,8 +1,9 @@
 package config_xp_level
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

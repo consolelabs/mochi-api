@@ -1,8 +1,9 @@
 package guild_user_xp
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

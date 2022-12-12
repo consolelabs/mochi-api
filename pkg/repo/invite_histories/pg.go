@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"sort"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 type pg struct {

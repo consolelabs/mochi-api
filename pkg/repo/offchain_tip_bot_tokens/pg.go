@@ -1,8 +1,9 @@
 package offchain_tip_bot_tokens
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

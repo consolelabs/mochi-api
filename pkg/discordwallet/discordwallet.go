@@ -3,14 +3,14 @@ package discordwallet
 import (
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/accounts"
+	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
+
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
-	"github.com/ethereum/go-ethereum/accounts"
-
-	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 )
 
 type IDiscordWallet interface {

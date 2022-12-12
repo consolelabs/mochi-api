@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -13,8 +16,6 @@ import (
 	mock_telegram_association "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association/mocks"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_GetByTelegramUsername(t *testing.T) {

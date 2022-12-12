@@ -7,9 +7,10 @@ package mock_questreward
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

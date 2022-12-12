@@ -10,9 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common"
@@ -21,8 +18,11 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"github.com/nanmu42/etherscan-api"
-
 	"golang.org/x/crypto/sha3"
+
+	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type Chain struct {

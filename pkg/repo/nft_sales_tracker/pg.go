@@ -1,10 +1,11 @@
 package nft_sales_tracker
 
 import (
-	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/response"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 type pg struct {

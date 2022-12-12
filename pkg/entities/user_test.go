@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -23,7 +25,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	mock_processor "github.com/defipod/mochi/pkg/service/processor/mocks"
-	"github.com/golang/mock/gomock"
 )
 
 func TestEntity_GetUserProfile(t *testing.T) {

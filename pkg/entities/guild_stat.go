@@ -3,8 +3,9 @@ package entities
 import (
 	"errors"
 
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 func (e *Entity) UpdateGuildStats(stat model.DiscordGuildStat) error {

@@ -3,15 +3,15 @@ package pg
 import (
 	"context"
 	"database/sql"
+	errs "errors"
 	"fmt"
 	"net/http"
 	"time"
 
-	errs "errors"
-
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 
@@ -19,7 +19,6 @@ import (
 	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/util"
-	"gorm.io/gorm"
 )
 
 // store is implimentation of repository

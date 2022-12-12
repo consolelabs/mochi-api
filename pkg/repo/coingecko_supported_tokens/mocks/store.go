@@ -7,9 +7,10 @@ package mock_coingeckosupportedtokens
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

@@ -3,9 +3,10 @@ package response
 import (
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/google/uuid"
 )
 
 type IndexerPrice struct {

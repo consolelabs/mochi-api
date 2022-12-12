@@ -1,8 +1,9 @@
 package response
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/google/uuid"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type NFTSalesTrackerResponse struct {

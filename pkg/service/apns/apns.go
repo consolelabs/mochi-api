@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/defipod/mochi/pkg/config"
 	"github.com/sideshow/apns2"
 	"github.com/sideshow/apns2/token"
+
+	"github.com/defipod/mochi/pkg/config"
 )
 
 type APNSClient struct {

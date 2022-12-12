@@ -6,6 +6,9 @@ import (
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -17,8 +20,6 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_CreateInviteHistory(t *testing.T) {

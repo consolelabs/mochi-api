@@ -1,10 +1,11 @@
 package entities
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) GetDefaultRoleByGuildID(guildID string) (*response.DefaultRole, error) {
