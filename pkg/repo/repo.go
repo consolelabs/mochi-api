@@ -39,7 +39,6 @@ import (
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
-	guildcustomcommand "github.com/defipod/mochi/pkg/repo/guild_custom_command"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
@@ -80,8 +79,6 @@ import (
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
-	whitelistcampaignusers "github.com/defipod/mochi/pkg/repo/whitelist_campaign_users"
-	whitelistcampaigns "github.com/defipod/mochi/pkg/repo/whitelist_campaigns"
 )
 
 type Repo struct {
@@ -96,7 +93,6 @@ type Repo struct {
 	Users                                users.Store
 	UserWallet                           userwallet.Store
 	GuildUsers                           guildusers.Store
-	GuildCustomCommand                   guildcustomcommand.Store
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	DiscordUserTokenAlert                discordusertokenalert.Store
@@ -119,8 +115,6 @@ type Repo struct {
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	UpvoteStreakTier                     upvotestreaktier.Store
 	GuildConfigToken                     guildconfigtoken.Store
-	WhitelistCampaigns                   whitelistcampaigns.Store
-	WhitelistCampaignUsers               whitelistcampaignusers.Store
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store
 	TwitterPost                          twitterpost.Store
