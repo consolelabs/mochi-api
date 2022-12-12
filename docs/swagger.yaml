@@ -414,33 +414,6 @@ definitions:
       welcome_message:
         type: string
     type: object
-  model.GuildCustomCommand:
-    properties:
-      actions:
-        items:
-          type: integer
-        type: array
-      channels_permissions:
-        items:
-          type: integer
-        type: array
-      cooldown:
-        type: integer
-      cooldown_duration:
-        type: integer
-      description:
-        type: string
-      enabled:
-        type: boolean
-      guild_id:
-        type: string
-      id:
-        type: string
-      roles_permissions:
-        items:
-          type: integer
-        type: array
-    type: object
   model.GuildRole:
     properties:
       guild_id:
@@ -876,30 +849,6 @@ definitions:
       user_discord_id:
         type: string
     type: object
-  model.WhitelistCampaign:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      name:
-        type: string
-      role_id:
-        type: integer
-    type: object
-  model.WhitelistCampaignUser:
-    properties:
-      address:
-        type: string
-      created_at:
-        type: string
-      discord_id:
-        type: string
-      notes:
-        type: string
-      whitelist_campaign_id:
-        type: string
-    type: object
   request.AddNftWatchlistRequest:
     properties:
       chain:
@@ -934,24 +883,6 @@ definitions:
         type: string
       user_id:
         type: string
-    type: object
-  request.AddWhitelistCampaignUser:
-    properties:
-      address:
-        type: string
-      discord_id:
-        type: string
-      notes:
-        type: string
-      whitelist_campaign_id:
-        type: string
-    type: object
-  request.AddWhitelistCampaignUserRequest:
-    properties:
-      users:
-        items:
-          $ref: '#/definitions/request.AddWhitelistCampaignUser'
-        type: array
     type: object
   request.BalcklistChannelRepostConfigRequest:
     properties:
@@ -1120,13 +1051,6 @@ definitions:
       username:
         type: string
     type: object
-  request.CreateWhitelistCampaignRequest:
-    properties:
-      guild_id:
-        type: string
-      name:
-        type: string
-    type: object
   request.DeleteDiscordUserAlertRequest:
     properties:
       id:
@@ -1183,19 +1107,6 @@ definitions:
         type: boolean
       user_discord_id:
         type: string
-    type: object
-  request.GiftXPRequest:
-    properties:
-      admin_discord_id:
-        type: string
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      user_discord_id:
-        type: string
-      xp_amount:
-        type: integer
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -1772,11 +1683,6 @@ definitions:
       data:
         type: string
     type: object
-  response.CreateCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
-    type: object
   response.CreateNFTCollectionResponse:
     properties:
       data:
@@ -1931,11 +1837,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.NFTCollectionCount'
-    type: object
-  response.GetCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
     type: object
   response.GetDataUserProfileResponse:
     properties:
@@ -2371,11 +2272,6 @@ definitions:
       message:
         type: string
     type: object
-  response.GiftXpHandlerResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.HandleUserActivityResponse'
-    type: object
   response.GuildConfigDefaultCurrencyResponse:
     properties:
       created_at:
@@ -2772,13 +2668,6 @@ definitions:
       data:
         items:
           $ref: '#/definitions/response.ConfigNotifyResponse'
-        type: array
-    type: object
-  response.ListCustomCommandsResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildCustomCommand'
         type: array
     type: object
   response.ListGuildGroupNFTRolesResponse:
@@ -3289,11 +3178,6 @@ definitions:
         type: string
       user_id:
         type: string
-    type: object
-  response.UpdateCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
     type: object
   response.UpdateUserFeedbackResponse:
     properties:
@@ -5408,28 +5292,6 @@ paths:
       summary: Update users' feedbacks
       tags:
       - Feedback
-  /gift/xp:
-    post:
-      consumes:
-      - application/json
-      description: Gift xp handler
-      parameters:
-      - description: Gift XP handler request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.GiftXPRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GiftXpHandlerResponse'
-      summary: Gift xp handler
-      tags:
-      - Gift
   /guilds:
     get:
       consumes:
@@ -5537,139 +5399,7 @@ paths:
             type: string
       summary: Create guild channel
       tags:
-      - Guild
-  /guilds/{guild_id}/custom-commands:
-    get:
-      consumes:
-      - application/json
-      description: List custom commands
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Enabled
-        in: query
-        name: enabled
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListCustomCommandsResponse'
-      summary: List custom commands
-      tags:
-      - Custom Command
-    post:
-      consumes:
-      - application/json
-      description: Create custom command
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Create custom command request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildCustomCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateCustomCommandResponse'
-      summary: Create custom command
-      tags:
-      - Custom Command
-  /guilds/{guild_id}/custom-commands/{command_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete custom commands
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      summary: Delete custom commands
-      tags:
-      - Custom Command
-    get:
-      consumes:
-      - application/json
-      description: Get custom commands
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetCustomCommandResponse'
-      summary: Get custom commands
-      tags:
-      - Custom Command
-    put:
-      consumes:
-      - application/json
-      description: Update custom command
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      - description: Update custom command request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildCustomCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UpdateCustomCommandResponse'
-      summary: Update custom command
-      tags:
-      - Custom Command
+      - Guild  
   /guilds/{guild_id}/stats:
     get:
       consumes:
@@ -7051,160 +6781,6 @@ paths:
       summary: Generate verification
       tags:
       - Verification
-  /whitelist-campaigns:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.WhitelistCampaign'
-            type: array
-      summary: Get whitelist campaign
-      tags:
-      - Whitelist campaign
-    post:
-      consumes:
-      - application/json
-      description: Create whitelist campaign
-      parameters:
-      - description: Create whitelist campaign request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
-      summary: Create whitelist campaign
-      tags:
-      - Whitelist campaign
-  /whitelist-campaigns/{campaignId}:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign by id
-      parameters:
-      - description: Campaign ID
-        in: path
-        name: campaignId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.WhitelistCampaign'
-      summary: Get whitelist campaign by id
-      tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign user
-      parameters:
-      - description: Campaign ID
-        in: query
-        name: campaign_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.WhitelistCampaignUser'
-            type: array
-      summary: Get whitelist campaign user
-      tags:
-      - Whitelist campaign
-    post:
-      consumes:
-      - application/json
-      description: Add whitelist campaign user
-      parameters:
-      - description: Add whitelist campaign user request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
-      summary: Add whitelist campaign user
-      tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users/{discord_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign user by discord ID
-      parameters:
-      - description: Discord ID
-        in: path
-        name: discord_id
-        required: true
-        type: string
-      - description: Campaign ID
-        in: query
-        name: campaign_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.WhitelistCampaignUser'
-      summary: Get whitelist campaign user by discord ID
-      tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users/csv:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign users csv
-      parameters:
-      - description: Campaign ID
-        in: query
-        name: campaign_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Get whitelist campaign users csv
-      tags:
-      - Whitelist campaign
 securityDefinitions:
   ApiKeyAuth:
     in: header

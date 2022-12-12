@@ -3092,40 +3092,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/gift/xp": {
-            "post": {
-                "description": "Gift xp handler",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Gift"
-                ],
-                "summary": "Gift xp handler",
-                "parameters": [
-                    {
-                        "description": "Gift XP handler request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GiftXPRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GiftXpHandlerResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/guilds": {
             "get": {
                 "description": "Get guilds",
@@ -3350,203 +3316,6 @@ const docTemplate = `{
                         "schema": {
                             "type": "string"
                         }
-                    }
-                }
-            }
-        },
-        "/guilds/{guild_id}/custom-commands": {
-            "get": {
-                "description": "List custom commands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "List custom commands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Enabled",
-                        "name": "enabled",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListCustomCommandsResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create custom command",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Create custom command",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create custom command request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildCustomCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateCustomCommandResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/guilds/{guild_id}/custom-commands/{command_id}": {
-            "get": {
-                "description": "Get custom commands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Get custom commands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetCustomCommandResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update custom command",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Update custom command",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update custom command request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildCustomCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UpdateCustomCommandResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete custom commands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Delete custom commands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
                     }
                 }
             }
@@ -5580,240 +5349,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/whitelist-campaigns": {
-            "get": {
-                "description": "Get whitelist campaign",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.WhitelistCampaign"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create whitelist campaign",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Create whitelist campaign",
-                "parameters": [
-                    {
-                        "description": "Create whitelist campaign request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateWhitelistCampaignRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateWhitelistCampaignRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/users": {
-            "get": {
-                "description": "Get whitelist campaign user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.WhitelistCampaignUser"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add whitelist campaign user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Add whitelist campaign user",
-                "parameters": [
-                    {
-                        "description": "Add whitelist campaign user request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AddWhitelistCampaignUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/request.AddWhitelistCampaignUserRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/users/csv": {
-            "get": {
-                "description": "Get whitelist campaign users csv",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign users csv",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/users/{discord_id}": {
-            "get": {
-                "description": "Get whitelist campaign user by discord ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign user by discord ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.WhitelistCampaignUser"
-                        }
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/{campaignId}": {
-            "get": {
-                "description": "Get whitelist campaign by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaignId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.WhitelistCampaign"
-                        }
-                    }
-                }
-            }
-        }
     },
     "definitions": {
         "big.Float": {
@@ -6416,47 +5951,6 @@ const docTemplate = `{
                 },
                 "welcome_message": {
                     "type": "string"
-                }
-            }
-        },
-        "model.GuildCustomCommand": {
-            "type": "object",
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "channels_permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "cooldown": {
-                    "type": "integer"
-                },
-                "cooldown_duration": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "roles_permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -7124,43 +6618,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.WhitelistCampaign": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.WhitelistCampaignUser": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "whitelist_campaign_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.AddNftWatchlistRequest": {
             "type": "object",
             "properties": {
@@ -7212,34 +6669,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.AddWhitelistCampaignUser": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "whitelist_campaign_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.AddWhitelistCampaignUserRequest": {
-            "type": "object",
-            "properties": {
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.AddWhitelistCampaignUser"
-                    }
                 }
             }
         },
@@ -7501,17 +6930,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateWhitelistCampaignRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "request.DeleteDiscordUserAlertRequest": {
             "type": "object",
             "properties": {
@@ -7598,26 +7016,6 @@ const docTemplate = `{
                 },
                 "user_discord_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.GiftXPRequest": {
-            "type": "object",
-            "properties": {
-                "admin_discord_id": {
-                    "type": "string"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "user_discord_id": {
-                    "type": "string"
-                },
-                "xp_amount": {
-                    "type": "integer"
                 }
             }
         },
@@ -8504,14 +7902,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
-                }
-            }
-        },
         "response.CreateNFTCollectionResponse": {
             "type": "object",
             "properties": {
@@ -8748,14 +8138,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NFTCollectionCount"
-                }
-            }
-        },
-        "response.GetCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
                 }
             }
         },
@@ -9433,14 +8815,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GiftXpHandlerResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.HandleUserActivityResponse"
-                }
-            }
-        },
         "response.GuildConfigDefaultCurrencyResponse": {
             "type": "object",
             "properties": {
@@ -10048,17 +9422,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.ConfigNotifyResponse"
-                    }
-                }
-            }
-        },
-        "response.ListCustomCommandsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildCustomCommand"
                     }
                 }
             }
@@ -10846,14 +10209,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
-                }
-            }
-        },
-        "response.UpdateCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
                 }
             }
         },

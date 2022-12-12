@@ -412,21 +412,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 	}, nil
 }
 
-func (e *Entity) SendGiftXp(req request.GiftXPRequest) (*response.HandleUserActivityResponse, error) {
-	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		UserID:    req.UserDiscordID,
-		Action:    "gifted",
-		CustomXP:  int64(req.XPAmount),
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.SendGiftXp] entity.HandleUserActivities failed)")
-		return nil, err
-	}
-	return res, nil
-}
-
 func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
 	was, err := e.repo.UserWallet.ListWalletAddresses("evm")
 	if err != nil {
