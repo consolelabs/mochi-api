@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -15,7 +17,6 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	mock_indexer "github.com/defipod/mochi/pkg/service/indexer/mocks"
-	"github.com/golang/mock/gomock"
 )
 
 func TestEntity_GetNftSales(t *testing.T) {

@@ -1,9 +1,10 @@
 package conversation_repost_histories
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

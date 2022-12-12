@@ -4,6 +4,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -13,8 +16,6 @@ import (
 	mock_guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role/mocks"
 	mock_guildconfigreactionroles "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles/mocks"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_ConfigLevelRole(t *testing.T) {

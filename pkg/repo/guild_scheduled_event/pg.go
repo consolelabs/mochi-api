@@ -1,10 +1,10 @@
 package guild_scheduled_event
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/model"
 )
 

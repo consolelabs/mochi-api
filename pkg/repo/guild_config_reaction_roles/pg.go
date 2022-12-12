@@ -3,9 +3,10 @@ package guild_config_reaction_roles
 import (
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"gorm.io/gorm"
 )
 
 type pg struct {

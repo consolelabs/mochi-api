@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateUser(req request.CreateUserRequest) error {
@@ -410,21 +411,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 			AcademyXp:  userFactionXp.Data.ReputationXp,
 		},
 	}, nil
-}
-
-func (e *Entity) SendGiftXp(req request.GiftXPRequest) (*response.HandleUserActivityResponse, error) {
-	res, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		UserID:    req.UserDiscordID,
-		Action:    "gifted",
-		CustomXP:  int64(req.XPAmount),
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.SendGiftXp] entity.HandleUserActivities failed)")
-		return nil, err
-	}
-	return res, nil
 }
 
 func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {

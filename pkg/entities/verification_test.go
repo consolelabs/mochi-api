@@ -7,21 +7,21 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
+	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
+	mock_config_verify "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
-	"github.com/golang/mock/gomock"
-
-	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
-	mock_config_verify "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message/mocks"
 )
 
 func TestEntity_GetGuildConfigWalletVerificationMessage(t *testing.T) {

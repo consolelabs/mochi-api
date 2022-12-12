@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWalletVerificationMessage) (*model.GuildConfigWalletVerificationMessage, error) {

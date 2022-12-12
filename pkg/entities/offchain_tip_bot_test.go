@@ -4,6 +4,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
@@ -17,9 +21,6 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
-	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func TestEntity_TransferToken(t *testing.T) {

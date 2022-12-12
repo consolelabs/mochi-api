@@ -4,11 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	_ "github.com/defipod/mochi/pkg/response"
-	"github.com/gin-gonic/gin"
 )
 
 // GetLinkedTelegram     godoc

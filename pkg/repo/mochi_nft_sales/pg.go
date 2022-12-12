@@ -1,9 +1,10 @@
 package mochinftsales
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"gorm.io/gorm"
 )
 
 type pg struct {

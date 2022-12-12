@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/bwmarrin/discordgo"
+
 	"github.com/defipod/mochi/pkg/model"
 )
 

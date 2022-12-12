@@ -1,10 +1,11 @@
 package message_repost_history
 
 import (
-	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/request"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 )
 
 type pg struct {

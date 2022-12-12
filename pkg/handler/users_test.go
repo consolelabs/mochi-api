@@ -7,6 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -15,9 +19,6 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	mock_processor "github.com/defipod/mochi/pkg/service/processor/mocks"
 	"github.com/defipod/mochi/pkg/util/testhelper"
-	"github.com/gin-gonic/gin"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandler_GetUserProfile(t *testing.T) {

@@ -1,9 +1,10 @@
 package offchain_tip_bot_user_balances
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/google/uuid"
 )
 
 type Store interface {

@@ -3,10 +3,11 @@ package entities
 import (
 	"errors"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) IsRepostableMessage(req request.MessageReactionRequest) bool {

@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	_ "github.com/defipod/mochi/pkg/model"
@@ -13,7 +15,6 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/gin-gonic/gin"
 )
 
 type error interface {

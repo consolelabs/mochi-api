@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"sync"
 
-	"github.com/defipod/mochi/pkg/logger"
 	"github.com/go-testfixtures/testfixtures/v3"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/logger"
 )
 
 var (
