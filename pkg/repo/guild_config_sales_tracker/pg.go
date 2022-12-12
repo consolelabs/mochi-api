@@ -2,7 +2,6 @@ package guild_config_sales_tracker
 
 import (
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -21,17 +20,5 @@ func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigSalesTracker, erro
 }
 
 func (pg *pg) UpsertOne(config *model.GuildConfigSalesTracker) error {
-	tx := pg.db.Begin()
-
-	// update on conflict
-	err := tx.Table("guild_config_sales_trackers").Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "guild_id"}},
-		UpdateAll: true,
-	}).Create(&config).Error
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	return tx.Commit().Error
+	return pg.db.Create(&config).Error
 }
