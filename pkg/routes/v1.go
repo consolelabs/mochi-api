@@ -68,21 +68,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.GET("/:guild_id/custom-tokens", h.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.ListMyGuilds)
 		guildGroup.PUT("/:guild_id", h.UpdateGuild)
-
-		customCommandGroup := guildGroup.Group("/:guild_id/custom-commands")
-		{
-			customCommandGroup.POST("", h.CreateCustomCommand)
-			customCommandGroup.GET("", h.ListCustomCommands)
-			customCommandGroup.GET("/:command_id", h.GetCustomCommand)
-			customCommandGroup.PUT("/:command_id", h.UpdateCustomCommand)
-			customCommandGroup.DELETE("/:command_id", h.DeleteCustomCommand)
-		}
-
 		countStatsGroup := guildGroup.Group("/:guild_id/stats")
 		{
 			countStatsGroup.GET("", h.GetGuildStatsHandler)
 		}
-
 		// api to contact with discord
 		guildGroup.POST("/:guild_id/channels", h.CreateGuildChannel)
 	}
@@ -295,20 +284,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.POST("/generate", h.GenerateVerification)
 		verifyGroup.POST("", h.VerifyWalletAddress)
 	}
-
-	whitelistCampaignGroup := v1.Group("/whitelist-campaigns")
-	{
-		whitelistCampaignGroup.POST("", h.CreateWhitelistCampaign)
-		whitelistCampaignGroup.GET("", h.GetWhitelistCampaigns)
-		whitelistCampaignGroup.GET("/:campaignId", h.GetWhitelistCampaignById)
-		whitelistCampaignUserGroup := whitelistCampaignGroup.Group("/users")
-		{
-			whitelistCampaignUserGroup.POST("", h.AddWhitelistCampaignUsers)
-			whitelistCampaignUserGroup.GET("", h.GetWhitelistCampaignUsers)
-			whitelistCampaignUserGroup.GET("/:discordId", h.GetWhitelistCampaignUserByDiscordId)
-			whitelistCampaignUserGroup.GET("/csv", h.GetWhitelistCampaignUsersCSV)
-		}
-	}
 	nftsGroup := v1.Group("/nfts")
 	{
 		nftsGroup.GET("", h.ListAllNFTCollections)
@@ -342,10 +317,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			nftWatchlistGroup.POST("", h.AddNftWatchlist)
 			nftWatchlistGroup.DELETE("", h.DeleteNftWatchlist)
 		}
-	}
-	giftGroup := v1.Group("/gift")
-	{
-		giftGroup.POST("/xp", h.GiftXpHandler)
 	}
 	twitterGroup := v1.Group("/twitter")
 	{
