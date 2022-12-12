@@ -1,10 +1,11 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/middleware"
-	"github.com/gin-gonic/gin"
 )
 
 // NewRoutes ...

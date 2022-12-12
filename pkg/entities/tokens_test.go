@@ -6,6 +6,9 @@ import (
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -23,8 +26,6 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
 	mock_covalent "github.com/defipod/mochi/pkg/service/covalent/mocks"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_UpsertCustomToken(t *testing.T) {

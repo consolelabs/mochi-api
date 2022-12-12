@@ -7,9 +7,10 @@ package mock_userwatchlistitem
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

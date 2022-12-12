@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -17,7 +19,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/golang/mock/gomock"
 )
 
 func TestEntity_UpdateGuildStats(t *testing.T) {

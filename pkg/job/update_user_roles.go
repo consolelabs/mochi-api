@@ -4,11 +4,12 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
-	"gorm.io/gorm"
 )
 
 type updateUserRoles struct {

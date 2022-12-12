@@ -7,15 +7,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/util"
-
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/consts"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) GuildLatestInvites(guildID string) ([]*discordgo.Invite, error) {

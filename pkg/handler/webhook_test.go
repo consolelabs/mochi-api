@@ -8,6 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -20,8 +23,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 )
 
 func Test_HandleDiscordWebhook(t *testing.T) {

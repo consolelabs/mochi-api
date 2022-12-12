@@ -3,11 +3,12 @@ package abi
 import (
 	"errors"
 
-	"github.com/defipod/mochi/pkg/config"
-	abi "github.com/defipod/mochi/pkg/contract/erc721"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+
+	"github.com/defipod/mochi/pkg/config"
+	abi "github.com/defipod/mochi/pkg/contract/erc721"
 )
 
 type abiEntity struct {

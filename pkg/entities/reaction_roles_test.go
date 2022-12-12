@@ -5,6 +5,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -15,9 +19,6 @@ import (
 	mock_guildconfigreactionroles "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles/mocks"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func TestEntity_ListAllReactionRoles(t *testing.T) {

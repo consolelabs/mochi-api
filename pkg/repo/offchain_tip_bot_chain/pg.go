@@ -3,8 +3,9 @@ package offchain_tip_bot_chain
 import (
 	"strings"
 
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

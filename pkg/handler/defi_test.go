@@ -7,6 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -18,9 +22,6 @@ import (
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/defipod/mochi/pkg/util/testhelper"
-	"github.com/gin-gonic/gin"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestHandler_GetCoin(t *testing.T) {

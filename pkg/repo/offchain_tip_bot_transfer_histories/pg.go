@@ -3,9 +3,10 @@ package offchain_tip_bot_transfer_histories
 import (
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 type pg struct {

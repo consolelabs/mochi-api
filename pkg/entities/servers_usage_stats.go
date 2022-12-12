@@ -1,10 +1,11 @@
 package entities
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) AddServersUsageStats(info *request.UsageInformation) error {

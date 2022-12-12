@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -18,8 +21,6 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
 	"github.com/defipod/mochi/pkg/util/testhelper"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_GetUserWatchlist(t *testing.T) {

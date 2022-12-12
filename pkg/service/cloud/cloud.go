@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/disintegration/imaging"
+	"golang.org/x/image/webp"
+	"google.golang.org/api/option"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/disintegration/imaging"
-	"golang.org/x/image/webp"
-
-	"google.golang.org/api/option"
 )
 
 type clientUploader struct {

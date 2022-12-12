@@ -4,8 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/defipod/mochi/pkg/response"
 	"github.com/gin-gonic/gin"
+
+	"github.com/defipod/mochi/pkg/response"
 )
 
 // GetUserTransaction     godoc

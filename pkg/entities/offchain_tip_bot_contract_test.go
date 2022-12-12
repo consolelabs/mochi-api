@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -13,7 +15,6 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
-	"github.com/golang/mock/gomock"
 )
 
 func TestEntity_GetUserBalances(t *testing.T) {

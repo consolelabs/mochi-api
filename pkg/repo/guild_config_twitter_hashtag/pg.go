@@ -3,9 +3,10 @@ package guild_config_twitter_hashtag
 import (
 	"fmt"
 
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

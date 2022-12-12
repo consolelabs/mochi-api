@@ -6,6 +6,10 @@ import (
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
@@ -27,9 +31,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
-	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func TestEntity_GetUserRoleByLevel(t *testing.T) {

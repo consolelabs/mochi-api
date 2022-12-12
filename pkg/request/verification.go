@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/gin-gonic/gin"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type NewGuildConfigWalletVerificationMessageRequest struct {

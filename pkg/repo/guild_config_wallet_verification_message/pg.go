@@ -1,9 +1,10 @@
 package guildconfigwalletverificationmessage
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {

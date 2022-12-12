@@ -4,15 +4,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo"
 	mock_guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker/mocks"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func TestEntity_GetInviteTrackerLogChannel(t *testing.T) {

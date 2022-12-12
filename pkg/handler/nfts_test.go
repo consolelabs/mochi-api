@@ -9,6 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -25,9 +29,6 @@ import (
 	mock_marketplace "github.com/defipod/mochi/pkg/service/marketplace/mocks"
 	"github.com/defipod/mochi/pkg/util"
 	"github.com/defipod/mochi/pkg/util/testhelper"
-	"github.com/gin-gonic/gin"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
 )
 
 // func TestHandler_GetNewListedNFTCollection(t *testing.T) {

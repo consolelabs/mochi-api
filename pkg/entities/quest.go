@@ -6,6 +6,9 @@ import (
 	"sort"
 	"time"
 
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo/quest"
@@ -15,8 +18,6 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) GetUserQuestList(req request.GetUserQuestListRequest) ([]model.QuestUserList, error) {
