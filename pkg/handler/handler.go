@@ -1,33 +1,67 @@
 package handler
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
-
 	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/handler/auth"
+	"github.com/defipod/mochi/pkg/handler/cache"
+	"github.com/defipod/mochi/pkg/handler/community"
+	"github.com/defipod/mochi/pkg/handler/config"
+	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
+	configcommunity "github.com/defipod/mochi/pkg/handler/config-community"
+	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
+	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
+	"github.com/defipod/mochi/pkg/handler/data"
+	"github.com/defipod/mochi/pkg/handler/defi"
+	"github.com/defipod/mochi/pkg/handler/guild"
+	"github.com/defipod/mochi/pkg/handler/healthz"
+	"github.com/defipod/mochi/pkg/handler/nft"
+	"github.com/defipod/mochi/pkg/handler/tip"
+	"github.com/defipod/mochi/pkg/handler/user"
+	"github.com/defipod/mochi/pkg/handler/verify"
+	"github.com/defipod/mochi/pkg/handler/webhook"
+	"github.com/defipod/mochi/pkg/handler/widget"
 	"github.com/defipod/mochi/pkg/logger"
 )
 
-// Handler for app
 type Handler struct {
-	entities *entities.Entity
-	log      logger.Logger
+	Healthcheck     healthz.IHandler
+	Auth            auth.IHandler
+	Cache           cache.IHandler
+	Community       community.IHandler
+	Guild           guild.IHandler
+	Config          config.IHandler
+	Data            data.IHandler
+	Defi            defi.IHandler
+	Nft             nft.IHandler
+	User            user.IHandler
+	Verify          verify.IHandler
+	Webhook         webhook.IHandler
+	Tip             tip.IHandler
+	Widget          widget.IHandler
+	ConfigChannel   configchannel.IHandler
+	ConfigCommunity configcommunity.IHandler
+	ConfigDefi      configdefi.IHandler
+	ConfigRoles     configroles.IHandler
 }
 
-// New will return an instance of Auth struct
-func New(entities *entities.Entity) (*Handler, error) {
-	handler := &Handler{
-		entities: entities,
-		log:      *entities.GetLogger(),
+func New(entities *entities.Entity, logger logger.Logger) *Handler {
+	return &Handler{
+		Healthcheck:     healthz.New(),
+		Auth:            auth.New(entities, logger),
+		Cache:           cache.New(entities, logger),
+		Community:       community.New(entities, logger),
+		Config:          config.New(entities, logger),
+		Data:            data.New(entities, logger),
+		Defi:            defi.New(entities, logger),
+		Nft:             nft.New(entities, logger),
+		User:            user.New(entities, logger),
+		Verify:          verify.New(entities, logger),
+		Webhook:         webhook.New(entities, logger),
+		Tip:             tip.New(entities, logger),
+		Widget:          widget.New(entities, logger),
+		ConfigChannel:   configchannel.New(entities, logger),
+		ConfigCommunity: configcommunity.New(entities, logger),
+		ConfigDefi:      configdefi.New(entities, logger),
+		ConfigRoles:     configroles.New(entities, logger),
 	}
-
-	return handler, nil
-}
-
-// Healthz handler
-// Return "OK"
-func (h *Handler) Healthz(c *gin.Context) {
-	c.Header("Content-Type", "text/plain")
-	c.String(http.StatusOK, "OK")
 }
