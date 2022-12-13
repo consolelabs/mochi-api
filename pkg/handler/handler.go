@@ -50,6 +50,7 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Auth:            auth.New(entities, logger),
 		Cache:           cache.New(entities, logger),
 		Community:       community.New(entities, logger),
+		Guild:           guild.New(entities, logger),
 		Config:          config.New(entities, logger),
 		Data:            data.New(entities, logger),
 		Defi:            defi.New(entities, logger),
