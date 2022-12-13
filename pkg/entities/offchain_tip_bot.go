@@ -506,3 +506,7 @@ func (e *Entity) TotalFee() ([]response.TotalFeeWithdraw, error) {
 func (e *Entity) UpdateTokenFee(req request.OffchainUpdateTokenFee) error {
 	return e.repo.OffchainTipBotTokens.UpdateTokenFee(req.Symbol, req.ServiceFee)
 }
+
+func (e *Entity) GetAllTipBotTokens() ([]model.OffchainTipBotToken, error) {
+	return e.repo.OffchainTipBotTokens.GetAll()
+}

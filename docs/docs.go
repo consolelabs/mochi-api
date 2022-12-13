@@ -4601,6 +4601,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/offchain-tip-bot/tokens": {
+            "get": {
+                "description": "Get all offchain tip bot tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OffChain"
+                ],
+                "summary": "Get all offchain tip bot tokens",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.AllTipBotTokensResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/offchain-tip-bot/transactions": {
             "get": {
                 "description": "Get transactions by query",
@@ -8261,6 +8284,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                }
+            }
+        },
+        "response.AllTipBotTokensResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OffchainTipBotToken"
                     }
                 }
             }

@@ -72,3 +72,7 @@ type TotalFeeWithdraw struct {
 	Symbol   string  `json:"symbol"`
 	TotalFee float64 `json:"total_fee"`
 }
+
+type AllTipBotTokensResponse struct {
+	Data []model.OffchainTipBotToken `json:"data"`
+}
