@@ -167,26 +167,31 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 			Inline: true,
 		},
 		{
-			Name:   "Hodl",
-			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
-			Inline: true,
-		},
-		{
 			Name:   "Price",
 			Value:  util.FormatCryptoPrice(*nftToken.Price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
 			Inline: true,
 		},
 		{
-			Name:   "Last Price",
-			Value:  util.FormatCryptoPrice(*nftToken.LastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
-			Inline: true,
-		},
-		{
-			Name: "PnL",
-			// + " " + strings.ToUpper(nftSale.Price.Token.Symbol)
+			Name:   "PnL",
 			Value:  util.GetGainEmoji(nftToken.Pnl) + util.FormatCryptoPrice(*nftToken.Pnl) + nftToken.SubPnlDisplay,
 			Inline: true,
 		},
+	}
+
+	if util.SecondsToDays(nftSale.Hodl) > 0 {
+		data = append(data, &discordgo.MessageEmbedField{
+			Name:   "Hodl",
+			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
+			Inline: true,
+		})
+	}
+
+	if util.FormatCryptoPrice(*nftToken.LastPrice) != "0" {
+		data = append(data, &discordgo.MessageEmbedField{
+			Name:   "Last Price",
+			Value:  util.FormatCryptoPrice(*nftToken.LastPrice) + " " + strings.ToUpper(nftSale.LastPrice.Token.Symbol),
+			Inline: true,
+		})
 	}
 	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
@@ -244,8 +249,8 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 
 func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceRequest, collection *model.NFTCollection, indexerTokenRes *response.IndexerGetNFTTokenDetailResponse) (*nftTokenModel, error) {
 	// calculate last price, price, pnl, sub pnl
-	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimal)
-	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimal)
+	price := util.StringWeiToEther(nftSale.Price.Amount, nftSale.Price.Token.Decimals)
+	lastPrice := util.StringWeiToEther(nftSale.LastPrice.Amount, nftSale.LastPrice.Token.Decimals)
 	pnl := new(big.Float)
 	pnl = pnl.Sub(price, lastPrice)
 

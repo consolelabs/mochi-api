@@ -32,5 +32,5 @@ type TokenInfoModel struct {
 	Symbol   string `json:"symbol"`
 	IsNative bool   `json:"is_native"`
 	Address  string `json:"address"`
-	Decimal  int    `json:"decimal"`
+	Decimals int    `json:"decimals"`
 }
