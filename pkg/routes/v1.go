@@ -13,18 +13,39 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	// asdsda
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
-
-	chainGroup := v1.Group("/chains")
+	authGroup := v1.Group("/auth")
 	{
+<<<<<<< HEAD
 		chainGroup.GET("", h.Defi.ListAllChain)
+=======
+		authGroup.POST("/login", h.Login)
+		authGroup.POST("/logout", h.Logout)
 	}
-
-	metricGroup := v1.Group("/metrics")
+	cacheGroup := v1.Group("/cache")
 	{
-		metricGroup.GET("", h.Data.MetricByProperties)
+		cacheGroup.POST("/upvote", h.SetUpvoteMessageCache)
+>>>>>>> e7fabac (chore: refactor routes)
 	}
 
-	offchainTipBotGroup := v1.Group("/offchain-tip-bot")
+	dataGroup := v1.Group("/data")
+	{
+<<<<<<< HEAD
+		metricGroup.GET("", h.Data.MetricByProperties)
+=======
+		dataGroup.GET("/metrics", h.MetricByProperties)
+		usageGroup := dataGroup.Group("/usage-stats")
+		{
+			usageGroup.POST("", h.AddServersUsageStat)
+			usageGroup.GET("/gitbook", h.AddGitbookClick)
+		}
+		activitygroup := dataGroup.Group("/activities")
+		{
+			activitygroup.POST("/:activity", h.ToggleActivityConfig)
+		}
+>>>>>>> e7fabac (chore: refactor routes)
+	}
+
+	offchainTipBotGroup := v1.Group("/tip")
 	{
 		// watch total balances
 		offchainTipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
@@ -35,8 +56,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			offchainTipBotTokensGroup.GET("", h.Tip.GetAllTipBotTokens)
 			offchainTipBotTokensGroup.PUT("", h.Tip.UpdateTokenFee)
 		}
-
 		// offchain tip bot
+<<<<<<< HEAD
 		offchainTipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
 		offchainTipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
 		offchainTipBotGroup.GET("/balances", h.Tip.GetUserBalances)
@@ -63,6 +84,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		authGroup.POST("/login", h.Auth.Login)
 		authGroup.POST("/logout", h.Auth.Logout)
+=======
+		offchainTipBotGroup.GET("/chains", h.OffchainTipBotListAllChains)
+		offchainTipBotGroup.POST("/assign-contract", h.OffchainTipBotCreateAssignContract)
+		offchainTipBotGroup.GET("/balances", h.GetUserBalances)
+		offchainTipBotGroup.POST("/withdraw", h.OffchainTipBotWithdraw)
+		offchainTipBotGroup.POST("/transfer", h.TransferToken)
+		offchainTipBotGroup.GET("/transactions", h.GetTransactionsByQuery)
+>>>>>>> e7fabac (chore: refactor routes)
 	}
 
 	guildGroup := v1.Group("/guilds")
@@ -83,6 +112,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	userGroup := v1.Group("/users")
 	{
+<<<<<<< HEAD
 		userGroup.GET("me", middleware.AuthGuard(cfg), h.User.GetMyInfo)
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
@@ -92,6 +122,19 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/upvote-leaderboard", h.User.GetUserUpvoteLeaderboard)
 		userGroup.GET("/:id/transactions", h.User.GetUserTransaction)
 		userGroup.GET("/top", h.User.GetTopUsers)
+=======
+		userGroup.GET("me", middleware.AuthGuard(cfg), h.GetMyInfo)
+		userGroup.POST("", h.IndexUsers)
+		userGroup.GET("/:id", h.GetUser)
+		userGroup.GET("/wallets/:address", h.GetUserWalletByGuildIDAddress)
+		userGroup.GET("/gmstreak", h.GetUserCurrentGMStreak)
+		userGroup.GET("/upvote-streak", h.GetUserCurrentUpvoteStreak) // get users upvote streak
+		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
+		userGroup.GET("/:id/transactions", h.GetUserTransaction)
+		userGroup.GET("/top", h.GetTopUsers)
+		userGroup.GET("", h.GetUserProfile)
+		// moved to /widget/device, to be removed
+>>>>>>> e7fabac (chore: refactor routes)
 		deviceGroup := userGroup.Group("/device")
 		{
 			deviceGroup.GET("", h.Widget.GetUserDevice)
@@ -110,6 +153,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			invitesGroup.GET("/leaderboard/:id", h.User.GetInvitesLeaderboard)
 			invitesGroup.GET("/aggregation", h.User.InvitesAggregation)
 		}
+<<<<<<< HEAD
 	}
 
 	profleGroup := v1.Group("/profiles")
@@ -148,15 +192,29 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			roleReactionGroup.DELETE("", h.ConfigRoles.RemoveReactionRoleConfig)
 			roleReactionGroup.POST("/filter", h.ConfigRoles.FilterConfigByReaction)
 
-		}
-		defaultRoleGroup := configGroup.Group("/default-roles")
+=======
+		feedbackGroup := communityGroup.Group("/feedback")
 		{
+			feedbackGroup.POST("", h.HandleUserFeedback)
+			feedbackGroup.PUT("", h.UpdateUserFeedback)
+			feedbackGroup.GET("", h.GetAllUserFeedback)
+>>>>>>> e7fabac (chore: refactor routes)
+		}
+		questGroup := communityGroup.Group("/quests")
+		{
+<<<<<<< HEAD
 			defaultRoleGroup.GET("", h.ConfigRoles.GetDefaultRolesByGuildID)
 			defaultRoleGroup.POST("", h.ConfigRoles.CreateDefaultRole)
 			defaultRoleGroup.DELETE("", h.ConfigRoles.DeleteDefaultRoleByGuildID)
+=======
+			questGroup.GET("", h.GetUserQuestList)
+			questGroup.POST("/progress", h.UpdateQuestProgress)
+			questGroup.POST("/claim", h.ClaimQuestsRewards)
+>>>>>>> e7fabac (chore: refactor routes)
 		}
-		defaultCurrencyGroup := configGroup.Group("/default-currency")
+		twitterGroup := communityGroup.Group("/twitter")
 		{
+<<<<<<< HEAD
 			defaultCurrencyGroup.GET("", h.ConfigDefi.GetGuildDefaultCurrency)
 			defaultCurrencyGroup.POST("", h.ConfigDefi.UpsertGuildDefaultCurrency)
 			defaultCurrencyGroup.DELETE("", h.ConfigDefi.DeleteGuildDefaultCurrency)
@@ -191,6 +249,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			nftRoleGroup.DELETE("/", h.ConfigRoles.RemoveGuildNFTRole)
 		}
 		repostReactionGroup := configGroup.Group("/repost-reactions")
+=======
+			twitterGroup.POST("", h.CreateTwitterPost)
+			twitterGroup.GET("/top", h.GetTwitterLeaderboard)
+		}
+		// starboard
+		repostReactionGroup := communityGroup.Group("/repost-reactions")
+>>>>>>> e7fabac (chore: refactor routes)
 		{
 			repostReactionGroup.GET("/:guild_id", h.Community.GetRepostReactionConfigs)
 			repostReactionGroup.POST("", h.Community.ConfigRepostReaction)
@@ -202,11 +267,92 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.GET("/blacklist-channel", h.Community.GetGuildBlacklistChannelRepostConfig)
 			repostReactionGroup.DELETE("/blacklist-channel", h.Community.DeleteBlacklistChannelRepostConfig)
 		}
-		activitygroup := configGroup.Group("/activities")
+	}
+
+	configGroup := v1.Group("/configs")
+	{
+		//
+		configGroup.GET("/upvote-tiers", h.GetUpvoteTiersConfig)
+		configGroup.GET("/sales-tracker", h.GetSalesTrackerConfig)
+		// prune exclude
+		configGroup.GET("/whitelist-prune", h.GetGuildPruneExclude)
+		configGroup.POST("/whitelist-prune", h.UpsertGuildPruneExclude)
+		configGroup.DELETE("/whitelist-prune", h.DeleteGuildPruneExclude)
+		// moved to /widget/token-alert, to be removed
+		tokenAlertGroup := configGroup.Group("/token-alert")
 		{
+<<<<<<< HEAD
 			activitygroup.POST("/:activity", h.Config.ToggleActivityConfig)
+=======
+			tokenAlertGroup.GET("", h.GetUserTokenAlert)
+			tokenAlertGroup.POST("", h.UpsertUserTokenAlert)
+			tokenAlertGroup.DELETE("", h.DeleteUserTokenAlert)
+>>>>>>> e7fabac (chore: refactor routes)
 		}
-		twitterGroup := configGroup.Group("/twitter")
+
+	}
+
+	configChannelGroup := v1.Group("/config-channels")
+	{
+		configChannelGroup.GET("/gm", h.GetGmConfig)
+		configChannelGroup.POST("/gm", h.UpsertGmConfig)
+		// config welcome channel
+		configChannelGroup.GET("/welcome", h.GetWelcomeChannelConfig)
+		configChannelGroup.POST("/welcome", h.UpsertWelcomeChannelConfig)
+		configChannelGroup.DELETE("/welcome", h.DeleteWelcomeChannelConfig)
+		// config vote channel
+		configChannelGroup.GET("/upvote", h.GetVoteChannelConfig)
+		configChannelGroup.POST("/upvote", h.UpsertVoteChannelConfig)
+		configChannelGroup.DELETE("/upvote", h.DeleteVoteChannelConfig)
+		// config tip notify channel
+		configChannelGroup.POST("/tip-notify", h.CreateConfigNotify)
+		configChannelGroup.GET("/tip-notify", h.ListConfigNotify)
+		configChannelGroup.DELETE("/tip-notify/:id", h.DeleteConfigNotify)
+		// config join-leave channel
+		configChannelGroup.GET("/join-leave", h.GetJoinLeaveChannelConfig)
+		configChannelGroup.POST("/join-leave", h.UpsertJoinLeaveChannelConfig)
+		configChannelGroup.DELETE("/join-leave", h.DeleteJoinLeaveChannelConfig)
+	}
+
+	configRoleGroup := v1.Group("/config-roles")
+	{
+		roleReactionGroup := configRoleGroup.Group("/reaction-roles")
+		{
+			roleReactionGroup.GET("", h.GetAllRoleReactionConfigs)
+			roleReactionGroup.POST("", h.AddReactionRoleConfig)
+			roleReactionGroup.DELETE("", h.RemoveReactionRoleConfig)
+			roleReactionGroup.POST("/filter", h.FilterConfigByReaction)
+
+		}
+		defaultRoleGroup := configRoleGroup.Group("/default-roles")
+		{
+			defaultRoleGroup.GET("", h.GetDefaultRolesByGuildID)
+			defaultRoleGroup.POST("", h.CreateDefaultRole)
+			defaultRoleGroup.DELETE("", h.DeleteDefaultRoleByGuildID)
+		}
+		levelRoleGroup := configRoleGroup.Group("/level-roles")
+		{
+			levelRoleGroup.POST("", h.ConfigLevelRole)
+			levelRoleGroup.GET("/:guild_id", h.GetLevelRoleConfigs)
+			levelRoleGroup.DELETE("/:guild_id", h.RemoveLevelRoleConfig)
+		}
+		nftRoleGroup := configRoleGroup.Group("/nft-roles")
+		{
+			nftRoleGroup.GET("", h.ListGuildGroupNFTRoles)
+			nftRoleGroup.POST("", h.NewGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/group", h.RemoveGuildGroupNFTRole)
+			nftRoleGroup.DELETE("/", h.RemoveGuildNFTRole)
+		}
+	}
+
+	configCommunityGroup := v1.Group("/config-community")
+	{
+		telegramGroup := configCommunityGroup.Group("/telegram")
+		{
+			telegramGroup.GET("", h.GetLinkedTelegram)
+			telegramGroup.POST("", h.LinkUserTelegramWithDiscord)
+		}
+		twitterGroup := configCommunityGroup.Group("/twitter")
 		{
 			twitterGroup.POST("", h.ConfigCommunity.CreateTwitterConfig)
 			twitterGroup.GET("", h.ConfigCommunity.GetAllTwitterConfig)
@@ -218,11 +364,39 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.GET("/blacklist", h.ConfigCommunity.GetTwitterBlackList)
 			twitterGroup.DELETE("/blacklist", h.ConfigCommunity.DeleteFromTwitterBlackList)
 		}
-		defaultTickerGroup := configGroup.Group("/default-ticker")
+	}
+
+	configDefiGroup := v1.Group("/config-defi")
+	{
+		defaultCurrencyGroup := configDefiGroup.Group("/default-currency")
+		{
+			defaultCurrencyGroup.GET("", h.GetGuildDefaultCurrency)
+			defaultCurrencyGroup.POST("", h.UpsertGuildDefaultCurrency)
+			defaultCurrencyGroup.DELETE("", h.DeleteGuildDefaultCurrency)
+		}
+		defaultSymbolGroup := configDefiGroup.Group("/default-symbol")
+		{
+			defaultSymbolGroup.POST("", h.CreateDefaultCollectionSymbol)
+		}
+		tokenGroup := configDefiGroup.Group("/tokens")
+		{
+			tokenGroup.GET("", h.GetGuildTokens)
+			tokenGroup.POST("", h.UpsertGuildTokenConfig)
+			tokenGroup.GET("/default", h.GetDefaultToken)
+			tokenGroup.POST("/default", h.ConfigDefaultToken)
+			tokenGroup.DELETE("/default", h.RemoveDefaultToken)
+		}
+		customTokenGroup := configDefiGroup.Group("/custom-tokens")
+		{
+			customTokenGroup.POST("", h.HandlerGuildCustomTokenConfig)
+		}
+
+		defaultTickerGroup := configDefiGroup.Group("/default-ticker")
 		{
 			defaultTickerGroup.GET("", h.ConfigDefi.GetGuildDefaultTicker)
 			defaultTickerGroup.POST("", h.ConfigDefi.SetGuildDefaultTicker)
 		}
+<<<<<<< HEAD
 
 		defaultNftTickerGroup := configGroup.Group("/default-nft-ticker")
 		{
@@ -242,6 +416,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenAlertGroup.DELETE("", h.Widget.DeleteUserTokenAlert)
 		}
 		monikerGroup := configGroup.Group("/monikers")
+=======
+		monikerGroup := configDefiGroup.Group("/monikers")
+>>>>>>> e7fabac (chore: refactor routes)
 		{
 			monikerGroup.POST("", h.ConfigDefi.UpsertMonikerConfig)
 			monikerGroup.GET("/:guild_id", h.ConfigDefi.GetMonikerByGuildID)
@@ -256,10 +433,18 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/tokens", h.Defi.GetSupportedTokens)
 
 		// Data from CoinGecko
+<<<<<<< HEAD
 		defiGroup.GET("/market-chart", h.Defi.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.Defi.GetCoin)
 		defiGroup.GET("/coins", h.Defi.SearchCoins)
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
+=======
+		defiGroup.GET("/market-chart", h.GetHistoricalMarketChart)
+		defiGroup.GET("/coins/:id", h.GetCoin)
+		defiGroup.GET("/coins", h.SearchCoins)
+		defiGroup.GET("/coins/compare", h.CompareToken)
+		defiGroup.GET("/chains", h.ListAllChain)
+>>>>>>> e7fabac (chore: refactor routes)
 
 		watchlistGroup := defiGroup.Group("/watchlist")
 		{
@@ -269,6 +454,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
+<<<<<<< HEAD
 	webhook := v1.Group("/webhook")
 	{
 		webhook.POST("/discord", h.Webhook.HandleDiscordWebhook)
@@ -277,6 +463,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		webhook.POST("/discordbotlist", h.Webhook.WebhookUpvoteDiscordBot)
 	}
 
+=======
+>>>>>>> e7fabac (chore: refactor routes)
 	verifyGroup := v1.Group("/verify")
 	{
 		verifyGroup.POST("/config", h.Verify.NewGuildConfigWalletVerificationMessage)
@@ -286,6 +474,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.POST("/generate", h.Verify.GenerateVerification)
 		verifyGroup.POST("", h.Verify.VerifyWalletAddress)
 	}
+
 	nftsGroup := v1.Group("/nfts")
 	{
 		nftsGroup.GET("", h.Nft.ListAllNFTCollections)
@@ -312,13 +501,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/tickers", h.Nft.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.Nft.GetNFTCollectionByAddressChain)
 		}
-
 		nftWatchlistGroup := nftsGroup.Group("/watchlist")
 		{
 			nftWatchlistGroup.GET("", h.Nft.GetNftWatchlist)
 			nftWatchlistGroup.POST("", h.Nft.AddNftWatchlist)
 			nftWatchlistGroup.DELETE("", h.Nft.DeleteNftWatchlist)
 		}
+<<<<<<< HEAD
 	}
 	twitterGroup := v1.Group("/twitter")
 	{
@@ -346,6 +535,18 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		questGroup.GET("", h.Community.GetUserQuestList)
 		questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 		questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
+=======
+		trade := nftsGroup.Group("/trades")
+		{
+			trade.GET("/:id", h.GetTradeOffer)
+			trade.POST("", h.CreateTradeOffer)
+		}
+		defaultNftTickerGroup := nftsGroup.Group("/default-nft-ticker")
+		{
+			defaultNftTickerGroup.GET("", h.GetGuildDefaultNftTicker)
+			defaultNftTickerGroup.POST("", h.SetGuildDefaultNftTicker)
+		}
+>>>>>>> e7fabac (chore: refactor routes)
 	}
 
 	fiatGroup := v1.Group("/fiat")
@@ -353,6 +554,28 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		fiatGroup.GET("/historical-exchange-rates", h.Defi.GetFiatHistoricalExchangeRates)
 	}
 
+	widgetGroup := v1.Group("/widget")
+	{
+		tokenAlertGroup := widgetGroup.Group("/token-alert")
+		{
+			tokenAlertGroup.GET("", h.GetUserTokenAlert)
+			tokenAlertGroup.POST("", h.UpsertUserTokenAlert)
+			tokenAlertGroup.DELETE("", h.DeleteUserTokenAlert)
+		}
+		deviceGroup := widgetGroup.Group("/device")
+		{
+			deviceGroup.GET("", h.GetUserDevice)
+			deviceGroup.POST("", h.UpsertUserDevice)
+			deviceGroup.DELETE("", h.DeleteUserDevice)
+		}
+	}
+	webhook := v1.Group("/webhook")
+	{
+		webhook.POST("/discord", h.HandleDiscordWebhook)
+		webhook.POST("/nft", h.WebhookNftHandler)
+		webhook.POST("/topgg", h.WebhookUpvoteTopGG)
+		webhook.POST("/discordbotlist", h.WebhookUpvoteDiscordBot)
+	}
 	dataWebhookGroup := v1.Group("/data-webhook")
 	{
 		dataWebhookGroup.POST("/notify-nft-integration", h.Webhook.NotifyNftCollectionIntegration)
