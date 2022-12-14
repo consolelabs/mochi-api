@@ -1,0 +1,17 @@
+{
+  "data": {
+    "base_suggestions": [
+      {
+        "id": "binance-peg-dogecoin",
+        "symbol": "doge",
+        "name": "Binance-Peg Dogecoin"
+      },
+      {
+        "id": "dogecoin",
+        "symbol": "doge",
+        "name": "Dogecoin"
+      }
+    ],
+    "target_suggestions": null
+  }
+}
