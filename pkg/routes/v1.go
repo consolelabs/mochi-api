@@ -253,9 +253,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	defiGroup := v1.Group("/defi")
 	{
 		defiGroup.GET("")
-		defiGroup.POST("/transfer", h.InDiscordWalletTransfer)
-		defiGroup.POST("/withdraw", h.InDiscordWalletWithdraw)
-		defiGroup.GET("/balances", h.InDiscordWalletBalances)
 		defiGroup.GET("/tokens", h.GetSupportedTokens)
 
 		// Data from CoinGecko

@@ -342,19 +342,42 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 	}
 
 	// temp get from old tokens because not have flow from coingecko to offchain_tip_bot_tokens yet
-	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Token), true)
+	token, err := e.repo.Token.GetBySymbol(req.Token, true)
 	if err != nil {
+		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.OffchainTipBotWithdraw] repo.Token.GetBySymbol() failed")
 		return nil, err
 	}
 
 	// execute tx
-	signedTx, transferredAmount, err := e.transferOffchain(req.Amount,
-		accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
-		req.Amount,
-		token, -1, req.All)
-	if err != nil {
-		err = fmt.Errorf("error transfer: %v", err)
-		return nil, err
+	var (
+		withdrawalAmount  *big.Float
+		transactionFee    float64
+		transferredAmount float64
+		txHash            string
+	)
+	if strings.ToLower(req.Token) == "sol" {
+		hash, amt, err := e.solana.Transfer(e.cfg.SolanaCentralizedWalletPrivateKey, req.RecipientAddress, req.Amount, req.All)
+		if err != nil {
+			e.log.Fields(logger.Fields{"recipient": req.RecipientAddress, "amount": req.Amount, "all": req.All}).Error(err, "[entity.transferSolana] e.solana.Transfer() failed")
+			return nil, err
+		}
+		// withdrawalAmount = req.Amount
+		// transactionFee = float64(txRes.Meta.Fee)
+		transferredAmount = amt
+		txHash = hash
+	} else {
+		signedTx, amount, err := e.transferOnchain(req.Amount,
+			accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
+			req.Amount,
+			token, -1, req.All)
+		if err != nil {
+			err = fmt.Errorf("error transfer: %v", err)
+			return nil, err
+		}
+		txHash = signedTx.Hash().Hex()
+		transferredAmount = amount
+		withdrawalAmount = util.WeiToEther(signedTx.Value())
+		transactionFee, _ = util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
 	}
 
 	// execute tx success -> create offchain_tip_bot_activity_logs + offchain_tip_bot_transfer_histories and update offchain_tip_bot_user_balances
@@ -402,16 +425,13 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		return nil, err
 	}
 
-	withdrawalAmount := util.WeiToEther(signedTx.Value())
-	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-
 	return &response.OffchainTipBotWithdraw{
 		UserDiscordID:  req.Recipient,
 		ToAddress:      req.RecipientAddress,
 		Amount:         transferredAmount,
 		Symbol:         req.Token,
-		TxHash:         signedTx.Hash().Hex(),
-		TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
+		TxHash:         txHash,
+		TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, txHash),
 		WithdrawAmount: withdrawalAmount,
 		TransactionFee: transactionFee,
 	}, nil
