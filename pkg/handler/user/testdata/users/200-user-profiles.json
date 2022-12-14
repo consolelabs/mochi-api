@@ -1,0 +1,42 @@
+{
+  "data": {
+    "id": "393034938028392449",
+    "about_me": "",
+    "current_level": {
+      "level": 0,
+      "min_xp": 0
+    },
+    "next_level": {
+      "level": 1,
+      "min_xp": 20
+    },
+    "guild_xp": 7,
+    "nr_of_actions": 1,
+    "progress": 0.35,
+    "guild": {
+      "id": "552427722551459840",
+      "name": "bestKN",
+      "bot_scopes": ["*"],
+      "alias": "",
+      "roles": null,
+      "created_at": "2022-04-20T16:36:20.014Z",
+      "global_xp": true,
+      "log_channel": "test",
+      "active": true
+    },
+    "guild_rank": 1,
+    "user_wallet": {
+      "user_discord_id": "",
+      "guild_id": "",
+      "address": "",
+      "chain_type": null,
+      "created_at": "0001-01-01T00:00:00Z"
+    },
+    "user_faction_xps": {
+      "imperial_xp": 0,
+      "rebellio_xp": 0,
+      "merchant_xp": 0,
+      "academy_xp": 0
+    }
+  }
+}

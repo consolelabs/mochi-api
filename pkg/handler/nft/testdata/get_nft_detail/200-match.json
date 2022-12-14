@@ -1,0 +1,55 @@
+{
+  "data": {
+    "token_id": "1",
+    "collection_address": "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+    "name": "Portalhead #1",
+    "description": "A Modern People Project.",
+    "image": "https://portalheads.mypinata.cloud/ipfs/QmNip3GfiuE2rFyMrSfPaafgLyLNUiMSmCti1N8LAF5Re9/0x12791c9a355a9097e9ef4b894cbf46579ca259d281a27d0f6e6b27a00538607c.jpg",
+    "image_content_type": "",
+    "rarity_rank": 0,
+    "rarity_tier": "",
+    "attributes": [
+      {
+        "collection_address": "",
+        "token_id": "",
+        "trait_type": "eyes",
+        "value": "White POV",
+        "count": 0,
+        "rarity": "",
+        "frequency": "5.220%"
+      },
+      {
+        "collection_address": "",
+        "token_id": "",
+        "trait_type": "face",
+        "value": "None",
+        "count": 0,
+        "rarity": "",
+        "frequency": "60.140%"
+      },
+      {
+        "collection_address": "",
+        "token_id": "",
+        "trait_type": "head",
+        "value": "Woke Up Like Dis",
+        "count": 0,
+        "rarity": "",
+        "frequency": "2.750%"
+      }
+    ],
+    "rarity": {
+      "rank": 0,
+      "score": "",
+      "total": 6771
+    },
+    "metadata_id": "",
+    "owner": {
+      "owner_address": "0x5417A03667AbB6A059b3F174c1F67b1E83753046",
+      "token_id": "1",
+      "collection_address": ""
+    },
+    "marketplace": []
+  },
+  "suggestions": [],
+  "default_symbol": null
+}

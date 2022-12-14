@@ -1,0 +1,3 @@
+{
+    "error": "pq: duplicate key value violates unique constraint \"user_telegram_discord_associations_pkey\""
+}

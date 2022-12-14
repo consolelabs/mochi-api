@@ -1,0 +1,116 @@
+{
+  "data": [
+    {
+      "id": "bitcoin",
+      "name": "Bitcoin",
+      "symbol": "btc",
+      "current_price": 19238.62,
+      "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+      "sparkline_in_7d": {
+        "price": [18861.78098812819, 19087.709424228065, 19165.140362664395]
+      },
+      "price_change_percentage_24h": 0.33071,
+      "price_change_percentage_7d_in_currency": 2.281861441149524,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "ethereum",
+      "name": "Ethereum",
+      "symbol": "eth",
+      "current_price": 1302.07,
+      "image": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+      "sparkline_in_7d": {
+        "price": [1296.873383685728, 1317.4021123270202, 1321.6466884030708]
+      },
+      "price_change_percentage_24h": 0.30844,
+      "price_change_percentage_7d_in_currency": 0.6174474468422891,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "binancecoin",
+      "name": "BNB",
+      "symbol": "bnb",
+      "current_price": 285.96,
+      "image": "https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png?1644979850",
+      "sparkline_in_7d": {
+        "price": [271.8725401305167, 274.3169987349479, 274.52923955490246]
+      },
+      "price_change_percentage_24h": 1.16908,
+      "price_change_percentage_7d_in_currency": 4.332244779295762,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "solana",
+      "name": "Solana",
+      "symbol": "sol",
+      "current_price": 32.68,
+      "image": "https://assets.coingecko.com/coins/images/4128/large/solana.png?1640133422",
+      "sparkline_in_7d": {
+        "price": [32.55379876249857, 32.853415888089245, 33.105954022206525]
+      },
+      "price_change_percentage_24h": 0.41472,
+      "price_change_percentage_7d_in_currency": 1.103904029633381,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "matic-network",
+      "name": "Polygon",
+      "symbol": "matic",
+      "current_price": 0.775881,
+      "image": "https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png?1624446912",
+      "sparkline_in_7d": {
+        "price": [0.7407198851382445, 0.7502069119119806, 0.7559222981580057]
+      },
+      "price_change_percentage_24h": 0.81771,
+      "price_change_percentage_7d_in_currency": 4.725445455130517,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "avalanche-2",
+      "name": "Avalanche",
+      "symbol": "avax",
+      "current_price": 16.86,
+      "image": "https://assets.coingecko.com/coins/images/12559/large/coin-round-red.png?1604021818",
+      "sparkline_in_7d": {
+        "price": [17.205317839234308, 17.36749528376322, 17.43106660592316]
+      },
+      "price_change_percentage_24h": 0.35013,
+      "price_change_percentage_7d_in_currency": -2.6628978539310992,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "internet-computer",
+      "name": "Internet Computer",
+      "symbol": "icp",
+      "current_price": 6,
+      "image": "https://assets.coingecko.com/coins/images/14495/large/Internet_Computer_logo.png?1620703073",
+      "sparkline_in_7d": {
+        "price": [6.168892847271933, 6.155438275738423, 6.131422137275525]
+      },
+      "price_change_percentage_24h": -0.39209,
+      "price_change_percentage_7d_in_currency": 1.6237690910330411,
+      "is_pair": false,
+      "is_default": true
+    },
+    {
+      "id": "fantom",
+      "name": "Fantom",
+      "symbol": "ftm",
+      "current_price": 0.221302,
+      "image": "https://assets.coingecko.com/coins/images/4001/large/Fantom.png?1558015016",
+      "sparkline_in_7d": {
+        "price": [0.22630507054947152, 0.22775235232649785, 0.22848573456673352]
+      },
+      "price_change_percentage_24h": -0.01195,
+      "price_change_percentage_7d_in_currency": -1.428104703485673,
+      "is_pair": false,
+      "is_default": true
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+    "data": [
+        {
+            "balances":10.5, "balances_in_usd":31.5, "id":"pancakeswap-token", "name":"Panswap Cake", "rate_in_usd":3, "symbol":"CAKE"
+        },
+        { 
+            "balances":1.5, "balances_in_usd":0.015, "id":"", "name":"Icy", "rate_in_usd":0.01, "symbol":"icy"
+        }
+    ]
+}
