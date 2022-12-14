@@ -10,6 +10,6 @@ type Store interface {
 	GetByUserDiscordId(userDiscordId string) (transferHistories []model.OffchainTipBotTransferHistory, err error)
 	TotalFeeFromWithdraw() ([]response.TotalFeeWithdraw, error)
 	GetTransactionsByQuery(receiverId, senderId, token string) ([]model.OffchainTipBotTransferHistory, error)
-	GetTotalTransactionByGuildAndToken(guildId, token string) (count int64, err error)
+	GetTotalTransactionByGuildAndToken(guildId, token string) ([]model.OffchainTipBotTransferHistory, int64, error)
 	GetTotalTransactionByGuild(guildId string) (count int64, err error)
 }

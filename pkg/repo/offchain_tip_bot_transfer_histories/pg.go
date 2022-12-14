@@ -64,8 +64,10 @@ func (pg *pg) GetTransactionsByQuery(senderId, receiverId, token string) ([]mode
 	return transferHistories, db.Find(&transferHistories).Error
 }
 
-func (pg *pg) GetTotalTransactionByGuildAndToken(guildId, token string) (count int64, err error) {
-	return count, pg.db.Model(&model.OffchainTipBotTransferHistory{}).Where("guild_id = ? and token = ? and status = ?", guildId, strings.ToUpper(token), "success").Count(&count).Error
+func (pg *pg) GetTotalTransactionByGuildAndToken(guildId, token string) ([]model.OffchainTipBotTransferHistory, int64, error) {
+	var transferHistories []model.OffchainTipBotTransferHistory
+	var count int64
+	return transferHistories, count, pg.db.Model(&model.OffchainTipBotTransferHistory{}).Where("guild_id = ? and token = ? and status = ?", guildId, strings.ToUpper(token), "success").Find(&transferHistories).Count(&count).Error
 }
 
 func (pg *pg) GetTotalTransactionByGuild(guildId string) (count int64, err error) {

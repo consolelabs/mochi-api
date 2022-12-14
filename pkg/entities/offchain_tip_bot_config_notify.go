@@ -54,7 +54,7 @@ func (e *Entity) ListConfigNotify(guildId string) (rs []response.ConfigNotifyRes
 			}
 
 		} else {
-			totalTx, err = e.repo.OffchainTipBotTransferHistories.GetTotalTransactionByGuildAndToken(guildId, config.Token)
+			_, totalTx, err = e.repo.OffchainTipBotTransferHistories.GetTotalTransactionByGuildAndToken(guildId, config.Token)
 			if err != nil {
 				e.log.Error(err, "[entities.ListConfigNotify] - failed to get total transaction by guild and token")
 				return nil, err
