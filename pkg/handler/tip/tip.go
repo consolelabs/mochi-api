@@ -268,3 +268,30 @@ func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
 }
+
+// GetTransactionsByQuery     godoc
+// @Summary     Get transactions history by query
+// @Description Get transactions history by query
+// @Tags        OffChain
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "guild ID"
+// @Param       token   query  string true  "token"
+// @Success     200 {object} response.TransactionsResponse
+// @Router      /offchain-tip-bot/history [get]
+func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
+	guildId := c.Query("guild_id")
+	token := c.Query("token")
+	if guildId == "" || token == "" {
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("missing query parameters"), nil))
+		return
+	}
+	transactions, err := h.entities.GetTransactionsByGuildIdAndToken(guildId, token)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserTransactionsByQuery] - failed to get transactions by query")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(transactions, nil, nil, nil))
+	return
+}

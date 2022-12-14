@@ -7,10 +7,9 @@ package mock_offchain_tip_bot_transfer_histories
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	model "github.com/defipod/mochi/pkg/model"
 	response "github.com/defipod/mochi/pkg/response"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.
@@ -82,12 +81,13 @@ func (mr *MockStoreMockRecorder) GetTotalTransactionByGuild(guildId interface{})
 }
 
 // GetTotalTransactionByGuildAndToken mocks base method.
-func (m *MockStore) GetTotalTransactionByGuildAndToken(guildId, token string) (int64, error) {
+func (m *MockStore) GetTotalTransactionByGuildAndToken(guildId, token string) ([]model.OffchainTipBotTransferHistory, int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTotalTransactionByGuildAndToken", guildId, token)
-	ret0, _ := ret[0].(int64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].([]model.OffchainTipBotTransferHistory)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetTotalTransactionByGuildAndToken indicates an expected call of GetTotalTransactionByGuildAndToken.

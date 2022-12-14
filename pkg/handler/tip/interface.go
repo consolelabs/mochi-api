@@ -13,4 +13,5 @@ type IHandler interface {
 	TotalFee(c *gin.Context)
 	UpdateTokenFee(c *gin.Context)
 	GetAllTipBotTokens(c *gin.Context)
+	GetTransactionHistoryByQuery(c *gin.Context)
 }
