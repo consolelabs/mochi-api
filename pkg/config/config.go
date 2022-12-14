@@ -93,6 +93,8 @@ type Config struct {
 
 	CentralizedWalletPrivateKey string
 
+	SolanaCentralizedWalletPrivateKey string
+
 	APILayerAPIKey string
 }
 
@@ -226,6 +228,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CoinGeckoAPIKey: v.GetString("COINGECKO_API_KEY"),
 
 		CentralizedWalletPrivateKey: v.GetString("CENTRALIZED_WALLET_PRIVATE_KEY"),
+
+		SolanaCentralizedWalletPrivateKey: v.GetString("SOLANA_CENTRALIZED_WALLET_PK"),
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
 	}

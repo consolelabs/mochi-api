@@ -1,4 +1,0 @@
-{
-    "data": null,
-    "error":"json: cannot unmarshal number into Go struct field ConfigureInviteRequest.guild_id of type string"
-}

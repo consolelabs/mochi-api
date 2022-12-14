@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
+	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
@@ -38,6 +39,7 @@ type Entity struct {
 	indexer     indexer.Service
 	abi         abi.Service
 	marketplace marketplace.Service
+	solana      chain.Solana
 }
 
 var e *Entity
@@ -96,6 +98,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		indexer:     indexer.NewIndexer(cfg, log),
 		abi:         abi.NewAbi(&cfg),
 		marketplace: marketplace.NewMarketplace(&cfg),
+		solana:      *chain.NewSolanaClient(&cfg, log),
 	}
 
 	if e.discord != nil && e.cache != nil {
