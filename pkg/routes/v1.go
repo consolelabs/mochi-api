@@ -132,7 +132,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/upvote-leaderboard", h.GetUserUpvoteLeaderboard)
 		userGroup.GET("/:id/transactions", h.GetUserTransaction)
 		userGroup.GET("/top", h.GetTopUsers)
-		userGroup.GET("", h.GetUserProfile)
+		userGroup.GET("/profiles", h.GetUserProfile)
 		// moved to /widget/device, to be removed
 >>>>>>> e7fabac (chore: refactor routes)
 		deviceGroup := userGroup.Group("/device")
