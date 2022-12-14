@@ -94,10 +94,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 		gin.Recovery(),
 	)
 
-	h, err := handler.New(e)
-	if err != nil {
-		l.Fatal(err, "failed to init handler")
-	}
+	h := handler.New(e, l)
 
 	corsOrigins := cfg.GetCORS()
 	r.Use(func(c *gin.Context) {
@@ -132,7 +129,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 	})
 
 	// handlers
-	r.GET("/healthz", h.Healthz)
+	r.GET("/healthz", h.Healthcheck.Healthz)
 
 	// use ginSwagger middleware to serve the API docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
