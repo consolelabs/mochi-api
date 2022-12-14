@@ -4,14 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
 
@@ -62,114 +60,6 @@ func (e *Entity) generateInDiscordWallet(user *model.User) error {
 	return nil
 }
 
-func (e *Entity) InDiscordWalletTransfer(req request.TransferRequest) ([]response.InDiscordWalletTransferResponse, []string) {
-	res := []response.InDiscordWalletTransferResponse{}
-	errs := []string{}
-
-	fromUser, err := e.GetOneOrUpsertUser(req.Sender)
-	if err != nil {
-		e.log.Fields(logger.Fields{"sender": req.Sender}).Error(err, "[entity.InDiscordWalletTransfer] GetOneOrUpsertUser() failed")
-		errs = append(errs, err.Error())
-		return nil, errs
-	}
-
-	toUsers, err := e.repo.Users.GetByDiscordIDs(req.Recipients)
-	if err != nil {
-		e.log.Fields(logger.Fields{"recipients": req.Recipients}).Error(err, "[entity.InDiscordWalletTransfer] repo.Users.GetByDiscordIDs() failed")
-		errs = append(errs, err.Error())
-		return nil, errs
-	}
-	// create + generate wallet if not exists
-	if len(toUsers) == 0 {
-		for _, r := range req.Recipients {
-			u, err := e.GetOneOrUpsertUser(r)
-			if err != nil {
-				e.log.Fields(logger.Fields{"discord_id": r}).Error(err, "[entity.InDiscordWalletTransfer] GetOneOrUpsertUser() failed")
-				errs = append(errs, err.Error())
-				return nil, errs
-			}
-			toUsers = append(toUsers, *u)
-		}
-	}
-	amountEach := req.Amount / float64(len(toUsers))
-	if req.Each {
-		amountEach = req.Amount
-	}
-
-	fromAcc, err := e.dcwallet.GetAccountByWalletNumber(int(fromUser.InDiscordWalletNumber.Int64))
-	if err != nil {
-		errs = append(errs, fmt.Sprintf("error getting user address: %v", err))
-		return nil, errs
-	}
-
-	var token model.Token
-	if req.Cryptocurrency == "" {
-		token, err = e.repo.Token.GetDefaultTokenByGuildID(req.GuildID)
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error getting default token: %v", err))
-			return nil, errs
-		}
-	} else {
-		token, err = e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error getting token info: %v", err))
-			return nil, errs
-		}
-	}
-
-	nonce := -1
-	for _, toUser := range toUsers {
-		if err = e.generateInDiscordWallet(&toUser); err != nil {
-			errs = append(errs, fmt.Sprintf("cannot generate in-discord wallet: %v", err))
-			continue
-		}
-
-		toAcc, err := e.dcwallet.GetAccountByWalletNumber(int(toUser.InDiscordWalletNumber.Int64))
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error getting user address: %v", err))
-			continue
-		}
-
-		signedTx, transferredAmount, err := e.transfer(fromAcc, toAcc, amountEach, token, nonce, req.All)
-		if err != nil {
-			errs = append(errs, fmt.Sprintf("error transfer: %v", err))
-			continue
-		}
-		nonce = int(signedTx.Nonce()) + 1
-		transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-
-		res = append(res, response.InDiscordWalletTransferResponse{
-			FromDiscordID:  req.Sender,
-			ToDiscordID:    toUser.ID,
-			Amount:         transferredAmount,
-			Cryptocurrency: token.Symbol,
-			TxHash:         signedTx.Hash().Hex(),
-			TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
-			TransactionFee: transactionFee,
-		})
-	}
-	if len(errs) == 0 {
-		errs = nil
-	}
-	if len(res) > 0 {
-		if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-			GuildID:   req.GuildID,
-			ChannelID: req.ChannelID,
-			UserID:    req.Sender,
-			Timestamp: time.Now(),
-			Action:    req.TransferType,
-		}); err != nil {
-			err = fmt.Errorf("error create activity log: %v", err)
-			errs = append(errs, err.Error())
-		}
-	}
-
-	if err := e.sendTransferLogs(req, res); err != nil {
-		e.log.Errorf(err, "[entity.InDiscordWalletTransfer] failed")
-	}
-	return res, errs
-}
-
 func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {
 	if req.GuildID == "" || len(res) == 0 {
 		return nil
@@ -192,85 +82,6 @@ func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.In
 		description = fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, token, req.ChannelID)
 	}
 	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, req.Sender, strings.ToUpper(req.TransferType), description)
-}
-
-func (e *Entity) InDiscordWalletWithdraw(req request.TransferRequest) (*response.InDiscordWalletWithdrawResponse, error) {
-	fromUser, err := e.GetOneOrUpsertUser(req.Sender)
-	if err != nil {
-		e.log.Fields(logger.Fields{"sender": req.Sender}).Error(err, "[entity.InDiscordWalletWithdraw] GetOneOrUpsertUser() failed")
-		return nil, err
-	}
-
-	fromAccount, err := e.dcwallet.GetAccountByWalletNumber(int(fromUser.InDiscordWalletNumber.Int64))
-	if err != nil {
-		err = fmt.Errorf("error getting user address: %v", err)
-		return nil, err
-	}
-
-	token, err := e.repo.Token.GetBySymbol(strings.ToLower(req.Cryptocurrency), true)
-	if err != nil {
-		err = fmt.Errorf("error getting token info: %v", err)
-		return nil, err
-	}
-
-	signedTx, transferredAmount, err := e.transfer(fromAccount,
-		accounts.Account{Address: common.HexToAddress(req.Recipients[0])},
-		req.Amount,
-		token, -1, req.All)
-	if err != nil {
-		err = fmt.Errorf("error transfer: %v", err)
-		return nil, err
-	}
-
-	if req.GuildID == "" {
-		// log activity
-		if err := e.repo.GuildUserActivityLog.CreateOneNoGuild(model.GuildUserActivityLog{
-			UserID:       req.Sender,
-			ActivityName: "withdraw",
-		}); err != nil {
-			err = fmt.Errorf("error create activity log: %v", err)
-			return nil, err
-		}
-	} else {
-		if _, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-			GuildID:   req.GuildID,
-			ChannelID: req.ChannelID,
-			UserID:    req.Sender,
-			Timestamp: time.Now(),
-			Action:    req.TransferType,
-		}); err != nil {
-			err = fmt.Errorf("error create activity log: %v", err)
-			return nil, err
-		}
-	}
-	withdrawalAmount := util.WeiToEther(signedTx.Value())
-	transactionFee, _ := util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-
-	res := &response.InDiscordWalletWithdrawResponse{
-		FromDiscordID:    req.Sender,
-		ToAddress:        req.Recipients[0],
-		Amount:           transferredAmount,
-		Cryptocurrency:   req.Cryptocurrency,
-		TxHash:           signedTx.Hash().Hex(),
-		TxURL:            fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
-		WithdrawalAmount: withdrawalAmount,
-		TransactionFee:   transactionFee,
-	}
-
-	err = e.sendTransferLogs(req, []response.InDiscordWalletTransferResponse{
-		{
-			FromDiscordID:  req.Sender,
-			Amount:         transferredAmount,
-			Cryptocurrency: token.Symbol,
-			TxHash:         signedTx.Hash().Hex(),
-			TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, signedTx.Hash().Hex()),
-			TransactionFee: transactionFee,
-		},
-	})
-	if err != nil {
-		e.log.Errorf(err, "[entity.InDiscordWalletWithdraw] sendTransferLogs failed")
-	}
-	return res, nil
 }
 
 func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
@@ -296,33 +107,13 @@ func (e *Entity) balances(address string, tokens []model.Token) (map[string]floa
 	return balances, nil
 }
 
-func (e *Entity) transfer(fromAccount accounts.Account, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+// TODO: refactor
+func (e *Entity) transferOnchain(balance float64, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	chain := e.dcwallet.Chain(token.ChainID)
 	if chain == nil {
 		return nil, 0, errors.New("cryptocurrency not supported")
 	}
-	signedTx, amount, err := chain.Transfer(
-		fromAccount,
-		toAccount,
-		amount,
-		token,
-		nonce,
-		all,
-	)
-	if err != nil {
-		err = fmt.Errorf("error transfer: %v", err)
-		return nil, 0, err
-	}
-
-	return signedTx, amount, nil
-}
-
-func (e *Entity) transferOffchain(balance float64, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
-	chain := e.dcwallet.Chain(token.ChainID)
-	if chain == nil {
-		return nil, 0, errors.New("cryptocurrency not supported")
-	}
-	signedTx, amount, err := chain.TransferOffchain(
+	signedTx, amount, err := chain.TransferOnchain(
 		balance,
 		toAccount,
 		amount,
@@ -336,53 +127,6 @@ func (e *Entity) transferOffchain(balance float64, toAccount accounts.Account, a
 	}
 
 	return signedTx, amount, nil
-}
-
-func (e *Entity) InDiscordWalletBalances(guildID, discordID string) (*response.UserBalancesResponse, error) {
-	response := &response.UserBalancesResponse{}
-	user, err := e.GetOneOrUpsertUser(discordID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"discord_id": discordID}).Error(err, "[entity.InDiscordWalletBalances] GetOneOrUpsertUser() failed")
-		return nil, err
-	}
-
-	tokens, err := e.GetGuildTokens(guildID)
-	if err != nil {
-		err = fmt.Errorf("failed to get global default tokens - err: %v", err)
-		return nil, err
-	}
-
-	if user.InDiscordWalletAddress.String == "" {
-		if err = e.generateInDiscordWallet(user); err != nil {
-			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
-			return nil, err
-		}
-	}
-
-	balances, err := e.balances(user.InDiscordWalletAddress.String, tokens)
-	if err != nil {
-		err = fmt.Errorf("cannot get user balances: %v", err)
-		return nil, err
-	}
-	response.Balances = balances
-
-	coinIDs := make([]string, len(tokens))
-	for i, token := range tokens {
-		coinIDs[i] = token.CoinGeckoID
-	}
-
-	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(coinIDs, "usd")
-	if err != nil {
-		err = fmt.Errorf("cannot get user balances: %v", err)
-		return nil, err
-	}
-
-	response.BalancesInUSD = make(map[string]float64)
-	for _, token := range tokens {
-		response.BalancesInUSD[token.Symbol] = response.Balances[token.Symbol] * tokenPrices[token.CoinGeckoID]
-	}
-
-	return response, nil
 }
 
 func (e *Entity) GetSupportedTokens() (tokens []model.Token, err error) {
