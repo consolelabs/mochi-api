@@ -29,7 +29,7 @@ func (pg *pg) GetOneByDiscordIDAndGuildID(discordID, guildID string) (*model.Use
 
 func (pg *pg) GetOneByGuildIDAndAddress(guildID, address string) (*model.UserWallet, error) {
 	var uw model.UserWallet
-	return &uw, pg.db.Where("guild_id = ? and address = ?", guildID, address).First(&uw).Error
+	return &uw, pg.db.Where("guild_id = ? and address = ?", guildID, address).Preload("User").First(&uw).Error
 }
 
 func (pg *pg) UpsertOne(uw model.UserWallet) error {
