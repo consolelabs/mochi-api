@@ -1,0 +1,14 @@
+{
+  "data": [
+    {
+      "id": "binance-peg-dogecoin",
+      "symbol": "doge",
+      "name": "Binance-Peg Dogecoin"
+    },
+    {
+      "id": "dogecoin",
+      "symbol": "doge",
+      "name": "Dogecoin"
+    }
+  ]
+}

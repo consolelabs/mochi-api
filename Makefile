@@ -77,7 +77,6 @@ gen-mock:
 	@mockgen -source=./pkg/repo/guild_user_activity_log/store.go -destination=./pkg/repo/guild_user_activity_log/mocks/store.go
 	@mockgen -source=./pkg/repo/invite_histories/store.go -destination=./pkg/repo/invite_histories/mocks/store.go
 	@mockgen -source=./pkg/repo/discord_guilds/store.go -destination=./pkg/repo/discord_guilds/mocks/store.go
-	@mockgen -source=./pkg/repo/guild_custom_command/store.go -destination=./pkg/repo/guild_custom_command/mocks/store.go
 	@mockgen -source=./pkg/repo/config_xp_level/store.go -destination=./pkg/repo/config_xp_level/mocks/store.go
 	@mockgen -source=./pkg/repo/token/store.go -destination=./pkg/repo/token/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_token/store.go -destination=./pkg/repo/guild_config_token/mocks/store.go
