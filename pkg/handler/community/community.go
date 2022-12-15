@@ -585,7 +585,7 @@ func (h *Handler) CreateTwitterPost(c *gin.Context) {
 // @Produce     json
 // @Param       req  query request.GetTwitterLeaderboardRequest true "Create twitter post request"
 // @Success     200 {object} response.GetTwitterLeaderboardResponse
-// @Router      /twitter/top [get]
+// @Router      /community/twitter/top [get]
 func (h *Handler) GetTwitterLeaderboard(c *gin.Context) {
 	req := request.GetTwitterLeaderboardRequest{}
 	if err := c.ShouldBindQuery(&req); err != nil {

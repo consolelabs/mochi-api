@@ -251,7 +251,7 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 // GetUserProfile     godoc
 // @Summary     Get user profile
 // @Description Get user profile
-// @Tags        Profile
+// @Tags        User
 // @Accept      json
 // @Produce     json
 // @Param       guild_id query     string true "Guild ID"
@@ -323,7 +323,7 @@ func (h *Handler) GetUserWalletByGuildIDAddress(c *gin.Context) {
 // GetUserTransaction     godoc
 // @Summary     Get user transaction
 // @Description Get user transaction
-// @Tags        OffChain
+// @Tags        User
 // @Accept      json
 // @Produce     json
 // @Param       id path     string true "user discord ID"

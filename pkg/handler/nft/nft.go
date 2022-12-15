@@ -766,7 +766,7 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 // CreateTradeOffer     godoc
 // @Summary     Create Trade Offer
 // @Description Create Trade Offer
-// @Tags        Trade
+// @Tags        NFT
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateTradeOfferRequest true "Create Trade Offer Request"
@@ -791,7 +791,7 @@ func (h *Handler) CreateTradeOffer(c *gin.Context) {
 // GetTradeOffer     godoc
 // @Summary     Get Trade Offer
 // @Description Get Trade Offer
-// @Tags        Trade
+// @Tags        NFT
 // @Accept      json
 // @Produce     json
 // @Param       id path  string true  "Trade Offer ID"
