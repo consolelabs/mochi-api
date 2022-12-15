@@ -4450,7 +4450,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Create an assign contract",
                 "parameters": [
@@ -4484,7 +4484,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get offchain user bals",
                 "parameters": [
@@ -4516,7 +4516,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get transactions history by query",
                 "parameters": [
@@ -4555,7 +4555,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get all offchain tip bot tokens",
                 "responses": {
@@ -4578,7 +4578,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get transactions by query",
                 "parameters": [
@@ -4622,7 +4622,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Transfer token",
                 "parameters": [
@@ -4656,7 +4656,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Withdraw",
                 "parameters": [

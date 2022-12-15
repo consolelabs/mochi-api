@@ -4458,7 +4458,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Create an assign contract",
                 "parameters": [
@@ -4492,7 +4492,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get offchain user bals",
                 "parameters": [
@@ -4524,7 +4524,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get transactions history by query",
                 "parameters": [
@@ -4563,7 +4563,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get all offchain tip bot tokens",
                 "responses": {
@@ -4586,7 +4586,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get transactions by query",
                 "parameters": [
@@ -4630,7 +4630,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Transfer token",
                 "parameters": [
@@ -4664,7 +4664,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Withdraw",
                 "parameters": [

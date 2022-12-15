@@ -349,7 +349,7 @@ func (h *Handler) GetUserTransaction(c *gin.Context) {
 // GetTransactionsByQuery     godoc
 // @Summary     Get transactions by query
 // @Description Get transactions by query
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       sender_id   query  string false  "sender ID"

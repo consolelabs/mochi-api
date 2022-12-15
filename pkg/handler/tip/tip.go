@@ -50,7 +50,7 @@ func (h *Handler) OffchainTipBotListAllChains(c *gin.Context) {
 // AddContract   godoc
 // @Summary     OffChain Tip Bot - Create an assign contract
 // @Description Create an assign contract when user want to deposit a specific token to contract
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateAssignContract true "Create assign contract request"
@@ -115,7 +115,7 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 // GetUserBalances     godoc
 // @Summary     Get offchain user bals
 // @Description Get offchain user bals
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       user_id query     string true "user ID"
@@ -143,7 +143,7 @@ func (h *Handler) GetUserBalances(c *gin.Context) {
 // OffchainTipBotWithdraw     godoc
 // @Summary     OffChain Tip Bot - Withdraw
 // @Description OffChain Tip Bot - Withdraw
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.OffchainWithdrawRequest true "Withdraw token request"
@@ -174,7 +174,7 @@ func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
 // TransferToken   godoc
 // @Summary     OffChain Tip Bot - Transfer token
 // @Description API transfer token for tip, airdrop, ...
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.OffchainTransferRequest true "Transfer token request"
@@ -253,7 +253,7 @@ func (h *Handler) UpdateTokenFee(c *gin.Context) {
 // GetAllTipBotTokens     godoc
 // @Summary     Get all offchain tip bot tokens
 // @Description Get all offchain tip bot tokens
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.AllTipBotTokensResponse
@@ -272,7 +272,7 @@ func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
 // GetTransactionsByQuery     godoc
 // @Summary     Get transactions history by query
 // @Description Get transactions history by query
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "guild ID"

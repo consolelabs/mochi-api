@@ -6108,7 +6108,7 @@ paths:
             $ref: '#/definitions/response.GetAssignedContract'
       summary: OffChain Tip Bot - Create an assign contract
       tags:
-      - OffChain
+      - Tip
   /tip/balances:
     get:
       consumes:
@@ -6129,7 +6129,7 @@ paths:
             $ref: '#/definitions/response.GetUserBalancesResponse'
       summary: Get offchain user bals
       tags:
-      - OffChain
+      - Tip
   /tip/history:
     get:
       consumes:
@@ -6155,7 +6155,7 @@ paths:
             $ref: '#/definitions/response.TransactionsResponse'
       summary: Get transactions history by query
       tags:
-      - OffChain
+      - Tip
   /tip/tokens:
     get:
       consumes:
@@ -6170,7 +6170,7 @@ paths:
             $ref: '#/definitions/response.AllTipBotTokensResponse'
       summary: Get all offchain tip bot tokens
       tags:
-      - OffChain
+      - Tip
   /tip/transactions:
     get:
       consumes:
@@ -6199,7 +6199,7 @@ paths:
             $ref: '#/definitions/response.TransactionsResponse'
       summary: Get transactions by query
       tags:
-      - OffChain
+      - Tip
   /tip/transfer:
     post:
       consumes:
@@ -6221,7 +6221,7 @@ paths:
             $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
       summary: OffChain Tip Bot - Transfer token
       tags:
-      - OffChain
+      - Tip
   /tip/withdraw:
     post:
       consumes:
@@ -6243,7 +6243,7 @@ paths:
             $ref: '#/definitions/response.OffchainTipBotWithdrawResponse'
       summary: OffChain Tip Bot - Withdraw
       tags:
-      - OffChain
+      - Tip
   /users:
     post:
       consumes:
