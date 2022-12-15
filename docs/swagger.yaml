@@ -3678,6 +3678,32 @@ paths:
       summary: Create twitter post
       tags:
       - Community
+  /community/twitter/top:
+    get:
+      consumes:
+      - application/json
+      description: Create twitter post
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
+      summary: Create twitter post
+      tags:
+      - Community
   /config-channels/gm:
     get:
       consumes:
@@ -5940,7 +5966,7 @@ paths:
             $ref: '#/definitions/response.CreateTradeOfferResponse'
       summary: Create Trade Offer
       tags:
-      - Trade
+      - NFT
   /nfts/trades/{id}:
     get:
       consumes:
@@ -5961,7 +5987,7 @@ paths:
             $ref: '#/definitions/response.GetTradeOfferResponse'
       summary: Get Trade Offer
       tags:
-      - Trade
+      - NFT
   /nfts/trading-volume:
     get:
       consumes:
@@ -6218,32 +6244,6 @@ paths:
       summary: OffChain Tip Bot - Withdraw
       tags:
       - OffChain
-  /twitter/top:
-    get:
-      consumes:
-      - application/json
-      description: Create twitter post
-      parameters:
-      - in: query
-        name: guild_id
-        required: true
-        type: string
-      - in: query
-        name: page
-        type: integer
-      - in: query
-        name: size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
-      summary: Create twitter post
-      tags:
-      - Community
   /users:
     post:
       consumes:
@@ -6286,7 +6286,7 @@ paths:
             $ref: '#/definitions/response.UserTransactionResponse'
       summary: Get user transaction
       tags:
-      - OffChain
+      - User
   /users/{user_id}:
     get:
       consumes:
@@ -6380,7 +6380,7 @@ paths:
             $ref: '#/definitions/response.GetDataUserProfileResponse'
       summary: Get user profile
       tags:
-      - Profile
+      - User
   /users/top:
     get:
       consumes:

@@ -791,6 +791,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/community/twitter/top": {
+            "get": {
+                "description": "Create twitter post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Create twitter post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/config-channels/gm": {
             "get": {
                 "description": "Get GM config",
@@ -4107,7 +4148,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Trade"
+                    "NFT"
                 ],
                 "summary": "Create Trade Offer",
                 "parameters": [
@@ -4141,7 +4182,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Trade"
+                    "NFT"
                 ],
                 "summary": "Get Trade Offer",
                 "parameters": [
@@ -4647,47 +4688,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/twitter/top": {
-            "get": {
-                "description": "Create twitter post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Create twitter post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/users": {
             "post": {
                 "description": "Create User",
@@ -4803,7 +4803,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Profile"
+                    "User"
                 ],
                 "summary": "Get user profile",
                 "parameters": [
@@ -4998,7 +4998,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "User"
                 ],
                 "summary": "Get user transaction",
                 "parameters": [
