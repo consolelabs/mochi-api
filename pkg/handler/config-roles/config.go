@@ -29,12 +29,12 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // GetAllRoleReactionConfigs     godoc
 // @Summary     Get all role reaction configs
 // @Description Get all role reaction configs
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.DataListRoleReactionResponse
-// @Router      /configs/reaction-roles [get]
+// @Router      /config-roles/reaction-roles [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -56,12 +56,12 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 // AddReactionRoleConfig     godoc
 // @Summary     Add reaction role config
 // @Description Add reaction role config
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.RoleReactionUpdateRequest true "Add reaction role config request"
 // @Success     200 {object} response.RoleReactionConfigResponse
-// @Router      /configs/reaction-roles [post]
+// @Router      /config-roles/reaction-roles [post]
 func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
@@ -84,12 +84,12 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 // RemoveReactionRoleConfig     godoc
 // @Summary     Remove reaction role config
 // @Description Remove reaction role config
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.RoleReactionUpdateRequest true "Remove reaction role config request"
 // @Success     200 {object} response.ResponseSucess
-// @Router      /configs/reaction-roles [delete]
+// @Router      /config-roles/reaction-roles [delete]
 func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
@@ -119,12 +119,12 @@ func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 // FilterConfigByReaction     godoc
 // @Summary     Filter config by reaction
 // @Description Filter config by reaction
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.RoleReactionRequest true "Filter config by reaction request"
 // @Success     200 {object} response.DataFilterConfigByReaction
-// @Router      /configs/reaction-roles/filter [post]
+// @Router      /config-roles/reaction-roles/filter [post]
 func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 	var req request.RoleReactionRequest
 
@@ -147,12 +147,12 @@ func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 // GetDefaultRolesByGuildID     godoc
 // @Summary     Get default roles by guild id
 // @Description Get default roles by guild id
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.DefaultRoleResponse
-// @Router      /configs/default-roles [get]
+// @Router      /config-roles/default-roles [get]
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -174,12 +174,12 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 // CreateDefaultRole     godoc
 // @Summary     Create default role
 // @Description Create default role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateDefaultRoleRequest true "Create default role request"
 // @Success     200 {object} response.DefaultRoleResponse
-// @Router      /configs/default-roles [post]
+// @Router      /config-roles/default-roles [post]
 func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	body := request.CreateDefaultRoleRequest{}
 
@@ -206,12 +206,12 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 // DeleteDefaultRole     godoc
 // @Summary     Delete default role
 // @Description Delete default role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ResponseSucess
-// @Router      /configs/default-roles [delete]
+// @Router      /config-roles/default-roles [delete]
 func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -232,12 +232,12 @@ func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 // ListGuildNFTRoles     godoc
 // @Summary     List guild nft roles
 // @Description List guild nft roles
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ListGuildGroupNFTRolesResponse
-// @Router      /configs/nft-roles [get]
+// @Router      /config-roles/nft-roles [get]
 func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -259,12 +259,12 @@ func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 // NewGuildNFTRole     godoc
 // @Summary     New guild nft role
 // @Description New guild nft role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigGroupNFTRoleRequest true "New NFT role request"
 // @Success     200 {object} response.NewGuildGroupNFTRoleResponse
-// @Router      /configs/nft-roles [post]
+// @Router      /config-roles/nft-roles [post]
 func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 	var req request.ConfigGroupNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -285,12 +285,12 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 // RemoveGuildNFTRole     godoc
 // @Summary     Remove guild nft role
 // @Description Remove guild nft role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       config_ids  query string true "32951e68-9959-4e1d-88ca-22b442e19efe|45d06941-468b-4e5e-8b8f-d20c77c87805"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/nft-roles [delete]
+// @Router      /config-roles/nft-roles [delete]
 func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 	configIDs := c.Query("config_ids")
 
@@ -308,12 +308,12 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 // RemoveGuildGroupNFTRole     godoc
 // @Summary     Remove guild group nft role
 // @Description Remove guild group nft role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       group_config_id  query string true "Group config ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/nft-roles/group [delete]
+// @Router      /config-roles/nft-roles/group [delete]
 func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 	groupConfigID := c.Query("group_config_id")
 
@@ -328,12 +328,12 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 // ConfigLevelRole     godoc
 // @Summary     Config Level role
 // @Description Config level role
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigLevelRoleRequest true "Config level role request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/level-roles [post]
+// @Router      /config-roles/level-roles [post]
 func (h *Handler) ConfigLevelRole(c *gin.Context) {
 	var req request.ConfigLevelRoleRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -370,12 +370,12 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 // GetLevelRoleConfig     godoc
 // @Summary     Get level role config
 // @Description Get level role config
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.GetLevelRoleConfigsResponse
-// @Router      /configs/level-roles/{guild_id} [get]
+// @Router      /config-roles/level-roles/{guild_id} [get]
 func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -397,12 +397,12 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 // RemoveLevelRoleConfig     godoc
 // @Summary     Remove level role config
 // @Description Remove level role config
-// @Tags        Config
+// @Tags        ConfigRole
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/level-roles/{guild_id} [delete]
+// @Router      /config-roles/level-roles/{guild_id} [delete]
 func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {

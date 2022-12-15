@@ -251,13 +251,13 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 // GetUserProfile     godoc
 // @Summary     Get user profile
 // @Description Get user profile
-// @Tags        Profile
+// @Tags        User
 // @Accept      json
 // @Produce     json
 // @Param       guild_id query     string true "Guild ID"
 // @Param       user_id query     string true "User ID"
 // @Success     200 {object} response.GetDataUserProfileResponse
-// @Router      /profiles/ [get]
+// @Router      /users/profiles/ [get]
 func (h *Handler) GetUserProfile(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -291,7 +291,7 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 // @Produce     json
 // @Param       address path     string true "Address"
 // @Success     200 {object} response.GetUserWalletByGuildIDAddressResponse
-// @Router      /users/{user_id} [get]
+// @Router      /users/wallets/{address} [get]
 func (h *Handler) GetUserWalletByGuildIDAddress(c *gin.Context) {
 	address := c.Param("address")
 	if address == "" {
@@ -323,7 +323,7 @@ func (h *Handler) GetUserWalletByGuildIDAddress(c *gin.Context) {
 // GetUserTransaction     godoc
 // @Summary     Get user transaction
 // @Description Get user transaction
-// @Tags        OffChain
+// @Tags        User
 // @Accept      json
 // @Produce     json
 // @Param       id path     string true "user discord ID"
@@ -349,14 +349,14 @@ func (h *Handler) GetUserTransaction(c *gin.Context) {
 // GetTransactionsByQuery     godoc
 // @Summary     Get transactions by query
 // @Description Get transactions by query
-// @Tags        OffChain
+// @Tags        Tip
 // @Accept      json
 // @Produce     json
 // @Param       sender_id   query  string false  "sender ID"
 // @Param       receiver_id   query  string false  "receiver ID"
 // @Param       token   query  string true  "token"
 // @Success     200 {object} response.TransactionsResponse
-// @Router      /offchain-tip-bot/transactions [get]
+// @Router      /tip/transactions [get]
 func (h *Handler) GetTransactionsByQuery(c *gin.Context) {
 	senderId := c.Query("sender_id")
 	receiverId := c.Query("receiver_id")

@@ -28,12 +28,12 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // GetGmConfig     godoc
 // @Summary     Get GM config
 // @Description Get GM config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetGmConfigResponse
-// @Router      /configs/gm [get]
+// @Router      /config-channels/gm [get]
 func (h *Handler) GetGmConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -55,12 +55,12 @@ func (h *Handler) GetGmConfig(c *gin.Context) {
 // UpsertGmConfig     godoc
 // @Summary     Update or insert GM config
 // @Description Update or insert GM config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertGmConfigRequest true "Upsert GM Config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/gm [post]
+// @Router      /config-channels/gm [post]
 func (h *Handler) UpsertGmConfig(c *gin.Context) {
 	var req request.UpsertGmConfigRequest
 
@@ -92,12 +92,12 @@ func (h *Handler) UpsertGmConfig(c *gin.Context) {
 // GetWelcomeChannelConfig     godoc
 // @Summary     Get welcome channel config
 // @Description Get welcome channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetWelcomeChannelConfigResponse
-// @Router      /configs/welcome [get]
+// @Router      /config-channels/welcome [get]
 func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -120,12 +120,12 @@ func (h *Handler) GetWelcomeChannelConfig(c *gin.Context) {
 // UpsertWelcomeChannelConfig     godoc
 // @Summary     Update or insert welcome channel config
 // @Description Update or insert welcome channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertWelcomeConfigRequest true "Upsert welcome channel config request"
 // @Success     200 {object} response.GetWelcomeChannelConfigResponse
-// @Router      /configs/welcome [post]
+// @Router      /config-channels/welcome [post]
 func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	var req request.UpsertWelcomeConfigRequest
 
@@ -158,12 +158,12 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 // DeleteWelcomeChannelConfig     godoc
 // @Summary     Delete welcome channel config
 // @Description Delete welcome channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteWelcomeConfigRequest true "Delete welcome channel config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/welcome [delete]
+// @Router      /config-channels/welcome [delete]
 func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	var req request.DeleteWelcomeConfigRequest
 
@@ -190,12 +190,12 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 // GetVoteChannelConfig     godoc
 // @Summary     Get vote channel config
 // @Description Get vote channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /configs/upvote [get]
+// @Router      /config-channels/upvote [get]
 func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -218,12 +218,12 @@ func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
 // UpsertVoteChannelConfig     godoc
 // @Summary     Update or insert vote channel config
 // @Description Update or insert vote channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertVoteChannelConfigRequest true "Upsert vote channel config request"
 // @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /configs/upvote [post]
+// @Router      /config-channels/upvote [post]
 func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
 	var req request.UpsertVoteChannelConfigRequest
 
@@ -256,12 +256,12 @@ func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
 // DeleteVoteChannelConfig     godoc
 // @Summary     Delete vote channel config
 // @Description Delete vote channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteVoteChannelConfigRequest true "Delete vote channel config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/upvote [delete]
+// @Router      /config-channels/upvote [delete]
 func (h *Handler) DeleteVoteChannelConfig(c *gin.Context) {
 	var req request.DeleteVoteChannelConfigRequest
 
@@ -334,12 +334,12 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 // GetJoinLeaveChannelConfig     godoc
 // @Summary     Get join-leave channel config
 // @Description Get join-leave channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /configs/join-leave [get]
+// @Router      /config-channels/join-leave [get]
 func (h *Handler) GetJoinLeaveChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -362,12 +362,12 @@ func (h *Handler) GetJoinLeaveChannelConfig(c *gin.Context) {
 // UpsertJoinLeaveChannelConfig     godoc
 // @Summary     Update or insert join-leave channel config
 // @Description Update or insert join-leave channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertJoinLeaveChannelConfigRequest true "Upsert join-leave channel config request"
 // @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /configs/join-leave [post]
+// @Router      /config-channels/join-leave [post]
 func (h *Handler) UpsertJoinLeaveChannelConfig(c *gin.Context) {
 	var req request.UpsertJoinLeaveChannelConfigRequest
 
@@ -400,12 +400,12 @@ func (h *Handler) UpsertJoinLeaveChannelConfig(c *gin.Context) {
 // DeleteJoinLeaveChannelConfig     godoc
 // @Summary     Delete join-leave channel config
 // @Description Delete join-leave channel config
-// @Tags        Config
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteJoinLeaveChannelConfigRequest true "Delete join-leave channel config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/join-leave [delete]
+// @Router      /config-channels/join-leave [delete]
 func (h *Handler) DeleteJoinLeaveChannelConfig(c *gin.Context) {
 	var req request.DeleteJoinLeaveChannelConfigRequest
 
@@ -432,12 +432,12 @@ func (h *Handler) DeleteJoinLeaveChannelConfig(c *gin.Context) {
 // CreateConfigNotify   godoc
 // @Summary     OffChain Tip Bot - Config notify
 // @Description API config notify channel for token
-// @Tags        OffChain
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       Request body request.CreateTipConfigNotify true "config notify request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /offchain-tip-bot/config-notify [post]
+// @Router      /config-channels/tip-notify [post]
 func (h *Handler) CreateConfigNotify(c *gin.Context) {
 	req := request.CreateTipConfigNotify{}
 
@@ -460,12 +460,12 @@ func (h *Handler) CreateConfigNotify(c *gin.Context) {
 // ListConfigNotify   godoc
 // @Summary     OffChain Tip Bot - Config notify
 // @Description API get list config notify channel for token
-// @Tags        OffChain
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       guild_id query string true "guild id"
 // @Success     200 {object} response.ListConfigNotifyResponse
-// @Router      /offchain-tip-bot/config-notify [get]
+// @Router      /config-channels/tip-notify [get]
 func (h *Handler) ListConfigNotify(c *gin.Context) {
 	guildId := c.Query("guild_id")
 	listConfigs, err := h.entities.ListConfigNotify(guildId)
@@ -481,12 +481,12 @@ func (h *Handler) ListConfigNotify(c *gin.Context) {
 // DeleteConfigNotify   godoc
 // @Summary     OffChain Tip Bot - Config notify
 // @Description API delete config notify channel for token
-// @Tags        OffChain
+// @Tags        ConfigChannel
 // @Accept      json
 // @Produce     json
 // @Param       id path string true "id of config notify"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /offchain-tip-bot/config-notify/{id} [delete]
+// @Router      /config-channels/tip-notify/{id} [delete]
 func (h *Handler) DeleteConfigNotify(c *gin.Context) {
 	id := c.Param("id")
 

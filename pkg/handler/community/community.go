@@ -30,12 +30,12 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // HandleUserFeedback     godoc
 // @Summary     Post users' feedbacks
 // @Description Post users' feedbacks
-// @Tags        Feedback
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req body request.UserFeedbackRequest true "request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /feedback [post]
+// @Router      /community/feedback [post]
 func (h *Handler) HandleUserFeedback(c *gin.Context) {
 	var req request.UserFeedbackRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -57,12 +57,12 @@ func (h *Handler) HandleUserFeedback(c *gin.Context) {
 // UpdateUserFeedback     godoc
 // @Summary     Update users' feedbacks
 // @Description Update users' feedbacks
-// @Tags        Feedback
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req body request.UpdateUserFeedbackRequest true "request"
 // @Success     200 {object} response.UpdateUserFeedbackResponse
-// @Router      /feedback [put]
+// @Router      /community/feedback [put]
 func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 	var req request.UpdateUserFeedbackRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -90,13 +90,13 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // GetAllUserFeedback     godoc
 // @Summary     Get users' feedbacks
 // @Description Get users' feedbacks
-// @Tags        Feedback
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       filter query string false "filter by"
 // @Param       value query string false "filtered value"
 // @Success     200 {object} response.UserFeedbackResponse
-// @Router      /feedback [get]
+// @Router      /community/feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 	filter := c.Query("filter")
 	value := c.Query("value")
@@ -115,12 +115,12 @@ func (h *Handler) GetAllUserFeedback(c *gin.Context) {
 // GetUserQuestList     godoc
 // @Summary     Get user quest list
 // @Description Get user quest list
-// @Tags        Quest
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req query request.GetUserQuestListRequest true "request"
 // @Success     200 {object} response.GetUserQuestListResponse
-// @Router      /quests [get]
+// @Router      /community/quests [get]
 func (h *Handler) GetUserQuestList(c *gin.Context) {
 	var req request.GetUserQuestListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -140,12 +140,12 @@ func (h *Handler) GetUserQuestList(c *gin.Context) {
 // ClaimQuestsRewards     godoc
 // @Summary     Claim user quests' rewards
 // @Description Claim user quests' rewards
-// @Tags        Quest
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req body request.ClaimQuestsRewardsRequest true "request"
 // @Success     200 {object} response.ClaimQuestsRewardsResponse
-// @Router      /quests/claim [POST]
+// @Router      /community/quests/claim [POST]
 func (h *Handler) ClaimQuestsRewards(c *gin.Context) {
 	var req request.ClaimQuestsRewardsRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -166,12 +166,12 @@ func (h *Handler) ClaimQuestsRewards(c *gin.Context) {
 // UpdateQuestProgress     godoc
 // @Summary     Update user's quest progress
 // @Description Update user's quest progress
-// @Tags        Quest
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req body request.UpdateQuestProgressRequest true "request"
 // @Success     200 {string} string "ok"
-// @Router      /quests [POST]
+// @Router      /community/quests/progress [POST]
 func (h *Handler) UpdateQuestProgress(c *gin.Context) {
 	var req request.UpdateQuestProgressRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -217,12 +217,12 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 // ConfigResposeReaction     godoc
 // @Summary     Config Respost reaction
 // @Description Config Respost reaction
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigRepostRequest true "Config repost reaction request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions [post]
+// @Router      /community/repost-reactions [post]
 func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -264,12 +264,12 @@ func (h *Handler) ConfigRepostReaction(c *gin.Context) {
 // CreateConfigRepostReactionStartStop     godoc
 // @Summary     Config Respost reaction with start stop
 // @Description Config Respost reaction with start stop
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigRepostReactionStartStop true "Config repost reaction start stop request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions/start-stop [post]
+// @Router      /community/repost-reactions/conversation [post]
 func (h *Handler) CreateConfigRepostReactionConversation(c *gin.Context) {
 	var req request.ConfigRepostReactionStartStop
 	if err := c.BindJSON(&req); err != nil {
@@ -348,12 +348,12 @@ func (h *Handler) RemoveConfigRepostReactionConversation(c *gin.Context) {
 // GetReposeReactionConfigs     godoc
 // @Summary     Get Respost reaction configs
 // @Description Get Respost reaction configs
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.GetRepostReactionConfigsResponse
-// @Router      /configs/repost-reactions/{guild_id} [get]
+// @Router      /community/repost-reactions/{guild_id} [get]
 func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -386,12 +386,12 @@ func (h *Handler) GetRepostReactionConfigs(c *gin.Context) {
 // RemoveReposeReactionConfig     godoc
 // @Summary     Remove Respost reaction config
 // @Description Remove Respost reaction config
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigRepostRequest true "Remove repost reaction config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions [delete]
+// @Router      /community/repost-reactions [delete]
 func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 	var req request.ConfigRepostRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -429,12 +429,12 @@ func (h *Handler) RemoveRepostReactionConfig(c *gin.Context) {
 // CreateBlacklistChannelRepostConfig     godoc
 // @Summary     Create blacklist channel repost config
 // @Description Create blacklist channel repost config
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.BalcklistChannelRepostConfigRequest true "Upsert join-leave channel config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions/blacklist-channel [post]
+// @Router      /community/repost-reactions/blacklist-channel [post]
 func (h *Handler) CreateBlacklistChannelRepostConfig(c *gin.Context) {
 	var req request.BalcklistChannelRepostConfigRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -464,12 +464,12 @@ func (h *Handler) CreateBlacklistChannelRepostConfig(c *gin.Context) {
 // GetGuildBlacklistChannelRepostConfig     godoc
 // @Summary     Get guild blacklist channel repost config
 // @Description Get guild blacklist channel repost config
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions/blacklist-channel [get]
+// @Router      /community/repost-reactions/blacklist-channel [get]
 func (h *Handler) GetGuildBlacklistChannelRepostConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -492,12 +492,12 @@ func (h *Handler) GetGuildBlacklistChannelRepostConfig(c *gin.Context) {
 // DeleteBlacklistChannelRepostConfig     godoc
 // @Summary     Delete blacklist channel repost config
 // @Description Delete blacklist channel repost config
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.BalcklistChannelRepostConfigRequest true "Delete blacklist channel repost config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions/blacklist-channel [delete]
+// @Router      /community/repost-reactions/blacklist-channel [delete]
 func (h *Handler) DeleteBlacklistChannelRepostConfig(c *gin.Context) {
 	var req request.BalcklistChannelRepostConfigRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -527,12 +527,12 @@ func (h *Handler) DeleteBlacklistChannelRepostConfig(c *gin.Context) {
 // EditMessageRepost     godoc
 // @Summary     edit message repost
 // @Description edit message repost
-// @Tags        Config
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.EditMessageRepostRequest true "edit message repost request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/repost-reactions/message-repost [put]
+// @Router      /community/repost-reactions/message-repost [put]
 func (h *Handler) EditMessageRepost(c *gin.Context) {
 	req := request.EditMessageRepostRequest{}
 	if err := c.BindJSON(&req); err != nil {
@@ -554,12 +554,12 @@ func (h *Handler) EditMessageRepost(c *gin.Context) {
 // CreateTwitterPost     godoc
 // @Summary     Create twitter post
 // @Description Create twitter post
-// @Tags        Twitter
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.TwitterPost true "Create twitter post request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /twitter [post]
+// @Router      /community/twitter [post]
 func (h *Handler) CreateTwitterPost(c *gin.Context) {
 	req := request.TwitterPost{}
 	err := c.BindJSON(&req)
@@ -577,15 +577,15 @@ func (h *Handler) CreateTwitterPost(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "OK"})
 }
 
-// CreateTwitterPost     godoc
+// GetTwitterLeaderboard     godoc
 // @Summary     Create twitter post
 // @Description Create twitter post
-// @Tags        Twitter
+// @Tags        Community
 // @Accept      json
 // @Produce     json
 // @Param       req  query request.GetTwitterLeaderboardRequest true "Create twitter post request"
 // @Success     200 {object} response.GetTwitterLeaderboardResponse
-// @Router      /twitter/top [get]
+// @Router      /community/twitter/top [get]
 func (h *Handler) GetTwitterLeaderboard(c *gin.Context) {
 	req := request.GetTwitterLeaderboardRequest{}
 	if err := c.ShouldBindQuery(&req); err != nil {

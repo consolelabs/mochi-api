@@ -116,9 +116,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/chains": {
+        "/community/feedback": {
             "get": {
-                "description": "List All Chain",
+                "description": "Get users' feedbacks",
                 "consumes": [
                     "application/json"
                 ],
@@ -126,14 +126,92 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Chain"
+                    "Community"
                 ],
-                "summary": "List All Chain",
+                "summary": "Get users' feedbacks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter by",
+                        "name": "filter",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "filtered value",
+                        "name": "value",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetListAllChainsResponse"
+                            "$ref": "#/definitions/response.UserFeedbackResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update users' feedbacks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Update users' feedbacks",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateUserFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UpdateUserFeedbackResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Post users' feedbacks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Post users' feedbacks",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UserFeedbackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -313,9 +391,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/activities/{activity}": {
-            "post": {
-                "description": "Toggle activity config",
+        "/community/quests": {
+            "get": {
+                "description": "Get user quest list",
                 "consumes": [
                     "application/json"
                 ],
@@ -323,17 +401,180 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "Community"
                 ],
-                "summary": "Toggle activity config",
+                "summary": "Get user quest list",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Activity name",
-                        "name": "activity",
-                        "in": "path",
-                        "required": true
+                        "name": "routine",
+                        "in": "query"
                     },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserQuestListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/quests/claim": {
+            "post": {
+                "description": "Claim user quests' rewards",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Claim user quests' rewards",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ClaimQuestsRewardsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ClaimQuestsRewardsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/quests/progress": {
+            "post": {
+                "description": "Update user's quest progress",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Update user's quest progress",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateQuestProgressRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/repost-reactions": {
+            "post": {
+                "description": "Config Respost reaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Config Respost reaction",
+                "parameters": [
+                    {
+                        "description": "Config repost reaction request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigRepostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove Respost reaction config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Remove Respost reaction config",
+                "parameters": [
+                    {
+                        "description": "Remove repost reaction config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigRepostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/repost-reactions/blacklist-channel": {
+            "get": {
+                "description": "Get guild blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Get guild blacklist channel repost config",
+                "parameters": [
                     {
                         "type": "string",
                         "description": "Guild ID",
@@ -346,13 +587,1013 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ToggleActivityConfigResponse"
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Create blacklist channel repost config",
+                "parameters": [
+                    {
+                        "description": "Upsert join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete blacklist channel repost config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Delete blacklist channel repost config",
+                "parameters": [
+                    {
+                        "description": "Delete blacklist channel repost config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
             }
         },
-        "/configs/custom-tokens": {
+        "/community/repost-reactions/conversation": {
+            "post": {
+                "description": "Config Respost reaction with start stop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Config Respost reaction with start stop",
+                "parameters": [
+                    {
+                        "description": "Config repost reaction start stop request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigRepostReactionStartStop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/repost-reactions/message-repost": {
+            "put": {
+                "description": "edit message repost",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "edit message repost",
+                "parameters": [
+                    {
+                        "description": "edit message repost request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.EditMessageRepostRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/repost-reactions/{guild_id}": {
+            "get": {
+                "description": "Get Respost reaction configs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Get Respost reaction configs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetRepostReactionConfigsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/twitter": {
+            "post": {
+                "description": "Create twitter post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Create twitter post",
+                "parameters": [
+                    {
+                        "description": "Create twitter post request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.TwitterPost"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/twitter/top": {
+            "get": {
+                "description": "Create twitter post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Create twitter post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/gm": {
+            "get": {
+                "description": "Get GM config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get GM config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGmConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert GM config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Update or insert GM config",
+                "parameters": [
+                    {
+                        "description": "Upsert GM Config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGmConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/join-leave": {
+            "get": {
+                "description": "Get join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get join-leave channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Update or insert join-leave channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertJoinLeaveChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete join-leave channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Delete join-leave channel config",
+                "parameters": [
+                    {
+                        "description": "Delete join-leave channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/tip-notify": {
+            "get": {
+                "description": "API get list config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "guild id",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListConfigNotifyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "API config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "description": "config notify request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTipConfigNotify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/tip-notify/{id}": {
+            "delete": {
+                "description": "API delete config notify channel for token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "OffChain Tip Bot - Config notify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of config notify",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/upvote": {
+            "get": {
+                "description": "Get vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get vote channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Update or insert vote channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete vote channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Delete vote channel config",
+                "parameters": [
+                    {
+                        "description": "Delete vote channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/welcome": {
+            "get": {
+                "description": "Get welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get welcome channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Update or insert welcome channel config",
+                "parameters": [
+                    {
+                        "description": "Upsert welcome channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertWelcomeConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete welcome channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Delete welcome channel config",
+                "parameters": [
+                    {
+                        "description": "Delete welcome channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteWelcomeConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-community/telegram": {
+            "get": {
+                "description": "Get telegram account linked with discord ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Get telegram account linked with discord ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "request",
+                        "name": "telegram_username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetLinkedTelegramResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Link user's telegram with discord account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Link user's telegram with discord account",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.LinkUserTelegramWithDiscordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-community/twitter": {
+            "post": {
+                "description": "Create twitter config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Create twitter config",
+                "parameters": [
+                    {
+                        "description": "Create Twitter config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.GuildConfigTwitterFeed"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-community/twitter/blacklist": {
+            "get": {
+                "description": "get twitter blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Get twitter blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add an user to twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Add an user to twitter watching blacklist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an user from twitter watching blacklist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Delete an user from twitter watching blacklist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "twitter_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-community/twitter/hashtag": {
+            "get": {
+                "description": "get all twitter hashtag config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Get all twitter hashtag config",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetAllTwitterHashtagConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create twitter hashtag config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Create twitter hashtag config",
+                "parameters": [
+                    {
+                        "description": "Create twitter hashtag config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.TwitterHashtag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-community/twitter/hashtag/{guild_id}": {
+            "get": {
+                "description": "get twitter hashtag config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Get twitter hashtag config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTwitterHashtagConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete twitter hashtag config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigCommunity"
+                ],
+                "summary": "Delete twitter hashtag config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-defi/custom-tokens": {
             "post": {
                 "description": "Guild custom token config",
                 "consumes": [
@@ -362,7 +1603,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Guild custom token config",
                 "parameters": [
@@ -386,7 +1627,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/default-currency": {
+        "/config-defi/default-currency": {
             "get": {
                 "description": "Get default currency by guild id",
                 "consumes": [
@@ -396,7 +1637,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Get default currency by guild id",
                 "parameters": [
@@ -426,7 +1667,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Upsert default currency",
                 "parameters": [
@@ -458,7 +1699,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Delete default currency",
                 "parameters": [
@@ -482,172 +1723,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/default-nft-ticker": {
-            "get": {
-                "description": "Get guild default nft ticker",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get guild default nft ticker",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Guild ticker query",
-                        "name": "query",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildDefaultNftTickerResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Set guild default nft ticker",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Set guild default nft ticker",
-                "parameters": [
-                    {
-                        "description": "Set guild default ticker request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GuildConfigDefaultNftTickerRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseDataMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/default-roles": {
-            "get": {
-                "description": "Get default roles by guild id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get default roles by guild id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DefaultRoleResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create default role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Create default role",
-                "parameters": [
-                    {
-                        "description": "Create default role request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateDefaultRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DefaultRoleResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete default role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete default role",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseSucess"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/default-symbol": {
+        "/config-defi/default-symbol": {
             "post": {
                 "description": "Create default collection symbol",
                 "consumes": [
@@ -657,7 +1733,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Create default collection symbol",
                 "parameters": [
@@ -681,7 +1757,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/default-ticker": {
+        "/config-defi/default-ticker": {
             "get": {
                 "description": "Get guild default ticker",
                 "consumes": [
@@ -691,7 +1767,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Get guild default ticker",
                 "parameters": [
@@ -728,7 +1804,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Set guild default ticker",
                 "parameters": [
@@ -752,263 +1828,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/gm": {
-            "get": {
-                "description": "Get GM config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get GM config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGmConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert GM config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Update or insert GM config",
-                "parameters": [
-                    {
-                        "description": "Upsert GM Config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertGmConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/join-leave": {
-            "get": {
-                "description": "Get join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get join-leave channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Update or insert join-leave channel config",
-                "parameters": [
-                    {
-                        "description": "Upsert join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertJoinLeaveChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete join-leave channel config",
-                "parameters": [
-                    {
-                        "description": "Delete join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/level-roles": {
-            "post": {
-                "description": "Config level role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Config Level role",
-                "parameters": [
-                    {
-                        "description": "Config level role request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigLevelRoleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/level-roles/{guild_id}": {
-            "get": {
-                "description": "Get level role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get level role config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetLevelRoleConfigsResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove level role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Remove level role config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/monikers": {
+        "/config-defi/monikers": {
             "post": {
                 "description": "Upsert moniker config",
                 "consumes": [
@@ -1018,7 +1838,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Upsert moniker config",
                 "parameters": [
@@ -1050,7 +1870,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Delete moniker config",
                 "parameters": [
@@ -1074,7 +1894,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/monikers/default": {
+        "/config-defi/monikers/default": {
             "get": {
                 "description": "Get default moniker",
                 "consumes": [
@@ -1084,7 +1904,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Get default moniker",
                 "responses": {
@@ -1097,7 +1917,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/monikers/{guild_id}": {
+        "/config-defi/monikers/{guild_id}": {
             "get": {
                 "description": "Get moniker configs",
                 "consumes": [
@@ -1107,7 +1927,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigDefi"
                 ],
                 "summary": "Get moniker configs",
                 "parameters": [
@@ -1129,7 +1949,354 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/nft-roles": {
+        "/config-defi/tokens": {
+            "get": {
+                "description": "Get guild tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Get guild tokens",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildTokensResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Update or insert guild token config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Update or insert guild token config",
+                "parameters": [
+                    {
+                        "description": "Upsert Guild Token Config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildTokenConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-defi/tokens/default": {
+            "get": {
+                "description": "Get Default token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Get Default token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetDefaultTokenResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Config Default token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Config Default token",
+                "parameters": [
+                    {
+                        "description": "Config default token request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigDefaultTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove Default token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Remove Default token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/default-roles": {
+            "get": {
+                "description": "Get default roles by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get default roles by guild id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DefaultRoleResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create default role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Create default role",
+                "parameters": [
+                    {
+                        "description": "Create default role request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDefaultRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DefaultRoleResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete default role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Delete default role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseSucess"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/level-roles": {
+            "post": {
+                "description": "Config level role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Config Level role",
+                "parameters": [
+                    {
+                        "description": "Config level role request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ConfigLevelRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/level-roles/{guild_id}": {
+            "get": {
+                "description": "Get level role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get level role config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetLevelRoleConfigsResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove level role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove level role config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/nft-roles": {
             "get": {
                 "description": "List guild nft roles",
                 "consumes": [
@@ -1139,7 +2306,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigRole"
                 ],
                 "summary": "List guild nft roles",
                 "parameters": [
@@ -1169,7 +2336,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigRole"
                 ],
                 "summary": "New guild nft role",
                 "parameters": [
@@ -1201,7 +2368,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Config"
+                    "ConfigRole"
                 ],
                 "summary": "Remove guild nft role",
                 "parameters": [
@@ -1218,6 +2385,168 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/nft-roles/group": {
+            "delete": {
+                "description": "Remove guild group nft role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove guild group nft role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group config ID",
+                        "name": "group_config_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/reaction-roles": {
+            "get": {
+                "description": "Get all role reaction configs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get all role reaction configs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataListRoleReactionResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add reaction role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Add reaction role config",
+                "parameters": [
+                    {
+                        "description": "Add reaction role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.RoleReactionConfigResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove reaction role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove reaction role config",
+                "parameters": [
+                    {
+                        "description": "Remove reaction role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseSucess"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/reaction-roles/filter": {
+            "post": {
+                "description": "Filter config by reaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Filter config by reaction",
+                "parameters": [
+                    {
+                        "description": "Filter config by reaction request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RoleReactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
                         }
                     }
                 }
@@ -1255,398 +2584,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/reaction-roles": {
-            "get": {
-                "description": "Get all role reaction configs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get all role reaction configs",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DataListRoleReactionResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add reaction role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Add reaction role config",
-                "parameters": [
-                    {
-                        "description": "Add reaction role config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.RoleReactionConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove reaction role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Remove reaction role config",
-                "parameters": [
-                    {
-                        "description": "Remove reaction role config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseSucess"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/reaction-roles/filter": {
-            "post": {
-                "description": "Filter config by reaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Filter config by reaction",
-                "parameters": [
-                    {
-                        "description": "Filter config by reaction request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.RoleReactionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/repost-reactions": {
-            "post": {
-                "description": "Config Respost reaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Config Respost reaction",
-                "parameters": [
-                    {
-                        "description": "Config repost reaction request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove Respost reaction config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Remove Respost reaction config",
-                "parameters": [
-                    {
-                        "description": "Remove repost reaction config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/repost-reactions/blacklist-channel": {
-            "get": {
-                "description": "Get guild blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get guild blacklist channel repost config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Create blacklist channel repost config",
-                "parameters": [
-                    {
-                        "description": "Upsert join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete blacklist channel repost config",
-                "parameters": [
-                    {
-                        "description": "Delete blacklist channel repost config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/repost-reactions/message-repost": {
-            "put": {
-                "description": "edit message repost",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "edit message repost",
-                "parameters": [
-                    {
-                        "description": "edit message repost request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.EditMessageRepostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/repost-reactions/start-stop": {
-            "post": {
-                "description": "Config Respost reaction with start stop",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Config Respost reaction with start stop",
-                "parameters": [
-                    {
-                        "description": "Config repost reaction start stop request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostReactionStartStop"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/repost-reactions/{guild_id}": {
-            "get": {
-                "description": "Get Respost reaction configs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get Respost reaction configs",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetRepostReactionConfigsResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/configs/sales-tracker": {
             "get": {
                 "description": "Get sales tracker config",
@@ -1674,323 +2611,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetSalesTrackerConfigResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/telegram": {
-            "get": {
-                "description": "Get telegram account linked with discord ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Telegram"
-                ],
-                "summary": "Get telegram account linked with discord ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "request",
-                        "name": "telegram_username",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetLinkedTelegramResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Link user's telegram with discord account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Telegram"
-                ],
-                "summary": "Link user's telegram with discord account",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.LinkUserTelegramWithDiscordRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/token-alert": {
-            "get": {
-                "description": "Get user current token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get user current token alerts",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DiscordUserTokenAlertResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert user token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Upsert user token alerts",
-                "parameters": [
-                    {
-                        "description": "Upsert user token alert",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertDiscordUserAlertRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete user token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete user token alerts",
-                "parameters": [
-                    {
-                        "description": "Delete user token alert",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteDiscordUserAlertRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/tokens": {
-            "get": {
-                "description": "Get guild tokens",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get guild tokens",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildTokensResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert guild token config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Update or insert guild token config",
-                "parameters": [
-                    {
-                        "description": "Upsert Guild Token Config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildTokenConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/tokens/default": {
-            "get": {
-                "description": "Get Default token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get Default token",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetDefaultTokenResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Config Default token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Config Default token",
-                "parameters": [
-                    {
-                        "description": "Config default token request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigDefaultTokenRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove Default token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Remove Default token",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -2026,349 +2646,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create twitter config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Create twitter config",
-                "parameters": [
-                    {
-                        "description": "Create Twitter config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildConfigTwitterFeed"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/twitter/blacklist": {
-            "get": {
-                "description": "get twitter blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get twitter blacklist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add an user to twitter watching blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Add an user to twitter watching blacklist",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete an user from twitter watching blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete an user from twitter watching blacklist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "twitter_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/twitter/hashtag": {
-            "get": {
-                "description": "get all twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get all twitter hashtag config",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllTwitterHashtagConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Create twitter hashtag config",
-                "parameters": [
-                    {
-                        "description": "Create twitter hashtag config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TwitterHashtag"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/twitter/hashtag/{guild_id}": {
-            "get": {
-                "description": "get twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get twitter hashtag config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterHashtagConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete twitter hashtag config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/upvote": {
-            "get": {
-                "description": "Get vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get vote channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Update or insert vote channel config",
-                "parameters": [
-                    {
-                        "description": "Upsert vote channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete vote channel config",
-                "parameters": [
-                    {
-                        "description": "Delete vote channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
             }
         },
         "/configs/upvote-tiers": {
@@ -2389,102 +2666,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetUpvoteTiersConfig"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/welcome": {
-            "get": {
-                "description": "Get welcome channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get welcome channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert welcome channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Update or insert welcome channel config",
-                "parameters": [
-                    {
-                        "description": "Upsert welcome channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertWelcomeConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete welcome channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete welcome channel config",
-                "parameters": [
-                    {
-                        "description": "Delete welcome channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteWelcomeConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -2586,9 +2767,86 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/balances": {
+        "/data/configs/activities/{activity}": {
+            "post": {
+                "description": "Toggle activity config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Toggle activity config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Activity name",
+                        "name": "activity",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ToggleActivityConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/metrics": {
             "get": {
-                "description": "In Discord Wallet balance",
+                "description": "API to get stats of collections, users, servers, ...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Metric",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "case active_users",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataMetric"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/chains": {
+            "get": {
+                "description": "List All Chain",
                 "consumes": [
                     "application/json"
                 ],
@@ -2598,27 +2856,12 @@ const docTemplate = `{
                 "tags": [
                     "Defi"
                 ],
-                "summary": "In Discord Wallet balance",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "List All Chain",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.InDiscordWalletBalancesResponse"
+                            "$ref": "#/definitions/response.GetListAllChainsResponse"
                         }
                     }
                 }
@@ -2809,40 +3052,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/transfer": {
-            "post": {
-                "description": "In Discord Wallet transfer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "In Discord Wallet transfer",
-                "parameters": [
-                    {
-                        "description": "In Discord Wallet transfer request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TransferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.InDiscordWalletTransferResponseWrapper"
-                        }
-                    }
-                }
-            }
-        },
         "/defi/watchlist": {
             "get": {
                 "description": "Get user's watchlist",
@@ -2926,6 +3135,43 @@ const docTemplate = `{
                 "tags": [
                     "Defi"
                 ],
+                "summary": "Remove from user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/fiat/historical-exchange-rates": {
+            "get": {
+                "description": "Remove from user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Fiat"
+                ],
                 "summary": "Get historical market chart",
                 "parameters": [
                     {
@@ -2952,175 +3198,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetFiatHistoricalExchangeRatesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/defi/withdraw": {
-            "post": {
-                "description": "In Discord Wallet withdraw",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "In Discord Wallet withdraw",
-                "parameters": [
-                    {
-                        "description": "In Discord Wallet withdraw request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TransferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.InDiscordWalletWithdrawResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/feedback": {
-            "get": {
-                "description": "Get users' feedbacks",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Feedback"
-                ],
-                "summary": "Get users' feedbacks",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "filter by",
-                        "name": "filter",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "filtered value",
-                        "name": "value",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserFeedbackResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update users' feedbacks",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Feedback"
-                ],
-                "summary": "Update users' feedbacks",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpdateUserFeedbackRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UpdateUserFeedbackResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Post users' feedbacks",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Feedback"
-                ],
-                "summary": "Post users' feedbacks",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UserFeedbackRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/gift/xp": {
-            "post": {
-                "description": "Gift xp handler",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Gift"
-                ],
-                "summary": "Gift xp handler",
-                "parameters": [
-                    {
-                        "description": "Gift XP handler request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GiftXPRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GiftXpHandlerResponse"
                         }
                     }
                 }
@@ -3176,38 +3253,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/request.CreateGuildRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/guilds/custom-tokens": {
-            "get": {
-                "description": "List all guild custom token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Guild"
-                ],
-                "summary": "List all guild custom token",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListAllCustomTokenResponse"
                         }
                     }
                 }
@@ -3354,9 +3399,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/guilds/{guild_id}/custom-commands": {
+        "/guilds/{guild_id}/custom-tokens": {
             "get": {
-                "description": "List custom commands",
+                "description": "List all guild custom token",
                 "consumes": [
                     "application/json"
                 ],
@@ -3364,99 +3409,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Custom Command"
+                    "Guild"
                 ],
-                "summary": "List custom commands",
+                "summary": "List all guild custom token",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Guild ID",
                         "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Enabled",
-                        "name": "enabled",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListCustomCommandsResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create custom command",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Create custom command",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create custom command request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildCustomCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateCustomCommandResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/guilds/{guild_id}/custom-commands/{command_id}": {
-            "get": {
-                "description": "Get custom commands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Get custom commands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
                         "in": "path",
                         "required": true
                     }
@@ -3465,88 +3425,8 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetCustomCommandResponse"
+                            "$ref": "#/definitions/response.ListAllCustomTokenResponse"
                         }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update custom command",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Update custom command",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update custom command request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildCustomCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UpdateCustomCommandResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete custom commands",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Custom Command"
-                ],
-                "summary": "Delete custom commands",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Command ID",
-                        "name": "command_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
                     }
                 }
             }
@@ -3578,44 +3458,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.DiscordGuildStat"
-                        }
-                    }
-                }
-            }
-        },
-        "/metrics": {
-            "get": {
-                "description": "API to get stats of collections, users, servers, ...",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Metric"
-                ],
-                "summary": "Metric",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage",
-                        "name": "q",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "case active_users",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DataMetric"
                         }
                     }
                 }
@@ -3889,7 +3731,7 @@ const docTemplate = `{
         },
         "/nfts/collections/{symbol}": {
             "get": {
-                "description": "Create NFT Sales tracker",
+                "description": "Get NFT Tokens",
                 "consumes": [
                     "application/json"
                 ],
@@ -3899,7 +3741,7 @@ const docTemplate = `{
                 "tags": [
                     "NFT"
                 ],
-                "summary": "Create NFT Sales tracker",
+                "summary": "Get NFT Tokens",
                 "parameters": [
                     {
                         "type": "string",
@@ -3946,6 +3788,77 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetDetailNftCollectionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/nfts/default-nft-ticker": {
+            "get": {
+                "description": "Get guild default nft ticker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get guild default nft ticker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ticker query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildDefaultNftTickerResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Set guild default nft ticker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Set guild default nft ticker",
+                "parameters": [
+                    {
+                        "description": "Set guild default ticker request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GuildConfigDefaultNftTickerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseDataMessage"
                         }
                     }
                 }
@@ -4081,6 +3994,36 @@ const docTemplate = `{
                     }
                 }
             },
+            "post": {
+                "description": "Create NFT Sales tracker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Create NFT Sales tracker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Symbol",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.IndexerGetNFTTokensResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete NFT sales tracker",
                 "consumes": [
@@ -4190,6 +4133,72 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.IndexerGetNFTTokenTickersResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/nfts/trades": {
+            "post": {
+                "description": "Create Trade Offer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Create Trade Offer",
+                "parameters": [
+                    {
+                        "description": "Create Trade Offer Request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTradeOfferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateTradeOfferResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/nfts/trades/{id}": {
+            "get": {
+                "description": "Get Trade Offer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get Trade Offer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trade Offer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTradeOfferResponse"
                         }
                     }
                 }
@@ -4439,7 +4448,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/assign-contract": {
+        "/tip/assign-contract": {
             "post": {
                 "description": "Create an assign contract when user want to deposit a specific token to contract",
                 "consumes": [
@@ -4449,7 +4458,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Create an assign contract",
                 "parameters": [
@@ -4473,7 +4482,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/balances": {
+        "/tip/balances": {
             "get": {
                 "description": "Get offchain user bals",
                 "consumes": [
@@ -4483,7 +4492,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get offchain user bals",
                 "parameters": [
@@ -4505,9 +4514,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/config-notify": {
+        "/tip/history": {
             "get": {
-                "description": "API get list config notify channel for token",
+                "description": "Get transactions history by query",
                 "consumes": [
                     "application/json"
                 ],
@@ -4515,14 +4524,21 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
-                "summary": "OffChain Tip Bot - Config notify",
+                "summary": "Get transactions history by query",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "guild id",
+                        "description": "guild ID",
                         "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
                         "in": "query",
                         "required": true
                     }
@@ -4531,77 +4547,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListConfigNotifyResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "API config notify channel for token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OffChain"
-                ],
-                "summary": "OffChain Tip Bot - Config notify",
-                "parameters": [
-                    {
-                        "description": "config notify request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateTipConfigNotify"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/response.TransactionsResponse"
                         }
                     }
                 }
             }
         },
-        "/offchain-tip-bot/config-notify/{id}": {
-            "delete": {
-                "description": "API delete config notify channel for token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OffChain"
-                ],
-                "summary": "OffChain Tip Bot - Config notify",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "id of config notify",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/offchain-tip-bot/tokens": {
+        "/tip/tokens": {
             "get": {
                 "description": "Get all offchain tip bot tokens",
                 "consumes": [
@@ -4611,7 +4563,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get all offchain tip bot tokens",
                 "responses": {
@@ -4624,7 +4576,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/transactions": {
+        "/tip/transactions": {
             "get": {
                 "description": "Get transactions by query",
                 "consumes": [
@@ -4634,7 +4586,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "Get transactions by query",
                 "parameters": [
@@ -4668,7 +4620,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/transfer": {
+        "/tip/transfer": {
             "post": {
                 "description": "API transfer token for tip, airdrop, ...",
                 "consumes": [
@@ -4678,7 +4630,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Transfer token",
                 "parameters": [
@@ -4702,7 +4654,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/offchain-tip-bot/withdraw": {
+        "/tip/withdraw": {
             "post": {
                 "description": "OffChain Tip Bot - Withdraw",
                 "consumes": [
@@ -4712,7 +4664,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "OffChain"
+                    "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Withdraw",
                 "parameters": [
@@ -4731,288 +4683,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.OffchainTipBotWithdrawResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/profiles/": {
-            "get": {
-                "description": "Get user profile",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Profile"
-                ],
-                "summary": "Get user profile",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetDataUserProfileResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/quests": {
-            "get": {
-                "description": "Get user quest list",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Quest"
-                ],
-                "summary": "Get user quest list",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "routine",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserQuestListResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update user's quest progress",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Quest"
-                ],
-                "summary": "Update user's quest progress",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpdateQuestProgressRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/quests/claim": {
-            "post": {
-                "description": "Claim user quests' rewards",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Quest"
-                ],
-                "summary": "Claim user quests' rewards",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ClaimQuestsRewardsRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ClaimQuestsRewardsResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/trades": {
-            "post": {
-                "description": "Create Trade Offer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trade"
-                ],
-                "summary": "Create Trade Offer",
-                "parameters": [
-                    {
-                        "description": "Create Trade Offer Request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateTradeOfferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateTradeOfferResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/trades/{id}": {
-            "get": {
-                "description": "Get Trade Offer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Trade"
-                ],
-                "summary": "Get Trade Offer",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Trade Offer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTradeOfferResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/twitter": {
-            "post": {
-                "description": "Create twitter post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Twitter"
-                ],
-                "summary": "Create twitter post",
-                "parameters": [
-                    {
-                        "description": "Create twitter post request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TwitterPost"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/twitter/top": {
-            "get": {
-                "description": "Create twitter post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Twitter"
-                ],
-                "summary": "Create twitter post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
                         }
                     }
                 }
@@ -5039,102 +4709,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/request.CreateUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/device": {
-            "get": {
-                "description": "Get user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user current device data",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Device ID",
-                        "name": "device_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserDeviceResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Upsert user current device data",
-                "parameters": [
-                    {
-                        "description": "Upsert user device",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertUserDeviceRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Delete user current device data",
-                "parameters": [
-                    {
-                        "description": "Delete user device",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteUserDeviceRequest"
                         }
                     }
                 ],
@@ -5214,6 +4788,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetMyInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/profiles/": {
+            "get": {
+                "description": "Get user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetDataUserProfileResponse"
                         }
                     }
                 }
@@ -5343,39 +4956,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/transactions": {
-            "get": {
-                "description": "Get user transaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OffChain"
-                ],
-                "summary": "Get user transaction",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user discord ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserTransactionResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{user_id}": {
+        "/users/wallets/{address}": {
             "get": {
                 "description": "Get user by guild_id address",
                 "consumes": [
@@ -5402,6 +4983,70 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetUserWalletByGuildIDAddressResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/transactions": {
+            "get": {
+                "description": "Get user transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user transaction",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user discord ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserTransactionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}": {
+            "get": {
+                "description": "Get user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserResponse"
                         }
                     }
                 }
@@ -5603,9 +5248,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/whitelist-campaigns": {
+        "/widget/device": {
             "get": {
-                "description": "Get whitelist campaign",
+                "description": "Get user current device data",
                 "consumes": [
                     "application/json"
                 ],
@@ -5613,14 +5258,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Whitelist campaign"
+                    "Widget"
                 ],
-                "summary": "Get whitelist campaign",
+                "summary": "Get user current device data",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
+                        "description": "Device ID",
+                        "name": "device_id",
                         "in": "query",
                         "required": true
                     }
@@ -5629,16 +5274,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.WhitelistCampaign"
-                            }
+                            "$ref": "#/definitions/response.UserDeviceResponse"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create whitelist campaign",
+                "description": "Upsert user current device data",
                 "consumes": [
                     "application/json"
                 ],
@@ -5646,17 +5288,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Whitelist campaign"
+                    "Widget"
                 ],
-                "summary": "Create whitelist campaign",
+                "summary": "Upsert user current device data",
                 "parameters": [
                     {
-                        "description": "Create whitelist campaign request",
+                        "description": "Upsert user device",
                         "name": "Request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateWhitelistCampaignRequest"
+                            "$ref": "#/definitions/request.UpsertUserDeviceRequest"
                         }
                     }
                 ],
@@ -5664,48 +5306,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/request.CreateWhitelistCampaignRequest"
-                        }
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/users": {
-            "get": {
-                "description": "Get whitelist campaign user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.WhitelistCampaignUser"
-                            }
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
             },
-            "post": {
-                "description": "Add whitelist campaign user",
+            "delete": {
+                "description": "Delete user current device data",
                 "consumes": [
                     "application/json"
                 ],
@@ -5713,17 +5320,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Whitelist campaign"
+                    "Widget"
                 ],
-                "summary": "Add whitelist campaign user",
+                "summary": "Delete user current device data",
                 "parameters": [
                     {
-                        "description": "Add whitelist campaign user request",
+                        "description": "Delete user device",
                         "name": "Request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddWhitelistCampaignUserRequest"
+                            "$ref": "#/definitions/request.DeleteUserDeviceRequest"
                         }
                     }
                 ],
@@ -5731,15 +5338,15 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/request.AddWhitelistCampaignUserRequest"
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
             }
         },
-        "/whitelist-campaigns/users/csv": {
+        "/widget/token-alert": {
             "get": {
-                "description": "Get whitelist campaign users csv",
+                "description": "Get user current token alerts",
                 "consumes": [
                     "application/json"
                 ],
@@ -5747,50 +5354,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Whitelist campaign"
+                    "Widget"
                 ],
-                "summary": "Get whitelist campaign users csv",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/whitelist-campaigns/users/{discord_id}": {
-            "get": {
-                "description": "Get whitelist campaign user by discord ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Whitelist campaign"
-                ],
-                "summary": "Get whitelist campaign user by discord ID",
+                "summary": "Get user current token alerts",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "Discord ID",
                         "name": "discord_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaign_id",
                         "in": "query",
                         "required": true
                     }
@@ -5799,15 +5370,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.WhitelistCampaignUser"
+                            "$ref": "#/definitions/response.DiscordUserTokenAlertResponse"
                         }
                     }
                 }
-            }
-        },
-        "/whitelist-campaigns/{campaignId}": {
-            "get": {
-                "description": "Get whitelist campaign by id",
+            },
+            "post": {
+                "description": "Upsert user token alerts",
                 "consumes": [
                     "application/json"
                 ],
@@ -5815,23 +5384,57 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Whitelist campaign"
+                    "Widget"
                 ],
-                "summary": "Get whitelist campaign by id",
+                "summary": "Upsert user token alerts",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Campaign ID",
-                        "name": "campaignId",
-                        "in": "path",
-                        "required": true
+                        "description": "Upsert user token alert",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertDiscordUserAlertRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.WhitelistCampaign"
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user token alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Widget"
+                ],
+                "summary": "Delete user token alerts",
+                "parameters": [
+                    {
+                        "description": "Delete user token alert",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteDiscordUserAlertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -6439,47 +6042,6 @@ const docTemplate = `{
                 },
                 "welcome_message": {
                     "type": "string"
-                }
-            }
-        },
-        "model.GuildCustomCommand": {
-            "type": "object",
-            "properties": {
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "channels_permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "cooldown": {
-                    "type": "integer"
-                },
-                "cooldown_duration": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "roles_permissions": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -7147,43 +6709,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.WhitelistCampaign": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.WhitelistCampaignUser": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "whitelist_campaign_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.AddNftWatchlistRequest": {
             "type": "object",
             "properties": {
@@ -7235,34 +6760,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.AddWhitelistCampaignUser": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "notes": {
-                    "type": "string"
-                },
-                "whitelist_campaign_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.AddWhitelistCampaignUserRequest": {
-            "type": "object",
-            "properties": {
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.AddWhitelistCampaignUser"
-                    }
                 }
             }
         },
@@ -7524,17 +7021,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateWhitelistCampaignRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
         "request.DeleteDiscordUserAlertRequest": {
             "type": "object",
             "properties": {
@@ -7621,26 +7107,6 @@ const docTemplate = `{
                 },
                 "user_discord_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.GiftXPRequest": {
-            "type": "object",
-            "properties": {
-                "admin_discord_id": {
-                    "type": "string"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "user_discord_id": {
-                    "type": "string"
-                },
-                "xp_amount": {
-                    "type": "integer"
                 }
             }
         },
@@ -7892,41 +7358,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "request.TransferRequest": {
-            "type": "object",
-            "properties": {
-                "all": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "channelId": {
-                    "type": "string"
-                },
-                "cryptocurrency": {
-                    "type": "string"
-                },
-                "each": {
-                    "type": "boolean"
-                },
-                "guildId": {
-                    "type": "string"
-                },
-                "recipients": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "transferType": {
-                    "type": "string"
                 }
             }
         },
@@ -8538,14 +7969,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
-                }
-            }
-        },
         "response.CreateNFTCollectionResponse": {
             "type": "object",
             "properties": {
@@ -8782,14 +8205,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NFTCollectionCount"
-                }
-            }
-        },
-        "response.GetCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
                 }
             }
         },
@@ -9467,14 +8882,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GiftXpHandlerResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.HandleUserActivityResponse"
-                }
-            }
-        },
         "response.GuildConfigDefaultCurrencyResponse": {
             "type": "object",
             "properties": {
@@ -9503,121 +8910,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "response.HandleUserActivityResponse": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "added_xp": {
-                    "type": "integer"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "current_level": {
-                    "type": "integer"
-                },
-                "current_xp": {
-                    "type": "integer"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "level_up": {
-                    "type": "boolean"
-                },
-                "timestamp": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.InDiscordWalletBalancesResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.UserBalancesResponse"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.InDiscordWalletTransferResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "cryptocurrency": {
-                    "type": "string"
-                },
-                "fromDiscordID": {
-                    "type": "string"
-                },
-                "toDiscordID": {
-                    "type": "string"
-                },
-                "transactionFee": {
-                    "type": "number"
-                },
-                "txHash": {
-                    "type": "string"
-                },
-                "txUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.InDiscordWalletTransferResponseWrapper": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.InDiscordWalletTransferResponse"
-                    }
-                },
-                "errors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "response.InDiscordWalletWithdrawResponse": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "cryptocurrency": {
-                    "type": "string"
-                },
-                "fromDiscordId": {
-                    "type": "string"
-                },
-                "toAddress": {
-                    "type": "string"
-                },
-                "transactionFee": {
-                    "type": "number"
-                },
-                "txHash": {
-                    "type": "string"
-                },
-                "txURL": {
-                    "type": "string"
-                },
-                "withdrawalAmount": {
-                    "$ref": "#/definitions/big.Float"
                 }
             }
         },
@@ -10082,17 +9374,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.ConfigNotifyResponse"
-                    }
-                }
-            }
-        },
-        "response.ListCustomCommandsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildCustomCommand"
                     }
                 }
             }
@@ -10883,14 +10164,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UpdateCustomCommandResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildCustomCommand"
-                }
-            }
-        },
         "response.UpdateUserFeedbackResponse": {
             "type": "object",
             "properties": {
@@ -10922,23 +10195,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "response.UserBalancesResponse": {
-            "type": "object",
-            "properties": {
-                "balances": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "number"
-                    }
-                },
-                "balances_in_usd": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "number"
-                    }
                 }
             }
         },
