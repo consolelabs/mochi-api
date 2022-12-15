@@ -414,33 +414,6 @@ definitions:
       welcome_message:
         type: string
     type: object
-  model.GuildCustomCommand:
-    properties:
-      actions:
-        items:
-          type: integer
-        type: array
-      channels_permissions:
-        items:
-          type: integer
-        type: array
-      cooldown:
-        type: integer
-      cooldown_duration:
-        type: integer
-      description:
-        type: string
-      enabled:
-        type: boolean
-      guild_id:
-        type: string
-      id:
-        type: string
-      roles_permissions:
-        items:
-          type: integer
-        type: array
-    type: object
   model.GuildRole:
     properties:
       guild_id:
@@ -876,30 +849,6 @@ definitions:
       user_discord_id:
         type: string
     type: object
-  model.WhitelistCampaign:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      name:
-        type: string
-      role_id:
-        type: integer
-    type: object
-  model.WhitelistCampaignUser:
-    properties:
-      address:
-        type: string
-      created_at:
-        type: string
-      discord_id:
-        type: string
-      notes:
-        type: string
-      whitelist_campaign_id:
-        type: string
-    type: object
   request.AddNftWatchlistRequest:
     properties:
       chain:
@@ -934,24 +883,6 @@ definitions:
         type: string
       user_id:
         type: string
-    type: object
-  request.AddWhitelistCampaignUser:
-    properties:
-      address:
-        type: string
-      discord_id:
-        type: string
-      notes:
-        type: string
-      whitelist_campaign_id:
-        type: string
-    type: object
-  request.AddWhitelistCampaignUserRequest:
-    properties:
-      users:
-        items:
-          $ref: '#/definitions/request.AddWhitelistCampaignUser'
-        type: array
     type: object
   request.BalcklistChannelRepostConfigRequest:
     properties:
@@ -1120,13 +1051,6 @@ definitions:
       username:
         type: string
     type: object
-  request.CreateWhitelistCampaignRequest:
-    properties:
-      guild_id:
-        type: string
-      name:
-        type: string
-    type: object
   request.DeleteDiscordUserAlertRequest:
     properties:
       id:
@@ -1183,19 +1107,6 @@ definitions:
         type: boolean
       user_discord_id:
         type: string
-    type: object
-  request.GiftXPRequest:
-    properties:
-      admin_discord_id:
-        type: string
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      user_discord_id:
-        type: string
-      xp_amount:
-        type: integer
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -1360,29 +1271,6 @@ definitions:
     required:
     - token_address
     - token_ids
-    type: object
-  request.TransferRequest:
-    properties:
-      all:
-        type: boolean
-      amount:
-        type: number
-      channelId:
-        type: string
-      cryptocurrency:
-        type: string
-      each:
-        type: boolean
-      guildId:
-        type: string
-      recipients:
-        items:
-          type: string
-        type: array
-      sender:
-        type: string
-      transferType:
-        type: string
     type: object
   request.TwitterHashtag:
     properties:
@@ -1779,11 +1667,6 @@ definitions:
       data:
         type: string
     type: object
-  response.CreateCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
-    type: object
   response.CreateNFTCollectionResponse:
     properties:
       data:
@@ -1938,11 +1821,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.NFTCollectionCount'
-    type: object
-  response.GetCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
     type: object
   response.GetDataUserProfileResponse:
     properties:
@@ -2378,11 +2256,6 @@ definitions:
       message:
         type: string
     type: object
-  response.GiftXpHandlerResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.HandleUserActivityResponse'
-    type: object
   response.GuildConfigDefaultCurrencyResponse:
     properties:
       created_at:
@@ -2402,81 +2275,6 @@ definitions:
         items:
           type: string
         type: array
-    type: object
-  response.HandleUserActivityResponse:
-    properties:
-      action:
-        type: string
-      added_xp:
-        type: integer
-      channel_id:
-        type: string
-      current_level:
-        type: integer
-      current_xp:
-        type: integer
-      guild_id:
-        type: string
-      level_up:
-        type: boolean
-      timestamp:
-        type: string
-      user_id:
-        type: string
-    type: object
-  response.InDiscordWalletBalancesResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.UserBalancesResponse'
-      status:
-        type: string
-    type: object
-  response.InDiscordWalletTransferResponse:
-    properties:
-      amount:
-        type: number
-      cryptocurrency:
-        type: string
-      fromDiscordID:
-        type: string
-      toDiscordID:
-        type: string
-      transactionFee:
-        type: number
-      txHash:
-        type: string
-      txUrl:
-        type: string
-    type: object
-  response.InDiscordWalletTransferResponseWrapper:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.InDiscordWalletTransferResponse'
-        type: array
-      errors:
-        items:
-          type: string
-        type: array
-    type: object
-  response.InDiscordWalletWithdrawResponse:
-    properties:
-      amount:
-        type: number
-      cryptocurrency:
-        type: string
-      fromDiscordId:
-        type: string
-      toAddress:
-        type: string
-      transactionFee:
-        type: number
-      txHash:
-        type: string
-      txURL:
-        type: string
-      withdrawalAmount:
-        $ref: '#/definitions/big.Float'
     type: object
   response.IndexerChain:
     properties:
@@ -2779,13 +2577,6 @@ definitions:
       data:
         items:
           $ref: '#/definitions/response.ConfigNotifyResponse'
-        type: array
-    type: object
-  response.ListCustomCommandsResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildCustomCommand'
         type: array
     type: object
   response.ListGuildGroupNFTRolesResponse:
@@ -3297,11 +3088,6 @@ definitions:
       user_id:
         type: string
     type: object
-  response.UpdateCustomCommandResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildCustomCommand'
-    type: object
   response.UpdateUserFeedbackResponse:
     properties:
       data:
@@ -3323,17 +3109,6 @@ definitions:
         type: integer
       username:
         type: string
-    type: object
-  response.UserBalancesResponse:
-    properties:
-      balances:
-        additionalProperties:
-          type: number
-        type: object
-      balances_in_usd:
-        additionalProperties:
-          type: number
-        type: object
     type: object
   response.UserDeviceResponse:
     properties:
@@ -3462,21 +3237,72 @@ paths:
       summary: Set or overwrite an upvote message cache
       tags:
       - Cache
-  /chains:
+  /community/feedback:
     get:
       consumes:
       - application/json
-      description: List All Chain
+      description: Get users' feedbacks
+      parameters:
+      - description: filter by
+        in: query
+        name: filter
+        type: string
+      - description: filtered value
+        in: query
+        name: value
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetListAllChainsResponse'
-      summary: List All Chain
+            $ref: '#/definitions/response.UserFeedbackResponse'
+      summary: Get users' feedbacks
       tags:
-      - Chain
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Post users' feedbacks
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserFeedbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Post users' feedbacks
+      tags:
+      - Community
+    put:
+      consumes:
+      - application/json
+      description: Update users' feedbacks
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserFeedbackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateUserFeedbackResponse'
+      summary: Update users' feedbacks
+      tags:
+      - Community
   /community/invites/:
     get:
       consumes:
@@ -3592,17 +3418,164 @@ paths:
       summary: Get invites leaderboard
       tags:
       - Community
-  /configs/activities/{activity}:
+  /community/quests:
+    get:
+      consumes:
+      - application/json
+      description: Get user quest list
+      parameters:
+      - in: query
+        name: routine
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserQuestListResponse'
+      summary: Get user quest list
+      tags:
+      - Community
+  /community/quests/claim:
     post:
       consumes:
       - application/json
-      description: Toggle activity config
+      description: Claim user quests' rewards
       parameters:
-      - description: Activity name
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.ClaimQuestsRewardsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ClaimQuestsRewardsResponse'
+      summary: Claim user quests' rewards
+      tags:
+      - Community
+  /community/quests/progress:
+    post:
+      consumes:
+      - application/json
+      description: Update user's quest progress
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateQuestProgressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Update user's quest progress
+      tags:
+      - Community
+  /community/repost-reactions:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Respost reaction config
+      parameters:
+      - description: Remove repost reaction config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove Respost reaction config
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Config Respost reaction
+      parameters:
+      - description: Config repost reaction request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Respost reaction
+      tags:
+      - Community
+  /community/repost-reactions/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Respost reaction configs
+      parameters:
+      - description: Guild ID
         in: path
-        name: activity
+        name: guild_id
         required: true
         type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetRepostReactionConfigsResponse'
+      summary: Get Respost reaction configs
+      tags:
+      - Community
+  /community/repost-reactions/blacklist-channel:
+    delete:
+      consumes:
+      - application/json
+      description: Delete blacklist channel repost config
+      parameters:
+      - description: Delete blacklist channel repost config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete blacklist channel repost config
+      tags:
+      - Community
+    get:
+      consumes:
+      - application/json
+      description: Get guild blacklist channel repost config
+      parameters:
       - description: Guild ID
         in: query
         name: guild_id
@@ -3614,11 +3587,597 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ToggleActivityConfigResponse'
-      summary: Toggle activity config
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Get guild blacklist channel repost config
       tags:
-      - Config
-  /configs/custom-tokens:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Create blacklist channel repost config
+      parameters:
+      - description: Upsert join-leave channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create blacklist channel repost config
+      tags:
+      - Community
+  /community/repost-reactions/conversation:
+    post:
+      consumes:
+      - application/json
+      description: Config Respost reaction with start stop
+      parameters:
+      - description: Config repost reaction start stop request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigRepostReactionStartStop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Respost reaction with start stop
+      tags:
+      - Community
+  /community/repost-reactions/message-repost:
+    put:
+      consumes:
+      - application/json
+      description: edit message repost
+      parameters:
+      - description: edit message repost request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EditMessageRepostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: edit message repost
+      tags:
+      - Community
+  /community/twitter:
+    post:
+      consumes:
+      - application/json
+      description: Create twitter post
+      parameters:
+      - description: Create twitter post request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TwitterPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter post
+      tags:
+      - Community
+  /config-channels/gm:
+    get:
+      consumes:
+      - application/json
+      description: Get GM config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGmConfigResponse'
+      summary: Get GM config
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: Update or insert GM config
+      parameters:
+      - description: Upsert GM Config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGmConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update or insert GM config
+      tags:
+      - ConfigChannel
+  /config-channels/join-leave:
+    delete:
+      consumes:
+      - application/json
+      description: Delete join-leave channel config
+      parameters:
+      - description: Delete join-leave channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteJoinLeaveChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete join-leave channel config
+      tags:
+      - ConfigChannel
+    get:
+      consumes:
+      - application/json
+      description: Get join-leave channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Get join-leave channel config
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: Update or insert join-leave channel config
+      parameters:
+      - description: Upsert join-leave channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Update or insert join-leave channel config
+      tags:
+      - ConfigChannel
+  /config-channels/tip-notify:
+    get:
+      consumes:
+      - application/json
+      description: API get list config notify channel for token
+      parameters:
+      - description: guild id
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListConfigNotifyResponse'
+      summary: OffChain Tip Bot - Config notify
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: API config notify channel for token
+      parameters:
+      - description: config notify request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTipConfigNotify'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: OffChain Tip Bot - Config notify
+      tags:
+      - ConfigChannel
+  /config-channels/tip-notify/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: API delete config notify channel for token
+      parameters:
+      - description: id of config notify
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: OffChain Tip Bot - Config notify
+      tags:
+      - ConfigChannel
+  /config-channels/upvote:
+    delete:
+      consumes:
+      - application/json
+      description: Delete vote channel config
+      parameters:
+      - description: Delete vote channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteVoteChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete vote channel config
+      tags:
+      - ConfigChannel
+    get:
+      consumes:
+      - application/json
+      description: Get vote channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Get vote channel config
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: Update or insert vote channel config
+      parameters:
+      - description: Upsert vote channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertVoteChannelConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      summary: Update or insert vote channel config
+      tags:
+      - ConfigChannel
+  /config-channels/welcome:
+    delete:
+      consumes:
+      - application/json
+      description: Delete welcome channel config
+      parameters:
+      - description: Delete welcome channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteWelcomeConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete welcome channel config
+      tags:
+      - ConfigChannel
+    get:
+      consumes:
+      - application/json
+      description: Get welcome channel config
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+      summary: Get welcome channel config
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: Update or insert welcome channel config
+      parameters:
+      - description: Upsert welcome channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertWelcomeConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+      summary: Update or insert welcome channel config
+      tags:
+      - ConfigChannel
+  /config-community/telegram:
+    get:
+      consumes:
+      - application/json
+      description: Get telegram account linked with discord ID
+      parameters:
+      - description: request
+        in: query
+        name: telegram_username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetLinkedTelegramResponse'
+      summary: Get telegram account linked with discord ID
+      tags:
+      - ConfigCommunity
+    post:
+      consumes:
+      - application/json
+      description: Link user's telegram with discord account
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.LinkUserTelegramWithDiscordRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponse'
+      summary: Link user's telegram with discord account
+      tags:
+      - ConfigCommunity
+  /config-community/twitter:
+    post:
+      consumes:
+      - application/json
+      description: Create twitter config
+      parameters:
+      - description: Create Twitter config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/model.GuildConfigTwitterFeed'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter config
+      tags:
+      - ConfigCommunity
+  /config-community/twitter/blacklist:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an user from twitter watching blacklist
+      parameters:
+      - in: query
+        name: guild_id
+        required: true
+        type: string
+      - in: query
+        name: twitter_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Delete an user from twitter watching blacklist
+      tags:
+      - ConfigCommunity
+    get:
+      consumes:
+      - application/json
+      description: get twitter blacklist
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterBlackListResponse'
+      summary: Get twitter blacklist
+      tags:
+      - ConfigCommunity
+    post:
+      consumes:
+      - application/json
+      description: Add an user to twitter watching blacklist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Add an user to twitter watching blacklist
+      tags:
+      - ConfigCommunity
+  /config-community/twitter/hashtag:
+    get:
+      consumes:
+      - application/json
+      description: get all twitter hashtag config
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllTwitterHashtagConfigResponse'
+      summary: Get all twitter hashtag config
+      tags:
+      - ConfigCommunity
+    post:
+      consumes:
+      - application/json
+      description: Create twitter hashtag config
+      parameters:
+      - description: Create twitter hashtag config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TwitterHashtag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create twitter hashtag config
+      tags:
+      - ConfigCommunity
+  /config-community/twitter/hashtag/{guild_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete twitter hashtag config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete twitter hashtag config
+      tags:
+      - ConfigCommunity
+    get:
+      consumes:
+      - application/json
+      description: get twitter hashtag config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
+      summary: Get twitter hashtag config
+      tags:
+      - ConfigCommunity
+  /config-defi/custom-tokens:
     post:
       consumes:
       - application/json
@@ -3639,8 +4198,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Guild custom token config
       tags:
-      - Config
-  /configs/default-currency:
+      - ConfigDefi
+  /config-defi/default-currency:
     delete:
       consumes:
       - application/json
@@ -3661,7 +4220,7 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Delete default currency
       tags:
-      - Config
+      - ConfigDefi
     get:
       consumes:
       - application/json
@@ -3681,7 +4240,7 @@ paths:
             $ref: '#/definitions/response.GuildConfigDefaultCurrencyResponse'
       summary: Get default currency by guild id
       tags:
-      - Config
+      - ConfigDefi
     post:
       consumes:
       - application/json
@@ -3702,117 +4261,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Upsert default currency
       tags:
-      - Config
-  /configs/default-nft-ticker:
-    get:
-      consumes:
-      - application/json
-      description: Get guild default nft ticker
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      - description: Guild ticker query
-        in: query
-        name: query
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetGuildDefaultNftTickerResponse'
-      summary: Get guild default nft ticker
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Set guild default nft ticker
-      parameters:
-      - description: Set guild default ticker request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.GuildConfigDefaultNftTickerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseDataMessage'
-      summary: Set guild default nft ticker
-      tags:
-      - Config
-  /configs/default-roles:
-    delete:
-      consumes:
-      - application/json
-      description: Delete default role
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseSucess'
-      summary: Delete default role
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get default roles by guild id
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.DefaultRoleResponse'
-      summary: Get default roles by guild id
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Create default role
-      parameters:
-      - description: Create default role request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateDefaultRoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.DefaultRoleResponse'
-      summary: Create default role
-      tags:
-      - Config
-  /configs/default-symbol:
+      - ConfigDefi
+  /config-defi/default-symbol:
     post:
       consumes:
       - application/json
@@ -3833,8 +4283,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Create default collection symbol
       tags:
-      - Config
-  /configs/default-ticker:
+      - ConfigDefi
+  /config-defi/default-ticker:
     get:
       consumes:
       - application/json
@@ -3859,7 +4309,7 @@ paths:
             $ref: '#/definitions/response.GetGuildDefaultTickerResponse'
       summary: Get guild default ticker
       tags:
-      - Config
+      - ConfigDefi
     post:
       consumes:
       - application/json
@@ -3880,176 +4330,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Set guild default ticker
       tags:
-      - Config
-  /configs/gm:
-    get:
-      consumes:
-      - application/json
-      description: Get GM config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetGmConfigResponse'
-      summary: Get GM config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Update or insert GM config
-      parameters:
-      - description: Upsert GM Config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertGmConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Update or insert GM config
-      tags:
-      - Config
-  /configs/join-leave:
-    delete:
-      consumes:
-      - application/json
-      description: Delete join-leave channel config
-      parameters:
-      - description: Delete join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteJoinLeaveChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete join-leave channel config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get join-leave channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Get join-leave channel config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Update or insert join-leave channel config
-      parameters:
-      - description: Upsert join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Update or insert join-leave channel config
-      tags:
-      - Config
-  /configs/level-roles:
-    post:
-      consumes:
-      - application/json
-      description: Config level role
-      parameters:
-      - description: Config level role request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigLevelRoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Level role
-      tags:
-      - Config
-  /configs/level-roles/{guild_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove level role config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove level role config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get level role config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetLevelRoleConfigsResponse'
-      summary: Get level role config
-      tags:
-      - Config
-  /configs/monikers:
+      - ConfigDefi
+  /config-defi/monikers:
     delete:
       consumes:
       - application/json
@@ -4070,7 +4352,7 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Delete moniker config
       tags:
-      - Config
+      - ConfigDefi
     post:
       consumes:
       - application/json
@@ -4091,8 +4373,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Upsert moniker config
       tags:
-      - Config
-  /configs/monikers/{guild_id}:
+      - ConfigDefi
+  /config-defi/monikers/{guild_id}:
     get:
       consumes:
       - application/json
@@ -4112,8 +4394,8 @@ paths:
             $ref: '#/definitions/response.MonikerConfigResponse'
       summary: Get moniker configs
       tags:
-      - Config
-  /configs/monikers/default:
+      - ConfigDefi
+  /config-defi/monikers/default:
     get:
       consumes:
       - application/json
@@ -4127,8 +4409,236 @@ paths:
             $ref: '#/definitions/response.MonikerConfigResponse'
       summary: Get default moniker
       tags:
-      - Config
-  /configs/nft-roles:
+      - ConfigDefi
+  /config-defi/tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get guild tokens
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildTokensResponse'
+      summary: Get guild tokens
+      tags:
+      - ConfigDefi
+    post:
+      consumes:
+      - application/json
+      description: Update or insert guild token config
+      parameters:
+      - description: Upsert Guild Token Config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildTokenConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update or insert guild token config
+      tags:
+      - ConfigDefi
+  /config-defi/tokens/default:
+    delete:
+      consumes:
+      - application/json
+      description: Remove Default token
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove Default token
+      tags:
+      - ConfigDefi
+    get:
+      consumes:
+      - application/json
+      description: Get Default token
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetDefaultTokenResponse'
+      summary: Get Default token
+      tags:
+      - ConfigDefi
+    post:
+      consumes:
+      - application/json
+      description: Config Default token
+      parameters:
+      - description: Config default token request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigDefaultTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Default token
+      tags:
+      - ConfigDefi
+  /config-roles/default-roles:
+    delete:
+      consumes:
+      - application/json
+      description: Delete default role
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseSucess'
+      summary: Delete default role
+      tags:
+      - ConfigRole
+    get:
+      consumes:
+      - application/json
+      description: Get default roles by guild id
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultRoleResponse'
+      summary: Get default roles by guild id
+      tags:
+      - ConfigRole
+    post:
+      consumes:
+      - application/json
+      description: Create default role
+      parameters:
+      - description: Create default role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDefaultRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DefaultRoleResponse'
+      summary: Create default role
+      tags:
+      - ConfigRole
+  /config-roles/level-roles:
+    post:
+      consumes:
+      - application/json
+      description: Config level role
+      parameters:
+      - description: Config level role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigLevelRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Level role
+      tags:
+      - ConfigRole
+  /config-roles/level-roles/{guild_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove level role config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove level role config
+      tags:
+      - ConfigRole
+    get:
+      consumes:
+      - application/json
+      description: Get level role config
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetLevelRoleConfigsResponse'
+      summary: Get level role config
+      tags:
+      - ConfigRole
+  /config-roles/nft-roles:
     delete:
       consumes:
       - application/json
@@ -4148,7 +4658,7 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Remove guild nft role
       tags:
-      - Config
+      - ConfigRole
     get:
       consumes:
       - application/json
@@ -4168,7 +4678,7 @@ paths:
             $ref: '#/definitions/response.ListGuildGroupNFTRolesResponse'
       summary: List guild nft roles
       tags:
-      - Config
+      - ConfigRole
     post:
       consumes:
       - application/json
@@ -4189,8 +4699,8 @@ paths:
             $ref: '#/definitions/response.NewGuildGroupNFTRoleResponse'
       summary: New guild nft role
       tags:
-      - Config
-  /configs/nft-roles/group:
+      - ConfigRole
+  /config-roles/nft-roles/group:
     delete:
       consumes:
       - application/json
@@ -4210,8 +4720,8 @@ paths:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Remove guild group nft role
       tags:
-      - Config
-  /configs/reaction-roles:
+      - ConfigRole
+  /config-roles/reaction-roles:
     delete:
       consumes:
       - application/json
@@ -4232,7 +4742,7 @@ paths:
             $ref: '#/definitions/response.ResponseSucess'
       summary: Remove reaction role config
       tags:
-      - Config
+      - ConfigRole
     get:
       consumes:
       - application/json
@@ -4252,7 +4762,7 @@ paths:
             $ref: '#/definitions/response.DataListRoleReactionResponse'
       summary: Get all role reaction configs
       tags:
-      - Config
+      - ConfigRole
     post:
       consumes:
       - application/json
@@ -4273,8 +4783,8 @@ paths:
             $ref: '#/definitions/response.RoleReactionConfigResponse'
       summary: Add reaction role config
       tags:
-      - Config
-  /configs/reaction-roles/filter:
+      - ConfigRole
+  /config-roles/reaction-roles/filter:
     post:
       consumes:
       - application/json
@@ -4295,101 +4805,16 @@ paths:
             $ref: '#/definitions/response.DataFilterConfigByReaction'
       summary: Filter config by reaction
       tags:
-      - Config
-  /configs/repost-reactions:
+      - ConfigRole
+  /configs/nft-roles/group:
     delete:
       consumes:
       - application/json
-      description: Remove Respost reaction config
+      description: Remove guild group nft role
       parameters:
-      - description: Remove repost reaction config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove Respost reaction config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Config Respost reaction
-      parameters:
-      - description: Config repost reaction request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Respost reaction
-      tags:
-      - Config
-  /configs/repost-reactions/{guild_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get Respost reaction configs
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetRepostReactionConfigsResponse'
-      summary: Get Respost reaction configs
-      tags:
-      - Config
-  /configs/repost-reactions/blacklist-channel:
-    delete:
-      consumes:
-      - application/json
-      description: Delete blacklist channel repost config
-      parameters:
-      - description: Delete blacklist channel repost config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete blacklist channel repost config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get guild blacklist channel repost config
-      parameters:
-      - description: Guild ID
+      - description: Group config ID
         in: query
-        name: guild_id
+        name: group_config_id
         required: true
         type: string
       produces:
@@ -4399,72 +4824,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
-      summary: Get guild blacklist channel repost config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Create blacklist channel repost config
-      parameters:
-      - description: Upsert join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create blacklist channel repost config
-      tags:
-      - Config
-  /configs/repost-reactions/message-repost:
-    put:
-      consumes:
-      - application/json
-      description: edit message repost
-      parameters:
-      - description: edit message repost request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.EditMessageRepostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: edit message repost
-      tags:
-      - Config
-  /configs/repost-reactions/start-stop:
-    post:
-      consumes:
-      - application/json
-      description: Config Respost reaction with start stop
-      parameters:
-      - description: Config repost reaction start stop request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostReactionStartStop'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Respost reaction with start stop
+      summary: Remove guild group nft role
       tags:
       - Config
   /configs/sales-tracker:
@@ -4488,214 +4848,6 @@ paths:
       summary: Get sales tracker config
       tags:
       - Config
-  /configs/telegram:
-    get:
-      consumes:
-      - application/json
-      description: Get telegram account linked with discord ID
-      parameters:
-      - description: request
-        in: query
-        name: telegram_username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetLinkedTelegramResponse'
-      summary: Get telegram account linked with discord ID
-      tags:
-      - Telegram
-    post:
-      consumes:
-      - application/json
-      description: Link user's telegram with discord account
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.LinkUserTelegramWithDiscordRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponse'
-      summary: Link user's telegram with discord account
-      tags:
-      - Telegram
-  /configs/token-alert:
-    delete:
-      consumes:
-      - application/json
-      description: Delete user token alerts
-      parameters:
-      - description: Delete user token alert
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteDiscordUserAlertRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete user token alerts
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get user current token alerts
-      parameters:
-      - description: Discord ID
-        in: query
-        name: discord_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.DiscordUserTokenAlertResponse'
-      summary: Get user current token alerts
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Upsert user token alerts
-      parameters:
-      - description: Upsert user token alert
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertDiscordUserAlertRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert user token alerts
-      tags:
-      - Config
-  /configs/tokens:
-    get:
-      consumes:
-      - application/json
-      description: Get guild tokens
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetGuildTokensResponse'
-      summary: Get guild tokens
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Update or insert guild token config
-      parameters:
-      - description: Upsert Guild Token Config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertGuildTokenConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Update or insert guild token config
-      tags:
-      - Config
-  /configs/tokens/default:
-    delete:
-      consumes:
-      - application/json
-      description: Remove Default token
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove Default token
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get Default token
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetDefaultTokenResponse'
-      summary: Get Default token
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Config Default token
-      parameters:
-      - description: Config default token request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigDefaultTokenRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Default token
-      tags:
-      - Config
   /configs/twitter:
     get:
       consumes:
@@ -4717,231 +4869,6 @@ paths:
       summary: Get all twitter config
       tags:
       - Config
-    post:
-      consumes:
-      - application/json
-      description: Create twitter config
-      parameters:
-      - description: Create Twitter config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildConfigTwitterFeed'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter config
-      tags:
-      - Config
-  /configs/twitter/blacklist:
-    delete:
-      consumes:
-      - application/json
-      description: Delete an user from twitter watching blacklist
-      parameters:
-      - in: query
-        name: guild_id
-        required: true
-        type: string
-      - in: query
-        name: twitter_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Delete an user from twitter watching blacklist
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: get twitter blacklist
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterBlackListResponse'
-      summary: Get twitter blacklist
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Add an user to twitter watching blacklist
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Add an user to twitter watching blacklist
-      tags:
-      - Config
-  /configs/twitter/hashtag:
-    get:
-      consumes:
-      - application/json
-      description: get all twitter hashtag config
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetAllTwitterHashtagConfigResponse'
-      summary: Get all twitter hashtag config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Create twitter hashtag config
-      parameters:
-      - description: Create twitter hashtag config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TwitterHashtag'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter hashtag config
-      tags:
-      - Config
-  /configs/twitter/hashtag/{guild_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete twitter hashtag config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete twitter hashtag config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: get twitter hashtag config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
-      summary: Get twitter hashtag config
-      tags:
-      - Config
-  /configs/upvote:
-    delete:
-      consumes:
-      - application/json
-      description: Delete vote channel config
-      parameters:
-      - description: Delete vote channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteVoteChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete vote channel config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get vote channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Get vote channel config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Update or insert vote channel config
-      parameters:
-      - description: Upsert vote channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertVoteChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Update or insert vote channel config
-      tags:
-      - Config
   /configs/upvote-tiers:
     get:
       consumes:
@@ -4955,69 +4882,6 @@ paths:
           schema:
             $ref: '#/definitions/response.GetUpvoteTiersConfig'
       summary: Get all upvote tiers
-      tags:
-      - Config
-  /configs/welcome:
-    delete:
-      consumes:
-      - application/json
-      description: Delete welcome channel config
-      parameters:
-      - description: Delete welcome channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteWelcomeConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete welcome channel config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get welcome channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
-      summary: Get welcome channel config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Update or insert welcome channel config
-      parameters:
-      - description: Upsert welcome channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertWelcomeConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
-      summary: Update or insert welcome channel config
       tags:
       - Config
   /configs/whitelist-prune:
@@ -5083,19 +4947,20 @@ paths:
       summary: Upsert prune exclude config
       tags:
       - Config
-  /defi/balances:
-    get:
+  /data/configs/activities/{activity}:
+    post:
       consumes:
       - application/json
-      description: In Discord Wallet balance
+      description: Toggle activity config
       parameters:
+      - description: Activity name
+        in: path
+        name: activity
+        required: true
+        type: string
       - description: Guild ID
         in: query
         name: guild_id
-        type: string
-      - description: Discord ID
-        in: path
-        name: discord_id
         required: true
         type: string
       produces:
@@ -5104,8 +4969,49 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.InDiscordWalletBalancesResponse'
-      summary: In Discord Wallet balance
+            $ref: '#/definitions/response.ToggleActivityConfigResponse'
+      summary: Toggle activity config
+      tags:
+      - Data
+  /data/metrics:
+    get:
+      consumes:
+      - application/json
+      description: API to get stats of collections, users, servers, ...
+      parameters:
+      - description: total_servers | active_users | nft_collections | verified_wallets
+          | supported_tokens | command_usage
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: case active_users
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DataMetric'
+      summary: Metric
+      tags:
+      - Data
+  /defi/chains:
+    get:
+      consumes:
+      - application/json
+      description: List All Chain
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetListAllChainsResponse'
+      summary: List All Chain
       tags:
       - Defi
   /defi/coins:
@@ -5231,28 +5137,6 @@ paths:
       summary: Get supported tokens
       tags:
       - Defi
-  /defi/transfer:
-    post:
-      consumes:
-      - application/json
-      description: In Discord Wallet transfer
-      parameters:
-      - description: In Discord Wallet transfer request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TransferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.InDiscordWalletTransferResponseWrapper'
-      summary: In Discord Wallet transfer
-      tags:
-      - Defi
   /defi/watchlist:
     delete:
       consumes:
@@ -5260,16 +5144,12 @@ paths:
       description: Remove from user's watchlist
       parameters:
       - in: query
-        name: base
+        name: symbol
         required: true
         type: string
       - in: query
-        maximum: 365
-        minimum: 7
-        name: days
-        type: integer
-      - in: query
-        name: target
+        name: user_id
+        required: true
         type: string
       produces:
       - application/json
@@ -5277,8 +5157,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetFiatHistoricalExchangeRatesResponse'
-      summary: Get historical market chart
+            type: object
+      summary: Remove from user's watchlist
       tags:
       - Defi
     get:
@@ -5327,41 +5207,23 @@ paths:
       summary: Add to user's watchlist
       tags:
       - Defi
-  /defi/withdraw:
-    post:
-      consumes:
-      - application/json
-      description: In Discord Wallet withdraw
-      parameters:
-      - description: In Discord Wallet withdraw request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TransferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.InDiscordWalletWithdrawResponse'
-      summary: In Discord Wallet withdraw
-      tags:
-      - Defi
-  /feedback:
+  /fiat/historical-exchange-rates:
     get:
       consumes:
       - application/json
-      description: Get users' feedbacks
+      description: Remove from user's watchlist
       parameters:
-      - description: filter by
-        in: query
-        name: filter
+      - in: query
+        name: base
+        required: true
         type: string
-      - description: filtered value
-        in: query
-        name: value
+      - in: query
+        maximum: 365
+        minimum: 7
+        name: days
+        type: integer
+      - in: query
+        name: target
         type: string
       produces:
       - application/json
@@ -5369,74 +5231,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserFeedbackResponse'
-      summary: Get users' feedbacks
+            $ref: '#/definitions/response.GetFiatHistoricalExchangeRatesResponse'
+      summary: Get historical market chart
       tags:
-      - Feedback
-    post:
-      consumes:
-      - application/json
-      description: Post users' feedbacks
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.UserFeedbackRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Post users' feedbacks
-      tags:
-      - Feedback
-    put:
-      consumes:
-      - application/json
-      description: Update users' feedbacks
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpdateUserFeedbackRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UpdateUserFeedbackResponse'
-      summary: Update users' feedbacks
-      tags:
-      - Feedback
-  /gift/xp:
-    post:
-      consumes:
-      - application/json
-      description: Gift xp handler
-      parameters:
-      - description: Gift XP handler request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.GiftXPRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GiftXpHandlerResponse'
-      summary: Gift xp handler
-      tags:
-      - Gift
+      - Fiat
   /guilds:
     get:
       consumes:
@@ -5545,20 +5343,15 @@ paths:
       summary: Create guild channel
       tags:
       - Guild
-  /guilds/{guild_id}/custom-commands:
+  /guilds/{guild_id}/custom-tokens:
     get:
       consumes:
       - application/json
-      description: List custom commands
+      description: List all guild custom token
       parameters:
       - description: Guild ID
         in: path
         name: guild_id
-        required: true
-        type: string
-      - description: Enabled
-        in: query
-        name: enabled
         required: true
         type: string
       produces:
@@ -5567,116 +5360,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListCustomCommandsResponse'
-      summary: List custom commands
+            $ref: '#/definitions/response.ListAllCustomTokenResponse'
+      summary: List all guild custom token
       tags:
-      - Custom Command
-    post:
-      consumes:
-      - application/json
-      description: Create custom command
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Create custom command request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildCustomCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateCustomCommandResponse'
-      summary: Create custom command
-      tags:
-      - Custom Command
-  /guilds/{guild_id}/custom-commands/{command_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete custom commands
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      summary: Delete custom commands
-      tags:
-      - Custom Command
-    get:
-      consumes:
-      - application/json
-      description: Get custom commands
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetCustomCommandResponse'
-      summary: Get custom commands
-      tags:
-      - Custom Command
-    put:
-      consumes:
-      - application/json
-      description: Update custom command
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Command ID
-        in: path
-        name: command_id
-        required: true
-        type: string
-      - description: Update custom command request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildCustomCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UpdateCustomCommandResponse'
-      summary: Update custom command
-      tags:
-      - Custom Command
+      - Guild
   /guilds/{guild_id}/stats:
     get:
       consumes:
@@ -5696,27 +5383,6 @@ paths:
           schema:
             $ref: '#/definitions/model.DiscordGuildStat'
       summary: Get guild stats
-      tags:
-      - Guild
-  /guilds/custom-tokens:
-    get:
-      consumes:
-      - application/json
-      description: List all guild custom token
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListAllCustomTokenResponse'
-      summary: List all guild custom token
       tags:
       - Guild
   /guilds/user-managed:
@@ -5740,32 +5406,6 @@ paths:
       summary: Get my guilds list
       tags:
       - Guild
-  /metrics:
-    get:
-      consumes:
-      - application/json
-      description: API to get stats of collections, users, servers, ...
-      parameters:
-      - description: total_servers | active_users | nft_collections | verified_wallets
-          | supported_tokens | command_usage
-        in: query
-        name: q
-        required: true
-        type: string
-      - description: case active_users
-        in: query
-        name: guild_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.DataMetric'
-      summary: Metric
-      tags:
-      - Metric
   /nfts:
     get:
       consumes:
@@ -5918,7 +5558,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Create NFT Sales tracker
+      description: Get NFT Tokens
       parameters:
       - description: Symbol
         in: path
@@ -5932,7 +5572,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
-      summary: Create NFT Sales tracker
+      summary: Get NFT Tokens
       tags:
       - NFT
   /nfts/collections/{symbol}/detail:
@@ -6049,6 +5689,53 @@ paths:
       summary: Get NFT collection tickers
       tags:
       - NFT
+  /nfts/default-nft-ticker:
+    get:
+      consumes:
+      - application/json
+      description: Get guild default nft ticker
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: Guild ticker query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildDefaultNftTickerResponse'
+      summary: Get guild default nft ticker
+      tags:
+      - NFT
+    post:
+      consumes:
+      - application/json
+      description: Set guild default nft ticker
+      parameters:
+      - description: Set guild default ticker request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GuildConfigDefaultNftTickerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseDataMessage'
+      summary: Set guild default nft ticker
+      tags:
+      - NFT
   /nfts/icons:
     get:
       consumes:
@@ -6161,6 +5848,26 @@ paths:
       summary: Get all nft sales tracker
       tags:
       - NFT
+    post:
+      consumes:
+      - application/json
+      description: Create NFT Sales tracker
+      parameters:
+      - description: Symbol
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
+      summary: Create NFT Sales tracker
+      tags:
+      - NFT
   /nfts/supported-chains:
     post:
       consumes:
@@ -6212,6 +5919,49 @@ paths:
       summary: Get NFT token tickers
       tags:
       - NFT
+  /nfts/trades:
+    post:
+      consumes:
+      - application/json
+      description: Create Trade Offer
+      parameters:
+      - description: Create Trade Offer Request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTradeOfferRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateTradeOfferResponse'
+      summary: Create Trade Offer
+      tags:
+      - Trade
+  /nfts/trades/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Trade Offer
+      parameters:
+      - description: Trade Offer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTradeOfferResponse'
+      summary: Get Trade Offer
+      tags:
+      - Trade
   /nfts/trading-volume:
     get:
       consumes:
@@ -6310,7 +6060,7 @@ paths:
       summary: Add to user's nft watchlist
       tags:
       - NFT
-  /offchain-tip-bot/assign-contract:
+  /tip/assign-contract:
     post:
       consumes:
       - application/json
@@ -6333,7 +6083,7 @@ paths:
       summary: OffChain Tip Bot - Create an assign contract
       tags:
       - OffChain
-  /offchain-tip-bot/balances:
+  /tip/balances:
     get:
       consumes:
       - application/json
@@ -6354,57 +6104,20 @@ paths:
       summary: Get offchain user bals
       tags:
       - OffChain
-  /offchain-tip-bot/config-notify:
+  /tip/history:
     get:
       consumes:
       - application/json
-      description: API get list config notify channel for token
+      description: Get transactions history by query
       parameters:
-      - description: guild id
+      - description: guild ID
         in: query
         name: guild_id
         required: true
         type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListConfigNotifyResponse'
-      summary: OffChain Tip Bot - Config notify
-      tags:
-      - OffChain
-    post:
-      consumes:
-      - application/json
-      description: API config notify channel for token
-      parameters:
-      - description: config notify request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateTipConfigNotify'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: OffChain Tip Bot - Config notify
-      tags:
-      - OffChain
-  /offchain-tip-bot/config-notify/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: API delete config notify channel for token
-      parameters:
-      - description: id of config notify
-        in: path
-        name: id
+      - description: token
+        in: query
+        name: token
         required: true
         type: string
       produces:
@@ -6413,11 +6126,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: OffChain Tip Bot - Config notify
+            $ref: '#/definitions/response.TransactionsResponse'
+      summary: Get transactions history by query
       tags:
       - OffChain
-  /offchain-tip-bot/tokens:
+  /tip/tokens:
     get:
       consumes:
       - application/json
@@ -6432,7 +6145,7 @@ paths:
       summary: Get all offchain tip bot tokens
       tags:
       - OffChain
-  /offchain-tip-bot/transactions:
+  /tip/transactions:
     get:
       consumes:
       - application/json
@@ -6461,7 +6174,7 @@ paths:
       summary: Get transactions by query
       tags:
       - OffChain
-  /offchain-tip-bot/transfer:
+  /tip/transfer:
     post:
       consumes:
       - application/json
@@ -6483,7 +6196,7 @@ paths:
       summary: OffChain Tip Bot - Transfer token
       tags:
       - OffChain
-  /offchain-tip-bot/withdraw:
+  /tip/withdraw:
     post:
       consumes:
       - application/json
@@ -6505,163 +6218,6 @@ paths:
       summary: OffChain Tip Bot - Withdraw
       tags:
       - OffChain
-  /profiles/:
-    get:
-      consumes:
-      - application/json
-      description: Get user profile
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      - description: User ID
-        in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetDataUserProfileResponse'
-      summary: Get user profile
-      tags:
-      - Profile
-  /quests:
-    get:
-      consumes:
-      - application/json
-      description: Get user quest list
-      parameters:
-      - in: query
-        name: routine
-        type: string
-      - in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserQuestListResponse'
-      summary: Get user quest list
-      tags:
-      - Quest
-    post:
-      consumes:
-      - application/json
-      description: Update user's quest progress
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpdateQuestProgressRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Update user's quest progress
-      tags:
-      - Quest
-  /quests/claim:
-    post:
-      consumes:
-      - application/json
-      description: Claim user quests' rewards
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.ClaimQuestsRewardsRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ClaimQuestsRewardsResponse'
-      summary: Claim user quests' rewards
-      tags:
-      - Quest
-  /trades:
-    post:
-      consumes:
-      - application/json
-      description: Create Trade Offer
-      parameters:
-      - description: Create Trade Offer Request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateTradeOfferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateTradeOfferResponse'
-      summary: Create Trade Offer
-      tags:
-      - Trade
-  /trades/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get Trade Offer
-      parameters:
-      - description: Trade Offer ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTradeOfferResponse'
-      summary: Get Trade Offer
-      tags:
-      - Trade
-  /twitter:
-    post:
-      consumes:
-      - application/json
-      description: Create twitter post
-      parameters:
-      - description: Create twitter post request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TwitterPost'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter post
-      tags:
-      - Twitter
   /twitter/top:
     get:
       consumes:
@@ -6687,7 +6243,7 @@ paths:
             $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
       summary: Create twitter post
       tags:
-      - Twitter
+      - Community
   /users:
     post:
       consumes:
@@ -6735,11 +6291,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user by guild_id address
+      description: Get user
       parameters:
-      - description: Address
+      - description: User ID
         in: path
-        name: address
+        name: user_id
         required: true
         type: string
       produces:
@@ -6748,71 +6304,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserWalletByGuildIDAddressResponse'
-      summary: Get user by guild_id address
-      tags:
-      - User
-  /users/device:
-    delete:
-      consumes:
-      - application/json
-      description: Delete user current device data
-      parameters:
-      - description: Delete user device
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteUserDeviceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete user current device data
-      tags:
-      - User
-    get:
-      consumes:
-      - application/json
-      description: Get user current device data
-      parameters:
-      - description: Device ID
-        in: query
-        name: device_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UserDeviceResponse'
-      summary: Get user current device data
-      tags:
-      - User
-    post:
-      consumes:
-      - application/json
-      description: Upsert user current device data
-      parameters:
-      - description: Upsert user device
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertUserDeviceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert user current device data
+            $ref: '#/definitions/response.GetUserResponse'
+      summary: Get user
       tags:
       - User
   /users/gmstreak:
@@ -6862,6 +6355,32 @@ paths:
       summary: Get user info
       tags:
       - User
+  /users/profiles/:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetDataUserProfileResponse'
+      summary: Get user profile
+      tags:
+      - Profile
   /users/top:
     get:
       consumes:
@@ -6943,6 +6462,27 @@ paths:
           schema:
             $ref: '#/definitions/response.CurrentUserUpvoteStreakResponse'
       summary: Get user current upvote streak
+      tags:
+      - User
+  /users/wallets/{address}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by guild_id address
+      parameters:
+      - description: Address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserWalletByGuildIDAddressResponse'
+      summary: Get user by guild_id address
       tags:
       - User
   /verify:
@@ -7073,80 +6613,36 @@ paths:
       summary: Generate verification
       tags:
       - Verification
-  /whitelist-campaigns:
-    get:
+  /widget/device:
+    delete:
       consumes:
       - application/json
-      description: Get whitelist campaign
+      description: Delete user current device data
       parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.WhitelistCampaign'
-            type: array
-      summary: Get whitelist campaign
-      tags:
-      - Whitelist campaign
-    post:
-      consumes:
-      - application/json
-      description: Create whitelist campaign
-      parameters:
-      - description: Create whitelist campaign request
+      - description: Delete user device
         in: body
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
+          $ref: '#/definitions/request.DeleteUserDeviceRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/request.CreateWhitelistCampaignRequest'
-      summary: Create whitelist campaign
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete user current device data
       tags:
-      - Whitelist campaign
-  /whitelist-campaigns/{campaignId}:
+      - Widget
     get:
       consumes:
       - application/json
-      description: Get whitelist campaign by id
+      description: Get user current device data
       parameters:
-      - description: Campaign ID
-        in: path
-        name: campaignId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.WhitelistCampaign'
-      summary: Get whitelist campaign by id
-      tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users:
-    get:
-      consumes:
-      - application/json
-      description: Get whitelist campaign user
-      parameters:
-      - description: Campaign ID
+      - description: Device ID
         in: query
-        name: campaign_id
+        name: device_id
         required: true
         type: string
       produces:
@@ -7155,78 +6651,94 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/model.WhitelistCampaignUser'
-            type: array
-      summary: Get whitelist campaign user
+            $ref: '#/definitions/response.UserDeviceResponse'
+      summary: Get user current device data
       tags:
-      - Whitelist campaign
+      - Widget
     post:
       consumes:
       - application/json
-      description: Add whitelist campaign user
+      description: Upsert user current device data
       parameters:
-      - description: Add whitelist campaign user request
+      - description: Upsert user device
         in: body
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
+          $ref: '#/definitions/request.UpsertUserDeviceRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/request.AddWhitelistCampaignUserRequest'
-      summary: Add whitelist campaign user
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert user current device data
       tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users/{discord_id}:
+      - Widget
+  /widget/token-alert:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user token alerts
+      parameters:
+      - description: Delete user token alert
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteDiscordUserAlertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete user token alerts
+      tags:
+      - Widget
     get:
       consumes:
       - application/json
-      description: Get whitelist campaign user by discord ID
+      description: Get user current token alerts
       parameters:
       - description: Discord ID
-        in: path
+        in: query
         name: discord_id
         required: true
         type: string
-      - description: Campaign ID
-        in: query
-        name: campaign_id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.WhitelistCampaignUser'
-      summary: Get whitelist campaign user by discord ID
+            $ref: '#/definitions/response.DiscordUserTokenAlertResponse'
+      summary: Get user current token alerts
       tags:
-      - Whitelist campaign
-  /whitelist-campaigns/users/csv:
-    get:
+      - Widget
+    post:
       consumes:
       - application/json
-      description: Get whitelist campaign users csv
+      description: Upsert user token alerts
       parameters:
-      - description: Campaign ID
-        in: query
-        name: campaign_id
+      - description: Upsert user token alert
+        in: body
+        name: Request
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/request.UpsertDiscordUserAlertRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
-      summary: Get whitelist campaign users csv
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert user token alerts
       tags:
-      - Whitelist campaign
+      - Widget
 securityDefinitions:
   ApiKeyAuth:
     in: header
