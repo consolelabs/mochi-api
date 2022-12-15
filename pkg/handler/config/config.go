@@ -106,13 +106,13 @@ func (h *Handler) DeleteGuildPruneExclude(c *gin.Context) {
 // ToggleActivityConfig     godoc
 // @Summary     Toggle activity config
 // @Description Toggle activity config
-// @Tags        Config
+// @Tags        Data
 // @Accept      json
 // @Produce     json
 // @Param       activity   path  string true  "Activity name"
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ToggleActivityConfigResponse
-// @Router      /configs/activities/{activity} [post]
+// @Router      /data/configs/activities/{activity} [post]
 func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 	var (
 		activityName = c.Param("activity")

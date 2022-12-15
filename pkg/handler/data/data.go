@@ -63,13 +63,13 @@ func (h *Handler) AddGitbookClick(c *gin.Context) {
 // MetricByProperties   godoc
 // @Summary     Metric
 // @Description API to get stats of collections, users, servers, ...
-// @Tags        Metric
+// @Tags        Data
 // @Accept      json
 // @Produce     json
 // @Param       q   query  string true  "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage"
 // @Param       guild_id   query  string false  "case active_users"
 // @Success     200 {object} response.DataMetric
-// @Router      /metrics [get]
+// @Router      /data/metrics [get]
 func (h *Handler) MetricByProperties(c *gin.Context) {
 	query := c.Query("q")
 

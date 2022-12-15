@@ -298,7 +298,7 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 // @Produce     json
 // @Param       symbol   path  string true  "Symbol"
 // @Success     200 {object} response.IndexerGetNFTTokensResponse
-// @Router      /nfts/collections/{symbol} [get]
+// @Router      /nfts/sales-tracker [post]
 func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
 	var req request.NFTSalesTrackerRequest
 	if err := c.Bind(&req); err != nil {
@@ -630,13 +630,13 @@ func (h *Handler) DeleteNftWatchlist(c *gin.Context) {
 // GetGuildDefaultNftTicker     godoc
 // @Summary     Get guild default nft ticker
 // @Description Get guild default nft ticker
-// @Tags        Config
+// @Tags        NFT
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Param       query   query  string true  "Guild ticker query"
 // @Success     200 {object} response.GetGuildDefaultNftTickerResponse
-// @Router      /configs/default-nft-ticker [get]
+// @Router      /nfts/default-nft-ticker [get]
 func (h *Handler) GetGuildDefaultNftTicker(c *gin.Context) {
 	var req request.GetGuildDefaultNftTickerRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -657,12 +657,12 @@ func (h *Handler) GetGuildDefaultNftTicker(c *gin.Context) {
 // SetGuildDefaultNftTicker     godoc
 // @Summary     Set guild default nft ticker
 // @Description Set guild default nft ticker
-// @Tags        Config
+// @Tags        NFT
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.GuildConfigDefaultNftTickerRequest true "Set guild default ticker request"
 // @Success     200 {object} response.ResponseDataMessage
-// @Router      /configs/default-nft-ticker [post]
+// @Router      /nfts/default-nft-ticker [post]
 func (h *Handler) SetGuildDefaultNftTicker(c *gin.Context) {
 	req := request.GuildConfigDefaultNftTickerRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -771,7 +771,7 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.CreateTradeOfferRequest true "Create Trade Offer Request"
 // @Success     200 {object} response.CreateTradeOfferResponse
-// @Router      /trades [post]
+// @Router      /nfts/trades [post]
 func (h *Handler) CreateTradeOffer(c *gin.Context) {
 	req := request.CreateTradeOfferRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -796,7 +796,7 @@ func (h *Handler) CreateTradeOffer(c *gin.Context) {
 // @Produce     json
 // @Param       id path  string true  "Trade Offer ID"
 // @Success     200 {object} response.GetTradeOfferResponse
-// @Router      /trades/{id} [get]
+// @Router      /nfts/trades/{id} [get]
 func (h *Handler) GetTradeOffer(c *gin.Context) {
 	tradeId := c.Param("id")
 	if tradeId == "" {

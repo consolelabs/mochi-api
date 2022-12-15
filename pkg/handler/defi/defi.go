@@ -253,12 +253,12 @@ func (h *Handler) RemoveFromWatchlist(c *gin.Context) {
 // GetFiatHistoricalExchangeRates     godoc
 // @Summary     Get historical market chart
 // @Description Remove from user's watchlist
-// @Tags        Defi
+// @Tags        Fiat
 // @Accept      json
 // @Produce     json
 // @Param       req query request.GetFiatHistoricalExchangeRatesRequest true "request"
 // @Success     200 {object} response.GetFiatHistoricalExchangeRatesResponse
-// @Router      /defi/watchlist [delete]
+// @Router      /fiat/historical-exchange-rates [get]
 func (h *Handler) GetFiatHistoricalExchangeRates(c *gin.Context) {
 	var req request.GetFiatHistoricalExchangeRatesRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -278,11 +278,11 @@ func (h *Handler) GetFiatHistoricalExchangeRates(c *gin.Context) {
 // AddContract   godoc
 // @Summary     List All Chain
 // @Description List All Chain
-// @Tags        Chain
+// @Tags        Defi
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.GetListAllChainsResponse
-// @Router      /chains [get]
+// @Router      /defi/chains [get]
 func (h *Handler) ListAllChain(c *gin.Context) {
 	returnChain, err := h.entities.ListAllChain()
 	if err != nil {

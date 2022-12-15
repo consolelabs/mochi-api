@@ -55,7 +55,7 @@ func (h *Handler) OffchainTipBotListAllChains(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.CreateAssignContract true "Create assign contract request"
 // @Success     200 {object} response.GetAssignedContract
-// @Router      /offchain-tip-bot/assign-contract [post]
+// @Router      /tip/assign-contract [post]
 func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 	body := request.CreateAssignContract{}
 
@@ -120,7 +120,7 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 // @Produce     json
 // @Param       user_id query     string true "user ID"
 // @Success     200 {object} response.GetUserBalancesResponse
-// @Router      /offchain-tip-bot/balances [get]
+// @Router      /tip/balances [get]
 func (h *Handler) GetUserBalances(c *gin.Context) {
 	userID := c.Query("user_id")
 
@@ -148,7 +148,7 @@ func (h *Handler) GetUserBalances(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.OffchainWithdrawRequest true "Withdraw token request"
 // @Success     200 {object} response.OffchainTipBotWithdrawResponse
-// @Router      /offchain-tip-bot/withdraw [post]
+// @Router      /tip/withdraw [post]
 func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
 	req := request.OffchainWithdrawRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -179,7 +179,7 @@ func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.OffchainTransferRequest true "Transfer token request"
 // @Success     200 {object} response.OffchainTipBotTransferTokenResponse
-// @Router      /offchain-tip-bot/transfer [post]
+// @Router      /tip/transfer [post]
 func (h *Handler) TransferToken(c *gin.Context) {
 	req := request.OffchainTransferRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -257,7 +257,7 @@ func (h *Handler) UpdateTokenFee(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.AllTipBotTokensResponse
-// @Router      /offchain-tip-bot/tokens [get]
+// @Router      /tip/tokens [get]
 func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
 	tokens, err := h.entities.GetAllTipBotTokens()
 	if err != nil {
@@ -278,7 +278,7 @@ func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
 // @Param       guild_id   query  string true  "guild ID"
 // @Param       token   query  string true  "token"
 // @Success     200 {object} response.TransactionsResponse
-// @Router      /offchain-tip-bot/history [get]
+// @Router      /tip/history [get]
 func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 	guildId := c.Query("guild_id")
 	token := c.Query("token")
