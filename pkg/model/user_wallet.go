@@ -8,7 +8,9 @@ type UserWallet struct {
 	Address       string         `json:"address"`
 	ChainType     JSONNullString `json:"chain_type"`
 	CreatedAt     time.Time      `json:"created_at"`
-	User          *User          `gorm:"foreignKey:UserDiscordID;references:ID" json:"user"`
+
+	// preload user
+	User *User `gorm:"foreignKey:UserDiscordID;references:ID" json:"user"`
 }
 
 type WalletAddress struct {
