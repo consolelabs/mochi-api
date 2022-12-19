@@ -7,10 +7,9 @@ package mock_questuserlist
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	model "github.com/defipod/mochi/pkg/model"
 	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.
