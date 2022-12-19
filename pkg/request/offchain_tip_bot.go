@@ -34,3 +34,10 @@ type OffchainUpdateTokenFee struct {
 	Symbol     string  `json:"symbol"`
 	ServiceFee float64 `json:"service_fee"`
 }
+
+type TipBotDepositRequest struct {
+	Address     string `json:"address"`
+	TokenSymbol string `json:"token_symbol"`
+	Amount      int64  `json:"amount"`
+	Signature   string `json:"signature"`
+}

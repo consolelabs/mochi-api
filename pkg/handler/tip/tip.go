@@ -295,3 +295,31 @@ func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(transactions, nil, nil, nil))
 	return
 }
+
+func (h *Handler) GetContracts(c *gin.Context) {
+	chainID := c.Query("chain_id")
+	contracts, err := h.entities.GetContracts(chainID)
+	if err != nil {
+		h.log.Error(err, "[handler.GetContracts] entities.GetContracts() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(contracts, nil, nil, nil))
+}
+
+func (h *Handler) HandleDeposit(c *gin.Context) {
+	req := request.TipBotDepositRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.HandleDeposit] - c.ShouldBindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.HandleIncomingDeposit(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.HandleDeposit] entities.HandleIncomingDeposit() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+}

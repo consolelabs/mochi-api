@@ -56,6 +56,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		offchainTipBotGroup.POST("/transfer", h.Tip.TransferToken)
 		offchainTipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
 		offchainTipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+		offchainTipBotGroup.GET("/contracts", h.Tip.GetContracts)
+		offchainTipBotGroup.POST("/deposit", h.Tip.HandleDeposit)
 	}
 
 	guildGroup := v1.Group("/guilds")

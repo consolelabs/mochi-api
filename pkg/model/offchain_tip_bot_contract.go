@@ -7,16 +7,17 @@ import (
 )
 
 type OffchainTipBotContract struct {
-	ID               uuid.UUID  `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	ChainID          string     `json:"chain_id"`
-	ContractAddress  string     `json:"contract_address"`
-	Status           int        `json:"status"`
-	AssignStatus     int        `json:"assign_status"`
-	CentralizeWallet string     `json:"centralize_wallet"`
-	SweepedTime      *time.Time `json:"sweeped_time"`
-	CreatedAt        time.Time  `json:"created_at"`
-	UpdatedAt        time.Time  `json:"updated_at"`
-	DeletedAt        *time.Time `json:"-"`
+	ID                  uuid.UUID            `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
+	ChainID             string               `json:"chain_id"`
+	ContractAddress     string               `json:"contract_address"`
+	Status              int                  `json:"status"`
+	AssignStatus        int                  `json:"assign_status"`
+	CentralizeWallet    string               `json:"centralize_wallet"`
+	SweepedTime         *time.Time           `json:"sweeped_time"`
+	CreatedAt           time.Time            `json:"created_at"`
+	UpdatedAt           time.Time            `json:"updated_at"`
+	DeletedAt           *time.Time           `json:"-"`
+	OffchainTipBotChain *OffchainTipBotChain `json:"chain" gorm:"foreignkey:ChainID"`
 }
 
 func (OffchainTipBotContract) TableName() string {
