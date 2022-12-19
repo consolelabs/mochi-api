@@ -168,14 +168,22 @@ func (e *Entity) RemoveSpecificRoleReaction(req request.RoleReactionUpdateReques
 			updatedRoles = append(updatedRoles, r)
 		}
 	}
-	data, err := json.Marshal(updatedRoles)
-	if err != nil {
-		return err
-	}
 
-	err = e.repo.GuildConfigReactionRole.UpdateRoleConfig(req, string(data))
-	if err != nil {
-		return err
+	if len(updatedRoles) == 0 {
+		err = e.repo.GuildConfigReactionRole.ClearMessageConfig(req.GuildID, req.MessageID)
+		if err != nil {
+			return err
+		}
+	} else {
+		data, err := json.Marshal(updatedRoles)
+		if err != nil {
+			return err
+		}
+
+		err = e.repo.GuildConfigReactionRole.UpdateRoleConfig(req, string(data))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
