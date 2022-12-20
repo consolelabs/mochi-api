@@ -6,6 +6,7 @@ import (
 	errs "errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -14,6 +15,7 @@ import (
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
+	"gorm.io/plugin/dbresolver"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -87,6 +89,38 @@ func NewPostgresStore(cfg *config.Config) repo.Store {
 		})
 	if err != nil {
 		panic(err)
+	}
+
+	var readDialectors []gorm.Dialector
+	for _, r := range cfg.DBReadHosts {
+		port := cfg.DBPort
+		if strings.Contains(r, ":") {
+			p := strings.Split(r, ":")
+			r = p[0]
+			port = p[1]
+		}
+		ds := fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			cfg.DBUser, cfg.DBPass,
+			r, port, cfg.DBName,
+		)
+		conn, err := sql.Open("postgres", ds)
+		if err != nil {
+			l.Errorf("cannot init replica %v:%v", r, port)
+			continue
+		}
+		readDialectors = append(readDialectors, postgres.New(postgres.Config{Conn: conn}))
+	}
+
+	if len(readDialectors) > 0 {
+		err := db.Use(dbresolver.Register(dbresolver.Config{
+			Replicas: readDialectors,
+			// sources/replicas load balancing policy
+			Policy: dbresolver.RandomPolicy{},
+		}))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return &store{
