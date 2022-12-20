@@ -27,12 +27,12 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // GetUserTokenAlert     godoc
 // @Summary     Get user current token alerts
 // @Description Get user current token alerts
-// @Tags        Config
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       discord_id query     string true "Discord ID"
 // @Success     200 {object} response.DiscordUserTokenAlertResponse
-// @Router      /configs/token-alert [get]
+// @Router      /widget/token-alert [get]
 func (h *Handler) GetUserTokenAlert(c *gin.Context) {
 	discordID := c.Query("discord_id")
 	if discordID == "" {
@@ -54,12 +54,12 @@ func (h *Handler) GetUserTokenAlert(c *gin.Context) {
 // UpsertUserTokenAlert     godoc
 // @Summary     Upsert user token alerts
 // @Description Upsert user token alerts
-// @Tags        Config
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertDiscordUserAlertRequest true "Upsert user token alert"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/token-alert [post]
+// @Router      /widget/token-alert [post]
 func (h *Handler) UpsertUserTokenAlert(c *gin.Context) {
 	req := request.UpsertDiscordUserAlertRequest{}
 	err := c.BindJSON(&req)
@@ -82,12 +82,12 @@ func (h *Handler) UpsertUserTokenAlert(c *gin.Context) {
 // DeleteUserTokenAlert     godoc
 // @Summary     Delete user token alerts
 // @Description Delete user token alerts
-// @Tags        Config
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteDiscordUserAlertRequest true "Delete user token alert"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/token-alert [delete]
+// @Router      /widget/token-alert [delete]
 func (h *Handler) DeleteUserTokenAlert(c *gin.Context) {
 	req := request.DeleteDiscordUserAlertRequest{}
 	err := c.BindJSON(&req)
@@ -110,12 +110,12 @@ func (h *Handler) DeleteUserTokenAlert(c *gin.Context) {
 // GetUserDevice     godoc
 // @Summary     Get user current device data
 // @Description Get user current device data
-// @Tags        User
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       device_id query     string true "Device ID"
 // @Success     200 {object} response.UserDeviceResponse
-// @Router      /users/device [get]
+// @Router      /widget/device [get]
 func (h *Handler) GetUserDevice(c *gin.Context) {
 	deviceID := c.Query("device_id")
 	if deviceID == "" {
@@ -137,12 +137,12 @@ func (h *Handler) GetUserDevice(c *gin.Context) {
 // UpsertUserDevice     godoc
 // @Summary     Upsert user current device data
 // @Description Upsert user current device data
-// @Tags        User
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertUserDeviceRequest true "Upsert user device"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /users/device [post]
+// @Router      /widget/device [post]
 func (h *Handler) UpsertUserDevice(c *gin.Context) {
 	req := request.UpsertUserDeviceRequest{}
 	err := c.BindJSON(&req)
@@ -165,12 +165,12 @@ func (h *Handler) UpsertUserDevice(c *gin.Context) {
 // DeleteUserDevice     godoc
 // @Summary     Delete user current device data
 // @Description Delete user current device data
-// @Tags        User
+// @Tags        Widget
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteUserDeviceRequest true "Delete user device"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /users/device [delete]
+// @Router      /widget/device [delete]
 func (h *Handler) DeleteUserDevice(c *gin.Context) {
 	req := request.DeleteUserDeviceRequest{}
 	err := c.BindJSON(&req)

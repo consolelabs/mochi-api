@@ -28,12 +28,12 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // UpsertMonikerConfig     godoc
 // @Summary     Upsert moniker config
 // @Description Upsert moniker config
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertMonikerConfigRequest true "Upsert moniker config"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/monikers [post]
+// @Router      /config-defi/monikers [post]
 func (h *Handler) UpsertMonikerConfig(c *gin.Context) {
 	var req request.UpsertMonikerConfigRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -53,12 +53,12 @@ func (h *Handler) UpsertMonikerConfig(c *gin.Context) {
 // GetMonikerByGuildID     godoc
 // @Summary     Get moniker configs
 // @Description Get moniker configs
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.MonikerConfigResponse
-// @Router      /configs/monikers/{guild_id} [get]
+// @Router      /config-defi/monikers/{guild_id} [get]
 func (h *Handler) GetMonikerByGuildID(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -78,12 +78,12 @@ func (h *Handler) GetMonikerByGuildID(c *gin.Context) {
 // DeleteMonikerConfig     godoc
 // @Summary     Delete moniker config
 // @Description Delete moniker config
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.DeleteMonikerConfigRequest true "Delete moinker config"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/monikers [delete]
+// @Router      /config-defi/monikers [delete]
 func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 	var req request.DeleteMonikerConfigRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -103,11 +103,11 @@ func (h *Handler) DeleteMonikerConfig(c *gin.Context) {
 // GetDefaultMoniker     godoc
 // @Summary     Get default moniker
 // @Description Get default moniker
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.MonikerConfigResponse
-// @Router      /configs/monikers/default [get]
+// @Router      /config-defi/monikers/default [get]
 func (h *Handler) GetDefaultMoniker(c *gin.Context) {
 	configs, err := h.entities.GetDefaultMoniker()
 	if err != nil {
@@ -121,12 +121,12 @@ func (h *Handler) GetDefaultMoniker(c *gin.Context) {
 // SetGuildDefaultTicker     godoc
 // @Summary     Set guild default ticker
 // @Description Set guild default ticker
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.GuildConfigDefaultTickerRequest true "Set guild default ticker request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/default-ticker [post]
+// @Router      /config-defi/default-ticker [post]
 func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 	req := request.GuildConfigDefaultTickerRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -146,13 +146,13 @@ func (h *Handler) SetGuildDefaultTicker(c *gin.Context) {
 // GetGuildDefaultTicker     godoc
 // @Summary     Get guild default ticker
 // @Description Get guild default ticker
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Param       query   query  string true  "Guild ticker query"
 // @Success     200 {object} response.GetGuildDefaultTickerResponse
-// @Router      /configs/default-ticker [get]
+// @Router      /config-defi/default-ticker [get]
 func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 	var req request.GetGuildDefaultTickerRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -172,12 +172,12 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 // GetGuildtokens     godoc
 // @Summary     Get guild tokens
 // @Description Get guild tokens
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string false  "Guild ID"
 // @Success     200 {object} response.GetGuildTokensResponse
-// @Router      /configs/tokens [get]
+// @Router      /config-defi/tokens [get]
 func (h *Handler) GetGuildTokens(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	// if guild id empty, return global default tokens
@@ -194,12 +194,12 @@ func (h *Handler) GetGuildTokens(c *gin.Context) {
 // UpsertGuildTokenConfig     godoc
 // @Summary     Update or insert guild token config
 // @Description Update or insert guild token config
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertGuildTokenConfigRequest true "Upsert Guild Token Config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/tokens [post]
+// @Router      /config-defi/tokens [post]
 func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 	var req request.UpsertGuildTokenConfigRequest
 
@@ -231,12 +231,12 @@ func (h *Handler) UpsertGuildTokenConfig(c *gin.Context) {
 // GetDefaultToken     godoc
 // @Summary     Get Default token
 // @Description Get Default token
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetDefaultTokenResponse
-// @Router      /configs/tokens/default [get]
+// @Router      /config-defi/tokens/default [get]
 func (h *Handler) GetDefaultToken(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	token, err := h.entities.GetDefaultToken(guildID)
@@ -252,12 +252,12 @@ func (h *Handler) GetDefaultToken(c *gin.Context) {
 // ConfigDefaultToken     godoc
 // @Summary     Config Default token
 // @Description Config Default token
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigDefaultTokenRequest true "Config default token request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/tokens/default [post]
+// @Router      /config-defi/tokens/default [post]
 func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 	req := request.ConfigDefaultTokenRequest{}
 	if err := c.BindJSON(&req); err != nil {
@@ -284,12 +284,12 @@ func (h *Handler) ConfigDefaultToken(c *gin.Context) {
 // RemoveDefaultToken     godoc
 // @Summary     Remove Default token
 // @Description Remove Default token
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/tokens/default [delete]
+// @Router      /config-defi/tokens/default [delete]
 func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if err := h.entities.RemoveDefaultToken(guildID); err != nil {
@@ -304,12 +304,12 @@ func (h *Handler) RemoveDefaultToken(c *gin.Context) {
 // CreateDefaultCollectionSymbol     godoc
 // @Summary     Create default collection symbol
 // @Description Create default collection symbol
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.ConfigDefaultCollection true "Config Default Collection Symbol request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/default-symbol [post]
+// @Router      /config-defi/default-symbol [post]
 func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 	req := request.ConfigDefaultCollection{}
 	if err := c.BindJSON(&req); err != nil {
@@ -335,7 +335,7 @@ func (h *Handler) CreateDefaultCollectionSymbol(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.ListAllCustomTokenResponse
-// @Router      /guilds/custom-tokens [get]
+// @Router      /guilds/{guild_id}/custom-tokens [get]
 func (h *Handler) ListAllCustomToken(c *gin.Context) {
 	guildID := c.Param("guild_id")
 
@@ -353,12 +353,12 @@ func (h *Handler) ListAllCustomToken(c *gin.Context) {
 // HandlerGuildCustomTokenConfig     godoc
 // @Summary     Guild custom token config
 // @Description Guild custom token config
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertCustomTokenConfigRequest true "Custom guild custom token config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/custom-tokens [post]
+// @Router      /config-defi/custom-tokens [post]
 func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 	var req request.UpsertCustomTokenConfigRequest
 
@@ -401,12 +401,12 @@ func (h *Handler) HandlerGuildCustomTokenConfig(c *gin.Context) {
 // GetGuildDefaultCurrency     godoc
 // @Summary     Get default currency by guild id
 // @Description Get default currency by guild id
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GuildConfigDefaultCurrencyResponse
-// @Router      /configs/default-currency [get]
+// @Router      /config-defi/default-currency [get]
 func (h *Handler) GetGuildDefaultCurrency(c *gin.Context) {
 	guildID := c.Query("guild_id")
 	if guildID == "" {
@@ -428,12 +428,12 @@ func (h *Handler) GetGuildDefaultCurrency(c *gin.Context) {
 // UpsertGuildDefaultCurrency     godoc
 // @Summary     Upsert default currency
 // @Description Upsert default currency
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertGuildDefaultCurrencyRequest true "Upsert default currency config"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/default-currency [post]
+// @Router      /config-defi/default-currency [post]
 func (h *Handler) UpsertGuildDefaultCurrency(c *gin.Context) {
 	var req request.UpsertGuildDefaultCurrencyRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -455,12 +455,12 @@ func (h *Handler) UpsertGuildDefaultCurrency(c *gin.Context) {
 // DeleteGuildDefaultCurrency     godoc
 // @Summary     Delete default currency
 // @Description Delete default currency
-// @Tags        Config
+// @Tags        ConfigDefi
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.GuildIDRequest true "Delete default currency config"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /configs/default-currency [delete]
+// @Router      /config-defi/default-currency [delete]
 func (h *Handler) DeleteGuildDefaultCurrency(c *gin.Context) {
 	var req request.GuildIDRequest
 	if err := c.BindJSON(&req); err != nil {
