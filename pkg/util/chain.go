@@ -27,6 +27,8 @@ func ConvertChainToChainId(chain string) string {
 
 func ConvertChainIDToChain(chain string) string {
 	switch chain {
+	case "0":
+		return "sol"
 	case "1":
 		return "eth"
 	case "250":
