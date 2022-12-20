@@ -97,6 +97,8 @@ type Config struct {
 	SolanaCentralizedWalletPrivateKey string
 
 	APILayerAPIKey string
+
+	Kafka Kafka
 }
 
 type MarketplaceBaseUrl struct {
@@ -114,6 +116,12 @@ type RpcUrl struct {
 	Ftm string
 	Opt string
 	Bsc string
+}
+
+type Kafka struct {
+	Brokers       string
+	ConsumerGroup string
+	Topic         string
 }
 
 // GetCORS in config
@@ -234,6 +242,11 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		SolanaCentralizedWalletPrivateKey: v.GetString("SOLANA_CENTRALIZED_WALLET_PK"),
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
+		Kafka: Kafka{
+			Brokers:       v.GetString("KAFKA_BROKERS"),
+			ConsumerGroup: v.GetString("KAFKA_CONSUMER_GROUP"),
+			Topic:         v.GetString("KAFKA_TOPIC"),
+		},
 	}
 }
 

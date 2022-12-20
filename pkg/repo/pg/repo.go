@@ -1,8 +1,6 @@
 package pg
 
 import (
-	"gorm.io/gorm"
-
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
@@ -18,7 +16,6 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
@@ -83,6 +80,7 @@ import (
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
+	"gorm.io/gorm"
 )
 
 // NewRepo new pg repo implementation
@@ -154,7 +152,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserPass:                        questuserpass.NewPG(db),
 		QuestStreak:                          queststreak.NewPG(db),
 		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
-		GitbookClickCollector:                gitbookclickcollector.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		TradeOffer:                           tradeoffer.NewPG(db),

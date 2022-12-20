@@ -9,18 +9,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/pprof"
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
-
 	_ "github.com/defipod/mochi/docs"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/routes"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/pprof"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 // @title          Swagger API
