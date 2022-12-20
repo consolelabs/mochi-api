@@ -94,23 +94,25 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, indexerMock, nil, nil)
 
 	tests := []struct {
-		name             string
-		querySymbol      string
-		queryTokenId     string
-		queryGuildId     string
-		expectedAddress  string
-		wantIndexerResp  *response.IndexerGetNFTTokenDetailResponse
-		wantCode         int
-		wantErr          error
-		wantResponsePath string
+		name              string
+		querySymbol       string
+		queryTokenId      string
+		queryGuildId      string
+		queryUsingAddress string
+		expectedAddress   string
+		wantIndexerResp   *response.IndexerGetNFTTokenDetailResponse
+		wantCode          int
+		wantErr           error
+		wantResponsePath  string
 	}{
 		// TODO: Add test cases.
 		{
-			name:            "query match single record",
-			querySymbol:     "PH",
-			queryTokenId:    "1",
-			queryGuildId:    "",
-			expectedAddress: "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
+			name:              "query match single record",
+			querySymbol:       "PH",
+			queryTokenId:      "1",
+			queryGuildId:      "",
+			queryUsingAddress: "false",
+			expectedAddress:   "0xb54FF1EBc9950fce19Ee9E055A382B1219f862f0",
 			wantIndexerResp: &response.IndexerGetNFTTokenDetailResponse{
 				Data: response.IndexerNFTTokenDetailData{
 					TokenID:           "1",
@@ -172,32 +174,35 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 			wantResponsePath: "testdata/get_nft_detail/200-match.json",
 		},
 		{
-			name:             "query no record found",
-			querySymbol:      "qweasd",
-			queryTokenId:     "1",
-			queryGuildId:     "",
-			wantCode:         200,
-			wantErr:          nil,
-			wantResponsePath: "testdata/get_nft_detail/200-no-data.json",
+			name:              "query no record found",
+			querySymbol:       "qweasd",
+			queryTokenId:      "1",
+			queryGuildId:      "",
+			queryUsingAddress: "false",
+			wantCode:          200,
+			wantErr:           nil,
+			wantResponsePath:  "testdata/get_nft_detail/200-no-data.json",
 		},
 		{
-			name:             "query match multiple record - no default",
-			querySymbol:      "NEKO",
-			queryTokenId:     "1",
-			queryGuildId:     "",
-			wantCode:         200,
-			wantErr:          nil,
-			wantResponsePath: "testdata/get_nft_detail/200-suggest.json",
+			name:              "query match multiple record - no default",
+			querySymbol:       "NEKO",
+			queryTokenId:      "1",
+			queryGuildId:      "",
+			queryUsingAddress: "false",
+			wantCode:          200,
+			wantErr:           nil,
+			wantResponsePath:  "testdata/get_nft_detail/200-suggest.json",
 		},
 		{
-			name:             "query match multiple record - with default",
-			querySymbol:      "NEKO",
-			queryTokenId:     "1",
-			queryGuildId:     "863278424433229854",
-			expectedAddress:  "",
-			wantCode:         200,
-			wantErr:          nil,
-			wantResponsePath: "testdata/get_nft_detail/200-default.json",
+			name:              "query match multiple record - with default",
+			querySymbol:       "NEKO",
+			queryTokenId:      "1",
+			queryGuildId:      "863278424433229854",
+			queryUsingAddress: "false",
+			expectedAddress:   "",
+			wantCode:          200,
+			wantErr:           nil,
+			wantResponsePath:  "testdata/get_nft_detail/200-default.json",
 		},
 	}
 
@@ -209,7 +214,7 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 			}
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/nfts/%s/%s?guild_id=%s", tt.querySymbol, tt.queryTokenId, tt.queryGuildId), nil)
+			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/nfts/%s/%s?guild_id=%s&query_address=%s", tt.querySymbol, tt.queryTokenId, tt.queryGuildId, tt.queryUsingAddress), nil)
 			ctx.Params = []gin.Param{
 				{
 					Key:   "symbol",
