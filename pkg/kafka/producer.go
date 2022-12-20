@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	// "github.com/defipod/mochi/pkg/logger"
 )
 
 func (k *Kafka) RunProducer() error {
@@ -25,7 +24,6 @@ func (k *Kafka) RunProducer() error {
 		for run {
 			select {
 			case <-k.producer.termChan:
-				// logger.Logger.Info("producer received termination signal")
 				run = false
 
 			case e := <-p.Events():
@@ -34,17 +32,14 @@ func (k *Kafka) RunProducer() error {
 					// Message delivery report
 					m := ev
 					if m.TopicPartition.Error != nil {
-						// logger.Logger.Error(m.TopicPartition.Error, "failed to deliver message")
 						continue
 					}
 
 				case kafka.Error:
 					e := ev
 					if e.IsFatal() {
-						// logger.Logger.Error(e, "fatal error event")
 						run = false
 					}
-					// logger.Logger.Error(e, "error event")
 
 				default:
 					// Other events, such as rebalances, etc.
@@ -56,9 +51,7 @@ func (k *Kafka) RunProducer() error {
 	k.producer.producer = p
 	k.producer.ready = true
 
-	// logger.L.Info("producer is ready")
 	<-k.producer.termChan
-	// logger.L.Info("closing producer")
 	p.Close()
 
 	fatalErr := p.GetFatalError()
@@ -85,7 +78,6 @@ func (k *Kafka) CloseProducer() error {
 func (k *Kafka) Produce(topic, key string, value []byte) error {
 	// wait for producer to be ready
 	if !k.producer.ready {
-		// logger.L.Info("producer is not ready, waiting")
 		for {
 			if k.producer.ready {
 				break

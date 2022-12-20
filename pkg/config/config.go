@@ -122,6 +122,7 @@ type Kafka struct {
 	Brokers       string
 	ConsumerGroup string
 	Topic         string
+	Key           string
 }
 
 // GetCORS in config
@@ -246,6 +247,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Brokers:       v.GetString("KAFKA_BROKERS"),
 			ConsumerGroup: v.GetString("KAFKA_CONSUMER_GROUP"),
 			Topic:         v.GetString("KAFKA_TOPIC"),
+			Key:           v.GetString("KAFKA_KEY"),
 		},
 	}
 }

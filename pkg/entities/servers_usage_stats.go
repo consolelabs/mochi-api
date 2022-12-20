@@ -32,7 +32,7 @@ func (e *Entity) AddGitbookClick(url, cmd, action string) error {
 		e.log.Error(err, "[entities.AddGitbookClick] - failed to marshal kafka message")
 		return err
 	}
-	return e.kafka.Produce(e.cfg.Kafka.Topic, e.cfg.Kafka.Topic, b)
+	return e.kafka.Produce(e.cfg.Kafka.Topic, e.cfg.Kafka.Key, b)
 }
 
 func (e *Entity) TotalCommandUsage(guildId string) (*response.Metric, error) {
