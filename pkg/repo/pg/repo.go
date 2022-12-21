@@ -1,6 +1,8 @@
 package pg
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
@@ -80,7 +82,6 @@ import (
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
-	"gorm.io/gorm"
 )
 
 // NewRepo new pg repo implementation

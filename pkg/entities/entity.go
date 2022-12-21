@@ -6,6 +6,8 @@ import (
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/redis/v8"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
@@ -20,7 +22,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/go-redis/redis/v8"
 )
 
 var (
