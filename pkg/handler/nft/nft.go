@@ -50,7 +50,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	tokenID := c.Param("id")
 	query := struct {
 		GuildID        string `json:"guild_id" form:"guild_id"`
-		QueryByAddress *bool  `json:"query_address" form:"query_address" binding:"required"`
+		QueryByAddress bool   `json:"query_address" form:"query_address" binding:"required"`
 	}{}
 	if err := c.ShouldBindQuery(&query); err != nil {
 		h.log.Fields(logger.Fields{"query": query}).Error(err, "[handler.GetNFTDetail] - failed to bind query")
@@ -58,7 +58,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 		return
 	}
 
-	res, err := h.entities.GetNFTDetail(symbol, tokenID, query.GuildID, *query.QueryByAddress)
+	res, err := h.entities.GetNFTDetail(symbol, tokenID, query.GuildID, query.QueryByAddress)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
