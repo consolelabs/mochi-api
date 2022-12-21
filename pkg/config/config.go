@@ -27,6 +27,7 @@ type Config struct {
 	DBName         string
 	DBPass         string
 	DBSSLMode      string
+	DBReadHosts    []string
 
 	DiscordLogWebhook       string
 	InDiscordWalletMnemonic string
@@ -149,12 +150,13 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		AllowedOrigins: v.GetString("ALLOWED_ORIGINS"),
 
-		DBHost:    v.GetString("DB_HOST"),
-		DBPort:    v.GetString("DB_PORT"),
-		DBUser:    v.GetString("DB_USER"),
-		DBName:    v.GetString("DB_NAME"),
-		DBPass:    v.GetString("DB_PASS"),
-		DBSSLMode: v.GetString("DB_SSL_MODE"),
+		DBHost:      v.GetString("DB_HOST"),
+		DBPort:      v.GetString("DB_PORT"),
+		DBUser:      v.GetString("DB_USER"),
+		DBName:      v.GetString("DB_NAME"),
+		DBPass:      v.GetString("DB_PASS"),
+		DBSSLMode:   v.GetString("DB_SSL_MODE"),
+		DBReadHosts: strings.Split(v.GetString("DB_READ_HOSTS"), ","),
 
 		MochiBotSecret: v.GetString("MOCHI_BOT_SECRET"),
 

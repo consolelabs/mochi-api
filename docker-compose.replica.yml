@@ -1,0 +1,60 @@
+version: "3"
+services:
+  postgresql-master:
+    image: docker.io/bitnami/postgresql:14
+    volumes:
+      - 'postgresql_master_data:/bitnami/postgresql'
+    container_name: mochi-postgres
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=mochi_local
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5434:5432
+    expose:
+      - 5434
+  postgresql-slave:
+    image: docker.io/bitnami/postgresql:14
+    depends_on:
+      - postgresql-master
+    environment:
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=repl_user
+      - POSTGRESQL_REPLICATION_PASSWORD=repl_password
+      - POSTGRESQL_MASTER_HOST=postgresql-master
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 5435:5432
+    expose:
+      - 5435
+  redis:
+    image: redis:6.2.6-alpine
+    restart: always
+    container_name: mochi-redis
+    ports:
+      - 6379:6379
+    expose:
+      - 6379
+  postgres_test:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: mochi_local_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    container_name: mochi_local_test
+    ports:
+      - 25433:5432
+    expose:
+      - 25433
+
+
+volumes:
+  postgresql_master_data:
+    driver: local
