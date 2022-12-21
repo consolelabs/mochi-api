@@ -575,9 +575,10 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 		marketplace marketplace.Service
 	}
 	type args struct {
-		symbol  string
-		tokenID string
-		guildID string
+		symbol         string
+		tokenID        string
+		guildID        string
+		queryByAddress bool
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -630,9 +631,10 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				indexer: mockIndexer,
 			},
 			args: args{
-				symbol:  "rabby",
-				tokenID: "1",
-				guildID: "12312123",
+				symbol:         "rabby",
+				tokenID:        "1",
+				guildID:        "12312123",
+				queryByAddress: false,
 			},
 			want: &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
 				Data: &response.IndexerNFTTokenDetailData{
@@ -664,9 +666,10 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				log:     log,
 			},
 			args: args{
-				symbol:  "neko",
-				tokenID: "1",
-				guildID: "12312123",
+				symbol:         "neko",
+				tokenID:        "1",
+				guildID:        "12312123",
+				queryByAddress: false,
 			},
 			want:    nil,
 			wantErr: true,
@@ -679,9 +682,10 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				log:     log,
 			},
 			args: args{
-				symbol:  "doggo",
-				tokenID: "1",
-				guildID: "12312123",
+				symbol:         "doggo",
+				tokenID:        "1",
+				guildID:        "12312123",
+				queryByAddress: false,
 			},
 			want:    nil,
 			wantErr: true,
@@ -779,7 +783,7 @@ func TestEntity_GetNFTDetail(t *testing.T) {
 				abi:         tt.fields.abi,
 				marketplace: tt.fields.marketplace,
 			}
-			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID, tt.args.guildID)
+			got, err := e.GetNFTDetail(tt.args.symbol, tt.args.tokenID, tt.args.guildID, tt.args.queryByAddress)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetNFTDetail() error = %v, wantErr %v", err, tt.wantErr)
 				return
