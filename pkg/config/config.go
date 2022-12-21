@@ -119,10 +119,8 @@ type RpcUrl struct {
 }
 
 type Kafka struct {
-	Brokers       string
-	ConsumerGroup string
-	Topic         string
-	Key           string
+	Brokers string
+	Topic   string
 }
 
 // GetCORS in config
@@ -244,10 +242,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
 		Kafka: Kafka{
-			Brokers:       v.GetString("KAFKA_BROKERS"),
-			ConsumerGroup: v.GetString("KAFKA_CONSUMER_GROUP"),
-			Topic:         v.GetString("KAFKA_TOPIC"),
-			Key:           v.GetString("KAFKA_KEY"),
+			Brokers: v.GetString("KAFKA_BROKERS"),
+			Topic:   v.GetString("KAFKA_TOPIC"),
 		},
 	}
 }
