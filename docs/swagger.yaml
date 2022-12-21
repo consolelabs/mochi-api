@@ -2,6 +2,52 @@ basePath: /api/v1
 definitions:
   big.Float:
     type: object
+  discordgo.GuildFeature:
+    enum:
+    - ANIMATED_BANNER
+    - ANIMATED_ICON
+    - AUTO_MODERATION
+    - BANNER
+    - COMMUNITY
+    - DISCOVERABLE
+    - FEATURABLE
+    - INVITE_SPLASH
+    - MEMBER_VERIFICATION_GATE_ENABLED
+    - MONETIZATION_ENABLED
+    - MORE_STICKERS
+    - NEWS
+    - PARTNERED
+    - PREVIEW_ENABLED
+    - PRIVATE_THREADS
+    - ROLE_ICONS
+    - TICKETED_EVENTS_ENABLED
+    - VANITY_URL
+    - VERIFIED
+    - VIP_REGIONS
+    - WELCOME_SCREEN_ENABLED
+    type: string
+    x-enum-varnames:
+    - GuildFeatureAnimatedBanner
+    - GuildFeatureAnimatedIcon
+    - GuildFeatureAutoModeration
+    - GuildFeatureBanner
+    - GuildFeatureCommunity
+    - GuildFeatureDiscoverable
+    - GuildFeatureFeaturable
+    - GuildFeatureInviteSplash
+    - GuildFeatureMemberVerificationGateEnabled
+    - GuildFeatureMonetizationEnabled
+    - GuildFeatureMoreStickers
+    - GuildFeatureNews
+    - GuildFeaturePartnered
+    - GuildFeaturePreviewEnabled
+    - GuildFeaturePrivateThreads
+    - GuildFeatureRoleIcons
+    - GuildFeatureTicketedEventsEnabled
+    - GuildFeatureVanityURL
+    - GuildFeatureVerified
+    - GuildFeatureVipRegions
+    - GuildFeatureWelcomeScreenEnabled
   discordgo.User:
     properties:
       accent_color:
@@ -47,11 +93,12 @@ definitions:
           Only available when the request is authorized via a Bearer token.
         type: integer
       public_flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.UserFlags'
         description: |-
           The public flags on a user's account.
           This is a combination of bit masks; the presence of a certain flag can
           be checked by performing a bitwise AND between this int and the flag.
-        type: integer
       system:
         description: Whether the user is an Official Discord System user (part of
           the urgent message system).
@@ -68,14 +115,46 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
-  entities.LoginResponse:
+  discordgo.UserFlags:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 64
+    - 128
+    - 256
+    - 512
+    - 1024
+    - 4096
+    - 16384
+    - 65536
+    - 131072
+    - 262144
+    type: integer
+    x-enum-varnames:
+    - UserFlagDiscordEmployee
+    - UserFlagDiscordPartner
+    - UserFlagHypeSquadEvents
+    - UserFlagBugHunterLevel1
+    - UserFlagHouseBravery
+    - UserFlagHouseBrilliance
+    - UserFlagHouseBalance
+    - UserFlagEarlySupporter
+    - UserFlagTeamUser
+    - UserFlagSystem
+    - UserFlagBugHunterLevel2
+    - UserFlagVerifiedBot
+    - UserFlagVerifiedBotDeveloper
+    - UserFlagDiscordCertifiedModerator
+  github_com_defipod_mochi_pkg_entities.LoginResponse:
     properties:
       access_token:
         type: string
       expires_at:
         type: integer
     type: object
-  model.Activity:
+  github_com_defipod_mochi_pkg_model.Activity:
     properties:
       guild_default:
         type: boolean
@@ -86,7 +165,7 @@ definitions:
       xp:
         type: integer
     type: object
-  model.Chain:
+  github_com_defipod_mochi_pkg_model.Chain:
     properties:
       coin_gecko_id:
         type: string
@@ -99,7 +178,7 @@ definitions:
       short_name:
         type: string
     type: object
-  model.CoingeckoSupportedTokens:
+  github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens:
     properties:
       id:
         type: string
@@ -108,14 +187,14 @@ definitions:
       symbol:
         type: string
     type: object
-  model.ConfigXpLevel:
+  github_com_defipod_mochi_pkg_model.ConfigXpLevel:
     properties:
       level:
         type: integer
       min_xp:
         type: integer
     type: object
-  model.DiscordGuild:
+  github_com_defipod_mochi_pkg_model.DiscordGuild:
     properties:
       active:
         type: boolean
@@ -137,10 +216,10 @@ definitions:
         type: string
       roles:
         items:
-          $ref: '#/definitions/model.GuildRole'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildRole'
         type: array
     type: object
-  model.DiscordGuildStat:
+  github_com_defipod_mochi_pkg_model.DiscordGuildStat:
     properties:
       created_at:
         type: string
@@ -181,7 +260,7 @@ definitions:
       nr_of_voice_channels:
         type: integer
     type: object
-  model.DiscordUserDevice:
+  github_com_defipod_mochi_pkg_model.DiscordUserDevice:
     properties:
       created_at:
         type: string
@@ -192,7 +271,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.DiscordUserGMStreak:
+  github_com_defipod_mochi_pkg_model.DiscordUserGMStreak:
     properties:
       created_at:
         type: string
@@ -209,12 +288,12 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.DiscordUserTokenAlert:
+  github_com_defipod_mochi_pkg_model.DiscordUserTokenAlert:
     properties:
       created_at:
         type: string
       device:
-        $ref: '#/definitions/model.DiscordUserDevice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserDevice'
       device_id:
         type: string
       discord_id:
@@ -234,7 +313,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.DiscordUserUpvoteStreak:
+  github_com_defipod_mochi_pkg_model.DiscordUserUpvoteStreak:
     properties:
       created_at:
         type: string
@@ -249,18 +328,18 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.GuildConfigActivity:
+  github_com_defipod_mochi_pkg_model.GuildConfigActivity:
     properties:
       active:
         type: boolean
       activity:
-        $ref: '#/definitions/model.Activity'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Activity'
       activity_id:
         type: integer
       guild_id:
         type: string
     type: object
-  model.GuildConfigDefaultCollection:
+  github_com_defipod_mochi_pkg_model.GuildConfigDefaultCollection:
     properties:
       address:
         type: string
@@ -275,7 +354,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.GuildConfigDefaultTicker:
+  github_com_defipod_mochi_pkg_model.GuildConfigDefaultTicker:
     properties:
       default_ticker:
         type: string
@@ -284,7 +363,7 @@ definitions:
       query:
         type: string
     type: object
-  model.GuildConfigGmGn:
+  github_com_defipod_mochi_pkg_model.GuildConfigGmGn:
     properties:
       channel_id:
         type: string
@@ -299,7 +378,7 @@ definitions:
       sticker:
         type: string
     type: object
-  model.GuildConfigInviteTracker:
+  github_com_defipod_mochi_pkg_model.GuildConfigInviteTracker:
     properties:
       channel_id:
         type: string
@@ -308,20 +387,20 @@ definitions:
       id:
         type: string
       webhook_url:
-        $ref: '#/definitions/model.JSONNullString'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.JSONNullString'
     type: object
-  model.GuildConfigLevelRole:
+  github_com_defipod_mochi_pkg_model.GuildConfigLevelRole:
     properties:
       guild_id:
         type: string
       level:
         type: integer
       level_config:
-        $ref: '#/definitions/model.ConfigXpLevel'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel'
       role_id:
         type: string
     type: object
-  model.GuildConfigRepostReaction:
+  github_com_defipod_mochi_pkg_model.GuildConfigRepostReaction:
     properties:
       emoji:
         type: string
@@ -340,7 +419,7 @@ definitions:
       repost_channel_id:
         type: string
     type: object
-  model.GuildConfigSalesTracker:
+  github_com_defipod_mochi_pkg_model.GuildConfigSalesTracker:
     properties:
       channel_id:
         type: string
@@ -349,7 +428,7 @@ definitions:
       id:
         type: string
     type: object
-  model.GuildConfigTwitterBlacklist:
+  github_com_defipod_mochi_pkg_model.GuildConfigTwitterBlacklist:
     properties:
       created_at:
         type: string
@@ -362,7 +441,7 @@ definitions:
       twitter_username:
         type: string
     type: object
-  model.GuildConfigTwitterFeed:
+  github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed:
     properties:
       guild_id:
         type: string
@@ -375,7 +454,7 @@ definitions:
       twitter_consumer_secret:
         type: string
     type: object
-  model.GuildConfigVoteChannel:
+  github_com_defipod_mochi_pkg_model.GuildConfigVoteChannel:
     properties:
       channel_id:
         type: string
@@ -384,7 +463,7 @@ definitions:
       id:
         type: string
     type: object
-  model.GuildConfigWalletVerificationMessage:
+  github_com_defipod_mochi_pkg_model.GuildConfigWalletVerificationMessage:
     properties:
       content:
         type: string
@@ -403,7 +482,7 @@ definitions:
       verify_role_id:
         type: string
     type: object
-  model.GuildConfigWelcomeChannel:
+  github_com_defipod_mochi_pkg_model.GuildConfigWelcomeChannel:
     properties:
       channel_id:
         type: string
@@ -414,7 +493,7 @@ definitions:
       welcome_message:
         type: string
     type: object
-  model.GuildRole:
+  github_com_defipod_mochi_pkg_model.GuildRole:
     properties:
       guild_id:
         type: string
@@ -423,7 +502,7 @@ definitions:
       role_id:
         type: integer
     type: object
-  model.JSONNullString:
+  github_com_defipod_mochi_pkg_model.JSONNullString:
     properties:
       string:
         type: string
@@ -431,7 +510,7 @@ definitions:
         description: Valid is true if String is not NULL
         type: boolean
     type: object
-  model.MonikerConfig:
+  github_com_defipod_mochi_pkg_model.MonikerConfig:
     properties:
       amount:
         type: number
@@ -446,13 +525,13 @@ definitions:
       plural:
         type: string
       token:
-        $ref: '#/definitions/model.OffchainTipBotToken'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken'
       token_id:
         type: string
       updated_at:
         type: string
     type: object
-  model.NFTCollection:
+  github_com_defipod_mochi_pkg_model.NFTCollection:
     properties:
       address:
         type: string
@@ -475,38 +554,38 @@ definitions:
       symbol:
         type: string
     type: object
-  model.NFTCollectionDetail:
-    properties:
-      address:
-        type: string
-      author:
-        type: string
-      chain:
-        $ref: '#/definitions/model.Chain'
-      chain_id:
-        type: string
-      created_at:
-        type: string
-      erc_format:
-        type: string
-      id:
-        type: string
-      image:
-        type: string
-      is_verified:
-        type: boolean
-      name:
-        type: string
-      symbol:
-        type: string
-    type: object
-  model.NewListedNFTCollection:
+  github_com_defipod_mochi_pkg_model.NFTCollectionDetail:
     properties:
       address:
         type: string
       author:
         type: string
       chain:
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Chain'
+      chain_id:
+        type: string
+      created_at:
+        type: string
+      erc_format:
+        type: string
+      id:
+        type: string
+      image:
+        type: string
+      is_verified:
+        type: boolean
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  github_com_defipod_mochi_pkg_model.NewListedNFTCollection:
+    properties:
+      address:
+        type: string
+      author:
+        type: string
+      chain:
         type: string
       chain_id:
         type: string
@@ -525,12 +604,12 @@ definitions:
       symbol:
         type: string
     type: object
-  model.OffchainTipBotAssignContract:
+  github_com_defipod_mochi_pkg_model.OffchainTipBotAssignContract:
     properties:
       chain_id:
         type: string
       contract:
-        $ref: '#/definitions/model.OffchainTipBotContract'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotContract'
       contract_id:
         type: string
       expired_time:
@@ -544,7 +623,7 @@ definitions:
       user_id:
         type: string
     type: object
-  model.OffchainTipBotContract:
+  github_com_defipod_mochi_pkg_model.OffchainTipBotContract:
     properties:
       assign_status:
         type: integer
@@ -565,7 +644,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.OffchainTipBotToken:
+  github_com_defipod_mochi_pkg_model.OffchainTipBotToken:
     properties:
       coin_gecko_id:
         type: string
@@ -588,7 +667,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.OffchainTipBotTransferHistory:
+  github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory:
     properties:
       action:
         type: string
@@ -617,51 +696,83 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.Quest:
+  github_com_defipod_mochi_pkg_model.Quest:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestAction'
       frequency:
         type: integer
       id:
         type: string
       rewards:
         items:
-          $ref: '#/definitions/model.QuestReward'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestReward'
         type: array
       routine:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine'
       title:
         type: string
     type: object
-  model.QuestReward:
+  github_com_defipod_mochi_pkg_model.QuestAction:
+    enum:
+    - gm
+    - vote
+    - trade
+    - gift
+    - ticker
+    - watchlist
+    - bonus
+    type: string
+    x-enum-varnames:
+    - GM
+    - VOTE
+    - TRADE
+    - GIFT
+    - TICKER
+    - WATCHLIST
+    - BONUS
+  github_com_defipod_mochi_pkg_model.QuestReward:
     properties:
       id:
         type: string
       pass_id:
         type: string
       quest:
-        $ref: '#/definitions/model.Quest'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Quest'
       quest_id:
         type: string
       reward_amount:
         type: integer
       reward_type:
-        $ref: '#/definitions/model.QuestRewardType'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestRewardType'
       reward_type_id:
         type: string
     type: object
-  model.QuestRewardType:
+  github_com_defipod_mochi_pkg_model.QuestRewardType:
     properties:
       id:
         type: string
       name:
         type: string
     type: object
-  model.QuestUserList:
+  github_com_defipod_mochi_pkg_model.QuestRoutine:
+    enum:
+    - daily
+    - weekly
+    - monthly
+    - yearly
+    - once
+    type: string
+    x-enum-varnames:
+    - DAILY
+    - WEEKLY
+    - MONTHLY
+    - YEARLY
+    - ONCE
+  github_com_defipod_mochi_pkg_model.QuestUserList:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestAction'
       current:
         type: integer
       end_time:
@@ -675,11 +786,11 @@ definitions:
       multiplier:
         type: number
       quest:
-        $ref: '#/definitions/model.Quest'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Quest'
       quest_id:
         type: string
       routine:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine'
       start_time:
         type: string
       target:
@@ -687,7 +798,7 @@ definitions:
       user_id:
         type: string
     type: object
-  model.QuestUserReward:
+  github_com_defipod_mochi_pkg_model.QuestUserReward:
     properties:
       claimed_at:
         type: string
@@ -696,7 +807,7 @@ definitions:
       quest_id:
         type: string
       reward:
-        $ref: '#/definitions/model.QuestReward'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestReward'
       reward_amount:
         type: integer
       reward_id:
@@ -708,12 +819,12 @@ definitions:
       user_id:
         type: string
     type: object
-  model.Token:
+  github_com_defipod_mochi_pkg_model.Token:
     properties:
       address:
         type: string
       chain:
-        $ref: '#/definitions/model.Chain'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Chain'
       chain_id:
         type: integer
       coin_gecko_id:
@@ -733,7 +844,7 @@ definitions:
       symbol:
         type: string
     type: object
-  model.TradeItem:
+  github_com_defipod_mochi_pkg_model.TradeItem:
     properties:
       id:
         type: string
@@ -748,13 +859,13 @@ definitions:
       trade_offer_id:
         type: string
     type: object
-  model.TradeOffer:
+  github_com_defipod_mochi_pkg_model.TradeOffer:
     properties:
       created_at:
         type: string
       have_items:
         items:
-          $ref: '#/definitions/model.TradeItem'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.TradeItem'
         type: array
       id:
         type: string
@@ -764,10 +875,10 @@ definitions:
         type: string
       want_items:
         items:
-          $ref: '#/definitions/model.TradeItem'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.TradeItem'
         type: array
     type: object
-  model.TwitterPostStreak:
+  github_com_defipod_mochi_pkg_model.TwitterPostStreak:
     properties:
       created_at:
         type: string
@@ -786,7 +897,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.UpvoteStreakTier:
+  github_com_defipod_mochi_pkg_model.UpvoteStreakTier:
     properties:
       id:
         type: integer
@@ -797,7 +908,7 @@ definitions:
       xp_per_interval:
         type: integer
     type: object
-  model.UserFactionXpsMapping:
+  github_com_defipod_mochi_pkg_model.UserFactionXpsMapping:
     properties:
       academy_xp:
         type: integer
@@ -808,7 +919,7 @@ definitions:
       rebellio_xp:
         type: integer
     type: object
-  model.UserFeedback:
+  github_com_defipod_mochi_pkg_model.UserFeedback:
     properties:
       command:
         type: string
@@ -829,19 +940,19 @@ definitions:
       status:
         type: string
     type: object
-  model.UserTelegramDiscordAssociation:
+  github_com_defipod_mochi_pkg_model.UserTelegramDiscordAssociation:
     properties:
       discord_id:
         type: string
       telegram_username:
         type: string
     type: object
-  model.UserWallet:
+  github_com_defipod_mochi_pkg_model.UserWallet:
     properties:
       address:
         type: string
       chain_type:
-        $ref: '#/definitions/model.JSONNullString'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.JSONNullString'
       created_at:
         type: string
       guild_id:
@@ -849,7 +960,7 @@ definitions:
       user_discord_id:
         type: string
     type: object
-  request.AddNftWatchlistRequest:
+  github_com_defipod_mochi_pkg_request.AddNftWatchlistRequest:
     properties:
       chain:
         type: string
@@ -862,7 +973,7 @@ definitions:
       user_id:
         type: string
     type: object
-  request.AddToTwitterBlackListRequest:
+  github_com_defipod_mochi_pkg_request.AddToTwitterBlackListRequest:
     properties:
       created_by:
         type: string
@@ -873,7 +984,7 @@ definitions:
       twitter_username:
         type: string
     type: object
-  request.AddToWatchlistRequest:
+  github_com_defipod_mochi_pkg_request.AddToWatchlistRequest:
     properties:
       coin_gecko_id:
         type: string
@@ -884,23 +995,23 @@ definitions:
       user_id:
         type: string
     type: object
-  request.BalcklistChannelRepostConfigRequest:
+  github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest:
     properties:
       channel_id:
         type: string
       guild_id:
         type: string
     type: object
-  request.ClaimQuestsRewardsRequest:
+  github_com_defipod_mochi_pkg_request.ClaimQuestsRewardsRequest:
     properties:
       quest_id:
         type: string
       routine:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine'
       user_id:
         type: string
     type: object
-  request.ConfigDefaultCollection:
+  github_com_defipod_mochi_pkg_request.ConfigDefaultCollection:
     properties:
       address:
         type: string
@@ -911,14 +1022,14 @@ definitions:
       symbol:
         type: string
     type: object
-  request.ConfigDefaultTokenRequest:
+  github_com_defipod_mochi_pkg_request.ConfigDefaultTokenRequest:
     properties:
       guild_id:
         type: string
       symbol:
         type: string
     type: object
-  request.ConfigGroupNFTRoleRequest:
+  github_com_defipod_mochi_pkg_request.ConfigGroupNFTRoleRequest:
     properties:
       collection_address:
         items:
@@ -933,7 +1044,7 @@ definitions:
       role_id:
         type: string
     type: object
-  request.ConfigLevelRoleRequest:
+  github_com_defipod_mochi_pkg_request.ConfigLevelRoleRequest:
     properties:
       guild_id:
         type: string
@@ -942,7 +1053,7 @@ definitions:
       role_id:
         type: string
     type: object
-  request.ConfigRepostReactionStartStop:
+  github_com_defipod_mochi_pkg_request.ConfigRepostReactionStartStop:
     properties:
       emoji_start:
         type: string
@@ -953,7 +1064,7 @@ definitions:
       repost_channel_id:
         type: string
     type: object
-  request.ConfigRepostRequest:
+  github_com_defipod_mochi_pkg_request.ConfigRepostRequest:
     properties:
       emoji:
         type: string
@@ -964,7 +1075,7 @@ definitions:
       repost_channel_id:
         type: string
     type: object
-  request.ConfigureInviteRequest:
+  github_com_defipod_mochi_pkg_request.ConfigureInviteRequest:
     properties:
       guild_id:
         type: string
@@ -973,14 +1084,14 @@ definitions:
       webhook_url:
         type: string
     type: object
-  request.CreateAssignContract:
+  github_com_defipod_mochi_pkg_request.CreateAssignContract:
     properties:
       token_symbol:
         type: string
       user_id:
         type: string
     type: object
-  request.CreateDefaultRoleRequest:
+  github_com_defipod_mochi_pkg_request.CreateDefaultRoleRequest:
     properties:
       guild_id:
         type: string
@@ -990,14 +1101,14 @@ definitions:
     - guild_id
     - role_id
     type: object
-  request.CreateGuildRequest:
+  github_com_defipod_mochi_pkg_request.CreateGuildRequest:
     properties:
       id:
         type: string
       name:
         type: string
     type: object
-  request.CreateNFTCollectionRequest:
+  github_com_defipod_mochi_pkg_request.CreateNFTCollectionRequest:
     properties:
       address:
         type: string
@@ -1014,7 +1125,7 @@ definitions:
       message_id:
         type: string
     type: object
-  request.CreateTipConfigNotify:
+  github_com_defipod_mochi_pkg_request.CreateTipConfigNotify:
     properties:
       channel_id:
         type: string
@@ -1023,22 +1134,22 @@ definitions:
       token:
         type: string
     type: object
-  request.CreateTradeOfferRequest:
+  github_com_defipod_mochi_pkg_request.CreateTradeOfferRequest:
     properties:
       have_items:
         items:
-          $ref: '#/definitions/request.TradeOfferItem'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.TradeOfferItem'
         type: array
       owner_address:
         type: string
       want_items:
         items:
-          $ref: '#/definitions/request.TradeOfferItem'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.TradeOfferItem'
         type: array
     required:
     - owner_address
     type: object
-  request.CreateUserRequest:
+  github_com_defipod_mochi_pkg_request.CreateUserRequest:
     properties:
       guild_id:
         type: string
@@ -1051,17 +1162,17 @@ definitions:
       username:
         type: string
     type: object
-  request.DeleteDiscordUserAlertRequest:
+  github_com_defipod_mochi_pkg_request.DeleteDiscordUserAlertRequest:
     properties:
       id:
         type: string
     type: object
-  request.DeleteJoinLeaveChannelConfigRequest:
+  github_com_defipod_mochi_pkg_request.DeleteJoinLeaveChannelConfigRequest:
     properties:
       guild_id:
         type: string
     type: object
-  request.DeleteMonikerConfigRequest:
+  github_com_defipod_mochi_pkg_request.DeleteMonikerConfigRequest:
     properties:
       guild_id:
         type: string
@@ -1071,22 +1182,22 @@ definitions:
     - guild_id
     - moniker
     type: object
-  request.DeleteUserDeviceRequest:
+  github_com_defipod_mochi_pkg_request.DeleteUserDeviceRequest:
     properties:
       device_id:
         type: string
     type: object
-  request.DeleteVoteChannelConfigRequest:
+  github_com_defipod_mochi_pkg_request.DeleteVoteChannelConfigRequest:
     properties:
       guild_id:
         type: string
     type: object
-  request.DeleteWelcomeConfigRequest:
+  github_com_defipod_mochi_pkg_request.DeleteWelcomeConfigRequest:
     properties:
       guild_id:
         type: string
     type: object
-  request.EditMessageRepostRequest:
+  github_com_defipod_mochi_pkg_request.EditMessageRepostRequest:
     properties:
       guild_id:
         type: string
@@ -1099,7 +1210,7 @@ definitions:
       repost_message_id:
         type: string
     type: object
-  request.GenerateVerificationRequest:
+  github_com_defipod_mochi_pkg_request.GenerateVerificationRequest:
     properties:
       guild_id:
         type: string
@@ -1108,7 +1219,7 @@ definitions:
       user_discord_id:
         type: string
     type: object
-  request.GuildConfigDefaultNftTickerRequest:
+  github_com_defipod_mochi_pkg_request.GuildConfigDefaultNftTickerRequest:
     properties:
       chain_id:
         type: integer
@@ -1121,7 +1232,7 @@ definitions:
       symbol:
         type: string
     type: object
-  request.GuildConfigDefaultTickerRequest:
+  github_com_defipod_mochi_pkg_request.GuildConfigDefaultTickerRequest:
     properties:
       default_ticker:
         type: string
@@ -1130,12 +1241,12 @@ definitions:
       query:
         type: string
     type: object
-  request.GuildIDRequest:
+  github_com_defipod_mochi_pkg_request.GuildIDRequest:
     properties:
       guild_id:
         type: string
     type: object
-  request.LinkUserTelegramWithDiscordRequest:
+  github_com_defipod_mochi_pkg_request.LinkUserTelegramWithDiscordRequest:
     properties:
       discord_id:
         type: string
@@ -1145,12 +1256,12 @@ definitions:
     - discord_id
     - telegram_username
     type: object
-  request.LoginRequest:
+  github_com_defipod_mochi_pkg_request.LoginRequest:
     properties:
       access_token:
         type: string
     type: object
-  request.NewGuildConfigWalletVerificationMessageRequest:
+  github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest:
     properties:
       content:
         type: string
@@ -1169,7 +1280,7 @@ definitions:
       verify_role_id:
         type: string
     type: object
-  request.OffchainTransferRequest:
+  github_com_defipod_mochi_pkg_request.OffchainTransferRequest:
     properties:
       all:
         type: boolean
@@ -1202,7 +1313,7 @@ definitions:
       transfer_type:
         type: string
     type: object
-  request.OffchainWithdrawRequest:
+  github_com_defipod_mochi_pkg_request.OffchainWithdrawRequest:
     properties:
       all:
         type: boolean
@@ -1227,7 +1338,7 @@ definitions:
       transfer_type:
         type: string
     type: object
-  request.RoleReactionRequest:
+  github_com_defipod_mochi_pkg_request.RoleReactionRequest:
     properties:
       guild_id:
         type: string
@@ -1236,7 +1347,7 @@ definitions:
       reaction:
         type: string
     type: object
-  request.RoleReactionUpdateRequest:
+  github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest:
     properties:
       channel_id:
         type: string
@@ -1249,7 +1360,7 @@ definitions:
       role_id:
         type: string
     type: object
-  request.SetUpvoteMessageCacheRequest:
+  github_com_defipod_mochi_pkg_request.SetUpvoteMessageCacheRequest:
     properties:
       channel_id:
         type: string
@@ -1260,7 +1371,7 @@ definitions:
       user_id:
         type: string
     type: object
-  request.TradeOfferItem:
+  github_com_defipod_mochi_pkg_request.TradeOfferItem:
     properties:
       token_address:
         type: string
@@ -1272,7 +1383,7 @@ definitions:
     - token_address
     - token_ids
     type: object
-  request.TwitterHashtag:
+  github_com_defipod_mochi_pkg_request.TwitterHashtag:
     properties:
       channel_id:
         type: string
@@ -1295,7 +1406,7 @@ definitions:
       user_id:
         type: string
     type: object
-  request.TwitterPost:
+  github_com_defipod_mochi_pkg_request.TwitterPost:
     properties:
       content:
         type: string
@@ -1308,7 +1419,7 @@ definitions:
       twitter_id:
         type: string
     type: object
-  request.UpdateGuildRequest:
+  github_com_defipod_mochi_pkg_request.UpdateGuildRequest:
     properties:
       active:
         type: boolean
@@ -1319,23 +1430,23 @@ definitions:
       log_channel:
         type: string
     type: object
-  request.UpdateQuestProgressRequest:
+  github_com_defipod_mochi_pkg_request.UpdateQuestProgressRequest:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestAction'
       guild_id:
         type: string
       user_id:
         type: string
     type: object
-  request.UpdateUserFeedbackRequest:
+  github_com_defipod_mochi_pkg_request.UpdateUserFeedbackRequest:
     properties:
       id:
         type: string
       status:
         type: string
     type: object
-  request.UpsertCustomTokenConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertCustomTokenConfigRequest:
     properties:
       active:
         type: boolean
@@ -1362,7 +1473,7 @@ definitions:
       symbol:
         type: string
     type: object
-  request.UpsertDiscordUserAlertRequest:
+  github_com_defipod_mochi_pkg_request.UpsertDiscordUserAlertRequest:
     properties:
       device_id:
         type: string
@@ -1381,7 +1492,7 @@ definitions:
       trend:
         type: string
     type: object
-  request.UpsertGmConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertGmConfigRequest:
     properties:
       channel_id:
         type: string
@@ -1394,21 +1505,21 @@ definitions:
       sticker:
         type: string
     type: object
-  request.UpsertGuildDefaultCurrencyRequest:
+  github_com_defipod_mochi_pkg_request.UpsertGuildDefaultCurrencyRequest:
     properties:
       Symbol:
         type: string
       guild_id:
         type: string
     type: object
-  request.UpsertGuildPruneExcludeRequest:
+  github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest:
     properties:
       guild_id:
         type: string
       role_id:
         type: string
     type: object
-  request.UpsertGuildTokenConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertGuildTokenConfigRequest:
     properties:
       active:
         type: boolean
@@ -1417,14 +1528,14 @@ definitions:
       symbol:
         type: string
     type: object
-  request.UpsertJoinLeaveChannelConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertJoinLeaveChannelConfigRequest:
     properties:
       channel_id:
         type: string
       guild_id:
         type: string
     type: object
-  request.UpsertMonikerConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertMonikerConfigRequest:
     properties:
       amount:
         type: number
@@ -1442,21 +1553,21 @@ definitions:
     - moniker
     - token
     type: object
-  request.UpsertUserDeviceRequest:
+  github_com_defipod_mochi_pkg_request.UpsertUserDeviceRequest:
     properties:
       device_id:
         type: string
       ios_noti_token:
         type: string
     type: object
-  request.UpsertVoteChannelConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertVoteChannelConfigRequest:
     properties:
       channel_id:
         type: string
       guild_id:
         type: string
     type: object
-  request.UpsertWelcomeConfigRequest:
+  github_com_defipod_mochi_pkg_request.UpsertWelcomeConfigRequest:
     properties:
       channel_id:
         type: string
@@ -1465,7 +1576,7 @@ definitions:
       welcome_message:
         type: string
     type: object
-  request.UserFeedbackRequest:
+  github_com_defipod_mochi_pkg_request.UserFeedbackRequest:
     properties:
       avatar:
         type: string
@@ -1480,7 +1591,7 @@ definitions:
       username:
         type: string
     type: object
-  request.VerifyWalletAddressRequest:
+  github_com_defipod_mochi_pkg_request.VerifyWalletAddressRequest:
     properties:
       code:
         type: string
@@ -1489,47 +1600,47 @@ definitions:
       wallet_address:
         type: string
     type: object
-  response.AddToWatchlistResponse:
+  github_com_defipod_mochi_pkg_response.AddToWatchlistResponse:
     properties:
       data:
-        $ref: '#/definitions/response.AddToWatchlistResponseData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.AddToWatchlistResponseData'
     type: object
-  response.AddToWatchlistResponseData:
+  github_com_defipod_mochi_pkg_response.AddToWatchlistResponseData:
     properties:
       base_suggestions:
         items:
-          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens'
         type: array
       target_suggestions:
         items:
-          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens'
         type: array
     type: object
-  response.AllTipBotTokensResponse:
+  github_com_defipod_mochi_pkg_response.AllTipBotTokensResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.OffchainTipBotToken'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken'
         type: array
     type: object
-  response.ClaimQuestsRewardsResponse:
+  github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponse:
     properties:
       data:
-        $ref: '#/definitions/response.ClaimQuestsRewardsResponseData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponseData'
     type: object
-  response.ClaimQuestsRewardsResponseData:
+  github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponseData:
     properties:
       rewards:
         items:
-          $ref: '#/definitions/model.QuestUserReward'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestUserReward'
         type: array
     type: object
-  response.CoinDescription:
+  github_com_defipod_mochi_pkg_response.CoinDescription:
     properties:
       en:
         type: string
     type: object
-  response.CoinImage:
+  github_com_defipod_mochi_pkg_response.CoinImage:
     properties:
       large:
         type: string
@@ -1538,7 +1649,7 @@ definitions:
       thumb:
         type: string
     type: object
-  response.CoinMarketItemData:
+  github_com_defipod_mochi_pkg_response.CoinMarketItemData:
     properties:
       current_price:
         type: number
@@ -1566,7 +1677,7 @@ definitions:
       symbol:
         type: string
     type: object
-  response.CoinPriceHistoryResponse:
+  github_com_defipod_mochi_pkg_response.CoinPriceHistoryResponse:
     properties:
       from:
         type: string
@@ -1585,7 +1696,7 @@ definitions:
       to:
         type: string
     type: object
-  response.CollectionSuggestions:
+  github_com_defipod_mochi_pkg_response.CollectionSuggestions:
     properties:
       address:
         type: string
@@ -1598,13 +1709,13 @@ definitions:
       symbol:
         type: string
     type: object
-  response.CompareTokenReponseData:
+  github_com_defipod_mochi_pkg_response.CompareTokenReponseData:
     properties:
       base_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse'
       base_coin_suggestions:
         items:
-          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens'
         type: array
       from:
         type: string
@@ -1613,10 +1724,10 @@ definitions:
           type: number
         type: array
       target_coin:
-        $ref: '#/definitions/response.GetCoinResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse'
       target_coin_suggestions:
         items:
-          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens'
         type: array
       times:
         items:
@@ -1625,12 +1736,12 @@ definitions:
       to:
         type: string
     type: object
-  response.CompareTokenResponse:
+  github_com_defipod_mochi_pkg_response.CompareTokenResponse:
     properties:
       data:
-        $ref: '#/definitions/response.CompareTokenReponseData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CompareTokenReponseData'
     type: object
-  response.ConfigGroupNFTRoleResponse:
+  github_com_defipod_mochi_pkg_response.ConfigGroupNFTRoleResponse:
     properties:
       group_name:
         type: string
@@ -1638,14 +1749,14 @@ definitions:
         type: string
       nft_collection_configs:
         items:
-          $ref: '#/definitions/response.NFTCollectionConfig'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionConfig'
         type: array
       number_of_tokens:
         type: integer
       role_id:
         type: string
     type: object
-  response.ConfigNotifyResponse:
+  github_com_defipod_mochi_pkg_response.ConfigNotifyResponse:
     properties:
       channel_id:
         type: string
@@ -1662,30 +1773,30 @@ definitions:
       updated_at:
         type: string
     type: object
-  response.ConfigureInvitesResponse:
+  github_com_defipod_mochi_pkg_response.ConfigureInvitesResponse:
     properties:
       data:
         type: string
     type: object
-  response.CreateNFTCollectionResponse:
+  github_com_defipod_mochi_pkg_response.CreateNFTCollectionResponse:
     properties:
       data:
-        $ref: '#/definitions/model.NFTCollection'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection'
     type: object
-  response.CreateTradeOfferResponse:
+  github_com_defipod_mochi_pkg_response.CreateTradeOfferResponse:
     properties:
       data:
-        $ref: '#/definitions/model.TradeOffer'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.TradeOffer'
     type: object
-  response.CurrentUserUpvoteStreakResponse:
+  github_com_defipod_mochi_pkg_response.CurrentUserUpvoteStreakResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserCurrentUpvoteStreakResponse'
     type: object
-  response.DataFilterConfigByReaction:
+  github_com_defipod_mochi_pkg_response.DataFilterConfigByReaction:
     properties:
       data:
-        $ref: '#/definitions/response.RoleReactionResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionResponse'
       page:
         description: page index
         type: integer
@@ -1695,10 +1806,10 @@ definitions:
       total:
         type: integer
     type: object
-  response.DataListRoleReactionResponse:
+  github_com_defipod_mochi_pkg_response.DataListRoleReactionResponse:
     properties:
       data:
-        $ref: '#/definitions/response.ListRoleReactionResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListRoleReactionResponse'
       page:
         description: page index
         type: integer
@@ -1708,24 +1819,24 @@ definitions:
       total:
         type: integer
     type: object
-  response.DataMetric:
+  github_com_defipod_mochi_pkg_response.DataMetric:
     properties:
       data:
-        $ref: '#/definitions/response.Metric'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.Metric'
     type: object
-  response.DefaultRole:
+  github_com_defipod_mochi_pkg_response.DefaultRole:
     properties:
       guild_id:
         type: string
       role_id:
         type: string
     type: object
-  response.DefaultRoleResponse:
+  github_com_defipod_mochi_pkg_response.DefaultRoleResponse:
     properties:
       data:
-        $ref: '#/definitions/response.DefaultRole'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DefaultRole'
     type: object
-  response.DiscordGuildResponse:
+  github_com_defipod_mochi_pkg_response.DiscordGuildResponse:
     properties:
       bot_addable:
         type: boolean
@@ -1733,7 +1844,7 @@ definitions:
         type: boolean
       features:
         items:
-          type: string
+          $ref: '#/definitions/discordgo.GuildFeature'
         type: array
       icon:
         type: string
@@ -1747,97 +1858,97 @@ definitions:
         example: "0"
         type: string
     type: object
-  response.DiscordUserTokenAlertResponse:
+  github_com_defipod_mochi_pkg_response.DiscordUserTokenAlertResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.DiscordUserTokenAlert'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserTokenAlert'
         type: array
     type: object
-  response.GenerateVerificationResponse:
+  github_com_defipod_mochi_pkg_response.GenerateVerificationResponse:
     properties:
       code:
         type: string
       status:
         type: string
     type: object
-  response.GetAllNFTSalesTrackerResponse:
+  github_com_defipod_mochi_pkg_response.GetAllNFTSalesTrackerResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.NFTSalesTrackerResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTSalesTrackerResponse'
         type: array
     type: object
-  response.GetAllTwitterConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetAllTwitterConfigResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.GuildConfigTwitterFeed'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed'
         type: array
       message:
         type: string
     type: object
-  response.GetAllTwitterHashtagConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetAllTwitterHashtagConfigResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.TwitterHashtag'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.TwitterHashtag'
         type: array
     type: object
-  response.GetAssignedContract:
+  github_com_defipod_mochi_pkg_response.GetAssignedContract:
     properties:
       data:
-        $ref: '#/definitions/model.OffchainTipBotAssignContract'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotAssignContract'
     type: object
-  response.GetCoinResponse:
+  github_com_defipod_mochi_pkg_response.GetCoinResponse:
     properties:
       asset_platform_id:
         type: string
       description:
-        $ref: '#/definitions/response.CoinDescription'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CoinDescription'
       id:
         type: string
       image:
-        $ref: '#/definitions/response.CoinImage'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CoinImage'
       market_cap_rank:
         type: integer
       market_data:
-        $ref: '#/definitions/response.MarketData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.MarketData'
       name:
         type: string
       symbol:
         type: string
       tickers:
         items:
-          $ref: '#/definitions/response.TickerData'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.TickerData'
         type: array
     type: object
-  response.GetCoinResponseWrapper:
+  github_com_defipod_mochi_pkg_response.GetCoinResponseWrapper:
     properties:
       data:
-        $ref: '#/definitions/response.GetCoinResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse'
     type: object
-  response.GetCollectionCountResponse:
+  github_com_defipod_mochi_pkg_response.GetCollectionCountResponse:
     properties:
       data:
-        $ref: '#/definitions/response.NFTCollectionCount'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionCount'
     type: object
-  response.GetDataUserProfileResponse:
+  github_com_defipod_mochi_pkg_response.GetDataUserProfileResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GetUserProfileResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserProfileResponse'
     type: object
-  response.GetDefaultTokenResponse:
+  github_com_defipod_mochi_pkg_response.GetDefaultTokenResponse:
     properties:
       data:
-        $ref: '#/definitions/model.Token'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Token'
     type: object
-  response.GetDetailNftCollectionResponse:
+  github_com_defipod_mochi_pkg_response.GetDetailNftCollectionResponse:
     properties:
       data:
-        $ref: '#/definitions/model.NFTCollectionDetail'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.NFTCollectionDetail'
     type: object
-  response.GetFiatHistoricalExchangeRatesResponse:
+  github_com_defipod_mochi_pkg_response.GetFiatHistoricalExchangeRatesResponse:
     properties:
       from:
         type: string
@@ -1854,31 +1965,31 @@ definitions:
       to:
         type: string
     type: object
-  response.GetGmConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetGmConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigGmGn'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigGmGn'
       message:
         type: string
     type: object
-  response.GetGuildDefaultNftTickerResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildDefaultNftTickerResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigDefaultCollection'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigDefaultCollection'
     type: object
-  response.GetGuildDefaultTickerResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildDefaultTickerResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigDefaultTicker'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigDefaultTicker'
     type: object
-  response.GetGuildPruneExcludeResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildPruneExcludeResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GuildPruneExcludeList'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GuildPruneExcludeList'
       message:
         type: string
     type: object
-  response.GetGuildResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildResponse:
     properties:
       active:
         type: boolean
@@ -1899,14 +2010,14 @@ definitions:
       name:
         type: string
     type: object
-  response.GetGuildTokensResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildTokensResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.Token'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Token'
         type: array
     type: object
-  response.GetGuildUserResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildUserResponse:
     properties:
       guild_id:
         type: string
@@ -1917,44 +2028,44 @@ definitions:
       user_id:
         type: string
     type: object
-  response.GetGuildsResponse:
+  github_com_defipod_mochi_pkg_response.GetGuildsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.GetGuildResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildResponse'
         type: array
     type: object
-  response.GetHistoricalMarketChartResponse:
+  github_com_defipod_mochi_pkg_response.GetHistoricalMarketChartResponse:
     properties:
       data:
-        $ref: '#/definitions/response.CoinPriceHistoryResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CoinPriceHistoryResponse'
     type: object
-  response.GetInviteTrackerConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetInviteTrackerConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigInviteTracker'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigInviteTracker'
       message:
         type: string
     type: object
-  response.GetInvitesLeaderboardResponse:
+  github_com_defipod_mochi_pkg_response.GetInvitesLeaderboardResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.UserInvitesAggregation'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UserInvitesAggregation'
         type: array
     type: object
-  response.GetInvitesResponse:
+  github_com_defipod_mochi_pkg_response.GetInvitesResponse:
     properties:
       data:
         items:
           type: string
         type: array
     type: object
-  response.GetLevelRoleConfigsResponse:
+  github_com_defipod_mochi_pkg_response.GetLevelRoleConfigsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.GuildConfigLevelRole'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigLevelRole'
         type: array
       page:
         description: page index
@@ -1965,38 +2076,38 @@ definitions:
       total:
         type: integer
     type: object
-  response.GetLinkedTelegramResponse:
+  github_com_defipod_mochi_pkg_response.GetLinkedTelegramResponse:
     properties:
       data:
-        $ref: '#/definitions/model.UserTelegramDiscordAssociation'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserTelegramDiscordAssociation'
     type: object
-  response.GetListAllChainsResponse:
+  github_com_defipod_mochi_pkg_response.GetListAllChainsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.Chain'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Chain'
         type: array
     type: object
-  response.GetMyInfoResponse:
+  github_com_defipod_mochi_pkg_response.GetMyInfoResponse:
     properties:
       data:
         $ref: '#/definitions/discordgo.User'
     type: object
-  response.GetNFTActivityData:
+  github_com_defipod_mochi_pkg_response.GetNFTActivityData:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.IndexerNFTActivityData'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTActivityData'
         type: array
       metadata:
-        $ref: '#/definitions/util.Pagination'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_util.Pagination'
     type: object
-  response.GetNFTActivityResponse:
+  github_com_defipod_mochi_pkg_response.GetNFTActivityResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GetNFTActivityData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNFTActivityData'
     type: object
-  response.GetNFTCollectionByAddressChain:
+  github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChain:
     properties:
       address:
         type: string
@@ -2031,12 +2142,12 @@ definitions:
       website:
         type: string
     type: object
-  response.GetNFTCollectionByAddressChainResponse:
+  github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChainResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GetNFTCollectionByAddressChain'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChain'
     type: object
-  response.GetNftWatchlist:
+  github_com_defipod_mochi_pkg_response.GetNftWatchlist:
     properties:
       floor_price:
         type: number
@@ -2053,93 +2164,93 @@ definitions:
       price_change_percentage_24h:
         type: number
       sparkline_in_7d:
-        $ref: '#/definitions/response.SparkLineIn7d'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.SparkLineIn7d'
       symbol:
         type: string
       token:
-        $ref: '#/definitions/response.IndexerToken'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerToken'
     type: object
-  response.GetNftWatchlistResponse:
+  github_com_defipod_mochi_pkg_response.GetNftWatchlistResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.GetNftWatchlist'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNftWatchlist'
         type: array
     type: object
-  response.GetRepostReactionConfigsResponse:
+  github_com_defipod_mochi_pkg_response.GetRepostReactionConfigsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.GuildConfigRepostReaction'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigRepostReaction'
         type: array
     type: object
-  response.GetSalesTrackerConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetSalesTrackerConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigSalesTracker'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigSalesTracker'
     type: object
-  response.GetSuggestionNFTCollectionsResponse:
+  github_com_defipod_mochi_pkg_response.GetSuggestionNFTCollectionsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.CollectionSuggestions'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions'
         type: array
     type: object
-  response.GetSupportedChains:
+  github_com_defipod_mochi_pkg_response.GetSupportedChains:
     properties:
       data:
         items:
           type: string
         type: array
     type: object
-  response.GetSupportedTokensResponse:
+  github_com_defipod_mochi_pkg_response.GetSupportedTokensResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.Token'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Token'
         type: array
     type: object
-  response.GetTradeOfferResponse:
+  github_com_defipod_mochi_pkg_response.GetTradeOfferResponse:
     properties:
       data:
-        $ref: '#/definitions/model.TradeOffer'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.TradeOffer'
     type: object
-  response.GetTwitterBlackListResponse:
+  github_com_defipod_mochi_pkg_response.GetTwitterBlackListResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.GuildConfigTwitterBlacklist'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterBlacklist'
         type: array
     type: object
-  response.GetTwitterHashtagConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetTwitterHashtagConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/response.TwitterHashtag'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.TwitterHashtag'
     type: object
-  response.GetTwitterLeaderboardResponse:
+  github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponse:
     properties:
       data:
-        $ref: '#/definitions/response.GetTwitterLeaderboardResponseData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponseData'
     type: object
-  response.GetTwitterLeaderboardResponseData:
+  github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponseData:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.TwitterPostStreak'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.TwitterPostStreak'
         type: array
       metadata:
-        $ref: '#/definitions/response.PaginationResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.PaginationResponse'
     type: object
-  response.GetUpvoteTiersConfig:
+  github_com_defipod_mochi_pkg_response.GetUpvoteTiersConfig:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.UpvoteStreakTier'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UpvoteStreakTier'
         type: array
       message:
         type: string
     type: object
-  response.GetUserBalances:
+  github_com_defipod_mochi_pkg_response.GetUserBalances:
     properties:
       balances:
         type: number
@@ -2154,19 +2265,19 @@ definitions:
       symbol:
         type: string
     type: object
-  response.GetUserBalancesResponse:
+  github_com_defipod_mochi_pkg_response.GetUserBalancesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.GetUserBalances'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserBalances'
         type: array
     type: object
-  response.GetUserCurrentGMStreakResponse:
+  github_com_defipod_mochi_pkg_response.GetUserCurrentGMStreakResponse:
     properties:
       data:
-        $ref: '#/definitions/model.DiscordUserGMStreak'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserGMStreak'
     type: object
-  response.GetUserCurrentUpvoteStreakResponse:
+  github_com_defipod_mochi_pkg_response.GetUserCurrentUpvoteStreakResponse:
     properties:
       discord_id:
         type: string
@@ -2183,14 +2294,14 @@ definitions:
       total_count:
         type: integer
     type: object
-  response.GetUserProfileResponse:
+  github_com_defipod_mochi_pkg_response.GetUserProfileResponse:
     properties:
       about_me:
         type: string
       current_level:
-        $ref: '#/definitions/model.ConfigXpLevel'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel'
       guild:
-        $ref: '#/definitions/model.DiscordGuild'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordGuild'
       guild_rank:
         type: integer
       guild_xp:
@@ -2198,76 +2309,76 @@ definitions:
       id:
         type: string
       next_level:
-        $ref: '#/definitions/model.ConfigXpLevel'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel'
       nr_of_actions:
         type: integer
       progress:
         type: number
       user_faction_xps:
-        $ref: '#/definitions/model.UserFactionXpsMapping'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserFactionXpsMapping'
       user_wallet:
-        $ref: '#/definitions/model.UserWallet'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserWallet'
     type: object
-  response.GetUserQuestListResponse:
+  github_com_defipod_mochi_pkg_response.GetUserQuestListResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.QuestUserList'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.QuestUserList'
         type: array
     type: object
-  response.GetUserResponse:
+  github_com_defipod_mochi_pkg_response.GetUserResponse:
     properties:
       data:
-        $ref: '#/definitions/response.User'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.User'
     type: object
-  response.GetUserUpvoteLeaderboardResponse:
+  github_com_defipod_mochi_pkg_response.GetUserUpvoteLeaderboardResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.DiscordUserUpvoteStreak'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserUpvoteStreak'
         type: array
       message:
         type: string
     type: object
-  response.GetUserWalletByGuildIDAddressResponse:
+  github_com_defipod_mochi_pkg_response.GetUserWalletByGuildIDAddressResponse:
     properties:
       data:
-        $ref: '#/definitions/model.UserWallet'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserWallet'
     type: object
-  response.GetVoteChannelConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigVoteChannel'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigVoteChannel'
       message:
         type: string
     type: object
-  response.GetWatchlistResponse:
+  github_com_defipod_mochi_pkg_response.GetWatchlistResponse:
     properties:
       data:
         description: Pagination *PaginationResponse  `json:"pagination"`
         items:
-          $ref: '#/definitions/response.CoinMarketItemData'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CoinMarketItemData'
         type: array
     type: object
-  response.GetWelcomeChannelConfigResponse:
+  github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigWelcomeChannel'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigWelcomeChannel'
       message:
         type: string
     type: object
-  response.GuildConfigDefaultCurrencyResponse:
+  github_com_defipod_mochi_pkg_response.GuildConfigDefaultCurrencyResponse:
     properties:
       created_at:
         type: string
       guild_id:
         type: string
       tip_bot_token:
-        $ref: '#/definitions/model.OffchainTipBotToken'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken'
       updated_at:
         type: string
     type: object
-  response.GuildPruneExcludeList:
+  github_com_defipod_mochi_pkg_response.GuildPruneExcludeList:
     properties:
       guild_id:
         type: string
@@ -2276,7 +2387,7 @@ definitions:
           type: string
         type: array
     type: object
-  response.IndexerChain:
+  github_com_defipod_mochi_pkg_response.IndexerChain:
     properties:
       chain_id:
         type: integer
@@ -2287,27 +2398,27 @@ definitions:
       symbol:
         type: string
     type: object
-  response.IndexerGetNFTTokenDetailResponseWithSuggestions:
+  github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenDetailResponseWithSuggestions:
     properties:
       data:
-        $ref: '#/definitions/response.IndexerNFTTokenDetailData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData'
       default_symbol:
-        $ref: '#/definitions/response.CollectionSuggestions'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions'
       suggestions:
         items:
-          $ref: '#/definitions/response.CollectionSuggestions'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions'
         type: array
     type: object
-  response.IndexerGetNFTTokenTickersResponse:
+  github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenTickersResponse:
     properties:
       data:
-        $ref: '#/definitions/response.IndexerNFTTokenTickersData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenTickersData'
     type: object
-  response.IndexerGetNFTTokensResponse:
+  github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.IndexerNFTTokenDetailData'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData'
         type: array
       page:
         type: integer
@@ -2316,7 +2427,7 @@ definitions:
       total:
         type: integer
     type: object
-  response.IndexerNFTActivityData:
+  github_com_defipod_mochi_pkg_response.IndexerNFTActivityData:
     properties:
       chain_id:
         type: integer
@@ -2335,7 +2446,7 @@ definitions:
       listing_price:
         type: string
       listing_price_obj:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       listing_status:
         type: string
       listing_type:
@@ -2349,7 +2460,7 @@ definitions:
       sold_price:
         type: string
       sold_price_obj:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       to_address:
         type: string
       token_id:
@@ -2357,20 +2468,20 @@ definitions:
       transaction_hash:
         type: string
     type: object
-  response.IndexerNFTCollectionTickersData:
+  github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersData:
     properties:
       address:
         type: string
       chain:
-        $ref: '#/definitions/response.IndexerChain'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerChain'
       collection_image:
         type: string
       floor_price:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       items:
         type: integer
       last_sale_price:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       marketplaces:
         items:
           type: string
@@ -2386,16 +2497,16 @@ definitions:
       price_change_30d:
         type: string
       tickers:
-        $ref: '#/definitions/response.IndexerTickers'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerTickers'
       total_volume:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
     type: object
-  response.IndexerNFTCollectionTickersResponse:
+  github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersResponse:
     properties:
       data:
-        $ref: '#/definitions/response.IndexerNFTCollectionTickersData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersData'
     type: object
-  response.IndexerNFTTokenAttribute:
+  github_com_defipod_mochi_pkg_response.IndexerNFTTokenAttribute:
     properties:
       collection_address:
         type: string
@@ -2412,13 +2523,13 @@ definitions:
       value:
         type: string
     type: object
-  response.IndexerNFTTokenDetailData:
+  github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData:
     properties:
       amount:
         type: string
       attributes:
         items:
-          $ref: '#/definitions/response.IndexerNFTTokenAttribute'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenAttribute'
         type: array
       collection_address:
         type: string
@@ -2432,16 +2543,16 @@ definitions:
         type: string
       marketplace:
         items:
-          $ref: '#/definitions/response.NftListingMarketplace'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftListingMarketplace'
         type: array
       metadata_id:
         type: string
       name:
         type: string
       owner:
-        $ref: '#/definitions/response.IndexerNftTokenOwner'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNftTokenOwner'
       rarity:
-        $ref: '#/definitions/response.IndexerNFTTokenRarity'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenRarity'
       rarity_rank:
         type: integer
       rarity_score:
@@ -2453,7 +2564,7 @@ definitions:
       token_id:
         type: string
     type: object
-  response.IndexerNFTTokenRarity:
+  github_com_defipod_mochi_pkg_response.IndexerNFTTokenRarity:
     properties:
       rank:
         type: integer
@@ -2464,20 +2575,20 @@ definitions:
       total:
         type: integer
     type: object
-  response.IndexerNFTTokenTickersData:
+  github_com_defipod_mochi_pkg_response.IndexerNFTTokenTickersData:
     properties:
       collection_address:
         type: string
       description:
         type: string
       floor_price:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       image:
         type: string
       image_cdn:
         type: string
       last_sale_price:
-        $ref: '#/definitions/response.IndexerPrice'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
       name:
         type: string
       price_change_1d:
@@ -2493,11 +2604,11 @@ definitions:
       rarity_tier:
         type: string
       tickers:
-        $ref: '#/definitions/response.IndexerTickers'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerTickers'
       token_id:
         type: string
     type: object
-  response.IndexerNftTokenOwner:
+  github_com_defipod_mochi_pkg_response.IndexerNftTokenOwner:
     properties:
       collection_address:
         type: string
@@ -2506,18 +2617,18 @@ definitions:
       token_id:
         type: string
     type: object
-  response.IndexerPrice:
+  github_com_defipod_mochi_pkg_response.IndexerPrice:
     properties:
       amount:
         type: string
       token:
-        $ref: '#/definitions/response.IndexerToken'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerToken'
     type: object
-  response.IndexerTickers:
+  github_com_defipod_mochi_pkg_response.IndexerTickers:
     properties:
       prices:
         items:
-          $ref: '#/definitions/response.IndexerPrice'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice'
         type: array
       times:
         items:
@@ -2528,7 +2639,7 @@ definitions:
           type: integer
         type: array
     type: object
-  response.IndexerToken:
+  github_com_defipod_mochi_pkg_response.IndexerToken:
     properties:
       address:
         type: string
@@ -2539,17 +2650,17 @@ definitions:
       symbol:
         type: string
     type: object
-  response.InvitesAggregationResponse:
+  github_com_defipod_mochi_pkg_response.InvitesAggregationResponse:
     properties:
       data:
-        $ref: '#/definitions/response.UserInvitesAggregation'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UserInvitesAggregation'
     type: object
-  response.LinkUserTelegramWithDiscordResponse:
+  github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponse:
     properties:
       data:
-        $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponseData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponseData'
     type: object
-  response.LinkUserTelegramWithDiscordResponseData:
+  github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponseData:
     properties:
       discord_id:
         type: string
@@ -2558,35 +2669,35 @@ definitions:
       telegram_username:
         type: string
     type: object
-  response.ListAllCustomTokenResponse:
+  github_com_defipod_mochi_pkg_response.ListAllCustomTokenResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.Token'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Token'
         type: array
     type: object
-  response.ListAllNFTCollectionsResponse:
+  github_com_defipod_mochi_pkg_response.ListAllNFTCollectionsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.NFTCollection'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection'
         type: array
     type: object
-  response.ListConfigNotifyResponse:
+  github_com_defipod_mochi_pkg_response.ListConfigNotifyResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.ConfigNotifyResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ConfigNotifyResponse'
         type: array
     type: object
-  response.ListGuildGroupNFTRolesResponse:
+  github_com_defipod_mochi_pkg_response.ListGuildGroupNFTRolesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.ListGuildNFTRoleConfigsResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListGuildNFTRoleConfigsResponse'
         type: array
     type: object
-  response.ListGuildNFTRoleConfigsResponse:
+  github_com_defipod_mochi_pkg_response.ListGuildNFTRoleConfigsResponse:
     properties:
       color:
         type: integer
@@ -2598,7 +2709,7 @@ definitions:
         type: string
       nft_collection_configs:
         items:
-          $ref: '#/definitions/response.NFTCollectionConfig'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionConfig'
         type: array
       number_of_tokens:
         type: integer
@@ -2607,32 +2718,32 @@ definitions:
       role_name:
         type: string
     type: object
-  response.ListMyGuildsResponse:
+  github_com_defipod_mochi_pkg_response.ListMyGuildsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.DiscordGuildResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DiscordGuildResponse'
         type: array
     type: object
-  response.ListRoleReactionResponse:
+  github_com_defipod_mochi_pkg_response.ListRoleReactionResponse:
     properties:
       configs:
         items:
-          $ref: '#/definitions/response.RoleReactionByMessage'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionByMessage'
         type: array
       guild_id:
         type: string
       success:
         type: boolean
     type: object
-  response.LogoutResponse:
+  github_com_defipod_mochi_pkg_response.LogoutResponse:
     properties:
       message:
         type: string
       status:
         type: string
     type: object
-  response.MarketData:
+  github_com_defipod_mochi_pkg_response.MarketData:
     properties:
       current_price:
         additionalProperties:
@@ -2655,7 +2766,7 @@ definitions:
           type: number
         type: object
     type: object
-  response.Metric:
+  github_com_defipod_mochi_pkg_response.Metric:
     properties:
       nft_collections:
         type: integer
@@ -2686,28 +2797,28 @@ definitions:
       total_verified_wallets:
         type: integer
     type: object
-  response.MonikerConfigData:
+  github_com_defipod_mochi_pkg_response.MonikerConfigData:
     properties:
       moniker:
-        $ref: '#/definitions/model.MonikerConfig'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.MonikerConfig'
       value:
         type: number
     type: object
-  response.MonikerConfigResponse:
+  github_com_defipod_mochi_pkg_response.MonikerConfigResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.MonikerConfigData'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigData'
         type: array
     type: object
-  response.NFTChainCollectionCount:
+  github_com_defipod_mochi_pkg_response.NFTChainCollectionCount:
     properties:
       chain:
-        $ref: '#/definitions/model.Chain'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.Chain'
       count:
         type: integer
     type: object
-  response.NFTCollectionConfig:
+  github_com_defipod_mochi_pkg_response.NFTCollectionConfig:
     properties:
       address:
         type: string
@@ -2736,44 +2847,44 @@ definitions:
       symbol:
         type: string
     type: object
-  response.NFTCollectionCount:
+  github_com_defipod_mochi_pkg_response.NFTCollectionCount:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.NFTChainCollectionCount'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTChainCollectionCount'
         type: array
       total:
         type: integer
     type: object
-  response.NFTCollectionsData:
+  github_com_defipod_mochi_pkg_response.NFTCollectionsData:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.NFTCollection'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection'
         type: array
       metadata:
-        $ref: '#/definitions/util.Pagination'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_util.Pagination'
     type: object
-  response.NFTCollectionsResponse:
+  github_com_defipod_mochi_pkg_response.NFTCollectionsResponse:
     properties:
       data:
-        $ref: '#/definitions/response.NFTCollectionsData'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionsData'
     type: object
-  response.NFTNewListed:
+  github_com_defipod_mochi_pkg_response.NFTNewListed:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.NewListedNFTCollection'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.NewListedNFTCollection'
         type: array
       metadata:
-        $ref: '#/definitions/util.Pagination'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_util.Pagination'
     type: object
-  response.NFTNewListedResponse:
+  github_com_defipod_mochi_pkg_response.NFTNewListedResponse:
     properties:
       data:
-        $ref: '#/definitions/response.NFTNewListed'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTNewListed'
     type: object
-  response.NFTSalesTrackerResponse:
+  github_com_defipod_mochi_pkg_response.NFTSalesTrackerResponse:
     properties:
       channel_id:
         type: string
@@ -2784,7 +2895,7 @@ definitions:
       platform:
         type: string
     type: object
-  response.NFTTradingVolume:
+  github_com_defipod_mochi_pkg_response.NFTTradingVolume:
     properties:
       collection_address:
         type: string
@@ -2799,28 +2910,28 @@ definitions:
       trading_volume:
         type: number
     type: object
-  response.NFTTradingVolumeResponse:
+  github_com_defipod_mochi_pkg_response.NFTTradingVolumeResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.NFTTradingVolume'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTTradingVolume'
         type: array
     type: object
-  response.NewGuildConfigWalletVerificationMessageResponse:
+  github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigWalletVerificationMessage'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigWalletVerificationMessage'
       status:
         type: string
     type: object
-  response.NewGuildGroupNFTRoleResponse:
+  github_com_defipod_mochi_pkg_response.NewGuildGroupNFTRoleResponse:
     properties:
       data:
-        $ref: '#/definitions/response.ConfigGroupNFTRoleResponse'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ConfigGroupNFTRoleResponse'
       message:
         type: string
     type: object
-  response.NftListingMarketplace:
+  github_com_defipod_mochi_pkg_response.NftListingMarketplace:
     properties:
       contract_address:
         type: string
@@ -2843,7 +2954,7 @@ definitions:
       token_id:
         type: string
     type: object
-  response.NftMetadataAttrIcon:
+  github_com_defipod_mochi_pkg_response.NftMetadataAttrIcon:
     properties:
       discord_icon:
         type: string
@@ -2854,14 +2965,14 @@ definitions:
       unicode_icon:
         type: string
     type: object
-  response.NftMetadataAttrIconResponse:
+  github_com_defipod_mochi_pkg_response.NftMetadataAttrIconResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.NftMetadataAttrIcon'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftMetadataAttrIcon'
         type: array
     type: object
-  response.NftSales:
+  github_com_defipod_mochi_pkg_response.NftSales:
     properties:
       buyer:
         type: string
@@ -2880,28 +2991,28 @@ definitions:
       seller:
         type: string
     type: object
-  response.NftSalesResponse:
+  github_com_defipod_mochi_pkg_response.NftSalesResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.NftSales'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftSales'
         type: array
     type: object
-  response.NftWatchlistSuggest:
+  github_com_defipod_mochi_pkg_response.NftWatchlistSuggest:
     properties:
       default_symbol:
-        $ref: '#/definitions/response.CollectionSuggestions'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions'
       suggestions:
         items:
-          $ref: '#/definitions/response.CollectionSuggestions'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions'
         type: array
     type: object
-  response.NftWatchlistSuggestResponse:
+  github_com_defipod_mochi_pkg_response.NftWatchlistSuggestResponse:
     properties:
       data:
-        $ref: '#/definitions/response.NftWatchlistSuggest'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftWatchlistSuggest'
     type: object
-  response.OffchainTipBotTransferToken:
+  github_com_defipod_mochi_pkg_response.OffchainTipBotTransferToken:
     properties:
       amount:
         type: number
@@ -2914,14 +3025,14 @@ definitions:
       symbol:
         type: string
     type: object
-  response.OffchainTipBotTransferTokenResponse:
+  github_com_defipod_mochi_pkg_response.OffchainTipBotTransferTokenResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/response.OffchainTipBotTransferToken'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotTransferToken'
         type: array
     type: object
-  response.OffchainTipBotWithdraw:
+  github_com_defipod_mochi_pkg_response.OffchainTipBotWithdraw:
     properties:
       amount:
         type: number
@@ -2940,12 +3051,12 @@ definitions:
       withdraw_amount:
         $ref: '#/definitions/big.Float'
     type: object
-  response.OffchainTipBotWithdrawResponse:
+  github_com_defipod_mochi_pkg_response.OffchainTipBotWithdrawResponse:
     properties:
       data:
-        $ref: '#/definitions/response.OffchainTipBotWithdraw'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotWithdraw'
     type: object
-  response.PaginationResponse:
+  github_com_defipod_mochi_pkg_response.PaginationResponse:
     properties:
       page:
         description: page index
@@ -2956,34 +3067,34 @@ definitions:
       total:
         type: integer
     type: object
-  response.ResponseDataMessage:
+  github_com_defipod_mochi_pkg_response.ResponseDataMessage:
     properties:
       data:
-        $ref: '#/definitions/response.ResponseMessage'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
     type: object
-  response.ResponseMessage:
+  github_com_defipod_mochi_pkg_response.ResponseMessage:
     properties:
       message:
         type: string
     type: object
-  response.ResponseStatus:
+  github_com_defipod_mochi_pkg_response.ResponseStatus:
     properties:
       status:
         type: string
     type: object
-  response.ResponseSucess:
+  github_com_defipod_mochi_pkg_response.ResponseSucess:
     properties:
       success:
         type: boolean
     type: object
-  response.Role:
+  github_com_defipod_mochi_pkg_response.Role:
     properties:
       id:
         type: string
       reaction:
         type: string
     type: object
-  response.RoleReactionByMessage:
+  github_com_defipod_mochi_pkg_response.RoleReactionByMessage:
     properties:
       channel_id:
         type: string
@@ -2991,10 +3102,10 @@ definitions:
         type: string
       roles:
         items:
-          $ref: '#/definitions/response.Role'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.Role'
         type: array
     type: object
-  response.RoleReactionConfigResponse:
+  github_com_defipod_mochi_pkg_response.RoleReactionConfigResponse:
     properties:
       channel_id:
         type: string
@@ -3004,12 +3115,12 @@ definitions:
         type: string
       roles:
         items:
-          $ref: '#/definitions/response.Role'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.Role'
         type: array
       success:
         type: boolean
     type: object
-  response.RoleReactionResponse:
+  github_com_defipod_mochi_pkg_response.RoleReactionResponse:
     properties:
       channel_id:
         type: string
@@ -3018,23 +3129,23 @@ definitions:
       message_id:
         type: string
       role:
-        $ref: '#/definitions/response.Role'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_response.Role'
     type: object
-  response.SearchCoinResponse:
+  github_com_defipod_mochi_pkg_response.SearchCoinResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.CoingeckoSupportedTokens'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens'
         type: array
     type: object
-  response.SparkLineIn7d:
+  github_com_defipod_mochi_pkg_response.SparkLineIn7d:
     properties:
       price:
         items:
           type: number
         type: array
     type: object
-  response.TickerData:
+  github_com_defipod_mochi_pkg_response.TickerData:
     properties:
       base:
         type: string
@@ -3047,21 +3158,21 @@ definitions:
       target_coin_id:
         type: string
     type: object
-  response.ToggleActivityConfigResponse:
+  github_com_defipod_mochi_pkg_response.ToggleActivityConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigActivity'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigActivity'
       message:
         type: string
     type: object
-  response.TransactionsResponse:
+  github_com_defipod_mochi_pkg_response.TransactionsResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.OffchainTipBotTransferHistory'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory'
         type: array
     type: object
-  response.TwitterHashtag:
+  github_com_defipod_mochi_pkg_response.TwitterHashtag:
     properties:
       channel_id:
         type: string
@@ -3088,16 +3199,16 @@ definitions:
       user_id:
         type: string
     type: object
-  response.UpdateUserFeedbackResponse:
+  github_com_defipod_mochi_pkg_response.UpdateUserFeedbackResponse:
     properties:
       data:
-        $ref: '#/definitions/model.UserFeedback'
+        $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserFeedback'
     type: object
-  response.User:
+  github_com_defipod_mochi_pkg_response.User:
     properties:
       guild_users:
         items:
-          $ref: '#/definitions/response.GetGuildUserResponse'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildUserResponse'
         type: array
       id:
         type: string
@@ -3110,18 +3221,18 @@ definitions:
       username:
         type: string
     type: object
-  response.UserDeviceResponse:
+  github_com_defipod_mochi_pkg_response.UserDeviceResponse:
     properties:
       device_id:
         type: string
       ios_noti_token:
         type: string
     type: object
-  response.UserFeedbackResponse:
+  github_com_defipod_mochi_pkg_response.UserFeedbackResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.UserFeedback'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.UserFeedback'
         type: array
       page:
         type: integer
@@ -3130,7 +3241,7 @@ definitions:
       total:
         type: integer
     type: object
-  response.UserInvitesAggregation:
+  github_com_defipod_mochi_pkg_response.UserInvitesAggregation:
     properties:
       fake:
         type: integer
@@ -3141,14 +3252,14 @@ definitions:
       regular:
         type: integer
     type: object
-  response.UserTransactionResponse:
+  github_com_defipod_mochi_pkg_response.UserTransactionResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.OffchainTipBotTransferHistory'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory'
         type: array
     type: object
-  util.Pagination:
+  github_com_defipod_mochi_pkg_util.Pagination:
     properties:
       page:
         type: integer
@@ -3189,14 +3300,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.LoginRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.LoginResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_entities.LoginResponse'
       summary: Login
       tags:
       - Auth
@@ -3211,7 +3322,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.LogoutResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.LogoutResponse'
       summary: Logout
       tags:
       - Auth
@@ -3226,14 +3337,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.SetUpvoteMessageCacheRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.SetUpvoteMessageCacheRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Set or overwrite an upvote message cache
       tags:
       - Cache
@@ -3257,7 +3368,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserFeedbackResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UserFeedbackResponse'
       summary: Get users' feedbacks
       tags:
       - Community
@@ -3271,14 +3382,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.UserFeedbackRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UserFeedbackRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Post users' feedbacks
       tags:
       - Community
@@ -3292,14 +3403,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.UpdateUserFeedbackRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpdateUserFeedbackRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UpdateUserFeedbackResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UpdateUserFeedbackResponse'
       summary: Update users' feedbacks
       tags:
       - Community
@@ -3325,7 +3436,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetInvitesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetInvitesResponse'
       summary: Get invites
       tags:
       - Community
@@ -3351,7 +3462,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.InvitesAggregationResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.InvitesAggregationResponse'
       summary: Invites Aggregation
       tags:
       - Community
@@ -3372,7 +3483,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetInviteTrackerConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetInviteTrackerConfigResponse'
       summary: Get invites tracker config
       tags:
       - Community
@@ -3386,14 +3497,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigureInviteRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigureInviteRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ConfigureInvitesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ConfigureInvitesResponse'
       summary: Configure invites
       tags:
       - Community
@@ -3414,7 +3525,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetInvitesLeaderboardResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetInvitesLeaderboardResponse'
       summary: Get invites leaderboard
       tags:
       - Community
@@ -3425,9 +3536,6 @@ paths:
       description: Get user quest list
       parameters:
       - in: query
-        name: routine
-        type: string
-      - in: query
         name: user_id
         required: true
         type: string
@@ -3437,7 +3545,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserQuestListResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserQuestListResponse'
       summary: Get user quest list
       tags:
       - Community
@@ -3452,14 +3560,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.ClaimQuestsRewardsRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ClaimQuestsRewardsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ClaimQuestsRewardsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponse'
       summary: Claim user quests' rewards
       tags:
       - Community
@@ -3474,7 +3582,7 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.UpdateQuestProgressRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpdateQuestProgressRequest'
       produces:
       - application/json
       responses:
@@ -3496,14 +3604,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove Respost reaction config
       tags:
       - Community
@@ -3517,14 +3625,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Config Respost reaction
       tags:
       - Community
@@ -3545,7 +3653,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetRepostReactionConfigsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetRepostReactionConfigsResponse'
       summary: Get Respost reaction configs
       tags:
       - Community
@@ -3560,14 +3668,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete blacklist channel repost config
       tags:
       - Community
@@ -3587,7 +3695,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Get guild blacklist channel repost config
       tags:
       - Community
@@ -3601,14 +3709,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create blacklist channel repost config
       tags:
       - Community
@@ -3623,14 +3731,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigRepostReactionStartStop'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostReactionStartStop'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Config Respost reaction with start stop
       tags:
       - Community
@@ -3645,14 +3753,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.EditMessageRepostRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.EditMessageRepostRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: edit message repost
       tags:
       - Community
@@ -3667,14 +3775,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.TwitterPost'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.TwitterPost'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create twitter post
       tags:
       - Community
@@ -3700,7 +3808,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponse'
       summary: Create twitter post
       tags:
       - Community
@@ -3721,7 +3829,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGmConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGmConfigResponse'
       summary: Get GM config
       tags:
       - ConfigChannel
@@ -3735,14 +3843,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertGmConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertGmConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Update or insert GM config
       tags:
       - ConfigChannel
@@ -3757,14 +3865,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteJoinLeaveChannelConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteJoinLeaveChannelConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete join-leave channel config
       tags:
       - ConfigChannel
@@ -3784,7 +3892,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse'
       summary: Get join-leave channel config
       tags:
       - ConfigChannel
@@ -3798,14 +3906,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertJoinLeaveChannelConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse'
       summary: Update or insert join-leave channel config
       tags:
       - ConfigChannel
@@ -3826,7 +3934,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListConfigNotifyResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListConfigNotifyResponse'
       summary: OffChain Tip Bot - Config notify
       tags:
       - ConfigChannel
@@ -3840,14 +3948,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateTipConfigNotify'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateTipConfigNotify'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: OffChain Tip Bot - Config notify
       tags:
       - ConfigChannel
@@ -3868,7 +3976,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: OffChain Tip Bot - Config notify
       tags:
       - ConfigChannel
@@ -3883,14 +3991,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteVoteChannelConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteVoteChannelConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete vote channel config
       tags:
       - ConfigChannel
@@ -3910,7 +4018,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse'
       summary: Get vote channel config
       tags:
       - ConfigChannel
@@ -3924,14 +4032,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertVoteChannelConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertVoteChannelConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse'
       summary: Update or insert vote channel config
       tags:
       - ConfigChannel
@@ -3946,14 +4054,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteWelcomeConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteWelcomeConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete welcome channel config
       tags:
       - ConfigChannel
@@ -3973,7 +4081,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse'
       summary: Get welcome channel config
       tags:
       - ConfigChannel
@@ -3987,14 +4095,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertWelcomeConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertWelcomeConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetWelcomeChannelConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse'
       summary: Update or insert welcome channel config
       tags:
       - ConfigChannel
@@ -4015,7 +4123,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetLinkedTelegramResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetLinkedTelegramResponse'
       summary: Get telegram account linked with discord ID
       tags:
       - ConfigCommunity
@@ -4029,14 +4137,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.LinkUserTelegramWithDiscordRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.LinkUserTelegramWithDiscordRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponse'
       summary: Link user's telegram with discord account
       tags:
       - ConfigCommunity
@@ -4051,14 +4159,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/model.GuildConfigTwitterFeed'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create twitter config
       tags:
       - ConfigCommunity
@@ -4101,7 +4209,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetTwitterBlackListResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterBlackListResponse'
       summary: Get twitter blacklist
       tags:
       - ConfigCommunity
@@ -4115,7 +4223,7 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.AddToTwitterBlackListRequest'
       produces:
       - application/json
       responses:
@@ -4137,7 +4245,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetAllTwitterHashtagConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetAllTwitterHashtagConfigResponse'
       summary: Get all twitter hashtag config
       tags:
       - ConfigCommunity
@@ -4151,14 +4259,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.TwitterHashtag'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.TwitterHashtag'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create twitter hashtag config
       tags:
       - ConfigCommunity
@@ -4179,7 +4287,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete twitter hashtag config
       tags:
       - ConfigCommunity
@@ -4199,7 +4307,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterHashtagConfigResponse'
       summary: Get twitter hashtag config
       tags:
       - ConfigCommunity
@@ -4214,14 +4322,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertCustomTokenConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertCustomTokenConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Guild custom token config
       tags:
       - ConfigDefi
@@ -4236,14 +4344,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.GuildIDRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.GuildIDRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete default currency
       tags:
       - ConfigDefi
@@ -4263,7 +4371,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GuildConfigDefaultCurrencyResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GuildConfigDefaultCurrencyResponse'
       summary: Get default currency by guild id
       tags:
       - ConfigDefi
@@ -4277,14 +4385,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertGuildDefaultCurrencyRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildDefaultCurrencyRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Upsert default currency
       tags:
       - ConfigDefi
@@ -4299,14 +4407,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigDefaultCollection'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigDefaultCollection'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create default collection symbol
       tags:
       - ConfigDefi
@@ -4332,7 +4440,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildDefaultTickerResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildDefaultTickerResponse'
       summary: Get guild default ticker
       tags:
       - ConfigDefi
@@ -4346,14 +4454,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.GuildConfigDefaultTickerRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.GuildConfigDefaultTickerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Set guild default ticker
       tags:
       - ConfigDefi
@@ -4368,14 +4476,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteMonikerConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteMonikerConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete moniker config
       tags:
       - ConfigDefi
@@ -4389,14 +4497,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertMonikerConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertMonikerConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Upsert moniker config
       tags:
       - ConfigDefi
@@ -4417,7 +4525,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.MonikerConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigResponse'
       summary: Get moniker configs
       tags:
       - ConfigDefi
@@ -4432,7 +4540,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.MonikerConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigResponse'
       summary: Get default moniker
       tags:
       - ConfigDefi
@@ -4452,7 +4560,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildTokensResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildTokensResponse'
       summary: Get guild tokens
       tags:
       - ConfigDefi
@@ -4466,14 +4574,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertGuildTokenConfigRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildTokenConfigRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Update or insert guild token config
       tags:
       - ConfigDefi
@@ -4494,7 +4602,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove Default token
       tags:
       - ConfigDefi
@@ -4514,7 +4622,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetDefaultTokenResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetDefaultTokenResponse'
       summary: Get Default token
       tags:
       - ConfigDefi
@@ -4528,14 +4636,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigDefaultTokenRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigDefaultTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Config Default token
       tags:
       - ConfigDefi
@@ -4556,7 +4664,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseSucess'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseSucess'
       summary: Delete default role
       tags:
       - ConfigRole
@@ -4576,7 +4684,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DefaultRoleResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DefaultRoleResponse'
       summary: Get default roles by guild id
       tags:
       - ConfigRole
@@ -4590,14 +4698,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateDefaultRoleRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateDefaultRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DefaultRoleResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DefaultRoleResponse'
       summary: Create default role
       tags:
       - ConfigRole
@@ -4612,14 +4720,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigLevelRoleRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigLevelRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Config Level role
       tags:
       - ConfigRole
@@ -4640,7 +4748,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove level role config
       tags:
       - ConfigRole
@@ -4660,7 +4768,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetLevelRoleConfigsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetLevelRoleConfigsResponse'
       summary: Get level role config
       tags:
       - ConfigRole
@@ -4681,7 +4789,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove guild nft role
       tags:
       - ConfigRole
@@ -4701,7 +4809,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListGuildGroupNFTRolesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListGuildGroupNFTRolesResponse'
       summary: List guild nft roles
       tags:
       - ConfigRole
@@ -4715,14 +4823,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.ConfigGroupNFTRoleRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.ConfigGroupNFTRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NewGuildGroupNFTRoleResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NewGuildGroupNFTRoleResponse'
       summary: New guild nft role
       tags:
       - ConfigRole
@@ -4743,7 +4851,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove guild group nft role
       tags:
       - ConfigRole
@@ -4758,14 +4866,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.RoleReactionUpdateRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseSucess'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseSucess'
       summary: Remove reaction role config
       tags:
       - ConfigRole
@@ -4785,7 +4893,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DataListRoleReactionResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DataListRoleReactionResponse'
       summary: Get all role reaction configs
       tags:
       - ConfigRole
@@ -4799,14 +4907,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.RoleReactionUpdateRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.RoleReactionConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionConfigResponse'
       summary: Add reaction role config
       tags:
       - ConfigRole
@@ -4821,14 +4929,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.RoleReactionRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DataFilterConfigByReaction'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DataFilterConfigByReaction'
       summary: Filter config by reaction
       tags:
       - ConfigRole
@@ -4849,7 +4957,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Remove guild group nft role
       tags:
       - Config
@@ -4870,7 +4978,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetSalesTrackerConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetSalesTrackerConfigResponse'
       summary: Get sales tracker config
       tags:
       - Config
@@ -4891,7 +4999,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetAllTwitterConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetAllTwitterConfigResponse'
       summary: Get all twitter config
       tags:
       - Config
@@ -4906,7 +5014,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUpvoteTiersConfig'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUpvoteTiersConfig'
       summary: Get all upvote tiers
       tags:
       - Config
@@ -4921,14 +5029,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete prune exclude config
       tags:
       - Config
@@ -4948,7 +5056,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildPruneExcludeResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildPruneExcludeResponse'
       summary: Get prune exclusion config
       tags:
       - Config
@@ -4962,14 +5070,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Upsert prune exclude config
       tags:
       - Config
@@ -4995,7 +5103,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ToggleActivityConfigResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ToggleActivityConfigResponse'
       summary: Toggle activity config
       tags:
       - Data
@@ -5021,7 +5129,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DataMetric'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DataMetric'
       summary: Metric
       tags:
       - Data
@@ -5036,7 +5144,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetListAllChainsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetListAllChainsResponse'
       summary: List All Chain
       tags:
       - Defi
@@ -5057,7 +5165,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.SearchCoinResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.SearchCoinResponse'
       summary: Search coin
       tags:
       - Defi
@@ -5078,7 +5186,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetCoinResponseWrapper'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponseWrapper'
       summary: Get coin
       tags:
       - Defi
@@ -5113,7 +5221,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CompareTokenResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CompareTokenResponse'
       summary: Compare token
       tags:
       - Defi
@@ -5144,7 +5252,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetHistoricalMarketChartResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetHistoricalMarketChartResponse'
       summary: Get historical market chart
       tags:
       - Defi
@@ -5159,7 +5267,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetSupportedTokensResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetSupportedTokensResponse'
       summary: Get supported tokens
       tags:
       - Defi
@@ -5208,7 +5316,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetWatchlistResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetWatchlistResponse'
       summary: Get user's watchlist
       tags:
       - Defi
@@ -5222,14 +5330,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.AddToWatchlistRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.AddToWatchlistRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.AddToWatchlistResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.AddToWatchlistResponse'
       summary: Add to user's watchlist
       tags:
       - Defi
@@ -5257,7 +5365,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetFiatHistoricalExchangeRatesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetFiatHistoricalExchangeRatesResponse'
       summary: Get historical market chart
       tags:
       - Fiat
@@ -5272,7 +5380,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildsResponse'
       summary: Get guilds
       tags:
       - Guild
@@ -5286,14 +5394,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateGuildRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateGuildRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/request.CreateGuildRequest'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateGuildRequest'
       summary: Create guild
       tags:
       - Guild
@@ -5314,7 +5422,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildResponse'
       summary: Get guild
       tags:
       - Guild
@@ -5333,14 +5441,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpdateGuildRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpdateGuildRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Update guild
       tags:
       - Guild
@@ -5386,7 +5494,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListAllCustomTokenResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListAllCustomTokenResponse'
       summary: List all guild custom token
       tags:
       - Guild
@@ -5407,7 +5515,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.DiscordGuildStat'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_model.DiscordGuildStat'
       summary: Get guild stats
       tags:
       - Guild
@@ -5428,7 +5536,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListMyGuildsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListMyGuildsResponse'
       summary: Get my guilds list
       tags:
       - Guild
@@ -5443,7 +5551,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ListAllNFTCollectionsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ListAllNFTCollectionsResponse'
       summary: List all nft collections
       tags:
       - NFT
@@ -5468,13 +5576,17 @@ paths:
         name: guild_id
         required: true
         type: string
+      - description: Query by using Collection Address
+        in: query
+        name: query_address
+        type: boolean
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.IndexerGetNFTTokenDetailResponseWithSuggestions'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenDetailResponseWithSuggestions'
       summary: Get NFT Detail
       tags:
       - NFT
@@ -5508,7 +5620,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetNFTActivityResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNFTActivityResponse'
       summary: Get NFT Activity
       tags:
       - NFT
@@ -5534,7 +5646,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NFTCollectionsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionsResponse'
       summary: Get NFT trading volume
       tags:
       - NFT
@@ -5548,14 +5660,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateNFTCollectionRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateNFTCollectionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CreateNFTCollectionResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CreateNFTCollectionResponse'
       summary: Create NFT Collection
       tags:
       - NFT
@@ -5576,7 +5688,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Update NFT Collection
       tags:
       - NFT
@@ -5597,7 +5709,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse'
       summary: Get NFT Tokens
       tags:
       - NFT
@@ -5618,7 +5730,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetDetailNftCollectionResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetDetailNftCollectionResponse'
       summary: Get detail nft collection
       tags:
       - NFT
@@ -5644,7 +5756,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetNFTCollectionByAddressChainResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChainResponse'
       summary: Get NFT collection by address chain
       tags:
       - NFT
@@ -5659,7 +5771,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetCollectionCountResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetCollectionCountResponse'
       summary: Get collection count
       tags:
       - NFT
@@ -5680,7 +5792,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetSuggestionNFTCollectionsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetSuggestionNFTCollectionsResponse'
       summary: Get guild suggest nft collections
       tags:
       - NFT
@@ -5711,7 +5823,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.IndexerNFTCollectionTickersResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersResponse'
       summary: Get NFT collection tickers
       tags:
       - NFT
@@ -5737,7 +5849,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetGuildDefaultNftTickerResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetGuildDefaultNftTickerResponse'
       summary: Get guild default nft ticker
       tags:
       - NFT
@@ -5751,14 +5863,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.GuildConfigDefaultNftTickerRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.GuildConfigDefaultNftTickerRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseDataMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseDataMessage'
       summary: Set guild default nft ticker
       tags:
       - NFT
@@ -5773,7 +5885,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NftMetadataAttrIconResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftMetadataAttrIconResponse'
       summary: Get NFT metadata attribute icon
       tags:
       - NFT
@@ -5804,7 +5916,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NFTNewListedResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTNewListedResponse'
       summary: Get new listed nft collection
       tags:
       - NFT
@@ -5830,7 +5942,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NftSalesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftSalesResponse'
       summary: Get NFT sales
       tags:
       - NFT
@@ -5856,7 +5968,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete NFT sales tracker
       tags:
       - NFT
@@ -5870,7 +5982,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetAllNFTSalesTrackerResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetAllNFTSalesTrackerResponse'
       summary: Get all nft sales tracker
       tags:
       - NFT
@@ -5890,7 +6002,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse'
       summary: Create NFT Sales tracker
       tags:
       - NFT
@@ -5905,7 +6017,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetSupportedChains'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetSupportedChains'
       summary: Get supported chains
       tags:
       - NFT
@@ -5941,7 +6053,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.IndexerGetNFTTokenTickersResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenTickersResponse'
       summary: Get NFT token tickers
       tags:
       - NFT
@@ -5956,14 +6068,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateTradeOfferRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateTradeOfferRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CreateTradeOfferResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CreateTradeOfferResponse'
       summary: Create Trade Offer
       tags:
       - NFT
@@ -5984,7 +6096,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetTradeOfferResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetTradeOfferResponse'
       summary: Get Trade Offer
       tags:
       - NFT
@@ -6005,7 +6117,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NFTTradingVolumeResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NFTTradingVolumeResponse'
       summary: Get NFT trading volume
       tags:
       - NFT
@@ -6061,7 +6173,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetNftWatchlistResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetNftWatchlistResponse'
       summary: Get user's nft watchlist
       tags:
       - NFT
@@ -6075,14 +6187,14 @@ paths:
         name: req
         required: true
         schema:
-          $ref: '#/definitions/request.AddNftWatchlistRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.AddNftWatchlistRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NftWatchlistSuggestResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NftWatchlistSuggestResponse'
       summary: Add to user's nft watchlist
       tags:
       - NFT
@@ -6098,14 +6210,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateAssignContract'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateAssignContract'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetAssignedContract'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetAssignedContract'
       summary: OffChain Tip Bot - Create an assign contract
       tags:
       - Tip
@@ -6126,7 +6238,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserBalancesResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserBalancesResponse'
       summary: Get offchain user bals
       tags:
       - Tip
@@ -6152,7 +6264,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.TransactionsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.TransactionsResponse'
       summary: Get transactions history by query
       tags:
       - Tip
@@ -6167,7 +6279,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.AllTipBotTokensResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.AllTipBotTokensResponse'
       summary: Get all offchain tip bot tokens
       tags:
       - Tip
@@ -6196,7 +6308,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.TransactionsResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.TransactionsResponse'
       summary: Get transactions by query
       tags:
       - Tip
@@ -6211,14 +6323,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.OffchainTransferRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.OffchainTransferRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotTransferTokenResponse'
       summary: OffChain Tip Bot - Transfer token
       tags:
       - Tip
@@ -6233,14 +6345,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.OffchainWithdrawRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.OffchainWithdrawRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.OffchainTipBotWithdrawResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotWithdrawResponse'
       summary: OffChain Tip Bot - Withdraw
       tags:
       - Tip
@@ -6255,14 +6367,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateUserRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.CreateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Create User
       tags:
       - User
@@ -6283,7 +6395,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserTransactionResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UserTransactionResponse'
       summary: Get user transaction
       tags:
       - User
@@ -6304,7 +6416,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserResponse'
       summary: Get user
       tags:
       - User
@@ -6330,7 +6442,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserCurrentGMStreakResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserCurrentGMStreakResponse'
       summary: Get user current GM streak
       tags:
       - User
@@ -6351,7 +6463,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetMyInfoResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetMyInfoResponse'
       summary: Get user info
       tags:
       - User
@@ -6377,7 +6489,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetDataUserProfileResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetDataUserProfileResponse'
       summary: Get user profile
       tags:
       - User
@@ -6413,7 +6525,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetMyInfoResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetMyInfoResponse'
       summary: Get top users
       tags:
       - User
@@ -6439,7 +6551,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserUpvoteLeaderboardResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserUpvoteLeaderboardResponse'
       summary: Get user upvote leaderboard
       tags:
       - User
@@ -6460,7 +6572,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CurrentUserUpvoteStreakResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.CurrentUserUpvoteStreakResponse'
       summary: Get user current upvote streak
       tags:
       - User
@@ -6481,7 +6593,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetUserWalletByGuildIDAddressResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GetUserWalletByGuildIDAddressResponse'
       summary: Get user by guild_id address
       tags:
       - User
@@ -6496,14 +6608,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.VerifyWalletAddressRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.VerifyWalletAddressRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseStatus'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseStatus'
       summary: Verify wallet address
       tags:
       - Verification
@@ -6524,7 +6636,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseStatus'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseStatus'
       summary: Delete guild config wallet verification message
       tags:
       - Verification
@@ -6538,14 +6650,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.NewGuildConfigWalletVerificationMessageRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse'
       summary: Config wallet verification message
       tags:
       - Verification
@@ -6559,14 +6671,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.NewGuildConfigWalletVerificationMessageRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse'
       summary: Update guild config wallet verification message
       tags:
       - Verification
@@ -6587,7 +6699,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.NewGuildConfigWalletVerificationMessageResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse'
       summary: Get guild config wallet verification message
       tags:
       - Verification
@@ -6602,14 +6714,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.GenerateVerificationRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.GenerateVerificationRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GenerateVerificationResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.GenerateVerificationResponse'
       summary: Generate verification
       tags:
       - Verification
@@ -6624,14 +6736,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteUserDeviceRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteUserDeviceRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete user current device data
       tags:
       - Widget
@@ -6651,7 +6763,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserDeviceResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.UserDeviceResponse'
       summary: Get user current device data
       tags:
       - Widget
@@ -6665,14 +6777,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertUserDeviceRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertUserDeviceRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Upsert user current device data
       tags:
       - Widget
@@ -6687,14 +6799,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.DeleteDiscordUserAlertRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.DeleteDiscordUserAlertRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Delete user token alerts
       tags:
       - Widget
@@ -6714,7 +6826,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DiscordUserTokenAlertResponse'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.DiscordUserTokenAlertResponse'
       summary: Get user current token alerts
       tags:
       - Widget
@@ -6728,14 +6840,14 @@ paths:
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.UpsertDiscordUserAlertRequest'
+          $ref: '#/definitions/github_com_defipod_mochi_pkg_request.UpsertDiscordUserAlertRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseMessage'
+            $ref: '#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage'
       summary: Upsert user token alerts
       tags:
       - Widget
