@@ -90,14 +90,14 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 	}
 
 	ac := &model.OffchainTipBotAssignContract{
-		ContractID:  chains[0].Contracts[0].ID.String(),
-		ChainID:     chains[0].ID.String(),
+		ContractID:  chains[0].Contracts[0].ID,
+		ChainID:     chains[0].ID,
 		UserID:      body.UserID,
 		ExpiredTime: time.Now().Add(3 * 24 * time.Hour),
 	}
 	for _, t := range chains[0].Tokens {
 		if strings.EqualFold(strings.ToLower(t.TokenSymbol), strings.ToLower(body.TokenSymbol)) {
-			ac.TokenID = t.ID.String()
+			ac.TokenID = t.ID
 			break
 		}
 	}
@@ -297,8 +297,13 @@ func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 }
 
 func (h *Handler) GetContracts(c *gin.Context) {
-	chainID := c.Query("chain_id")
-	contracts, err := h.entities.GetContracts(chainID)
+	req := request.TipBotGetContractsRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetContracts] ShouldBindQuery() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	contracts, err := h.entities.GetContracts(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetContracts] entities.GetContracts() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
@@ -314,7 +319,6 @@ func (h *Handler) HandleDeposit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-
 	err := h.entities.HandleIncomingDeposit(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.HandleDeposit] entities.HandleIncomingDeposit() failed")
@@ -322,4 +326,21 @@ func (h *Handler) HandleDeposit(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+}
+
+func (h *Handler) GetLatestDeposit(c *gin.Context) {
+	req := request.GetLatestDepositRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetLatestDeposit] c.ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	tx, err := h.entities.GetLatestDepositTx(req)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetLatestDeposit] entity.GetLatestDepositTx() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(tx, nil, nil, nil))
 }

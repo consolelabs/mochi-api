@@ -58,6 +58,7 @@ import (
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
 	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
+	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
 	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
@@ -167,5 +168,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		MonikerConfig:                        monikerconfig.NewPG(db),
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
+		OffchainTipBotDepositLog:             offchaintipbotdepositlog.NewPG(db),
 	}
 }

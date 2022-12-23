@@ -50,17 +50,17 @@ func (mr *MockStoreMockRecorder) GetAll(f interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll), f)
 }
 
-// GetByID mocks base method.
-func (m *MockStore) GetByID(id string) (model.OffchainTipBotChain, error) {
+// GetByChainID mocks base method.
+func (m *MockStore) GetByChainID(chainID int) (model.OffchainTipBotChain, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", id)
+	ret := m.ctrl.Call(m, "GetByChainID", chainID)
 	ret0, _ := ret[0].(model.OffchainTipBotChain)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByID indicates an expected call of GetByID.
-func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
+// GetByChainID indicates an expected call of GetByChainID.
+func (mr *MockStoreMockRecorder) GetByChainID(chainID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), chainID)
 }
