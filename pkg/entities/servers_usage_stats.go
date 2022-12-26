@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"encoding/json"
+	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -20,19 +20,20 @@ func (e *Entity) AddServersUsageStats(info *request.UsageInformation) error {
 }
 
 func (e *Entity) AddGitbookClick(url, cmd, action string) error {
-	kafkaMsg := model.KafkaMessage{
-		Platform: "mochi-api",
-		Gitbook: model.GitbookClick{
-			Command:    cmd,
-			Subcommand: action,
-		},
-	}
-	b, err := json.Marshal(kafkaMsg)
-	if err != nil {
-		e.log.Error(err, "[entities.AddGitbookClick] - failed to marshal kafka message")
+	info, err := e.repo.GitbookClickCollector.GetByCommandAndAction(cmd, action)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Error(err, "[entities.AddGitbookClick] - failed to get gitbook click info")
 		return err
 	}
-	return e.kafka.Produce(e.cfg.Kafka.Topic, "webhook.gitbook", b)
+	if err == gorm.ErrRecordNotFound {
+		return e.repo.GitbookClickCollector.UpsertOne(model.GitbookClickCollector{
+			Command:     cmd,
+			Action:      action,
+			CountClicks: 1,
+		})
+	}
+	info.CountClicks = info.CountClicks + 1
+	return e.repo.GitbookClickCollector.UpsertOne(info)
 }
 
 func (e *Entity) TotalCommandUsage(guildId string) (*response.Metric, error) {

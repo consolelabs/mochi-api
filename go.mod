@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/bwmarrin/discordgo v0.26.1
-	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/ethereum/go-ethereum v1.10.17
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/pprof v1.3.0
@@ -23,7 +22,6 @@ require (
 	github.com/nanmu42/etherscan-api v1.7.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/portto/solana-go-sdk v1.22.1
-	github.com/riferrei/srclient v0.5.4
 	github.com/sideshow/apns2 v0.23.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.10.1
@@ -93,7 +91,6 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
@@ -108,7 +105,6 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/linkedin/goavro/v2 v2.11.1 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -122,7 +118,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
-	github.com/santhosh-tekuri/jsonschema/v5 v5.0.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
@@ -134,7 +129,6 @@ require (
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/tyler-smith/go-bip39 v1.0.1-0.20181017060643-dbb3b84ba2ef // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
