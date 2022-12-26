@@ -30,7 +30,8 @@
       "guild_id": "",
       "address": "",
       "chain_type": null,
-      "created_at": "0001-01-01T00:00:00Z"
+      "created_at": "0001-01-01T00:00:00Z",
+      "user": null
     },
     "user_faction_xps": {
       "imperial_xp": 0,

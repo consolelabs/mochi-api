@@ -423,6 +423,31 @@ definitions:
       role_id:
         type: integer
     type: object
+  model.GuildUser:
+    properties:
+      guild_id:
+        type: string
+      id:
+        type: string
+      invited_by:
+        type: string
+      nickname:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.GuildRole'
+        type: array
+      user_id:
+        type: string
+    type: object
+  model.JSONNullInt64:
+    properties:
+      int64:
+        type: integer
+      valid:
+        description: Valid is true if Int64 is not NULL
+        type: boolean
+    type: object
   model.JSONNullString:
     properties:
       string:
@@ -797,6 +822,23 @@ definitions:
       xp_per_interval:
         type: integer
     type: object
+  model.User:
+    properties:
+      guild_users:
+        items:
+          $ref: '#/definitions/model.GuildUser'
+        type: array
+      id:
+        type: string
+      in_discord_wallet_address:
+        $ref: '#/definitions/model.JSONNullString'
+      in_discord_wallet_number:
+        $ref: '#/definitions/model.JSONNullInt64'
+      nr_of_join:
+        type: integer
+      username:
+        type: string
+    type: object
   model.UserFactionXpsMapping:
     properties:
       academy_xp:
@@ -846,6 +888,9 @@ definitions:
         type: string
       guild_id:
         type: string
+      user:
+        $ref: '#/definitions/model.User'
+        description: preload user
       user_discord_id:
         type: string
     type: object
