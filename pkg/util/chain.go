@@ -5,7 +5,7 @@ import "strings"
 func ConvertChainToChainId(chain string) string {
 	switch chain {
 	case "sol":
-		return "0"
+		return "999"
 	case "eth":
 		return "1"
 	case "ftm":
@@ -24,6 +24,8 @@ func ConvertChainToChainId(chain string) string {
 		return "9999"
 	case "arb":
 		return "42161"
+	case "polygon":
+		return "137"
 	default:
 		return chain
 	}
@@ -31,7 +33,7 @@ func ConvertChainToChainId(chain string) string {
 
 func ConvertChainIDToChain(chain string) string {
 	switch chain {
-	case "0":
+	case "999":
 		return "sol"
 	case "1":
 		return "eth"
@@ -43,6 +45,8 @@ func ConvertChainIDToChain(chain string) string {
 		return "arb"
 	case "sol":
 		return "sol"
+	case "137":
+		return "polygon"
 	default:
 		return chain
 	}
