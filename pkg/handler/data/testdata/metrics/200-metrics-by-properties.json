@@ -1,0 +1,16 @@
+{
+  "data": {
+    "nft_collections": 5,
+    "server_active_users": 0,
+    "total_active_users": 0,
+    "total_servers": 0,
+    "total_verified_wallets": 0,
+    "server_verified_wallets": 0,
+    "server_token_supported": 0,
+    "total_token_supported": 0,
+    "server_token": null,
+    "total_token": null,
+    "total_command_usage": 0,
+    "server_command_usage": 0
+  }
+}

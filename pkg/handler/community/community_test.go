@@ -291,3 +291,447 @@ func TestHandler_EditMessageRepost(t *testing.T) {
 		})
 	}
 }
+
+func TestHandler_CreateConfigRepostReactionConversation(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             interface{}
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "Config repost reaction conversation but missing guild_id",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:         "",
+				EmojiStart:      "test",
+				EmojiStop:       "test",
+				RepostChannelID: "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+		{
+			name: "Config repost reaction conversation but missing start emoji",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:         "test",
+				EmojiStart:      "",
+				EmojiStop:       "test",
+				RepostChannelID: "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/guild_config_repost_reactions/400-missing-emoji.json",
+		},
+		{
+			name: "Config repost reaction conversation but missing stop emoji",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:         "test",
+				EmojiStart:      "test",
+				EmojiStop:       "",
+				RepostChannelID: "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/guild_config_repost_reactions/400-missing-emoji.json",
+		},
+		{
+			name: "Config repost reaction conversation but missing repost channel id",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:         "test",
+				EmojiStart:      "test",
+				EmojiStop:       "test",
+				RepostChannelID: "",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/guild_config_repost_reactions/400-missing-repost-channel-id.json",
+		},
+		{
+			name: "Config repost reaction conversation succesfully",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:         "552427722551459840",
+				EmojiStart:      "test",
+				EmojiStop:       "test",
+				RepostChannelID: "test",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/community/repost-reactions/conversation", bytes.NewBuffer(body))
+
+			h.CreateConfigRepostReactionConversation(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.CreateConfigRepostReactionConversation] response mismatched")
+		})
+	}
+}
+
+func TestHandler_RemoveConfigRepostReactionConversation(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             interface{}
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "Remove config repost reaction conversation but missing guild_id",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:    "",
+				EmojiStart: "test",
+				EmojiStop:  "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-guildID.json",
+		},
+		{
+			name: "Remove config repost reaction conversation but missing start emoji",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:    "test",
+				EmojiStart: "",
+				EmojiStop:  "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/guild_config_repost_reactions/400-missing-emoji.json",
+		},
+		{
+			name: "Remove config repost reaction conversation but missing stop emoji",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:    "test",
+				EmojiStart: "test",
+				EmojiStop:  "",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/guild_config_repost_reactions/400-missing-emoji.json",
+		},
+		{
+			name: "Remove config repost reaction conversation succesfully",
+			args: request.ConfigRepostReactionStartStop{
+				GuildID:    "552427722551459840",
+				EmojiStart: "test",
+				EmojiStop:  "test",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-message-ok.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodDelete, "/api/v1/community/repost-reactions/conversation", bytes.NewBuffer(body))
+
+			h.RemoveConfigRepostReactionConversation(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.RemoveConfigRepostReactionConversation] response mismatched")
+		})
+	}
+}
+
+func TestHandler_UpdateUserFeedback(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             interface{}
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "Missing guild_id",
+			args: request.UpdateUserFeedbackRequest{
+				ID:     "test",
+				Status: "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/feedback/400-invalid-status.json",
+		},
+		// {
+		// 	name: "Config repost reaction conversation succesfully",
+		// 	args: request.UpdateUserFeedbackRequest{
+		// 		ID:     "test",
+		// 		Status: "none",
+		// 	},
+		// 	wantCode:         http.StatusOK,
+		// 	wantResponsePath: "testdata/200-message-ok.json",
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPut, "/api/v1/community/feedback", bytes.NewBuffer(body))
+
+			h.UpdateUserFeedback(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.UpdateUserFeedback] response mismatched")
+		})
+	}
+}
+
+func TestHandler_HandleUserFeedback(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             interface{}
+		wantCode         int
+		wantResponsePath string
+	}{
+		// {
+		// 	name: "missing body",
+		// 	args: request.UserFeedbackRequest{
+		// 		DiscordID: "",
+		// 		Username:  "",
+		// 		MessageID: "",
+		// 		Feedback:  "",
+		// 		Avatar:    "",
+		// 		Command:   "",
+		// 	},
+		// 	wantCode:         http.StatusBadRequest,
+		// 	wantResponsePath: "testdata/400-missing-guildID.json",
+		// },
+		// {
+		// 	name: "Config repost reaction conversation succesfully",
+		// 	args: request.UserFeedbackRequest{
+		// 		DiscordID: "test",
+		// 		Username:  "test",
+		// 		MessageID: "test",
+		// 		Feedback:  "test",
+		// 		Avatar:    "test",
+		// 		Command:   "test",
+		// 	},
+		// 	wantCode:         http.StatusOK,
+		// 	wantResponsePath: "testdata/200-message-ok.json",
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/community/feedback", bytes.NewBuffer(body))
+
+			h.HandleUserFeedback(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.CreateConfigRepostReactionConversation] response mismatched")
+		})
+	}
+}
+
+func TestHandler_GetAllUserFeedback(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name:             "Filter by command",
+			query:            "filter=command",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/feedback/200-get-all-user-feedback.json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/community/feedback?%s", tt.query), nil)
+
+			h.GetAllUserFeedback(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetAllUserFeedback] response mismatched")
+		})
+	}
+}
+
+func TestHandler_GetUserQuestList(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		query            string
+		wantCode         int
+		wantResponsePath string
+	}{
+		// {
+		// 	name:             "With user id",
+		// 	query:            "user_id=test",
+		// 	wantCode:         http.StatusOK,
+		// 	wantResponsePath: "testdata/quests/200-get-by-user-id-test.json",
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/community/quests?%s", tt.query), nil)
+
+			h.GetUserQuestList(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetUserQuestList] response mismatched")
+		})
+	}
+}
+
+func TestHandler_CreateTwitterPost(t *testing.T) {
+	db := testhelper.LoadTestDB("../../../migrations/test_seed")
+	repo := pg.NewRepo(db)
+	cfg := config.LoadTestConfig()
+	log := logger.NewLogrusLogger()
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+
+	h := &Handler{
+		entities: entity,
+		log:      log,
+	}
+
+	tests := []struct {
+		name             string
+		args             interface{}
+		wantCode         int
+		wantResponsePath string
+	}{
+		{
+			name: "Twitter post successfully",
+			args: request.TwitterPost{
+				TwitterID:     "test",
+				TwitterHandle: "test",
+				TweetID:       "test",
+				GuildID:       "test",
+				Content:       "test",
+			},
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/twitter/200-message-ok.json",
+		},
+		// {
+		// 	name:             "Twitter post without body",
+		// 	args:             request.TwitterPost{},
+		// 	wantCode:         http.StatusBadRequest,
+		// 	wantResponsePath: "testdata/twitter/400-error-eol.json",
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			body, err := json.Marshal(tt.args)
+			if err != nil {
+				t.Error(err)
+				return
+			}
+
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/community/twitter", bytes.NewBuffer(body))
+
+			h.CreateTwitterPost(ctx)
+			require.Equal(t, tt.wantCode, w.Code)
+			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
+			require.NoError(t, err)
+
+			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.CreateTwitterPost] response mismatched")
+		})
+	}
+}
