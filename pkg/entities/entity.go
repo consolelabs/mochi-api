@@ -13,7 +13,6 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
-	"github.com/defipod/mochi/pkg/kafka"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
@@ -41,7 +40,6 @@ type Entity struct {
 	abi         abi.Service
 	marketplace marketplace.Service
 	solana      chain.Solana
-	kafka       kafka.Kafka
 }
 
 var e *Entity
@@ -87,16 +85,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		log.Fatal(err, "failed to init service")
 	}
 
-	kafka := kafka.New(cfg.Kafka.Brokers)
-
-	errCh := make(chan error)
-	go func(ch chan error) {
-		err := kafka.RunProducer()
-		if err != nil {
-			errCh <- err
-		}
-	}(errCh)
-
 	// *** init entity ***
 	e = &Entity{
 		repo:        repo,
@@ -111,7 +99,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		abi:         abi.NewAbi(&cfg),
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
-		kafka:       *kafka,
 	}
 
 	if e.discord != nil && e.cache != nil {
