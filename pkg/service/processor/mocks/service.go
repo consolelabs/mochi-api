@@ -7,9 +7,10 @@ package mock_processor
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	request "github.com/defipod/mochi/pkg/request"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockService is a mock of Service interface.

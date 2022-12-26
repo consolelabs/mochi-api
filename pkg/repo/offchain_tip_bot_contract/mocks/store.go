@@ -7,9 +7,10 @@ package mock_offchain_tip_bot_contract
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	offchain_tip_bot_contract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

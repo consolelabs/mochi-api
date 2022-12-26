@@ -3,10 +3,10 @@ package offchain_tip_bot_chain
 import (
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/google/uuid"
 )
 
 type pg struct {

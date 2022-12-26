@@ -14,7 +14,4 @@ type IHandler interface {
 	UpdateTokenFee(c *gin.Context)
 	GetAllTipBotTokens(c *gin.Context)
 	GetTransactionHistoryByQuery(c *gin.Context)
-	GetContracts(c *gin.Context)
-	HandleDeposit(c *gin.Context)
-	GetLatestDeposit(c *gin.Context)
 }

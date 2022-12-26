@@ -7,8 +7,9 @@ package mock_marketplace
 import (
 	reflect "reflect"
 
-	response "github.com/defipod/mochi/pkg/response"
 	gomock "github.com/golang/mock/gomock"
+
+	response "github.com/defipod/mochi/pkg/response"
 )
 
 // MockService is a mock of Service interface.

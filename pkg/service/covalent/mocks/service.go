@@ -10,6 +10,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 
 	response "github.com/defipod/mochi/pkg/response"
+	covalent "github.com/defipod/mochi/pkg/service/covalent"
 )
 
 // MockService is a mock of Service interface.
@@ -49,4 +50,19 @@ func (m *MockService) GetHistoricalTokenPrices(chainID int, currency, address st
 func (mr *MockServiceMockRecorder) GetHistoricalTokenPrices(chainID, currency, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalTokenPrices", reflect.TypeOf((*MockService)(nil).GetHistoricalTokenPrices), chainID, currency, address)
+}
+
+// GetTransactionsByAddress mocks base method.
+func (m *MockService) GetTransactionsByAddress(chainID int, address string) (*covalent.GetTransactionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTransactionsByAddress", chainID, address)
+	ret0, _ := ret[0].(*covalent.GetTransactionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTransactionsByAddress indicates an expected call of GetTransactionsByAddress.
+func (mr *MockServiceMockRecorder) GetTransactionsByAddress(chainID, address interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsByAddress", reflect.TypeOf((*MockService)(nil).GetTransactionsByAddress), chainID, address)
 }

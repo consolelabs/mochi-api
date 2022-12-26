@@ -1,9 +1,10 @@
 package offchain_tip_bot_deposit_log
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {

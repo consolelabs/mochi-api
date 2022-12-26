@@ -7,9 +7,10 @@ package mock_nft_sales_tracker
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+
 	model "github.com/defipod/mochi/pkg/model"
 	response "github.com/defipod/mochi/pkg/response"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

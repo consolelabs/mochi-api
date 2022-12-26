@@ -7,8 +7,9 @@ package mock_discord_user_gm_streak
 import (
 	reflect "reflect"
 
-	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
+
+	model "github.com/defipod/mochi/pkg/model"
 )
 
 // MockStore is a mock of Store interface.

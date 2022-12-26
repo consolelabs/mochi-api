@@ -1,8 +1,9 @@
 package offchain_tip_bot_deposit_log
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/google/uuid"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type Store interface {

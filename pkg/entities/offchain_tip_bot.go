@@ -553,6 +553,7 @@ func (e *Entity) GetContracts(req request.TipBotGetContractsRequest) ([]model.Of
 
 // TODO: refactor
 func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
+	e.log.Fields(logger.Fields{"txHash": req.TxHash, "chainID": req.ChainID}).Info("receiving new deposit ...")
 	chain, err := e.repo.OffchainTipBotChain.GetByChainID(req.ChainID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"chainID": req.ChainID}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotChain.GetByChainID() failed")
@@ -623,16 +624,6 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		FailReason:      "",
 		Message:         req.TxHash,
 		UserID:          &userID,
-	}
-
-	_, err = e.repo.OffchainTipBotDepositLog.GetByID(assignedContract.ChainID, req.TxHash)
-	if err == gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"chainID": assignedContract.ChainID, "txHash": req.TxHash}).Info("[entity.HandleIncomingDeposit] this deposit tx has already been handled")
-		return nil
-	}
-	if err != nil {
-		e.log.Fields(logger.Fields{"chainID": assignedContract.ChainID, "txHash": req.TxHash}).Info("[entity.HandleIncomingDeposit] repo.OffchainTipBotDepositLog.GetByID() failed()")
-		return err
 	}
 
 	al, err := e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&activityLog)

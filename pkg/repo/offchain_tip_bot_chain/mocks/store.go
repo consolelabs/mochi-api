@@ -7,9 +7,11 @@ package mock_offchain_tip_bot_chain
 import (
 	reflect "reflect"
 
+	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
+
 	model "github.com/defipod/mochi/pkg/model"
 	offchain_tip_bot_chain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
-	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.
@@ -63,4 +65,19 @@ func (m *MockStore) GetByChainID(chainID int) (model.OffchainTipBotChain, error)
 func (mr *MockStoreMockRecorder) GetByChainID(chainID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), chainID)
+}
+
+// GetByID mocks base method.
+func (m *MockStore) GetByID(id uuid.UUID) (model.OffchainTipBotChain, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", id)
+	ret0, _ := ret[0].(model.OffchainTipBotChain)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
