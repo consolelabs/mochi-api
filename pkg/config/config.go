@@ -49,7 +49,8 @@ type Config struct {
 	BscScan       string
 	BscScanAPIKey string
 
-	CovalentAPIKey string
+	CovalentBaseUrl string
+	CovalentAPIKey  string
 
 	DiscordToken string
 
@@ -177,7 +178,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BscScan:       v.GetString("BSC_SCAN"),
 		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
 
-		CovalentAPIKey: v.GetString("COVALENT_API_KEY"),
+		CovalentBaseUrl: v.GetString("COVALENT_BASE_URL"),
+		CovalentAPIKey:  v.GetString("COVALENT_API_KEY"),
 
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 
@@ -294,6 +296,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
+	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

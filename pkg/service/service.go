@@ -50,7 +50,7 @@ func NewService(
 
 	return &Service{
 		CoinGecko: coingecko.NewService(&cfg),
-		Covalent:  covalent.NewService(&cfg),
+		Covalent:  covalent.NewService(&cfg, log),
 		Discord:   discordSvc,
 		Indexer:   indexer.NewIndexer(cfg, log),
 		Abi:       abi.NewAbi(&cfg),

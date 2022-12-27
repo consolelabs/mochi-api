@@ -48,6 +48,7 @@ func (h *Handler) AddGitbookClick(c *gin.Context) {
 	cmd := c.Query("command")
 	action := c.Query("action")
 	if url == "" || cmd == "" {
+		h.log.Error(nil, "[handler.AddGitbookClick] - url and command are required")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("url and command are required"), nil))
 	}
 

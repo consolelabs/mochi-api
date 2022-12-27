@@ -16,7 +16,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetBySymbol(symbol string) (*model.OffchainTipBotToken, error) {
 	var rs model.OffchainTipBotToken
-	return &rs, pg.db.Where("token_symbol = ?", symbol).First(&rs).Error
+	return &rs, pg.db.Where("token_symbol ILIKE ?", symbol).First(&rs).Error
 }
 
 func (pg *pg) GetAll() (rs []model.OffchainTipBotToken, err error) {

@@ -93,6 +93,10 @@ func NewPostgresStore(cfg *config.Config) repo.Store {
 
 	var readDialectors []gorm.Dialector
 	for _, r := range cfg.DBReadHosts {
+		if r == "" {
+			continue
+		}
+
 		port := cfg.DBPort
 		if strings.Contains(r, ":") {
 			p := strings.Split(r, ":")

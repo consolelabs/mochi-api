@@ -10,6 +10,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 
 	model "github.com/defipod/mochi/pkg/model"
+	offchain_tip_bot_activity_logs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 )
 
 // MockStore is a mock of Store interface.
@@ -48,4 +49,19 @@ func (m *MockStore) CreateActivityLog(al *model.OffchainTipBotActivityLog) (*mod
 func (mr *MockStoreMockRecorder) CreateActivityLog(al interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateActivityLog", reflect.TypeOf((*MockStore)(nil).CreateActivityLog), al)
+}
+
+// List mocks base method.
+func (m *MockStore) List(arg0 offchain_tip_bot_activity_logs.ListQuery) ([]model.OffchainTipBotActivityLog, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", arg0)
+	ret0, _ := ret[0].([]model.OffchainTipBotActivityLog)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockStoreMockRecorder) List(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockStore)(nil).List), arg0)
 }

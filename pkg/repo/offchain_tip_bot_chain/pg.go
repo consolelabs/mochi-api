@@ -3,6 +3,7 @@ package offchain_tip_bot_chain
 import (
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -50,7 +51,12 @@ func (pg *pg) GetAll(f Filter) ([]model.OffchainTipBotChain, error) {
 	return rs, db.Find(&rs).Error
 }
 
-func (pg *pg) GetByID(id string) (model.OffchainTipBotChain, error) {
+func (pg *pg) GetByID(id uuid.UUID) (model.OffchainTipBotChain, error) {
+	var chain model.OffchainTipBotChain
+	return chain, pg.db.First(&chain, "id = ?", id).Error
+}
+
+func (pg *pg) GetByChainID(chainID int) (model.OffchainTipBotChain, error) {
 	var rs model.OffchainTipBotChain
-	return rs, pg.db.Where("chain_id = ?", id).First(&rs).Error
+	return rs, pg.db.Where("chain_id = ?", chainID).First(&rs).Error
 }

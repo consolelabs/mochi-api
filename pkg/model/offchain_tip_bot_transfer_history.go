@@ -8,7 +8,7 @@ import (
 
 type OffchainTipBotTransferHistory struct {
 	ID         uuid.UUID  `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	SenderID   string     `json:"sender_id"`
+	SenderID   *string    `json:"sender_id"`
 	ReceiverID string     `json:"receiver_id"`
 	GuildID    string     `json:"guild_id"`
 	LogID      string     `json:"log_id"`

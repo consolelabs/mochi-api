@@ -130,24 +130,24 @@ func (h *Handler) UpsertWelcomeChannelConfig(c *gin.Context) {
 	var req request.UpsertWelcomeConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to read JSON")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertWelcomeChannelConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if req.GuildID == "" {
-		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
+		h.log.Info("[handler.UpsertWelcomeChannelConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 	if req.ChannelID == "" {
-		h.log.Info("[handler.GetWelcomeChannelConfig] - channel id empty")
+		h.log.Info("[handler.UpsertWelcomeChannelConfig] - channel id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
 		return
 	}
 
 	config, err := h.entities.UpsertWelcomeChannelConfig(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to upsert welcome config")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertWelcomeChannelConfig] - failed to upsert welcome config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -168,18 +168,18 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	var req request.DeleteWelcomeConfigRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to read JSON")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteWelcomeChannelConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if req.GuildID == "" {
-		h.log.Info("[handler.GetWelcomeChannelConfig] - guild id empty")
+		h.log.Info("[handler.DeleteWelcomeChannelConfig] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
 		return
 	}
 
 	if err := h.entities.DeleteWelcomeChannelConfig(req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetWelcomeChannelConfig] - failed to delete welcome config")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteWelcomeChannelConfig] - failed to delete welcome config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

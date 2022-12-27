@@ -6064,6 +6064,44 @@
                 }
             }
         },
+        "model.GuildUser": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "invited_by": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildRole"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.JSONNullInt64": {
+            "type": "object",
+            "properties": {
+                "int64": {
+                    "type": "integer"
+                },
+                "valid": {
+                    "description": "Valid is true if Int64 is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
         "model.JSONNullString": {
             "type": "object",
             "properties": {
@@ -6634,6 +6672,32 @@
                 }
             }
         },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "guild_users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildUser"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "in_discord_wallet_address": {
+                    "$ref": "#/definitions/model.JSONNullString"
+                },
+                "in_discord_wallet_number": {
+                    "$ref": "#/definitions/model.JSONNullInt64"
+                },
+                "nr_of_join": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserFactionXpsMapping": {
             "type": "object",
             "properties": {
@@ -6708,6 +6772,10 @@
                 },
                 "guild_id": {
                     "type": "string"
+                },
+                "user": {
+                    "description": "preload user",
+                    "$ref": "#/definitions/model.User"
                 },
                 "user_discord_id": {
                     "type": "string"

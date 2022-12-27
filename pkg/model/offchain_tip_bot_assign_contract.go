@@ -10,10 +10,10 @@ import (
 
 type OffchainTipBotAssignContract struct {
 	ID                     uuid.UUID               `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	TokenID                string                  `json:"token_id"`
-	ChainID                string                  `json:"chain_id"`
+	TokenID                uuid.UUID               `json:"token_id"`
+	ChainID                uuid.UUID               `json:"chain_id"`
 	UserID                 string                  `json:"user_id"`
-	ContractID             string                  `json:"contract_id"`
+	ContractID             uuid.UUID               `json:"contract_id"`
 	Status                 int                     `json:"status" gorm:"default:0"`
 	ExpiredTime            time.Time               `json:"expired_time"`
 	OffchainTipBotContract *OffchainTipBotContract `json:"contract" gorm:"foreignkey:ContractID"`

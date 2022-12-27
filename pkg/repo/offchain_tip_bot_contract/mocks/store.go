@@ -10,6 +10,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 
 	model "github.com/defipod/mochi/pkg/model"
+	offchain_tip_bot_contract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
 )
 
 // MockStore is a mock of Store interface.
@@ -64,6 +65,21 @@ func (mr *MockStoreMockRecorder) DeleteExpiredAssignContract() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteExpiredAssignContract", reflect.TypeOf((*MockStore)(nil).DeleteExpiredAssignContract))
 }
 
+// GetAssignContract mocks base method.
+func (m *MockStore) GetAssignContract(address, tokenSymbol string) (*model.OffchainTipBotAssignContract, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAssignContract", address, tokenSymbol)
+	ret0, _ := ret[0].(*model.OffchainTipBotAssignContract)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAssignContract indicates an expected call of GetAssignContract.
+func (mr *MockStoreMockRecorder) GetAssignContract(address, tokenSymbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAssignContract", reflect.TypeOf((*MockStore)(nil).GetAssignContract), address, tokenSymbol)
+}
+
 // GetByAddress mocks base method.
 func (m *MockStore) GetByAddress(addr string) (model.OffchainTipBotContract, error) {
 	m.ctrl.T.Helper()
@@ -79,21 +95,6 @@ func (mr *MockStoreMockRecorder) GetByAddress(addr interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockStore)(nil).GetByAddress), addr)
 }
 
-// GetByChainID mocks base method.
-func (m *MockStore) GetByChainID(id string) ([]model.OffchainTipBotContract, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByChainID", id)
-	ret0, _ := ret[0].([]model.OffchainTipBotContract)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByChainID indicates an expected call of GetByChainID.
-func (mr *MockStoreMockRecorder) GetByChainID(id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), id)
-}
-
 // GetByID mocks base method.
 func (m *MockStore) GetByID(id string) (model.OffchainTipBotContract, error) {
 	m.ctrl.T.Helper()
@@ -107,4 +108,19 @@ func (m *MockStore) GetByID(id string) (model.OffchainTipBotContract, error) {
 func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
+}
+
+// List mocks base method.
+func (m *MockStore) List(arg0 offchain_tip_bot_contract.ListQuery) ([]model.OffchainTipBotContract, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", arg0)
+	ret0, _ := ret[0].([]model.OffchainTipBotContract)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockStoreMockRecorder) List(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockStore)(nil).List), arg0)
 }

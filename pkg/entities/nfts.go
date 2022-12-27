@@ -396,11 +396,6 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
 	}
 
-	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, solanaCollection.Data.Data.Collection, solanaCollection.Data.Data.Symbol, util.ConvertChainIDToChain("sol"), solanaCollection.Data.Data.Avatar)
-	if err != nil {
-		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
-		return nil, fmt.Errorf("Cannot send embed message: %v", err)
-	}
 	return
 }
 
@@ -501,12 +496,6 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
 		return nil, fmt.Errorf("Cannot add collection: %v", err)
-	}
-
-	err = e.svc.Discord.NotifyAddNewCollection(req.GuildID, name, symbol, util.ConvertChainIDToChain(convertedChainId), image)
-	if err != nil {
-		e.log.Errorf(err, "[e.svc.Discord.NotifyAddNewCollection] cannot send embed message: %v", err)
-		return nil, fmt.Errorf("Cannot send embed message: %v", err)
 	}
 
 	//Add collection to podtown
