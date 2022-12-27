@@ -136,11 +136,11 @@ func (e *Entity) NotifyNftCollectionSync(req request.NotifyCompleteNftSyncReques
 	}
 
 	// reply to orignal command
-	description := fmt.Sprintf("👉 To check rarity, run `$nft %s <token_id>`.\n👉 To track sales, run `$sales track <channel> %s %s`.", collection.Symbol, collection.Address, collection.ChainID)
+	description := fmt.Sprintf("👉 You can check rarity by running `$nft %s <token_id>`.\n👉 You can track sales movement by running `$sales track <channel> %s %s`.", collection.Symbol, collection.Address, collection.ChainID)
 	_, err = e.discord.ChannelMessageSendEmbedReply(history.ChannelID, &discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: "https://cdn.discordapp.com/emojis/977508805011181638.png?size=240&quality=lossless",
-			Name:    fmt.Sprintf("%s is ready to use", collection.Name),
+			Name:    fmt.Sprintf("%s is ready to use!", collection.Name),
 		},
 		Description: description,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
