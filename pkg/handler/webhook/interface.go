@@ -24,5 +24,6 @@ type IHandler interface {
 	WebhookUpvoteDiscordBot(c *gin.Context)
 	NotifyNftCollectionIntegration(c *gin.Context)
 	NotifyNftCollectionSync(c *gin.Context)
+	NotifyNftCollectionAdd(c *gin.Context)
 	NotifySaleMarketplace(c *gin.Context)
 }

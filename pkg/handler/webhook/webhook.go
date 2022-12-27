@@ -427,6 +427,23 @@ func (h *Handler) NotifyNftCollectionIntegration(c *gin.Context) {
 	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
 }
 
+func (h *Handler) NotifyNftCollectionAdd(c *gin.Context) {
+	req := request.NotifyNftCollectionAddRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.NotifyNftCollectionIntegration] c.BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.NotifyNftCollectionAdd(req)
+	if err != nil {
+		h.log.Error(err, "[handler.NotifyNftCollectionAdd] entity.NotifyNftCollectionAdd() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.ResponseMessage{Message: "ok"})
+}
+
 func (h *Handler) NotifyNftCollectionSync(c *gin.Context) {
 	req := request.NotifyCompleteNftSyncRequest{}
 	if err := c.BindJSON(&req); err != nil {
