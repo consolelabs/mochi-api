@@ -1,0 +1,6 @@
+- id: 2
+  guild_id: "882287783169896468"
+  user_id: "463379262620041226"
+  command: "vote info"
+  args: "$vote info"
+  success: true
