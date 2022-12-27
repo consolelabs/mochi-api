@@ -459,7 +459,7 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 
 	// store nft add request
 	history := model.NftAddRequestHistory{
-		Address:   address,
+		Address:   req.Address,
 		ChainID:   int64(chainID),
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
