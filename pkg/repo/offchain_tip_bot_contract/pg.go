@@ -42,7 +42,9 @@ func (pg *pg) GetByAddress(addr string) (model.OffchainTipBotContract, error) {
 }
 
 func (pg *pg) CreateAssignContract(ac *model.OffchainTipBotAssignContract) (*model.OffchainTipBotAssignContract, error) {
-	return ac, pg.db.Preload("OffchainTipBotContract").FirstOrCreate(&ac).Error
+	return ac, pg.db.
+		Where("chain_id = ? AND token_id = ? AND contract_id = ? AND user_id = ? AND expired_time >= now()", ac.ChainID, ac.TokenID, ac.ContractID, ac.UserID).
+		Preload("OffchainTipBotContract").FirstOrCreate(&ac).Error
 }
 
 func (pg *pg) DeleteExpiredAssignContract() error {
