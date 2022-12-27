@@ -74,6 +74,47 @@ func (e *Entity) NotifyNftCollectionIntegration(req request.NotifyCompleteNftInt
 	return err
 }
 
+func (e *Entity) NotifyNftCollectionAdd(req request.NotifyNftCollectionAddRequest) error {
+	collection, err := e.repo.NFTCollection.GetByAddress(req.CollectionAddress)
+	if err != nil {
+		e.log.Error(err, "[entity.NotifyNftCollectionAdd] repo.NFTCollection.GetByAddress() failed")
+		return err
+	}
+	history, err := e.repo.NftAddRequestHistory.GetOne(nftaddrequesthistory.GetOneQuery{Address: req.CollectionAddress, ChainID: req.ChainID})
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": req.CollectionAddress}).Error(err, "[entity.NotifyNftCollectionAdd] repo.NftAddRequestHistory.GetOne() failed")
+		return err
+	}
+
+	chain := strings.ToUpper(util.ConvertChainIDToChain(collection.ChainID))
+	// send logs to mochi
+	err = e.svc.Discord.NotifyAddNewCollection(history.GuildID, collection.Name, collection.Symbol, chain, collection.Image)
+	if err != nil {
+		e.log.Error(err, "[entity.NotifyNftCollectionAdd] svc.Discord.NotifyAddNewCollection() failed")
+		return err
+	}
+
+	// reply to orignal command
+	description := fmt.Sprintf("👉 Your collection is being processed. We will let you know when it's ready to use.\n👉 You can track other collections in `$nft list`.\n👉 You can track sales movement by running `$sales track <channel> %s %s`.", collection.Address, collection.ChainID)
+	_, err = e.discord.ChannelMessageSendEmbedReply(history.ChannelID, &discordgo.MessageEmbed{
+		Author: &discordgo.MessageEmbedAuthor{
+			IconURL: "https://cdn.discordapp.com/emojis/977508805011181638.png?size=240&quality=lossless",
+			Name:    fmt.Sprintf("%s has been added", collection.Name),
+		},
+		Description: description,
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: collection.Image,
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}, &discordgo.MessageReference{
+		GuildID:   history.GuildID,
+		ChannelID: history.ChannelID,
+		MessageID: history.MessageID,
+	})
+
+	return err
+}
+
 func (e *Entity) NotifyNftCollectionSync(req request.NotifyCompleteNftSyncRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(req.CollectionAddress)
 	if err != nil {

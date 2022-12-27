@@ -373,6 +373,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	dataWebhookGroup := v1.Group("/data-webhook")
 	{
 		dataWebhookGroup.POST("/notify-nft-integration", h.Webhook.NotifyNftCollectionIntegration)
+		dataWebhookGroup.POST("/notify-nft-add", h.Webhook.NotifyNftCollectionAdd)
 		dataWebhookGroup.POST("/notify-nft-sync", h.Webhook.NotifyNftCollectionSync)
 		dataWebhookGroup.POST("/notify-sale-marketplace", h.Webhook.NotifySaleMarketplace)
 	}
