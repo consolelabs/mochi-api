@@ -9,9 +9,9 @@ import (
 
 type OffchainTipBotActivityLog struct {
 	ID              uuid.UUID      `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	UserID          string         `json:"user_id"`
-	GuildID         string         `json:"guild_id"`
-	ChannelID       string         `json:"channel_id"`
+	UserID          *string        `json:"user_id"`
+	GuildID         *string        `json:"guild_id"`
+	ChannelID       *string        `json:"channel_id"`
 	Action          *string        `json:"action"`
 	Receiver        pq.StringArray `json:"receiver" gorm:"type:varchar(256)[];"`
 	NumberReceivers int            `json:"number_receivers"`
@@ -28,6 +28,7 @@ type OffchainTipBotActivityLog struct {
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       *time.Time     `json:"deleted_at"`
+	SenderAddress   *string        `json:"sender_address"`
 }
 
 func (OffchainTipBotActivityLog) TableName() string {

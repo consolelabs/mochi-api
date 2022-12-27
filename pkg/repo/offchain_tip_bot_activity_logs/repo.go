@@ -17,3 +17,21 @@ func NewPG(db *gorm.DB) Store {
 func (pg *pg) CreateActivityLog(al *model.OffchainTipBotActivityLog) (*model.OffchainTipBotActivityLog, error) {
 	return al, pg.db.Create(al).Error
 }
+
+func (pg *pg) List(q ListQuery) ([]model.OffchainTipBotActivityLog, error) {
+	var result []model.OffchainTipBotActivityLog
+	db := pg.db
+	if q.Action != "" {
+		db = db.Where("action = ?", q.Action)
+	}
+	if q.UserID != "" {
+		db = db.Where("user_id = ?", q.UserID)
+	}
+	if q.Message != "" {
+		db = db.Where("message = ?", q.Message)
+	}
+	if q.TokenID != "" {
+		db = db.Where("token_id = ?", q.TokenID)
+	}
+	return result, db.Find(&result).Error
+}

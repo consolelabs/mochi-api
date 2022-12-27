@@ -64,6 +64,9 @@ func TestEntity_TransferToken(t *testing.T) {
 	fullCmd5 := "tip <@760874365037314100> <@580788681967665173> 1 cake each"
 	fullCmd6 := "tip <@760874365037314100> <@580788681967665173> 1 alt each"
 	fullCmd7 := "tip <@760874365037314100> <@580788681967665173> 2 cake each"
+	senderID := "463379262620041226"
+	guildID := "462663954813157376"
+	channelID := "1003381172178530494"
 
 	tests := []struct {
 		name              string
@@ -100,7 +103,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			transferHistories: []model.OffchainTipBotTransferHistory{
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -111,9 +114,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100"},
@@ -156,7 +159,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			transferHistories: []model.OffchainTipBotTransferHistory{
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -166,7 +169,7 @@ func TestEntity_TransferToken(t *testing.T) {
 					Action:     "tip",
 				},
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "580788681967665173",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -177,9 +180,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100", "580788681967665173"},
@@ -230,7 +233,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			transferHistories: []model.OffchainTipBotTransferHistory{
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -241,9 +244,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100"},
@@ -287,7 +290,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			transferHistories: []model.OffchainTipBotTransferHistory{
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -297,7 +300,7 @@ func TestEntity_TransferToken(t *testing.T) {
 					Action:     "tip",
 				},
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "580788681967665173",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -308,9 +311,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100", "580788681967665173"},
@@ -360,7 +363,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			transferHistories: []model.OffchainTipBotTransferHistory{
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -370,7 +373,7 @@ func TestEntity_TransferToken(t *testing.T) {
 					Action:     "tip",
 				},
 				{
-					SenderID:   "463379262620041226",
+					SenderID:   &senderID,
 					ReceiverID: "580788681967665173",
 					GuildID:    "462663954813157376",
 					LogID:      uuid.UUID{}.String(),
@@ -381,9 +384,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100", "580788681967665173"},
@@ -430,9 +433,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				err:   gorm.ErrRecordNotFound,
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				Receiver:        []string{"760874365037314100", "580788681967665173"},
 				NumberReceivers: 2,
@@ -467,9 +470,9 @@ func TestEntity_TransferToken(t *testing.T) {
 				err:   nil,
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
-				UserID:          "463379262620041226",
-				GuildID:         "462663954813157376",
-				ChannelID:       "1003381172178530494",
+				UserID:          &senderID,
+				GuildID:         &guildID,
+				ChannelID:       &channelID,
 				Action:          &tip,
 				TokenID:         uuid.UUID{}.String(),
 				Receiver:        []string{"760874365037314100", "580788681967665173"},

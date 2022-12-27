@@ -90,14 +90,14 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 	}
 
 	ac := &model.OffchainTipBotAssignContract{
-		ContractID:  chains[0].Contracts[0].ID.String(),
-		ChainID:     chains[0].ID.String(),
+		ContractID:  chains[0].Contracts[0].ID,
+		ChainID:     chains[0].ID,
 		UserID:      body.UserID,
 		ExpiredTime: time.Now().Add(3 * 24 * time.Hour),
 	}
 	for _, t := range chains[0].Tokens {
 		if strings.EqualFold(strings.ToLower(t.TokenSymbol), strings.ToLower(body.TokenSymbol)) {
-			ac.TokenID = t.ID.String()
+			ac.TokenID = t.ID
 			break
 		}
 	}
