@@ -59,17 +59,6 @@ func TestHandler_SetUpvoteMessageCache(t *testing.T) {
 			wantCode:         http.StatusBadRequest,
 			wantResponsePath: "testdata/400-missing-required-fields.json",
 		},
-		// {
-		// 	name: "Set upvote message cache succesfully",
-		// 	args: request.SetUpvoteMessageCacheRequest{
-		// 		GuildID:   "test",
-		// 		MessageID: "test",
-		// 		ChannelID: "test",
-		// 		UserID:    "test",
-		// 	},
-		// 	wantCode:         http.StatusOK,
-		// 	wantResponsePath: "testdata/200-message-ok.json",
-		// },
 	}
 
 	for _, tt := range tests {
