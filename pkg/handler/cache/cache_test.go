@@ -38,11 +38,22 @@ func TestHandler_SetUpvoteMessageCache(t *testing.T) {
 		wantResponsePath string
 	}{
 		{
-			name: "Missing required fields",
+			name: "400_missing_guild_id",
 			args: request.SetUpvoteMessageCacheRequest{
 				GuildID:   "",
-				MessageID: "",
-				ChannelID: "",
+				MessageID: "test",
+				ChannelID: "test",
+				UserID:    "test",
+			},
+			wantCode:         http.StatusBadRequest,
+			wantResponsePath: "testdata/400-missing-required-fields.json",
+		},
+		{
+			name: "400_missing_user_id",
+			args: request.SetUpvoteMessageCacheRequest{
+				GuildID:   "test",
+				MessageID: "test",
+				ChannelID: "test",
 				UserID:    "",
 			},
 			wantCode:         http.StatusBadRequest,

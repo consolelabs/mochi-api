@@ -699,36 +699,17 @@ func TestHandler_NewGuildGroupNFTRole(t *testing.T) {
 		wantCode         int
 		wantResponsePath string
 	}{
-		// {
-		// 	name: "success config nftrole",
-		// 	args: request.ConfigGroupNFTRoleRequest{
-		// 		CollectionAddress: []string{"1a42432c-b1a8-4874-b7cc-875a5086742a"},
-		// 		GuildID:           "863278424433229854",
-		// 		RoleID:            "1012578894550937621",
-		// 		NumberOfTokens:    1,
-		// 		GroupName:         "test",
-		// 	},
-		// 	wantCode:         201,
-		// 	wantResponsePath: "testdata/new_guild_nft_role/201-success.json",
-		// },
-		// {
-		// 	name:             "fail to config - lack of guildID",
-		// 	args:             request.ConfigGroupNFTRoleRequest{},
-		// 	wantCode:         400,
-		// 	wantResponsePath: "testdata/400-missing-guildID.json",
-		// },
-		// {
-		// 	name:             "fail to config - lack of nft collection id",
-		// 	args:             request.ConfigGroupNFTRoleRequest{},
-		// 	wantCode:         400,
-		// 	wantResponsePath: "testdata/new_guild_nft_role/400-missing-nft.json",
-		// },
-		// {
-		// 	name:             "fail to config - lack of roleID",
-		// 	args:             request.ConfigGroupNFTRoleRequest{},
-		// 	wantCode:         400,
-		// 	wantResponsePath: "testdata/400-missing-roleID.json",
-		// },
+		{
+			name: "500_role_id_has_already_been_configured",
+			args: request.ConfigGroupNFTRoleRequest{
+				GuildID:        "891310117658705931",
+				RoleID:         "1023875294236516362",
+				NumberOfTokens: 1,
+				GroupName:      "test",
+			},
+			wantCode:         http.StatusInternalServerError,
+			wantResponsePath: "testdata/nft_roles/500-role-has-been-used.json",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
