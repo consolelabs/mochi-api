@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -41,7 +43,7 @@ func (job *watchEvmDeposits) Run() error {
 		return err
 	}
 	for _, contract := range contracts {
-		log := l.Fields(logger.Fields{"contractID": contract.ID.String()})
+		log := l.Fields(logger.Fields{"contractID": contract.ID.String(), "address": contract.ContractAddress})
 		log.Infof("[watchEvmDeposits] start watching contract")
 		if contract.Chain == nil || contract.Chain.ChainID == nil {
 			log.Info("[watchEvmDeposits] no chainID")
@@ -56,7 +58,7 @@ func (job *watchEvmDeposits) Run() error {
 			ChainID:         contract.ChainID.String(),
 			ContractAddress: contract.ContractAddress,
 		})
-		if err != nil {
+		if err != nil && err != gorm.ErrRecordNotFound {
 			log.Error(err, "[watchEvmDeposits] job.entity.GetLatestDepositTx() failed")
 			continue
 		}
