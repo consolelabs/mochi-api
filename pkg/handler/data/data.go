@@ -8,7 +8,6 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -22,25 +21,6 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 		entities: entities,
 		log:      logger,
 	}
-}
-
-func (h *Handler) AddServersUsageStat(c *gin.Context) {
-	var req request.UsageInformation
-	if err := c.Bind(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddServersUsageStat] - failed to read JSON")
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-		return
-	}
-	err := h.entities.AddServersUsageStats(&req)
-	if err != nil {
-		h.log.Error(err, "[handler.AddServersUsageStat] - failed to add usage stat")
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
 func (h *Handler) AddGitbookClick(c *gin.Context) {
@@ -85,8 +65,6 @@ func (h *Handler) MetricByProperties(c *gin.Context) {
 		h.MetricVerifiedWallets(c, query, c.Query("guild_id"))
 	case "supported_tokens":
 		h.MetricSupportedTokens(c, query, c.Query("guild_id"))
-	case "command_usage":
-		h.MetricCommandUsage(c, query, c.Query("guild_id"))
 	default:
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, nil, nil))
 	}
@@ -140,14 +118,4 @@ func (h *Handler) MetricSupportedTokens(c *gin.Context, query string, guildId st
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(totalSupportedTokens, nil, nil, nil))
-}
-
-func (h *Handler) MetricCommandUsage(c *gin.Context, query string, guildId string) {
-	totalCommandUsage, err := h.entities.TotalCommandUsage(guildId)
-	if err != nil {
-		h.log.Fields(logger.Fields{"query": query}).Error(err, "[handler.MetricCommandUsage] - failed to get total command usage")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(totalCommandUsage, nil, nil, nil))
 }

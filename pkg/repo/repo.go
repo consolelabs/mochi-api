@@ -67,7 +67,6 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
-	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -137,7 +136,6 @@ type Repo struct {
 	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
 	UserTelegramDiscordAssociation       usertelegramdiscordassociation.Store
-	ServersUsageStats                    serversusagestats.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
 	ConversationRepostHistories          conversationreposthistories.Store
