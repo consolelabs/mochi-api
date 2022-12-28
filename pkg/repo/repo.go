@@ -15,7 +15,6 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
@@ -150,7 +149,6 @@ type Repo struct {
 	QuestUserPass                        questuserpass.Store
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
-	GitbookClickCollector                gitbookclickcollector.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
 	OffchainTipBotContract               offchaintipbotcontract.Store
 	TradeOffer                           tradeoffer.Store
