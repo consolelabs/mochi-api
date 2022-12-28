@@ -117,7 +117,8 @@ func (job *watchEvmDeposits) Run() error {
 
 func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, contractAddress string) (bool, error) {
 	l := job.log.Fields(logger.Fields{"txHash": tx.TxHash})
-	if tx.ToAddress == contractAddress {
+	// covalent address returned in lower case
+	if strings.EqualFold(tx.ToAddress, contractAddress) {
 		amount, err := strconv.Atoi(tx.Value)
 		if err != nil {
 			l.Error(err, "[getTxDetails] strconv.Atoi() failed: invalid native amount")
