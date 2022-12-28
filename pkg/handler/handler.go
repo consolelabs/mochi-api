@@ -10,6 +10,7 @@ import (
 	configcommunity "github.com/defipod/mochi/pkg/handler/config-community"
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
+	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
 	"github.com/defipod/mochi/pkg/handler/data"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/guild"
@@ -42,6 +43,7 @@ type Handler struct {
 	ConfigCommunity configcommunity.IHandler
 	ConfigDefi      configdefi.IHandler
 	ConfigRoles     configroles.IHandler
+	DaoVoting       daovoting.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -64,5 +66,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ConfigCommunity: configcommunity.New(entities, logger),
 		ConfigDefi:      configdefi.New(entities, logger),
 		ConfigRoles:     configroles.New(entities, logger),
+		DaoVoting:       daovoting.New(entities, logger),
 	}
 }

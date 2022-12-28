@@ -9,6 +9,10 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
+	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
+	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
+	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
+	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -21,6 +25,7 @@ import (
 	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
+	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -169,5 +174,10 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
 		OffchainTipBotDepositLog:             offchaintipbotdepositlog.NewPG(db),
+		GuildConfigDaoProposal:               guildconfigdaoproposal.NewPG(db),
+		DaoProposal:                          daoproposal.NewPG(db),
+		DaoVote:                              daovote.NewPG(db),
+		DaoProposalVoteOption:                daoproposalvoteoption.NewPG(db),
+		DaoVoteOption:                        daovoteoption.NewPG(db),
 	}
 }
