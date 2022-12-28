@@ -1,9 +1,10 @@
 FROM golang:1.18-alpine
+RUN apk add build-base
 RUN mkdir /build
 WORKDIR /build
 COPY . .
 
-ENV GOOS=linux GOARCH=amd64 CGO_ENABLED=0
+ENV GOOS=linux GOARCH=amd64 CGO_ENABLED=1
 RUN go install -v ./...
 RUN go install -v github.com/rubenv/sql-migrate/sql-migrate@latest
 
