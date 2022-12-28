@@ -75,10 +75,14 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 	if req.Quantity == 0 {
 		req.Quantity = 5
 	}
+	e.log.Fields(logger.Fields{"req": req}).Info("[entity.generateUserQuestList] start generating quests list ...")
 	quests, err := e.repo.Quest.List(quest.ListQuery{Routine: string(req.Routine), NotActions: []model.QuestAction{model.BONUS}})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.generateUserQuestList] repo.Quest.List() failed")
 		return nil, err
+	}
+	if len(quests) == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Infof("[entity.generateUserQuestList] no %s quests found", req.Routine)
 	}
 	size := util.MinInt(req.Quantity, len(quests))
 	userQuests := make([]model.QuestUserList, 0, size)
@@ -145,6 +149,7 @@ func (e *Entity) getOrGenerateUserQuests(startTime time.Time, userID string, rou
 		return nil, err
 	}
 	if len(uQuests) > 0 {
+		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Errorf(err, "[entity.getOrGenerateUserQuests] found %d quests for user %s", len(uQuests), userID)
 		return uQuests, nil
 	}
 	generateReq := request.GenerateUserQuestListRequest{
@@ -155,11 +160,15 @@ func (e *Entity) getOrGenerateUserQuests(startTime time.Time, userID string, rou
 	uQuests, err = e.generateUserQuestList(generateReq)
 	if err != nil {
 		e.log.Fields(logger.Fields{"generateReq": generateReq}).Error(err, "[entity.getOrGenerateUserQuests] entity.generateUserQuestList() failed")
+		return nil, err
+	}
+	if len(uQuests) == 0 {
+		e.log.Fields(logger.Fields{"req": generateReq}).Info("[entity.getOrGenerateUserQuests] no quests were generated ")
 	}
 	sort.Slice(uQuests, func(i, j int) bool {
 		return uQuests[i].Quest.Title < uQuests[j].Quest.Title
 	})
-	return uQuests, err
+	return uQuests, nil
 }
 
 func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
@@ -172,6 +181,10 @@ func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 	if err != nil {
 		e.log.Error(err, "[entity.UpdateUserQuestProgress] repo.Quest.GetAvailableRoutines() failed")
 		return err
+	}
+	if len(routines) == 0 {
+		e.log.Error(err, "[entity.UpdateUserQuestProgress] no available routines")
+		return nil
 	}
 	for _, routine := range routines {
 		// check if user quests have been generated yet ...
