@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/gagliardetto/solana-go"
@@ -13,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 )
 
@@ -49,46 +51,51 @@ func watchSolanaDeposits(cfg config.Config, l logger.Logger) error {
 		l.Error(err, "[watchSolanaDeposits] e.GetContracts() failed")
 		return err
 	}
+	wg := sync.WaitGroup{}
+	wg.Add(len(contracts))
 	for _, contract := range contracts {
-		log := l.Fields(logger.Fields{"address": contract.ContractAddress})
-		log.Infof("[watchSolanaDeposits] start watching contract")
-		program := solana.MustPublicKeyFromBase58(contract.ContractAddress) // serum
-		{
-			// Subscribe to log events that mention the provided pubkey:
-			sub, err := wsClient.LogsSubscribeMentions(
-				program,
-				rpc.CommitmentFinalized,
-			)
-			if err != nil {
-				log.Error(err, "[watchSolanaDeposits] wsClient.LogsSubscribeMentions()")
-				return err
-			}
-			defer sub.Unsubscribe()
+		go func(contract model.OffchainTipBotContract) error {
+			log := l.Fields(logger.Fields{"address": contract.ContractAddress})
+			log.Infof("[watchSolanaDeposits] start watching contract")
+			program := solana.MustPublicKeyFromBase58(contract.ContractAddress) // serum
+			{
+				// Subscribe to log events that mention the provided pubkey:
+				sub, err := wsClient.LogsSubscribeMentions(
+					program,
+					rpc.CommitmentFinalized,
+				)
+				if err != nil {
+					log.Error(err, "[watchSolanaDeposits] wsClient.LogsSubscribeMentions()")
+					return err
+				}
+				defer sub.Unsubscribe()
 
-			for {
-				got, err := sub.Recv()
-				if err != nil {
-					log.Error(err, "[watchSolanaDeposits] sub.Recv() failed")
-					continue
-				}
-				signature := got.Value.Signature.String()
-				log.Infof("[watchSolanaDeposits] receive signature: %s", signature)
-				req, err := getDepositRequest(contract.ContractAddress, signature, 0)
-				if err != nil {
-					l.Fields(logger.Fields{"address": contract.ContractAddress, "signature": signature}).Error(err, "[watchSolanaDeposits] getDepositRequest() failed")
-					continue
-				}
-				if req == nil {
-					continue
-				}
-				e.HandleIncomingDeposit(*req)
-				if err != nil {
-					l.Fields(logger.Fields{"req": req}).Error(err, "[watchSolanaDeposits] e.HandleIncomingDeposit() failed")
-					continue
+				for {
+					got, err := sub.Recv()
+					if err != nil {
+						log.Error(err, "[watchSolanaDeposits] sub.Recv() failed")
+						continue
+					}
+					signature := got.Value.Signature.String()
+					log.Infof("[watchSolanaDeposits] receive signature: %s", signature)
+					req, err := getDepositRequest(contract.ContractAddress, signature, 0)
+					if err != nil {
+						l.Fields(logger.Fields{"address": contract.ContractAddress, "signature": signature}).Error(err, "[watchSolanaDeposits] getDepositRequest() failed")
+						continue
+					}
+					if req == nil {
+						continue
+					}
+					e.HandleIncomingDeposit(*req)
+					if err != nil {
+						l.Fields(logger.Fields{"req": req}).Error(err, "[watchSolanaDeposits] e.HandleIncomingDeposit() failed")
+						continue
+					}
 				}
 			}
-		}
+		}(contract)
 	}
+	wg.Wait()
 	return nil
 }
 
