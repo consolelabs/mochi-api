@@ -95,7 +95,7 @@ func (job *watchEvmDeposits) Run() error {
 			req := request.TipBotDepositRequest{
 				ChainID:       *contract.Chain.ChainID,
 				FromAddress:   newTx.FromAddress,
-				ToAddress:     newTx.ToAddress,
+				ToAddress:     contract.ContractAddress,
 				TokenSymbol:   newTx.TokenSymbol,
 				TokenContract: newTx.TokenContract,
 				Amount:        newTx.Amount,
