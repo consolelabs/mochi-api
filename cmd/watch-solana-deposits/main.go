@@ -74,7 +74,7 @@ func watchSolanaDeposits(cfg config.Config, l logger.Logger) error {
 					got, err := sub.Recv()
 					if err != nil {
 						log.Error(err, "[watchSolanaDeposits] sub.Recv() failed")
-						continue
+						return err
 					}
 					signature := got.Value.Signature.String()
 					log.Infof("[watchSolanaDeposits] receive signature: %s", signature)
