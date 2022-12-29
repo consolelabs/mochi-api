@@ -90,7 +90,6 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 	}
 
 	ac := &model.OffchainTipBotAssignContract{
-		ContractID:  chains[0].Contracts[0].ID,
 		ChainID:     chains[0].ID,
 		UserID:      body.UserID,
 		ExpiredTime: time.Now().Add(3 * 24 * time.Hour),
@@ -101,8 +100,14 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 			break
 		}
 	}
-
-	userAssignedContract, err := h.entities.OffchainTipBotCreateAssignContract(ac)
+	var userAssignedContract *model.OffchainTipBotAssignContract
+	for _, contract := range chains[0].Contracts {
+		ac.ContractID = contract.ID
+		userAssignedContract, err = h.entities.OffchainTipBotCreateAssignContract(ac)
+		if err == nil {
+			break
+		}
+	}
 	if err != nil {
 		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to create assign contract")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
