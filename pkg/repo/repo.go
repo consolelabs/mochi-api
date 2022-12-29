@@ -6,6 +6,10 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
+	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
+	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
+	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
+	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
 	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
@@ -15,9 +19,9 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
+	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -68,7 +72,6 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
-	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -138,7 +141,6 @@ type Repo struct {
 	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
 	UserTelegramDiscordAssociation       usertelegramdiscordassociation.Store
-	ServersUsageStats                    serversusagestats.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
 	ConversationRepostHistories          conversationreposthistories.Store
@@ -150,7 +152,6 @@ type Repo struct {
 	QuestUserPass                        questuserpass.Store
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
-	GitbookClickCollector                gitbookclickcollector.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
 	OffchainTipBotContract               offchaintipbotcontract.Store
 	TradeOffer                           tradeoffer.Store
@@ -164,4 +165,9 @@ type Repo struct {
 	OffchainTipBotConfigNotify           offchaintipbotconfignotify.Store
 	NftAddRequestHistory                 nftaddrequesthistory.Store
 	OffchainTipBotDepositLog             offchaintipbotdepositlog.Store
+	GuildConfigDaoProposal               guildconfigdaoproposal.Store
+	DaoProposal                          daoproposal.Store
+	DaoVote                              daovote.Store
+	DaoProposalVoteOption                daoproposalvoteoption.Store
+	DaoVoteOption                        daovoteoption.Store
 }

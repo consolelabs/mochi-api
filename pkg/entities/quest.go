@@ -81,9 +81,7 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.generateUserQuestList] repo.Quest.List() failed")
 		return nil, err
 	}
-	if len(quests) == 0 {
-		e.log.Fields(logger.Fields{"req": req}).Infof("[entity.generateUserQuestList] no %s quests found", req.Routine)
-	}
+	e.log.Fields(logger.Fields{"req": req}).Infof("[entity.generateUserQuestList] %d %s quests found", len(quests), req.Routine)
 	size := util.MinInt(req.Quantity, len(quests))
 	userQuests := make([]model.QuestUserList, 0, size)
 	for i := 0; i < size; i++ {
@@ -132,12 +130,14 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 		e.log.Fields(logger.Fields{"userID": req.UserID, "userQuests": userQuests}).Error(err, "[entity.generateUserQuestList] entity.finalizeUserQuestList() failed")
 		return nil, err
 	}
+	e.log.Fields(logger.Fields{"userQuests": userQuests}).Infof("[entity.generateUserQuestList] creating %d quests for user %s", len(userQuests), req.UserID)
 	// save user quests list
 	err = e.repo.QuestUserList.UpsertMany(userQuests)
 	if err != nil {
 		e.log.Fields(logger.Fields{"list": userQuests}).Error(err, "[entity.generateUserQuestList] repo.QuestUserList.UpsertMany() failed")
 		return nil, err
 	}
+	e.log.Fields(logger.Fields{"userQuests": userQuests}).Infof("[entity.generateUserQuestList] created %d quests for user %s", len(userQuests), req.UserID)
 	return userQuests, nil
 }
 
