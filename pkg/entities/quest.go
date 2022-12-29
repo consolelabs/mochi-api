@@ -122,6 +122,7 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 			Routine:   bonusQuest.Routine,
 			Target:    bonusQuest.Frequency,
 			StartTime: req.StartTime,
+			EndTime:   req.StartTime.Add(24 * time.Hour),
 			Quest:     bonusQuest,
 		})
 	}
