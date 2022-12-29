@@ -5,7 +5,11 @@ WORKDIR /build
 COPY . .
 
 ENV GOOS=linux GOARCH=amd64 CGO_ENABLED=1
-RUN go install -v ./...
+RUN set -ex && \
+  apk add --no-progress --no-cache \
+  gcc \
+  musl-dev
+RUN go install --tags musl -v ./...
 RUN go install -v github.com/rubenv/sql-migrate/sql-migrate@latest
 
 FROM alpine:3.15.0
