@@ -1,10 +1,10 @@
 FROM golang:1.18-alpine
-RUN apk add build-base
 RUN mkdir /build
 WORKDIR /build
 COPY . .
 
 ENV GOOS=linux GOARCH=amd64 CGO_ENABLED=1
+
 RUN set -ex && \
   apk add --no-progress --no-cache \
   gcc \
