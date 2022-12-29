@@ -1,9 +1,10 @@
 package questuserlist
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {
@@ -33,7 +34,7 @@ func (pg *pg) List(q ListQuery) ([]model.QuestUserList, error) {
 	db := pg.db
 	var list []model.QuestUserList
 	if q.UserID != nil {
-		db = db.Where("user_id = ?", q.UserID)
+		db = db.Where("user_id = ?", *q.UserID)
 	}
 	if q.QuestID != nil {
 		db = db.Where("quest_id = ?", *q.QuestID)
