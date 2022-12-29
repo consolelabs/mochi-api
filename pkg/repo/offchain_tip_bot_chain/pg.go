@@ -45,7 +45,7 @@ func (pg *pg) GetAll(f Filter) ([]model.OffchainTipBotChain, error) {
 		Where("t.id = ?", token.ID)
 
 	if f.IsContractAvailable {
-		db = db.Where("c.id NOT IN (SELECT id FROM offchain_tip_bot_assign_contract ac WHERE ac.token_id = ? AND expired_time > now())", token.ID)
+		db = db.Where("c.id NOT IN (SELECT contract_id FROM offchain_tip_bot_assign_contract ac WHERE ac.token_id = ? AND expired_time > now())", token.ID)
 	}
 
 	return rs, db.Find(&rs).Error
