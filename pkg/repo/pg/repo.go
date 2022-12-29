@@ -18,7 +18,6 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	gitbookclickcollector "github.com/defipod/mochi/pkg/repo/gitbook_click_collectors"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
@@ -71,7 +70,6 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
-	serversusagestats "github.com/defipod/mochi/pkg/repo/servers_usage_stats"
 	"github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -142,7 +140,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
 		UserTelegramDiscordAssociation:       usertelegramdiscordassociation.NewPG(db),
-		ServersUsageStats:                    serversusagestats.NewPG(db),
 		MessageReaction:                      messagereaction.NewPG(db),
 		UserNftWatchlistItem:                 usernftwatchlistitem.NewPG(db),
 		Quest:                                quest.NewPG(db),
@@ -155,7 +152,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserPass:                        questuserpass.NewPG(db),
 		QuestStreak:                          queststreak.NewPG(db),
 		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
-		GitbookClickCollector:                gitbookclickcollector.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		TradeOffer:                           tradeoffer.NewPG(db),

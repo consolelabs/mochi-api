@@ -28,7 +28,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		dataGroup.GET("/metrics", h.Data.MetricByProperties)
 		usageGroup := dataGroup.Group("/usage-stats")
 		{
-			usageGroup.POST("", h.Data.AddServersUsageStat)
 			usageGroup.GET("/gitbook", h.Data.AddGitbookClick)
 		}
 		activitygroup := dataGroup.Group("/activities")
