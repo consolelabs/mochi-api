@@ -7,11 +7,10 @@ package mock_discord
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	model "github.com/defipod/mochi/pkg/model"
 	request "github.com/defipod/mochi/pkg/request"
 	response "github.com/defipod/mochi/pkg/response"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockService is a mock of Service interface.
@@ -35,6 +34,20 @@ func NewMockService(ctrl *gomock.Controller) *MockService {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
+}
+
+// DeleteChannel mocks base method.
+func (m *MockService) DeleteChannel(channelId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChannel", channelId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChannel indicates an expected call of DeleteChannel.
+func (mr *MockServiceMockRecorder) DeleteChannel(channelId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChannel", reflect.TypeOf((*MockService)(nil).DeleteChannel), channelId)
 }
 
 // NotifyAddNewCollection mocks base method.
