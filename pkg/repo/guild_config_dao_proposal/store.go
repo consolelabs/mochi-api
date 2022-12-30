@@ -15,6 +15,10 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
+func (pg *pg) Create(config model.GuildConfigDaoProposal) (*model.GuildConfigDaoProposal, error) {
+	return &config, pg.db.Table("guild_config_dao_proposal").Create(&config).Error
+}
+
 func (pg *pg) GetById(id int64) (model *model.GuildConfigDaoProposal, err error) {
 	return model, pg.db.First(&model, id).Error
 }

@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"github.com/bwmarrin/discordgo"
+
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -29,5 +31,10 @@ type Service interface {
 	SendTipActivityLogs(channelID, userID, title, description, image string) error
 
 	// channel interaction
+	Channel(channelID string) (*discordgo.Channel, error)
+	CreateChannel(guildID string, createData discordgo.GuildChannelCreateData) (*discordgo.Channel, error)
 	DeleteChannel(channelId string) error
+
+	// DAO voting
+	SendMessage(channelID string, msgSend discordgo.MessageSend) error
 }

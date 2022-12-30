@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -547,10 +548,53 @@ func (d *Discord) NotifyCompleteCollectionSync(guildID string, collectionName st
 	return err
 }
 
+func (d *Discord) Channel(channelID string) (*discordgo.Channel, error) {
+	if channelID == "" {
+		return nil, errors.ErrInvalidDiscordChannelID
+	}
+	channel, err := d.session.Channel(channelID)
+	if err != nil {
+		d.log.Error(err, "[discord.Channel] d.session.Channel() failed")
+		return nil, err
+
+	}
+	return channel, nil
+}
+
+func (d *Discord) CreateChannel(guildID string, createData discordgo.GuildChannelCreateData) (*discordgo.Channel, error) {
+	if guildID == "" {
+		return nil, errors.ErrInvalidDiscordGuildID
+	}
+	channel, err := d.session.GuildChannelCreateComplex(guildID, createData)
+	if err != nil {
+		d.log.Fields(logger.Fields{
+			"guildID":    guildID,
+			"createData": createData,
+		}).Error(err, "[discord.CreateChannel] d.session.GuildChannelCreateComplex() failed")
+		return nil, err
+
+	}
+	return channel, nil
+}
+
 func (d *Discord) DeleteChannel(channelId string) error {
 	_, err := d.session.ChannelDelete(channelId)
 	if err != nil {
 		d.log.Error(err, "[discord.DeleteChannel] d.session.ChannelDelete() failed")
+		return err
+	}
+	return nil
+}
+
+func (d *Discord) SendMessage(channelID string, payload discordgo.MessageSend) error {
+	if channelID == "" {
+		return errors.ErrInvalidDiscordChannelID
+	}
+	if _, err := d.session.ChannelMessageSendComplex(channelID, &payload); err != nil {
+		d.log.Fields(logger.Fields{
+			"channelID": channelID,
+			"payload":   payload,
+		}).Error(err, "[discord.SendMessage] d.session.ChannelMessageSendComplex() failed")
 		return err
 	}
 	return nil
