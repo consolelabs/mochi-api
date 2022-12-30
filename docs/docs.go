@@ -992,6 +992,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-channels/proposal": {
+            "delete": {
+                "description": "Delete dao proposal config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Delete dao proposal channel config",
+                "parameters": [
+                    {
+                        "description": "Delete dao proposal channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteGuildConfigDaoProposal"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/config-channels/tip-notify": {
             "get": {
                 "description": "API get list config notify channel for token",
@@ -1275,6 +1309,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/{guild_id}/proposal": {
+            "get": {
+                "description": "Get dao proposal channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get dao proposal channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildConfigDaoProposal"
                         }
                     }
                 }
@@ -5821,6 +5887,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigDaoProposal": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guideline_channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "proposal_channel_id": {
+                    "type": "string"
+                },
+                "required_amount": {
+                    "type": "integer"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigDefaultCollection": {
             "type": "object",
             "properties": {
@@ -6294,6 +6398,56 @@ const docTemplate = `{
                 }
             }
         },
+        "model.OffchainTipBotChain": {
+            "type": "object",
+            "properties": {
+                "chain_id": {
+                    "type": "integer"
+                },
+                "chain_name": {
+                    "type": "string"
+                },
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OffchainTipBotContract"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "explorer_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_evm": {
+                    "type": "boolean"
+                },
+                "rpc_url": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "support_deposit": {
+                    "type": "boolean"
+                },
+                "tokens": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OffchainTipBotToken"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.OffchainTipBotContract": {
             "type": "object",
             "properties": {
@@ -6302,6 +6456,9 @@ const docTemplate = `{
                 },
                 "centralize_wallet": {
                     "type": "string"
+                },
+                "chain": {
+                    "$ref": "#/definitions/model.OffchainTipBotChain"
                 },
                 "chain_id": {
                     "type": "string"
@@ -7106,6 +7263,14 @@ const docTemplate = `{
             }
         },
         "request.DeleteDiscordUserAlertRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.DeleteGuildConfigDaoProposal": {
             "type": "object",
             "properties": {
                 "id": {
@@ -8350,6 +8515,14 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GetGuildConfigDaoProposal": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
                 }
             }
         },
