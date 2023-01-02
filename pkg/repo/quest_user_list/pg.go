@@ -3,6 +3,7 @@ package questuserlist
 import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/plugin/dbresolver"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -58,5 +59,5 @@ func (pg *pg) List(q ListQuery) ([]model.QuestUserList, error) {
 		db = db.Where("is_claimed = ?", *q.IsClaimed)
 	}
 	db = db.Preload("Quest").Preload("Quest.Rewards").Preload("Quest.Rewards.RewardType")
-	return list, db.Find(&list).Error
+	return list, db.Clauses(dbresolver.Write).Find(&list).Error
 }
