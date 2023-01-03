@@ -218,7 +218,7 @@ func (e *Entity) sendGuidelineMessage(guidelineChannelID, description string) er
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
-				Title:       "<:transaction:933341692667506718> Create a proposal",
+				Title:       "<:mail:1058304339237666866> Create a proposal",
 				Description: description,
 				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 				Type:        discordgo.EmbedTypeArticle,
@@ -233,8 +233,8 @@ func (e *Entity) sendGuidelineMessage(guidelineChannelID, description string) er
 						Disabled: false,
 						CustomID: "create-proposal",
 						Emoji: discordgo.ComponentEmoji{
-							Name: "transaction",
-							ID:   "933341692667506718",
+							Name: "mailsend",
+							ID:   "1058304343293567056",
 						},
 					},
 				},
