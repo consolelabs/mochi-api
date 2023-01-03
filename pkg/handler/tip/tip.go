@@ -300,3 +300,34 @@ func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(transactions, nil, nil, nil))
 	return
 }
+
+// TransferOnchain   godoc
+// @Summary     Onchain Tip Bot - Transfer token
+// @Description API transfer token for tip & airdrop
+// @Tags        Tip
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.OffchainTransferRequest true "Transfer token request"
+// @Success     200 {object} response.OnchainTipBotTransferTokenResponse
+// @Router      /tip/onchain/transfer [post]
+func (h *Handler) TransferOnchain(c *gin.Context) {
+	req := request.OffchainTransferRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferOnchain] ShouldBindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.TransferOnchain(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		h.log.Error(err, "[handler.TransferOnchain] entity.TransferOnchain() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
