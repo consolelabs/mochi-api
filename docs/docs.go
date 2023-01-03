@@ -2833,6 +2833,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/dao-voting/proposals/vote": {
+            "post": {
+                "description": "Create dao vote",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dao-voting"
+                ],
+                "summary": "Create dao vote",
+                "parameters": [
+                    {
+                        "description": "Create dao vote request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDaoVoteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/data/configs/activities/{activity}": {
             "post": {
                 "description": "Toggle activity config",
@@ -7144,6 +7178,29 @@ const docTemplate = `{
             "properties": {
                 "token_symbol": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateDaoVoteRequest": {
+            "type": "object",
+            "required": [
+                "choice",
+                "point",
+                "proposal_id",
+                "user_id"
+            ],
+            "properties": {
+                "choice": {
+                    "type": "string"
+                },
+                "point": {
+                    "type": "number"
+                },
+                "proposal_id": {
+                    "type": "integer"
                 },
                 "user_id": {
                     "type": "string"
