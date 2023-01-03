@@ -210,9 +210,11 @@ func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Info("[entity.UpdateUserQuestProgress] repo.QuestUserList.List() returns empty")
 		return nil
 	}
+	var defaultID uuid.UUID
 	for _, uQuest := range uQuests {
 		log.QuestID = uQuest.QuestID
 		log.Target = uQuest.Quest.Frequency
+		log.ID = defaultID
 		// create quest log
 		if err := e.repo.QuestUserLog.CreateOne(log); err != nil {
 			e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.UpdateUserQuestProgress] repo.QuestUserLog.CreateOne() failed")
@@ -233,7 +235,7 @@ func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 		}
 		// if the quest have not been completed yet, no need to update bonus quest ...
 		if !uQuest.IsCompleted {
-			return nil
+			continue
 		}
 		// ... else update bonus quest progress
 		err = e.updateUserBonusQuest(uQuest.Routine, log.UserID, startTime)
@@ -339,6 +341,7 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) (*res
 			PassID:       r.PassID,
 			StartTime:    &startTime,
 			Reward:       &rewards[i],
+			ClaimedAt:    now,
 		})
 	}
 	uRewards, err = e.finalizeUserRewards(req.UserID, string(model.VOTE), uRewards, list[0].Multiplier)
