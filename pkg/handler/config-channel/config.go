@@ -627,7 +627,7 @@ func (h *Handler) DeleteGuildConfigDaoProposal(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.CreateProposalChannelConfig true "Create proposal channel config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-channels/proposal-channel [post]
+// @Router      /config-channels/proposal [post]
 func (h *Handler) CreateProposalChannelConfig(c *gin.Context) {
 	var req request.CreateProposalChannelConfig
 	if err := c.ShouldBindJSON(&req); err != nil {
