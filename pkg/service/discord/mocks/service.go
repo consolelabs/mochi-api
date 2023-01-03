@@ -7,6 +7,7 @@ package mock_discord
 import (
 	reflect "reflect"
 
+	discordgo "github.com/bwmarrin/discordgo"
 	model "github.com/defipod/mochi/pkg/model"
 	request "github.com/defipod/mochi/pkg/request"
 	response "github.com/defipod/mochi/pkg/response"
@@ -34,6 +35,36 @@ func NewMockService(ctrl *gomock.Controller) *MockService {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
+}
+
+// Channel mocks base method.
+func (m *MockService) Channel(channelID string) (*discordgo.Channel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Channel", channelID)
+	ret0, _ := ret[0].(*discordgo.Channel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Channel indicates an expected call of Channel.
+func (mr *MockServiceMockRecorder) Channel(channelID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Channel", reflect.TypeOf((*MockService)(nil).Channel), channelID)
+}
+
+// CreateChannel mocks base method.
+func (m *MockService) CreateChannel(guildID string, createData discordgo.GuildChannelCreateData) (*discordgo.Channel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateChannel", guildID, createData)
+	ret0, _ := ret[0].(*discordgo.Channel)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateChannel indicates an expected call of CreateChannel.
+func (mr *MockServiceMockRecorder) CreateChannel(guildID, createData interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChannel", reflect.TypeOf((*MockService)(nil).CreateChannel), guildID, createData)
 }
 
 // DeleteChannel mocks base method.
@@ -242,6 +273,20 @@ func (m *MockService) SendLevelUpMessage(logChannelID, role string, uActivity *r
 func (mr *MockServiceMockRecorder) SendLevelUpMessage(logChannelID, role, uActivity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), logChannelID, role, uActivity)
+}
+
+// SendMessage mocks base method.
+func (m *MockService) SendMessage(channelID string, msgSend discordgo.MessageSend) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMessage", channelID, msgSend)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMessage indicates an expected call of SendMessage.
+func (mr *MockServiceMockRecorder) SendMessage(channelID, msgSend interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockService)(nil).SendMessage), channelID, msgSend)
 }
 
 // SendTipActivityLogs mocks base method.
