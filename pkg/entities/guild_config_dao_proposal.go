@@ -66,27 +66,26 @@ func (e *Entity) DeleteGuildConfigDaoProposalByGuildID(req *request.DeleteGuildC
 }
 
 func (e *Entity) createConfigDaoProposalWithAdminAuthority(req request.CreateProposalChannelConfig) (*model.GuildConfigDaoProposal, error) {
-	guidelineChannel, proposalChannel, err := e.createDAOVotingChannels(req.GuildID, req.ChannelID)
+	guidelineChannel, err := e.createGuidelineChannel(req.GuildID, req.ChannelID)
 	if err != nil {
 		return nil, err
 	}
 
-	msgDescription := `Only Administrators have the authority to post proposals.
-	The proposal should include this information:
-	- Proposal Title
-	- Proposal Description (maximum 2000 words)
-	- Vote option
-	- Vote duration
-
-	To create a proposal, click **<:transaction:933341692667506718>.**,`
-	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription); err != nil {
+	messageTempl, err := e.repo.DaoGuidelineMessages.GetByAuthority(model.Admin)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"authority": model.Admin,
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.repo.DaoGuidelineMessages.GetByAuthority failed")
+		return nil, err
+	}
+	if err := e.sendGuidelineMessage(guidelineChannel.ID, messageTempl.Message); err != nil {
 		return nil, err
 	}
 
 	guildConfigDaoProposal := model.GuildConfigDaoProposal{
 		GuildId:            req.GuildID,
 		GuidelineChannelId: guidelineChannel.ID,
-		ProposalChannelId:  proposalChannel.ID,
+		ProposalChannelId:  req.ChannelID,
 		Authority:          model.Admin,
 	}
 	config, err := e.repo.GuildConfigDaoProposal.Create(guildConfigDaoProposal)
@@ -149,19 +148,19 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		requiredAmount = int64(req.RequiredAmount * float64(10^token.Decimals))
 	}
 
-	guidelineChannel, proposalChannel, err := e.createDAOVotingChannels(req.GuildID, req.ChannelID)
+	guidelineChannel, err := e.createGuidelineChannel(req.GuildID, req.ChannelID)
 	if err != nil {
 		return nil, err
 	}
 
-	msgDescription := fmt.Sprintf(`You have to connect your wallet and own %v %s to post a proposal.
-	The proposal should include this information:
-	- Proposal Title
-	- Proposal Description (maximum 2000 words)
-	- Vote option
-	- Vote duration
-
-	To create a proposal, click **<:transaction:933341692667506718>.**,`, req.RequiredAmount, symbol)
+	messageTempl, err := e.repo.DaoGuidelineMessages.GetByAuthority(model.TokenHolder)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"authority": model.TokenHolder,
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.repo.DaoGuidelineMessages.GetByAuthority failed")
+		return nil, err
+	}
+	msgDescription := fmt.Sprintf(messageTempl.Message, req.RequiredAmount, symbol)
 	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription); err != nil {
 		return nil, err
 	}
@@ -169,7 +168,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 	guildConfigDaoProposal := model.GuildConfigDaoProposal{
 		GuildId:            req.GuildID,
 		GuidelineChannelId: guidelineChannel.ID,
-		ProposalChannelId:  proposalChannel.ID,
+		ProposalChannelId:  req.ChannelID,
 		Authority:          model.TokenHolder,
 		Type:               &req.Type,
 		RequiredAmount:     requiredAmount,
@@ -188,20 +187,20 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 	return config, nil
 }
 
-func (e *Entity) createDAOVotingChannels(guildID, sampleChannelID string) (guidelineChannel, proposalChannel *discordgo.Channel, err error) {
-	sampleChannel, err := e.svc.Discord.Channel(sampleChannelID)
+func (e *Entity) createGuidelineChannel(guildID, proposalChannelID string) (guidelineChannel *discordgo.Channel, err error) {
+	proposalChannel, err := e.svc.Discord.Channel(proposalChannelID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
-			"channelID": sampleChannelID,
+			"proposalChannelID": proposalChannelID,
 		}).Error(err, "[entity.CreateProposalChannelConfig] svc.Discord.Channel failed")
-		return nil, nil, errors.ErrInvalidDiscordChannelID
+		return nil, errors.ErrInvalidDiscordChannelID
 	}
 
 	guidelineChannelCreateData := discordgo.GuildChannelCreateData{
-		Name:                 fmt.Sprintf("guideline - %s", sampleChannel.Name),
-		Type:                 sampleChannel.Type,
-		PermissionOverwrites: sampleChannel.PermissionOverwrites,
-		ParentID:             sampleChannel.ParentID,
+		Name:                 fmt.Sprintf("guideline - %s", proposalChannel.Name),
+		Type:                 proposalChannel.Type,
+		PermissionOverwrites: proposalChannel.PermissionOverwrites,
+		ParentID:             proposalChannel.ParentID,
 	}
 	guidelineChannel, err = e.svc.Discord.CreateChannel(guildID, guidelineChannelCreateData)
 	if err != nil {
@@ -209,25 +208,10 @@ func (e *Entity) createDAOVotingChannels(guildID, sampleChannelID string) (guide
 			"guildID":    guildID,
 			"createData": guidelineChannelCreateData,
 		}).Error(err, "[entity.CreateProposalChannelConfig] svc.Discord.CreateChannel failed")
-		return nil, nil, err
+		return nil, err
 	}
 
-	proposalChannelCreateData := discordgo.GuildChannelCreateData{
-		Name:                 "Proposals",
-		Type:                 sampleChannel.Type,
-		PermissionOverwrites: sampleChannel.PermissionOverwrites,
-		ParentID:             sampleChannel.ParentID,
-	}
-	proposalChannel, err = e.svc.Discord.CreateChannel(guildID, proposalChannelCreateData)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"guildID":    guildID,
-			"createData": proposalChannelCreateData,
-		}).Error(err, "[entity.CreateProposalChannelConfig] svc.Discord.CreateChannel failed")
-		return nil, nil, err
-	}
-
-	return guidelineChannel, proposalChannel, nil
+	return guidelineChannel, nil
 }
 
 func (e *Entity) sendGuidelineMessage(guidelineChannelID, description string) error {
