@@ -45,7 +45,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.LoginRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.LoginRequest"
                         }
                     }
                 ],
@@ -53,7 +53,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.LoginResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_entities.LoginResponse"
                         }
                     }
                 }
@@ -76,7 +76,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.LogoutResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.LogoutResponse"
                         }
                     }
                 }
@@ -102,7 +102,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.SetUpvoteMessageCacheRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.SetUpvoteMessageCacheRequest"
                         }
                     }
                 ],
@@ -110,7 +110,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -147,7 +147,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UserFeedbackResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UserFeedbackResponse"
                         }
                     }
                 }
@@ -171,7 +171,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpdateUserFeedbackRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpdateUserFeedbackRequest"
                         }
                     }
                 ],
@@ -179,7 +179,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UpdateUserFeedbackResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UpdateUserFeedbackResponse"
                         }
                     }
                 }
@@ -203,7 +203,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserFeedbackRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UserFeedbackRequest"
                         }
                     }
                 ],
@@ -211,7 +211,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -250,7 +250,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetInvitesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetInvitesResponse"
                         }
                     }
                 }
@@ -289,7 +289,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.InvitesAggregationResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.InvitesAggregationResponse"
                         }
                     }
                 }
@@ -321,7 +321,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetInviteTrackerConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetInviteTrackerConfigResponse"
                         }
                     }
                 }
@@ -345,7 +345,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigureInviteRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigureInviteRequest"
                         }
                     }
                 ],
@@ -353,7 +353,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ConfigureInvitesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ConfigureInvitesResponse"
                         }
                     }
                 }
@@ -385,7 +385,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetInvitesLeaderboardResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetInvitesLeaderboardResponse"
                         }
                     }
                 }
@@ -407,11 +407,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "routine",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "name": "user_id",
                         "in": "query",
                         "required": true
@@ -421,7 +416,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserQuestListResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserQuestListResponse"
                         }
                     }
                 }
@@ -447,7 +442,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ClaimQuestsRewardsRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ClaimQuestsRewardsRequest"
                         }
                     }
                 ],
@@ -455,7 +450,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ClaimQuestsRewardsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponse"
                         }
                     }
                 }
@@ -481,7 +476,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpdateQuestProgressRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpdateQuestProgressRequest"
                         }
                     }
                 ],
@@ -515,7 +510,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostRequest"
                         }
                     }
                 ],
@@ -523,7 +518,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -547,7 +542,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostRequest"
                         }
                     }
                 ],
@@ -555,7 +550,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -587,7 +582,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -611,7 +606,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest"
                         }
                     }
                 ],
@@ -619,7 +614,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -643,7 +638,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest"
                         }
                     }
                 ],
@@ -651,7 +646,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -677,7 +672,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostReactionStartStop"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigRepostReactionStartStop"
                         }
                     }
                 ],
@@ -685,7 +680,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -711,7 +706,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.EditMessageRepostRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.EditMessageRepostRequest"
                         }
                     }
                 ],
@@ -719,7 +714,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -751,7 +746,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetRepostReactionConfigsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetRepostReactionConfigsResponse"
                         }
                     }
                 }
@@ -777,7 +772,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.TwitterPost"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.TwitterPost"
                         }
                     }
                 ],
@@ -785,7 +780,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -826,7 +821,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponse"
                         }
                     }
                 }
@@ -858,7 +853,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGmConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGmConfigResponse"
                         }
                     }
                 }
@@ -882,7 +877,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertGmConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertGmConfigRequest"
                         }
                     }
                 ],
@@ -890,7 +885,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -922,7 +917,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse"
                         }
                     }
                 }
@@ -946,7 +941,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertJoinLeaveChannelConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertJoinLeaveChannelConfigRequest"
                         }
                     }
                 ],
@@ -954,7 +949,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse"
                         }
                     }
                 }
@@ -978,7 +973,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteJoinLeaveChannelConfigRequest"
                         }
                     }
                 ],
@@ -986,7 +981,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1012,7 +1007,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteGuildConfigDaoProposal"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteGuildConfigDaoProposal"
                         }
                     }
                 ],
@@ -1020,7 +1015,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1052,7 +1047,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListConfigNotifyResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListConfigNotifyResponse"
                         }
                     }
                 }
@@ -1076,7 +1071,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateTipConfigNotify"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateTipConfigNotify"
                         }
                     }
                 ],
@@ -1084,7 +1079,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1116,7 +1111,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1148,7 +1143,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse"
                         }
                     }
                 }
@@ -1172,7 +1167,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertVoteChannelConfigRequest"
                         }
                     }
                 ],
@@ -1180,7 +1175,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse"
                         }
                     }
                 }
@@ -1204,7 +1199,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteVoteChannelConfigRequest"
                         }
                     }
                 ],
@@ -1212,7 +1207,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1244,7 +1239,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse"
                         }
                     }
                 }
@@ -1268,7 +1263,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertWelcomeConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertWelcomeConfigRequest"
                         }
                     }
                 ],
@@ -1276,7 +1271,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetWelcomeChannelConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse"
                         }
                     }
                 }
@@ -1300,7 +1295,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteWelcomeConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteWelcomeConfigRequest"
                         }
                     }
                 ],
@@ -1308,7 +1303,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1340,7 +1335,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildConfigDaoProposal"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildConfigDaoProposal"
                         }
                     }
                 }
@@ -1372,7 +1367,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetLinkedTelegramResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetLinkedTelegramResponse"
                         }
                     }
                 }
@@ -1396,7 +1391,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.LinkUserTelegramWithDiscordRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.LinkUserTelegramWithDiscordRequest"
                         }
                     }
                 ],
@@ -1404,7 +1399,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponse"
                         }
                     }
                 }
@@ -1430,7 +1425,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.GuildConfigTwitterFeed"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed"
                         }
                     }
                 ],
@@ -1438,7 +1433,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1469,7 +1464,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterBlackListResponse"
                         }
                     }
                 }
@@ -1493,7 +1488,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.AddToTwitterBlackListRequest"
                         }
                     }
                 ],
@@ -1559,7 +1554,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetAllTwitterHashtagConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetAllTwitterHashtagConfigResponse"
                         }
                     }
                 }
@@ -1583,7 +1578,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.TwitterHashtag"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.TwitterHashtag"
                         }
                     }
                 ],
@@ -1591,7 +1586,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1623,7 +1618,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetTwitterHashtagConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterHashtagConfigResponse"
                         }
                     }
                 }
@@ -1653,7 +1648,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1679,7 +1674,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertCustomTokenConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertCustomTokenConfigRequest"
                         }
                     }
                 ],
@@ -1687,7 +1682,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1719,7 +1714,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GuildConfigDefaultCurrencyResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GuildConfigDefaultCurrencyResponse"
                         }
                     }
                 }
@@ -1743,7 +1738,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildDefaultCurrencyRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildDefaultCurrencyRequest"
                         }
                     }
                 ],
@@ -1751,7 +1746,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1775,7 +1770,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GuildIDRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.GuildIDRequest"
                         }
                     }
                 ],
@@ -1783,7 +1778,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1809,7 +1804,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigDefaultCollection"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigDefaultCollection"
                         }
                     }
                 ],
@@ -1817,7 +1812,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1856,7 +1851,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildDefaultTickerResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildDefaultTickerResponse"
                         }
                     }
                 }
@@ -1880,7 +1875,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GuildConfigDefaultTickerRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.GuildConfigDefaultTickerRequest"
                         }
                     }
                 ],
@@ -1888,7 +1883,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1914,7 +1909,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertMonikerConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertMonikerConfigRequest"
                         }
                     }
                 ],
@@ -1922,7 +1917,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1946,7 +1941,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteMonikerConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteMonikerConfigRequest"
                         }
                     }
                 ],
@@ -1954,7 +1949,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -1977,7 +1972,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.MonikerConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigResponse"
                         }
                     }
                 }
@@ -2009,7 +2004,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.MonikerConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigResponse"
                         }
                     }
                 }
@@ -2040,7 +2035,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildTokensResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildTokensResponse"
                         }
                     }
                 }
@@ -2064,7 +2059,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildTokenConfigRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildTokenConfigRequest"
                         }
                     }
                 ],
@@ -2072,7 +2067,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2104,7 +2099,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetDefaultTokenResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetDefaultTokenResponse"
                         }
                     }
                 }
@@ -2128,7 +2123,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigDefaultTokenRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigDefaultTokenRequest"
                         }
                     }
                 ],
@@ -2136,7 +2131,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2166,7 +2161,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2198,7 +2193,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DefaultRoleResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DefaultRoleResponse"
                         }
                     }
                 }
@@ -2222,7 +2217,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateDefaultRoleRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateDefaultRoleRequest"
                         }
                     }
                 ],
@@ -2230,7 +2225,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DefaultRoleResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DefaultRoleResponse"
                         }
                     }
                 }
@@ -2260,7 +2255,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseSucess"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseSucess"
                         }
                     }
                 }
@@ -2286,7 +2281,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigLevelRoleRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigLevelRoleRequest"
                         }
                     }
                 ],
@@ -2294,7 +2289,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2326,7 +2321,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetLevelRoleConfigsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetLevelRoleConfigsResponse"
                         }
                     }
                 }
@@ -2356,7 +2351,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2388,7 +2383,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListGuildGroupNFTRolesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListGuildGroupNFTRolesResponse"
                         }
                     }
                 }
@@ -2412,7 +2407,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.ConfigGroupNFTRoleRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.ConfigGroupNFTRoleRequest"
                         }
                     }
                 ],
@@ -2420,7 +2415,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NewGuildGroupNFTRoleResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NewGuildGroupNFTRoleResponse"
                         }
                     }
                 }
@@ -2450,7 +2445,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2482,7 +2477,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2514,7 +2509,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DataListRoleReactionResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DataListRoleReactionResponse"
                         }
                     }
                 }
@@ -2538,7 +2533,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest"
                         }
                     }
                 ],
@@ -2546,7 +2541,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.RoleReactionConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionConfigResponse"
                         }
                     }
                 }
@@ -2570,7 +2565,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RoleReactionUpdateRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest"
                         }
                     }
                 ],
@@ -2578,7 +2573,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseSucess"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseSucess"
                         }
                     }
                 }
@@ -2604,7 +2599,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RoleReactionRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.RoleReactionRequest"
                         }
                     }
                 ],
@@ -2612,7 +2607,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DataFilterConfigByReaction"
                         }
                     }
                 }
@@ -2644,7 +2639,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2676,7 +2671,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetSalesTrackerConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetSalesTrackerConfigResponse"
                         }
                     }
                 }
@@ -2708,7 +2703,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetAllTwitterConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetAllTwitterConfigResponse"
                         }
                     }
                 }
@@ -2731,7 +2726,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUpvoteTiersConfig"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUpvoteTiersConfig"
                         }
                     }
                 }
@@ -2763,7 +2758,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildPruneExcludeResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildPruneExcludeResponse"
                         }
                     }
                 }
@@ -2787,7 +2782,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest"
                         }
                     }
                 ],
@@ -2795,7 +2790,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2819,7 +2814,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest"
                         }
                     }
                 ],
@@ -2827,7 +2822,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -2866,7 +2861,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ToggleActivityConfigResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ToggleActivityConfigResponse"
                         }
                     }
                 }
@@ -2904,7 +2899,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DataMetric"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DataMetric"
                         }
                     }
                 }
@@ -2927,7 +2922,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetListAllChainsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetListAllChainsResponse"
                         }
                     }
                 }
@@ -2959,7 +2954,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SearchCoinResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.SearchCoinResponse"
                         }
                     }
                 }
@@ -3011,7 +3006,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CompareTokenResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CompareTokenResponse"
                         }
                     }
                 }
@@ -3043,7 +3038,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetCoinResponseWrapper"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponseWrapper"
                         }
                     }
                 }
@@ -3089,7 +3084,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetHistoricalMarketChartResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetHistoricalMarketChartResponse"
                         }
                     }
                 }
@@ -3112,7 +3107,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetSupportedTokensResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetSupportedTokensResponse"
                         }
                     }
                 }
@@ -3153,7 +3148,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetWatchlistResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetWatchlistResponse"
                         }
                     }
                 }
@@ -3177,7 +3172,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddToWatchlistRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.AddToWatchlistRequest"
                         }
                     }
                 ],
@@ -3185,7 +3180,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.AddToWatchlistResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.AddToWatchlistResponse"
                         }
                     }
                 }
@@ -3263,7 +3258,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetFiatHistoricalExchangeRatesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetFiatHistoricalExchangeRatesResponse"
                         }
                     }
                 }
@@ -3286,7 +3281,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildsResponse"
                         }
                     }
                 }
@@ -3310,7 +3305,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateGuildRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateGuildRequest"
                         }
                     }
                 ],
@@ -3318,7 +3313,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/request.CreateGuildRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateGuildRequest"
                         }
                     }
                 }
@@ -3350,7 +3345,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListMyGuildsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListMyGuildsResponse"
                         }
                     }
                 }
@@ -3382,7 +3377,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildResponse"
                         }
                     }
                 }
@@ -3413,7 +3408,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpdateGuildRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpdateGuildRequest"
                         }
                     }
                 ],
@@ -3421,7 +3416,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -3491,7 +3486,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListAllCustomTokenResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListAllCustomTokenResponse"
                         }
                     }
                 }
@@ -3523,7 +3518,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.DiscordGuildStat"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordGuildStat"
                         }
                     }
                 }
@@ -3546,7 +3541,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ListAllNFTCollectionsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListAllNFTCollectionsResponse"
                         }
                     }
                 }
@@ -3585,7 +3580,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NFTCollectionsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionsResponse"
                         }
                     }
                 }
@@ -3609,7 +3604,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateNFTCollectionRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateNFTCollectionRequest"
                         }
                     }
                 ],
@@ -3617,7 +3612,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CreateNFTCollectionResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CreateNFTCollectionResponse"
                         }
                     }
                 }
@@ -3656,7 +3651,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetNFTCollectionByAddressChainResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChainResponse"
                         }
                     }
                 }
@@ -3679,7 +3674,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetCollectionCountResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetCollectionCountResponse"
                         }
                     }
                 }
@@ -3711,7 +3706,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetSuggestionNFTCollectionsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetSuggestionNFTCollectionsResponse"
                         }
                     }
                 }
@@ -3757,7 +3752,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerNFTCollectionTickersResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersResponse"
                         }
                     }
                 }
@@ -3789,7 +3784,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -3821,7 +3816,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokensResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse"
                         }
                     }
                 }
@@ -3860,7 +3855,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetDetailNftCollectionResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetDetailNftCollectionResponse"
                         }
                     }
                 }
@@ -3899,7 +3894,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetGuildDefaultNftTickerResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildDefaultNftTickerResponse"
                         }
                     }
                 }
@@ -3923,7 +3918,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GuildConfigDefaultNftTickerRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.GuildConfigDefaultNftTickerRequest"
                         }
                     }
                 ],
@@ -3931,7 +3926,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseDataMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseDataMessage"
                         }
                     }
                 }
@@ -3954,7 +3949,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NftMetadataAttrIconResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftMetadataAttrIconResponse"
                         }
                     }
                 }
@@ -4000,7 +3995,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NFTNewListedResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTNewListedResponse"
                         }
                     }
                 }
@@ -4039,7 +4034,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NftSalesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftSalesResponse"
                         }
                     }
                 }
@@ -4062,7 +4057,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetAllNFTSalesTrackerResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetAllNFTSalesTrackerResponse"
                         }
                     }
                 }
@@ -4092,7 +4087,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokensResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse"
                         }
                     }
                 }
@@ -4129,7 +4124,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -4152,7 +4147,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetSupportedChains"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetSupportedChains"
                         }
                     }
                 }
@@ -4205,7 +4200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokenTickersResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenTickersResponse"
                         }
                     }
                 }
@@ -4231,7 +4226,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateTradeOfferRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateTradeOfferRequest"
                         }
                     }
                 ],
@@ -4239,7 +4234,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CreateTradeOfferResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CreateTradeOfferResponse"
                         }
                     }
                 }
@@ -4271,7 +4266,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetTradeOfferResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetTradeOfferResponse"
                         }
                     }
                 }
@@ -4303,7 +4298,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NFTTradingVolumeResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTTradingVolumeResponse"
                         }
                     }
                 }
@@ -4349,7 +4344,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetNftWatchlistResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNftWatchlistResponse"
                         }
                     }
                 }
@@ -4373,7 +4368,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.AddNftWatchlistRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.AddNftWatchlistRequest"
                         }
                     }
                 ],
@@ -4381,7 +4376,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NftWatchlistSuggestResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftWatchlistSuggestResponse"
                         }
                     }
                 }
@@ -4470,7 +4465,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokenDetailResponseWithSuggestions"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenDetailResponseWithSuggestions"
                         }
                     }
                 }
@@ -4521,7 +4516,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetNFTActivityResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNFTActivityResponse"
                         }
                     }
                 }
@@ -4547,7 +4542,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateAssignContract"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateAssignContract"
                         }
                     }
                 ],
@@ -4555,7 +4550,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetAssignedContract"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetAssignedContract"
                         }
                     }
                 }
@@ -4587,7 +4582,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserBalancesResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserBalancesResponse"
                         }
                     }
                 }
@@ -4626,7 +4621,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.TransactionsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.TransactionsResponse"
                         }
                     }
                 }
@@ -4649,7 +4644,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.AllTipBotTokensResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.AllTipBotTokensResponse"
                         }
                     }
                 }
@@ -4693,7 +4688,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.TransactionsResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.TransactionsResponse"
                         }
                     }
                 }
@@ -4719,7 +4714,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.OffchainTransferRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.OffchainTransferRequest"
                         }
                     }
                 ],
@@ -4727,7 +4722,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.OffchainTipBotTransferTokenResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotTransferTokenResponse"
                         }
                     }
                 }
@@ -4753,7 +4748,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.OffchainWithdrawRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.OffchainWithdrawRequest"
                         }
                     }
                 ],
@@ -4761,7 +4756,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.OffchainTipBotWithdrawResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotWithdrawResponse"
                         }
                     }
                 }
@@ -4787,7 +4782,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.CreateUserRequest"
                         }
                     }
                 ],
@@ -4795,7 +4790,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -4834,7 +4829,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserCurrentGMStreakResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserCurrentGMStreakResponse"
                         }
                     }
                 }
@@ -4866,7 +4861,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetMyInfoResponse"
                         }
                     }
                 }
@@ -4905,7 +4900,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetDataUserProfileResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetDataUserProfileResponse"
                         }
                     }
                 }
@@ -4958,7 +4953,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetMyInfoResponse"
                         }
                     }
                 }
@@ -4997,7 +4992,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserUpvoteLeaderboardResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserUpvoteLeaderboardResponse"
                         }
                     }
                 }
@@ -5029,7 +5024,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CurrentUserUpvoteStreakResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CurrentUserUpvoteStreakResponse"
                         }
                     }
                 }
@@ -5061,7 +5056,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserWalletByGuildIDAddressResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserWalletByGuildIDAddressResponse"
                         }
                     }
                 }
@@ -5093,7 +5088,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UserTransactionResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UserTransactionResponse"
                         }
                     }
                 }
@@ -5125,7 +5120,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetUserResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserResponse"
                         }
                     }
                 }
@@ -5151,7 +5146,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.VerifyWalletAddressRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.VerifyWalletAddressRequest"
                         }
                     }
                 ],
@@ -5159,7 +5154,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseStatus"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseStatus"
                         }
                     }
                 }
@@ -5185,7 +5180,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.NewGuildConfigWalletVerificationMessageRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest"
                         }
                     }
                 ],
@@ -5193,7 +5188,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NewGuildConfigWalletVerificationMessageResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse"
                         }
                     }
                 }
@@ -5217,7 +5212,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.NewGuildConfigWalletVerificationMessageRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest"
                         }
                     }
                 ],
@@ -5225,7 +5220,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NewGuildConfigWalletVerificationMessageResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse"
                         }
                     }
                 }
@@ -5255,7 +5250,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseStatus"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseStatus"
                         }
                     }
                 }
@@ -5287,7 +5282,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.NewGuildConfigWalletVerificationMessageResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse"
                         }
                     }
                 }
@@ -5313,7 +5308,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.GenerateVerificationRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.GenerateVerificationRequest"
                         }
                     }
                 ],
@@ -5321,7 +5316,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GenerateVerificationResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GenerateVerificationResponse"
                         }
                     }
                 }
@@ -5353,7 +5348,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UserDeviceResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UserDeviceResponse"
                         }
                     }
                 }
@@ -5377,7 +5372,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertUserDeviceRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertUserDeviceRequest"
                         }
                     }
                 ],
@@ -5385,7 +5380,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -5409,7 +5404,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteUserDeviceRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteUserDeviceRequest"
                         }
                     }
                 ],
@@ -5417,7 +5412,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -5449,7 +5444,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DiscordUserTokenAlertResponse"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DiscordUserTokenAlertResponse"
                         }
                     }
                 }
@@ -5473,7 +5468,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpsertDiscordUserAlertRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.UpsertDiscordUserAlertRequest"
                         }
                     }
                 ],
@@ -5481,7 +5476,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -5505,7 +5500,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.DeleteDiscordUserAlertRequest"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.DeleteDiscordUserAlertRequest"
                         }
                     }
                 ],
@@ -5513,7 +5508,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                         }
                     }
                 }
@@ -5523,6 +5518,55 @@ const docTemplate = `{
     "definitions": {
         "big.Float": {
             "type": "object"
+        },
+        "discordgo.GuildFeature": {
+            "type": "string",
+            "enum": [
+                "ANIMATED_BANNER",
+                "ANIMATED_ICON",
+                "AUTO_MODERATION",
+                "BANNER",
+                "COMMUNITY",
+                "DISCOVERABLE",
+                "FEATURABLE",
+                "INVITE_SPLASH",
+                "MEMBER_VERIFICATION_GATE_ENABLED",
+                "MONETIZATION_ENABLED",
+                "MORE_STICKERS",
+                "NEWS",
+                "PARTNERED",
+                "PREVIEW_ENABLED",
+                "PRIVATE_THREADS",
+                "ROLE_ICONS",
+                "TICKETED_EVENTS_ENABLED",
+                "VANITY_URL",
+                "VERIFIED",
+                "VIP_REGIONS",
+                "WELCOME_SCREEN_ENABLED"
+            ],
+            "x-enum-varnames": [
+                "GuildFeatureAnimatedBanner",
+                "GuildFeatureAnimatedIcon",
+                "GuildFeatureAutoModeration",
+                "GuildFeatureBanner",
+                "GuildFeatureCommunity",
+                "GuildFeatureDiscoverable",
+                "GuildFeatureFeaturable",
+                "GuildFeatureInviteSplash",
+                "GuildFeatureMemberVerificationGateEnabled",
+                "GuildFeatureMonetizationEnabled",
+                "GuildFeatureMoreStickers",
+                "GuildFeatureNews",
+                "GuildFeaturePartnered",
+                "GuildFeaturePreviewEnabled",
+                "GuildFeaturePrivateThreads",
+                "GuildFeatureRoleIcons",
+                "GuildFeatureTicketedEventsEnabled",
+                "GuildFeatureVanityURL",
+                "GuildFeatureVerified",
+                "GuildFeatureVipRegions",
+                "GuildFeatureWelcomeScreenEnabled"
+            ]
         },
         "discordgo.User": {
             "type": "object",
@@ -5573,7 +5617,11 @@ const docTemplate = `{
                 },
                 "public_flags": {
                     "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.UserFlags"
+                        }
+                    ]
                 },
                 "system": {
                     "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
@@ -5593,7 +5641,42 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.LoginResponse": {
+        "discordgo.UserFlags": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                8,
+                64,
+                128,
+                256,
+                512,
+                1024,
+                4096,
+                16384,
+                65536,
+                131072,
+                262144
+            ],
+            "x-enum-varnames": [
+                "UserFlagDiscordEmployee",
+                "UserFlagDiscordPartner",
+                "UserFlagHypeSquadEvents",
+                "UserFlagBugHunterLevel1",
+                "UserFlagHouseBravery",
+                "UserFlagHouseBrilliance",
+                "UserFlagHouseBalance",
+                "UserFlagEarlySupporter",
+                "UserFlagTeamUser",
+                "UserFlagSystem",
+                "UserFlagBugHunterLevel2",
+                "UserFlagVerifiedBot",
+                "UserFlagVerifiedBotDeveloper",
+                "UserFlagDiscordCertifiedModerator"
+            ]
+        },
+        "github_com_defipod_mochi_pkg_entities.LoginResponse": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -5604,7 +5687,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Activity": {
+        "github_com_defipod_mochi_pkg_model.Activity": {
             "type": "object",
             "properties": {
                 "guild_default": {
@@ -5621,7 +5704,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Chain": {
+        "github_com_defipod_mochi_pkg_model.Chain": {
             "type": "object",
             "properties": {
                 "coin_gecko_id": {
@@ -5641,7 +5724,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CoingeckoSupportedTokens": {
+        "github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens": {
             "type": "object",
             "properties": {
                 "id": {
@@ -5655,7 +5738,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ConfigXpLevel": {
+        "github_com_defipod_mochi_pkg_model.ConfigXpLevel": {
             "type": "object",
             "properties": {
                 "level": {
@@ -5666,7 +5749,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DiscordGuild": {
+        "github_com_defipod_mochi_pkg_model.DiscordGuild": {
             "type": "object",
             "properties": {
                 "active": {
@@ -5699,12 +5782,12 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildRole"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildRole"
                     }
                 }
             }
         },
-        "model.DiscordGuildStat": {
+        "github_com_defipod_mochi_pkg_model.DiscordGuildStat": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -5766,7 +5849,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DiscordUserDevice": {
+        "github_com_defipod_mochi_pkg_model.DiscordUserDevice": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -5783,7 +5866,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DiscordUserGMStreak": {
+        "github_com_defipod_mochi_pkg_model.DiscordUserGMStreak": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -5809,14 +5892,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DiscordUserTokenAlert": {
+        "github_com_defipod_mochi_pkg_model.DiscordUserTokenAlert": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string"
                 },
                 "device": {
-                    "$ref": "#/definitions/model.DiscordUserDevice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserDevice"
                 },
                 "device_id": {
                     "type": "string"
@@ -5847,7 +5930,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DiscordUserUpvoteStreak": {
+        "github_com_defipod_mochi_pkg_model.DiscordUserUpvoteStreak": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -5870,14 +5953,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigActivity": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigActivity": {
             "type": "object",
             "properties": {
                 "active": {
                     "type": "boolean"
                 },
                 "activity": {
-                    "$ref": "#/definitions/model.Activity"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Activity"
                 },
                 "activity_id": {
                     "type": "integer"
@@ -5887,7 +5970,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigDaoProposal": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigDaoProposal": {
             "type": "object",
             "properties": {
                 "address": {
@@ -5925,7 +6008,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigDefaultCollection": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigDefaultCollection": {
             "type": "object",
             "properties": {
                 "address": {
@@ -5948,7 +6031,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigDefaultTicker": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigDefaultTicker": {
             "type": "object",
             "properties": {
                 "default_ticker": {
@@ -5962,7 +6045,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigGmGn": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigGmGn": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -5985,7 +6068,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigInviteTracker": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigInviteTracker": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -5998,11 +6081,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "webhook_url": {
-                    "$ref": "#/definitions/model.JSONNullString"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.JSONNullString"
                 }
             }
         },
-        "model.GuildConfigLevelRole": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigLevelRole": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -6012,14 +6095,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "level_config": {
-                    "$ref": "#/definitions/model.ConfigXpLevel"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel"
                 },
                 "role_id": {
                     "type": "string"
                 }
             }
         },
-        "model.GuildConfigRepostReaction": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigRepostReaction": {
             "type": "object",
             "properties": {
                 "emoji": {
@@ -6048,7 +6131,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigSalesTracker": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigSalesTracker": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -6062,7 +6145,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigTwitterBlacklist": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigTwitterBlacklist": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -6082,7 +6165,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigTwitterFeed": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -6102,7 +6185,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigVoteChannel": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigVoteChannel": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -6116,7 +6199,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigWalletVerificationMessage": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigWalletVerificationMessage": {
             "type": "object",
             "properties": {
                 "content": {
@@ -6145,7 +6228,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigWelcomeChannel": {
+        "github_com_defipod_mochi_pkg_model.GuildConfigWelcomeChannel": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -6162,7 +6245,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildRole": {
+        "github_com_defipod_mochi_pkg_model.GuildRole": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -6176,7 +6259,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildUser": {
+        "github_com_defipod_mochi_pkg_model.GuildUser": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -6194,7 +6277,7 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildRole"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildRole"
                     }
                 },
                 "user_id": {
@@ -6202,7 +6285,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.JSONNullInt64": {
+        "github_com_defipod_mochi_pkg_model.JSONNullInt64": {
             "type": "object",
             "properties": {
                 "int64": {
@@ -6214,7 +6297,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.JSONNullString": {
+        "github_com_defipod_mochi_pkg_model.JSONNullString": {
             "type": "object",
             "properties": {
                 "string": {
@@ -6226,7 +6309,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.MonikerConfig": {
+        "github_com_defipod_mochi_pkg_model.MonikerConfig": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -6248,7 +6331,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "$ref": "#/definitions/model.OffchainTipBotToken"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken"
                 },
                 "token_id": {
                     "type": "string"
@@ -6258,7 +6341,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.NFTCollection": {
+        "github_com_defipod_mochi_pkg_model.NFTCollection": {
             "type": "object",
             "properties": {
                 "address": {
@@ -6293,45 +6376,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.NFTCollectionDetail": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "author": {
-                    "type": "string"
-                },
-                "chain": {
-                    "$ref": "#/definitions/model.Chain"
-                },
-                "chain_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "erc_format": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "is_verified": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.NewListedNFTCollection": {
+        "github_com_defipod_mochi_pkg_model.NFTCollectionDetail": {
             "type": "object",
             "properties": {
                 "address": {
@@ -6341,6 +6386,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "chain": {
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Chain"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "erc_format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_defipod_mochi_pkg_model.NewListedNFTCollection": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "chain": {
                     "type": "string"
                 },
                 "chain_id": {
@@ -6369,14 +6452,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotAssignContract": {
+        "github_com_defipod_mochi_pkg_model.OffchainTipBotAssignContract": {
             "type": "object",
             "properties": {
                 "chain_id": {
                     "type": "string"
                 },
                 "contract": {
-                    "$ref": "#/definitions/model.OffchainTipBotContract"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotContract"
                 },
                 "contract_id": {
                     "type": "string"
@@ -6398,7 +6481,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotChain": {
+        "github_com_defipod_mochi_pkg_model.OffchainTipBotChain": {
             "type": "object",
             "properties": {
                 "chain_id": {
@@ -6410,7 +6493,7 @@ const docTemplate = `{
                 "contracts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotContract"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotContract"
                     }
                 },
                 "created_at": {
@@ -6440,7 +6523,7 @@ const docTemplate = `{
                 "tokens": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotToken"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken"
                     }
                 },
                 "updated_at": {
@@ -6448,7 +6531,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotContract": {
+        "github_com_defipod_mochi_pkg_model.OffchainTipBotContract": {
             "type": "object",
             "properties": {
                 "assign_status": {
@@ -6458,7 +6541,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "chain": {
-                    "$ref": "#/definitions/model.OffchainTipBotChain"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotChain"
                 },
                 "chain_id": {
                     "type": "string"
@@ -6483,7 +6566,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotToken": {
+        "github_com_defipod_mochi_pkg_model.OffchainTipBotToken": {
             "type": "object",
             "properties": {
                 "coin_gecko_id": {
@@ -6518,7 +6601,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotTransferHistory": {
+        "github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory": {
             "type": "object",
             "properties": {
                 "action": {
@@ -6562,11 +6645,11 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Quest": {
+        "github_com_defipod_mochi_pkg_model.Quest": {
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestAction"
                 },
                 "frequency": {
                     "type": "integer"
@@ -6577,18 +6660,39 @@ const docTemplate = `{
                 "rewards": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.QuestReward"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestReward"
                     }
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine"
                 },
                 "title": {
                     "type": "string"
                 }
             }
         },
-        "model.QuestReward": {
+        "github_com_defipod_mochi_pkg_model.QuestAction": {
+            "type": "string",
+            "enum": [
+                "gm",
+                "vote",
+                "trade",
+                "gift",
+                "ticker",
+                "watchlist",
+                "bonus"
+            ],
+            "x-enum-varnames": [
+                "GM",
+                "VOTE",
+                "TRADE",
+                "GIFT",
+                "TICKER",
+                "WATCHLIST",
+                "BONUS"
+            ]
+        },
+        "github_com_defipod_mochi_pkg_model.QuestReward": {
             "type": "object",
             "properties": {
                 "id": {
@@ -6598,7 +6702,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "quest": {
-                    "$ref": "#/definitions/model.Quest"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Quest"
                 },
                 "quest_id": {
                     "type": "string"
@@ -6607,14 +6711,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "reward_type": {
-                    "$ref": "#/definitions/model.QuestRewardType"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestRewardType"
                 },
                 "reward_type_id": {
                     "type": "string"
                 }
             }
         },
-        "model.QuestRewardType": {
+        "github_com_defipod_mochi_pkg_model.QuestRewardType": {
             "type": "object",
             "properties": {
                 "id": {
@@ -6625,11 +6729,28 @@ const docTemplate = `{
                 }
             }
         },
-        "model.QuestUserList": {
+        "github_com_defipod_mochi_pkg_model.QuestRoutine": {
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly",
+                "once"
+            ],
+            "x-enum-varnames": [
+                "DAILY",
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY",
+                "ONCE"
+            ]
+        },
+        "github_com_defipod_mochi_pkg_model.QuestUserList": {
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestAction"
                 },
                 "current": {
                     "type": "integer"
@@ -6650,13 +6771,13 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "quest": {
-                    "$ref": "#/definitions/model.Quest"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Quest"
                 },
                 "quest_id": {
                     "type": "string"
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine"
                 },
                 "start_time": {
                     "type": "string"
@@ -6669,7 +6790,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.QuestUserReward": {
+        "github_com_defipod_mochi_pkg_model.QuestUserReward": {
             "type": "object",
             "properties": {
                 "claimed_at": {
@@ -6682,7 +6803,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "reward": {
-                    "$ref": "#/definitions/model.QuestReward"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestReward"
                 },
                 "reward_amount": {
                     "type": "integer"
@@ -6701,14 +6822,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Token": {
+        "github_com_defipod_mochi_pkg_model.Token": {
             "type": "object",
             "properties": {
                 "address": {
                     "type": "string"
                 },
                 "chain": {
-                    "$ref": "#/definitions/model.Chain"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Chain"
                 },
                 "chain_id": {
                     "type": "integer"
@@ -6739,7 +6860,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TradeItem": {
+        "github_com_defipod_mochi_pkg_model.TradeItem": {
             "type": "object",
             "properties": {
                 "id": {
@@ -6762,7 +6883,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.TradeOffer": {
+        "github_com_defipod_mochi_pkg_model.TradeOffer": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -6771,7 +6892,7 @@ const docTemplate = `{
                 "have_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.TradeItem"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.TradeItem"
                     }
                 },
                 "id": {
@@ -6786,12 +6907,12 @@ const docTemplate = `{
                 "want_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.TradeItem"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.TradeItem"
                     }
                 }
             }
         },
-        "model.TwitterPostStreak": {
+        "github_com_defipod_mochi_pkg_model.TwitterPostStreak": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -6820,7 +6941,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UpvoteStreakTier": {
+        "github_com_defipod_mochi_pkg_model.UpvoteStreakTier": {
             "type": "object",
             "properties": {
                 "id": {
@@ -6837,23 +6958,23 @@ const docTemplate = `{
                 }
             }
         },
-        "model.User": {
+        "github_com_defipod_mochi_pkg_model.User": {
             "type": "object",
             "properties": {
                 "guild_users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildUser"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildUser"
                     }
                 },
                 "id": {
                     "type": "string"
                 },
                 "in_discord_wallet_address": {
-                    "$ref": "#/definitions/model.JSONNullString"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.JSONNullString"
                 },
                 "in_discord_wallet_number": {
-                    "$ref": "#/definitions/model.JSONNullInt64"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.JSONNullInt64"
                 },
                 "nr_of_join": {
                     "type": "integer"
@@ -6863,7 +6984,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserFactionXpsMapping": {
+        "github_com_defipod_mochi_pkg_model.UserFactionXpsMapping": {
             "type": "object",
             "properties": {
                 "academy_xp": {
@@ -6880,7 +7001,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserFeedback": {
+        "github_com_defipod_mochi_pkg_model.UserFeedback": {
             "type": "object",
             "properties": {
                 "command": {
@@ -6912,7 +7033,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserTelegramDiscordAssociation": {
+        "github_com_defipod_mochi_pkg_model.UserTelegramDiscordAssociation": {
             "type": "object",
             "properties": {
                 "discord_id": {
@@ -6923,14 +7044,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.UserWallet": {
+        "github_com_defipod_mochi_pkg_model.UserWallet": {
             "type": "object",
             "properties": {
                 "address": {
                     "type": "string"
                 },
                 "chain_type": {
-                    "$ref": "#/definitions/model.JSONNullString"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.JSONNullString"
                 },
                 "created_at": {
                     "type": "string"
@@ -6940,14 +7061,18 @@ const docTemplate = `{
                 },
                 "user": {
                     "description": "preload user",
-                    "$ref": "#/definitions/model.User"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.User"
+                        }
+                    ]
                 },
                 "user_discord_id": {
                     "type": "string"
                 }
             }
         },
-        "request.AddNftWatchlistRequest": {
+        "github_com_defipod_mochi_pkg_request.AddNftWatchlistRequest": {
             "type": "object",
             "properties": {
                 "chain": {
@@ -6967,7 +7092,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.AddToTwitterBlackListRequest": {
+        "github_com_defipod_mochi_pkg_request.AddToTwitterBlackListRequest": {
             "type": "object",
             "properties": {
                 "created_by": {
@@ -6984,7 +7109,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.AddToWatchlistRequest": {
+        "github_com_defipod_mochi_pkg_request.AddToWatchlistRequest": {
             "type": "object",
             "properties": {
                 "coin_gecko_id": {
@@ -7001,7 +7126,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.BalcklistChannelRepostConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.BalcklistChannelRepostConfigRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7012,21 +7137,21 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ClaimQuestsRewardsRequest": {
+        "github_com_defipod_mochi_pkg_request.ClaimQuestsRewardsRequest": {
             "type": "object",
             "properties": {
                 "quest_id": {
                     "type": "string"
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestRoutine"
                 },
                 "user_id": {
                     "type": "string"
                 }
             }
         },
-        "request.ConfigDefaultCollection": {
+        "github_com_defipod_mochi_pkg_request.ConfigDefaultCollection": {
             "type": "object",
             "properties": {
                 "address": {
@@ -7043,7 +7168,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigDefaultTokenRequest": {
+        "github_com_defipod_mochi_pkg_request.ConfigDefaultTokenRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7054,7 +7179,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigGroupNFTRoleRequest": {
+        "github_com_defipod_mochi_pkg_request.ConfigGroupNFTRoleRequest": {
             "type": "object",
             "properties": {
                 "collection_address": {
@@ -7077,7 +7202,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigLevelRoleRequest": {
+        "github_com_defipod_mochi_pkg_request.ConfigLevelRoleRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7091,7 +7216,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigRepostReactionStartStop": {
+        "github_com_defipod_mochi_pkg_request.ConfigRepostReactionStartStop": {
             "type": "object",
             "properties": {
                 "emoji_start": {
@@ -7108,7 +7233,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigRepostRequest": {
+        "github_com_defipod_mochi_pkg_request.ConfigRepostRequest": {
             "type": "object",
             "properties": {
                 "emoji": {
@@ -7125,7 +7250,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.ConfigureInviteRequest": {
+        "github_com_defipod_mochi_pkg_request.ConfigureInviteRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7139,7 +7264,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateAssignContract": {
+        "github_com_defipod_mochi_pkg_request.CreateAssignContract": {
             "type": "object",
             "properties": {
                 "token_symbol": {
@@ -7150,7 +7275,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateDefaultRoleRequest": {
+        "github_com_defipod_mochi_pkg_request.CreateDefaultRoleRequest": {
             "type": "object",
             "required": [
                 "guild_id",
@@ -7165,7 +7290,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateGuildRequest": {
+        "github_com_defipod_mochi_pkg_request.CreateGuildRequest": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7176,7 +7301,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateNFTCollectionRequest": {
+        "github_com_defipod_mochi_pkg_request.CreateNFTCollectionRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -7205,7 +7330,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateTipConfigNotify": {
+        "github_com_defipod_mochi_pkg_request.CreateTipConfigNotify": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7219,7 +7344,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateTradeOfferRequest": {
+        "github_com_defipod_mochi_pkg_request.CreateTradeOfferRequest": {
             "type": "object",
             "required": [
                 "owner_address"
@@ -7228,7 +7353,7 @@ const docTemplate = `{
                 "have_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/request.TradeOfferItem"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.TradeOfferItem"
                     }
                 },
                 "owner_address": {
@@ -7237,12 +7362,12 @@ const docTemplate = `{
                 "want_items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/request.TradeOfferItem"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_request.TradeOfferItem"
                     }
                 }
             }
         },
-        "request.CreateUserRequest": {
+        "github_com_defipod_mochi_pkg_request.CreateUserRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7262,7 +7387,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteDiscordUserAlertRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteDiscordUserAlertRequest": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7270,7 +7395,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteGuildConfigDaoProposal": {
+        "github_com_defipod_mochi_pkg_request.DeleteGuildConfigDaoProposal": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7278,7 +7403,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteJoinLeaveChannelConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteJoinLeaveChannelConfigRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7286,7 +7411,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteMonikerConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteMonikerConfigRequest": {
             "type": "object",
             "required": [
                 "guild_id",
@@ -7301,7 +7426,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteUserDeviceRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteUserDeviceRequest": {
             "type": "object",
             "properties": {
                 "device_id": {
@@ -7309,7 +7434,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteVoteChannelConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteVoteChannelConfigRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7317,7 +7442,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteWelcomeConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.DeleteWelcomeConfigRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7325,7 +7450,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.EditMessageRepostRequest": {
+        "github_com_defipod_mochi_pkg_request.EditMessageRepostRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7345,7 +7470,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.GenerateVerificationRequest": {
+        "github_com_defipod_mochi_pkg_request.GenerateVerificationRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7359,7 +7484,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.GuildConfigDefaultNftTickerRequest": {
+        "github_com_defipod_mochi_pkg_request.GuildConfigDefaultNftTickerRequest": {
             "type": "object",
             "properties": {
                 "chain_id": {
@@ -7379,7 +7504,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.GuildConfigDefaultTickerRequest": {
+        "github_com_defipod_mochi_pkg_request.GuildConfigDefaultTickerRequest": {
             "type": "object",
             "properties": {
                 "default_ticker": {
@@ -7393,7 +7518,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.GuildIDRequest": {
+        "github_com_defipod_mochi_pkg_request.GuildIDRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7401,7 +7526,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.LinkUserTelegramWithDiscordRequest": {
+        "github_com_defipod_mochi_pkg_request.LinkUserTelegramWithDiscordRequest": {
             "type": "object",
             "required": [
                 "discord_id",
@@ -7416,7 +7541,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.LoginRequest": {
+        "github_com_defipod_mochi_pkg_request.LoginRequest": {
             "type": "object",
             "properties": {
                 "access_token": {
@@ -7424,7 +7549,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.NewGuildConfigWalletVerificationMessageRequest": {
+        "github_com_defipod_mochi_pkg_request.NewGuildConfigWalletVerificationMessageRequest": {
             "type": "object",
             "properties": {
                 "content": {
@@ -7453,7 +7578,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.OffchainTransferRequest": {
+        "github_com_defipod_mochi_pkg_request.OffchainTransferRequest": {
             "type": "object",
             "properties": {
                 "all": {
@@ -7503,7 +7628,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.OffchainWithdrawRequest": {
+        "github_com_defipod_mochi_pkg_request.OffchainWithdrawRequest": {
             "type": "object",
             "properties": {
                 "all": {
@@ -7541,7 +7666,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.RoleReactionRequest": {
+        "github_com_defipod_mochi_pkg_request.RoleReactionRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7555,7 +7680,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.RoleReactionUpdateRequest": {
+        "github_com_defipod_mochi_pkg_request.RoleReactionUpdateRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7575,7 +7700,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.SetUpvoteMessageCacheRequest": {
+        "github_com_defipod_mochi_pkg_request.SetUpvoteMessageCacheRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7592,7 +7717,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.TradeOfferItem": {
+        "github_com_defipod_mochi_pkg_request.TradeOfferItem": {
             "type": "object",
             "required": [
                 "token_address",
@@ -7610,7 +7735,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.TwitterHashtag": {
+        "github_com_defipod_mochi_pkg_request.TwitterHashtag": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7645,7 +7770,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.TwitterPost": {
+        "github_com_defipod_mochi_pkg_request.TwitterPost": {
             "type": "object",
             "properties": {
                 "content": {
@@ -7665,7 +7790,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpdateGuildRequest": {
+        "github_com_defipod_mochi_pkg_request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
                 "active": {
@@ -7682,11 +7807,11 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpdateQuestProgressRequest": {
+        "github_com_defipod_mochi_pkg_request.UpdateQuestProgressRequest": {
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestAction"
                 },
                 "guild_id": {
                     "type": "string"
@@ -7696,7 +7821,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpdateUserFeedbackRequest": {
+        "github_com_defipod_mochi_pkg_request.UpdateUserFeedbackRequest": {
             "type": "object",
             "properties": {
                 "id": {
@@ -7707,7 +7832,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertCustomTokenConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertCustomTokenConfigRequest": {
             "type": "object",
             "properties": {
                 "active": {
@@ -7748,7 +7873,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertDiscordUserAlertRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertDiscordUserAlertRequest": {
             "type": "object",
             "properties": {
                 "device_id": {
@@ -7777,7 +7902,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertGmConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertGmConfigRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7797,7 +7922,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertGuildDefaultCurrencyRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
                 "Symbol": {
@@ -7808,7 +7933,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertGuildPruneExcludeRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertGuildPruneExcludeRequest": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -7819,7 +7944,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertGuildTokenConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertGuildTokenConfigRequest": {
             "type": "object",
             "properties": {
                 "active": {
@@ -7833,7 +7958,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertJoinLeaveChannelConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertJoinLeaveChannelConfigRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7844,7 +7969,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertMonikerConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertMonikerConfigRequest": {
             "type": "object",
             "required": [
                 "amount",
@@ -7870,7 +7995,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertUserDeviceRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertUserDeviceRequest": {
             "type": "object",
             "properties": {
                 "device_id": {
@@ -7881,7 +8006,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertVoteChannelConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertVoteChannelConfigRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7892,7 +8017,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpsertWelcomeConfigRequest": {
+        "github_com_defipod_mochi_pkg_request.UpsertWelcomeConfigRequest": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -7906,7 +8031,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UserFeedbackRequest": {
+        "github_com_defipod_mochi_pkg_request.UserFeedbackRequest": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -7929,7 +8054,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.VerifyWalletAddressRequest": {
+        "github_com_defipod_mochi_pkg_request.VerifyWalletAddressRequest": {
             "type": "object",
             "properties": {
                 "code": {
@@ -7943,62 +8068,62 @@ const docTemplate = `{
                 }
             }
         },
-        "response.AddToWatchlistResponse": {
+        "github_com_defipod_mochi_pkg_response.AddToWatchlistResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.AddToWatchlistResponseData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.AddToWatchlistResponseData"
                 }
             }
         },
-        "response.AddToWatchlistResponseData": {
+        "github_com_defipod_mochi_pkg_response.AddToWatchlistResponseData": {
             "type": "object",
             "properties": {
                 "base_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens"
                     }
                 },
                 "target_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens"
                     }
                 }
             }
         },
-        "response.AllTipBotTokensResponse": {
+        "github_com_defipod_mochi_pkg_response.AllTipBotTokensResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotToken"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken"
                     }
                 }
             }
         },
-        "response.ClaimQuestsRewardsResponse": {
+        "github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.ClaimQuestsRewardsResponseData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponseData"
                 }
             }
         },
-        "response.ClaimQuestsRewardsResponseData": {
+        "github_com_defipod_mochi_pkg_response.ClaimQuestsRewardsResponseData": {
             "type": "object",
             "properties": {
                 "rewards": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.QuestUserReward"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestUserReward"
                     }
                 }
             }
         },
-        "response.CoinDescription": {
+        "github_com_defipod_mochi_pkg_response.CoinDescription": {
             "type": "object",
             "properties": {
                 "en": {
@@ -8006,7 +8131,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CoinImage": {
+        "github_com_defipod_mochi_pkg_response.CoinImage": {
             "type": "object",
             "properties": {
                 "large": {
@@ -8020,7 +8145,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CoinMarketItemData": {
+        "github_com_defipod_mochi_pkg_response.CoinMarketItemData": {
             "type": "object",
             "properties": {
                 "current_price": {
@@ -8063,7 +8188,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CoinPriceHistoryResponse": {
+        "github_com_defipod_mochi_pkg_response.CoinPriceHistoryResponse": {
             "type": "object",
             "properties": {
                 "from": {
@@ -8092,7 +8217,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CollectionSuggestions": {
+        "github_com_defipod_mochi_pkg_response.CollectionSuggestions": {
             "type": "object",
             "properties": {
                 "address": {
@@ -8112,16 +8237,16 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CompareTokenReponseData": {
+        "github_com_defipod_mochi_pkg_response.CompareTokenReponseData": {
             "type": "object",
             "properties": {
                 "base_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse"
                 },
                 "base_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens"
                     }
                 },
                 "from": {
@@ -8134,12 +8259,12 @@ const docTemplate = `{
                     }
                 },
                 "target_coin": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse"
                 },
                 "target_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens"
                     }
                 },
                 "times": {
@@ -8153,15 +8278,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CompareTokenResponse": {
+        "github_com_defipod_mochi_pkg_response.CompareTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.CompareTokenReponseData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CompareTokenReponseData"
                 }
             }
         },
-        "response.ConfigGroupNFTRoleResponse": {
+        "github_com_defipod_mochi_pkg_response.ConfigGroupNFTRoleResponse": {
             "type": "object",
             "properties": {
                 "group_name": {
@@ -8173,7 +8298,7 @@ const docTemplate = `{
                 "nft_collection_configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NFTCollectionConfig"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionConfig"
                     }
                 },
                 "number_of_tokens": {
@@ -8184,7 +8309,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ConfigNotifyResponse": {
+        "github_com_defipod_mochi_pkg_response.ConfigNotifyResponse": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -8210,7 +8335,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ConfigureInvitesResponse": {
+        "github_com_defipod_mochi_pkg_response.ConfigureInvitesResponse": {
             "type": "object",
             "properties": {
                 "data": {
@@ -8218,35 +8343,35 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateNFTCollectionResponse": {
+        "github_com_defipod_mochi_pkg_response.CreateNFTCollectionResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.NFTCollection"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection"
                 }
             }
         },
-        "response.CreateTradeOfferResponse": {
+        "github_com_defipod_mochi_pkg_response.CreateTradeOfferResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.TradeOffer"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.TradeOffer"
                 }
             }
         },
-        "response.CurrentUserUpvoteStreakResponse": {
+        "github_com_defipod_mochi_pkg_response.CurrentUserUpvoteStreakResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserCurrentUpvoteStreakResponse"
                 }
             }
         },
-        "response.DataFilterConfigByReaction": {
+        "github_com_defipod_mochi_pkg_response.DataFilterConfigByReaction": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.RoleReactionResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionResponse"
                 },
                 "page": {
                     "description": "page index",
@@ -8261,11 +8386,11 @@ const docTemplate = `{
                 }
             }
         },
-        "response.DataListRoleReactionResponse": {
+        "github_com_defipod_mochi_pkg_response.DataListRoleReactionResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.ListRoleReactionResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListRoleReactionResponse"
                 },
                 "page": {
                     "description": "page index",
@@ -8280,15 +8405,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.DataMetric": {
+        "github_com_defipod_mochi_pkg_response.DataMetric": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.Metric"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.Metric"
                 }
             }
         },
-        "response.DefaultRole": {
+        "github_com_defipod_mochi_pkg_response.DefaultRole": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -8299,15 +8424,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.DefaultRoleResponse": {
+        "github_com_defipod_mochi_pkg_response.DefaultRoleResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.DefaultRole"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DefaultRole"
                 }
             }
         },
-        "response.DiscordGuildResponse": {
+        "github_com_defipod_mochi_pkg_response.DiscordGuildResponse": {
             "type": "object",
             "properties": {
                 "bot_addable": {
@@ -8319,7 +8444,7 @@ const docTemplate = `{
                 "features": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/discordgo.GuildFeature"
                     }
                 },
                 "icon": {
@@ -8340,18 +8465,18 @@ const docTemplate = `{
                 }
             }
         },
-        "response.DiscordUserTokenAlertResponse": {
+        "github_com_defipod_mochi_pkg_response.DiscordUserTokenAlertResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.DiscordUserTokenAlert"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserTokenAlert"
                     }
                 }
             }
         },
-        "response.GenerateVerificationResponse": {
+        "github_com_defipod_mochi_pkg_response.GenerateVerificationResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -8362,24 +8487,24 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetAllNFTSalesTrackerResponse": {
+        "github_com_defipod_mochi_pkg_response.GetAllNFTSalesTrackerResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NFTSalesTrackerResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTSalesTrackerResponse"
                     }
                 }
             }
         },
-        "response.GetAllTwitterConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetAllTwitterConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildConfigTwitterFeed"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterFeed"
                     }
                 },
                 "message": {
@@ -8387,45 +8512,45 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetAllTwitterHashtagConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetAllTwitterHashtagConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.TwitterHashtag"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.TwitterHashtag"
                     }
                 }
             }
         },
-        "response.GetAssignedContract": {
+        "github_com_defipod_mochi_pkg_response.GetAssignedContract": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.OffchainTipBotAssignContract"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotAssignContract"
                 }
             }
         },
-        "response.GetCoinResponse": {
+        "github_com_defipod_mochi_pkg_response.GetCoinResponse": {
             "type": "object",
             "properties": {
                 "asset_platform_id": {
                     "type": "string"
                 },
                 "description": {
-                    "$ref": "#/definitions/response.CoinDescription"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CoinDescription"
                 },
                 "id": {
                     "type": "string"
                 },
                 "image": {
-                    "$ref": "#/definitions/response.CoinImage"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CoinImage"
                 },
                 "market_cap_rank": {
                     "type": "integer"
                 },
                 "market_data": {
-                    "$ref": "#/definitions/response.MarketData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.MarketData"
                 },
                 "name": {
                     "type": "string"
@@ -8436,52 +8561,52 @@ const docTemplate = `{
                 "tickers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.TickerData"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.TickerData"
                     }
                 }
             }
         },
-        "response.GetCoinResponseWrapper": {
+        "github_com_defipod_mochi_pkg_response.GetCoinResponseWrapper": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetCoinResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetCoinResponse"
                 }
             }
         },
-        "response.GetCollectionCountResponse": {
+        "github_com_defipod_mochi_pkg_response.GetCollectionCountResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.NFTCollectionCount"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionCount"
                 }
             }
         },
-        "response.GetDataUserProfileResponse": {
+        "github_com_defipod_mochi_pkg_response.GetDataUserProfileResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetUserProfileResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserProfileResponse"
                 }
             }
         },
-        "response.GetDefaultTokenResponse": {
+        "github_com_defipod_mochi_pkg_response.GetDefaultTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.Token"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Token"
                 }
             }
         },
-        "response.GetDetailNftCollectionResponse": {
+        "github_com_defipod_mochi_pkg_response.GetDetailNftCollectionResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.NFTCollectionDetail"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.NFTCollectionDetail"
                 }
             }
         },
-        "response.GetFiatHistoricalExchangeRatesResponse": {
+        "github_com_defipod_mochi_pkg_response.GetFiatHistoricalExchangeRatesResponse": {
             "type": "object",
             "properties": {
                 "from": {
@@ -8507,53 +8632,53 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetGmConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGmConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigGmGn"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigGmGn"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.GetGuildConfigDaoProposal": {
+        "github_com_defipod_mochi_pkg_response.GetGuildConfigDaoProposal": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigDaoProposal"
                 }
             }
         },
-        "response.GetGuildDefaultNftTickerResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildDefaultNftTickerResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigDefaultCollection"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigDefaultCollection"
                 }
             }
         },
-        "response.GetGuildDefaultTickerResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildDefaultTickerResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigDefaultTicker"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigDefaultTicker"
                 }
             }
         },
-        "response.GetGuildPruneExcludeResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildPruneExcludeResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GuildPruneExcludeList"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GuildPruneExcludeList"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.GetGuildResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildResponse": {
             "type": "object",
             "properties": {
                 "active": {
@@ -8585,18 +8710,18 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetGuildTokensResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildTokensResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Token"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Token"
                     }
                 }
             }
         },
-        "response.GetGuildUserResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildUserResponse": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -8613,48 +8738,48 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetGuildsResponse": {
+        "github_com_defipod_mochi_pkg_response.GetGuildsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.GetGuildResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildResponse"
                     }
                 }
             }
         },
-        "response.GetHistoricalMarketChartResponse": {
+        "github_com_defipod_mochi_pkg_response.GetHistoricalMarketChartResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.CoinPriceHistoryResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CoinPriceHistoryResponse"
                 }
             }
         },
-        "response.GetInviteTrackerConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetInviteTrackerConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigInviteTracker"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigInviteTracker"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.GetInvitesLeaderboardResponse": {
+        "github_com_defipod_mochi_pkg_response.GetInvitesLeaderboardResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.UserInvitesAggregation"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UserInvitesAggregation"
                     }
                 }
             }
         },
-        "response.GetInvitesResponse": {
+        "github_com_defipod_mochi_pkg_response.GetInvitesResponse": {
             "type": "object",
             "properties": {
                 "data": {
@@ -8665,13 +8790,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetLevelRoleConfigsResponse": {
+        "github_com_defipod_mochi_pkg_response.GetLevelRoleConfigsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildConfigLevelRole"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigLevelRole"
                     }
                 },
                 "page": {
@@ -8687,26 +8812,26 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetLinkedTelegramResponse": {
+        "github_com_defipod_mochi_pkg_response.GetLinkedTelegramResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.UserTelegramDiscordAssociation"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserTelegramDiscordAssociation"
                 }
             }
         },
-        "response.GetListAllChainsResponse": {
+        "github_com_defipod_mochi_pkg_response.GetListAllChainsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Chain"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Chain"
                     }
                 }
             }
         },
-        "response.GetMyInfoResponse": {
+        "github_com_defipod_mochi_pkg_response.GetMyInfoResponse": {
             "type": "object",
             "properties": {
                 "data": {
@@ -8714,29 +8839,29 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetNFTActivityData": {
+        "github_com_defipod_mochi_pkg_response.GetNFTActivityData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.IndexerNFTActivityData"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTActivityData"
                     }
                 },
                 "metadata": {
-                    "$ref": "#/definitions/util.Pagination"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_util.Pagination"
                 }
             }
         },
-        "response.GetNFTActivityResponse": {
+        "github_com_defipod_mochi_pkg_response.GetNFTActivityResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetNFTActivityData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNFTActivityData"
                 }
             }
         },
-        "response.GetNFTCollectionByAddressChain": {
+        "github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChain": {
             "type": "object",
             "properties": {
                 "address": {
@@ -8789,15 +8914,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetNFTCollectionByAddressChainResponse": {
+        "github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChainResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetNFTCollectionByAddressChain"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNFTCollectionByAddressChain"
                 }
             }
         },
-        "response.GetNftWatchlist": {
+        "github_com_defipod_mochi_pkg_response.GetNftWatchlist": {
             "type": "object",
             "properties": {
                 "floor_price": {
@@ -8822,58 +8947,58 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "sparkline_in_7d": {
-                    "$ref": "#/definitions/response.SparkLineIn7d"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.SparkLineIn7d"
                 },
                 "symbol": {
                     "type": "string"
                 },
                 "token": {
-                    "$ref": "#/definitions/response.IndexerToken"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerToken"
                 }
             }
         },
-        "response.GetNftWatchlistResponse": {
+        "github_com_defipod_mochi_pkg_response.GetNftWatchlistResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.GetNftWatchlist"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetNftWatchlist"
                     }
                 }
             }
         },
-        "response.GetRepostReactionConfigsResponse": {
+        "github_com_defipod_mochi_pkg_response.GetRepostReactionConfigsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildConfigRepostReaction"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigRepostReaction"
                     }
                 }
             }
         },
-        "response.GetSalesTrackerConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetSalesTrackerConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigSalesTracker"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigSalesTracker"
                 }
             }
         },
-        "response.GetSuggestionNFTCollectionsResponse": {
+        "github_com_defipod_mochi_pkg_response.GetSuggestionNFTCollectionsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.CollectionSuggestions"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions"
                     }
                 }
             }
         },
-        "response.GetSupportedChains": {
+        "github_com_defipod_mochi_pkg_response.GetSupportedChains": {
             "type": "object",
             "properties": {
                 "data": {
@@ -8884,73 +9009,73 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetSupportedTokensResponse": {
+        "github_com_defipod_mochi_pkg_response.GetSupportedTokensResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Token"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Token"
                     }
                 }
             }
         },
-        "response.GetTradeOfferResponse": {
+        "github_com_defipod_mochi_pkg_response.GetTradeOfferResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.TradeOffer"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.TradeOffer"
                 }
             }
         },
-        "response.GetTwitterBlackListResponse": {
+        "github_com_defipod_mochi_pkg_response.GetTwitterBlackListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildConfigTwitterBlacklist"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigTwitterBlacklist"
                     }
                 }
             }
         },
-        "response.GetTwitterHashtagConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetTwitterHashtagConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.TwitterHashtag"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.TwitterHashtag"
                 }
             }
         },
-        "response.GetTwitterLeaderboardResponse": {
+        "github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.GetTwitterLeaderboardResponseData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponseData"
                 }
             }
         },
-        "response.GetTwitterLeaderboardResponseData": {
+        "github_com_defipod_mochi_pkg_response.GetTwitterLeaderboardResponseData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.TwitterPostStreak"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.TwitterPostStreak"
                     }
                 },
                 "metadata": {
-                    "$ref": "#/definitions/response.PaginationResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.PaginationResponse"
                 }
             }
         },
-        "response.GetUpvoteTiersConfig": {
+        "github_com_defipod_mochi_pkg_response.GetUpvoteTiersConfig": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.UpvoteStreakTier"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UpvoteStreakTier"
                     }
                 },
                 "message": {
@@ -8958,7 +9083,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserBalances": {
+        "github_com_defipod_mochi_pkg_response.GetUserBalances": {
             "type": "object",
             "properties": {
                 "balances": {
@@ -8981,26 +9106,26 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserBalancesResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserBalancesResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.GetUserBalances"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetUserBalances"
                     }
                 }
             }
         },
-        "response.GetUserCurrentGMStreakResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserCurrentGMStreakResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.DiscordUserGMStreak"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserGMStreak"
                 }
             }
         },
-        "response.GetUserCurrentUpvoteStreakResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserCurrentUpvoteStreakResponse": {
             "type": "object",
             "properties": {
                 "discord_id": {
@@ -9026,17 +9151,17 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserProfileResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserProfileResponse": {
             "type": "object",
             "properties": {
                 "about_me": {
                     "type": "string"
                 },
                 "current_level": {
-                    "$ref": "#/definitions/model.ConfigXpLevel"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel"
                 },
                 "guild": {
-                    "$ref": "#/definitions/model.DiscordGuild"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordGuild"
                 },
                 "guild_rank": {
                     "type": "integer"
@@ -9048,7 +9173,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "next_level": {
-                    "$ref": "#/definitions/model.ConfigXpLevel"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.ConfigXpLevel"
                 },
                 "nr_of_actions": {
                     "type": "integer"
@@ -9057,39 +9182,39 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "user_faction_xps": {
-                    "$ref": "#/definitions/model.UserFactionXpsMapping"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserFactionXpsMapping"
                 },
                 "user_wallet": {
-                    "$ref": "#/definitions/model.UserWallet"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserWallet"
                 }
             }
         },
-        "response.GetUserQuestListResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserQuestListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.QuestUserList"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.QuestUserList"
                     }
                 }
             }
         },
-        "response.GetUserResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.User"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.User"
                 }
             }
         },
-        "response.GetUserUpvoteLeaderboardResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserUpvoteLeaderboardResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.DiscordUserUpvoteStreak"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.DiscordUserUpvoteStreak"
                     }
                 },
                 "message": {
@@ -9097,49 +9222,49 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserWalletByGuildIDAddressResponse": {
+        "github_com_defipod_mochi_pkg_response.GetUserWalletByGuildIDAddressResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.UserWallet"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserWallet"
                 }
             }
         },
-        "response.GetVoteChannelConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetVoteChannelConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigVoteChannel"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigVoteChannel"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.GetWatchlistResponse": {
+        "github_com_defipod_mochi_pkg_response.GetWatchlistResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "description": "Pagination *PaginationResponse  ` + "`" + `json:\"pagination\"` + "`" + `",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.CoinMarketItemData"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CoinMarketItemData"
                     }
                 }
             }
         },
-        "response.GetWelcomeChannelConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.GetWelcomeChannelConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigWelcomeChannel"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigWelcomeChannel"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.GuildConfigDefaultCurrencyResponse": {
+        "github_com_defipod_mochi_pkg_response.GuildConfigDefaultCurrencyResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -9149,14 +9274,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tip_bot_token": {
-                    "$ref": "#/definitions/model.OffchainTipBotToken"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotToken"
                 },
                 "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "response.GuildPruneExcludeList": {
+        "github_com_defipod_mochi_pkg_response.GuildPruneExcludeList": {
             "type": "object",
             "properties": {
                 "guild_id": {
@@ -9170,7 +9295,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerChain": {
+        "github_com_defipod_mochi_pkg_response.IndexerChain": {
             "type": "object",
             "properties": {
                 "chain_id": {
@@ -9187,38 +9312,38 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerGetNFTTokenDetailResponseWithSuggestions": {
+        "github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenDetailResponseWithSuggestions": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.IndexerNFTTokenDetailData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData"
                 },
                 "default_symbol": {
-                    "$ref": "#/definitions/response.CollectionSuggestions"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions"
                 },
                 "suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.CollectionSuggestions"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions"
                     }
                 }
             }
         },
-        "response.IndexerGetNFTTokenTickersResponse": {
+        "github_com_defipod_mochi_pkg_response.IndexerGetNFTTokenTickersResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.IndexerNFTTokenTickersData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenTickersData"
                 }
             }
         },
-        "response.IndexerGetNFTTokensResponse": {
+        "github_com_defipod_mochi_pkg_response.IndexerGetNFTTokensResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.IndexerNFTTokenDetailData"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData"
                     }
                 },
                 "page": {
@@ -9232,7 +9357,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTActivityData": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTActivityData": {
             "type": "object",
             "properties": {
                 "chain_id": {
@@ -9260,7 +9385,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "listing_price_obj": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "listing_status": {
                     "type": "string"
@@ -9281,7 +9406,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sold_price_obj": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "to_address": {
                     "type": "string"
@@ -9294,26 +9419,26 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTCollectionTickersData": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersData": {
             "type": "object",
             "properties": {
                 "address": {
                     "type": "string"
                 },
                 "chain": {
-                    "$ref": "#/definitions/response.IndexerChain"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerChain"
                 },
                 "collection_image": {
                     "type": "string"
                 },
                 "floor_price": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "items": {
                     "type": "integer"
                 },
                 "last_sale_price": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "marketplaces": {
                     "type": "array",
@@ -9337,22 +9462,22 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tickers": {
-                    "$ref": "#/definitions/response.IndexerTickers"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerTickers"
                 },
                 "total_volume": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 }
             }
         },
-        "response.IndexerNFTCollectionTickersResponse": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.IndexerNFTCollectionTickersData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTCollectionTickersData"
                 }
             }
         },
-        "response.IndexerNFTTokenAttribute": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTTokenAttribute": {
             "type": "object",
             "properties": {
                 "collection_address": {
@@ -9378,7 +9503,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTTokenDetailData": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTTokenDetailData": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -9387,7 +9512,7 @@ const docTemplate = `{
                 "attributes": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.IndexerNFTTokenAttribute"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenAttribute"
                     }
                 },
                 "collection_address": {
@@ -9408,7 +9533,7 @@ const docTemplate = `{
                 "marketplace": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NftListingMarketplace"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftListingMarketplace"
                     }
                 },
                 "metadata_id": {
@@ -9418,10 +9543,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "owner": {
-                    "$ref": "#/definitions/response.IndexerNftTokenOwner"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNftTokenOwner"
                 },
                 "rarity": {
-                    "$ref": "#/definitions/response.IndexerNFTTokenRarity"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerNFTTokenRarity"
                 },
                 "rarity_rank": {
                     "type": "integer"
@@ -9440,7 +9565,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTTokenRarity": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTTokenRarity": {
             "type": "object",
             "properties": {
                 "rank": {
@@ -9457,7 +9582,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerNFTTokenTickersData": {
+        "github_com_defipod_mochi_pkg_response.IndexerNFTTokenTickersData": {
             "type": "object",
             "properties": {
                 "collection_address": {
@@ -9467,7 +9592,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "floor_price": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "image": {
                     "type": "string"
@@ -9476,7 +9601,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "last_sale_price": {
-                    "$ref": "#/definitions/response.IndexerPrice"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                 },
                 "name": {
                     "type": "string"
@@ -9500,14 +9625,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tickers": {
-                    "$ref": "#/definitions/response.IndexerTickers"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerTickers"
                 },
                 "token_id": {
                     "type": "string"
                 }
             }
         },
-        "response.IndexerNftTokenOwner": {
+        "github_com_defipod_mochi_pkg_response.IndexerNftTokenOwner": {
             "type": "object",
             "properties": {
                 "collection_address": {
@@ -9521,24 +9646,24 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerPrice": {
+        "github_com_defipod_mochi_pkg_response.IndexerPrice": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "string"
                 },
                 "token": {
-                    "$ref": "#/definitions/response.IndexerToken"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerToken"
                 }
             }
         },
-        "response.IndexerTickers": {
+        "github_com_defipod_mochi_pkg_response.IndexerTickers": {
             "type": "object",
             "properties": {
                 "prices": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.IndexerPrice"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.IndexerPrice"
                     }
                 },
                 "times": {
@@ -9555,7 +9680,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.IndexerToken": {
+        "github_com_defipod_mochi_pkg_response.IndexerToken": {
             "type": "object",
             "properties": {
                 "address": {
@@ -9572,23 +9697,23 @@ const docTemplate = `{
                 }
             }
         },
-        "response.InvitesAggregationResponse": {
+        "github_com_defipod_mochi_pkg_response.InvitesAggregationResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.UserInvitesAggregation"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.UserInvitesAggregation"
                 }
             }
         },
-        "response.LinkUserTelegramWithDiscordResponse": {
+        "github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponseData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponseData"
                 }
             }
         },
-        "response.LinkUserTelegramWithDiscordResponseData": {
+        "github_com_defipod_mochi_pkg_response.LinkUserTelegramWithDiscordResponseData": {
             "type": "object",
             "properties": {
                 "discord_id": {
@@ -9602,51 +9727,51 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ListAllCustomTokenResponse": {
+        "github_com_defipod_mochi_pkg_response.ListAllCustomTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Token"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Token"
                     }
                 }
             }
         },
-        "response.ListAllNFTCollectionsResponse": {
+        "github_com_defipod_mochi_pkg_response.ListAllNFTCollectionsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.NFTCollection"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection"
                     }
                 }
             }
         },
-        "response.ListConfigNotifyResponse": {
+        "github_com_defipod_mochi_pkg_response.ListConfigNotifyResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.ConfigNotifyResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ConfigNotifyResponse"
                     }
                 }
             }
         },
-        "response.ListGuildGroupNFTRolesResponse": {
+        "github_com_defipod_mochi_pkg_response.ListGuildGroupNFTRolesResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.ListGuildNFTRoleConfigsResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ListGuildNFTRoleConfigsResponse"
                     }
                 }
             }
         },
-        "response.ListGuildNFTRoleConfigsResponse": {
+        "github_com_defipod_mochi_pkg_response.ListGuildNFTRoleConfigsResponse": {
             "type": "object",
             "properties": {
                 "color": {
@@ -9664,7 +9789,7 @@ const docTemplate = `{
                 "nft_collection_configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NFTCollectionConfig"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionConfig"
                     }
                 },
                 "number_of_tokens": {
@@ -9678,24 +9803,24 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ListMyGuildsResponse": {
+        "github_com_defipod_mochi_pkg_response.ListMyGuildsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.DiscordGuildResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.DiscordGuildResponse"
                     }
                 }
             }
         },
-        "response.ListRoleReactionResponse": {
+        "github_com_defipod_mochi_pkg_response.ListRoleReactionResponse": {
             "type": "object",
             "properties": {
                 "configs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.RoleReactionByMessage"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.RoleReactionByMessage"
                     }
                 },
                 "guild_id": {
@@ -9706,7 +9831,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.LogoutResponse": {
+        "github_com_defipod_mochi_pkg_response.LogoutResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -9717,7 +9842,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.MarketData": {
+        "github_com_defipod_mochi_pkg_response.MarketData": {
             "type": "object",
             "properties": {
                 "current_price": {
@@ -9752,7 +9877,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Metric": {
+        "github_com_defipod_mochi_pkg_response.Metric": {
             "type": "object",
             "properties": {
                 "nft_collections": {
@@ -9799,40 +9924,40 @@ const docTemplate = `{
                 }
             }
         },
-        "response.MonikerConfigData": {
+        "github_com_defipod_mochi_pkg_response.MonikerConfigData": {
             "type": "object",
             "properties": {
                 "moniker": {
-                    "$ref": "#/definitions/model.MonikerConfig"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.MonikerConfig"
                 },
                 "value": {
                     "type": "number"
                 }
             }
         },
-        "response.MonikerConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.MonikerConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.MonikerConfigData"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.MonikerConfigData"
                     }
                 }
             }
         },
-        "response.NFTChainCollectionCount": {
+        "github_com_defipod_mochi_pkg_response.NFTChainCollectionCount": {
             "type": "object",
             "properties": {
                 "chain": {
-                    "$ref": "#/definitions/model.Chain"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.Chain"
                 },
                 "count": {
                     "type": "integer"
                 }
             }
         },
-        "response.NFTCollectionConfig": {
+        "github_com_defipod_mochi_pkg_response.NFTCollectionConfig": {
             "type": "object",
             "properties": {
                 "address": {
@@ -9876,13 +10001,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTCollectionCount": {
+        "github_com_defipod_mochi_pkg_response.NFTCollectionCount": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NFTChainCollectionCount"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTChainCollectionCount"
                     }
                 },
                 "total": {
@@ -9890,51 +10015,51 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTCollectionsData": {
+        "github_com_defipod_mochi_pkg_response.NFTCollectionsData": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.NFTCollection"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.NFTCollection"
                     }
                 },
                 "metadata": {
-                    "$ref": "#/definitions/util.Pagination"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_util.Pagination"
                 }
             }
         },
-        "response.NFTCollectionsResponse": {
+        "github_com_defipod_mochi_pkg_response.NFTCollectionsResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.NFTCollectionsData"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTCollectionsData"
                 }
             }
         },
-        "response.NFTNewListed": {
+        "github_com_defipod_mochi_pkg_response.NFTNewListed": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.NewListedNFTCollection"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.NewListedNFTCollection"
                     }
                 },
                 "metadata": {
-                    "$ref": "#/definitions/util.Pagination"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_util.Pagination"
                 }
             }
         },
-        "response.NFTNewListedResponse": {
+        "github_com_defipod_mochi_pkg_response.NFTNewListedResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.NFTNewListed"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTNewListed"
                 }
             }
         },
-        "response.NFTSalesTrackerResponse": {
+        "github_com_defipod_mochi_pkg_response.NFTSalesTrackerResponse": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -9951,7 +10076,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTTradingVolume": {
+        "github_com_defipod_mochi_pkg_response.NFTTradingVolume": {
             "type": "object",
             "properties": {
                 "collection_address": {
@@ -9974,40 +10099,40 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NFTTradingVolumeResponse": {
+        "github_com_defipod_mochi_pkg_response.NFTTradingVolumeResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NFTTradingVolume"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NFTTradingVolume"
                     }
                 }
             }
         },
-        "response.NewGuildConfigWalletVerificationMessageResponse": {
+        "github_com_defipod_mochi_pkg_response.NewGuildConfigWalletVerificationMessageResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigWalletVerificationMessage"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigWalletVerificationMessage"
                 },
                 "status": {
                     "type": "string"
                 }
             }
         },
-        "response.NewGuildGroupNFTRoleResponse": {
+        "github_com_defipod_mochi_pkg_response.NewGuildGroupNFTRoleResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.ConfigGroupNFTRoleResponse"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ConfigGroupNFTRoleResponse"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.NftListingMarketplace": {
+        "github_com_defipod_mochi_pkg_response.NftListingMarketplace": {
             "type": "object",
             "properties": {
                 "contract_address": {
@@ -10042,7 +10167,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NftMetadataAttrIcon": {
+        "github_com_defipod_mochi_pkg_response.NftMetadataAttrIcon": {
             "type": "object",
             "properties": {
                 "discord_icon": {
@@ -10059,18 +10184,18 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NftMetadataAttrIconResponse": {
+        "github_com_defipod_mochi_pkg_response.NftMetadataAttrIconResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NftMetadataAttrIcon"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftMetadataAttrIcon"
                     }
                 }
             }
         },
-        "response.NftSales": {
+        "github_com_defipod_mochi_pkg_response.NftSales": {
             "type": "object",
             "properties": {
                 "buyer": {
@@ -10099,40 +10224,40 @@ const docTemplate = `{
                 }
             }
         },
-        "response.NftSalesResponse": {
+        "github_com_defipod_mochi_pkg_response.NftSalesResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.NftSales"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftSales"
                     }
                 }
             }
         },
-        "response.NftWatchlistSuggest": {
+        "github_com_defipod_mochi_pkg_response.NftWatchlistSuggest": {
             "type": "object",
             "properties": {
                 "default_symbol": {
-                    "$ref": "#/definitions/response.CollectionSuggestions"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions"
                 },
                 "suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.CollectionSuggestions"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.CollectionSuggestions"
                     }
                 }
             }
         },
-        "response.NftWatchlistSuggestResponse": {
+        "github_com_defipod_mochi_pkg_response.NftWatchlistSuggestResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.NftWatchlistSuggest"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.NftWatchlistSuggest"
                 }
             }
         },
-        "response.OffchainTipBotTransferToken": {
+        "github_com_defipod_mochi_pkg_response.OffchainTipBotTransferToken": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -10152,18 +10277,18 @@ const docTemplate = `{
                 }
             }
         },
-        "response.OffchainTipBotTransferTokenResponse": {
+        "github_com_defipod_mochi_pkg_response.OffchainTipBotTransferTokenResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.OffchainTipBotTransferToken"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotTransferToken"
                     }
                 }
             }
         },
-        "response.OffchainTipBotWithdraw": {
+        "github_com_defipod_mochi_pkg_response.OffchainTipBotWithdraw": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -10192,15 +10317,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.OffchainTipBotWithdrawResponse": {
+        "github_com_defipod_mochi_pkg_response.OffchainTipBotWithdrawResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.OffchainTipBotWithdraw"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.OffchainTipBotWithdraw"
                 }
             }
         },
-        "response.PaginationResponse": {
+        "github_com_defipod_mochi_pkg_response.PaginationResponse": {
             "type": "object",
             "properties": {
                 "page": {
@@ -10216,15 +10341,15 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ResponseDataMessage": {
+        "github_com_defipod_mochi_pkg_response.ResponseDataMessage": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.ResponseMessage"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.ResponseMessage"
                 }
             }
         },
-        "response.ResponseMessage": {
+        "github_com_defipod_mochi_pkg_response.ResponseMessage": {
             "type": "object",
             "properties": {
                 "message": {
@@ -10232,7 +10357,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ResponseStatus": {
+        "github_com_defipod_mochi_pkg_response.ResponseStatus": {
             "type": "object",
             "properties": {
                 "status": {
@@ -10240,7 +10365,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ResponseSucess": {
+        "github_com_defipod_mochi_pkg_response.ResponseSucess": {
             "type": "object",
             "properties": {
                 "success": {
@@ -10248,7 +10373,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Role": {
+        "github_com_defipod_mochi_pkg_response.Role": {
             "type": "object",
             "properties": {
                 "id": {
@@ -10259,7 +10384,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.RoleReactionByMessage": {
+        "github_com_defipod_mochi_pkg_response.RoleReactionByMessage": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -10271,12 +10396,12 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.Role"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.Role"
                     }
                 }
             }
         },
-        "response.RoleReactionConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.RoleReactionConfigResponse": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -10291,7 +10416,7 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.Role"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.Role"
                     }
                 },
                 "success": {
@@ -10299,7 +10424,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.RoleReactionResponse": {
+        "github_com_defipod_mochi_pkg_response.RoleReactionResponse": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -10312,22 +10437,22 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
-                    "$ref": "#/definitions/response.Role"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.Role"
                 }
             }
         },
-        "response.SearchCoinResponse": {
+        "github_com_defipod_mochi_pkg_response.SearchCoinResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.CoingeckoSupportedTokens"
                     }
                 }
             }
         },
-        "response.SparkLineIn7d": {
+        "github_com_defipod_mochi_pkg_response.SparkLineIn7d": {
             "type": "object",
             "properties": {
                 "price": {
@@ -10338,7 +10463,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TickerData": {
+        "github_com_defipod_mochi_pkg_response.TickerData": {
             "type": "object",
             "properties": {
                 "base": {
@@ -10358,29 +10483,29 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ToggleActivityConfigResponse": {
+        "github_com_defipod_mochi_pkg_response.ToggleActivityConfigResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigActivity"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.GuildConfigActivity"
                 },
                 "message": {
                     "type": "string"
                 }
             }
         },
-        "response.TransactionsResponse": {
+        "github_com_defipod_mochi_pkg_response.TransactionsResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory"
                     }
                 }
             }
         },
-        "response.TwitterHashtag": {
+        "github_com_defipod_mochi_pkg_response.TwitterHashtag": {
             "type": "object",
             "properties": {
                 "channel_id": {
@@ -10421,21 +10546,21 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UpdateUserFeedbackResponse": {
+        "github_com_defipod_mochi_pkg_response.UpdateUserFeedbackResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.UserFeedback"
+                    "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserFeedback"
                 }
             }
         },
-        "response.User": {
+        "github_com_defipod_mochi_pkg_response.User": {
             "type": "object",
             "properties": {
                 "guild_users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.GetGuildUserResponse"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_response.GetGuildUserResponse"
                     }
                 },
                 "id": {
@@ -10455,7 +10580,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UserDeviceResponse": {
+        "github_com_defipod_mochi_pkg_response.UserDeviceResponse": {
             "type": "object",
             "properties": {
                 "device_id": {
@@ -10466,13 +10591,13 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UserFeedbackResponse": {
+        "github_com_defipod_mochi_pkg_response.UserFeedbackResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.UserFeedback"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.UserFeedback"
                     }
                 },
                 "page": {
@@ -10486,7 +10611,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UserInvitesAggregation": {
+        "github_com_defipod_mochi_pkg_response.UserInvitesAggregation": {
             "type": "object",
             "properties": {
                 "fake": {
@@ -10503,18 +10628,18 @@ const docTemplate = `{
                 }
             }
         },
-        "response.UserTransactionResponse": {
+        "github_com_defipod_mochi_pkg_response.UserTransactionResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
+                        "$ref": "#/definitions/github_com_defipod_mochi_pkg_model.OffchainTipBotTransferHistory"
                     }
                 }
             }
         },
-        "util.Pagination": {
+        "github_com_defipod_mochi_pkg_util.Pagination": {
             "type": "object",
             "properties": {
                 "page": {
