@@ -10,6 +10,6 @@ func (e *Entity) CreateDaoVote(req request.CreateDaoVoteRequest) error {
 		UserId:     req.UserID,
 		ProposalId: req.ProposalID,
 		Choice:     req.Choice,
-		Point:      req.Point,
+		Point:      1,
 	})
 }
