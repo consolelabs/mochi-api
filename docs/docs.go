@@ -7188,16 +7188,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "choice",
-                "point",
                 "proposal_id",
                 "user_id"
             ],
             "properties": {
                 "choice": {
                     "type": "string"
-                },
-                "point": {
-                    "type": "number"
                 },
                 "proposal_id": {
                     "type": "integer"

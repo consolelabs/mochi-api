@@ -1089,15 +1089,12 @@ definitions:
     properties:
       choice:
         type: string
-      point:
-        type: number
       proposal_id:
         type: integer
       user_id:
         type: string
     required:
     - choice
-    - point
     - proposal_id
     - user_id
     type: object
