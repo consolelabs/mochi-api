@@ -985,6 +985,38 @@
             }
         },
         "/config-channels/proposal": {
+            "post": {
+                "description": "Create proposal channel config for dao voting",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Create proposal channel config",
+                "parameters": [
+                    {
+                        "description": "Create proposal channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateProposalChannelConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete dao proposal config",
                 "consumes": [
@@ -5885,6 +5917,9 @@
                 "address": {
                     "type": "string"
                 },
+                "authority": {
+                    "type": "string"
+                },
                 "chain_id": {
                     "type": "integer"
                 },
@@ -7194,6 +7229,45 @@
                 },
                 "priority_flag": {
                     "type": "boolean"
+                }
+            }
+        },
+        "request.CreateProposalChannelConfig": {
+            "type": "object",
+            "required": [
+                "authority",
+                "channel_id",
+                "guild_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "authority": {
+                    "type": "string",
+                    "enum": [
+                        "admin",
+                        "token_holder"
+                    ]
+                },
+                "chain": {
+                    "type": "string"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "required_amount": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "nft_collection",
+                        "crypto_token"
+                    ]
                 }
             }
         },

@@ -22,6 +22,12 @@ func GetStatusCode(err error) int {
 		code = http.StatusNotFound
 	case ErrConflict:
 		code = http.StatusConflict
+	case
+		ErrInvalidChain,
+		ErrInvalidDiscordChannelID,
+		ErrInvalidDiscordGuildID, ErrInvalidTokenContract,
+		ErrInvalidProposalType:
+		code = http.StatusBadRequest
 	default:
 		code = http.StatusInternalServerError
 	}

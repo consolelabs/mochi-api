@@ -7,9 +7,8 @@ package mock_guildconfigwalletverificationmessage
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	model "github.com/defipod/mochi/pkg/model"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockStore is a mock of Store interface.

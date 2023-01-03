@@ -7,11 +7,10 @@ package mock_offchain_tip_bot_user_balances
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-	uuid "github.com/google/uuid"
-
 	model "github.com/defipod/mochi/pkg/model"
 	response "github.com/defipod/mochi/pkg/response"
+	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/google/uuid"
 )
 
 // MockStore is a mock of Store interface.

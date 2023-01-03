@@ -6,4 +6,10 @@ var (
 
 	//ErrTypeAssertionFailed ...
 	ErrTypeAssertionFailed = NewStringError("Fail to type assertion", 400)
+
+	ErrInvalidDiscordChannelID = NewStringError("Invalid Discord channel ID", 400)
+	ErrInvalidDiscordGuildID   = NewStringError("Invalid Discord guild ID", 400)
+	ErrInvalidChain            = NewStringError("Invalid chain", 400)
+	ErrInvalidTokenContract    = NewStringError("Invalid token contract", 400)
+	ErrInvalidProposalType     = NewStringError("Invalid proposal type", 400)
 )

@@ -7,10 +7,9 @@ package mock_coingecko
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	request "github.com/defipod/mochi/pkg/request"
 	response "github.com/defipod/mochi/pkg/response"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockService is a mock of Service interface.

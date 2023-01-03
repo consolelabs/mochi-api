@@ -7,10 +7,9 @@ package mock_indexer
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	response "github.com/defipod/mochi/pkg/response"
 	indexer "github.com/defipod/mochi/pkg/service/indexer"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockService is a mock of Service interface.
