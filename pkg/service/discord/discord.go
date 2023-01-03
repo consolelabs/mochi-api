@@ -546,3 +546,12 @@ func (d *Discord) NotifyCompleteCollectionSync(guildID string, collectionName st
 	}
 	return err
 }
+
+func (d *Discord) DeleteChannel(channelId string) error {
+	_, err := d.session.ChannelDelete(channelId)
+	if err != nil {
+		d.log.Error(err, "[discord.DeleteChannel] d.session.ChannelDelete() failed")
+		return err
+	}
+	return nil
+}
