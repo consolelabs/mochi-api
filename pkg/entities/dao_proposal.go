@@ -63,3 +63,30 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 
 	return daoProposal, nil
 }
+
+func (e *Entity) DeleteDaoProposal(req *request.DeteleDaoProposalRequest) error {
+	proposal, err := e.repo.DaoProposal.GetByGuildAndDiscussionChannelId(req.GuildId, req.DiscussionChannelID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"DiscussionChannelID": req.DiscussionChannelID}).Error(err, "[entities.DeleteDaoProposal][repo.DaoProposal.GetByDiscussionChannelId] - failed to get DAO proposal")
+		return err
+	}
+
+	err = e.repo.DaoProposalVoteOption.DeleteAllByProposalID(proposal.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.DeleteDaoProposal][repo.DaoProposalVoteOption.DeleteAllByProposalID()] - failed to clear dao proposal vote options")
+		return err
+	}
+
+	err = e.repo.DaoProposal.DeleteById(proposal.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.DeleteDaoProposal][repo.DaoProposal.DeleteById()] - failed to delete dao proposal")
+		return err
+	}
+
+	err = e.svc.Discord.DeleteChannel(proposal.DiscussionChannelId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.DeleteDaoProposal][svc.Discord.DeleteChannel()] - failed to delete discussion channel")
+	}
+
+	return nil
+}
