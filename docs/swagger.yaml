@@ -115,6 +115,59 @@ definitions:
       min_xp:
         type: integer
     type: object
+  model.DaoProposal:
+    properties:
+      closed_at:
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      description:
+        type: string
+      discussion_channel_id:
+        type: string
+      guild_config_dao_proposal_id:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      voting_channel_id:
+        type: string
+    type: object
+  model.DaoProposalVoteCount:
+    properties:
+      choice:
+        type: string
+      guild_id:
+        type: string
+      proposal_id:
+        type: string
+      sum:
+        type: integer
+    type: object
+  model.DaoVote:
+    properties:
+      choice:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      point:
+        type: number
+      proposal_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
   model.DiscordGuild:
     properties:
       active:
@@ -1915,6 +1968,22 @@ definitions:
       status:
         type: string
     type: object
+  response.GetAllDaoProposalVotes:
+    properties:
+      proposal:
+        $ref: '#/definitions/response.GetDaoProposalData'
+      votes:
+        items:
+          $ref: '#/definitions/model.DaoVote'
+        type: array
+    type: object
+  response.GetAllDaoProposals:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.DaoProposal'
+        type: array
+    type: object
   response.GetAllNFTSalesTrackerResponse:
     properties:
       data:
@@ -1975,6 +2044,35 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.NFTCollectionCount'
+    type: object
+  response.GetDaoProposalData:
+    properties:
+      closed_at:
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      description:
+        type: string
+      discussion_channel_id:
+        type: string
+      guild_config_dao_proposal_id:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: integer
+      points:
+        items:
+          $ref: '#/definitions/model.DaoProposalVoteCount'
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+      voting_channel_id:
+        type: string
     type: object
   response.GetDataUserProfileResponse:
     properties:
@@ -5196,6 +5294,27 @@ paths:
       summary: Upsert prune exclude config
       tags:
       - Config
+  /dao-voting/proposals:
+    get:
+      consumes:
+      - application/json
+      description: Get dao proposals
+      parameters:
+      - description: Discord ID
+        in: query
+        name: user-discord-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllDaoProposals'
+      summary: Get dao proposals
+      tags:
+      - DAO-Voting
   /dao-voting/proposals/vote:
     post:
       consumes:
@@ -5218,6 +5337,31 @@ paths:
       summary: Create dao vote
       tags:
       - Dao-voting
+  /dao-voting/user-votes:
+    get:
+      consumes:
+      - application/json
+      description: Get dao votes
+      parameters:
+      - description: Discord ID
+        in: query
+        name: user-discord-id
+        required: true
+        type: string
+      - description: Proposal ID
+        in: query
+        name: proposal-id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllDaoProposalVotes'
+      summary: Get dao votes
+      tags:
+      - DAO-Voting
   /data/configs/activities/{activity}:
     post:
       consumes:

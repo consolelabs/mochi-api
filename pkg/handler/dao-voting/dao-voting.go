@@ -1,6 +1,7 @@
 package daovoting
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,9 +23,61 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 		log:      logger,
 	}
 }
+
+// GetProposals     godoc
+// @Summary     Get dao proposals
+// @Description Get dao proposals
+// @Tags        DAO-Voting
+// @Accept      json
+// @Produce     json
+// @Param       user-discord-id   query  string true  "Discord ID"
+// @Success     200 {object} response.GetAllDaoProposals
+// @Router      /dao-voting/proposals [get]
 func (h *Handler) GetProposals(c *gin.Context) {
-	h.entities.Test()
-	c.JSON(http.StatusOK, response.CreateResponse("ok", nil, nil, nil))
+	userId := c.Query("user-discord-id")
+	if userId == "" {
+		h.log.Info("[handler.GetProposals] - discord id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id is required"), nil))
+		return
+	}
+
+	proposals, err := h.entities.GetAllDaoProposalByUserId(userId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"discord_id": userId}).Error(err, "[handler.GetProposals] - failed to get proposals by discord id")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(proposals, nil, nil, nil))
+}
+
+// GetProposals     godoc
+// @Summary     Get dao votes
+// @Description Get dao votes
+// @Tags        DAO-Voting
+// @Accept      json
+// @Produce     json
+// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       proposal-id   query  string false  "Proposal ID"
+// @Success     200 {object} response.GetAllDaoProposalVotes
+// @Router      /dao-voting/user-votes [get]
+func (h *Handler) GetUserVotes(c *gin.Context) {
+	userId := c.Query("user-discord-id")
+	proposalId := c.Param("proposal_id")
+	if userId == "" || proposalId == "" {
+		h.log.Info("[handler.GetUserVotes] - discord id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id and proposal-id are required"), nil))
+		return
+	}
+
+	// with proposal and user id, get proposal's votes where user is creator
+	votes, err := h.entities.GetDaoProposalVotes(proposalId, userId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"discord_id": userId}).Error(err, "[handler.GetUserVotes] - failed to get proposal's vote")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(votes, nil, nil, nil))
+
 }
 
 // CreateDaoVote      godoc

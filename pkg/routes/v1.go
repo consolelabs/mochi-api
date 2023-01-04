@@ -28,12 +28,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		proposalGroup := daoVoting.Group("/proposals")
 		{
 			proposalGroup.GET("", h.DaoVoting.GetProposals)
+			proposalGroup.GET("/:proposal_id", h.DaoVoting.GetUserVotes)
 			voteGroup := proposalGroup.Group("/vote")
 			{
 				voteGroup.POST("", h.DaoVoting.CreateDaoVote)
 			}
 		}
-
 	}
 	dataGroup := v1.Group("/data")
 	{
