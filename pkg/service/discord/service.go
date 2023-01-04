@@ -37,4 +37,5 @@ type Service interface {
 
 	// DAO voting
 	SendMessage(channelID string, msgSend discordgo.MessageSend) error
+	CreateDiscussionChannelForProposal(guildId, proposalTitle string) (string, error)
 }

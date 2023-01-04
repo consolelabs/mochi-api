@@ -32,3 +32,11 @@ func (pg *pg) GetByCreatorIdAndProposalId(proposal int64, userId string) (models
 	}
 	return models, err
 }
+
+func (pg *pg) Create(model *model.DaoProposal) (*model.DaoProposal, error) {
+	return model, pg.db.Create(&model).Error
+}
+
+func (pg *pg) UpdateDiscussionChannel(id int64, discussionChannelId string) error {
+	return pg.db.Model(&model.DaoProposal{}).Where("id = ?", id).Update("discussion_channel_id", discussionChannelId).Error
+}
