@@ -105,3 +105,31 @@ func (h *Handler) CreateDaoVote(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// AddContract   godoc
+// @Summary     Dao Proposal
+// @Description Create dao proposal and then create a discussion channel for users to discuss about the proposal.
+// @Tags        DAO Proposal
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateDaoProposalRequest true "Create dao proposal request"
+// @Success     200 {object} response.CreateDaoProposalResponse
+// @Router      /dao-voting/proposals [post]
+func (h *Handler) CreateProposal(c *gin.Context) {
+	var req request.CreateDaoProposalRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateProposal] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	daoProposal, err := h.entities.CreateDaoProposal(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.CreateProposal] - failed to create dao proposal")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(daoProposal, nil, nil, nil))
+}

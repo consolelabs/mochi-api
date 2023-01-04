@@ -2895,6 +2895,38 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create dao proposal and then create a discussion channel for users to discuss about the proposal.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DAO Proposal"
+                ],
+                "summary": "Dao Proposal",
+                "parameters": [
+                    {
+                        "description": "Create dao proposal request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDaoProposalRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateDaoProposalResponse"
+                        }
+                    }
+                }
             }
         },
         "/dao-voting/proposals/vote": {
@@ -7370,6 +7402,29 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateDaoProposalRequest": {
+            "type": "object",
+            "properties": {
+                "creator_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "vote_option": {
+                    "$ref": "#/definitions/request.VoteOptionRequest"
+                },
+                "voting_channel_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateDaoVoteRequest": {
             "type": "object",
             "required": [
@@ -8221,6 +8276,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.VoteOptionRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "required_amount": {
+                    "type": "integer"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "response.AddToWatchlistResponse": {
             "type": "object",
             "properties": {
@@ -8493,6 +8568,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "type": "string"
+                }
+            }
+        },
+        "response.CreateDaoProposalResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.DaoProposal"
                 }
             }
         },

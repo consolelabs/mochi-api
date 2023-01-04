@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -598,4 +599,13 @@ func (d *Discord) SendMessage(channelID string, payload discordgo.MessageSend) e
 		return err
 	}
 	return nil
+}
+
+func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalTitle string) (string, error) {
+	discussionChannel, err := d.session.GuildChannelCreate(guildId, proposalTitle, discordgo.ChannelTypeGuildText)
+	if err != nil {
+		d.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "CreateDiscussionChannelForProposal - GuildChannelCreate failed")
+		return "", err
+	}
+	return discussionChannel.ID, nil
 }
