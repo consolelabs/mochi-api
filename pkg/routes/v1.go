@@ -25,7 +25,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	daoVoting := v1.Group("/dao-voting")
 	{
-		daoVoting.GET("/proposals", h.DaoVoting.GetProposals)
+		proposalGroup := daoVoting.Group("/proposals")
+		{
+			proposalGroup.POST("/", h.DaoVoting.CreateProposal)
+			proposalGroup.GET("", h.DaoVoting.GetProposals)
+			proposalGroup.GET("/:proposal_id", h.DaoVoting.GetUserVotes)
+			voteGroup := proposalGroup.Group("/vote")
+			{
+				voteGroup.POST("", h.DaoVoting.CreateDaoVote)
+			}
+		}
+
 	}
 	dataGroup := v1.Group("/data")
 	{
@@ -40,25 +50,30 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
-	offchainTipBotGroup := v1.Group("/tip")
+	tipBotGroup := v1.Group("/tip")
 	{
 		// watch total balances
-		offchainTipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
-		offchainTipBotGroup.GET("/total-offchain-balances", h.Tip.TotalOffchainBalances)
-		offchainTipBotGroup.GET("/total-fees", h.Tip.TotalFee)
-		offchainTipBotTokensGroup := offchainTipBotGroup.Group("/tokens")
+		tipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
+		tipBotGroup.GET("/total-offchain-balances", h.Tip.TotalOffchainBalances)
+		tipBotGroup.GET("/total-fees", h.Tip.TotalFee)
+		offchainTipBotTokensGroup := tipBotGroup.Group("/tokens")
 		{
 			offchainTipBotTokensGroup.GET("", h.Tip.GetAllTipBotTokens)
 			offchainTipBotTokensGroup.PUT("", h.Tip.UpdateTokenFee)
 		}
 		// offchain tip bot
-		offchainTipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
-		offchainTipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
-		offchainTipBotGroup.GET("/balances", h.Tip.GetUserBalances)
-		offchainTipBotGroup.POST("/withdraw", h.Tip.OffchainTipBotWithdraw)
-		offchainTipBotGroup.POST("/transfer", h.Tip.TransferToken)
-		offchainTipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
-		offchainTipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+		tipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
+		tipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
+		tipBotGroup.GET("/balances", h.Tip.GetUserBalances)
+		tipBotGroup.POST("/withdraw", h.Tip.OffchainTipBotWithdraw)
+		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
+		tipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
+		tipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+
+		onchainGroup := tipBotGroup.Group("/onchain")
+		{
+			onchainGroup.POST("/transfer", h.Tip.TransferOnchain)
+		}
 	}
 
 	guildGroup := v1.Group("/guilds")
@@ -182,7 +197,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		// config dao proposal channel
 		configChannelGroup.GET("/:guild_id/proposal", h.ConfigChannel.GetGuildConfigDaoProposal)
 		configChannelGroup.DELETE("/proposal", h.ConfigChannel.DeleteGuildConfigDaoProposal)
-
+		configChannelGroup.POST("/proposal", h.ConfigChannel.CreateProposalChannelConfig)
 	}
 
 	configRoleGroup := v1.Group("/config-roles")

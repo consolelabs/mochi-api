@@ -9,6 +9,7 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
+	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
 	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
 	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
 	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
@@ -175,5 +176,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DaoVote:                              daovote.NewPG(db),
 		DaoProposalVoteOption:                daoproposalvoteoption.NewPG(db),
 		DaoVoteOption:                        daovoteoption.NewPG(db),
+		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
 	}
 }

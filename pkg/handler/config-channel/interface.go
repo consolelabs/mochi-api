@@ -29,4 +29,5 @@ type IHandler interface {
 
 	GetGuildConfigDaoProposal(c *gin.Context)
 	DeleteGuildConfigDaoProposal(c *gin.Context)
+	CreateProposalChannelConfig(c *gin.Context)
 }

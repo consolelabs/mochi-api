@@ -9,6 +9,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -616,4 +617,31 @@ func (h *Handler) DeleteGuildConfigDaoProposal(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// CreateProposalChannelConfig     godoc
+// @Summary     Create proposal channel config
+// @Description Create proposal channel config for dao voting
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateProposalChannelConfig true "Create proposal channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-channels/proposal [post]
+func (h *Handler) CreateProposalChannelConfig(c *gin.Context) {
+	var req request.CreateProposalChannelConfig
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateProposalChannelConfig] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.CreateProposalChannelConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateProposalChannelConfig] - entities.CreateProposalChannelConfig failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }
