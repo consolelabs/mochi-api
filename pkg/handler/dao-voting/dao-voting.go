@@ -141,18 +141,18 @@ func (h *Handler) CreateProposal(c *gin.Context) {
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
-// @Param       proposal-id   query  string true  "Proposal ID"
-// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       proposal_id   query  string true  "Proposal ID"
+// @Param       user_discord_id   query  string true  "Discord ID"
 // @Success     200 {object} response.GetVote
-// @Router      /dao-voting/vote [get]
+// @Router      /dao-voting/votes [get]
 func (h *Handler) GetVote(c *gin.Context) {
-	userId := c.Query("user-discord-id")
+	userId := c.Query("user_discord_id")
 	if userId == "" {
 		h.log.Info("[handler.GetVote] - discord id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errs.ErrInvalidDiscordUserID, nil))
 		return
 	}
-	proposalId := c.Query("proposal-id")
+	proposalId := c.Query("proposal_id")
 	if proposalId == "" {
 		h.log.Info("[handler.GetVote] - proposal id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errs.ErrInvalidProposalID, nil))
