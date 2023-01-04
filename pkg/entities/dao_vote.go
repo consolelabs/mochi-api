@@ -5,8 +5,10 @@ import (
 	"strconv"
 
 	"github.com/defipod/mochi/pkg/model"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateDaoVote(req request.CreateDaoVoteRequest) error {
@@ -88,4 +90,21 @@ func (e *Entity) GetDaoProposalVotes(proposalId, discordId string) (*response.Ge
 		},
 		Votes: votes,
 	}, nil
+}
+
+func (e *Entity) GetDaoProposalVoteOfUser(proposalId, userId string) (*model.DaoVote, error) {
+	proposalIdNumber, err := strconv.ParseInt(proposalId, 10, 64)
+	if err != nil {
+		e.log.Error(err, "[Entity][GetDaoProposalVoteOfUser] proposal id invalid")
+		return nil, errs.ErrInvalidProposalID
+	}
+	vote, err := e.repo.DaoVote.GetByUserAndProposalID(proposalIdNumber, userId)
+	if err != nil {
+		e.log.Error(err, "[Entity][GetDaoProposalVoteOfUser] repo.DaoVote.GetByUserAndProposalID failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errs.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	return vote, nil
 }
