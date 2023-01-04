@@ -72,7 +72,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		onchainGroup := tipBotGroup.Group("/onchain")
 		{
-			onchainGroup.POST("/transfer", h.Tip.TransferOnchain)
+			onchainGroup.POST("/submit", h.Tip.SubmitOnchainTransfer)
+			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
 		}
 	}
 
