@@ -148,5 +148,5 @@ type GuildConfigDefaultCurrencyResponse struct {
 }
 
 type CreateProposalChannelConfigResponse struct {
-	Data []TwitterHashtag `json:"data"`
+	Data model.GuildConfigDaoProposal `json:"data"`
 }

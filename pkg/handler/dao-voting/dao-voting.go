@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -132,4 +133,40 @@ func (h *Handler) CreateProposal(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(daoProposal, nil, nil, nil))
+}
+
+// GetProposals     godoc
+// @Summary     Get dao votes
+// @Description Get dao votes
+// @Tags        DAO-Voting
+// @Accept      json
+// @Produce     json
+// @Param       proposal-id   query  string true  "Proposal ID"
+// @Param       user-discord-id   query  string true  "Discord ID"
+// @Success     200 {object} response.GetVote
+// @Router      /dao-voting/vote [get]
+func (h *Handler) GetVote(c *gin.Context) {
+	userId := c.Query("user-discord-id")
+	if userId == "" {
+		h.log.Info("[handler.GetVote] - discord id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errs.ErrInvalidDiscordUserID, nil))
+		return
+	}
+	proposalId := c.Query("proposal-id")
+	if proposalId == "" {
+		h.log.Info("[handler.GetVote] - proposal id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errs.ErrInvalidProposalID, nil))
+		return
+	}
+
+	vote, err := h.entities.GetDaoProposalVoteOfUser(proposalId, userId)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"proposalId": proposalId,
+			"discord_id": userId,
+		}).Error(err, "[handler.GetVote] - entities.GetDaoProposalVoteOfUser failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(vote, nil, nil, nil))
 }

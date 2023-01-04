@@ -626,7 +626,7 @@ func (h *Handler) DeleteGuildConfigDaoProposal(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.CreateProposalChannelConfig true "Create proposal channel config request"
-// @Success     200 {object} response.ResponseMessage
+// @Success     200 {object} response.CreateProposalChannelConfigResponse
 // @Router      /config-channels/proposal [post]
 func (h *Handler) CreateProposalChannelConfig(c *gin.Context) {
 	var req request.CreateProposalChannelConfig
