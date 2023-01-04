@@ -3,20 +3,21 @@ package request
 import "time"
 
 type OffchainTransferRequest struct {
-	Sender       string   `json:"sender"`
-	Recipients   []string `json:"recipients"`
-	Platform     string   `json:"platform"`
-	GuildID      string   `json:"guild_id"`
-	ChannelID    string   `json:"channel_id"`
-	Amount       float64  `json:"amount"`
-	Token        string   `json:"token"`
-	Each         bool     `json:"each"`
-	All          bool     `json:"all"`
-	TransferType string   `json:"transfer_type"`
-	FullCommand  string   `json:"full_command"`
-	Duration     int      `json:"duration"`
-	Message      string   `json:"message"`
-	Image        string   `json:"image"`
+	Sender              string   `json:"sender"`
+	Recipients          []string `json:"recipients"`
+	RecipientsAddresses []string `json:"recipients_addresses"`
+	Platform            string   `json:"platform"`
+	GuildID             string   `json:"guild_id"`
+	ChannelID           string   `json:"channel_id"`
+	Amount              float64  `json:"amount"`
+	Token               string   `json:"token"`
+	Each                bool     `json:"each"`
+	All                 bool     `json:"all"`
+	TransferType        string   `json:"transfer_type"`
+	FullCommand         string   `json:"full_command"`
+	Duration            int      `json:"duration"`
+	Message             string   `json:"message"`
+	Image               string   `json:"image"`
 }
 type OffchainWithdrawRequest struct {
 	Recipient        string  `json:"recipient"`

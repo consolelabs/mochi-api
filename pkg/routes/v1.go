@@ -48,25 +48,30 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
-	offchainTipBotGroup := v1.Group("/tip")
+	tipBotGroup := v1.Group("/tip")
 	{
 		// watch total balances
-		offchainTipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
-		offchainTipBotGroup.GET("/total-offchain-balances", h.Tip.TotalOffchainBalances)
-		offchainTipBotGroup.GET("/total-fees", h.Tip.TotalFee)
-		offchainTipBotTokensGroup := offchainTipBotGroup.Group("/tokens")
+		tipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
+		tipBotGroup.GET("/total-offchain-balances", h.Tip.TotalOffchainBalances)
+		tipBotGroup.GET("/total-fees", h.Tip.TotalFee)
+		offchainTipBotTokensGroup := tipBotGroup.Group("/tokens")
 		{
 			offchainTipBotTokensGroup.GET("", h.Tip.GetAllTipBotTokens)
 			offchainTipBotTokensGroup.PUT("", h.Tip.UpdateTokenFee)
 		}
 		// offchain tip bot
-		offchainTipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
-		offchainTipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
-		offchainTipBotGroup.GET("/balances", h.Tip.GetUserBalances)
-		offchainTipBotGroup.POST("/withdraw", h.Tip.OffchainTipBotWithdraw)
-		offchainTipBotGroup.POST("/transfer", h.Tip.TransferToken)
-		offchainTipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
-		offchainTipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+		tipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
+		tipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
+		tipBotGroup.GET("/balances", h.Tip.GetUserBalances)
+		tipBotGroup.POST("/withdraw", h.Tip.OffchainTipBotWithdraw)
+		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
+		tipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
+		tipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+
+		onchainGroup := tipBotGroup.Group("/onchain")
+		{
+			onchainGroup.POST("/transfer", h.Tip.TransferOnchain)
+		}
 	}
 
 	guildGroup := v1.Group("/guilds")
