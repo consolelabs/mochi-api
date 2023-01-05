@@ -5,7 +5,7 @@ import "time"
 type DaoProposalVoteOption struct {
 	Id             int64     `json:"id"`
 	ProposalId     int64     `json:"proposal_id"`
-	VoteOptionId   int64     `json:"vote_option_id"`
+	VoteOptionId   *int64     `json:"vote_option_id"`
 	Address        string    `json:"address"`
 	ChainId        int64     `json:"chain_id"`
 	Symbol         string    `json:"symbol"`
