@@ -19,11 +19,6 @@ type CreateDaoProposalRequest struct {
 	VoteOption      *VoteOptionRequest `json:"vote_option"`
 }
 
-type DeteleDaoProposalRequest struct {
-	GuildId             string `json:"guild_id"`
-	DiscussionChannelID string `json:"discussion_channel_id"`
-}
-
 type VoteOptionRequest struct {
 	Id             int64  `json:"id"`
 	Address        string `json:"address"`

@@ -18,10 +18,6 @@ func (pg *pg) GetById(id int64) (model *model.DaoProposal, err error) {
 	return model, pg.db.First(&model, id).Error
 }
 
-func (pg *pg) GetByGuildAndDiscussionChannelId(guildId string, discussionChannelId string) (model *model.DaoProposal, err error) {
-	return model, pg.db.Where("guild_id = ? AND discussion_channel_id = ?", guildId, discussionChannelId).First(&model).Error
-}
-
 func (pg *pg) GetAllByCreatorId(userId string) (models *[]model.DaoProposal, err error) {
 	return models, pg.db.Where("creator_id = ?", userId).Find(&models).Error
 }
