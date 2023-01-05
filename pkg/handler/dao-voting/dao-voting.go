@@ -170,3 +170,30 @@ func (h *Handler) GetVote(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(vote, nil, nil, nil))
 }
+
+// DeleteDaoProposal   godoc
+// @Summary     Delete DAO Proposal
+// @Description Detele DAO proposal and then remove its discussion channel.
+// @Tags        DAO Proposal
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeteteDaoProposalRequest true "Detete dao proposal request"
+// @Success     200 {object} response.DeteteDaoProposalResponse
+// @Router      /dao-voting/proposals [detete]
+func (h *Handler) DeteteProposal(c *gin.Context) {
+	proposalId := c.Param("proposal_id")
+	if proposalId == "" {
+		h.log.Info("[handler.DeteteProposal] - proposal_id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("proposal_id is required"), nil))
+		return
+	}
+
+	err := h.entities.DeleteDaoProposal(proposalId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"proposal_id": proposalId}).Error(err, "[handler.DeleteProposal] - failed to delete dao proposal")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
