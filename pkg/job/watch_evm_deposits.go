@@ -1,9 +1,11 @@
 package job
 
 import (
+	"errors"
+	"fmt"
 	"math"
+	"math/big"
 	"sort"
-	"strconv"
 	"strings"
 
 	"gorm.io/gorm"
@@ -119,16 +121,19 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 	l := job.log.Fields(logger.Fields{"txHash": tx.TxHash})
 	// covalent address returned in lower case
 	if strings.EqualFold(tx.ToAddress, contractAddress) {
-		amount, err := strconv.Atoi(tx.Value)
-		if err != nil {
+		amount := new(big.Int)
+		amount, ok := amount.SetString(tx.Value, 10)
+		if !ok {
+			err := fmt.Errorf("invalid tx amount %s", tx.Value)
 			l.Error(err, "[getTxDetails] strconv.Atoi() failed: invalid native amount")
 			return false, err
 		}
-		if amount == 0 {
-			l.Error(err, "[getTxDetails] zero amount transaction")
+		if amount.Cmp(big.NewInt(0)) == 0 {
+			err := errors.New("zero tx amount")
+			l.Error(err, "[getTxDetails] zero transaction amount")
 			return false, nil
 		}
-		tx.Amount = float64(amount)
+		tx.Amount, _ = new(big.Float).SetInt(amount).Float64()
 		return true, nil
 	}
 
@@ -163,14 +168,17 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 			return false, nil
 		}
 		if strings.EqualFold(p.Name, "value") {
-			amount, err := strconv.Atoi(p.Value)
-			if err != nil {
+			amount := new(big.Int)
+			amount, ok := amount.SetString(p.Value, 10)
+			if !ok {
+				err := fmt.Errorf("invalid tx amount %s", p.Value)
 				l.Error(err, "[getTxDetails] strconv.Atoi() failed: invalid erc20 amount")
 				return false, err
 			}
 			tx.ToAddress = contractAddress
 			tx.TokenContract = event.SenderAddress
-			tx.Amount = float64(amount) / math.Pow10(decimals)
+			tx.Amount, _ = new(big.Float).SetInt(amount).Float64()
+			tx.Amount /= math.Pow10(decimals)
 		}
 	}
 	return true, nil
