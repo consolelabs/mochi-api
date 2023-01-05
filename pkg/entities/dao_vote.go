@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
@@ -19,6 +20,52 @@ func (e *Entity) CreateDaoVote(req request.CreateDaoVoteRequest) error {
 		Point:      1,
 	})
 }
+
+func (e *Entity) UpdateDaoVote(voteId string, req request.UpdateDaoVoteRequest) (*model.DaoVote, error) {
+	if err := req.Choice.IsValid(); err != nil {
+		e.log.Fields(logger.Fields{
+			"choice": req.Choice,
+		}).Error(err, "[Entity][UpdateDaoVote] invalid vote choice")
+		return nil, err
+	}
+
+	voteIdNum, err := strconv.ParseInt(voteId, 10, 64)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"voteId": voteId,
+		}).Error(err, "[Entity][UpdateDaoVote] convert voteId to int64 failed")
+		return nil, errs.ErrInvalidVoteID
+	}
+
+	vote, err := e.repo.DaoVote.GetById(voteIdNum)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"voteId": voteIdNum,
+		}).Error(err, "[Entity][UpdateDaoVote] repo.DaoVote.GetById failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errs.ErrRecordNotFound
+		}
+		return nil, err
+	}
+
+	if vote.UserId != req.UserID {
+		e.log.Fields(logger.Fields{
+			"userID": req.UserID,
+		}).Error(err, "[Entity][UpdateDaoVote] the update user is not the creator")
+		return nil, errs.ErrInvalidDiscordUserID
+	}
+
+	vote.Choice = req.Choice
+	updatedVote, err := e.repo.DaoVote.Update(vote)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"vote": vote,
+		}).Error(err, "[Entity][UpdateDaoVote] repo.DaoVote.Update failed")
+		return nil, err
+	}
+	return updatedVote, nil
+}
+
 func (e *Entity) GetAllDaoProposalByUserId(userId string) (*[]model.DaoProposal, error) {
 	proposals, err := e.repo.DaoProposal.GetAllByCreatorId(userId)
 	if err != nil {

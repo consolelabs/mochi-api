@@ -35,6 +35,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			{
 				voteGroup.GET("", h.DaoVoting.GetVote)
 				voteGroup.POST("", h.DaoVoting.CreateDaoVote)
+				voteGroup.PUT("/:vote_id", h.DaoVoting.UpdateDaoVote)
 			}
 		}
 
