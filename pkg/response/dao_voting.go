@@ -34,5 +34,9 @@ type GetDaoProposalData struct {
 }
 
 type GetVote struct {
-	Data model.DaoVote `json:"data"`
+	Data *model.DaoVote `json:"data"`
+}
+
+type UpdateVote struct {
+	Data *model.DaoVote `json:"data"`
 }

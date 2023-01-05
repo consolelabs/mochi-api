@@ -14,4 +14,6 @@ var (
 	ErrInvalidTokenContract    = NewStringError("Invalid token contract", 400)
 	ErrInvalidProposalType     = NewStringError("Invalid proposal type", 400)
 	ErrInvalidProposalID       = NewStringError("Invalid proposal ID", 400)
+	ErrInvalidVoteID           = NewStringError("Invalid vote ID", 400)
+	ErrInvalidVoteChoice       = NewStringError("Invalid vote choice", 400)
 )

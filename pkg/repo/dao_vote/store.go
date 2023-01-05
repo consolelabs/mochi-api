@@ -15,7 +15,7 @@ func NewPG(db *gorm.DB) Store {
 }
 
 func (pg *pg) GetById(id int64) (model *model.DaoVote, err error) {
-	return model, pg.db.Preload("Proposal").First(&model, id).Error
+	return model, pg.db.First(&model, id).Error
 }
 
 func (pg *pg) GetByUserAndProposalID(proposalId int64, userId string) (model *model.DaoVote, err error) {
@@ -33,4 +33,8 @@ func (pg *pg) GetByProposalId(proposalId int64) (models *[]model.DaoVote, err er
 
 func (pg *pg) CreateDaoVote(vote *model.DaoVote) error {
 	return pg.db.Create(vote).Error
+}
+
+func (pg *pg) Update(vote *model.DaoVote) (*model.DaoVote, error) {
+	return vote, pg.db.Save(vote).Error
 }

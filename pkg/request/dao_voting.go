@@ -1,13 +1,15 @@
 package request
 
+import "github.com/defipod/mochi/pkg/model"
+
 type DeleteGuildConfigDaoProposal struct {
 	ID string `json:"id"`
 }
 
 type CreateDaoVoteRequest struct {
-	UserID     string `json:"user_id" binding:"required"`
-	ProposalID int64  `json:"proposal_id" binding:"required"`
-	Choice     string `json:"choice" binding:"required"`
+	UserID     string           `json:"user_id" binding:"required"`
+	ProposalID int64            `json:"proposal_id" binding:"required"`
+	Choice     model.VoteChoice `json:"choice" binding:"required"`
 }
 
 type CreateDaoProposalRequest struct {
@@ -25,4 +27,9 @@ type VoteOptionRequest struct {
 	ChainId        int64  `json:"chain_id"`
 	Symbol         string `json:"symbol"`
 	RequiredAmount int64  `json:"required_amount"`
+}
+
+type UpdateDaoVoteRequest struct {
+	UserID string           `json:"user_id" binding:"required"`
+	Choice model.VoteChoice `json:"choice" binding:"required"`
 }
