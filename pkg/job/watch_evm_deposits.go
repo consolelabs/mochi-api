@@ -71,7 +71,7 @@ func (job *watchEvmDeposits) Run() error {
 			if latestDeposit.SignedAt.Unix() >= item.BlockSignedAt.Unix() {
 				continue
 			}
-			if latestDeposit.TxHash == item.TxHash {
+			if strings.EqualFold(latestDeposit.TxHash, item.TxHash) {
 				continue
 			}
 			isDeposit, err := job.getTxDetails(&item, contract.ContractAddress)
@@ -133,11 +133,24 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 	}
 
 	// case erc20 token
-	if tx.LogEvents == nil || len(tx.LogEvents) == 0 || !strings.EqualFold(tx.LogEvents[0].Decoded.Name, "Transfer") {
+	if tx.LogEvents == nil || len(tx.LogEvents) == 0 {
 		l.Info("[getTxDetails] not transfer transaction")
 		return false, nil
 	}
-	event := tx.LogEvents[0]
+
+	transferEvIdx := -1
+	for i, e := range tx.LogEvents {
+		if strings.EqualFold(e.Decoded.Name, "Transfer") {
+			transferEvIdx = i
+			break
+		}
+	}
+	if transferEvIdx < 0 {
+		l.Info("[getTxDetails] no Transfer log event")
+		return false, nil
+	}
+
+	event := tx.LogEvents[transferEvIdx]
 	if event.Decoded.Params == nil || len(event.Decoded.Params) == 0 {
 		l.Info("[getTxDetails] no event params")
 		return false, nil
@@ -145,7 +158,7 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 	decimals := event.SenderContractDecimals
 	tx.TokenSymbol = event.SenderContractTickerSymbol
 	for _, p := range event.Decoded.Params {
-		if strings.EqualFold(p.Name, "to") && p.Value != contractAddress {
+		if strings.EqualFold(p.Name, "to") && !strings.EqualFold(p.Value, contractAddress) {
 			l.Info("[getTxDetails] different recipient address")
 			return false, nil
 		}

@@ -135,9 +135,9 @@ func (h *Handler) CreateProposal(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(daoProposal, nil, nil, nil))
 }
 
-// GetProposals     godoc
-// @Summary     Get dao votes
-// @Description Get dao votes
+// GetProposalVoteOfUser     godoc
+// @Summary     Get dao proposal vote of user
+// @Description Get dao proposal vote of user
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
@@ -165,6 +165,40 @@ func (h *Handler) GetVote(c *gin.Context) {
 			"proposalId": proposalId,
 			"discord_id": userId,
 		}).Error(err, "[handler.GetVote] - entities.GetDaoProposalVoteOfUser failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(vote, nil, nil, nil))
+}
+
+// UpdateDaoVote      godoc
+// @Summary     Update dao vote
+// @Description Update dao vote
+// @Tags        Dao-voting
+// @Accept      json
+// @Produce     json
+// @Param       vote_id   path  string true  "DAO Vote ID"
+// @Param       Request  body request.UpdateDaoVoteRequest true "Update dao vote request"
+// @Success     200        {object} response.UpdateVote
+// @Router      /dao-voting/proposals/votes/{vote_id} [put]
+func (h *Handler) UpdateDaoVote(c *gin.Context) {
+	voteId := c.Param("vote_id")
+	if voteId == "" {
+		h.log.Info("[handler.UpdateDaoVote] - vote id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errs.ErrInvalidVoteID, nil))
+		return
+	}
+
+	var req request.UpdateDaoVoteRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpdateDaoVote] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	vote, err := h.entities.UpdateDaoVote(voteId, req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateDaoVote] - entities.UpdateDaoVote failed")
 		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
