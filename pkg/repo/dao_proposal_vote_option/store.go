@@ -21,3 +21,7 @@ func (pg *pg) GetById(id int64) (model *model.DaoProposalVoteOption, err error) 
 func (pg *pg) Create(model *model.DaoProposalVoteOption) (*model.DaoProposalVoteOption, error) {
 	return model, pg.db.Create(&model).Error
 }
+
+func (pg *pg) DeleteAllByProposalID(proposalId int64) error {
+	return pg.db.Where("proposal_id = ?", proposalId).Delete(&model.DaoProposalVoteOption{}).Error
+}

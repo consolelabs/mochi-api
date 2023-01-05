@@ -40,3 +40,7 @@ func (pg *pg) Create(model *model.DaoProposal) (*model.DaoProposal, error) {
 func (pg *pg) UpdateDiscussionChannel(id int64, discussionChannelId string) error {
 	return pg.db.Model(&model.DaoProposal{}).Where("id = ?", id).Update("discussion_channel_id", discussionChannelId).Error
 }
+
+func (pg *pg) DeleteById(id int64) error {
+	return pg.db.Delete(&model.DaoProposal{}, id).Error
+}

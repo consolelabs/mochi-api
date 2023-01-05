@@ -30,6 +30,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			proposalGroup.POST("/", h.DaoVoting.CreateProposal)
 			proposalGroup.GET("", h.DaoVoting.GetProposals)
 			proposalGroup.GET("/:proposal_id", h.DaoVoting.GetUserVotes)
+			proposalGroup.DELETE("/:proposal_id", h.DaoVoting.DeteteProposal)
 			voteGroup := proposalGroup.Group("/votes")
 			{
 				voteGroup.GET("", h.DaoVoting.GetVote)
@@ -74,7 +75,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		onchainGroup := tipBotGroup.Group("/onchain")
 		{
-			onchainGroup.POST("/transfer", h.Tip.TransferOnchain)
+			onchainGroup.POST("/submit", h.Tip.SubmitOnchainTransfer)
+			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
 		}
 	}
 

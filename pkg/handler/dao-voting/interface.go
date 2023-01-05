@@ -9,4 +9,5 @@ type IHandler interface {
 	GetUserVotes(c *gin.Context)
 	CreateProposal(c *gin.Context)
 	GetVote(c *gin.Context)
+	DeteteProposal(c *gin.Context)
 }
