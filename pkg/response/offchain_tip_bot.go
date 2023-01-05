@@ -76,16 +76,3 @@ type TotalFeeWithdraw struct {
 type AllTipBotTokensResponse struct {
 	Data []model.OffchainTipBotToken `json:"data"`
 }
-
-type OnchainTipBotTransferToken struct {
-	SenderID         string  `json:"sender_id"`
-	RecipientID      string  `json:"recipient_id"`
-	Amount           float64 `json:"amount"`
-	Symbol           string  `json:"symbol"`
-	AmountInUSD      float64 `json:"amount_in_usd"`
-	RecipientAddress string  `json:"recipient_address"`
-}
-
-type OnchainTipBotTransferTokenResponse struct {
-	Data []OnchainTipBotTransferToken `json:"data"`
-}

@@ -64,6 +64,7 @@ import (
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
 	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
+	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -172,4 +173,5 @@ type Repo struct {
 	DaoProposalVoteOption                daoproposalvoteoption.Store
 	DaoVoteOption                        daovoteoption.Store
 	DaoGuidelineMessages                 daoguidelinemessages.Store
+	OnchainTipBotTransaction             onchaintipbottransaction.Store
 }
