@@ -7,4 +7,6 @@ type IHandler interface {
 	CreateDaoVote(c *gin.Context)
 	GetUserVotes(c *gin.Context)
 	CreateProposal(c *gin.Context)
+	GetVote(c *gin.Context)
+	DeteteProposal(c *gin.Context)
 }

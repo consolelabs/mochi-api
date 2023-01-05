@@ -16,5 +16,6 @@ type IHandler interface {
 	GetTransactionHistoryByQuery(c *gin.Context)
 
 	// onchain
-	TransferOnchain(c *gin.Context)
+	SubmitOnchainTransfer(c *gin.Context)
+	ClaimOnchainTransfer(c *gin.Context)
 }
