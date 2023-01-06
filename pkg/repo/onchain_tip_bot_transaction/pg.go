@@ -3,6 +3,7 @@ package onchaintipbottransaction
 import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/plugin/dbresolver"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -27,7 +28,7 @@ func (pg *pg) List(q ListQuery) ([]model.OnchainTipBotTransaction, error) {
 	if q.Status != "" {
 		db = db.Where("status = ?", q.Status)
 	}
-	return list, db.Find(&list).Error
+	return list, db.Clauses(dbresolver.Write).Find(&list).Error
 }
 
 func (pg *pg) GetOne(ID int) (*model.OnchainTipBotTransaction, error) {

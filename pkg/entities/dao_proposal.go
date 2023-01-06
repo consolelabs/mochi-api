@@ -37,7 +37,7 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		RequiredAmount: config.RequiredAmount,
 	}
 	if req.VoteOption != nil {
-		proposalVoteOption.VoteOptionId = req.VoteOption.Id
+		proposalVoteOption.VoteOptionId = &req.VoteOption.Id
 		proposalVoteOption.Address = req.VoteOption.Address
 		proposalVoteOption.ChainId = req.VoteOption.ChainId
 		proposalVoteOption.Symbol = req.VoteOption.Symbol
