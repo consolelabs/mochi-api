@@ -1,5 +1,7 @@
 package response
 
+import "github.com/defipod/mochi/pkg/model"
+
 type SubmitOnchainTransfer struct {
 	SenderID    string  `json:"sender_id"`
 	RecipientID string  `json:"recipient_id"`
@@ -21,4 +23,8 @@ type ClaimOnchainTransfer struct {
 
 type ClaimOnchainTransferResponse struct {
 	Data *ClaimOnchainTransfer `json:"data"`
+}
+
+type GetOnchainTransfersResponse struct {
+	Data []model.OnchainTipBotTransaction `json:"data"`
 }

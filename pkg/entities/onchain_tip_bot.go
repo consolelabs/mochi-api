@@ -159,7 +159,7 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 }
 
 func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (*response.ClaimOnchainTransfer, error) {
-	tx, err := e.repo.OnchainTipBotTransaction.GetOne(req.ClaimID)
+	tx, err := e.repo.OnchainTipBotTransaction.GetOnePending(req.ClaimID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"claim_id": req.ClaimID}).Error(err, "[entity.ClaimOnchainTransfer] repo.OnchainTipBotTransaction.GetOne() failed")
 		return nil, err
@@ -287,9 +287,9 @@ func (e *Entity) notifyPendingTransfer(userID string) error {
 	embed := &discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: "https://cdn.discordapp.com/emojis/933342303546929203.png?size=240&quality=lossless",
-			Name:    "On-chain tippings!",
+			Name:    "Claim your tip!",
 		},
-		Description: fmt.Sprintf("<@%s>, you received %d tipping(s) from others.\nYou can claim each transfer by using\n`$claim <Claim ID> <your recipient address>`", userID, len(txs)),
+		Description: fmt.Sprintf("You have received %d tips. You can claim each by \n`$claim <Claim ID> <your recipient address>`.", len(txs)),
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Claim ID",
@@ -302,7 +302,7 @@ func (e *Entity) notifyPendingTransfer(userID string) error {
 				Inline: true,
 			},
 			{
-				Name:   "Author",
+				Name:   "Sender",
 				Value:  strings.Join(senders, "\n"),
 				Inline: true,
 			},
@@ -317,4 +317,14 @@ func (e *Entity) notifyPendingTransfer(userID string) error {
 		e.log.Fields(logger.Fields{"dm": dmChannel.ID, "userID": userID}).Error(err, "[entity.notifyPendingTransfer] discord.ChannelMessageSendEmbeds() failed")
 	}
 	return err
+}
+
+func (e *Entity) GetUserOnchainTransfers(userID, status string) ([]model.OnchainTipBotTransaction, error) {
+	q := onchaintipbottransaction.ListQuery{RecipientDiscordID: userID, Status: status}
+	txs, err := e.repo.OnchainTipBotTransaction.List(q)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": q}).Error(err, "[entity.GetUserOnchainTransfers] repo.OnchainTipBotTransaction.List() failed")
+		return nil, err
+	}
+	return txs, nil
 }
