@@ -125,7 +125,7 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 		amount, ok := amount.SetString(tx.Value, 10)
 		if !ok {
 			err := fmt.Errorf("invalid tx amount %s", tx.Value)
-			l.Error(err, "[getTxDetails] strconv.Atoi() failed: invalid native amount")
+			l.Error(err, "[getTxDetails] invalid native amount")
 			return false, err
 		}
 		if amount.Cmp(big.NewInt(0)) == 0 {
@@ -172,7 +172,7 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 			amount, ok := amount.SetString(p.Value, 10)
 			if !ok {
 				err := fmt.Errorf("invalid tx amount %s", p.Value)
-				l.Error(err, "[getTxDetails] strconv.Atoi() failed: invalid erc20 amount")
+				l.Error(err, "[getTxDetails] invalid erc20 amount")
 				return false, err
 			}
 			tx.ToAddress = contractAddress

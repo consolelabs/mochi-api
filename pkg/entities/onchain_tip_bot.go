@@ -272,6 +272,7 @@ func (e *Entity) notifyPendingTransfer(userID string) error {
 		return err
 	}
 	if len(txs) == 0 {
+		e.log.Fields(logger.Fields{"userID": userID}).Info("[entity.notifyPendingTransfer] no pending tx")
 		return nil
 	}
 
