@@ -31,9 +31,9 @@ func (pg *pg) List(q ListQuery) ([]model.OnchainTipBotTransaction, error) {
 	return list, db.Clauses(dbresolver.Write).Find(&list).Error
 }
 
-func (pg *pg) GetOne(ID int) (*model.OnchainTipBotTransaction, error) {
+func (pg *pg) GetOnePending(ID int) (*model.OnchainTipBotTransaction, error) {
 	tx := &model.OnchainTipBotTransaction{}
-	return tx, pg.db.First(tx, ID).Error
+	return tx, pg.db.Where("status = ? AND id = ?", "pending", ID).First(tx).Error
 }
 
 func (pg *pg) UpsertMany(list []*model.OnchainTipBotTransaction) error {

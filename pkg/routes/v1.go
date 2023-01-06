@@ -77,6 +77,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			onchainGroup.POST("/submit", h.Tip.SubmitOnchainTransfer)
 			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
+			onchainGroup.GET("/:user_id/transfers", h.Tip.GetOnchainTransfers)
 		}
 	}
 
