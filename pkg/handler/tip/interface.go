@@ -18,4 +18,5 @@ type IHandler interface {
 	// onchain
 	SubmitOnchainTransfer(c *gin.Context)
 	ClaimOnchainTransfer(c *gin.Context)
+	GetOnchainTransfers(c *gin.Context)
 }

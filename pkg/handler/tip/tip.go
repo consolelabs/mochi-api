@@ -303,7 +303,7 @@ func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 
 // SubmitOnchainTransfer   godoc
 // @Summary     Onchain Tip Bot - Submit transfer transaction
-// @Description API transfer token for tip & airdrop
+// @Description Onchain Tip Bot - Submit transfer transaction
 // @Tags        Tip
 // @Accept      json
 // @Produce     json
@@ -334,7 +334,7 @@ func (h *Handler) SubmitOnchainTransfer(c *gin.Context) {
 
 // ClaimOnchainTransfer   godoc
 // @Summary     Onchain Tip Bot - Submit transfer transaction
-// @Description API transfer token for tip & airdrop
+// @Description Onchain Tip Bot - Submit transfer transaction
 // @Tags        Tip
 // @Accept      json
 // @Produce     json
@@ -356,6 +356,34 @@ func (h *Handler) ClaimOnchainTransfer(c *gin.Context) {
 			return
 		}
 		h.log.Error(err, "[handler.ClaimOnchainTransfer] entity.ClaimOnchainTransfer() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// GetOnchainTransfers   godoc
+// @Summary     Onchain Tip Bot - Get user's onchain transfers
+// @Description Onchain Tip Bot - Get user's onchain transfers
+// @Tags        Tip
+// @Accept      json
+// @Produce     json
+// @Param       user_id  query string false "userId"
+// @Param       status  query string false "status"
+// @Success     200 {object} response.GetOnchainTransfersResponse
+// @Router      /tip/onchain/{user_id}/transfers [get]
+func (h *Handler) GetOnchainTransfers(c *gin.Context) {
+	userId := c.Param("user_id")
+	if userId == "" {
+		err := errors.New("user_id is required")
+		h.log.Errorf(err, "[handler.GetOnchainTransfers] %s", err.Error())
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	status := c.Query("status")
+	data, err := h.entities.GetUserOnchainTransfers(userId, status)
+	if err != nil {
+		h.log.Fields(logger.Fields{"user_id": userId, "status": status}).Error(err, "[handler.GetOnchainTransfers] entity.GetUserOnchainTransfers() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
