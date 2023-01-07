@@ -176,10 +176,7 @@ func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (
 	}
 
 	// send onchain tx
-	onchainTx, _, err := e.transferOnchain(tx.Amount,
-		accounts.Account{Address: common.HexToAddress(req.Address)},
-		tx.Amount,
-		token, -1, false)
+	onchainTx, _, err := e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.Address)}, tx.Amount, token, -1, false)
 	if err != nil {
 		e.log.Fields(logger.Fields{"addr": req.Address, "amount": tx.Amount, "token": token.Symbol}).Error(err, "[entity.ClaimOnchainTransfer] e.transferOnchain() failed")
 		return nil, err

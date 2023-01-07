@@ -371,10 +371,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		transferredAmount = amt
 		txHash = hash
 	} else {
-		signedTx, amount, err := e.transferOnchain(req.Amount,
-			accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
-			req.Amount,
-			token, -1, req.All)
+		signedTx, amount, err := e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.RecipientAddress)}, req.Amount, token, -1, req.All)
 		if err != nil {
 			err = fmt.Errorf("error transfer: %v", err)
 			return nil, err
