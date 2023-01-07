@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
@@ -324,4 +325,34 @@ func (e *Entity) GetUserOnchainTransfers(userID, status string) ([]model.Onchain
 		return nil, err
 	}
 	return txs, nil
+}
+
+func (e *Entity) OnchainBalances(address string, tokens []model.Token) (map[string]*big.Int, error) {
+	balances := make(map[string]*big.Int, 0)
+	for _, token := range tokens {
+		chain := e.dcwallet.Chain(token.ChainID)
+		if chain == nil {
+			err := errors.New("chain not supported")
+			e.log.Fields(logger.Fields{"chainID": token.ChainID}).Errorf(err, "[entity.OnchainBalances] %s", err.Error())
+			continue
+		}
+		key := strings.ToUpper(token.Symbol)
+		switch token.IsNative {
+		case true:
+			nativeBal, err := chain.RawNativeBalance(address, token)
+			if err != nil {
+				e.log.Fields(logger.Fields{"token": key}).Error(err, "[entity.OnchainBalances] chain.RawNativeBalance() failed")
+				continue
+			}
+			balances[key] = nativeBal
+		default:
+			tokenBalance, err := chain.RawErc20TokenBalance(address, token)
+			if err != nil {
+				e.log.Fields(logger.Fields{"token": key}).Errorf(err, "[entity.OnchainBalances] chain.RawErc20TokenBalance() failed")
+				continue
+			}
+			balances[key] = tokenBalance
+		}
+	}
+	return balances, nil
 }
