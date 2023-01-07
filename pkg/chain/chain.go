@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -55,7 +56,7 @@ func NewClient(config *config.Config, hdwallet *hdwallet.Wallet, log logger.Logg
 	}, nil
 }
 
-func (ch *Chain) Balance(address string) (float64, error) {
+func (ch *Chain) nativeBalance(address string, token model.Token) (float64, error) {
 	account := common.HexToAddress(address)
 	balanceAt, err := ch.client.BalanceAt(context.Background(), account, nil)
 	if err != nil {
@@ -64,13 +65,13 @@ func (ch *Chain) Balance(address string) (float64, error) {
 
 	balance := new(big.Float)
 	balance.SetString(balanceAt.String())
-	value := new(big.Float).Quo(balance, big.NewFloat(math.Pow10(18)))
+	value := new(big.Float).Quo(balance, big.NewFloat(math.Pow10(token.Decimals)))
 	v, _ := value.Float64()
 
 	return v, nil
 }
 
-func (ch *Chain) TransferOnchain(balance float64, toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Chain) TransferOnchain(toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	var (
 		t   *types.Transaction
 		err error
@@ -78,16 +79,15 @@ func (ch *Chain) TransferOnchain(balance float64, toAcc accounts.Account, amount
 
 	switch token.IsNative {
 	case true:
-		t, amount, err = ch.transferOnchain(balance, toAcc, amount, nonce, all)
+		t, amount, err = ch.transferNativeOnchain(toAcc, amount, token, nonce, all)
 	default:
-		t, amount, err = ch.transferTokenOnchain(balance, toAcc, amount, token, nonce, all)
+		t, amount, err = ch.transferErc20TokenOnchain(toAcc, amount, token, nonce, all)
 	}
 
 	return t, amount, err
 }
 
-func (ch *Chain) transferOnchain(balance float64, toAcc accounts.Account, amount float64, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
-
+func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	privateKey, err := crypto.HexToECDSA(ch.config.CentralizedWalletPrivateKey)
 	if err != nil {
 		return nil, 0, err
@@ -114,6 +114,11 @@ func (ch *Chain) transferOnchain(balance float64, toAcc accounts.Account, amount
 		return nil, 0, err
 	}
 
+	balance, err := ch.nativeBalance(fromAddress.Hex(), token)
+	if err != nil {
+		ch.log.Fields(logger.Fields{"address": fromAddress.Hex(), "token": token}).Error(err, "[chain.transferNativeOnchain] nativeBalance() failed")
+		return nil, 0, err
+	}
 	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
 	if all {
 		if balance <= maxTxFee {
@@ -147,7 +152,7 @@ func (ch *Chain) transferOnchain(balance float64, toAcc accounts.Account, amount
 	return signedTx, amount, nil
 }
 
-func (ch *Chain) transferTokenOnchain(balance float64, toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
+func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	privateKey, err := crypto.HexToECDSA(ch.config.CentralizedWalletPrivateKey)
 	if err != nil {
 		return nil, 0, err
@@ -184,6 +189,11 @@ func (ch *Chain) transferTokenOnchain(balance float64, toAcc accounts.Account, a
 
 	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
 
+	balance, err := ch.erc20TokenBalance(fromAddress.Hex(), token)
+	if err != nil {
+		ch.log.Fields(logger.Fields{"address": fromAddress.Hex(), "token": token}).Error(err, "[chain.transferErc20TokenOnchain] erc20TokenBalance() failed")
+		return nil, 0, err
+	}
 	if all {
 		amount = balance
 	}
@@ -191,6 +201,7 @@ func (ch *Chain) transferTokenOnchain(balance float64, toAcc accounts.Account, a
 	amt := new(big.Int)
 	amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
 
+	fmt.Println(balance, "|||", amount)
 	if !all && balance < amount {
 		return nil, 0, errors.New("balance is not enough")
 	}
@@ -239,7 +250,7 @@ func (ch *Chain) erc20TokenBalance(address string, token model.Token) (float64, 
 
 	balance := new(big.Float)
 	balance.SetString(tokenBalance.Int().String())
-	value := new(big.Float).Quo(balance, big.NewFloat(math.Pow10(18)))
+	value := new(big.Float).Quo(balance, big.NewFloat(math.Pow10(token.Decimals)))
 	v, _ := value.Float64()
 	return v, nil
 }
@@ -250,7 +261,7 @@ func (ch *Chain) Balances(address string, tokens []model.Token) (map[string]floa
 		key := strings.ToUpper(token.Symbol)
 		switch token.IsNative {
 		case true:
-			nativeCryptoBal, err := ch.Balance(address)
+			nativeCryptoBal, err := ch.nativeBalance(address, token)
 			if err != nil {
 				return nil, err
 			}
