@@ -93,6 +93,21 @@ func (mr *MockStoreMockRecorder) GetByAddress(address, chainID interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockStore)(nil).GetByAddress), address, chainID)
 }
 
+// GetByChainID mocks base method.
+func (m *MockStore) GetByChainID(chainID int) ([]model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByChainID", chainID)
+	ret0, _ := ret[0].([]model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByChainID indicates an expected call of GetByChainID.
+func (mr *MockStoreMockRecorder) GetByChainID(chainID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), chainID)
+}
+
 // GetBySymbol mocks base method.
 func (m *MockStore) GetBySymbol(symbol string, botSupported bool) (model.Token, error) {
 	m.ctrl.T.Helper()

@@ -13,4 +13,5 @@ type Store interface {
 	GetSupportedTokenByGuildId(guildID string) ([]model.Token, error)
 	GetOneBySymbol(symbol string) (*model.Token, error)
 	GetDefaultTokenByGuildID(guildID string) (model.Token, error)
+	GetByChainID(chainID int) ([]model.Token, error)
 }
