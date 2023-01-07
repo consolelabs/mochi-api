@@ -101,8 +101,8 @@ func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.
 		return nil, errors.New("error casting public key to ECDSA")
 	}
 
-	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	centralizedAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), centralizedAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +142,7 @@ func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.
 	if err != nil {
 		return nil, err
 	}
-	log := l.Fields(logger.Fields{"txHash": receipt.TxHash.Hex()})
+	log := l.Fields(logger.Fields{"txHash": receipt.TxHash.Hex(), "chainID": chainID})
 	if receipt.Status == 0 {
 		log.Info("sweep tokens tx failed")
 	} else if receipt.Status == 1 {

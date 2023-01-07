@@ -92,5 +92,5 @@ func (pg *pg) GetDefaultTokenByGuildID(guildID string) (model.Token, error) {
 
 func (pg *pg) GetByChainID(chainID int) ([]model.Token, error) {
 	var tokens []model.Token
-	return tokens, pg.db.Preload("Chain").Where("chain_id = ?", chainID).Find(&tokens).Error
+	return tokens, pg.db.Preload("Chain").Where("chain_id = ? AND discord_bot_supported = TRUE", chainID).Find(&tokens).Error
 }
