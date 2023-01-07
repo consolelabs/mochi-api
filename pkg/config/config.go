@@ -94,6 +94,7 @@ type Config struct {
 	CoinGeckoAPIKey string
 
 	CentralizedWalletPrivateKey string
+	CentralizedWalletAddress    string
 
 	SolanaCentralizedWalletPrivateKey string
 
@@ -243,6 +244,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CoinGeckoAPIKey: v.GetString("COINGECKO_API_KEY"),
 
 		CentralizedWalletPrivateKey: v.GetString("CENTRALIZED_WALLET_PRIVATE_KEY"),
+		CentralizedWalletAddress:    v.GetString("CENTRALIZED_WALLET_ADDRESS"),
 
 		SolanaCentralizedWalletPrivateKey: v.GetString("SOLANA_CENTRALIZED_WALLET_PK"),
 
@@ -308,6 +310,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
 	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
+	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

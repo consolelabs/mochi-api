@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
-	"fmt"
 	"math"
 	"math/big"
 	"strconv"
@@ -201,7 +200,6 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 	amt := new(big.Int)
 	amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
 
-	fmt.Println(balance, "|||", amount)
 	if !all && balance < amount {
 		return nil, 0, errors.New("balance is not enough")
 	}
@@ -275,4 +273,43 @@ func (ch *Chain) Balances(address string, tokens []model.Token) (map[string]floa
 		}
 	}
 	return balances, nil
+}
+
+// func (ch *Chain) RawBalances(address string, tokens []model.Token) (map[string]*big.Int, error) {
+// 	balances := make(map[string]*big.Int, 0)
+// 	for _, token := range tokens {
+// 		key := strings.ToUpper(token.Symbol)
+// 		switch token.IsNative {
+// 		case true:
+// 			nativeCryptoBal, err := ch.rawNativeBalance(address, token)
+// 			if err != nil {
+// 				return nil, err
+// 			}
+// 			balances[key] = nativeCryptoBal
+// 		default:
+// 			tokenBalance, err := ch.rawErc20TokenBalance(address, token)
+// 			if err != nil {
+// 				return nil, err
+// 			}
+// 			balances[key] = tokenBalance
+// 		}
+// 	}
+// 	return balances, nil
+// }
+
+func (ch *Chain) RawNativeBalance(address string, token model.Token) (*big.Int, error) {
+	account := common.HexToAddress(address)
+	balanceAt, err := ch.client.BalanceAt(context.Background(), account, nil)
+	if err != nil {
+		return nil, err
+	}
+	return balanceAt, nil
+}
+
+func (ch *Chain) RawErc20TokenBalance(address string, token model.Token) (*big.Int, error) {
+	tokenBalance, err := ch.scan.TokenBalance(token.Address, address)
+	if err != nil {
+		return nil, err
+	}
+	return tokenBalance.Int(), nil
 }

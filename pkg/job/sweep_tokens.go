@@ -1,6 +1,9 @@
 package job
 
 import (
+	"math/big"
+	"strings"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -32,7 +35,7 @@ func (job *sweepTokens) Run() error {
 		return err
 	}
 	for _, contract := range contracts {
-		log := l.Fields(logger.Fields{"contractID": contract.ID.String(), "address": contract.ContractAddress})
+		log := l.Fields(logger.Fields{"address": contract.ContractAddress})
 		log.Infof("[sweepTokens] start to sweep tokens")
 		if contract.Chain == nil || contract.Chain.ChainID == nil {
 			log.Info("[sweepTokens] undefined chain/chainID")
@@ -47,7 +50,23 @@ func (job *sweepTokens) Run() error {
 			log.Infof("[sweepTokens] chain %d has no tokens", *contract.Chain.ChainID)
 			continue
 		}
+		centralizedBalances, err := job.entity.OnchainBalances(cfg.CentralizedWalletAddress, tokens)
+		if err != nil {
+			log.Fields(logger.Fields{"chainID": *contract.Chain.ChainID}).Error(err, "[sweepTokens] job.entity.OnchainBalances() failed")
+			continue
+		}
 		for _, token := range tokens {
+			symbol := strings.ToUpper(token.Symbol)
+			bal, ok := centralizedBalances[symbol]
+			if !ok {
+				log.Fields(logger.Fields{"token": symbol}).Info("[sweepTokens] cannot get token balance info")
+				continue
+			}
+			if bal == nil || bal.Cmp(big.NewInt(0)) == 0 {
+				log.Fields(logger.Fields{"token": symbol}).Info("[sweepTokens] no balance to sweep")
+				continue
+			}
+			log.Fields(logger.Fields{"token": symbol}).Info("[sweepTokens] start executing SweepTokens() ...")
 			tx, err := abi.SweepTokens(contract.ContractAddress, int64(*contract.Chain.ChainID), token)
 			if err != nil {
 				log.Error(err, "[sweepTokens] abi.SweepTokens() failed")
