@@ -1,14 +1,22 @@
 package abi
 
 import (
+	"context"
+	"crypto/ecdsa"
 	"errors"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/defipod/mochi/pkg/config"
 	abi "github.com/defipod/mochi/pkg/contract/erc721"
+	"github.com/defipod/mochi/pkg/contracts/deposit"
+	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type abiEntity struct {
@@ -73,4 +81,72 @@ func (e *abiEntity) selectRpcUrl(chainId int64) string {
 	default:
 		return e.config.RpcUrl.Eth
 	}
+}
+
+func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.Token) (*types.Transaction, error) {
+	l := logger.NewLogrusLogger()
+	rpcUrl := e.selectRpcUrl(chainID)
+	client, err := ethclient.Dial(rpcUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKey, err := crypto.HexToECDSA(e.config.CentralizedWalletPrivateKey)
+	if err != nil {
+		return nil, err
+	}
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("error casting public key to ECDSA")
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		return nil, err
+	}
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	networkID, err := client.NetworkID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, networkID)
+	if err != nil {
+		return nil, err
+	}
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(300000)
+	auth.GasPrice = gasPrice
+
+	depositContract, err := deposit.NewDeposit(common.HexToAddress(contractAddr), client)
+	if err != nil {
+		return nil, err
+	}
+
+	var tx *types.Transaction
+	if token.IsNative {
+		tx, err = depositContract.SweepNativeToken(auth)
+	} else {
+		tx, err = depositContract.SweepToken(auth, common.HexToAddress(token.Address))
+	}
+	if err != nil {
+		return nil, err
+	}
+	receipt, err := bind.WaitMined(context.Background(), client, tx)
+	if err != nil {
+		return nil, err
+	}
+	log := l.Fields(logger.Fields{"txHash": receipt.TxHash.Hex()})
+	if receipt.Status == 0 {
+		log.Info("sweep tokens tx failed")
+	} else if receipt.Status == 1 {
+		log.Info("sweep tokens tx succeeded")
+	}
+	return tx, nil
 }

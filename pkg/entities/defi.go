@@ -108,13 +108,12 @@ func (e *Entity) balances(address string, tokens []model.Token) (map[string]floa
 }
 
 // TODO: refactor
-func (e *Entity) transferOnchain(balance float64, toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
+func (e *Entity) transferOnchain(toAccount accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
 	chain := e.dcwallet.Chain(token.ChainID)
 	if chain == nil {
 		return nil, 0, errors.New("cryptocurrency not supported")
 	}
 	signedTx, amount, err := chain.TransferOnchain(
-		balance,
 		toAccount,
 		amount,
 		token,

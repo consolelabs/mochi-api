@@ -371,10 +371,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		transferredAmount = amt
 		txHash = hash
 	} else {
-		signedTx, amount, err := e.transferOnchain(req.Amount,
-			accounts.Account{Address: common.HexToAddress(req.RecipientAddress)},
-			req.Amount,
-			token, -1, req.All)
+		signedTx, amount, err := e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.RecipientAddress)}, req.Amount, token, -1, req.All)
 		if err != nil {
 			err = fmt.Errorf("error transfer: %v", err)
 			return nil, err
@@ -676,6 +673,18 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		e.log.Fields(logger.Fields{"amount": amount, "userID": userID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.notifyDepositTx() failed")
 		return err
 	}
+
+	if !chain.IsEVM {
+		return nil
+	}
+
+	// sweep token for EVM chain
+	tx, err := e.abi.SweepTokens(req.ToAddress, int64(req.ChainID), token)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.notifyDepositTx() failed")
+		return err
+	}
+	e.log.Infof("[entity.HandleIncomingDeposit] sweep tokens tx: %s", tx.Hash().Hex())
 	return nil
 }
 
