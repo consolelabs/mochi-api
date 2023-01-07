@@ -197,3 +197,7 @@ func (e *Entity) TotalSupportedTokens(guildId string) (*response.Metric, error) 
 		TotalToken:           totalToken,
 	}, nil
 }
+
+func (e *Entity) GetTokensByChainID(chainID int) ([]model.Token, error) {
+	return e.repo.Token.GetByChainID(chainID)
+}
