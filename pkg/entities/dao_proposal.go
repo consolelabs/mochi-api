@@ -144,17 +144,13 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 	if query.GuildID == "" {
 		return nil, errs.ErrInvalidDiscordGuildID
 	}
-	if query.GuidelineChannelID == "" {
-		return nil, errs.ErrInvalidDiscordChannelID
-	}
 
-	config, err := e.repo.GuildConfigDaoProposal.
-		GetByGuildIDAndGuideLineChannelID(query.GuildID, query.GuidelineChannelID)
+	config, err := e.repo.GuildConfigDaoProposal.GetByGuildId(query.GuildID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"userID":  query.UserID,
 			"guildID": query.GuildID,
-		}).Error(err, "[entities.TokenHolderStatus] - repo.GuildConfigDaoProposal.GetByGuildIDAndGuidelineChannelID failed")
+		}).Error(err, "[entities.TokenHolderStatus] - repo.GuildConfigDaoProposal.GetByGuildID failed")
 		if err == gorm.ErrRecordNotFound {
 			return nil, errs.ErrRecordNotFound
 		}
@@ -202,18 +198,10 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 }
 
 func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
-	if query.ProposalID == "" {
+	if query.ProposalID == nil {
 		return nil, errs.ErrInvalidProposalID
 	}
-	proposalIDNum, err := strconv.ParseInt(query.ProposalID, 10, 64)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"userID":  query.UserID,
-			"guildID": query.GuildID,
-		}).Error(errs.ErrInvalidProposalID, "[entities.TokenHolderStatus] - repo.GuildConfigDaoProposal.GetByGuildIDAndGuidelineChannelID failed")
-		return nil, errs.ErrInvalidProposalID
-	}
-	config, err := e.repo.DaoProposalVoteOption.GetOneByProposalID(proposalIDNum)
+	config, err := e.repo.DaoProposalVoteOption.GetOneByProposalID(*query.ProposalID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"proposalID": query.ProposalID,

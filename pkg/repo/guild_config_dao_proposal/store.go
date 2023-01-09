@@ -30,7 +30,3 @@ func (pg *pg) DeleteById(id string) (*model.GuildConfigDaoProposal, error) {
 	var config = model.GuildConfigDaoProposal{}
 	return &config, pg.db.Clauses(clause.Returning{}).Where("id = ?", id).Delete(&config, id).Error
 }
-
-func (pg *pg) GetByGuildIDAndGuideLineChannelID(guildId, guidelineChannelId string) (model *model.GuildConfigDaoProposal, err error) {
-	return model, pg.db.Where("guild_id = ? AND guideline_channel_id = ?", guildId, guidelineChannelId).First(&model).Error
-}
