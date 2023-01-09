@@ -43,7 +43,7 @@ type UpdateVote struct {
 
 type TokenHolderStatusData struct {
 	IsWalletConnected bool                          `json:"is_wallet_connected"`
-	UserHoldingAmount string                        `json:"user_holding_amount"`
+	UserHoldingAmount *string                       `json:"user_holding_amount,omitempty"`
 	IsQualified       *bool                         `json:"is_qualified,omitempty"`
 	GuildConfig       *model.GuildConfigDaoProposal `json:"guild_config,omitempty"`
 	VoteConfig        *model.DaoProposalVoteOption  `json:"vote_config,omitempty"`

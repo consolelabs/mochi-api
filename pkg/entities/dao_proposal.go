@@ -211,12 +211,12 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		return nil, errs.ErrInternalError
 	}
 	isQualified := balance.Cmp(requiredAmountBigInt) != -1
-
+	userHoldingAmount := balance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
 			IsQualified:       &isQualified,
-			UserHoldingAmount: balance.Text(10),
+			UserHoldingAmount: &userHoldingAmount,
 			GuildConfig:       config,
 		},
 	}, nil
@@ -294,12 +294,12 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		return nil, err
 	}
 	isQualified := balance.Cmp(requiredAmountBigInt) != -1
-
+	userHoldingAmount := balance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
 			IsQualified:       &isQualified,
-			UserHoldingAmount: balance.Text(10),
+			UserHoldingAmount: &userHoldingAmount,
 			VoteConfig:        config,
 		},
 	}, nil
