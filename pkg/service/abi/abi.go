@@ -79,7 +79,7 @@ func (e *abiEntity) selectRpcUrl(chainId int64) string {
 	case 42161:
 		return e.config.RpcUrl.Arbitrum
 	case 66:
-		return e.config.RpcUrl.Okx
+		return e.config.RpcUrl.Okc
 	default:
 		return e.config.RpcUrl.Eth
 	}

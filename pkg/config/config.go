@@ -120,7 +120,7 @@ type RpcUrl struct {
 	Bsc      string
 	Polygon  string
 	Arbitrum string
-	Okx      string
+	Okc      string
 }
 
 type Kafka struct {
@@ -214,7 +214,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Bsc:      v.GetString("BSC_RPC"),
 			Arbitrum: v.GetString("ARBITRUM_RPC"),
 			Polygon:  v.GetString("POLYGON_RPC"),
-			Okx:      v.GetString("OKX_RPC"),
+			Okc:      v.GetString("OKC_RPC"),
 		},
 
 		MarketplaceBaseUrl: MarketplaceBaseUrl{
@@ -308,7 +308,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BSC_RPC", "https://rpc.ankr.com/bsc")
 	v.SetDefault("ARBITRUM_RPC", "https://rpc.ankr.com/arbitrum")
 	v.SetDefault("POLYGON_RPC", "https://rpc.ankr.com/polygon")
-	v.SetDefault("OKX_RPC", "https://exchainrpc.okex.org")
+	v.SetDefault("OKC_RPC", "https://exchainrpc.okex.org")
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
