@@ -264,11 +264,14 @@ func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walle
 			return nil, err
 		}
 	case model.CryptoToken:
-		balanceOf, err = e.GetTokenBalanceFunc(chainIdStr, tokenAddress)
+		token := model.Token{
+			Address: tokenAddress,
+			ChainID: int(chainId),
+		}
+		balanceOf, err = e.GetTokenBalanceFunc(chainIdStr, token)
 		if err != nil {
 			e.log.Fields(logger.Fields{
-				"chainID": chainIdStr,
-				"address": tokenAddress,
+				"token": token,
 			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
 			return nil, err
 		}

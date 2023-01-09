@@ -7,16 +7,15 @@ import (
 	"strconv"
 	"strings"
 
+	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"gorm.io/gorm"
 
-	"github.com/defipod/mochi/pkg/contracts/erc20"
+	chainpkg "github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
@@ -207,7 +206,7 @@ func (e *Entity) GetTokensByChainID(chainID int) ([]model.Token, error) {
 	return e.repo.Token.GetByChainID(chainID)
 }
 
-func (e *Entity) GetTokenBalanceFunc(chainID, address string) (func(address string) (*big.Int, error), error) {
+func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(address string) (*big.Int, error), error) {
 	chainIDNum, err := strconv.Atoi(chainID)
 	if err != nil {
 		e.log.Errorf(err, "[strconv.Atoi] failed to convert chain %s to number", chainID)
@@ -218,20 +217,17 @@ func (e *Entity) GetTokenBalanceFunc(chainID, address string) (func(address stri
 		e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain by id %s", chainID)
 		return nil, fmt.Errorf("failed to get chain by id %s: %v", chainID, err)
 	}
-
-	// TODO: Support non evm
-	client, err := ethclient.Dial(chain.RPC)
+	wallet, err := hdwallet.NewFromMnemonic(e.cfg.InDiscordWalletMnemonic)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
+		return nil, err
+	}
+	chainClient, err := chainpkg.NewClient(&e.cfg, wallet, e.log, chain.RPC, chain.APIKey, chain.APIBaseURL)
+	if err != nil {
+		return nil, err
 	}
 
-	contractERC20, err := erc20.NewErc20(common.HexToAddress(address), client)
-	if err != nil {
-		e.log.Errorf(err, "[erc20.NewErc20] failed to init erc20 contract")
-		return nil, fmt.Errorf("failed to init erc20 contract: %v", err.Error())
-	}
 	balanceOf := func(address string) (*big.Int, error) {
-		b, err := contractERC20.BalanceOf(nil, common.HexToAddress(address))
+		b, err := chainClient.RawErc20TokenBalance(address, token)
 		if err != nil {
 			e.log.Errorf(err, "[contractERC20.BalanceOf] failed to get balance of %s in chain %s", address, chainID)
 			return nil, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, chainID, err.Error())
