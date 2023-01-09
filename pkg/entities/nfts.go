@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -458,18 +460,18 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	}
 
 	// store nft add request
-	history := model.NftAddRequestHistory{
-		Address:   req.Address,
-		ChainID:   int64(chainID),
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		MessageID: req.MessageID,
-	}
-	err = e.repo.NftAddRequestHistory.UpsertOne(history)
-	if err != nil {
-		e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
-		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
-	}
+	// history := model.NftAddRequestHistory{
+	// 	Address:   req.Address,
+	// 	ChainID:   int64(chainID),
+	// 	GuildID:   req.GuildID,
+	// 	ChannelID: req.ChannelID,
+	// 	MessageID: req.MessageID,
+	// }
+	// err = e.repo.NftAddRequestHistory.UpsertOne(history)
+	// if err != nil {
+	// 	e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
+	// 	return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	// }
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
 		Address:      req.Address,
@@ -499,13 +501,13 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	}
 
 	//Add collection to podtown
-	go CreatePodtownNFTCollection(model.NFTCollection{
-		Address:   req.Address,
-		Symbol:    symbol,
-		Name:      name,
-		ChainID:   convertedChainId,
-		ERCFormat: "ERC721",
-	}, e.cfg)
+	// go CreatePodtownNFTCollection(model.NFTCollection{
+	// 	Address:   req.Address,
+	// 	Symbol:    symbol,
+	// 	Name:      name,
+	// 	ChainID:   convertedChainId,
+	// 	ERCFormat: "ERC721",
+	// }, e.cfg)
 
 	return
 }
@@ -1267,4 +1269,61 @@ func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQu
 
 func (e *Entity) TotalNftCollection() (int64, error) {
 	return e.repo.NFTCollection.TotalNftCollection()
+}
+
+type Collections struct {
+	Collections []Collection `json:"collections"`
+	// Total       string       `json:"total"`
+	// End         bool         `json:"end"`
+}
+
+type Collection struct {
+	// Id      int64  `json:"id"`
+	// Address string `json:"address"`
+	Name     string `json:"Name"`
+	Contract string `json:"Contract"`
+}
+
+func (e *Entity) AddCollection() error {
+	// Open our jsonFile
+	jsonFile, err := os.Open("/Users/trkhoi/Downloads/bsc-collection.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Successfully Opened users.json")
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	// we initialize our Users array
+	var cols Collections
+
+	// we unmarshal our byteArray which contains our
+	// jsonFile's content into 'cols' which we defined above
+	json.Unmarshal(byteValue, &cols)
+
+	for _, col := range cols.Collections {
+		// e.log.Infof("Collection: %s", col.Address)
+		// _, err := e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
+		// 	Address: col.Address,
+		// 	ChainID: "250",
+		// })
+		// if err != nil {
+		// 	e.log.Errorf(err, "Failed to create collection")
+		// 	continue
+		// }
+
+		e.log.Infof("Collection: %s", col.Contract)
+		_, err := e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
+			Address: col.Contract,
+			ChainID: "56",
+		})
+		if err != nil {
+			e.log.Errorf(err, "Failed to create collection")
+			continue
+		}
+	}
+	return nil
 }

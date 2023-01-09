@@ -47,11 +47,12 @@ func (e *abiEntity) GetNameAndSymbol(address string, chainId int64) (name string
 	}
 	symbol, err = instance.Symbol(&bind.CallOpts{})
 	if err != nil {
-		if err.Error() == "execution reverted" {
-			return "", "", errors.New("This collection does not support collection symbol")
-		} else {
-			return "", "", err
-		}
+		// if err.Error() == "execution reverted" {
+		// 	return "", "", errors.New("This collection does not support collection symbol")
+		// } else {
+		// 	return "", "", err
+		// }
+		symbol = name
 	}
 	return name, symbol, nil
 }
