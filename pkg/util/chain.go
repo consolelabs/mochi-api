@@ -26,7 +26,7 @@ func ConvertChainToChainId(chain string) string {
 		return "42161"
 	case "polygon":
 		return "137"
-	case "okc":
+	case "okx":
 		return "66"
 	default:
 		return chain
@@ -46,7 +46,7 @@ func ConvertChainIDToChain(chain string) string {
 	case "42161":
 		return "arb"
 	case "66":
-		return "okc"
+		return "okx"
 	case "sol":
 		return "sol"
 	case "137":
@@ -83,7 +83,7 @@ func ConvertInputToChainId(input string) string {
 		"137":        "matic",
 		"10":         "op",
 		"199":        "btt",
-		"66":         "okc",
+		"66":         "okx",
 		"1285":       "movr",
 		"42220":      "celo",
 		"1088":       "metis",
