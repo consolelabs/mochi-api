@@ -257,6 +257,7 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 }
 
 func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walletAddress, tokenAddress string, chainId int64) (*big.Int, error) {
+	// TODO: Add calculate off-chain balance
 	chainIdStr := strconv.FormatInt(chainId, 10)
 	var balanceOf func(string) (*big.Int, error)
 	var err error
