@@ -38,7 +38,7 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"137":        "matic",
 		"10":         "op",
 		"199":        "btt",
-		"66":         "okt",
+		"66":         "okc",
 		"1285":       "movr",
 		"42220":      "celo",
 		"1088":       "metis",
