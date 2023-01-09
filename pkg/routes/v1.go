@@ -25,6 +25,15 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	daoVoting := v1.Group("/dao-voting")
 	{
+		tokenHolderGroup := daoVoting.Group("/token-holder")
+		{
+			/*
+			   Check token holder connect wallet yet ?
+			   and have enough amount based on criteria (has 10 icy, 3 neko, havent connected walelt, …)
+			   GET {path}/token-holder/status`
+			*/
+			tokenHolderGroup.GET("status", h.DaoVoting.TokenHolderStatus)
+		}
 		proposalGroup := daoVoting.Group("/proposals")
 		{
 			proposalGroup.POST("/", h.DaoVoting.CreateProposal)

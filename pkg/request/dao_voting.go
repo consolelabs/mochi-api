@@ -33,3 +33,18 @@ type UpdateDaoVoteRequest struct {
 	UserID string           `json:"user_id" binding:"required"`
 	Choice model.VoteChoice `json:"choice" binding:"required"`
 }
+
+type DAOAction string
+
+const (
+	CreateProposal DAOAction = "create_proposal"
+	Vote           DAOAction = "vote"
+)
+
+type TokenHolderStatusRequest struct {
+	Action             DAOAction `json:"action" form:"action" binding:"required,oneof=create_proposal vote"`
+	UserID             string    `json:"user_id" form:"user_id" binding:"required"`
+	ProposalID         string    `json:"proposal_id" form:"proposal_id"`
+	GuildID            string    `json:"guild_id" form:"guild_id"`
+	GuidelineChannelID string    `json:"guidline_channel_id" form:"guideline_channel_id"`
+}

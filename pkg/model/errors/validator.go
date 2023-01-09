@@ -16,4 +16,5 @@ var (
 	ErrInvalidProposalID       = NewStringError("Invalid proposal ID", 400)
 	ErrInvalidVoteID           = NewStringError("Invalid vote ID", 400)
 	ErrInvalidVoteChoice       = NewStringError("Invalid vote choice", 400)
+	ErrInvalidAuthorityType    = NewStringError("Invalid authority type", 400)
 )
