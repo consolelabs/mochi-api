@@ -107,13 +107,15 @@ func (e *Entity) DeleteDaoProposal(proposalId string) error {
 func (e *Entity) TokenHolderStatus(query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
 	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(query.UserID, query.GuildID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &response.TokenHolderStatus{
+				Data: &response.TokenHolderStatusData{IsWalletConnected: false},
+			}, nil
+		}
 		e.log.Fields(logger.Fields{
 			"userID":  query.UserID,
 			"guildID": query.GuildID,
 		}).Error(err, "[entities.TokenHolderStatus] - repo.UserWallet.GetOneByDiscordIDAndGuildID failed")
-		if err == gorm.ErrRecordNotFound {
-			return nil, errs.ErrRecordNotFound
-		}
 		return nil, err
 	}
 	// Not connect to wallet
@@ -174,44 +176,21 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		return nil, fmt.Errorf("config type data is mismatch")
 	}
 
-	var balanceOf func(string) (*big.Int, error)
-	switch *config.Type {
-	case model.NFT:
-		nftConfig := model.NFTCollectionConfig{
-			ChainID:   strconv.FormatInt(config.ChainID, 10),
-			Address:   config.Address,
-			ERCFormat: "erc721",
-		}
-		balanceOf, err = e.GetNFTBalanceFunc(nftConfig)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"config": nftConfig,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
-			return nil, err
-		}
-	case model.CryptoToken:
-		balanceOf, err = e.GetTokenBalanceFunc(strconv.FormatInt(config.ChainID, 10), config.Address)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"chainID": config.ChainID,
-				"address": config.Address,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
-			return nil, err
-		}
-	}
-	balance, err := balanceOf(walletAddress)
+	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, config.Address, config.ChainID)
 	if err != nil {
-		e.log.Fields(logger.Fields{
-			"wallletAddress": walletAddress,
-		}).Error(err, "[entities.TokenHolderStatus] - get user balance failed")
 		return nil, err
 	}
 	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
 	if !ok {
-		return nil, errs.ErrInternalError
+		err = fmt.Errorf("cannot convert big int from string")
+		e.log.Fields(logger.Fields{
+			"requiredAmount": config.RequiredAmount,
+			"base":           10,
+		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
+		return nil, err
 	}
-	isQualified := balance.Cmp(requiredAmountBigInt) != -1
-	userHoldingAmount := balance.Text(10)
+	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	userHoldingAmount := userBalance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
@@ -252,36 +231,8 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		return nil, fmt.Errorf("vote option of id %v is nil", config.Id)
 	}
 
-	var balanceOf func(string) (*big.Int, error)
-	switch voteOption.Type {
-	case model.NFT:
-		nftConfig := model.NFTCollectionConfig{
-			ChainID:   strconv.FormatInt(config.ChainId, 10),
-			Address:   config.Address,
-			ERCFormat: "erc721",
-		}
-		balanceOf, err = e.GetNFTBalanceFunc(nftConfig)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"config": nftConfig,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
-			return nil, err
-		}
-	case model.CryptoToken:
-		balanceOf, err = e.GetTokenBalanceFunc(strconv.FormatInt(config.ChainId, 10), config.Address)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"chainID": config.ChainId,
-				"address": config.Address,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
-			return nil, err
-		}
-	}
-	balance, err := balanceOf(walletAddress)
+	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, config.Address, config.ChainId)
 	if err != nil {
-		e.log.Fields(logger.Fields{
-			"wallletAddress": walletAddress,
-		}).Error(err, "[entities.TokenHolderStatus] - get user balance failed")
 		return nil, err
 	}
 	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
@@ -293,8 +244,8 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
 		return nil, err
 	}
-	isQualified := balance.Cmp(requiredAmountBigInt) != -1
-	userHoldingAmount := balance.Text(10)
+	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	userHoldingAmount := userBalance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
@@ -303,4 +254,42 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 			VoteConfig:        config,
 		},
 	}, nil
+}
+
+func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walletAddress, tokenAddress string, chainId int64) (*big.Int, error) {
+	chainIdStr := strconv.FormatInt(chainId, 10)
+	var balanceOf func(string) (*big.Int, error)
+	var err error
+	switch votingType {
+	case model.NFT:
+		nftConfig := model.NFTCollectionConfig{
+			ChainID:   chainIdStr,
+			Address:   tokenAddress,
+			ERCFormat: "erc721",
+		}
+		balanceOf, err = e.GetNFTBalanceFunc(nftConfig)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"config": nftConfig,
+			}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
+			return nil, err
+		}
+	case model.CryptoToken:
+		balanceOf, err = e.GetTokenBalanceFunc(chainIdStr, tokenAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"chainID": chainIdStr,
+				"address": tokenAddress,
+			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
+			return nil, err
+		}
+	}
+	balance, err := balanceOf(walletAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"wallletAddress": walletAddress,
+		}).Error(err, "[entities.TokenHolderStatus] - get user balance failed")
+		return nil, err
+	}
+	return balance, err
 }
