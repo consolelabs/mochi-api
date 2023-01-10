@@ -12,6 +12,7 @@ type IHandler interface {
 	GetTopUsers(c *gin.Context)
 	GetUserProfile(c *gin.Context)
 	GetUserWalletByGuildIDAddress(c *gin.Context)
+	GetUserWalletByGuildIDDiscordID(c *gin.Context)
 	GetUserTransaction(c *gin.Context)
 	GetTransactionsByQuery(c *gin.Context)
 

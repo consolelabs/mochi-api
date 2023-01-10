@@ -103,6 +103,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
 		userGroup.GET("/wallets/:address", h.User.GetUserWalletByGuildIDAddress)
+		userGroup.GET("/wallets", h.User.GetUserWalletByGuildIDDiscordID)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
 		userGroup.GET("/upvote-streak", h.User.GetUserCurrentUpvoteStreak) // get users upvote streak
 		userGroup.GET("/upvote-leaderboard", h.User.GetUserUpvoteLeaderboard)

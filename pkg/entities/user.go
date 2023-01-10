@@ -624,6 +624,18 @@ func (e *Entity) GetUserWalletByGuildIDAddress(guildID, address string) (*model.
 	return uw, nil
 }
 
+func (e *Entity) GetUserWalletByGuildIDDiscordID(guildID, userId string) (*model.UserWallet, error) {
+	uw, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(userId, guildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, ErrRecordNotFound
+		}
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+
+	return uw, nil
+}
+
 func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
 	discordGuilds, err := e.repo.DiscordGuilds.GetNonLeftGuilds()
 	if err != nil {

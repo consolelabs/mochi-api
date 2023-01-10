@@ -320,6 +320,44 @@ func (h *Handler) GetUserWalletByGuildIDAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(uw, nil, nil, nil))
 }
 
+// GetUserWalletByGuildIDDiscordID     godoc
+// @Summary     Get user by guild_id and discord_id
+// @Description Get user by guild_id and discord_id
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       guild_id query     string true "Guild ID"
+// @Param       user_id query     string true "User ID"
+// @Success     200 {object} response.GetUserWalletByGuildIDAddressResponse
+// @Router      /users/wallets [get]
+func (h *Handler) GetUserWalletByGuildIDDiscordID(c *gin.Context) {
+	address := c.Query("discord_id")
+	if address == "" {
+		h.log.Info("[handler.GetUserWalletByGuildIDDiscordID] - discord_id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("discord_id is required"), nil))
+		return
+	}
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetUserWalletByGuildIDDiscordID] - guild_id id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+	uw, err := h.entities.GetUserWalletByGuildIDDiscordID(guildID, address)
+	if err != nil {
+		if err == entities.ErrRecordNotFound {
+			h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.GetUserWalletByGuildIDDiscordID] - users not found")
+			c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
+			return
+		}
+		h.log.Fields(logger.Fields{"address": address}).Error(err, "[handler.GetUserWalletByGuildIDDiscordID] - failed to get user")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(uw, nil, nil, nil))
+}
+
 // GetUserTransaction     godoc
 // @Summary     Get user transaction
 // @Description Get user transaction
