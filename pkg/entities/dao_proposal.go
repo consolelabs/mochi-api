@@ -1,12 +1,16 @@
 package entities
 
 import (
+	"fmt"
+	"math/big"
 	"strconv"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*model.DaoProposal, error) {
@@ -41,7 +45,7 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		proposalVoteOption.Address = req.VoteOption.Address
 		proposalVoteOption.ChainId = req.VoteOption.ChainId
 		proposalVoteOption.Symbol = req.VoteOption.Symbol
-		proposalVoteOption.RequiredAmount = req.VoteOption.RequiredAmount
+		proposalVoteOption.RequiredAmount = strconv.FormatInt(req.VoteOption.RequiredAmount, 10)
 	}
 
 	_, err = e.repo.DaoProposalVoteOption.Create(&proposalVoteOption)
@@ -98,4 +102,186 @@ func (e *Entity) DeleteDaoProposal(proposalId string) error {
 	}
 
 	return nil
+}
+
+func (e *Entity) TokenHolderStatus(query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
+	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(query.UserID, query.GuildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return &response.TokenHolderStatus{
+				Data: &response.TokenHolderStatusData{IsWalletConnected: false},
+			}, nil
+		}
+		e.log.Fields(logger.Fields{
+			"userID":  query.UserID,
+			"guildID": query.GuildID,
+		}).Error(err, "[entities.TokenHolderStatus] - repo.UserWallet.GetOneByDiscordIDAndGuildID failed")
+		return nil, err
+	}
+	// Not connect to wallet
+	if userWallet.Address == "" {
+		return &response.TokenHolderStatus{
+			Data: &response.TokenHolderStatusData{IsWalletConnected: false},
+		}, nil
+	}
+
+	// Connected to wallet, check another criteria for the action
+	switch query.Action {
+	case request.CreateProposal:
+		return e.tokenHolderStatusForCreatingProposal(userWallet.Address, query)
+	case request.Vote:
+		return e.tokenHolderStatusForVoting(userWallet.Address, query)
+	default:
+		// invalid action or not supported
+		e.log.Fields(logger.Fields{
+			"action": query.Action,
+		}).Error(errs.ErrBadRequest, "[entities.TokenHolderStatus] - invalid action")
+		return nil, errs.ErrBadRequest
+	}
+}
+
+func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
+	if query.GuildID == "" {
+		return nil, errs.ErrInvalidDiscordGuildID
+	}
+
+	config, err := e.repo.GuildConfigDaoProposal.GetByGuildId(query.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"userID":  query.UserID,
+			"guildID": query.GuildID,
+		}).Error(err, "[entities.TokenHolderStatus] - repo.GuildConfigDaoProposal.GetByGuildID failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errs.ErrRecordNotFound
+		}
+		return nil, err
+	}
+
+	if config.Authority != model.TokenHolder {
+		e.log.Fields(logger.Fields{
+			"userID":  query.UserID,
+			"guildID": query.GuildID,
+		}).Error(errs.ErrInvalidAuthorityType, "[entities.TokenHolderStatus] - authority is not token holder")
+		return nil, errs.ErrInvalidAuthorityType
+	}
+
+	if config.Type == nil {
+		e.log.Fields(logger.Fields{
+			"configID": config.Id,
+		}).Error(errs.ErrInternalError, "[entities.TokenHolderStatus] - proposal voting type is nil")
+		return nil, fmt.Errorf("config type data is mismatch")
+	}
+
+	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, config.Address, config.ChainID)
+	if err != nil {
+		return nil, err
+	}
+	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
+	if !ok {
+		err = fmt.Errorf("cannot convert big int from string")
+		e.log.Fields(logger.Fields{
+			"requiredAmount": config.RequiredAmount,
+			"base":           10,
+		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
+		return nil, err
+	}
+	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	userHoldingAmount := userBalance.Text(10)
+	return &response.TokenHolderStatus{
+		Data: &response.TokenHolderStatusData{
+			IsWalletConnected: true,
+			IsQualified:       &isQualified,
+			UserHoldingAmount: &userHoldingAmount,
+			GuildConfig:       config,
+		},
+	}, nil
+}
+
+func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
+	if query.ProposalID == nil {
+		return nil, errs.ErrInvalidProposalID
+	}
+	config, err := e.repo.DaoProposalVoteOption.GetOneByProposalID(*query.ProposalID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"proposalID": query.ProposalID,
+		}).Error(errs.ErrInvalidProposalID, "[entities.TokenHolderStatus] - repo.DaoProposalVoteOption.GetOneByProposalID failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errs.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	voteOption := config.VoteOption
+	if voteOption == nil {
+		e.log.Fields(logger.Fields{
+			"voteOptionID": config.Id,
+		}).Error(errs.ErrInternalError, "[entities.TokenHolderStatus] - vote option is nil")
+		return nil, fmt.Errorf("vote option of id %v is nil", config.Id)
+	}
+
+	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, config.Address, config.ChainId)
+	if err != nil {
+		return nil, err
+	}
+	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
+	if !ok {
+		err = fmt.Errorf("cannot convert big int from string")
+		e.log.Fields(logger.Fields{
+			"requiredAmount": config.RequiredAmount,
+			"base":           10,
+		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
+		return nil, err
+	}
+	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	userHoldingAmount := userBalance.Text(10)
+	return &response.TokenHolderStatus{
+		Data: &response.TokenHolderStatusData{
+			IsWalletConnected: true,
+			IsQualified:       &isQualified,
+			UserHoldingAmount: &userHoldingAmount,
+			VoteConfig:        config,
+		},
+	}, nil
+}
+
+func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walletAddress, tokenAddress string, chainId int64) (*big.Int, error) {
+	// TODO: Add calculate off-chain balance
+	chainIdStr := strconv.FormatInt(chainId, 10)
+	var balanceOf func(string) (*big.Int, error)
+	var err error
+	switch votingType {
+	case model.NFT:
+		nftConfig := model.NFTCollectionConfig{
+			ChainID:   chainIdStr,
+			Address:   tokenAddress,
+			ERCFormat: "erc721",
+		}
+		balanceOf, err = e.GetNFTBalanceFunc(nftConfig)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"config": nftConfig,
+			}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
+			return nil, err
+		}
+	case model.CryptoToken:
+		token := model.Token{
+			Address: tokenAddress,
+			ChainID: int(chainId),
+		}
+		balanceOf, err = e.GetTokenBalanceFunc(chainIdStr, token)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"token": token,
+			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
+			return nil, err
+		}
+	}
+	balance, err := balanceOf(walletAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"wallletAddress": walletAddress,
+		}).Error(err, "[entities.TokenHolderStatus] - get user balance failed")
+		return nil, err
+	}
+	return balance, err
 }

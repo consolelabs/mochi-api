@@ -56,7 +56,7 @@ func (c *updateUserNFTBalances) Run() error {
 				UserAddress:     wa.Address,
 				ChainType:       wa.ChainType,
 				NFTCollectionID: nftConfig.ID,
-				Balance:         n,
+				Balance:         int(n.Int64()),
 			}
 
 			err = c.entity.NewUserNFTBalance(balance)

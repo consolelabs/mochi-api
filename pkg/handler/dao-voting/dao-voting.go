@@ -231,3 +231,30 @@ func (h *Handler) DeteteProposal(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// TokenHolderStatus     godoc
+// @Summary     Get status of token holder for creating proposal and voting
+// @Description Check token holder connect wallet yet? And have enough amount based on criteria (has 10 icy, 3 neko, havent connected walelt, …)
+// @Tags        DAO-Voting
+// @Accept      json
+// @Produce     json
+// @Param       user-discord-id   query  string true  "Discord ID"
+// @Success     200 {object} response.TokenHolderStatus
+// @Router      /dao-voting/token-holder/status [get]
+func (h *Handler) TokenHolderStatus(c *gin.Context) {
+	var query request.TokenHolderStatusRequest
+	if err := c.BindQuery(&query); err != nil {
+		h.log.Info("[handler.GetProposals] - bind query failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid params"), nil))
+		return
+	}
+	resp, err := h.entities.TokenHolderStatus(query)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"query": query,
+		}).Error(err, "[handler.TokenHolderStatus] - entities.TokenHolderStatus failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, resp)
+}

@@ -3,10 +3,14 @@ package entities
 import (
 	"errors"
 	"fmt"
+	"math/big"
+	"strconv"
 	"strings"
 
+	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"gorm.io/gorm"
 
+	chainpkg "github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
@@ -200,4 +204,35 @@ func (e *Entity) TotalSupportedTokens(guildId string) (*response.Metric, error) 
 
 func (e *Entity) GetTokensByChainID(chainID int) ([]model.Token, error) {
 	return e.repo.Token.GetByChainID(chainID)
+}
+
+func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(address string) (*big.Int, error), error) {
+	chainIDNum, err := strconv.Atoi(chainID)
+	if err != nil {
+		e.log.Errorf(err, "[strconv.Atoi] failed to convert chain %s to number", chainID)
+		return nil, fmt.Errorf("failed to convert string to int: %v", err)
+	}
+	chain, err := e.repo.Chain.GetByID(chainIDNum)
+	if err != nil {
+		e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain by id %s", chainID)
+		return nil, fmt.Errorf("failed to get chain by id %s: %v", chainID, err)
+	}
+	wallet, err := hdwallet.NewFromMnemonic(e.cfg.InDiscordWalletMnemonic)
+	if err != nil {
+		return nil, err
+	}
+	chainClient, err := chainpkg.NewClient(&e.cfg, wallet, e.log, chain.RPC, chain.APIKey, chain.APIBaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	balanceOf := func(address string) (*big.Int, error) {
+		b, err := chainClient.RawErc20TokenBalance(address, token)
+		if err != nil {
+			e.log.Errorf(err, "[contractERC20.BalanceOf] failed to get balance of %s in chain %s", address, chainID)
+			return nil, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, chainID, err.Error())
+		}
+		return b, nil
+	}
+	return balanceOf, nil
 }

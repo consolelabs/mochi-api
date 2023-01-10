@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type ProposalVotingType string
 
@@ -23,7 +25,7 @@ type GuildConfigDaoProposal struct {
 	GuidelineChannelId string                `json:"guideline_channel_id"`
 	Authority          ProposalAuthorityType `json:"authority"`
 	Type               *ProposalVotingType   `json:"type"`
-	RequiredAmount     int64                 `json:"required_amount"`
+	RequiredAmount     string                `json:"required_amount" gorm:"type:numeric"`
 	ChainID            int64                 `json:"chain_id"`
 	Symbol             string                `json:"symbol"`
 	Address            string                `json:"address"`

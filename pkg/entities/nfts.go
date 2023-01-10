@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
@@ -590,7 +591,7 @@ func (e *Entity) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, err
 	return e.repo.NFTCollection.ListAllNFTCollectionConfigs()
 }
 
-func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(address string) (int, error), error) {
+func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(address string) (*big.Int, error), error) {
 
 	chainID, err := strconv.Atoi(config.ChainID)
 	if err != nil {
@@ -609,7 +610,7 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
 	}
 
-	var balanceOf func(string) (int, error)
+	var balanceOf func(string) (*big.Int, error)
 	switch strings.ToLower(config.ERCFormat) {
 	case "721", "erc721":
 		contract721, err := erc721.NewErc721(common.HexToAddress(config.Address), client)
@@ -618,13 +619,13 @@ func (e *Entity) GetNFTBalanceFunc(config model.NFTCollectionConfig) (func(addre
 			return nil, fmt.Errorf("failed to init erc721 contract: %v", err.Error())
 		}
 
-		balanceOf = func(address string) (int, error) {
+		balanceOf = func(address string) (*big.Int, error) {
 			b, err := contract721.BalanceOf(nil, common.HexToAddress(address))
 			if err != nil {
 				e.log.Errorf(err, "[contract721.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
-				return 0, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+				return nil, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
 			}
-			return int(b.Int64()), nil
+			return b, nil
 		}
 
 	// case "1155", "erc1155":

@@ -30,7 +30,8 @@ func GetStatusCode(err error) int {
 		ErrInvalidDiscordUserID,
 		ErrInvalidProposalID,
 		ErrInvalidVoteID,
-		ErrInvalidVoteChoice:
+		ErrInvalidVoteChoice,
+		ErrInvalidAuthorityType:
 		code = http.StatusBadRequest
 	default:
 		code = http.StatusInternalServerError
