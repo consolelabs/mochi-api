@@ -31,14 +31,14 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
-// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       user_discord_id   query  string true  "Discord ID"
 // @Success     200 {object} response.GetAllDaoProposals
 // @Router      /dao-voting/proposals [get]
 func (h *Handler) GetProposals(c *gin.Context) {
-	userId := c.Query("user-discord-id")
+	userId := c.Query("user_discord_id")
 	if userId == "" {
 		h.log.Info("[handler.GetProposals] - discord id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id is required"), nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id is required"), nil))
 		return
 	}
 
@@ -57,16 +57,16 @@ func (h *Handler) GetProposals(c *gin.Context) {
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
-// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       user_discord_id   query  string true  "Discord ID"
 // @Param       proposal-id   query  string false  "Proposal ID"
 // @Success     200 {object} response.GetAllDaoProposalVotes
 // @Router      /dao-voting/user-votes [get]
 func (h *Handler) GetUserVotes(c *gin.Context) {
-	userId := c.Query("user-discord-id")
+	userId := c.Query("user_discord_id")
 	proposalId := c.Param("proposal_id")
 	if userId == "" || proposalId == "" {
 		h.log.Info("[handler.GetUserVotes] - discord id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id and proposal-id are required"), nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id and proposal-id are required"), nil))
 		return
 	}
 
