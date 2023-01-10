@@ -25,6 +25,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	daoVoting := v1.Group("/dao-voting")
 	{
+		tokenHolderGroup := daoVoting.Group("/token-holder")
+		{
+			tokenHolderGroup.GET("status", h.DaoVoting.TokenHolderStatus)
+		}
 		proposalGroup := daoVoting.Group("/proposals")
 		{
 			proposalGroup.POST("/", h.DaoVoting.CreateProposal)

@@ -31,14 +31,14 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
-// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       user_discord_id   query  string true  "Discord ID"
 // @Success     200 {object} response.GetAllDaoProposals
 // @Router      /dao-voting/proposals [get]
 func (h *Handler) GetProposals(c *gin.Context) {
-	userId := c.Query("user-discord-id")
+	userId := c.Query("user_discord_id")
 	if userId == "" {
 		h.log.Info("[handler.GetProposals] - discord id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id is required"), nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id is required"), nil))
 		return
 	}
 
@@ -57,16 +57,16 @@ func (h *Handler) GetProposals(c *gin.Context) {
 // @Tags        DAO-Voting
 // @Accept      json
 // @Produce     json
-// @Param       user-discord-id   query  string true  "Discord ID"
+// @Param       user_discord_id   query  string true  "Discord ID"
 // @Param       proposal-id   query  string false  "Proposal ID"
 // @Success     200 {object} response.GetAllDaoProposalVotes
 // @Router      /dao-voting/user-votes [get]
 func (h *Handler) GetUserVotes(c *gin.Context) {
-	userId := c.Query("user-discord-id")
+	userId := c.Query("user_discord_id")
 	proposalId := c.Param("proposal_id")
 	if userId == "" || proposalId == "" {
 		h.log.Info("[handler.GetUserVotes] - discord id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user-discord-id and proposal-id are required"), nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id and proposal-id are required"), nil))
 		return
 	}
 
@@ -230,4 +230,31 @@ func (h *Handler) DeteteProposal(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// TokenHolderStatus     godoc
+// @Summary     Get status of token holder for creating proposal and voting
+// @Description Check token holder connect wallet yet? And have enough amount based on criteria (has 10 icy, 3 neko, havent connected walelt, …)
+// @Tags        DAO-Voting
+// @Accept      json
+// @Produce     json
+// @Param       user-discord-id   query  string true  "Discord ID"
+// @Success     200 {object} response.TokenHolderStatus
+// @Router      /dao-voting/token-holder/status [get]
+func (h *Handler) TokenHolderStatus(c *gin.Context) {
+	var query request.TokenHolderStatusRequest
+	if err := c.BindQuery(&query); err != nil {
+		h.log.Info("[handler.GetProposals] - bind query failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid params"), nil))
+		return
+	}
+	resp, err := h.entities.TokenHolderStatus(query)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"query": query,
+		}).Error(err, "[handler.TokenHolderStatus] - entities.TokenHolderStatus failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, resp)
 }

@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math/big"
 	"strconv"
 	"time"
 
@@ -114,7 +115,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		return nil, err
 	}
 	symbol := ""
-	var requiredAmount int64 = 0
+	requiredAmount := big.NewInt(0)
 	if req.Type == "" {
 		e.log.Fields(logger.Fields{
 			"type": req.Type,
@@ -135,7 +136,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 			return nil, err
 		}
 		symbol = collection.Symbol
-		requiredAmount = int64(req.RequiredAmount)
+		requiredAmount = big.NewInt(int64(req.RequiredAmount))
 	case model.CryptoToken:
 		token, err := e.repo.Token.GetByAddress(req.Address, chainIdNumber)
 		if err != nil {
@@ -145,7 +146,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		}
 		symbol = token.Symbol
 		// convert decimal token
-		requiredAmount = int64(req.RequiredAmount * float64(10^token.Decimals))
+		requiredAmount = big.NewInt(int64(req.RequiredAmount * float64(10^token.Decimals)))
 	}
 
 	guidelineChannel, err := e.createGuidelineChannel(req.GuildID, req.ChannelID)
@@ -171,7 +172,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		ProposalChannelId:  req.ChannelID,
 		Authority:          model.TokenHolder,
 		Type:               &req.Type,
-		RequiredAmount:     requiredAmount,
+		RequiredAmount:     requiredAmount.Text(10),
 		ChainID:            int64(chainIdNumber),
 		Symbol:             symbol,
 		Address:            req.Address,

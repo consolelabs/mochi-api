@@ -18,6 +18,10 @@ func (pg *pg) GetById(id int64) (model *model.DaoProposalVoteOption, err error) 
 	return model, pg.db.Where("id = ?", id).First(&model).Error
 }
 
+func (pg *pg) GetOneByProposalID(proposalID int64) (model *model.DaoProposalVoteOption, err error) {
+	return model, pg.db.Preload("VoteOption").Where("proposal_id = ?", proposalID).First(&model).Error
+}
+
 func (pg *pg) Create(model *model.DaoProposalVoteOption) (*model.DaoProposalVoteOption, error) {
 	return model, pg.db.Create(&model).Error
 }

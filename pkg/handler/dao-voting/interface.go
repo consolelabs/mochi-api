@@ -10,4 +10,5 @@ type IHandler interface {
 	CreateProposal(c *gin.Context)
 	GetVote(c *gin.Context)
 	DeteteProposal(c *gin.Context)
+	TokenHolderStatus(c *gin.Context)
 }

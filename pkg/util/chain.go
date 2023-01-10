@@ -28,6 +28,8 @@ func ConvertChainToChainId(chain string) string {
 		return "137"
 	case "okc":
 		return "66"
+	case "onus":
+		return "1975"
 	default:
 		return chain
 	}
@@ -47,6 +49,8 @@ func ConvertChainIDToChain(chain string) string {
 		return "arb"
 	case "66":
 		return "okc"
+	case "1975":
+		return "onus"
 	case "sol":
 		return "sol"
 	case "137":
@@ -91,6 +95,7 @@ func ConvertInputToChainId(input string) string {
 		"0x64":       "xdai",
 		"288":        "boba",
 		"250":        "ftm",
+		"1975":       "onus",
 		"0xa86a":     "avax",
 		"42161":      "arb",
 		"1313161554": "aurora",
