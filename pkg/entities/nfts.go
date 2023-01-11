@@ -413,6 +413,11 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 		return nil, fmt.Errorf("Failed to validate address: %v", err)
 	}
 
+	// TODO: generic for all aptos collection address, now just get the data from bluemove
+	if req.ChainID == "9999" || req.ChainID == "apt" {
+		checksumAddress = req.Address
+	}
+
 	checkExistNFT, err := e.CheckExistNftCollection(checksumAddress)
 	if err != nil {
 		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)

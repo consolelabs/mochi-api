@@ -72,7 +72,7 @@ func TestConvertInputToChainId(t *testing.T) {
 		{
 			name: "invalid input chainId",
 			args: args{
-				input: "9999",
+				input: "99999",
 			},
 			want: "",
 		},
