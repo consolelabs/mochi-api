@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/ethereum/go-ethereum/common/math"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -88,6 +89,7 @@ func (e *Entity) createConfigDaoProposalWithAdminAuthority(req request.CreatePro
 		GuidelineChannelId: guidelineChannel.ID,
 		ProposalChannelId:  req.ChannelID,
 		Authority:          model.Admin,
+		RequiredAmount:     "0",
 	}
 	config, err := e.repo.GuildConfigDaoProposal.Create(guildConfigDaoProposal)
 	if err != nil {
@@ -146,7 +148,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		}
 		symbol = token.Symbol
 		// convert decimal token
-		requiredAmount = big.NewInt(int64(req.RequiredAmount * float64(10^token.Decimals)))
+		requiredAmount = big.NewInt(1).Mul(big.NewInt(int64(req.RequiredAmount)), math.BigPow(10, int64(token.Decimals)))
 	}
 
 	guidelineChannel, err := e.createGuidelineChannel(req.GuildID, req.ChannelID)
