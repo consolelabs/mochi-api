@@ -80,7 +80,7 @@ func (e *Entity) createConfigDaoProposalWithAdminAuthority(req request.CreatePro
 		}).Error(err, "[entity.CreateProposalChannelConfig] e.repo.DaoGuidelineMessages.GetByAuthority failed")
 		return nil, err
 	}
-	if err := e.sendGuidelineMessage(guidelineChannel.ID, messageTempl.Message); err != nil {
+	if err := e.sendGuidelineMessage(guidelineChannel.ID, messageTempl.Message, "admin"); err != nil {
 		return nil, err
 	}
 
@@ -164,7 +164,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		return nil, err
 	}
 	msgDescription := fmt.Sprintf(messageTempl.Message, req.RequiredAmount, symbol)
-	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription); err != nil {
+	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription, "tokenholder"); err != nil {
 		return nil, err
 	}
 
@@ -217,7 +217,7 @@ func (e *Entity) createGuidelineChannel(guildID, proposalChannelID string) (guid
 	return guidelineChannel, nil
 }
 
-func (e *Entity) sendGuidelineMessage(guidelineChannelID, description string) error {
+func (e *Entity) sendGuidelineMessage(guidelineChannelID, description, authority string) error {
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -234,7 +234,7 @@ func (e *Entity) sendGuidelineMessage(guidelineChannelID, description string) er
 						Label:    "Create a proposal",
 						Style:    discordgo.PrimaryButton,
 						Disabled: false,
-						CustomID: "create-proposal",
+						CustomID: fmt.Sprintf("create-proposal-%s-%s", guidelineChannelID, authority),
 						Emoji: discordgo.ComponentEmoji{
 							Name: "mailsend",
 							ID:   "1058304343293567056",
