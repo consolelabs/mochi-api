@@ -21,3 +21,7 @@ func (pg *pg) CreateOne(record model.GuildUserActivityLog) error {
 func (pg *pg) CreateOneNoGuild(record model.GuildUserActivityLog) error {
 	return pg.db.Select("UserID", "ActivityName", "EarnedXP").Create(&record).Error
 }
+
+func (pg *pg) CreateBatch(records []model.GuildUserActivityLog) error {
+	return pg.db.Create(&records).Error
+}

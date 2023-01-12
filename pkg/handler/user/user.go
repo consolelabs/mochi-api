@@ -460,3 +460,30 @@ func (h *Handler) InvitesAggregation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(aggregation, nil, nil, nil))
 }
+
+// SendUserXP     godoc
+// @Summary     Send User XP
+// @Description Send User XP
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.SendUserXPRequest true "Send user XP request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /users/xp [post]
+func (h *Handler) SendUserXP(c *gin.Context) {
+	var req request.SendUserXPRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.SendUserXP] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.SendUserXP(req)
+	if err != nil {
+		h.log.Error(err, "[handler.SendUserXP] - failed to send user XP")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
