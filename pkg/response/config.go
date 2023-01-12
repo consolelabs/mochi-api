@@ -150,3 +150,15 @@ type GuildConfigDefaultCurrencyResponse struct {
 type CreateProposalChannelConfigResponse struct {
 	Data model.GuildConfigDaoProposal `json:"data"`
 }
+
+type CreateGuildTokenRole struct {
+	Data *model.GuildConfigTokenRole `json:"data"`
+}
+
+type ListGuildTokenRoles struct {
+	Data []model.GuildConfigTokenRole `json:"data"`
+}
+
+type UpdateGuildTokenRole struct {
+	Data *model.GuildConfigTokenRole `json:"data"`
+}
