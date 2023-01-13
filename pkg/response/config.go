@@ -45,7 +45,7 @@ type GetVoteChannelConfigResponse struct {
 }
 
 type GetSalesTrackerConfigResponse struct {
-	Data *model.GuildConfigSalesTracker `json:"data"`
+	Data []model.GuildConfigSalesTracker `json:"data"`
 }
 
 type GetGuildTokensResponse struct {

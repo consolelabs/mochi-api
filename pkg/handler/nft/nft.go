@@ -299,37 +299,6 @@ func (h *Handler) GetNFTTokens(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-// CreateNFTSalesTracker     godoc
-// @Summary     Create NFT Sales tracker
-// @Description Create NFT Sales tracker
-// @Tags        NFT
-// @Accept      json
-// @Produce     json
-// @Param       symbol   path  string true  "Symbol"
-// @Success     200 {object} response.IndexerGetNFTTokensResponse
-// @Router      /nfts/sales-tracker [post]
-func (h *Handler) CreateNFTSalesTracker(c *gin.Context) {
-	var req request.NFTSalesTrackerRequest
-	if err := c.Bind(&req); err != nil {
-		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err := h.entities.CreateSalesTracker(req)
-	if err != nil {
-		if err.Error() == "Collection has not been added." {
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-			return
-		}
-		h.log.Fields(logger.Fields{"address": req.ContractAddress, "platform": req.Platform, "guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.CreateNFTSalesTracker] - failed to create sales tracker")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
 // GetDetailNftCollection     godoc
 // @Summary     Get detail nft collection
 // @Description Get detail nft collection
@@ -362,68 +331,6 @@ func (h *Handler) GetDetailNftCollection(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(collection, nil, nil, nil))
-}
-
-// GetAllNFTSalesTracker     godoc
-// @Summary     Get all nft sales tracker
-// @Description Get all nft sales tracker
-// @Tags        NFT
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.GetAllNFTSalesTrackerResponse
-// @Router      /nfts/sales-tracker [get]
-func (h *Handler) GetAllNFTSalesTracker(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID != "" {
-		data, err := h.entities.GetNFTSaleSTrackerByGuildID(guildID)
-		if err != nil {
-			h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetNFTSaleSTrackerByGuildID] - failed to get nft sales tracker")
-			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-			return
-		}
-		c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-		return
-	}
-	data, err := h.entities.GetAllNFTSalesTracker()
-	if err != nil {
-		h.log.Error(err, "[handler.GetAllNFTSalesTracker] - failed to get all NFT sales tracker")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("cannot get info"), nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-}
-
-// DeleteNFTSalesTracker     godoc
-// @Summary     Delete NFT sales tracker
-// @Description Delete NFT sales tracker
-// @Tags        NFT
-// @Accept      json
-// @Produce     json
-// @Param       guild_id   query  string true  "Guild ID"
-// @Param       contract_address   query  string true  "Contract Address"
-// @Success     200 {object} response.ResponseMessage
-// @Router      /nfts/sales-tracker [delete]
-func (h *Handler) DeleteNFTSalesTracker(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	contractAddress := c.Query("contract_address")
-	if guildID == "" {
-		h.log.Info("[handler.DeleteNFTSalesTracker] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild id is required"), nil))
-		return
-	}
-	if contractAddress == "" {
-		h.log.Info("[handler.DeleteNFTSalesTracker] - contract address empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("contract address is required"), nil))
-		return
-	}
-	err := h.entities.DeleteNFTSalesTracker(guildID, contractAddress)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID, "contractAddress": contractAddress}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 // GetCollectionCount     godoc
