@@ -10,6 +10,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -428,6 +429,138 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	if err := h.entities.RemoveGuildLevelRoleConfig(guildID, levelNr); err != nil {
 		h.log.Fields(logger.Fields{"guildID": guildID, "level": level}).Error(err, "[handler.RemoveLevelRoleConfig] - failed to remove guild level role config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// CreateGuildTokenRole     godoc
+// @Summary     Create guild token role config
+// @Description Create guild token role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       Request   body  request.CreateGuildTokenRole true  "Create guild token role config request"
+// @Success     200 {object} response.CreateGuildTokenRole
+// @Router      /config-roles/token-roles [post]
+func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
+	req := request.CreateGuildTokenRole{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.CreateGuildTokenRole(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - e.CreateGuildTokenRole failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// ListGuildTokenRole     godoc
+// @Summary     Get list token role config of guild
+// @Description Get list token role config of guild
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.ListGuildTokenRoles
+// @Router      /config-roles/token-roles/{guild_id} [get]
+func (h *Handler) ListGuildTokenRoles(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.ListGuildTokenRoles] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.ListGuildTokenRoles(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildTokenRoles] - e.ListGuildTokenRoles failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// UpdateGuildTokenRole     godoc
+// @Summary     Update guild token role config
+// @Description Update guild token role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       id path  int true  "Config ID"
+// @Success     200 {object} response.UpdateGuildTokenRole
+// @Router      /config-roles/token-roles/{id} [put]
+func (h *Handler) UpdateGuildTokenRole(c *gin.Context) {
+	idStr := c.Param("id")
+	if idStr == "" {
+		h.log.Info("[handler.UpdateGuildTokenRole] - id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"id": idStr,
+		}).Error(err, "[handler.UpdateGuildTokenRole] - strconv.Atoi failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
+		return
+	}
+
+	req := request.UpdateGuildTokenRole{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateGuildTokenRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.UpdateGuildTokenRole(id, req)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"id": id, "req": req,
+		}).Error(err, "[handler.UpdateGuildTokenRole] - e.UpdateGuildTokenRole failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// RemoveGuildTokenRole     godoc
+// @Summary     Remove guild token role config
+// @Description Remove guild token role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       id  path  int true  "Config ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-roles/token-roles/{id} [delete]
+func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
+	idStr := c.Param("id")
+	if idStr == "" {
+		h.log.Info("[handler.RemoveGuildTokenRole] - id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"id": idStr,
+		}).Error(err, "[handler.RemoveGuildTokenRole] - strconv.Atoi failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
+		return
+	}
+
+	if err := h.entities.RemoveGuildTokenRole(id); err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - e.RemoveGuildTokenRole failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 

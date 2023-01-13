@@ -20,4 +20,9 @@ type IHandler interface {
 	ConfigLevelRole(c *gin.Context)
 	GetLevelRoleConfigs(c *gin.Context)
 	RemoveLevelRoleConfig(c *gin.Context)
+
+	CreateGuildTokenRole(c *gin.Context)
+	ListGuildTokenRoles(c *gin.Context)
+	UpdateGuildTokenRole(c *gin.Context)
+	RemoveGuildTokenRole(c *gin.Context)
 }

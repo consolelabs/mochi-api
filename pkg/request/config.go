@@ -150,3 +150,18 @@ type CreateProposalChannelConfig struct {
 	Chain          string                      `json:"chain"`
 	RequiredAmount float64                     `json:"required_amount"`
 }
+
+type CreateGuildTokenRole struct {
+	GuildID string  `json:"guild_id" binding:"required"`
+	RoleID  string  `json:"role_id" binding:"required"`
+	Chain   string  `json:"chain" binding:"required"`
+	Address string  `json:"address" binding:"required"`
+	Amount  float64 `json:"amount" binding:"required"`
+}
+
+type UpdateGuildTokenRole struct {
+	RoleID  *string  `json:"role_id"`
+	Chain   *string  `json:"chain" binding:"required_with=Address"`
+	Address *string  `json:"address" binding:"required_with=Chain"`
+	Amount  *float64 `json:"amount"`
+}

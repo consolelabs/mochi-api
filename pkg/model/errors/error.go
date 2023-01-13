@@ -18,7 +18,9 @@ func (e Error) Error() string {
 func GetStatusCode(err error) int {
 	var code int
 	switch err {
-	case ErrRecordNotFound:
+	case
+		ErrRecordNotFound,
+		ErrTokenNotFound:
 		code = http.StatusNotFound
 	case ErrConflict:
 		code = http.StatusConflict

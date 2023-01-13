@@ -41,6 +41,7 @@ import (
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
+	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
@@ -179,5 +180,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DaoVoteOption:                        daovoteoption.NewPG(db),
 		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
 		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
+		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 	}
 }

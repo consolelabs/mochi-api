@@ -239,6 +239,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			nftRoleGroup.DELETE("/group", h.ConfigRoles.RemoveGuildGroupNFTRole)
 			nftRoleGroup.DELETE("/", h.ConfigRoles.RemoveGuildNFTRole)
 		}
+		tokenRoleGroup := configRoleGroup.Group("/token-roles")
+		{
+			tokenRoleGroup.POST("", h.ConfigRoles.CreateGuildTokenRole)
+			tokenRoleGroup.GET(":guild_id", h.ConfigRoles.ListGuildTokenRoles)
+			tokenRoleGroup.PUT("/:id", h.ConfigRoles.UpdateGuildTokenRole)
+			tokenRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildTokenRole)
+		}
 	}
 
 	configCommunityGroup := v1.Group("/config-community")
