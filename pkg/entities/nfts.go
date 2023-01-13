@@ -743,25 +743,6 @@ func (e *Entity) GetNFTTokens(symbol, query string) (*response.IndexerGetNFTToke
 	return data, nil
 }
 
-func (e *Entity) CreateNFTSalesTracker(addr, platform, guildID string) error {
-	checksum, err := util.ConvertToChecksumAddr(addr)
-	if err != nil {
-		e.log.Errorf(err, "[util.ConvertToChecksumAddr] cannot convert to checksum")
-		return fmt.Errorf("invalid contract address")
-	}
-	config, err := e.GetSalesTrackerConfig(guildID)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetSalesTrackerConfig] fail to get sale track config by guildID %d", guildID)
-		return err
-	}
-
-	return e.repo.NFTSalesTracker.FirstOrCreate(&model.InsertNFTSalesTracker{
-		ContractAddress: checksum,
-		Platform:        platform,
-		SalesConfigID:   config.ID.UUID.String(),
-	})
-}
-
 func (e *Entity) GetDetailNftCollection(symbol string, queryByAddress bool) (*model.NFTCollectionDetail, error) {
 	if queryByAddress {
 		data, err := e.repo.NFTCollection.GetByAddress(symbol)
@@ -805,68 +786,6 @@ func (e *Entity) GetCollectionWithChainDetail(collection *model.NFTCollection) *
 		Image:      util.StandardizeUri(collection.Image),
 		Author:     collection.Author,
 	}
-}
-
-func (e *Entity) GetAllNFTSalesTracker() ([]response.NFTSalesTrackerResponse, error) {
-	resp := []response.NFTSalesTrackerResponse{}
-	data, err := e.repo.NFTSalesTracker.GetAll()
-	if err != nil {
-		e.log.Errorf(err, "[repo.NFTSalesTracker.GetAll] failed to get all nft sales trackers")
-		return nil, err
-	}
-	for _, item := range data {
-		resp = append(resp, response.NFTSalesTrackerResponse{
-			ContractAddress: item.ContractAddress,
-			Platform:        item.Platform,
-			GuildID:         item.GuildConfigSalesTracker.GuildID,
-			ChannelID:       item.GuildConfigSalesTracker.ChannelID,
-		})
-	}
-	return resp, nil
-}
-
-func (e *Entity) DeleteNFTSalesTracker(guildID, contractAddress string) error {
-	return e.repo.NFTSalesTracker.DeleteNFTSalesTrackerByContractAddress(contractAddress)
-}
-
-func (e *Entity) GetNFTSaleSTrackerByGuildID(guildID string) (*response.NFTSalesTrackerGuildResponse, error) {
-	data, err := e.repo.NFTSalesTracker.GetSalesTrackerByGuildID(guildID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.GetNFTSaleSTrackerByGuildID] failed to get nft sales trackers")
-		return nil, err
-	}
-
-	if len(data) == 0 {
-		// Check for * address -> track all collections
-		// TODO: upddate this to pagination
-		data, err := e.repo.NFTSalesTracker.GetStarTrackerByGuildID(guildID)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.repo.GetStarTrackerByGuildID] failed to get * trackers")
-			return nil, err
-		}
-		if data != nil && data.GuildConfigSalesTracker.ID.Valid == true {
-			return &response.NFTSalesTrackerGuildResponse{
-				ID:        util.GetNullUUID(data.SalesConfigID),
-				GuildID:   guildID,
-				ChannelID: data.GuildConfigSalesTracker.ChannelID,
-				Collection: []response.NFTSalesTrackerData{
-					{
-						ContractAddress: "*",
-						Platform:        data.Platform,
-						Name:            "All Collections",
-					},
-				},
-			}, nil
-		}
-		return nil, nil
-	}
-
-	return &response.NFTSalesTrackerGuildResponse{
-		ID:         data[0].SalesConfigID,
-		GuildID:    guildID,
-		ChannelID:  data[0].GuildConfigSalesTracker.ChannelID,
-		Collection: data,
-	}, nil
 }
 
 func (e *Entity) GetNewListedNFTCollection(interval string, page string, size string) (*response.NFTNewListed, error) {

@@ -14,11 +14,14 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigSalesTracker, error) {
-	config := &model.GuildConfigSalesTracker{}
-	return config, pg.db.Table("guild_config_sales_trackers").Where("guild_id = ?", guildID).First(config).Error
+func (pg *pg) GetByGuildID(guildID string) (config []model.GuildConfigSalesTracker, err error) {
+	return config, pg.db.Where("guild_id = ?", guildID).Find(&config).Error
 }
 
-func (pg *pg) UpsertOne(config *model.GuildConfigSalesTracker) error {
+func (pg *pg) Create(config *model.GuildConfigSalesTracker) error {
 	return pg.db.Create(&config).Error
+}
+
+func (pg *pg) GetAllSalesTrackerConfig() (config []model.GuildConfigSalesTracker, err error) {
+	return config, pg.db.Find(&config).Error
 }

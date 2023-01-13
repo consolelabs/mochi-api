@@ -137,27 +137,6 @@ func (e *Entity) GetUpvoteTiersConfig() ([]model.UpvoteStreakTier, error) {
 	return tiers, nil
 }
 
-func (e *Entity) GetSalesTrackerConfig(guildID string) (*model.GuildConfigSalesTracker, error) {
-	config, err := e.repo.GuildConfigSalesTracker.GetByGuildID(guildID)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
-}
-
-func (e *Entity) UpsertSalesTrackerConfig(req request.UpsertSalesTrackerConfigRequest) error {
-	tmp := &model.GuildConfigSalesTracker{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-	}
-
-	if err := e.repo.GuildConfigSalesTracker.UpsertOne(tmp); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (e *Entity) GetGuildTokens(guildID string) ([]model.Token, error) {
 	if guildID == "" {
 		return e.repo.Token.GetDefaultTokens()
