@@ -16,3 +16,8 @@ type GuildConfigTokenRole struct {
 func (GuildConfigTokenRole) TableName() string {
 	return "guild_config_token_roles"
 }
+
+type MemberTokenRole struct {
+	UserDiscordID string `json:"user_id"`
+	RoleID        string `json:"role_id"`
+}
