@@ -342,10 +342,10 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 	}
 
 	if req.All {
-		req.Amount = util.RoundFloat(recipientBal.Amount/(1+offchainToken.ServiceFee), 4)
+		req.Amount = util.RoundFloat(recipientBal.Amount/(1+offchainToken.ServiceFee), 5)
 		// avoid round up lead to insufficent bal
 		if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
-			req.Amount = req.Amount - 0.0001
+			req.Amount = req.Amount - 0.00001
 		}
 	}
 
