@@ -41,6 +41,7 @@ import (
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
+	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
 	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
@@ -86,6 +87,7 @@ import (
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
+	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -179,5 +181,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DaoVoteOption:                        daovoteoption.NewPG(db),
 		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
 		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
+		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
+		UserTokenBalance:                     usertokenbalance.NewPG(db),
 	}
 }

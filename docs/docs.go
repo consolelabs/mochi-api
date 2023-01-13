@@ -1020,7 +1020,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
+                            "$ref": "#/definitions/response.CreateProposalChannelConfigResponse"
                         }
                     }
                 }
@@ -2882,7 +2882,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Discord ID",
-                        "name": "user-discord-id",
+                        "name": "user_discord_id",
                         "in": "query",
                         "required": true
                     }
@@ -2927,6 +2927,36 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Detele DAO proposal and then remove its discussion channel.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DAO Proposal"
+                ],
+                "summary": "Delete DAO Proposal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Proposal ID",
+                        "name": "proposal_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
             }
         },
         "/dao-voting/proposals/vote": {
@@ -2963,6 +2993,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/dao-voting/proposals/votes/{vote_id}": {
+            "put": {
+                "description": "Update dao vote",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dao-voting"
+                ],
+                "summary": "Update dao vote",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DAO Vote ID",
+                        "name": "vote_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update dao vote request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateDaoVoteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UpdateVote"
+                        }
+                    }
+                }
+            }
+        },
+        "/dao-voting/token-holder/status": {
+            "get": {
+                "description": "Check token holder connect wallet yet? And have enough amount based on criteria (has 10 icy, 3 neko, havent connected walelt, …)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DAO-Voting"
+                ],
+                "summary": "Get status of token holder for creating proposal and voting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "user-discord-id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TokenHolderStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/dao-voting/user-votes": {
             "get": {
                 "description": "Get dao votes",
@@ -2980,7 +3083,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Discord ID",
-                        "name": "user-discord-id",
+                        "name": "user_discord_id",
                         "in": "query",
                         "required": true
                     },
@@ -2996,6 +3099,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetAllDaoProposalVotes"
+                        }
+                    }
+                }
+            }
+        },
+        "/dao-voting/votes": {
+            "get": {
+                "description": "Get dao proposal vote of user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DAO-Voting"
+                ],
+                "summary": "Get dao proposal vote of user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Proposal ID",
+                        "name": "proposal_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "user_discord_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVote"
                         }
                     }
                 }
@@ -4800,6 +4942,111 @@ const docTemplate = `{
                 }
             }
         },
+        "/tip/onchain/claim": {
+            "post": {
+                "description": "Onchain Tip Bot - Submit transfer transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tip"
+                ],
+                "summary": "Onchain Tip Bot - Submit transfer transaction",
+                "parameters": [
+                    {
+                        "description": "req",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.ClaimOnchainTransferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ClaimOnchainTransferResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tip/onchain/transfer": {
+            "post": {
+                "description": "Onchain Tip Bot - Submit transfer transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tip"
+                ],
+                "summary": "Onchain Tip Bot - Submit transfer transaction",
+                "parameters": [
+                    {
+                        "description": "req",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SubmitOnchainTransferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SubmitOnchainTransferResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tip/onchain/{user_id}/transfers": {
+            "get": {
+                "description": "Onchain Tip Bot - Get user's onchain transfers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tip"
+                ],
+                "summary": "Onchain Tip Bot - Get user's onchain transfers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetOnchainTransfersResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/tip/tokens": {
             "get": {
                 "description": "Get all offchain tip bot tokens",
@@ -5230,6 +5477,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetUserWalletByGuildIDAddressResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/xp": {
+            "post": {
+                "description": "Send User XP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Send User XP",
+                "parameters": [
+                    {
+                        "description": "Send user XP request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SendUserXPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -5889,6 +6170,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DaoProposalVoteOption": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "proposal_id": {
+                    "type": "integer"
+                },
+                "required_amount": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "vote_option": {
+                    "$ref": "#/definitions/model.DaoVoteOption"
+                },
+                "vote_option_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.DaoVote": {
             "type": "object",
             "properties": {
@@ -5911,6 +6227,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DaoVoteOption": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -6164,7 +6497,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "required_amount": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "symbol": {
                     "type": "string"
@@ -6814,6 +7147,72 @@ const docTemplate = `{
                 }
             }
         },
+        "model.OnchainTipBotTransaction": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "claimed_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "full_command": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "recipient_address": {
+                    "type": "string"
+                },
+                "recipients": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "string": {
+                    "description": "(pending, claimed)",
+                    "type": "string"
+                },
+                "token_symbol": {
+                    "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
@@ -7260,6 +7659,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "guild_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.ClaimOnchainTransferRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "claim_id": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -7908,6 +8321,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.SendUserXPRequest": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "request.SetUpvoteMessageCacheRequest": {
             "type": "object",
             "properties": {
@@ -7921,6 +8354,56 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.SubmitOnchainTransferRequest": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "full_command": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "transfer_type": {
                     "type": "string"
                 }
             }
@@ -7994,6 +8477,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "twitter_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdateDaoVoteRequest": {
+            "type": "object",
+            "required": [
+                "choice",
+                "user_id"
+            ],
+            "properties": {
+                "choice": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -8332,6 +8830,43 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ClaimOnchainTransfer": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "amount_in_usd": {
+                    "type": "number"
+                },
+                "recipient_address": {
+                    "type": "string"
+                },
+                "recipient_id": {
+                    "type": "string"
+                },
+                "sender_id": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "tx_hash": {
+                    "type": "string"
+                },
+                "tx_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ClaimOnchainTransferResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.ClaimOnchainTransfer"
+                }
+            }
+        },
         "response.ClaimQuestsRewardsResponse": {
             "type": "object",
             "properties": {
@@ -8584,6 +9119,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.NFTCollection"
+                }
+            }
+        },
+        "response.CreateProposalChannelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
                 }
             }
         },
@@ -9273,6 +9816,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetOnchainTransfersResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.OnchainTipBotTransaction"
+                    }
+                }
+            }
+        },
         "response.GetRepostReactionConfigsResponse": {
             "type": "object",
             "properties": {
@@ -9532,6 +10086,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserWallet"
+                }
+            }
+        },
+        "response.GetVote": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.DaoVote"
                 }
             }
         },
@@ -10768,6 +11330,37 @@ const docTemplate = `{
                 }
             }
         },
+        "response.SubmitOnchainTransfer": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "amount_in_usd": {
+                    "type": "number"
+                },
+                "recipient_id": {
+                    "type": "string"
+                },
+                "sender_id": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SubmitOnchainTransferResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SubmitOnchainTransfer"
+                    }
+                }
+            }
+        },
         "response.TickerData": {
             "type": "object",
             "properties": {
@@ -10796,6 +11389,34 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.TokenHolderStatus": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.TokenHolderStatusData"
+                }
+            }
+        },
+        "response.TokenHolderStatusData": {
+            "type": "object",
+            "properties": {
+                "guild_config": {
+                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
+                },
+                "is_qualified": {
+                    "type": "boolean"
+                },
+                "is_wallet_connected": {
+                    "type": "boolean"
+                },
+                "user_holding_amount": {
+                    "type": "string"
+                },
+                "vote_config": {
+                    "$ref": "#/definitions/model.DaoProposalVoteOption"
                 }
             }
         },
@@ -10856,6 +11477,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserFeedback"
+                }
+            }
+        },
+        "response.UpdateVote": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.DaoVote"
                 }
             }
         },

@@ -120,6 +120,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			deviceGroup.POST("", h.Widget.UpsertUserDevice)
 			deviceGroup.DELETE("", h.Widget.DeleteUserDevice)
 		}
+		userGroup.POST("/xp", h.User.SendUserXP)
 	}
 
 	communityGroup := v1.Group("/community")
@@ -237,6 +238,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			nftRoleGroup.POST("", h.ConfigRoles.NewGuildGroupNFTRole)
 			nftRoleGroup.DELETE("/group", h.ConfigRoles.RemoveGuildGroupNFTRole)
 			nftRoleGroup.DELETE("/", h.ConfigRoles.RemoveGuildNFTRole)
+		}
+		tokenRoleGroup := configRoleGroup.Group("/token-roles")
+		{
+			tokenRoleGroup.POST("", h.ConfigRoles.CreateGuildTokenRole)
+			tokenRoleGroup.GET(":guild_id", h.ConfigRoles.ListGuildTokenRoles)
+			tokenRoleGroup.PUT("/:id", h.ConfigRoles.UpdateGuildTokenRole)
+			tokenRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildTokenRole)
 		}
 	}
 

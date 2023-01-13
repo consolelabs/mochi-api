@@ -211,9 +211,9 @@ func (h *Handler) UpdateDaoVote(c *gin.Context) {
 // @Tags        DAO Proposal
 // @Accept      json
 // @Produce     json
-// @Param       Request  body request.DeteteDaoProposalRequest true "Detete dao proposal request"
-// @Success     200 {object} response.DeteteDaoProposalResponse
-// @Router      /dao-voting/proposals [detete]
+// @Param       proposal_id   path  string true  "Proposal ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /dao-voting/proposals [delete]
 func (h *Handler) DeteteProposal(c *gin.Context) {
 	proposalId := c.Param("proposal_id")
 	if proposalId == "" {

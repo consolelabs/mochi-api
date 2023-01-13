@@ -17,4 +17,5 @@ var (
 	ErrInvalidVoteID           = NewStringError("Invalid vote ID", 400)
 	ErrInvalidVoteChoice       = NewStringError("Invalid vote choice", 400)
 	ErrInvalidAuthorityType    = NewStringError("Invalid authority type", 400)
+	ErrTokenNotFound           = NewStringError("Token not found", 404)
 )

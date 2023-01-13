@@ -18,4 +18,6 @@ type IHandler interface {
 	GetInvites(c *gin.Context)
 	GetInvitesLeaderboard(c *gin.Context)
 	InvitesAggregation(c *gin.Context)
+
+	SendUserXP(c *gin.Context)
 }

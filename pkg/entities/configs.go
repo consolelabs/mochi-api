@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	"github.com/defipod/mochi/pkg/request"
@@ -1178,4 +1180,151 @@ func (e *Entity) DeleteGuildDefaultCurrency(guildID string) error {
 		return err
 	}
 	return nil
+}
+
+func (e *Entity) CreateGuildTokenRole(req request.CreateGuildTokenRole) (*model.GuildConfigTokenRole, error) {
+	chainIDStr := util.ConvertInputToChainId(req.Chain)
+	if chainIDStr == "" {
+		e.log.Fields(logger.Fields{
+			"chain": req.Chain,
+		}).Error(errors.ErrInvalidChain, "[e.CreateGuildTokenRole] - util.ConvertInputToChainId failed")
+		return nil, errors.ErrInvalidChain
+	}
+	chainID, err := strconv.Atoi(chainIDStr)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"chainID": chainIDStr,
+		}).Error(err, "[e.CreateGuildTokenRole] - strconv.Atoi failed")
+		return nil, err
+	}
+	token, err := e.repo.Token.GetByAddress(req.Address, chainID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"address": req.Address,
+			"chainID": chainID,
+		}).Error(err, "[e.CreateGuildTokenRole] - repo.Token.GetByAddress failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.ErrTokenNotFound
+		}
+		return nil, err
+	}
+	config := &model.GuildConfigTokenRole{
+		GuildID:        req.GuildID,
+		RoleID:         req.RoleID,
+		RequiredAmount: req.Amount,
+		TokenID:        token.ID,
+	}
+	if err := e.repo.GuildConfigTokenRole.Create(config); err != nil {
+		e.log.Fields(logger.Fields{
+			"config": config,
+		}).Error(err, "[e.CreateGuildTokenRole] - repo.GuildConfigTokenRole.Create failed")
+		return nil, err
+	}
+	return config, nil
+}
+
+func (e *Entity) ListGuildTokenRoles(guildID string) ([]model.GuildConfigTokenRole, error) {
+	configs, err := e.repo.GuildConfigTokenRole.ListByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[e.ListGuildTokenRoles] - repo.GuildConfigTokenRole.ListByGuildID failed")
+		return nil, err
+	}
+	return configs, nil
+}
+
+func (e *Entity) UpdateGuildTokenRole(id int, req request.UpdateGuildTokenRole) (*model.GuildConfigTokenRole, error) {
+	config, err := e.repo.GuildConfigTokenRole.Get(id)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[e.UpdateGuildTokenRole] - repo.GuildConfigTokenRole.Get failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	if req.RoleID != nil {
+		config.RoleID = *req.RoleID
+	}
+	if req.Amount != nil {
+		config.RequiredAmount = *req.Amount
+	}
+	if req.Address != nil && req.Chain != nil {
+		chainIDStr := util.ConvertInputToChainId(*req.Chain)
+		if chainIDStr == "" {
+			e.log.Fields(logger.Fields{
+				"chain": req.Chain,
+			}).Error(errors.ErrInvalidChain, "[e.UpdateGuildTokenRole] - util.ConvertInputToChainId failed")
+			return nil, errors.ErrInvalidChain
+		}
+		chainID, err := strconv.Atoi(chainIDStr)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"chainID": chainIDStr,
+			}).Error(err, "[e.UpdateGuildTokenRole] - strconv.Atoi failed")
+			return nil, err
+		}
+		token, err := e.repo.Token.GetByAddress(*req.Address, chainID)
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"address": req.Address,
+				"chainID": chainID,
+			}).Error(err, "[e.UpdateGuildTokenRole] - repo.Token.GetByAddress failed")
+			if err == gorm.ErrRecordNotFound {
+				return nil, errors.ErrTokenNotFound
+			}
+			return nil, err
+		}
+		config.TokenID = token.ID
+	}
+	if err := e.repo.GuildConfigTokenRole.Update(config); err != nil {
+		e.log.Fields(logger.Fields{
+			"config": config,
+		}).Error(err, "[e.UpdateGuildTokenRole] - repo.GuildConfigTokenRole.Update failed")
+		return nil, err
+	}
+	return config, nil
+}
+
+func (e *Entity) RemoveGuildTokenRole(id int) error {
+	if _, err := e.repo.GuildConfigTokenRole.Get(id); err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[e.RemoveGuildTokenRole] - repo.GuildConfigTokenRole.Get failed")
+		if err == gorm.ErrRecordNotFound {
+			return errors.ErrRecordNotFound
+		}
+		return err
+	}
+	if err := e.repo.GuildConfigTokenRole.Delete(id); err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[e.RemoveGuildTokenRole] - repo.GuildConfigTokenRole.Delete failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) ListAllConfigTokens() ([]model.Token, error) {
+	tokens, err := e.repo.GuildConfigTokenRole.ListAllTokenConfigs()
+	if err != nil {
+		e.log.Error(err, "[e.ListAllConfigTokens] - repo.GuildConfigTokenRole.ListAllTokenConfigs failed")
+		return nil, err
+	}
+	return tokens, nil
+}
+
+func (e *Entity) ListMemberTokenRolesToAdd(listConfigTokenRoles []model.GuildConfigTokenRole, guildID string) (map[[2]string]bool, error) {
+	mrs, err := e.repo.UserTokenBalance.GetUserTokenBalancesByUserInGuild(guildID)
+	if err != nil {
+		return nil, err
+	}
+	rolesToAdd := make(map[[2]string]bool)
+
+	for _, mr := range mrs {
+		rolesToAdd[[2]string{mr.UserDiscordID, mr.RoleID}] = true
+	}
+	return rolesToAdd, nil
 }
