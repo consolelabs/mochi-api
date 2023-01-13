@@ -341,6 +341,10 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		return nil, err
 	}
 
+	if req.All {
+		req.Amount = util.RoundFloat(recipientBal.Amount/(1+offchainToken.ServiceFee), 4)
+	}
+
 	if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(modelNotEnoughBalance)
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
@@ -361,7 +365,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		txHash            string
 	)
 	if strings.ToLower(req.Token) == "sol" {
-		hash, amt, err := e.solana.Transfer(e.cfg.SolanaCentralizedWalletPrivateKey, req.RecipientAddress, req.Amount, req.All)
+		hash, amt, err := e.solana.Transfer(e.cfg.SolanaCentralizedWalletPrivateKey, req.RecipientAddress, req.Amount, false)
 		if err != nil {
 			e.log.Fields(logger.Fields{"recipient": req.RecipientAddress, "amount": req.Amount, "all": req.All}).Error(err, "[entity.transferSolana] e.solana.Transfer() failed")
 			return nil, err
@@ -371,7 +375,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		transferredAmount = amt
 		txHash = hash
 	} else {
-		signedTx, amount, err := e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.RecipientAddress)}, req.Amount, token, -1, req.All)
+		signedTx, amount, err := e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.RecipientAddress)}, req.Amount, token, -1, false)
 		if err != nil {
 			err = fmt.Errorf("error transfer: %v", err)
 			return nil, err
