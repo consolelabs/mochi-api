@@ -56,7 +56,6 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	nftsalestracker "github.com/defipod/mochi/pkg/repo/nft_sales_tracker"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
@@ -138,7 +137,6 @@ type Repo struct {
 	UserNFTBalance                       usernftbalance.Store
 	MessageRepostHistory                 messagereposthistory.Store
 	GuildScheduledEvent                  guildscheduledevent.Store
-	NFTSalesTracker                      nftsalestracker.Store
 	MochiNFTSales                        mochinftsales.Store
 	GuildConfigDefaultTicker             guildconfigdefaultticker.Store
 	UserWatchlistItem                    userwatchlistitem.Store

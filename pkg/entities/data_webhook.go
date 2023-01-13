@@ -248,10 +248,10 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		},
 		Timestamp: time.Now().Format(time.RFC3339),
 	}}
-	resp, _ := e.GetAllNFTSalesTracker()
+	resp, _ := e.GetAllSalesTrackerConfig()
 
 	for _, saleChannel := range resp {
-		if saleChannel.ContractAddress == "*" || nftSale.Address == saleChannel.ContractAddress {
+		if (saleChannel.ContractAddress == "*" && saleChannel.Chain == "*") || (saleChannel.ContractAddress == "*" && saleChannel.Chain == util.ConvertChainIDToChain(collection.ChainID)) || nftSale.Address == saleChannel.ContractAddress {
 			_, err := e.discord.ChannelMessageSendEmbeds(saleChannel.ChannelID, messageSale)
 			if err != nil {
 				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot send message to sale channel. CollectionName: %s, TokenName: %s", collection.Name, nftToken.Name)

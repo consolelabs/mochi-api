@@ -15,6 +15,7 @@ type IHandler interface {
 	DeleteVoteChannelConfig(c *gin.Context)
 	GetUpvoteTiersConfig(c *gin.Context)
 	GetSalesTrackerConfig(c *gin.Context)
+	CreateSalesTrackerConfig(c *gin.Context)
 
 	GetJoinLeaveChannelConfig(c *gin.Context)
 	UpsertJoinLeaveChannelConfig(c *gin.Context)

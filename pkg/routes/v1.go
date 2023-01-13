@@ -170,6 +170,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		//
 		configGroup.GET("/upvote-tiers", h.ConfigChannel.GetUpvoteTiersConfig)
 		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
+		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
 		// prune exclude
 		configGroup.GET("/whitelist-prune", h.Config.GetGuildPruneExclude)
 		configGroup.POST("/whitelist-prune", h.Config.UpsertGuildPruneExclude)
@@ -346,9 +347,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/:symbol/:id/activity", h.Nft.GetNFTActivity)
 		nftsGroup.GET("/supported-chains", h.Nft.GetSupportedChains)
 		nftsGroup.GET("/trading-volume", h.Nft.GetNFTTradingVolume)
-		nftsGroup.POST("/sales-tracker", h.Nft.CreateNFTSalesTracker)
-		nftsGroup.DELETE("/sales-tracker", h.Nft.DeleteNFTSalesTracker)
-		nftsGroup.GET("/sales-tracker", h.Nft.GetAllNFTSalesTracker)
 		nftsGroup.GET("/sales", h.Nft.GetNftSalesHandler)
 		nftsGroup.GET("/new-listed", h.Nft.GetNewListedNFTCollection)
 		nftsGroup.GET("/icons", h.Nft.GetNftMetadataAttrIcon)

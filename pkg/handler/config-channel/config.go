@@ -332,6 +332,32 @@ func (h *Handler) GetSalesTrackerConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }
 
+// CreateSalesTrackerConfig     godoc
+// @Summary     Create sales tracker config
+// @Description Create sales tracker config
+// @Tags        Config
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateSalesTrackerConfigRequest true "Create sales tracker config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /configs/sales-tracker [post]
+func (h *Handler) CreateSalesTrackerConfig(c *gin.Context) {
+	var req request.CreateSalesTrackerConfigRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateSalesTrackerConfig] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.CreateSalesTrackerConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateSalesTrackerConfig] - entities.CreateSalesTrackerConfig failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, err, nil))
+}
+
 // GetJoinLeaveChannelConfig     godoc
 // @Summary     Get join-leave channel config
 // @Description Get join-leave channel config
