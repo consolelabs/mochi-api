@@ -120,6 +120,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			deviceGroup.POST("", h.Widget.UpsertUserDevice)
 			deviceGroup.DELETE("", h.Widget.DeleteUserDevice)
 		}
+		userGroup.POST("/xp", h.User.SendUserXP)
 	}
 
 	communityGroup := v1.Group("/community")

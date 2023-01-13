@@ -18,3 +18,10 @@ type HandleUserActivityRequest struct {
 	Timestamp time.Time `json:"timestamp"`
 	CustomXP  int64     `json:"-"`
 }
+
+type SendUserXPRequest struct {
+	Recipients []string `json:"recipients"`
+	GuildID    string   `json:"guild_id"`
+	Each       bool     `json:"each"`
+	Amount     int      `json:"amount"`
+}
