@@ -84,6 +84,7 @@ import (
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
+	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
@@ -176,4 +177,5 @@ type Repo struct {
 	DaoGuidelineMessages                 daoguidelinemessages.Store
 	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
+	UserTokenBalance                     usertokenbalance.Store
 }

@@ -1306,3 +1306,25 @@ func (e *Entity) RemoveGuildTokenRole(id int) error {
 	}
 	return nil
 }
+
+func (e *Entity) ListAllConfigTokens() ([]model.Token, error) {
+	tokens, err := e.repo.GuildConfigTokenRole.ListAllTokenConfigs()
+	if err != nil {
+		e.log.Error(err, "[e.ListAllConfigTokens] - repo.GuildConfigTokenRole.ListAllTokenConfigs failed")
+		return nil, err
+	}
+	return tokens, nil
+}
+
+func (e *Entity) ListMemberTokenRolesToAdd(listConfigTokenRoles []model.GuildConfigTokenRole, guildID string) (map[[2]string]bool, error) {
+	mrs, err := e.repo.UserTokenBalance.GetUserTokenBalancesByUserInGuild(guildID)
+	if err != nil {
+		return nil, err
+	}
+	rolesToAdd := make(map[[2]string]bool)
+
+	for _, mr := range mrs {
+		rolesToAdd[[2]string{mr.UserDiscordID, mr.RoleID}] = true
+	}
+	return rolesToAdd, nil
+}

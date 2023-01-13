@@ -236,3 +236,12 @@ func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(ad
 	}
 	return balanceOf, nil
 }
+
+func (e *Entity) NewUserTokenBalance(balance model.UserTokenBalance) error {
+	err := e.repo.UserTokenBalance.Upsert(balance)
+	if err != nil {
+		e.log.Errorf(err, "[repo.UserTokenBalance.Upsert] failed to upsert user token balance")
+		return fmt.Errorf("failed to upsert user token balance: %v", err.Error())
+	}
+	return nil
+}
