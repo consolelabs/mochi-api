@@ -24,4 +24,8 @@ type IHandler interface {
 
 	CreateTwitterPost(c *gin.Context)
 	GetTwitterLeaderboard(c *gin.Context)
+
+	UpsertLevelUpMessage(c *gin.Context)
+	GetLevelUpMessage(c *gin.Context)
+	DeleteLevelUpMessage(c *gin.Context)
 }
