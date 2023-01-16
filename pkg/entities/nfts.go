@@ -400,6 +400,67 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	return
 }
 
+func (e *Entity) CreateBluemoveNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
+	checkExistNFT, err := e.CheckExistNftCollection(req.Address)
+	if err != nil {
+		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
+		return nil, err
+	}
+
+	if checkExistNFT {
+		return e.handleExistCollection(req)
+	}
+
+	convertedChainId := util.ConvertChainToChainId(req.ChainID)
+	chainID, _ := strconv.Atoi(convertedChainId)
+	collection, err := e.svc.Bluemove.SelectBluemoveCollection(req.Address, convertedChainId)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Bluemove.SelectBluemoveCollection] failed to get bluemove collection: %v", err)
+		return nil, err
+	}
+
+	history := model.NftAddRequestHistory{
+		Address:   req.Address,
+		ChainID:   int64(chainID),
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		MessageID: req.MessageID,
+	}
+	err = e.repo.NftAddRequestHistory.UpsertOne(history)
+	if err != nil {
+		e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	}
+
+	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+		Address:      collection.Author,
+		ChainID:      chainID,
+		Name:         collection.Name,
+		Symbol:       collection.Symbol,
+		PriorityFlag: req.PriorityFlag,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	}
+
+	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
+		Address:    req.Address,
+		Symbol:     collection.Symbol,
+		Name:       collection.Name,
+		ChainID:    convertedChainId,
+		ERCFormat:  "ERC721",
+		IsVerified: true,
+		Author:     req.Author,
+		Image:      collection.Image,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+		return nil, fmt.Errorf("Cannot add collection: %v", err)
+	}
+	return
+}
+
 func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
 	if address == "collection does not have an address" {
@@ -411,11 +472,6 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	if err != nil {
 		e.log.Errorf(err, "[util.ConvertToChecksumAddr] failed to convert checksum address: %v", err)
 		return nil, fmt.Errorf("Failed to validate address: %v", err)
-	}
-
-	// TODO: generic for all aptos collection address, now just get the data from bluemove
-	if req.ChainID == "9999" || req.ChainID == "apt" {
-		checksumAddress = req.Address
 	}
 
 	checkExistNFT, err := e.CheckExistNftCollection(checksumAddress)
