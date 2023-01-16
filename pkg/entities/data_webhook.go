@@ -175,6 +175,11 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		return err
 	}
 
+	txUrl := ""
+	if nftSale.Transaction != "" {
+		txUrl = "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")"
+	}
+
 	data := []*discordgo.MessageEmbedField{
 		{
 			Name:   "Rarity",
@@ -190,11 +195,6 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		{
 			Name:   "Marketplace",
 			Value:  nftToken.MarketplaceLink,
-			Inline: true,
-		},
-		{
-			Name:   "Transaction",
-			Value:  "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")",
 			Inline: true,
 		},
 		{
@@ -223,6 +223,14 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		data = append(data, &discordgo.MessageEmbedField{
 			Name:   "Hodl",
 			Value:  strconv.Itoa(util.SecondsToDays(nftSale.Hodl)) + " days",
+			Inline: true,
+		})
+	}
+
+	if txUrl != "" {
+		data = append(data, &discordgo.MessageEmbedField{
+			Name:   "Transaction",
+			Value:  txUrl,
 			Inline: true,
 		})
 	}
