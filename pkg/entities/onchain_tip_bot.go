@@ -282,12 +282,14 @@ func (e *Entity) notifyPendingTransfer(userID string) error {
 		amounts[i] = fmt.Sprintf("%.2f %s", tx.Amount, tx.TokenSymbol)
 		senders[i] = fmt.Sprintf("<@%s>", tx.SenderDiscordID)
 	}
+	description := fmt.Sprintf("<:pointingright:1058304352944656384> You have received %d tips. You can transfer each to your crypto wallet by `$claim <Claim ID> <your recipient address>`.", len(txs))
+	description += "\n<:pointingright:1058304352944656384> You can find the recipient address in your crypto wallet (Eg: Metamask, Phantom, ...)."
 	embed := &discordgo.MessageEmbed{
 		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: "https://cdn.discordapp.com/emojis/933342303546929203.png?size=240&quality=lossless",
 			Name:    "Claim your tip!",
 		},
-		Description: fmt.Sprintf("You have received %d tips. You can claim each by \n`$claim <Claim ID> <your recipient address>`.", len(txs)),
+		Description: description,
 		Fields: []*discordgo.MessageEmbedField{
 			{
 				Name:   "Claim ID",
@@ -355,4 +357,46 @@ func (e *Entity) OnchainBalances(address string, tokens []model.Token) (map[stri
 		}
 	}
 	return balances, nil
+}
+
+func (e *Entity) GetPendingOnchainBalances(userID string) ([]response.GetUserBalances, error) {
+	q := onchaintipbottransaction.ListQuery{RecipientDiscordID: userID, Status: "pending"}
+	txs, err := e.repo.OnchainTipBotTransaction.List(q)
+	if err != nil {
+		e.log.Fields(logger.Fields{"listQ": q}).Error(err, "[entity.GetPendingOnchainBalances] repo.OnchainTipBotTransaction.List() failed")
+		return nil, err
+	}
+	balanceMap := make(map[string]response.GetUserBalances)
+	for _, tx := range txs {
+		curBalance, ok := balanceMap[tx.TokenSymbol]
+		if !ok {
+			balanceMap[tx.TokenSymbol] = response.GetUserBalances{
+				Symbol:   tx.TokenSymbol,
+				Balances: tx.Amount,
+			}
+			continue
+		}
+		curBalance.Balances += tx.Amount
+	}
+	data := make([]response.GetUserBalances, 0, len(balanceMap))
+	for symbol, uBal := range balanceMap {
+		token, err := e.repo.Token.GetBySymbol(symbol, true)
+		if err != nil {
+			e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[entity.GetPendingOnchainBalances] repo.Token.GetBySymbol() failed")
+			return nil, err
+		}
+		if strings.EqualFold(token.Symbol, "icy") {
+			token.CoinGeckoID = "icy"
+		}
+		uBal.Name = token.Name
+		uBal.ID = token.CoinGeckoID
+		tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{token.CoinGeckoID}, "usd")
+		if err != nil {
+			e.log.Fields(logger.Fields{"id": token.CoinGeckoID}).Error(err, "[entity.GetPendingOnchainBalances] repo.Token.GetBySymbol() failed")
+			return nil, err
+		}
+		uBal.BalancesInUSD = uBal.Balances * tokenPrice[token.CoinGeckoID]
+		data = append(data, uBal)
+	}
+	return data, nil
 }

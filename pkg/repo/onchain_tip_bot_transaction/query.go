@@ -4,4 +4,5 @@ type ListQuery struct {
 	SenderDiscordID    string
 	RecipientDiscordID string
 	Status             string
+	Sort               string
 }

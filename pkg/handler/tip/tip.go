@@ -389,3 +389,29 @@ func (h *Handler) GetOnchainTransfers(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// GetOnchainBalances   godoc
+// @Summary     Onchain Tip Bot - Get user's onchain balances
+// @Description Onchain Tip Bot - Get user's onchain balances
+// @Tags        Tip
+// @Accept      json
+// @Produce     json
+// @Param       user_id  path string true "userId"
+// @Success     200 {object} response.GetUserBalancesResponse
+// @Router      /tip/onchain/{user_id}/balances [get]
+func (h *Handler) GetOnchainBalances(c *gin.Context) {
+	userId := c.Param("user_id")
+	if userId == "" {
+		err := errors.New("user_id is required")
+		h.log.Errorf(err, "[handler.GetOnchainBalances] %s", err.Error())
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	data, err := h.entities.GetPendingOnchainBalances(userId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"user_id": userId}).Error(err, "[handler.GetOnchainBalances] entity.GetPendingOnchainBalances() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
