@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"gorm.io/gorm"
 )
 
 func (e *Entity) UpsertLevelUpMessage(req request.UpsertGuildLevelUpMessageRequest) (*model.GuildConfigLevelupMessage, error) {
@@ -26,6 +27,9 @@ func (e *Entity) UpsertLevelUpMessage(req request.UpsertGuildLevelUpMessageReque
 func (e *Entity) GetLevelUpMessage(guildId string) (*model.GuildConfigLevelupMessage, error) {
 	config, err := e.repo.GuildConfigLevelUpMessage.GetByGuildId(guildId)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		e.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[entity.GetLevelUpMessage] e.repo.GuildConfigLevelUpMessage.GetByGuildId failed")
 		return nil, err
 	}
