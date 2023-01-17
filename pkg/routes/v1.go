@@ -82,6 +82,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			onchainGroup.POST("/submit", h.Tip.SubmitOnchainTransfer)
 			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
 			onchainGroup.GET("/:user_id/transfers", h.Tip.GetOnchainTransfers)
+			onchainGroup.GET("/:user_id/balances", h.Tip.GetOnchainBalances)
 		}
 	}
 
@@ -162,6 +163,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.POST("/blacklist-channel", h.Community.CreateBlacklistChannelRepostConfig)
 			repostReactionGroup.GET("/blacklist-channel", h.Community.GetGuildBlacklistChannelRepostConfig)
 			repostReactionGroup.DELETE("/blacklist-channel", h.Community.DeleteBlacklistChannelRepostConfig)
+		}
+		levelupGroup := communityGroup.Group("/levelup")
+		{
+			levelupGroup.GET("", h.Community.GetLevelUpMessage)
+			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
+			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
 		}
 	}
 

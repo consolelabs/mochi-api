@@ -435,6 +435,23 @@ definitions:
       role_id:
         type: string
     type: object
+  model.GuildConfigLevelupMessage:
+    properties:
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      message:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.GuildConfigRepostReaction:
     properties:
       emoji:
@@ -456,11 +473,38 @@ definitions:
     type: object
   model.GuildConfigSalesTracker:
     properties:
+      chain:
+        type: string
       channel_id:
+        type: string
+      contract_address:
+        type: string
+      created_at:
         type: string
       guild_id:
         type: string
       id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.GuildConfigTokenRole:
+    properties:
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      required_amount:
+        type: number
+      token:
+        $ref: '#/definitions/model.Token'
+      token_id:
+        type: integer
+      updated_at:
         type: string
     type: object
   model.GuildConfigTwitterBlacklist:
@@ -1272,6 +1316,25 @@ definitions:
       name:
         type: string
     type: object
+  request.CreateGuildTokenRole:
+    properties:
+      address:
+        type: string
+      amount:
+        type: number
+      chain:
+        type: string
+      guild_id:
+        type: string
+      role_id:
+        type: string
+    required:
+    - address
+    - amount
+    - chain
+    - guild_id
+    - role_id
+    type: object
   request.CreateNFTCollectionRequest:
     properties:
       address:
@@ -1317,6 +1380,17 @@ definitions:
     - authority
     - channel_id
     - guild_id
+    type: object
+  request.CreateSalesTrackerConfigRequest:
+    properties:
+      chain:
+        type: string
+      channel_id:
+        type: string
+      contract_address:
+        type: string
+      guild_id:
+        type: string
     type: object
   request.CreateTipConfigNotify:
     properties:
@@ -2074,6 +2148,11 @@ definitions:
       data:
         $ref: '#/definitions/model.DaoProposal'
     type: object
+  response.CreateGuildTokenRole:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigTokenRole'
+    type: object
   response.CreateNFTCollectionResponse:
     properties:
       data:
@@ -2187,13 +2266,6 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.DaoProposal'
-        type: array
-    type: object
-  response.GetAllNFTSalesTrackerResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.NFTSalesTrackerResponse'
         type: array
     type: object
   response.GetAllTwitterConfigResponse:
@@ -2332,6 +2404,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigDefaultTicker'
+    type: object
+  response.GetGuildLevelUpMessage:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigLevelupMessage'
     type: object
   response.GetGuildPruneExcludeResponse:
     properties:
@@ -2545,7 +2622,9 @@ definitions:
   response.GetSalesTrackerConfigResponse:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigSalesTracker'
+        items:
+          $ref: '#/definitions/model.GuildConfigSalesTracker'
+        type: array
     type: object
   response.GetSuggestionNFTCollectionsResponse:
     properties:
@@ -3081,6 +3160,13 @@ definitions:
       role_name:
         type: string
     type: object
+  response.ListGuildTokenRoles:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigTokenRole'
+        type: array
+    type: object
   response.ListMyGuildsResponse:
     properties:
       data:
@@ -3246,17 +3332,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.NFTNewListed'
-    type: object
-  response.NFTSalesTrackerResponse:
-    properties:
-      channel_id:
-        type: string
-      contract_address:
-        type: string
-      guild_id:
-        type: string
-      platform:
-        type: string
     type: object
   response.NFTTradingVolume:
     properties:
@@ -3600,6 +3675,11 @@ definitions:
       user_id:
         type: string
     type: object
+  response.UpdateGuildTokenRole:
+    properties:
+      data:
+        $ref: '#/definitions/model.GuildConfigTokenRole'
+    type: object
   response.UpdateUserFeedbackResponse:
     properties:
       data:
@@ -3933,6 +4013,72 @@ paths:
           schema:
             $ref: '#/definitions/response.GetInvitesLeaderboardResponse'
       summary: Get invites leaderboard
+      tags:
+      - Community
+  /community/levelup:
+    delete:
+      consumes:
+      - application/json
+      description: Delete levelup message
+      parameters:
+      - in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete levelup message
+      tags:
+      - Community
+    get:
+      consumes:
+      - application/json
+      description: Get levelup message
+      parameters:
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildLevelUpMessage'
+      summary: Get levelup message
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Upsert levelup message
+      parameters:
+      - in: query
+        name: channel_id
+        type: string
+      - in: query
+        name: guild_id
+        type: string
+      - in: query
+        name: image_url
+        type: string
+      - in: query
+        name: message
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGuildLevelUpMessage'
+      summary: Upsert levelup message
       tags:
       - Community
   /community/quests:
@@ -5413,6 +5559,90 @@ paths:
       summary: Filter config by reaction
       tags:
       - ConfigRole
+  /config-roles/token-roles:
+    post:
+      consumes:
+      - application/json
+      description: Create guild token role config
+      parameters:
+      - description: Create guild token role config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateGuildTokenRole'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateGuildTokenRole'
+      summary: Create guild token role config
+      tags:
+      - ConfigRole
+  /config-roles/token-roles/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get list token role config of guild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListGuildTokenRoles'
+      summary: Get list token role config of guild
+      tags:
+      - ConfigRole
+  /config-roles/token-roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove guild token role config
+      parameters:
+      - description: Config ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove guild token role config
+      tags:
+      - ConfigRole
+    put:
+      consumes:
+      - application/json
+      description: Update guild token role config
+      parameters:
+      - description: Config ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateGuildTokenRole'
+      summary: Update guild token role config
+      tags:
+      - ConfigRole
   /configs/nft-roles/group:
     delete:
       consumes:
@@ -5453,6 +5683,27 @@ paths:
           schema:
             $ref: '#/definitions/response.GetSalesTrackerConfigResponse'
       summary: Get sales tracker config
+      tags:
+      - Config
+    post:
+      consumes:
+      - application/json
+      description: Create sales tracker config
+      parameters:
+      - description: Create sales tracker config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateSalesTrackerConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create sales tracker config
       tags:
       - Config
   /configs/twitter:
@@ -6607,66 +6858,6 @@ paths:
           schema:
             $ref: '#/definitions/response.NftSalesResponse'
       summary: Get NFT sales
-      tags:
-      - NFT
-  /nfts/sales-tracker:
-    delete:
-      consumes:
-      - application/json
-      description: Delete NFT sales tracker
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      - description: Contract Address
-        in: query
-        name: contract_address
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete NFT sales tracker
-      tags:
-      - NFT
-    get:
-      consumes:
-      - application/json
-      description: Get all nft sales tracker
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetAllNFTSalesTrackerResponse'
-      summary: Get all nft sales tracker
-      tags:
-      - NFT
-    post:
-      consumes:
-      - application/json
-      description: Create NFT Sales tracker
-      parameters:
-      - description: Symbol
-        in: path
-        name: symbol
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.IndexerGetNFTTokensResponse'
-      summary: Create NFT Sales tracker
       tags:
       - NFT
   /nfts/supported-chains:

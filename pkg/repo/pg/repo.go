@@ -35,6 +35,7 @@ import (
 	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
+	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
@@ -181,5 +182,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 		UserTokenBalance:                     usertokenbalance.NewPG(db),
+		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 	}
 }

@@ -28,7 +28,10 @@ func (pg *pg) List(q ListQuery) ([]model.OnchainTipBotTransaction, error) {
 	if q.Status != "" {
 		db = db.Where("status = ?", q.Status)
 	}
-	return list, db.Clauses(dbresolver.Write).Find(&list).Error
+	if q.Sort == "" {
+		q.Sort = "id"
+	}
+	return list, db.Order(q.Sort).Clauses(dbresolver.Write).Find(&list).Error
 }
 
 func (pg *pg) GetOnePending(ID int) (*model.OnchainTipBotTransaction, error) {
