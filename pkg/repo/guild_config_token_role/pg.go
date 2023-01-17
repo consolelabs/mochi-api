@@ -23,7 +23,7 @@ func (pg *pg) Get(id int) (model *model.GuildConfigTokenRole, err error) {
 
 func (pg *pg) ListByGuildID(guildID string) ([]model.GuildConfigTokenRole, error) {
 	var configs []model.GuildConfigTokenRole
-	return configs, pg.db.Preload("Token").Where("guild_id = ?", guildID).Order("token_id, required_amount asc").Find(&configs).Error
+	return configs, pg.db.Preload("Token.Chain").Where("guild_id = ?", guildID).Order("token_id, required_amount asc").Find(&configs).Error
 }
 
 func (pg *pg) Update(config *model.GuildConfigTokenRole) error {

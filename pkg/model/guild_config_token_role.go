@@ -5,7 +5,7 @@ import "time"
 type GuildConfigTokenRole struct {
 	ID             int       `json:"id"`
 	GuildID        string    `json:"guild_id"`
-	RoleID         string    `json:"channel_id"`
+	RoleID         string    `json:"role_id"`
 	RequiredAmount float64   `json:"required_amount" gorm:"type:numeric"`
 	TokenID        int       `json:"token_id"`
 	Token          *Token    `json:"token,omitempty"`

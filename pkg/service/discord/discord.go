@@ -192,20 +192,26 @@ func (d *Discord) SendGuildActivityLogs(channelID, userID, title, description st
 	return nil
 }
 
-func (d *Discord) SendLevelUpMessage(logChannelID, role string, uActivity *response.HandleUserActivityResponse) {
-	if !uActivity.LevelUp {
-		return
-	}
-	if uActivity.ChannelID == "" && logChannelID == "" {
-		d.log.Info("Action was not performed at any channel and no log channel configured as well")
-		return
-	}
-	channelID := logChannelID
-	if channelID == "" {
+func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, uActivity *response.HandleUserActivityResponse) {
+	// priority: config channel -> chat channel
+	channelID := levelUpConfig.ChannelID
+	if levelUpConfig.ChannelID == "" {
 		channelID = uActivity.ChannelID
+	}
+	if channelID == "" {
+		d.log.Info("Action was not performed at any channel")
+		return
 	}
 	if role == "" {
 		role = "N/A"
+	}
+
+	description := fmt.Sprintf("<:pumpeet:930840081554624632> **You are leveled up to level %d, <@%s>**", uActivity.CurrentLevel, uActivity.UserID)
+	if levelUpConfig.Message != "" {
+		description = description + "\n\n" + strings.Replace(levelUpConfig.Message, "$name", fmt.Sprintf("<@%s>", uActivity.UserID), -1)
+		description = strings.Replace(description, `\n`, "\n", -1)
+	} else {
+		description = description + "\n\nThe results of hard work and dedication always look like luck to some. But you know you've earned every ounce of your success. <:mooning:930840083278487562> "
 	}
 
 	dcUser, err := d.session.User(uActivity.UserID)
@@ -213,21 +219,26 @@ func (d *Discord) SendLevelUpMessage(logChannelID, role string, uActivity *respo
 		d.log.Errorf(err, "SendLevelUpMessage - failed to get discord user %s", uActivity.UserID)
 		return
 	}
+	image := ""
+	if levelUpConfig.ImageURL != "" {
+		image = levelUpConfig.ImageURL
+	}
 
-	description := fmt.Sprintf("<@%s> has leveled up **(%d - %d)**\n\n**XP: **%d\n**Role: **%s", uActivity.UserID, uActivity.CurrentLevel-1, uActivity.CurrentLevel, uActivity.CurrentXP, role)
 	msgEmbed := discordgo.MessageEmbed{
-		Author: &discordgo.MessageEmbedAuthor{
-			Name:    "Level up!",
-			IconURL: "https://cdn.discordapp.com/emojis/984824963112513607.png?size=240&quality=lossless",
-		},
+		Title: "<:trophy:1060414870895464478> Level up!",
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: dcUser.AvatarURL(""),
 		},
+		Image: &discordgo.MessageEmbedImage{
+			URL: image,
+		},
 		Description: description,
 		Color:       mochiLogColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("XP achieved: %d", uActivity.CurrentXP),
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
-
 	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
 	if err != nil {
 		d.log.Errorf(err, "SendLevelUpMessage - failed to send level up msg")

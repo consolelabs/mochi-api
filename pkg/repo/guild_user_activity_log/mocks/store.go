@@ -34,6 +34,20 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// CreateBatch mocks base method.
+func (m *MockStore) CreateBatch(records []model.GuildUserActivityLog) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateBatch", records)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateBatch indicates an expected call of CreateBatch.
+func (mr *MockStoreMockRecorder) CreateBatch(records interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBatch", reflect.TypeOf((*MockStore)(nil).CreateBatch), records)
+}
+
 // CreateOne mocks base method.
 func (m *MockStore) CreateOne(record model.GuildUserActivityLog) error {
 	m.ctrl.T.Helper()
