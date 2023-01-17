@@ -163,6 +163,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			repostReactionGroup.GET("/blacklist-channel", h.Community.GetGuildBlacklistChannelRepostConfig)
 			repostReactionGroup.DELETE("/blacklist-channel", h.Community.DeleteBlacklistChannelRepostConfig)
 		}
+		levelupGroup := communityGroup.Group("/levelup")
+		{
+			levelupGroup.GET("", h.Community.GetLevelUpMessage)
+			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
+			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
+		}
 	}
 
 	configGroup := v1.Group("/configs")

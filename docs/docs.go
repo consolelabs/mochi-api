@@ -391,6 +391,109 @@ const docTemplate = `{
                 }
             }
         },
+        "/community/levelup": {
+            "get": {
+                "description": "Get levelup message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Get levelup message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildLevelUpMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert levelup message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Upsert levelup message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "channel_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "image_url",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "message",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGuildLevelUpMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete levelup message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Delete levelup message",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/community/quests": {
             "get": {
                 "description": "Get user quest list",
@@ -2650,6 +2753,134 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-roles/token-roles": {
+            "post": {
+                "description": "Create guild token role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Create guild token role config",
+                "parameters": [
+                    {
+                        "description": "Create guild token role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateGuildTokenRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateGuildTokenRole"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/token-roles/{guild_id}": {
+            "get": {
+                "description": "Get list token role config of guild",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get list token role config of guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListGuildTokenRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/token-roles/{id}": {
+            "put": {
+                "description": "Update guild token role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Update guild token role config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UpdateGuildTokenRole"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove guild token role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove guild token role config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/nft-roles/group": {
             "delete": {
                 "description": "Remove guild group nft role",
@@ -2709,6 +2940,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetSalesTrackerConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create sales tracker config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Config"
+                ],
+                "summary": "Create sales tracker config",
+                "parameters": [
+                    {
+                        "description": "Create sales tracker config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateSalesTrackerConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -4350,96 +4613,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.NftSalesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/nfts/sales-tracker": {
-            "get": {
-                "description": "Get all nft sales tracker",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Get all nft sales tracker",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllNFTSalesTrackerResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create NFT Sales tracker",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Create NFT Sales tracker",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Symbol",
-                        "name": "symbol",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.IndexerGetNFTTokensResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete NFT sales tracker",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Delete NFT sales tracker",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Contract Address",
-                        "name": "contract_address",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -6604,6 +6777,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigLevelupMessage": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigRepostReaction": {
             "type": "object",
             "properties": {
@@ -6636,13 +6835,54 @@ const docTemplate = `{
         "model.GuildConfigSalesTracker": {
             "type": "object",
             "properties": {
+                "chain": {
+                    "type": "string"
+                },
                 "channel_id": {
+                    "type": "string"
+                },
+                "contract_address": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "guild_id": {
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GuildConfigTokenRole": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "required_amount": {
+                    "type": "number"
+                },
+                "token": {
+                    "$ref": "#/definitions/model.Token"
+                },
+                "token_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -7883,6 +8123,33 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateGuildTokenRole": {
+            "type": "object",
+            "required": [
+                "address",
+                "amount",
+                "chain",
+                "guild_id",
+                "role_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "chain": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateNFTCollectionRequest": {
             "type": "object",
             "properties": {
@@ -7948,6 +8215,23 @@ const docTemplate = `{
                         "nft_collection",
                         "crypto_token"
                     ]
+                }
+            }
+        },
+        "request.CreateSalesTrackerConfigRequest": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "type": "string"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "contract_address": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
                 }
             }
         },
@@ -9114,6 +9398,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CreateGuildTokenRole": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigTokenRole"
+                }
+            }
+        },
         "response.CreateNFTCollectionResponse": {
             "type": "object",
             "properties": {
@@ -9287,17 +9579,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.DaoProposal"
-                    }
-                }
-            }
-        },
-        "response.GetAllNFTSalesTrackerResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.NFTSalesTrackerResponse"
                     }
                 }
             }
@@ -9512,6 +9793,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigDefaultTicker"
+                }
+            }
+        },
+        "response.GetGuildLevelUpMessage": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigLevelupMessage"
                 }
             }
         },
@@ -9842,7 +10131,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/model.GuildConfigSalesTracker"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigSalesTracker"
+                    }
                 }
             }
         },
@@ -10670,6 +10962,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ListGuildTokenRoles": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigTokenRole"
+                    }
+                }
+            }
+        },
         "response.ListMyGuildsResponse": {
             "type": "object",
             "properties": {
@@ -10923,23 +11226,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NFTNewListed"
-                }
-            }
-        },
-        "response.NFTSalesTrackerResponse": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "contract_address": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "platform": {
-                    "type": "string"
                 }
             }
         },
@@ -11469,6 +11755,14 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "response.UpdateGuildTokenRole": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigTokenRole"
                 }
             }
         },

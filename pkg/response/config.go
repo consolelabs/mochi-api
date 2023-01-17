@@ -162,3 +162,7 @@ type ListGuildTokenRoles struct {
 type UpdateGuildTokenRole struct {
 	Data *model.GuildConfigTokenRole `json:"data"`
 }
+
+type GetGuildLevelUpMessage struct {
+	Data *model.GuildConfigLevelupMessage `json:"data"`
+}

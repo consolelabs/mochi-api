@@ -165,3 +165,10 @@ type UpdateGuildTokenRole struct {
 	Address *string  `json:"address" binding:"required_with=Chain"`
 	Amount  *float64 `json:"amount"`
 }
+
+type UpsertGuildLevelUpMessageRequest struct {
+	GuildID   string `json:"guild_id"`
+	Message   string `json:"message"`
+	ImageURL  string `json:"image_url"`
+	ChannelID string `json:"channel_id"`
+}
