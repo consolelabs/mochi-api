@@ -265,8 +265,14 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 			"guildId": req.GuildID,
 			"userId":  req.UserID,
 		}).Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed")
-	} else {
-		e.svc.Discord.SendLevelUpMessage(latestUserXP.Guild.LogChannel, role, res)
+	} else if res.LevelUp {
+		// get level up config
+		config, err := e.repo.GuildConfigLevelUpMessage.GetByGuildId(req.GuildID)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"guildId": req.GuildID}).Errorf(err, "[HandleUserActivities] - e.repo.GuildConfigLevelUpMessage.GetByGuildId failed")
+			return nil, err
+		}
+		e.svc.Discord.SendLevelUpMessage(config, role, res)
 	}
 	return res, nil
 }

@@ -34,11 +34,40 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// Create mocks base method.
+func (m *MockStore) Create(config *model.GuildConfigSalesTracker) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", config)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockStoreMockRecorder) Create(config interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockStore)(nil).Create), config)
+}
+
+// GetAllSalesTrackerConfig mocks base method.
+func (m *MockStore) GetAllSalesTrackerConfig() ([]model.GuildConfigSalesTracker, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllSalesTrackerConfig")
+	ret0, _ := ret[0].([]model.GuildConfigSalesTracker)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllSalesTrackerConfig indicates an expected call of GetAllSalesTrackerConfig.
+func (mr *MockStoreMockRecorder) GetAllSalesTrackerConfig() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSalesTrackerConfig", reflect.TypeOf((*MockStore)(nil).GetAllSalesTrackerConfig))
+}
+
 // GetByGuildID mocks base method.
-func (m *MockStore) GetByGuildID(guildID string) (*model.GuildConfigSalesTracker, error) {
+func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildConfigSalesTracker, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByGuildID", guildID)
-	ret0, _ := ret[0].(*model.GuildConfigSalesTracker)
+	ret0, _ := ret[0].([]model.GuildConfigSalesTracker)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -47,18 +76,4 @@ func (m *MockStore) GetByGuildID(guildID string) (*model.GuildConfigSalesTracker
 func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
-}
-
-// UpsertOne mocks base method.
-func (m *MockStore) UpsertOne(config *model.GuildConfigSalesTracker) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertOne", config)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpsertOne indicates an expected call of UpsertOne.
-func (mr *MockStoreMockRecorder) UpsertOne(config interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), config)
 }
