@@ -118,9 +118,14 @@ func (h *Handler) CreateNFTCollection(c *gin.Context) {
 	}
 
 	var data *model.NFTCollection
-	if req.ChainID == "sol" {
+	switch req.ChainID {
+	case "sol":
 		data = h.handleCreateSolanaCollection(c, req)
-	} else {
+	case "apt":
+		data = h.handleCreateBluemoveCollection(c, req)
+	case "sui":
+		data = h.handleCreateBluemoveCollection(c, req)
+	default:
 		data = h.handleCreateEVMCollection(c, req)
 	}
 
@@ -147,6 +152,21 @@ func (h *Handler) handleCreateSolanaCollection(c *gin.Context, req request.Creat
 
 func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
 	data, err := h.entities.CreateEVMNFTCollection(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
+			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return nil
+		}
+		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return nil
+	}
+	return data
+}
+
+func (h *Handler) handleCreateBluemoveCollection(c *gin.Context, req request.CreateNFTCollectionRequest) *model.NFTCollection {
+	data, err := h.entities.CreateBluemoveNFTCollection(req)
 	if err != nil {
 		if strings.Contains(err.Error(), "Already added") || strings.Contains(err.Error(), "does not have") {
 			h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - duplicated record")

@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/service/apns"
 	"github.com/defipod/mochi/pkg/service/binance"
+	"github.com/defipod/mochi/pkg/service/bluemove"
 	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/covalent"
@@ -36,6 +37,7 @@ type Service struct {
 	Nghenhan  nghenhan.Service
 	Binance   binance.Service
 	APILayer  apilayer.Service
+	Bluemove  bluemove.Service
 }
 
 func NewService(
@@ -62,5 +64,6 @@ func NewService(
 		Solscan:   solscan.NewService(&cfg),
 		Binance:   binance.NewService(),
 		APILayer:  apilayer.NewService(&cfg),
+		Bluemove:  bluemove.New(&cfg, log),
 	}, nil
 }

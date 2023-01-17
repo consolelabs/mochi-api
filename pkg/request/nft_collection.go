@@ -47,6 +47,7 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"288":        "boba",
 		"250":        "ftm",
 		"1975":       "onus",
+		"9997":       "sui",
 		"9999":       "apt",
 		"0xa86a":     "avax",
 		"42161":      "arb",
