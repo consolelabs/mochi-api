@@ -515,3 +515,23 @@ func (h *Handler) CreateEnvelop(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(envelop, nil, nil, nil))
 }
+
+// GetUserEnvelopStreak     godoc
+// @Summary     Get user envelop streak
+// @Description Get user envelop streak
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       id path     string true "User ID"
+// @Success     200 {object} response.GetUserEnvelopStreak
+// @Router      /users/:id/envelop-streak [get]
+func (h *Handler) GetUserEnvelopStreak(c *gin.Context) {
+	userID := c.Param("id")
+	streak, err := h.entities.GetUserEnvelopStreak(userID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"userID": userID}).Error(err, "[handler.GetUserEnvelopStreak] - entities.GetUserEnvelopStreak failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(streak, nil, nil, nil))
+}

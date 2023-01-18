@@ -21,4 +21,5 @@ type IHandler interface {
 
 	SendUserXP(c *gin.Context)
 	CreateEnvelop(c *gin.Context)
+	GetUserEnvelopStreak(c *gin.Context)
 }

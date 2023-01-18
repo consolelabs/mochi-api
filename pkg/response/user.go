@@ -100,3 +100,7 @@ type GetUserWalletByGuildIDAddressResponse struct {
 type CreateEnvelop struct {
 	Data *model.Envelop `json:"data"`
 }
+
+type GetUserEnvelopStreak struct {
+	Data *model.UserEnvelopStreak `json:"data"`
+}
