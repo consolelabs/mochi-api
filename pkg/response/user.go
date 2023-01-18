@@ -96,3 +96,11 @@ type GetUserUpvoteLeaderboardResponse struct {
 type GetUserWalletByGuildIDAddressResponse struct {
 	Data *model.UserWallet `json:"data"`
 }
+
+type CreateEnvelop struct {
+	Data *model.Envelop `json:"data"`
+}
+
+type GetUserEnvelopStreak struct {
+	Data *model.UserEnvelopStreak `json:"data"`
+}
