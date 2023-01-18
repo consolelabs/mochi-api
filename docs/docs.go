@@ -5183,6 +5183,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/tip/onchain/{user_id}/balances": {
+            "get": {
+                "description": "Onchain Tip Bot - Get user's onchain balances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tip"
+                ],
+                "summary": "Onchain Tip Bot - Get user's onchain balances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "userId",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserBalancesResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/tip/onchain/{user_id}/transfers": {
             "get": {
                 "description": "Onchain Tip Bot - Get user's onchain transfers",
@@ -5384,6 +5416,72 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id/envelop-streak": {
+            "get": {
+                "description": "Get user envelop streak",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user envelop streak",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserEnvelopStreak"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/envelop": {
+            "post": {
+                "description": "Track user receive envelop",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Track user receive envelop",
+                "parameters": [
+                    {
+                        "description": "Create envelop request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateEnvelop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateEnvelop"
                         }
                     }
                 }
@@ -6625,6 +6723,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Envelop": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigActivity": {
             "type": "object",
             "properties": {
@@ -6861,9 +6979,6 @@ const docTemplate = `{
         "model.GuildConfigTokenRole": {
             "type": "object",
             "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
                 "created_at": {
                     "type": "string"
                 },
@@ -6875,6 +6990,9 @@ const docTemplate = `{
                 },
                 "required_amount": {
                     "type": "number"
+                },
+                "role_id": {
+                    "type": "string"
                 },
                 "token": {
                     "$ref": "#/definitions/model.Token"
@@ -7754,6 +7872,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserEnvelopStreak": {
+            "type": "object",
+            "properties": {
+                "total_envelop": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserFactionXpsMapping": {
             "type": "object",
             "properties": {
@@ -8108,6 +8237,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateEnvelop": {
+            "type": "object",
+            "required": [
+                "command",
+                "user_id"
+            ],
+            "properties": {
+                "command": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -9398,6 +9542,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CreateEnvelop": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.Envelop"
+                }
+            }
+        },
         "response.CreateGuildTokenRole": {
             "type": "object",
             "properties": {
@@ -10299,6 +10451,14 @@ const docTemplate = `{
                 },
                 "total_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.GetUserEnvelopStreak": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserEnvelopStreak"
                 }
             }
         },
