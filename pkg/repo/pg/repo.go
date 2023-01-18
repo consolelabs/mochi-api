@@ -23,6 +23,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
+	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
@@ -183,5 +184,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 		UserTokenBalance:                     usertokenbalance.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
+		Envelop:                              envelop.NewPG(db),
 	}
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -486,4 +487,31 @@ func (h *Handler) SendUserXP(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// CreateEnvelop     godoc
+// @Summary     Track user receive envelop
+// @Description Track user receive envelop
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateEnvelop true "Create envelop request"
+// @Success     200 {object} response.CreateEnvelop
+// @Router      /users/envelop [post]
+func (h *Handler) CreateEnvelop(c *gin.Context) {
+	var req request.CreateEnvelop
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateEnvelop] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	envelop, err := h.entities.CreateEnvelop(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateEnvelop] - entities.CreateEnvelop failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(envelop, nil, nil, nil))
 }
