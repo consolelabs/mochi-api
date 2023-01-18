@@ -8,7 +8,7 @@ setup:
 	go install github.com/rubenv/sql-migrate/...@latest
 	go install github.com/golang/mock/mockgen@v1.6.0
 	go install github.com/vektra/mockery/v2@latest
-	go install github.com/swaggo/swag/cmd/swag@latest
+	go install github.com/swaggo/swag/cmd/swag@v1.8.6
 	go install github.com/cosmtrek/air@latest
 	cp .env.sample .env
 	make init
