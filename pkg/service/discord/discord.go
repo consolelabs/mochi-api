@@ -239,6 +239,7 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMess
 		},
 		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
+	d.log.Fields(logger.Fields{"channelId": channelID, "userID": uActivity.UserID}).Info("Sending level up message")
 	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
 	if err != nil {
 		d.log.Errorf(err, "SendLevelUpMessage - failed to send level up msg")

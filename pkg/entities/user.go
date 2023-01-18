@@ -266,6 +266,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 			"userId":  req.UserID,
 		}).Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed")
 	} else if res.LevelUp {
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID}).Info("User leveled up")
 		// get level up config
 		config, err := e.repo.GuildConfigLevelUpMessage.GetByGuildId(req.GuildID)
 		if err != nil && err != gorm.ErrRecordNotFound {
