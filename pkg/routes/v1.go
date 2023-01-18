@@ -122,6 +122,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			deviceGroup.DELETE("", h.Widget.DeleteUserDevice)
 		}
 		userGroup.POST("/xp", h.User.SendUserXP)
+		userGroup.POST("/envelop", h.User.CreateEnvelop)
+		userGroup.GET("/:id/envelop-streak", h.User.GetUserEnvelopStreak) // get users upvote streak
 	}
 
 	communityGroup := v1.Group("/community")
