@@ -1,5 +1,10 @@
 {
   "data": {
+    "metadata": {
+      "page": 0,
+      "size": 10,
+      "total": 100
+    },
     "author": {
       "guild_id": "552427722551459840",
       "user_id": "393034938028392449",
