@@ -233,6 +233,13 @@ func TestEntity_GetTopUsers(t *testing.T) {
 				page:    0,
 			},
 			want: &response.TopUser{
+				Metadata: response.PaginationResponse{
+					Pagination: model.Pagination{
+						Page: 0,
+						Size: 5,
+					},
+					Total: 100,
+				},
 				Author:      &userXP,
 				Leaderboard: leaderboard,
 			},
