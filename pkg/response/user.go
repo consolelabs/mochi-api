@@ -37,6 +37,7 @@ type HandleUserActivityResponse struct {
 }
 
 type TopUser struct {
+	Metadata 	PaginationResponse  `json:"metadata"`
 	Author      *model.GuildUserXP  `json:"author"`
 	Leaderboard []model.GuildUserXP `json:"leaderboard"`
 }
