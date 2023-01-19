@@ -326,6 +326,13 @@ func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response
 	}
 
 	return &response.TopUser{
+		Metadata: response.PaginationResponse{
+			Pagination: model.Pagination{
+				Page: int64(page),
+				Size: int64(limit),
+			},
+			Total: 100,
+		},
 		Author:      author,
 		Leaderboard: leaderboard,
 	}, nil
