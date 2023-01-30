@@ -157,7 +157,7 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		return nil, err
 	}
 
-	if config.Authority != model.TokenHolder {
+	if config.Authority != model.TokenHolder && config.Authority != model.Admin{
 		e.log.Fields(logger.Fields{
 			"userID":  query.UserID,
 			"guildID": query.GuildID,
@@ -165,11 +165,15 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		return nil, errs.ErrInvalidAuthorityType
 	}
 
+	isQualified := true
 	if config.Type == nil {
-		e.log.Fields(logger.Fields{
-			"configID": config.Id,
-		}).Error(errs.ErrInternalError, "[entities.TokenHolderStatus] - proposal voting type is nil")
-		return nil, fmt.Errorf("config type data is mismatch")
+		return &response.TokenHolderStatus{
+			Data: &response.TokenHolderStatusData{
+				IsWalletConnected: true,
+				IsQualified:       &isQualified,
+				GuildConfig:        config,
+			},
+		}, nil 
 	}
 
 	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, config.Address, config.ChainID)
@@ -185,7 +189,7 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
 		return nil, err
 	}
-	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	isQualified = userBalance.Cmp(requiredAmountBigInt) != -1
 	userHoldingAmount := userBalance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
@@ -212,11 +216,15 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		return nil, err
 	}
 	voteOption := config.VoteOption
+	isQualified := true
 	if voteOption == nil {
-		e.log.Fields(logger.Fields{
-			"voteOptionID": config.Id,
-		}).Error(errs.ErrInternalError, "[entities.TokenHolderStatus] - vote option is nil")
-		return nil, fmt.Errorf("vote option of id %v is nil", config.Id)
+		return &response.TokenHolderStatus{
+			Data: &response.TokenHolderStatusData{
+				IsWalletConnected: true,
+				IsQualified:       &isQualified,
+				VoteConfig:        config,
+			},
+		}, nil 
 	}
 
 	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, config.Address, config.ChainId)
@@ -232,7 +240,7 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
 		return nil, err
 	}
-	isQualified := userBalance.Cmp(requiredAmountBigInt) != -1
+	isQualified = userBalance.Cmp(requiredAmountBigInt) != -1
 	userHoldingAmount := userBalance.Text(10)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
