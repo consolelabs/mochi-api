@@ -68,18 +68,18 @@ func (mr *MockServiceMockRecorder) CreateChannel(guildID, createData interface{}
 }
 
 // CreateDiscussionChannelForProposal mocks base method.
-func (m *MockService) CreateDiscussionChannelForProposal(guildId, proposalTitle string) (string, error) {
+func (m *MockService) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDiscussionChannelForProposal", guildId, proposalTitle)
+	ret := m.ctrl.Call(m, "CreateDiscussionChannelForProposal", guildId, proposalChannelID, proposalTitle)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateDiscussionChannelForProposal indicates an expected call of CreateDiscussionChannelForProposal.
-func (mr *MockServiceMockRecorder) CreateDiscussionChannelForProposal(guildId, proposalTitle interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDiscussionChannelForProposal", reflect.TypeOf((*MockService)(nil).CreateDiscussionChannelForProposal), guildId, proposalTitle)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDiscussionChannelForProposal", reflect.TypeOf((*MockService)(nil).CreateDiscussionChannelForProposal), guildId, proposalChannelID, proposalTitle)
 }
 
 // DeleteChannel mocks base method.

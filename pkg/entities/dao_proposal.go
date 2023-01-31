@@ -54,7 +54,7 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		return nil, err
 	}
 
-	discussionChannel, err := e.svc.Discord.CreateDiscussionChannelForProposal(req.GuildId, req.Title)
+	discussionChannel, err := e.svc.Discord.CreateDiscussionChannelForProposal(req.GuildId, req.VotingChannelId, req.Title)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.CreateDaoProposal][svc.Discord.CreateDiscussionChannelForProposal()] - failed to create discussion channel")
 		return nil, err
