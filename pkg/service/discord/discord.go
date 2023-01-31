@@ -613,8 +613,21 @@ func (d *Discord) SendMessage(channelID string, payload discordgo.MessageSend) e
 	return nil
 }
 
-func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalTitle string) (string, error) {
-	discussionChannel, err := d.session.GuildChannelCreate(guildId, proposalTitle, discordgo.ChannelTypeGuildText)
+func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
+	proposalChannel, err := d.Channel(proposalChannelID)
+	if err != nil {
+		d.log.Fields(logger.Fields{
+			"proposalChannelID": proposalChannelID,
+		}).Error(err, "[discord.CreateDiscussionChannelForProposal] get channel failed")
+		return "", errors.ErrInvalidDiscordChannelID
+	}
+	discussChannelCreateData := discordgo.GuildChannelCreateData{
+		Name:                 proposalTitle,
+		Type:                 discordgo.ChannelTypeGuildText,
+		PermissionOverwrites: proposalChannel.PermissionOverwrites,
+		ParentID:             proposalChannel.ParentID,
+	}
+	discussionChannel, err := d.CreateChannel(guildId, discussChannelCreateData)
 	if err != nil {
 		d.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "CreateDiscussionChannelForProposal - GuildChannelCreate failed")
 		return "", err
