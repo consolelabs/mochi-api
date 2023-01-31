@@ -50,6 +50,7 @@ import (
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
+	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
@@ -185,5 +186,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserTokenBalance:                     usertokenbalance.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Envelop:                              envelop.NewPG(db),
+		GuildConfigXPRole:                    guildconfigxprole.NewPG(db),
 	}
 }
