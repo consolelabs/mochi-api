@@ -140,7 +140,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		symbol = collection.Symbol
 		requiredAmount = big.NewInt(int64(req.RequiredAmount))
 	case model.CryptoToken:
-		token, err := e.repo.Token.GetByAddress(req.Address, chainIdNumber)
+		token, err := e.repo.Token.GetBySymbol(req.Chain, true)
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return nil, errors.ErrInvalidTokenContract
