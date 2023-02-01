@@ -256,6 +256,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenRoleGroup.PUT("/:id", h.ConfigRoles.UpdateGuildTokenRole)
 			tokenRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildTokenRole)
 		}
+		xpRoleGroup := configRoleGroup.Group("/xp-roles")
+		{
+			xpRoleGroup.POST("", h.ConfigRoles.CreateGuildXPRole)
+			xpRoleGroup.GET("", h.ConfigRoles.ListGuildXPRoles)
+			xpRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildXPRole)
+		}
 	}
 
 	configCommunityGroup := v1.Group("/config-community")

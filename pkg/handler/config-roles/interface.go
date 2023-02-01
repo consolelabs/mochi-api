@@ -25,4 +25,8 @@ type IHandler interface {
 	ListGuildTokenRoles(c *gin.Context)
 	UpdateGuildTokenRole(c *gin.Context)
 	RemoveGuildTokenRole(c *gin.Context)
+
+	CreateGuildXPRole(c *gin.Context)
+	ListGuildXPRoles(c *gin.Context)
+	RemoveGuildXPRole(c *gin.Context)
 }

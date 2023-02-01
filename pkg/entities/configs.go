@@ -1307,3 +1307,77 @@ func (e *Entity) ListMemberTokenRolesToAdd(listConfigTokenRoles []model.GuildCon
 	}
 	return rolesToAdd, nil
 }
+
+func (e *Entity) CreateGuildXPRole(req request.CreateGuildXPRole) (*model.GuildConfigXPRole, error) {
+	config, err := e.repo.GuildConfigXPRole.GetByRoleID(req.GuildID, req.RoleID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{
+			"guildID": req.GuildID,
+			"roleID":  req.RoleID,
+		}).Error(err, "[e.CreateGuildXPRole] - repo.GuildConfigXPRole.GetByRoleID failed")
+		return nil, err
+	}
+	// Record with role id and guild id already existed
+	if err == nil {
+		e.log.Fields(logger.Fields{
+			"guildID": req.GuildID,
+			"roleID":  req.RoleID,
+		}).Error(err, "[e.CreateGuildXPRole] - xp role config already existed")
+		return nil, errors.ErrXPRoleExisted
+	}
+	newConfig := &model.GuildConfigXPRole{
+		GuildID:    req.GuildID,
+		RoleID:     req.RoleID,
+		RequiredXP: req.XP,
+	}
+	if err := e.repo.GuildConfigXPRole.Create(newConfig); err != nil {
+		e.log.Fields(logger.Fields{
+			"config": config,
+		}).Error(err, "[e.CreateGuildXPRole] - repo.GuildConfigXPRole.Create failed")
+		return nil, err
+	}
+	return newConfig, nil
+}
+
+func (e *Entity) ListGuildXPRoles(guildID string) ([]model.GuildConfigXPRole, error) {
+	configs, err := e.repo.GuildConfigXPRole.ListByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[e.ListGuildXPRoles] - repo.GuildConfigXPRole.ListByGuildID failed")
+		return nil, err
+	}
+	return configs, nil
+}
+
+func (e *Entity) RemoveGuildXPRole(id int) error {
+	if _, err := e.repo.GuildConfigXPRole.Get(id); err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[e.REmoveGuildXPRole] - repo.GuildConfigXPRole.Get failed")
+		if err == gorm.ErrRecordNotFound {
+			return errors.ErrRecordNotFound
+		}
+		return err
+	}
+	if err := e.repo.GuildConfigXPRole.Delete(id); err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[e.RemoveGuildXPRole] - repo.GuildConfigXPRole.Delete failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) ListMemberXPRolesToAdd(listConfigTokenRoles []model.GuildConfigXPRole, guildID string) (map[[2]string]bool, error) {
+	mrs, err := e.repo.GuildConfigXPRole.GetMemberCurrentRoles(guildID)
+	if err != nil {
+		return nil, err
+	}
+	rolesToAdd := make(map[[2]string]bool)
+
+	for _, mr := range mrs {
+		rolesToAdd[[2]string{mr.UserID, mr.RoleID}] = true
+	}
+	return rolesToAdd, nil
+}
