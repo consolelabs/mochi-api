@@ -2881,6 +2881,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-roles/xp-roles": {
+            "post": {
+                "description": "Create guild XP role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Create guild XP role config",
+                "parameters": [
+                    {
+                        "description": "Create guild XP role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateGuildXPRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateGuildXPRole"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/xp-roles/": {
+            "get": {
+                "description": "Get list XP role config of guild",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get list XP role config of guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListGuildXPRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/xp-roles/{id}": {
+            "delete": {
+                "description": "Remove guild XP role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove guild XP role config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/configs/nft-roles/group": {
             "delete": {
                 "description": "Remove guild group nft role",
@@ -7105,6 +7203,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigXPRole": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "required_xp": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildRole": {
             "type": "object",
             "properties": {
@@ -8291,6 +8412,24 @@ const docTemplate = `{
                 },
                 "role_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.CreateGuildXPRole": {
+            "type": "object",
+            "required": [
+                "guild_id",
+                "role_id"
+            ],
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "xp": {
+                    "type": "integer"
                 }
             }
         },
@@ -9555,6 +9694,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigTokenRole"
+                }
+            }
+        },
+        "response.CreateGuildXPRole": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigXPRole"
                 }
             }
         },
@@ -11129,6 +11276,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigTokenRole"
+                    }
+                }
+            }
+        },
+        "response.ListGuildXPRoles": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigXPRole"
                     }
                 }
             }

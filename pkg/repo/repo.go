@@ -47,6 +47,7 @@ import (
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
+	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
 	guildscheduledevent "github.com/defipod/mochi/pkg/repo/guild_scheduled_event"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
@@ -180,4 +181,5 @@ type Repo struct {
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	UserTokenBalance                     usertokenbalance.Store
 	Envelop                              envelop.Store
+	GuildConfigXPRole                    guildconfigxprole.Store
 }

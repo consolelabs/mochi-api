@@ -172,3 +172,9 @@ type UpsertGuildLevelUpMessageRequest struct {
 	ImageURL  string `json:"image_url"`
 	ChannelID string `json:"channel_id"`
 }
+
+type CreateGuildXPRole struct {
+	GuildID string `json:"guild_id" binding:"required"`
+	RoleID  string `json:"role_id" binding:"required"`
+	XP      int    `json:"xp"`
+}
