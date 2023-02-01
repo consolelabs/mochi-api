@@ -378,3 +378,17 @@ type IndexerErrorResponse struct {
 	Data  interface{} `json:"data"`
 	Error string      `json:"error"`
 }
+
+type IndexerSoulBoundNFTResponse struct {
+	Data []IndexerSoulBoundNFT `json:"data"`
+}
+
+type IndexerSoulBoundNFT struct {
+	TraitType string `json:"trait_type"`
+	Value     string `json:"value"`
+	Count     int64  `json:"count"`
+}
+
+type GetSoulBoundNFTResponse struct {
+	Data []model.NftSoulbound `json:"data"`
+}

@@ -393,6 +393,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultNftTickerGroup.GET("", h.Nft.GetGuildDefaultNftTicker)
 			defaultNftTickerGroup.POST("", h.Nft.SetGuildDefaultNftTicker)
 		}
+		soulbound := nftsGroup.Group("/soulbound")
+		{
+			soulbound.GET("", h.Nft.GetSoulboundNFT)
+			soulbound.POST("", h.Nft.EnrichSoulboundNFT)
+		}
 	}
 
 	fiatGroup := v1.Group("/fiat")

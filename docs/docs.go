@@ -4716,6 +4716,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/nfts/soulbound": {
+            "get": {
+                "description": "Get Nft Soulbound",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "NFT"
+                ],
+                "summary": "Get Nft Soulbound",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "collection address",
+                        "name": "collection_address",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSoulBoundNFTResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts/supported-chains": {
             "post": {
                 "description": "Get supported chains",
@@ -7429,6 +7461,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.NftSoulbound": {
+            "type": "object",
+            "properties": {
+                "collection_address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "total_soul_bound": {
+                    "type": "integer"
+                },
+                "trait_type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }
@@ -10433,6 +10491,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigSalesTracker"
+                    }
+                }
+            }
+        },
+        "response.GetSoulBoundNFTResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.NftSoulbound"
                     }
                 }
             }

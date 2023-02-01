@@ -36,4 +36,6 @@ type IHandler interface {
 
 	CreateTradeOffer(c *gin.Context)
 	GetTradeOffer(c *gin.Context)
+	EnrichSoulboundNFT(c *gin.Context)
+	GetSoulboundNFT(c *gin.Context)
 }

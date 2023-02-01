@@ -59,6 +59,7 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	nftsoulbound "github.com/defipod/mochi/pkg/repo/nft_soulbound"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
@@ -182,4 +183,5 @@ type Repo struct {
 	UserTokenBalance                     usertokenbalance.Store
 	Envelop                              envelop.Store
 	GuildConfigXPRole                    guildconfigxprole.Store
+	NftSoulbound                         nftsoulbound.Store
 }
