@@ -33,11 +33,16 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		return nil, err
 	}
 
+	var optionId int64 = 1
+	if (*config.Type == model.CryptoToken){
+		optionId = 2
+	}
 	proposalVoteOption := model.DaoProposalVoteOption{
 		ProposalId:     daoProposal.Id,
 		Address:        config.Address,
 		ChainId:        config.ChainID,
 		Symbol:         config.Symbol,
+		VoteOptionId: 	&optionId,
 		RequiredAmount: config.RequiredAmount,
 	}
 	if req.VoteOption != nil {
@@ -47,6 +52,7 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		proposalVoteOption.Symbol = req.VoteOption.Symbol
 		proposalVoteOption.RequiredAmount = strconv.FormatInt(req.VoteOption.RequiredAmount, 10)
 	}
+	
 
 	_, err = e.repo.DaoProposalVoteOption.Create(&proposalVoteOption)
 	if err != nil {
