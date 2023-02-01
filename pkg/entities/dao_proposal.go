@@ -33,26 +33,23 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		return nil, err
 	}
 
-	var optionId int64 = 1
-	if (*config.Type == model.CryptoToken){
-		optionId = 2
+	var nftOptId int64 = 1
+	var tokenOptId int64 = 2
+	var optionId *int64
+	if config.Type != nil && *config.Type == model.NFT {
+		optionId = &nftOptId
+	}
+	if config.Type != nil && *config.Type == model.CryptoToken {
+		optionId = &tokenOptId
 	}
 	proposalVoteOption := model.DaoProposalVoteOption{
 		ProposalId:     daoProposal.Id,
 		Address:        config.Address,
 		ChainId:        config.ChainID,
 		Symbol:         config.Symbol,
-		VoteOptionId: 	&optionId,
-		RequiredAmount: config.RequiredAmount,
+		VoteOptionId:   optionId,
+		RequiredAmount: "1",
 	}
-	if req.VoteOption != nil {
-		proposalVoteOption.VoteOptionId = &req.VoteOption.Id
-		proposalVoteOption.Address = req.VoteOption.Address
-		proposalVoteOption.ChainId = req.VoteOption.ChainId
-		proposalVoteOption.Symbol = req.VoteOption.Symbol
-		proposalVoteOption.RequiredAmount = strconv.FormatInt(req.VoteOption.RequiredAmount, 10)
-	}
-	
 
 	_, err = e.repo.DaoProposalVoteOption.Create(&proposalVoteOption)
 	if err != nil {
@@ -163,7 +160,7 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		return nil, err
 	}
 
-	if config.Authority != model.TokenHolder && config.Authority != model.Admin{
+	if config.Authority != model.TokenHolder && config.Authority != model.Admin {
 		e.log.Fields(logger.Fields{
 			"userID":  query.UserID,
 			"guildID": query.GuildID,
@@ -177,9 +174,9 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 			Data: &response.TokenHolderStatusData{
 				IsWalletConnected: true,
 				IsQualified:       &isQualified,
-				GuildConfig:        config,
+				GuildConfig:       config,
 			},
-		}, nil 
+		}, nil
 	}
 
 	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, config.Address, config.ChainID)
@@ -230,7 +227,7 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 				IsQualified:       &isQualified,
 				VoteConfig:        config,
 			},
-		}, nil 
+		}, nil
 	}
 
 	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, config.Address, config.ChainId)
