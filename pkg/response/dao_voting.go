@@ -6,8 +6,24 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 )
 
+type GetGuildConfigDaoProposalData struct {
+	Id                 int64                       `json:"id"`
+	GuildId            string                      `json:"guild_id"`
+	ProposalChannelId  string                      `json:"proposal_channel_id"`
+	GuidelineChannelId string                      `json:"guideline_channel_id"`
+	Authority          model.ProposalAuthorityType `json:"authority"`
+	Type               *model.ProposalVotingType   `json:"type"`
+	RequiredAmount     string                      `json:"required_amount" gorm:"type:numeric"`
+	ChainID            int64                       `json:"chain_id"`
+	Chain              string                      `json:"chain"`
+	Symbol             string                      `json:"symbol"`
+	Address            string                      `json:"address"`
+	CreatedAt          time.Time                   `json:"created_at"`
+	UpdatedAt          time.Time                   `json:"updated_at"`
+}
+
 type GetGuildConfigDaoProposal struct {
-	Data *model.GuildConfigDaoProposal `json:"data"`
+	Data *GetGuildConfigDaoProposalData `json:"data"`
 }
 
 type GetAllDaoProposals struct {

@@ -81,6 +81,8 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
+	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
+	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	"github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -189,5 +191,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Envelop:                              envelop.NewPG(db),
 		GuildConfigXPRole:                    guildconfigxprole.NewPG(db),
 		NftSoulbound:                         nftsoulbound.NewPG(db),
+		SaleBotMarketplace:                   salebotmarketplace.NewPG(db),
+		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
 	}
 }

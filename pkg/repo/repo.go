@@ -78,6 +78,8 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
+	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
+	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -184,4 +186,6 @@ type Repo struct {
 	Envelop                              envelop.Store
 	GuildConfigXPRole                    guildconfigxprole.Store
 	NftSoulbound                         nftsoulbound.Store
+	SaleBotMarketplace                   salebotmarketplace.Store
+	SaleBotTwitterConfig                 salebottwitterconfig.Store
 }
