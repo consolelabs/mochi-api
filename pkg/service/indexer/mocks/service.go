@@ -243,3 +243,18 @@ func (mr *MockServiceMockRecorder) GetNftSales(addr, platform interface{}) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftSales", reflect.TypeOf((*MockService)(nil).GetNftSales), addr, platform)
 }
+
+// GetSoulBoundNFT mocks base method.
+func (m *MockService) GetSoulBoundNFT(collectionAddress string) (*response.IndexerSoulBoundNFTResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSoulBoundNFT", collectionAddress)
+	ret0, _ := ret[0].(*response.IndexerSoulBoundNFTResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSoulBoundNFT indicates an expected call of GetSoulBoundNFT.
+func (mr *MockServiceMockRecorder) GetSoulBoundNFT(collectionAddress interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSoulBoundNFT", reflect.TypeOf((*MockService)(nil).GetSoulBoundNFT), collectionAddress)
+}
