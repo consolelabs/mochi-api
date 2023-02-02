@@ -736,6 +736,23 @@ definitions:
       symbol:
         type: string
     type: object
+  model.NftSoulbound:
+    properties:
+      collection_address:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      total_soul_bound:
+        type: integer
+      trait_type:
+        type: string
+      updated_at:
+        type: string
+      value:
+        type: string
+    type: object
   model.OffchainTipBotAssignContract:
     properties:
       chain_id:
@@ -2691,6 +2708,13 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.GuildConfigSalesTracker'
+        type: array
+    type: object
+  response.GetSoulBoundNFTResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.NftSoulbound'
         type: array
     type: object
   response.GetSuggestionNFTCollectionsResponse:
@@ -7001,6 +7025,27 @@ paths:
           schema:
             $ref: '#/definitions/response.NftSalesResponse'
       summary: Get NFT sales
+      tags:
+      - NFT
+  /nfts/soulbound:
+    get:
+      consumes:
+      - application/json
+      description: Get Nft Soulbound
+      parameters:
+      - description: collection address
+        in: query
+        name: collection_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSoulBoundNFTResponse'
+      summary: Get Nft Soulbound
       tags:
       - NFT
   /nfts/supported-chains:
