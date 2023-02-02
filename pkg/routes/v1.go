@@ -191,7 +191,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenAlertGroup.POST("", h.Widget.UpsertUserTokenAlert)
 			tokenAlertGroup.DELETE("", h.Widget.DeleteUserTokenAlert)
 		}
-
+		configTwitterSaleGroup := configGroup.Group("/twitter-sales")
+		{
+			configTwitterSaleGroup.GET("", h.ConfigTwitterSale.Get)
+			configTwitterSaleGroup.POST("", h.ConfigTwitterSale.Create)
+		}
 	}
 
 	configChannelGroup := v1.Group("/config-channels")
