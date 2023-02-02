@@ -2460,7 +2460,36 @@ definitions:
   response.GetGuildConfigDaoProposal:
     properties:
       data:
-        $ref: '#/definitions/model.GuildConfigDaoProposal'
+        $ref: '#/definitions/response.GetGuildConfigDaoProposalData'
+    type: object
+  response.GetGuildConfigDaoProposalData:
+    properties:
+      address:
+        type: string
+      authority:
+        type: string
+      chain:
+        type: string
+      chain_id:
+        type: integer
+      created_at:
+        type: string
+      guideline_channel_id:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      proposal_channel_id:
+        type: string
+      required_amount:
+        type: string
+      symbol:
+        type: string
+      type:
+        type: string
+      updated_at:
+        type: string
     type: object
   response.GetGuildDefaultNftTickerResponse:
     properties:

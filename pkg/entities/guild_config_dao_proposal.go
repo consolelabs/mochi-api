@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -39,7 +40,7 @@ func (e *Entity) CreateProposalChannelConfig(req request.CreateProposalChannelCo
 	return nil, errors.ErrInternalError
 }
 
-func (e *Entity) GetGuildConfigDaoProposalByGuildID(guildId string) (*model.GuildConfigDaoProposal, error) {
+func (e *Entity) GetGuildConfigDaoProposalByGuildID(guildId string) (*response.GetGuildConfigDaoProposalData, error) {
 	config, err := e.repo.GuildConfigDaoProposal.GetByGuildId(guildId)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -48,7 +49,21 @@ func (e *Entity) GetGuildConfigDaoProposalByGuildID(guildId string) (*model.Guil
 		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entity.GetGuildConfigDaoProposalByGuildID] e.repo.GuildConfigDaoProposal.GetByGuildId failed")
 		return nil, err
 	}
-	return config, nil
+	return &response.GetGuildConfigDaoProposalData{
+		Id:                 config.Id,
+		GuildId:            config.GuildId,
+		ProposalChannelId:  config.ProposalChannelId,
+		GuidelineChannelId: config.GuidelineChannelId,
+		Authority:          config.Authority,
+		Type:               config.Type,
+		RequiredAmount:     config.RequiredAmount,
+		ChainID:            config.ChainID,
+		Chain:              util.ConvertChainIDToChain(strconv.FormatInt(config.ChainID, 10)),
+		Symbol:             config.Symbol,
+		Address:            config.Address,
+		CreatedAt:          config.CreatedAt,
+		UpdatedAt:          config.UpdatedAt,
+	}, nil
 }
 
 func (e *Entity) DeleteGuildConfigDaoProposalByGuildID(req *request.DeleteGuildConfigDaoProposal) error {
