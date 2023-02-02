@@ -150,7 +150,7 @@ func (e *Entity) getOrGenerateUserQuests(startTime time.Time, userID string, rou
 		return nil, err
 	}
 	if len(uQuests) > 0 {
-		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Errorf(err, "[entity.getOrGenerateUserQuests] found %d quests for user %s", len(uQuests), userID)
+		e.log.Fields(logger.Fields{"uQuestQ": uQuestQ}).Infof("[entity.getOrGenerateUserQuests] found %d quests for user %s", len(uQuests), userID)
 		return uQuests, nil
 	}
 	generateReq := request.GenerateUserQuestListRequest{

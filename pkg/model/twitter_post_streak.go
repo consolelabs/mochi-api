@@ -17,14 +17,14 @@ type TwitterPostStreak struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-func (s *TwitterPostStreak) BeforeCreate(tx *gorm.DB) (err error) {
+func (s *TwitterPostStreak) BeforeCreate(tx *gorm.DB) error {
 	now := time.Now().UTC()
 	s.CreatedAt = now
 	s.UpdatedAt = now
 	return nil
 }
 
-func (s *TwitterPostStreak) BeforeUpdate(tx *gorm.DB) (err error) {
+func (s *TwitterPostStreak) BeforeUpdate(tx *gorm.DB) error {
 	s.UpdatedAt = time.Now().UTC()
 	return nil
 }
