@@ -22,6 +22,7 @@ type IHandler interface {
 	handleNftSales(c *gin.Context, req request.NotifySaleMarketplaceRequest)
 	WebhookUpvoteTopGG(c *gin.Context)
 	WebhookUpvoteDiscordBot(c *gin.Context)
+	WebhookSnapshotProposal(c *gin.Context)
 	NotifyNftCollectionIntegration(c *gin.Context)
 	NotifyNftCollectionSync(c *gin.Context)
 	NotifyNftCollectionAdd(c *gin.Context)

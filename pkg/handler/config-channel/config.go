@@ -671,3 +671,76 @@ func (h *Handler) CreateProposalChannelConfig(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }
+
+// GetGuildConfigDaoTracker     godoc
+// @Summary     Get dao tracker channel config
+// @Description Get dao tracker channel config
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GuildConfigDaoTrackerResponse
+// @Router      /config-channels/dao-tracker/{guild_id} [get]
+func (h *Handler) GetGuildConfigDaoTracker(c *gin.Context) {
+	guildId := c.Param("guild_id")
+	config, err := h.entities.GetGuildConfigDaoTracker(guildId)
+	if err != nil {
+		h.log.Error(err, "[handler.GetGuildConfigDaoTracker] - failed to get configs")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// DeleteGuildConfigDaoTracker     godoc
+// @Summary     Delete dao tracker channel config
+// @Description Delete dao tracker config
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteGuildConfigDaoTracker true "Delete dao tracker channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-channels/dao-tracker [delete]
+func (h *Handler) DeleteGuildConfigDaoTracker(c *gin.Context) {
+	var req request.DeleteGuildConfigDaoTracker
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteGuildConfigDaoTracker] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	err := h.entities.DeleteGuildConfigDaoTracker(req)
+	if err != nil {
+		h.log.Error(err, "[handler.DeleteGuildConfigDaoTracker] - failed to delete configs")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
+}
+
+// UpsertGuildConfigDaoTracker     godoc
+// @Summary     Create tracker channel config
+// @Description Create tracker channel config for dao voting
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildConfigDaoTracer true "Create tracker channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-channels/dao-tracker [post]
+func (h *Handler) UpsertGuildConfigDaoTracker(c *gin.Context) {
+	var req request.UpsertGuildConfigDaoTracer
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildConfigDaoTracker] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	err := h.entities.UpsertGuildConfigDaoTracker(req)
+	if err != nil {
+		h.log.Error(err, "[handler.UpsertGuildConfigDaoTracker] - failed to upsert configs")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
+}

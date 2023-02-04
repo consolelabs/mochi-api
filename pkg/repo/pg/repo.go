@@ -27,6 +27,7 @@ import (
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
+	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -120,6 +121,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultCurrency:           guildconfigdefaultcurrency.NewPG(db),
+		GuildConfigDaoTracker:                guildconfigdaotracker.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
 		GuildConfigJoinLeaveChannel:          guildconfigjoinleavechannel.NewPG(db),
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),

@@ -671,3 +671,12 @@ func SendRequest(q SendRequestQuery) (int, error) {
 
 	return statusCode, json.Unmarshal(bytes, q.ParseForm)
 }
+
+func ParseSnapshotURL(url string) string {
+	//https://snapshot.org/#/bitdao.eth
+	if strings.Contains(url, "snapshot.org/#/") {
+		args := strings.Split(url, "/")
+		return args[len(args)-1]
+	}
+	return url
+}
