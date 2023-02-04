@@ -1381,3 +1381,31 @@ func (e *Entity) ListMemberXPRolesToAdd(listConfigTokenRoles []model.GuildConfig
 	}
 	return rolesToAdd, nil
 }
+
+func (e *Entity) GetGuildConfigDaoTracker(guildId string) (*[]model.GuildConfigDaoTracker, error) {
+	return e.repo.GuildConfigDaoTracker.GetAllByGuildID(guildId)
+}
+
+func (e *Entity) DeleteGuildConfigDaoTracker(req request.DeleteGuildConfigDaoTracker) error {
+	return e.repo.GuildConfigDaoTracker.DeleteByID(req.ID)
+}
+
+func (e *Entity) UpsertGuildConfigDaoTracker(req request.UpsertGuildConfigDaoTracer) error {
+	// check dao space is valid
+	spaceId := util.ParseSnapshotURL(req.SnapshotURL)
+	proposalSpace, err := e.svc.Snapshot.GetSpace(spaceId)
+	if err != nil || proposalSpace.Space == nil {
+		e.log.Fields(logger.Fields{"space": spaceId}).Info("proposal space id invalid")
+		return fmt.Errorf("proposal space id invalid")
+	}
+
+	err = e.repo.GuildConfigDaoTracker.Upsert(model.GuildConfigDaoTracker{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		Space:     spaceId,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}

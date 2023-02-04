@@ -208,6 +208,20 @@ func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
 }
 
+// NotifyNewProposal mocks base method.
+func (m *MockService) NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyNewProposal", channelID, proposal)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyNewProposal indicates an expected call of NotifyNewProposal.
+func (mr *MockServiceMockRecorder) NotifyNewProposal(channelID, proposal interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewProposal", reflect.TypeOf((*MockService)(nil).NotifyNewProposal), channelID, proposal)
+}
+
 // NotifyStealAveragePrice mocks base method.
 func (m *MockService) NotifyStealAveragePrice(price, floor float64, url, name, image string) error {
 	m.ctrl.T.Helper()
