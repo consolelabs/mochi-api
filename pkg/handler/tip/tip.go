@@ -69,6 +69,7 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 		offchaintipbotchain.Filter{
 			TokenSymbol:         body.TokenSymbol,
 			IsContractAvailable: true,
+			UserID:              body.UserID,
 		},
 	)
 	if err == gorm.ErrRecordNotFound {
@@ -84,7 +85,7 @@ func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
 
 	if len(chains) == 0 {
 		err := errors.New("contract not found or already assigned")
-		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - contract not found or already assigned")
+		h.log.Errorf(err, "[handler.OffchainTipBotCreateAssignContract] - %s", err.Error())
 		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

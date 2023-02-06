@@ -16,4 +16,5 @@ type Filter struct {
 	TokenID             string
 	TokenSymbol         string
 	IsContractAvailable bool
+	UserID              string
 }
