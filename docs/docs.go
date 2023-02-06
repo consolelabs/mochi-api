@@ -935,6 +935,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-channels/dao-tracker": {
+            "post": {
+                "description": "Create tracker channel config for dao voting",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Create tracker channel config",
+                "parameters": [
+                    {
+                        "description": "Create tracker channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildConfigDaoTracer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete dao tracker config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Delete dao tracker channel config",
+                "parameters": [
+                    {
+                        "description": "Delete dao tracker channel config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.DeleteGuildConfigDaoTracker"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-channels/dao-tracker/{guild_id}": {
+            "get": {
+                "description": "Get dao tracker channel config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigChannel"
+                ],
+                "summary": "Get dao tracker channel config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildConfigDaoTrackerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/config-channels/gm": {
             "get": {
                 "description": "Get GM config",
@@ -3102,6 +3200,70 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetAllTwitterConfigResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/configs/twitter-sales": {
+            "get": {
+                "description": "Get twitter sale config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigTwitterSale"
+                ],
+                "summary": "Get twitter sale config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "marketplace name",
+                        "name": "marketplace",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSaleTwitterConfigResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create twitter sale config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigTwitterSale"
+                ],
+                "summary": "Create twitter sale config",
+                "parameters": [
+                    {
+                        "description": "req",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTwitterSaleConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateTwitterSaleConfigResponse"
                         }
                     }
                 }
@@ -6931,6 +7093,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigDaoTracker": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "space": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigDefaultCollection": {
             "type": "object",
             "properties": {
@@ -7477,7 +7662,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "total_soul_bound": {
+                "total_soulbound": {
                     "type": "integer"
                 },
                 "trait_type": {
@@ -7885,6 +8070,52 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SaleBotMarketplace": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SaleBotTwitterConfig": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "collection_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "marketplace": {
+                    "$ref": "#/definitions/model.SaleBotMarketplace"
+                },
+                "marketplace_id": {
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -8613,6 +8844,20 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateTwitterSaleConfigRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "marketplace": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateUserRequest": {
             "type": "object",
             "properties": {
@@ -8642,6 +8887,14 @@ const docTemplate = `{
             }
         },
         "request.DeleteGuildConfigDaoProposal": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.DeleteGuildConfigDaoTracker": {
             "type": "object",
             "properties": {
                 "id": {
@@ -9253,6 +9506,20 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpsertGuildConfigDaoTracer": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "snapshot_url": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
@@ -9784,6 +10051,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.TradeOffer"
+                }
+            }
+        },
+        "response.CreateTwitterSaleConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.SaleBotTwitterConfig"
                 }
             }
         },
@@ -10528,6 +10803,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetSaleTwitterConfigResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SaleBotTwitterConfig"
+                    }
+                }
+            }
+        },
         "response.GetSalesTrackerConfigResponse": {
             "type": "object",
             "properties": {
@@ -10840,6 +11126,17 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GuildConfigDaoTrackerResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigDaoTracker"
+                    }
                 }
             }
         },

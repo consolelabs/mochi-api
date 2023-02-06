@@ -1399,13 +1399,9 @@ func (e *Entity) UpsertGuildConfigDaoTracker(req request.UpsertGuildConfigDaoTra
 		return fmt.Errorf("proposal space id invalid")
 	}
 
-	err = e.repo.GuildConfigDaoTracker.Upsert(model.GuildConfigDaoTracker{
+	return  e.repo.GuildConfigDaoTracker.Upsert(model.GuildConfigDaoTracker{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 		Space:     spaceId,
 	})
-	if err != nil {
-		return err
-	}
-	return nil
 }
