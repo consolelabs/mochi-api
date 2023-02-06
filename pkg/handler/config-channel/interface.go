@@ -31,4 +31,8 @@ type IHandler interface {
 	GetGuildConfigDaoProposal(c *gin.Context)
 	DeleteGuildConfigDaoProposal(c *gin.Context)
 	CreateProposalChannelConfig(c *gin.Context)
+
+	GetGuildConfigDaoTracker(c *gin.Context)
+	DeleteGuildConfigDaoTracker(c *gin.Context)
+	UpsertGuildConfigDaoTracker(c *gin.Context)
 }

@@ -222,6 +222,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.GET("/:guild_id/proposal", h.ConfigChannel.GetGuildConfigDaoProposal)
 		configChannelGroup.DELETE("/proposal", h.ConfigChannel.DeleteGuildConfigDaoProposal)
 		configChannelGroup.POST("/proposal", h.ConfigChannel.CreateProposalChannelConfig)
+		// config dao tracker channel
+		configChannelGroup.GET("/dao-tracker/:guild_id", h.ConfigChannel.GetGuildConfigDaoTracker)
+		configChannelGroup.DELETE("/dao-tracker", h.ConfigChannel.DeleteGuildConfigDaoTracker)
+		configChannelGroup.POST("/dao-tracker", h.ConfigChannel.UpsertGuildConfigDaoTracker)
 	}
 
 	configRoleGroup := v1.Group("/config-roles")
@@ -430,6 +434,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		webhook.POST("/nft", h.Webhook.WebhookNftHandler)
 		webhook.POST("/topgg", h.Webhook.WebhookUpvoteTopGG)
 		webhook.POST("/discordbotlist", h.Webhook.WebhookUpvoteDiscordBot)
+		webhook.POST("/snapshot", h.Webhook.WebhookSnapshotProposal)
 	}
 	dataWebhookGroup := v1.Group("/data-webhook")
 	{

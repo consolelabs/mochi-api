@@ -24,6 +24,7 @@ import (
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
+	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -119,6 +120,7 @@ type Repo struct {
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigPruneExclude              guildconfigpruneexclude.Store
 	GuildConfigLevelUpMessage            guildconfiglevelupmessage.Store
+	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store

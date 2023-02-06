@@ -634,3 +634,24 @@ func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalChannelID,
 	}
 	return discussionChannel.ID, nil
 }
+
+func (d *Discord) NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error {
+	body := proposal.Proposal.Body
+	if len(body) > 250 {
+		body = body[0:249] + "..."
+	}
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", proposal.Proposal.Title),
+		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Vote [here](https://snapshot.org/#/%s/proposal/%s)\n<:transaction:933341692667506718> Voting will close at: <t:%d>", body, proposal.Proposal.Space.ID, proposal.Proposal.ID, proposal.Proposal.End),
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
+		Content: "> @everyone",
+		Embed:   &msgEmbed,
+	})
+	if err != nil {
+		d.log.Error(err, "[discord.NotifyNewProposal] d.session.ChannelMessageSendEmbed() failed")
+	}
+	return err
+}
