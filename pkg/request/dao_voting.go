@@ -47,3 +47,13 @@ type TokenHolderStatusRequest struct {
 	ProposalID *int64    `json:"proposal_id" form:"proposal_id"`
 	GuildID    string    `json:"guild_id" form:"guild_id"`
 }
+
+type DeleteGuildConfigDaoTracker struct {
+	ID string `json:"id"`
+}
+
+type UpsertGuildConfigDaoTracer struct {
+	GuildID     string `json:"guild_id"`
+	ChannelID   string `json:"channel_id"`
+	SnapshotURL string `json:"snapshot_url"`
+}

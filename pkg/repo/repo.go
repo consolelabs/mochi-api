@@ -24,6 +24,7 @@ import (
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
+	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -59,6 +60,7 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	nftsoulbound "github.com/defipod/mochi/pkg/repo/nft_soulbound"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
@@ -77,6 +79,8 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
+	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
+	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
@@ -116,6 +120,7 @@ type Repo struct {
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigPruneExclude              guildconfigpruneexclude.Store
 	GuildConfigLevelUpMessage            guildconfiglevelupmessage.Store
+	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
@@ -182,4 +187,7 @@ type Repo struct {
 	UserTokenBalance                     usertokenbalance.Store
 	Envelop                              envelop.Store
 	GuildConfigXPRole                    guildconfigxprole.Store
+	NftSoulbound                         nftsoulbound.Store
+	SaleBotMarketplace                   salebotmarketplace.Store
+	SaleBotTwitterConfig                 salebottwitterconfig.Store
 }

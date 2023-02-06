@@ -756,3 +756,36 @@ func (h *Handler) GetTradeOffer(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// this used to get data from indexer and put in new table
+// TODO(trkhoi): put this in background job instead of api
+func (h *Handler) EnrichSoulboundNFT(c *gin.Context) {
+	collectionAddress := c.Query("collection_address")
+	err := h.entities.EnrichSoulboundNFT(collectionAddress)
+	if err != nil {
+		h.log.Error(err, "[handler.EnrichSoulboundNFT] entities.EnrichSoulboundNFT failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusCreated, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// GetSoulboundNFT     godoc
+// @Summary     Get Nft Soulbound
+// @Description Get Nft Soulbound
+// @Tags        NFT
+// @Accept      json
+// @Produce     json
+// @Param       collection_address query  string true  "collection address"
+// @Success     200 {object} response.GetSoulBoundNFTResponse
+// @Router      /nfts/soulbound [get]
+func (h *Handler) GetSoulboundNFT(c *gin.Context) {
+	collectionAddress := c.Query("collection_address")
+	res, err := h.entities.GetSoulboundNFT(collectionAddress)
+	if err != nil {
+		h.log.Error(err, "[handler.GetSoulboundNFT] entities.GetSoulboundNFT failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusCreated, response.CreateResponse(res, nil, nil, nil))
+}
