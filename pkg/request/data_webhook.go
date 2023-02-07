@@ -18,6 +18,7 @@ type NotifyCompleteNftSyncRequest struct {
 type NotifySaleMarketplaceRequest struct {
 	Event       string     `json:"event"`
 	TokenId     string     `json:"token_id"`
+	ChainID     int64      `json:"chain_id"`
 	Address     string     `json:"address"`
 	Marketplace string     `json:"marketplace"`
 	Transaction string     `json:"transaction"`

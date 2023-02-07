@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/response"
+	res "github.com/defipod/mochi/pkg/response"
 )
 
 type bluemoveService struct {
@@ -25,75 +24,39 @@ func New(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-func (b *bluemoveService) GetCollections(chainId, page, pageSize string) (*response.BluemoveCollectionsResponse, error) {
+func (s *bluemoveService) GetCollection(collectionAddress, chainId string) (*model.NFTCollection, error) {
 	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/collections?pagination[page]=%s&pagination[pageSize]=%s", b.ChooseBluemoveChain(chainId), page, pageSize), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/collections?collection_address=%s&chain_id=%s", s.config.MarketplaceBaseUrl.Bluemove, collectionAddress, chainId), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	request.Header.Add("Content-Type", "application/json")
 
-	resp, err := client.Do(request)
+	response, err := client.Do(request)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
-	resBody, err := ioutil.ReadAll(resp.Body)
+	defer response.Body.Close()
+	resBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
-	res := &response.BluemoveCollectionsResponse{}
+	res := &res.BluemoveCollectionResponse{}
 	err = json.Unmarshal(resBody, res)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
-}
-
-func (b *bluemoveService) SelectBluemoveCollection(collectionAddress, chainId string) (*model.NFTCollection, error) {
-	page := 0
-	pageSize := 100
-	mapCollections := make([]response.BluemoveCollectionDetail, 0)
-	for {
-		collections, err := b.GetCollections(chainId, fmt.Sprintf("%d", page), fmt.Sprintf("%d", pageSize))
-		if err != nil {
-			return nil, err
-		}
-
-		mapCollections = append(mapCollections, collections.Data...)
-
-		if int64(page) == collections.Meta.Pagination.PageCount {
-			break
-		}
-		page++
-	}
-
-	// select collection
-	for _, collection := range mapCollections {
-		if collection.Attributes.Creator == collectionAddress {
-			return &model.NFTCollection{
-				ChainID: chainId,
-				Name:    collection.Attributes.Name,
-				Symbol:  collection.Attributes.Slug,
-				Address: collectionAddress,
-				Image:   collection.Attributes.Uri,
-				Author:  strconv.Itoa(int(collection.Id)),
-			}, nil
-		}
-	}
-	return nil, nil
-}
-
-func (b *bluemoveService) ChooseBluemoveChain(chainId string) string {
-	switch chainId {
-	case "9999":
-		return b.config.MarketplaceBaseUrl.BluemoveAptos
-	case "9997":
-		return b.config.MarketplaceBaseUrl.BluemoveSui
-	default:
-		return b.config.MarketplaceBaseUrl.BluemoveAptos
-	}
+	return &model.NFTCollection{
+		Address:    collectionAddress,
+		Name:       res.Data.Name,
+		Symbol:     res.Data.Symbol,
+		ChainID:    chainId,
+		ERCFormat:  res.Data.ERCFormat,
+		IsVerified: res.Data.IsVerified,
+		Image:      res.Data.Image,
+		Author:     res.Data.Author,
+	}, nil
 }

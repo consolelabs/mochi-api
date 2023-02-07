@@ -1,12 +1,7 @@
 package bluemove
 
-import (
-	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/response"
-)
+import "github.com/defipod/mochi/pkg/model"
 
 type Service interface {
-	GetCollections(chainId, page, pageSize string) (*response.BluemoveCollectionsResponse, error)
-	SelectBluemoveCollection(collectionAddress, chainId string) (*model.NFTCollection, error)
-	ChooseBluemoveChain(chainId string) string
+	GetCollection(collectionAddress, chainId string) (*model.NFTCollection, error)
 }

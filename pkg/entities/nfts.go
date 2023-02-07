@@ -413,7 +413,7 @@ func (e *Entity) CreateBluemoveNFTCollection(req request.CreateNFTCollectionRequ
 
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, _ := strconv.Atoi(convertedChainId)
-	collection, err := e.svc.Bluemove.SelectBluemoveCollection(req.Address, convertedChainId)
+	collection, err := e.svc.Bluemove.GetCollection(req.Address, convertedChainId)
 	if err != nil {
 		e.log.Errorf(err, "[e.svc.Bluemove.SelectBluemoveCollection] failed to get bluemove collection: %v", err)
 		return nil, err

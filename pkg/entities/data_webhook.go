@@ -159,8 +159,15 @@ func (e *Entity) NotifyNftCollectionSync(req request.NotifyCompleteNftSyncReques
 func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.Address)
 	if err != nil {
-		e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.Address)
-		return err
+		e.CreateBluemoveNFTCollection(request.CreateNFTCollectionRequest{
+			Address:      nftSale.Address,
+			ChainID:      strconv.Itoa(int(nftSale.ChainID)),
+			Author:       "393034938028392449",
+			PriorityFlag: false,
+		})
+		return nil
+		// e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.Address)
+		// return err
 	}
 
 	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.Address, nftSale.TokenId)
