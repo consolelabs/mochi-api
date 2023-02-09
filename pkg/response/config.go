@@ -178,3 +178,11 @@ type ListGuildXPRoles struct {
 type GuildConfigDaoTrackerResponse struct {
 	Data *[]model.GuildConfigDaoTracker `json:"data"`
 }
+
+type CreateGuildMixRole struct {
+	Data *model.GuildConfigMixRole `json:"data"`
+}
+
+type ListGuildMixRoles struct {
+	Data []model.GuildConfigMixRole `json:"data"`
+}
