@@ -7,10 +7,9 @@ package mock_covalent
 import (
 	reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
-
 	response "github.com/defipod/mochi/pkg/response"
 	covalent "github.com/defipod/mochi/pkg/service/covalent"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockService is a mock of Service interface.
@@ -36,6 +35,21 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// GetHistoricalPortfolio mocks base method.
+func (m *MockService) GetHistoricalPortfolio(chainID int, address string, retry int) (*covalent.GetHistoricalPortfolioResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHistoricalPortfolio", chainID, address, retry)
+	ret0, _ := ret[0].(*covalent.GetHistoricalPortfolioResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHistoricalPortfolio indicates an expected call of GetHistoricalPortfolio.
+func (mr *MockServiceMockRecorder) GetHistoricalPortfolio(chainID, address, retry interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalPortfolio", reflect.TypeOf((*MockService)(nil).GetHistoricalPortfolio), chainID, address, retry)
+}
+
 // GetHistoricalTokenPrices mocks base method.
 func (m *MockService) GetHistoricalTokenPrices(chainID int, currency, address string) (*response.HistoricalTokenPricesResponse, error, int) {
 	m.ctrl.T.Helper()
@@ -53,16 +67,16 @@ func (mr *MockServiceMockRecorder) GetHistoricalTokenPrices(chainID, currency, a
 }
 
 // GetTransactionsByAddress mocks base method.
-func (m *MockService) GetTransactionsByAddress(chainID int, address string) (*covalent.GetTransactionsResponse, error) {
+func (m *MockService) GetTransactionsByAddress(chainID int, address string, size, retry int) (*covalent.GetTransactionsResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransactionsByAddress", chainID, address)
+	ret := m.ctrl.Call(m, "GetTransactionsByAddress", chainID, address, size, retry)
 	ret0, _ := ret[0].(*covalent.GetTransactionsResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTransactionsByAddress indicates an expected call of GetTransactionsByAddress.
-func (mr *MockServiceMockRecorder) GetTransactionsByAddress(chainID, address interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetTransactionsByAddress(chainID, address, size, retry interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsByAddress", reflect.TypeOf((*MockService)(nil).GetTransactionsByAddress), chainID, address)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransactionsByAddress", reflect.TypeOf((*MockService)(nil).GetTransactionsByAddress), chainID, address, size, retry)
 }

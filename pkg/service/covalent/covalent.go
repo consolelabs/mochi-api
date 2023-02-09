@@ -44,13 +44,38 @@ func (c *Covalent) GetHistoricalTokenPrices(chainID int, currency string, addres
 	return data, nil, http.StatusOK
 }
 
-func (c *Covalent) GetTransactionsByAddress(chainID int, address string) (*GetTransactionsResponse, error) {
-	url := c.getFullUrl(fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=1000", chainID, address))
+func (c *Covalent) GetTransactionsByAddress(chainID int, address string, size int, retry int) (*GetTransactionsResponse, error) {
+	url := c.getFullUrl(fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=%d", chainID, address, size))
 	res := &GetTransactionsResponse{}
 	statusCode, err := util.FetchData(url, res)
 	if err != nil {
-		c.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[covalent.GetTransactionsByAddress] utils.MakeRequest() failed")
+		c.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[covalent.GetTransactionsByAddress] util.FetchData() failed")
 		return nil, err
+	}
+	if res.Error {
+		if retry == 0 {
+			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+		} else {
+			return c.GetTransactionsByAddress(chainID, address, size, retry-1)
+		}
+	}
+	return res, nil
+}
+
+func (c *Covalent) GetHistoricalPortfolio(chainID int, address string, retry int) (*GetHistoricalPortfolioResponse, error) {
+	url := c.getFullUrl(fmt.Sprintf("/%d/address/%s/portfolio_v2/", chainID, address))
+	res := &GetHistoricalPortfolioResponse{}
+	statusCode, err := util.FetchData(url, res)
+	if err != nil {
+		c.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[covalent.GetHistoricalPortfolio] util.FetchData() failed")
+		return nil, err
+	}
+	if res.Error {
+		if retry == 0 {
+			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+		} else {
+			return c.GetHistoricalPortfolio(chainID, address, retry-1)
+		}
 	}
 	return res, nil
 }
