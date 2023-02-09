@@ -159,6 +159,7 @@ func (e *Entity) NotifyNftCollectionSync(req request.NotifyCompleteNftSyncReques
 func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequest) error {
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.Address)
 	if err != nil {
+		e.log.Infof("Collection not exist yet, adding it to database")
 		// TODO(trkhoi): handle for evm chain
 		if nftSale.ChainId == 9999 || nftSale.ChainId == 9997 {
 			e.CreateBluemoveNFTCollection(request.CreateNFTCollectionRequest{
@@ -166,6 +167,17 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 				ChainID: strconv.Itoa(int(nftSale.ChainId)),
 
 				Author:       "393034938028392449",
+				PriorityFlag: false,
+			})
+		}
+
+		if nftSale.ChainId == 66 {
+			e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
+				Address:      nftSale.Address,
+				ChainID:      strconv.Itoa(int(nftSale.ChainId)),
+				Author:       "393034938028392449",
+				GuildID:      "891310117658705931",
+				MessageID:    nftSale.Address,
 				PriorityFlag: false,
 			})
 		}
@@ -358,7 +370,7 @@ func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceReques
 			SubPnlPer:       subPnlPer,
 			Name:            collection.Name + " #" + nftSale.TokenId,
 			RarityRate:      "N/A",
-			Image:           "",
+			Image:           nftSale.Image,
 			Marketplace:     marketplace,
 			TokenID:         nftSale.TokenId,
 		}, nil
