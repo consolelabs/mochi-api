@@ -695,7 +695,7 @@ func (e *Entity) HandleMemberAdd(member *discordgo.Member) error {
 }
 
 func (e *Entity) HandleSnapshotEvent(req *request.SnapshotEvent) error {
-	if req.Event != "proposal/created" {
+	if req.Event != "proposal/start" {
 		return nil
 	}
 	// id: 'proposal/QmZ21uS8tVucpaNq2LZCbZUmHhYYXunC1ZS2gPDNWwPWD9'
