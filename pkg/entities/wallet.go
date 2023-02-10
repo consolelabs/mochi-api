@@ -28,7 +28,7 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 	chainIDs := []int{1, 56, 137, 250}
 	for i, wallet := range wallets {
 		for _, chainID := range chainIDs {
-			res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, wallet.Address, 3)
+			res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, wallet.Address, 5)
 			if err != nil {
 				e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.GetTrackingWallets] svc.Covalent.GetHistoricalPortfolio() failed")
 				return nil, err
@@ -91,7 +91,7 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 	chainIDs := []int{1, 56, 137, 250}
 	var assets []response.WalletAssetData
 	for _, chainID := range chainIDs {
-		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, req.Address, 3)
+		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, req.Address, 5)
 		if err != nil {
 			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.ListWalletAssets] svc.Covalent.GetHistoricalPortfolio() failed")
 			return nil, err
