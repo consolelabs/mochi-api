@@ -20,6 +20,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
 	"github.com/defipod/mochi/pkg/handler/verify"
+	"github.com/defipod/mochi/pkg/handler/wallet"
 	"github.com/defipod/mochi/pkg/handler/webhook"
 	"github.com/defipod/mochi/pkg/handler/widget"
 	"github.com/defipod/mochi/pkg/logger"
@@ -46,6 +47,7 @@ type Handler struct {
 	ConfigRoles       configroles.IHandler
 	DaoVoting         daovoting.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
+	Wallet            wallet.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -70,5 +72,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ConfigRoles:       configroles.New(entities, logger),
 		DaoVoting:         daovoting.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
+		Wallet:            wallet.New(entities, logger),
 	}
 }

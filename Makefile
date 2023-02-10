@@ -84,6 +84,7 @@ gen-mock:
 	@mockgen -source=./pkg/repo/discord_guild_stat_channels/store.go -destination=./pkg/repo/discord_guild_stat_channels/mocks/store.go
 	@mockgen -source=./pkg/repo/chain/store.go -destination=./pkg/repo/chain/mocks/store.go
 	@mockgen -source=./pkg/service/coingecko/service.go -destination=./pkg/service/coingecko/mocks/service.go
+	@mockgen -source=./pkg/service/covalent/service.go -destination=./pkg/service/covalent/mocks/service.go
 	@mockgen -source=./pkg/repo/guild_config_sales_tracker/store.go -destination=./pkg/repo/guild_config_sales_tracker/mocks/store.go
 	@mockgen -source=./pkg/service/indexer/service.go -destination=./pkg/service/indexer/mocks/service.go
 	@mockgen -source=./pkg/service/marketplace/service.go -destination=./pkg/service/marketplace/mocks/service.go

@@ -51,7 +51,7 @@ func (job *watchEvmDeposits) Run() error {
 			log.Info("[watchEvmDeposits] no chainID")
 			continue
 		}
-		transactionsRes, err := covalentSvc.GetTransactionsByAddress(*contract.Chain.ChainID, contract.ContractAddress)
+		transactionsRes, err := covalentSvc.GetTransactionsByAddress(*contract.Chain.ChainID, contract.ContractAddress, 1000, 3)
 		if err != nil {
 			log.Error(err, "[watchEvmDeposits] covalentSvc.GetTransactionsByAddress() failed")
 			continue
@@ -163,13 +163,18 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 	decimals := event.SenderContractDecimals
 	tx.TokenSymbol = event.SenderContractTickerSymbol
 	for _, p := range event.Decoded.Params {
-		if strings.EqualFold(p.Name, "to") && !strings.EqualFold(p.Value, contractAddress) {
+		val, ok := p.Value.(string)
+		if !ok {
+			l.Info("[getTxDetails] value not string")
+			return false, nil
+		}
+		if strings.EqualFold(p.Name, "to") && !strings.EqualFold(val, contractAddress) {
 			l.Info("[getTxDetails] different recipient address")
 			return false, nil
 		}
 		if strings.EqualFold(p.Name, "value") {
 			amount := new(big.Int)
-			amount, ok := amount.SetString(p.Value, 10)
+			amount, ok = amount.SetString(val, 10)
 			if !ok {
 				err := fmt.Errorf("invalid tx amount %s", p.Value)
 				l.Error(err, "[getTxDetails] invalid erc20 amount")

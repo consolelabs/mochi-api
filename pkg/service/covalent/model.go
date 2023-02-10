@@ -16,11 +16,11 @@ type decoded struct {
 }
 
 type decodedParams struct {
-	Name    string `json:"name"`
-	Type    string `json:"type"`
-	Indexed bool   `json:"indexed"`
-	Decoded bool   `json:"decoded"`
-	Value   string `json:"value"`
+	Name    string      `json:"name"`
+	Type    string      `json:"type"`
+	Indexed bool        `json:"indexed"`
+	Decoded bool        `json:"decoded"`
+	Value   interface{} `json:"value"`
 }
 
 type logEvent struct {
@@ -77,6 +77,53 @@ type GetTransactionsByAddressData struct {
 type GetTransactionsResponse struct {
 	Data         GetTransactionsByAddressData `json:"data"`
 	Error        bool                         `json:"error"`
-	ErrorMessage *string                      `json:"error_message"`
-	ErrorCode    *int                         `json:"error_code"`
+	ErrorMessage string                       `json:"error_message"`
+	ErrorCode    int                          `json:"error_code"`
+}
+
+type portfolioItem struct {
+	ContractDecimals     int         `json:"contract_decimals"`
+	ContractName         string      `json:"contract_name"`
+	ContractTickerSymbol string      `json:"contract_ticker_symbol"`
+	ContractAddress      string      `json:"contract_address"`
+	SupportsErc          interface{} `json:"supports_erc"`
+	LogoURL              string      `json:"logo_url"`
+	Holdings             []struct {
+		Timestamp time.Time `json:"timestamp"`
+		QuoteRate float64   `json:"quote_rate"`
+		Open      struct {
+			Balance string  `json:"balance"`
+			Quote   float64 `json:"quote"`
+		} `json:"open"`
+		High struct {
+			Balance string  `json:"balance"`
+			Quote   float64 `json:"quote"`
+		} `json:"high"`
+		Low struct {
+			Balance string  `json:"balance"`
+			Quote   float64 `json:"quote"`
+		} `json:"low"`
+		Close struct {
+			Balance string  `json:"balance"`
+			Quote   float64 `json:"quote"`
+		} `json:"close"`
+	} `json:"holdings"`
+}
+
+type GetHistoricalPortfolioData struct {
+	Address       string          `json:"address"`
+	UpdatedAt     time.Time       `json:"updated_at"`
+	NextUpdateAt  time.Time       `json:"next_update_at"`
+	QuoteCurrency string          `json:"quote_currency"`
+	ChainID       int             `json:"chain_id"`
+	ChainName     string          `json:"chain_name"`
+	Items         []portfolioItem `json:"items"`
+	Pagination    interface{}     `json:"pagination"`
+}
+
+type GetHistoricalPortfolioResponse struct {
+	Data         *GetHistoricalPortfolioData `json:"data"`
+	Error        bool                        `json:"error"`
+	ErrorMessage string                      `json:"error_message"`
+	ErrorCode    int                         `json:"error_code"`
 }
