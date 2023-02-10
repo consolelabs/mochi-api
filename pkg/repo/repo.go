@@ -93,6 +93,7 @@ import (
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 )
@@ -192,4 +193,5 @@ type Repo struct {
 	SaleBotMarketplace                   salebotmarketplace.Store
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigMixRole                   guildconfigmixrole.Store
+	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 }

@@ -14,6 +14,8 @@ func GetURLMarketPlace(marketplace string) (urlMarketPlace string) {
 		return "https://paintswap.finance/marketplace/collections/"
 	case "quixotic":
 		return "https://quixotic.io/asset/"
+	case "okx":
+		return "https://www.okx.com/web3/nft/markets/okc/"
 	default:
 		return ""
 	}
@@ -33,6 +35,8 @@ func GetTransactionUrl(marketplace string) (urlMarketPlace string) {
 		return "https://ftmscan.com/tx/"
 	case "x2y2":
 		return "https://etherscan.io/tx/"
+	case "okx":
+		return "https://www.oklink.com/en/okc/tx/"
 	default:
 		return ""
 	}
@@ -52,6 +56,8 @@ func GetWalletUrl(marketplace string) (urlMarketPlace string) {
 		return "https://ftmscan.com/address/"
 	case "x2y2":
 		return "https://etherscan.io/address/"
+	case "okx":
+		return "https://www.oklink.com/en/middle/multi-search?key="
 	default:
 		return ""
 	}

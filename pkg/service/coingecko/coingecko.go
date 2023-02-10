@@ -68,17 +68,27 @@ func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, in
 
 func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]float64, error) {
 	resp := &response.CoinPriceResponse{}
-	coinIDsArg := strings.Join(coinIDs, ",")
-	statusCode, err := util.FetchData(fmt.Sprintf(c.getPriceURL, coinIDsArg, currency), resp)
-	if err != nil || statusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
+	coinIDsArg := ""
+	icyIsExist := false
+	for _, v := range coinIDs {
+		if v != "icy" {
+			coinIDsArg = coinIDsArg + "," + v
+		} else {
+			icyIsExist = true
+		}
+	}
+	if coinIDsArg != "" {
+		statusCode, err := util.FetchData(fmt.Sprintf(c.getPriceURL, coinIDsArg, currency), resp)
+		if err != nil || statusCode != http.StatusOK {
+			return nil, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
+		}
 	}
 
 	prices := make(map[string]float64)
 	for k, v := range *resp {
 		prices[k] = v[currency]
 	}
-	if strings.Contains(coinIDsArg, "icy") && currency == "usd" {
+	if icyIsExist && currency == "usd" {
 		prices["icy"] = 1.5
 	}
 
