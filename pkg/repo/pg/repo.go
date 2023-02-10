@@ -95,6 +95,7 @@ import (
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
+	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
 )
@@ -195,5 +196,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		NftSoulbound:                         nftsoulbound.NewPG(db),
 		SaleBotMarketplace:                   salebotmarketplace.NewPG(db),
 		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
+		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
 	}
 }

@@ -124,6 +124,16 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("/xp", h.User.SendUserXP)
 		userGroup.POST("/envelop", h.User.CreateEnvelop)
 		userGroup.GET("/:id/envelop-streak", h.User.GetUserEnvelopStreak) // get users upvote streak
+
+		walletsGroup := userGroup.Group("/:id/wallets")
+		{
+			walletsGroup.GET("", h.Wallet.List)
+			walletsGroup.POST("/track", h.Wallet.Track)
+			walletsGroup.POST("/untrack", h.Wallet.Untrack)
+			walletsGroup.GET("/:address", h.Wallet.GetOne)
+			walletsGroup.GET("/:address/assets", h.Wallet.ListAssets)
+			walletsGroup.GET("/:address/txns", h.Wallet.ListTransactions)
+		}
 	}
 
 	communityGroup := v1.Group("/community")

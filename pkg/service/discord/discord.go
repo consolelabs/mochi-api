@@ -2,6 +2,7 @@ package discord
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -640,9 +641,12 @@ func (d *Discord) NotifyNewProposal(channelID string, proposal response.Snapshot
 	if len(body) > 250 {
 		body = body[0:249] + "..."
 	}
+	// remove image file name
+	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
+	res := reg.ReplaceAllString(body, " ")
 	msgEmbed := discordgo.MessageEmbed{
 		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", proposal.Proposal.Title),
-		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Vote [here](https://snapshot.org/#/%s/proposal/%s)\n<:transaction:933341692667506718> Voting will close at: <t:%d>", body, proposal.Proposal.Space.ID, proposal.Proposal.ID, proposal.Proposal.End),
+		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Vote [here](https://snapshot.org/#/%s/proposal/%s)\n<:transaction:933341692667506718> Voting will close at: <t:%d>", res, proposal.Proposal.Space.ID, proposal.Proposal.ID, proposal.Proposal.End),
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
