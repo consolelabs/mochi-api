@@ -649,3 +649,86 @@ func (h *Handler) RemoveGuildXPRole(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// CreateGuildMixRole     godoc
+// @Summary     Create guild Mix role config
+// @Description Create guild Mix role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       Request   body  request.CreateGuildMixRole true  "Create guild Mix role config request"
+// @Success     200 {object} response.CreateGuildMixRole
+// @Router      /config-roles/mix-roles [post]
+func (h *Handler) CreateGuildMixRole(c *gin.Context) {
+	req := request.CreateGuildMixRole{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildMixRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.CreateGuildMixRole(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildMixRole] - e.CreateGuildXPRole failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// ListGuildMixRoles     godoc
+// @Summary     Get list Mix role config of guild
+// @Description Get list Mix role config of guild
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ListGuildMixRoles
+// @Router      /config-roles/mix-roles/ [get]
+func (h *Handler) ListGuildMixRoles(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.ListGuildMixRoles] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.ListGuildMixRoles(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildMixRoles] - e.ListGuildMixRoles failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// RemoveGuildMixRole     godoc
+// @Summary     Remove guild Mix role config
+// @Description Remove guild Mix role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       id  path  int true  "Config ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-roles/mix-roles/{id} [delete]
+func (h *Handler) RemoveGuildMixRole(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"id": idStr,
+		}).Error(err, "[handler.RemoveGuildMixRole] - strconv.Atoi failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
+		return
+	}
+
+	if err := h.entities.RemoveGuildMixRole(id); err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildMixRole] - e.RemoveGuildMixRole failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

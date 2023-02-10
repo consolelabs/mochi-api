@@ -34,7 +34,8 @@ func GetStatusCode(err error) int {
 		ErrInvalidVoteID,
 		ErrInvalidVoteChoice,
 		ErrInvalidAuthorityType,
-		ErrXPRoleExisted:
+		ErrXPRoleExisted,
+		ErrMixRoleExisted:
 		code = http.StatusBadRequest
 	default:
 		code = http.StatusInternalServerError
