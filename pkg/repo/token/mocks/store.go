@@ -48,6 +48,21 @@ func (mr *MockStoreMockRecorder) CreateOne(token interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), token)
 }
 
+// Get mocks base method.
+func (m *MockStore) Get(id int) (*model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", id)
+	ret0, _ := ret[0].(*model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockStoreMockRecorder) Get(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockStore)(nil).Get), id)
+}
+
 // GetAll mocks base method.
 func (m *MockStore) GetAll() ([]model.Token, error) {
 	m.ctrl.T.Helper()

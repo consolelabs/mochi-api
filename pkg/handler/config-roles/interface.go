@@ -29,4 +29,8 @@ type IHandler interface {
 	CreateGuildXPRole(c *gin.Context)
 	ListGuildXPRoles(c *gin.Context)
 	RemoveGuildXPRole(c *gin.Context)
+
+	CreateGuildMixRole(c *gin.Context)
+	ListGuildMixRoles(c *gin.Context)
+	RemoveGuildMixRole(c *gin.Context)
 }

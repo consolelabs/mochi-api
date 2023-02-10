@@ -63,6 +63,10 @@ func (pg *pg) GetAll() ([]model.Token, error) {
 	return tokens, pg.db.Find(&tokens).Error
 }
 
+func (pg *pg) Get(id int) (model *model.Token, err error) {
+	return model, pg.db.First(&model, id).Error
+}
+
 func (pg *pg) GetSupportedTokenByGuildId(guildID string) ([]model.Token, error) {
 	var tokens []model.Token
 	return tokens, pg.db.

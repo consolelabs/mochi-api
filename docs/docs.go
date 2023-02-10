@@ -2595,6 +2595,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-roles/mix-roles": {
+            "post": {
+                "description": "Create guild Mix role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Create guild Mix role config",
+                "parameters": [
+                    {
+                        "description": "Create guild Mix role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateGuildMixRole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateGuildMixRole"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/mix-roles/": {
+            "get": {
+                "description": "Get list Mix role config of guild",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get list Mix role config of guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListGuildMixRoles"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/mix-roles/{id}": {
+            "delete": {
+                "description": "Remove guild Mix role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove guild Mix role config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/config-roles/nft-roles": {
             "get": {
                 "description": "List guild nft roles",
@@ -7236,6 +7334,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigMixRole": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nft_requirement": {
+                    "$ref": "#/definitions/model.MixRoleNFTRequirement"
+                },
+                "nft_requirement_id": {
+                    "type": "integer"
+                },
+                "required_level": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "token_requirement": {
+                    "$ref": "#/definitions/model.MixRoleTokenRequirement"
+                },
+                "token_requirement_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigRepostReaction": {
             "type": "object",
             "properties": {
@@ -7504,6 +7637,52 @@ const docTemplate = `{
                 "valid": {
                     "description": "Valid is true if String is not NULL",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.MixRoleNFTRequirement": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nft_collection": {
+                    "$ref": "#/definitions/model.NFTCollection"
+                },
+                "nft_collection_id": {
+                    "type": "string"
+                },
+                "required_amount": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MixRoleTokenRequirement": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "required_amount": {
+                    "type": "number"
+                },
+                "token": {
+                    "$ref": "#/definitions/model.Token"
+                },
+                "token_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -8666,6 +8845,30 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateGuildMixRole": {
+            "type": "object",
+            "required": [
+                "guild_id",
+                "role_id"
+            ],
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "nft_requirement": {
+                    "$ref": "#/definitions/request.MixRoleNFTRequirement"
+                },
+                "required_level": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                },
+                "token_requirement": {
+                    "$ref": "#/definitions/request.MixRoleTokenRequirement"
+                }
+            }
+        },
         "request.CreateGuildRequest": {
             "type": "object",
             "properties": {
@@ -9045,6 +9248,36 @@ const docTemplate = `{
             "properties": {
                 "access_token": {
                     "type": "string"
+                }
+            }
+        },
+        "request.MixRoleNFTRequirement": {
+            "type": "object",
+            "required": [
+                "amount",
+                "nft_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "nft_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.MixRoleTokenRequirement": {
+            "type": "object",
+            "required": [
+                "amount",
+                "token_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "token_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -10011,6 +10244,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.Envelop"
+                }
+            }
+        },
+        "response.CreateGuildMixRole": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.GuildConfigMixRole"
                 }
             }
         },
@@ -11643,6 +11884,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.ListGuildNFTRoleConfigsResponse"
+                    }
+                }
+            }
+        },
+        "response.ListGuildMixRoles": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigMixRole"
                     }
                 }
             }
