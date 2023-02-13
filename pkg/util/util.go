@@ -515,8 +515,7 @@ func Uint8ToIntPointer(u uint8) *int {
 }
 
 func FetchData(url string, parseForm interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 30}
-
+	client := &http.Client{Timeout: time.Second * 60}
 	resp, err := client.Get(url)
 	if err != nil {
 		return http.StatusInternalServerError, err
