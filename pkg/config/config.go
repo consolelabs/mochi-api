@@ -319,8 +319,8 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
-	v.SetDefault("BLUEMOVE_APTOS_BASE_URL", "https://aptos-mainnet-api.bluemove.net/api")
-	v.SetDefault("BLUEMOVE_SUI_BASE_URL", "https://sui-testnet-api.bluemove.net/api")
+	v.SetDefault("BLUEMOVE_APTOS_BASE_URL", "https://3rd.console.so/bluemove/api")
+	v.SetDefault("BLUEMOVE_SUI_BASE_URL", "https://3rd.console.so/bluemove/api")
 	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
 
