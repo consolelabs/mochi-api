@@ -23,7 +23,7 @@ type decodedParams struct {
 	Value   interface{} `json:"value"`
 }
 
-type logEvent struct {
+type LogEvent struct {
 	BlockSignedAt              time.Time   `json:"block_signed_at"`
 	BlockHeight                int         `json:"block_height"`
 	TxOffset                   int         `json:"tx_offset"`
@@ -58,7 +58,7 @@ type TransactionItemData struct {
 	FeesPaid         string      `json:"fees_paid"`
 	GasQuote         float64     `json:"gas_quote"`
 	GasQuoteRate     float64     `json:"gas_quote_rate"`
-	LogEvents        []logEvent  `json:"log_events"`
+	LogEvents        []LogEvent  `json:"log_events"`
 	TokenSymbol      string      `json:"-"`
 	TokenContract    string      `json:"-"`
 	Amount           float64     `json:"-"`

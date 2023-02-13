@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/big"
 	"sort"
+	"strconv"
 	"strings"
 
 	"gorm.io/gorm"
@@ -41,6 +42,13 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 					continue
 				}
 				latest := asset.Holdings[0]
+				if strings.EqualFold(asset.ContractTickerSymbol, "icy") {
+					bal, ok := new(big.Float).SetString(latest.Open.Balance)
+					if ok {
+						parsedBal, _ := bal.Float64()
+						latest.Open.Quote = 1.5 * parsedBal / math.Pow10(asset.ContractDecimals)
+					}
+				}
 				wallets[i].NetWorth += latest.Open.Quote
 			}
 		}
@@ -109,11 +117,15 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 				continue
 			}
 			parsedBal, _ := bal.Float64()
+			assetBal := parsedBal / math.Pow10(item.ContractDecimals)
+			if strings.EqualFold(item.ContractTickerSymbol, "icy") {
+				latest.Open.Quote = 1.5 * assetBal
+			}
 			assets = append(assets, response.WalletAssetData{
 				ChainID:        chainID,
 				ContractName:   item.ContractName,
 				ContractSymbol: item.ContractTickerSymbol,
-				AssetBalance:   parsedBal / math.Pow10(item.ContractDecimals),
+				AssetBalance:   assetBal,
 				UsdBalance:     latest.Open.Quote,
 			})
 		}
@@ -125,9 +137,6 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 	chainIDs := []int{1, 56, 137, 250}
 	var txns []response.WalletTransactionData
 	for _, chainID := range chainIDs {
-		chain, _ := e.repo.Chain.GetByID(chainID)
-		nativeSymbol := chain.Currency
-		txBaseUrl := chain.TxBaseURL
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
 		if err != nil {
 			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.ListWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
@@ -138,13 +147,12 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 		}
 		for _, item := range res.Data.Items {
 			tx := response.WalletTransactionData{
-				ChainID:      chainID,
-				From:         item.FromAddress,
-				To:           item.ToAddress,
-				TxHash:       item.TxHash,
-				SignedAt:     item.BlockSignedAt,
-				NativeSymbol: nativeSymbol,
-				TxBaseUrl:    txBaseUrl,
+				ChainID:    chainID,
+				From:       item.FromAddress,
+				To:         item.ToAddress,
+				TxHash:     item.TxHash,
+				SignedAt:   item.BlockSignedAt,
+				Successful: item.Successful,
 			}
 			//
 			if err := e.parseCovalentTxData(item, &tx, req.Address); err != nil {
@@ -160,143 +168,162 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 }
 
 func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *response.WalletTransactionData, addr string) error {
-	// default tx type
-	res.Type = "contract_interaction"
+	chain, _ := e.repo.Chain.GetByID(res.ChainID)
+	nativeSymbol := chain.Currency
+	scanBaseUrl := strings.Replace(chain.TxBaseURL, "/tx", "", 1)
+	res.ScanBaseUrl = scanBaseUrl
 	// 1. transfer native token
-	if tx.LogEvents == nil || len(tx.LogEvents) == 0 {
-		amount, ok := new(big.Float).SetString(tx.Value)
+	if tx.ValueQuote > 0 {
+		value, ok := new(big.Float).SetString(tx.Value)
 		if !ok {
 			err := fmt.Errorf("invalid tx amount %s", tx.Value)
 			e.log.Errorf(err, "[getTxDetails] invalid native amount %s", tx.Value)
 			return err
 		}
-		if amount.Cmp(big.NewFloat(0)) == 0 {
+		if value.Cmp(big.NewFloat(0)) == 0 {
 			err := errors.New("zero tx amount")
 			e.log.Errorf(err, "[getTxDetails] zero transaction amount %s", tx.Value)
 			return nil
 		}
-		res.Type = "transfer_native"
-		res.Amount, _ = amount.Float64()
-		res.Amount /= math.Pow10(18)
+		// res.Type = "transfer_native"
+		res.HasTransfer = true
+		amount, _ := value.Float64()
+		amount /= math.Pow10(18)
 		if strings.EqualFold(tx.FromAddress, addr) {
-			res.Amount = 0 - res.Amount
+			amount = 0 - amount
 		}
+		res.Actions = append(res.Actions, response.WalletTransactionAction{
+			Amount:         amount,
+			Unit:           nativeSymbol,
+			NativeTransfer: true,
+		})
 		return nil
 	}
 
-	// 2. other tx types (transfer nft, transfer erc20)
-	// res.NftIDs = make([]string, 0)
+	if tx.LogEvents == nil || len(tx.LogEvents) == 0 {
+		return nil
+	}
+
+	// 2. transaction with log events
 	events := tx.LogEvents
-	firstEv := events[0]
-	res.Contract = &response.ContractMetadata{
-		Address: firstEv.SenderAddress,
-		Symbol:  firstEv.SenderContractTickerSymbol,
-		Name:    firstEv.SenderName,
+	transferHandlers := map[string]func(string, covalent.LogEvent, *response.WalletTransactionAction){
+		"Transfer(indexed address from, indexed address to, uint256 value)":                                                        e.handleErc20Transfer,
+		"Transfer(indexed address from, indexed address to, indexed uint256 tokenId)":                                              e.handleErc721Transfer,
+		"TransferSingle(indexed address _operator, indexed address _from, indexed address _to, uint256 _id, uint256 _amount)":      e.handleErc1155TransferSingle,
+		"TransferBatch(indexed address _operator, indexed address _from, indexed address _to, uint256[] _ids, uint256[] _amounts)": e.handleErc1155TransferBatch,
 	}
-	if strings.EqualFold(firstEv.Decoded.Name, "Transfer") {
-		res.From = firstEv.Decoded.Params[0].Value.(string)
-		res.To = firstEv.Decoded.Params[1].Value.(string)
-		if strings.EqualFold(firstEv.Decoded.Signature, "Transfer(indexed address from, indexed address to, uint256 value)") {
-			res.Type = "transfer_erc20"
-			amount, _ := new(big.Float).SetString(firstEv.Decoded.Params[2].Value.(string))
-			res.Amount, _ = amount.Float64()
-			res.Amount /= math.Pow10(firstEv.SenderContractDecimals)
-		} else if strings.EqualFold(firstEv.Decoded.Signature, "Transfer(indexed address from, indexed address to, indexed uint256 tokenId)") {
-			res.Type = "transfer_nft"
-			res.Amount = 1
-			res.NftIDs = append(res.NftIDs, firstEv.Decoded.Params[2].Value.(string))
+	var actions []response.WalletTransactionAction
+	for _, ev := range events {
+		name := ev.Decoded.Name
+		signature := ev.Decoded.Signature
+		if name == "" || signature == "" {
+			continue
 		}
-		// res.Amount = ev.Decoded.Params[2].Value.
-		//  if ev.Decoded.Signature == "Transfer(indexed address from, indexed address to, uint256 value)" {
-		// 	res.Type = "transfer_erc20"
-		// 	res.From = ev.Decoded.Params[0].Value.(string)
-		// 	res.To = ev.Decoded.Params[1].Value.(string)
-		// 	res.Amount = ev.Decoded.Params[2].Value.
-
-		// } else if ev.Decoded.Signature == "Transfer(indexed address from, indexed address to, indexed uint256 tokenId)" {
-		// 	res.Type = "transfer_nft"
-		// 	res.From = ev.Decoded.Params[0].Value.(string)
-		// 	res.To = ev.Decoded.Params[1].Value.(string)
-		// }
-		// for _, p := range firstEv.Decoded.Params {
-		// 	if strings.EqualFold(p.Name, "from") {
-		// 		res.From = p.Value.(string)
-		// 	} else if strings.EqualFold(p.Name, "to") {
-		// 		res.To = p.Value.(string)
-		// 	} else if strings.EqualFold(p.Name, "value") {
-		// 		// res.Type = "transfer_erc20"
-		// 		amount, _ := new(big.Float).SetString(p.Value.(string))
-		// 		res.Amount, _ = amount.Float64()
-		// 		res.Amount /= math.Pow10(firstEv.SenderContractDecimals)
-		// 	} else if strings.EqualFold(p.Name, "tokenId") {
-		// 		// res.Type = "transfer_nft"
-		// 		res.Amount += 1
-		// 		res.NftIDs = append(res.NftIDs, p.Value.(string))
-		// 	}
-		// }
-		if strings.EqualFold(res.From, addr) {
-			res.Amount = 0 - res.Amount
+		contract := &response.ContractMetadata{
+			Address: ev.SenderAddress,
+			Symbol:  ev.SenderContractTickerSymbol,
+			Name:    ev.SenderName,
 		}
-		// if len(res.NftIDs) > 0 {
-		// 	res.Type = "transfer_nft"
-		// } else {
-		// 	res.Type = "transfer_erc20"
-		// }
-	} else if strings.EqualFold(firstEv.Decoded.Name, "Approval") || strings.EqualFold(firstEv.Decoded.Name, "ApprovalForAll") {
-		res.Type = "approval"
-	}
-	// for _, ev := range events {
-	// if strings.EqualFold(ev.Decoded.Name, "Transfer") {
-	// 	//  if ev.Decoded.Signature == "Transfer(indexed address from, indexed address to, uint256 value)" {
-	// 	// 	res.Type = "transfer_erc20"
-	// 	// 	res.From = ev.Decoded.Params[0].Value.(string)
-	// 	// 	res.To = ev.Decoded.Params[1].Value.(string)
-	// 	// 	res.Amount = ev.Decoded.Params[2].Value.
-
-	// 	// } else if ev.Decoded.Signature == "Transfer(indexed address from, indexed address to, indexed uint256 tokenId)" {
-	// 	// 	res.Type = "transfer_nft"
-	// 	// 	res.From = ev.Decoded.Params[0].Value.(string)
-	// 	// 	res.To = ev.Decoded.Params[1].Value.(string)
-	// 	// }
-	// 	for _, p := range ev.Decoded.Params {
-	// 		if strings.EqualFold(p.Name, "from") {
-	// 			res.From = p.Value.(string)
-	// 		} else if strings.EqualFold(p.Name, "to") {
-	// 			res.To = p.Value.(string)
-	// 		} else if strings.EqualFold(p.Name, "value") {
-	// 			// res.Type = "transfer_erc20"
-	// 			amount, _ := new(big.Float).SetString(p.Value.(string))
-	// 			res.Amount, _ = amount.Float64()
-	// 			res.Amount /= math.Pow10(ev.SenderContractDecimals)
-	// 		} else if strings.EqualFold(p.Name, "tokenId") {
-	// 			// res.Type = "transfer_nft"
-	// 			res.Amount += 1
-	// 			res.NftIDs = append(res.NftIDs, p.Value.(string))
-	// 		}
-	// 	}
-	// 	if strings.EqualFold(res.From, addr) {
-	// 		res.Amount = 0 - res.Amount
-	// 	}
-	// 	if len(res.NftIDs) > 0 {
-	// 		res.Type = "transfer_nft"
-	// 	} else {
-	// 		res.Type = "transfer_erc20"
-	// 	}
-	// } else if strings.EqualFold(ev.Decoded.Name, "Approval") || strings.EqualFold(ev.Decoded.Name, "ApprovalForAll") {
-	// 	res.Type = "approval"
-	// } else {
-	// 	res.Type = "contract_interaction"
-	// }
-	// }
-
-	// handle case transfer multiple nft
-	if res.Type == "transfer_nft" && len(events) > 1 {
-		for _, ev := range events[1:] {
-			if strings.EqualFold(ev.Decoded.Signature, "Transfer(indexed address from, indexed address to, indexed uint256 tokenId)") {
-				res.NftIDs = append(res.NftIDs, ev.Decoded.Params[2].Value.(string))
+		action := &response.WalletTransactionAction{Contract: contract, Name: name, Signature: signature}
+		_, isTransfer := transferHandlers[signature]
+		if isTransfer {
+			res.HasTransfer = isTransfer
+		}
+		if isTransfer {
+			handler, ok := transferHandlers[signature]
+			if ok {
+				// batch case: 1 action -> 1 token
+				if strings.Contains(signature, "Batch") {
+					type valueObj struct {
+						Value string
+					}
+					_ids := ev.Decoded.Params[3].Value.([]valueObj)
+					_amounts := ev.Decoded.Params[4].Value.([]valueObj)
+					for i, _id := range _ids {
+						if contract.Name == "" {
+							action.Unit = _id.Value
+							amt, err := strconv.ParseFloat(_amounts[i].Value, 10)
+							if err != nil {
+								continue
+							}
+							action.Amount = amt
+						}
+					}
+				}
+				handler(addr, ev, action)
+				if !strings.EqualFold(addr, action.From) && !strings.EqualFold(addr, action.To) {
+					// not relevant -> exclude action
+					continue
+				}
+			} else {
+				// no transfer handler -> exclude action
+				continue
 			}
 		}
-		res.Amount = float64(len(res.NftIDs))
+		actions = append(actions, *action)
+	}
+	for _, action := range actions {
+		_, isTransfer := transferHandlers[action.Signature]
+		if res.HasTransfer {
+			if isTransfer {
+				res.Actions = append(res.Actions, action)
+			}
+			continue
+		}
+		res.Actions = append(res.Actions, action)
 	}
 	return nil
+}
+
+func (*Entity) handleErc20Transfer(address string, ev covalent.LogEvent, action *response.WalletTransactionAction) {
+	action.From = ev.Decoded.Params[0].Value.(string)
+	action.To = ev.Decoded.Params[1].Value.(string)
+	value, _ := new(big.Float).SetString(ev.Decoded.Params[2].Value.(string))
+	action.Amount, _ = value.Float64()
+	action.Amount = action.Amount / math.Pow10(ev.SenderContractDecimals)
+	if strings.EqualFold(action.From, address) {
+		action.Amount = 0 - action.Amount
+	}
+	action.Unit = action.Contract.Symbol
+}
+
+func (*Entity) handleErc721Transfer(address string, ev covalent.LogEvent, action *response.WalletTransactionAction) {
+	action.From = ev.Decoded.Params[0].Value.(string)
+	action.To = ev.Decoded.Params[1].Value.(string)
+	tokenID := ev.Decoded.Params[2].Value.(string)
+	action.Amount = 1
+	if strings.EqualFold(action.From, address) {
+		action.Amount = -1
+	}
+	if action.Contract.Symbol == "" {
+		action.Unit = fmt.Sprintf("ERC-721 [%s]", action.Unit)
+	} else {
+		action.Unit = fmt.Sprintf("%s [%s]", action.Contract.Symbol, tokenID)
+	}
+}
+
+func (*Entity) handleErc1155TransferSingle(address string, ev covalent.LogEvent, action *response.WalletTransactionAction) {
+	action.From = ev.Decoded.Params[1].Value.(string)
+	action.To = ev.Decoded.Params[2].Value.(string)
+	tokenID := ev.Decoded.Params[3].Value.(string)
+	_amount, _ := new(big.Float).SetString(ev.Decoded.Params[4].Value.(string))
+	action.Amount, _ = _amount.Float64()
+	if strings.EqualFold(action.From, address) {
+		action.Amount = 0 - action.Amount
+	}
+	if action.Contract.Symbol == "" {
+		action.Unit = fmt.Sprintf("ERC-1155 [%s]", action.Unit)
+	} else {
+		action.Unit = fmt.Sprintf("%s [%s]", action.Contract.Symbol, tokenID)
+	}
+}
+
+func (*Entity) handleErc1155TransferBatch(address string, ev covalent.LogEvent, action *response.WalletTransactionAction) {
+	action.From = ev.Decoded.Params[1].Value.(string)
+	action.To = ev.Decoded.Params[2].Value.(string)
+	if action.Contract.Symbol == "" {
+		action.Unit = fmt.Sprintf("ERC-1155 [%s]", action.Unit)
+	} else {
+		action.Unit = fmt.Sprintf("%s [%s]", action.Contract.Symbol, action.Unit)
+	}
 }

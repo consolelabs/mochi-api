@@ -28,16 +28,27 @@ type ContractMetadata struct {
 	Symbol  string `json:"symbol"`
 }
 
+type WalletTransactionAction struct {
+	Name           string            `json:"name"`
+	Signature      string            `json:"signature"`
+	From           string            `json:"from"`
+	To             string            `json:"to"`
+	Amount         float64           `json:"amount"`
+	Unit           string            `json:"unit"`
+	NativeTransfer bool              `json:"native_transfer"`
+	Contract       *ContractMetadata `json:"contract"`
+}
+
 type WalletTransactionData struct {
-	ChainID      int               `json:"chain_id"`
-	TxHash       string            `json:"tx_hash"`
-	TxBaseUrl    string            `json:"tx_base_url"`
-	SignedAt     time.Time         `json:"signed_at"`
-	From         string            `json:"from"`
-	To           string            `json:"to"`
-	NativeSymbol string            `json:"native_symbol"`
-	Type         string            `json:"type"`
-	Amount       float64           `json:"amount"`
-	NftIDs       []string          `json:"nfts"`
-	Contract     *ContractMetadata `json:"contract"`
+	ChainID     int       `json:"chain_id"`
+	TxHash      string    `json:"tx_hash"`
+	ScanBaseUrl string    `json:"scan_base_url"`
+	SignedAt    time.Time `json:"signed_at"`
+	From        string    `json:"from"`
+	To          string    `json:"to"`
+	// NativeSymbol string                    `json:"native_symbol"`
+	// Amount      float64                   `json:"amount"`
+	Actions     []WalletTransactionAction `json:"actions"`
+	HasTransfer bool                      `json:"has_transfer"`
+	Successful  bool                      `json:"successful"`
 }
