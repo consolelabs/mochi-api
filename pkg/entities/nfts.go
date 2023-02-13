@@ -369,9 +369,12 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, err
 	}
 
+	convertedChainId := util.ConvertChainToChainId(req.ChainID)
+	chainID, _ := strconv.Atoi(convertedChainId)
+
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
 		Address:      solanaCollection.Data.Data.CollectionId,
-		ChainID:      0,
+		ChainID:      chainID,
 		Name:         solanaCollection.Data.Data.Collection,
 		Symbol:       solanaCollection.Data.Data.Symbol,
 		MessageID:    req.MessageID,
@@ -382,11 +385,24 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
 	}
 
+	history := model.NftAddRequestHistory{
+		Address:   req.Address,
+		ChainID:   int64(chainID),
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		MessageID: req.MessageID,
+	}
+	err = e.repo.NftAddRequestHistory.UpsertOne(history)
+	if err != nil {
+		e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
+		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	}
+
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    solanaCollection.Data.Data.CollectionId,
 		Symbol:     solanaCollection.Data.Data.Symbol,
 		Name:       solanaCollection.Data.Data.Collection,
-		ChainID:    "0",
+		ChainID:    convertedChainId,
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		Author:     req.Author,
