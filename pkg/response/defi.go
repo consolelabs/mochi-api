@@ -129,6 +129,10 @@ type GetSupportedTokensResponse struct {
 	Data []model.Token `json:"data"`
 }
 
+type GetSupportedTokenResponse struct {
+	Data *model.Token `json:"data"`
+}
+
 type GetCoinResponseWrapper struct {
 	Data *GetCoinResponse `json:"data"`
 }

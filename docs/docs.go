@@ -4026,6 +4026,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/token": {
+            "get": {
+                "description": "Get supported tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get supported tokens",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token address",
+                        "name": "address",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token chain",
+                        "name": "chain",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSupportedTokenResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/tokens": {
             "get": {
                 "description": "Get supported tokens",
@@ -5838,6 +5877,123 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetUserEnvelopStreak"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id/wallets": {
+            "get": {
+                "description": "Get user's trackng wallets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallet"
+                ],
+                "summary": "Get user's trackng wallets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTrackingWalletsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Untrack a wallet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallet"
+                ],
+                "summary": "Untrack a wallet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "alias",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id/wallets/:query": {
+            "get": {
+                "description": "Find one user's trackng wallet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallet"
+                ],
+                "summary": "Find one user's trackng wallet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "alias or address query",
+                        "name": "query",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetOneWalletResponse"
                         }
                     }
                 }
@@ -8556,6 +8712,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserWalletWatchlistItem": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "alias": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "net_worth": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.AddNftWatchlistRequest": {
             "type": "object",
             "properties": {
@@ -9515,6 +9691,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.TrackWalletRequest": {
+            "type": "object",
+            "required": [
+                "address",
+                "user_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "alias": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -11033,6 +11227,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetOneWalletResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserWalletWatchlistItem"
+                }
+            }
+        },
         "response.GetRepostReactionConfigsResponse": {
             "type": "object",
             "properties": {
@@ -11099,6 +11301,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetSupportedTokenResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.Token"
+                }
+            }
+        },
         "response.GetSupportedTokensResponse": {
             "type": "object",
             "properties": {
@@ -11106,6 +11316,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Token"
+                    }
+                }
+            }
+        },
+        "response.GetTrackingWalletsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserWalletWatchlistItem"
                     }
                 }
             }

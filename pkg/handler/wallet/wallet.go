@@ -32,7 +32,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Tags        Wallet
 // @Accept      json
 // @Produce     json
-// @Param       req   path  request.GetTrackingWalletsRequest true  "req"
+// @Param       id   path  string true  "user id"
 // @Success     200 {object} response.GetTrackingWalletsResponse
 // @Router      /users/:id/wallets [get]
 func (h *Handler) List(c *gin.Context) {
@@ -57,7 +57,8 @@ func (h *Handler) List(c *gin.Context) {
 // @Tags        Wallet
 // @Accept      json
 // @Produce     json
-// @Param       req   path  request.GetOneWalletRequest true  "req"
+// @Param       id   path  string true  "user Id"
+// @Param       query   path  string true  "alias or address query"
 // @Success     200 {object} response.GetOneWalletResponse
 // @Router      /users/:id/wallets/:query [get]
 func (h *Handler) GetOne(c *gin.Context) {
