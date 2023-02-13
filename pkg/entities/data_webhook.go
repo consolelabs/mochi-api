@@ -160,30 +160,8 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 	collection, err := e.repo.NFTCollection.GetByAddress(nftSale.Address)
 	if err != nil {
 		e.log.Infof("Collection not exist yet, adding it to database")
-		// TODO(trkhoi): handle for evm chain
-		if nftSale.ChainId == 9999 || nftSale.ChainId == 9997 {
-			e.CreateBluemoveNFTCollection(request.CreateNFTCollectionRequest{
-				Address: nftSale.Address,
-				ChainID: strconv.Itoa(int(nftSale.ChainId)),
-
-				Author:       "393034938028392449",
-				PriorityFlag: false,
-			})
-		}
-
-		if nftSale.ChainId == 66 {
-			e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
-				Address:      nftSale.Address,
-				ChainID:      strconv.Itoa(int(nftSale.ChainId)),
-				Author:       "393034938028392449",
-				GuildID:      "891310117658705931",
-				MessageID:    nftSale.Address,
-				PriorityFlag: false,
-			})
-		}
+		e.handleNewCollectionFromSales(nftSale)
 		return nil
-		// e.log.Errorf(err, "[repo.NFTCollection.GetByAddress] cannot get collection by address %s", nftSale.Address)
-		// return err
 	}
 
 	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.Address, nftSale.TokenId)
@@ -426,4 +404,36 @@ func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceReques
 		Marketplace:     marketplace,
 		TokenID:         nftSale.TokenId,
 	}, nil
+}
+
+func (e *Entity) handleNewCollectionFromSales(nftSale request.NotifySaleMarketplaceRequest) {
+	switch nftSale.ChainId {
+	case 9999, 9997:
+		e.CreateBluemoveNFTCollection(request.CreateNFTCollectionRequest{
+			Address:      nftSale.Address,
+			ChainID:      strconv.Itoa(int(nftSale.ChainId)),
+			Author:       "393034938028392449",
+			GuildID:      "891310117658705931",
+			MessageID:    nftSale.Address,
+			PriorityFlag: false,
+		})
+	case 999:
+		e.CreateSolanaNFTCollection(request.CreateNFTCollectionRequest{
+			Address:      nftSale.Address,
+			ChainID:      strconv.Itoa(int(nftSale.ChainId)),
+			Author:       "393034938028392449",
+			GuildID:      "891310117658705931",
+			MessageID:    nftSale.Address,
+			PriorityFlag: false,
+		})
+	default:
+		e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
+			Address:      nftSale.Address,
+			ChainID:      strconv.Itoa(int(nftSale.ChainId)),
+			Author:       "393034938028392449",
+			GuildID:      "891310117658705931",
+			MessageID:    nftSale.Address,
+			PriorityFlag: false,
+		})
+	}
 }
