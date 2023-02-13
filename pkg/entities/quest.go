@@ -128,17 +128,17 @@ func (e *Entity) generateUserQuestList(req request.GenerateUserQuestListRequest)
 	}
 	userQuests, err = e.finalizeUserQuestList(req.UserID, string(model.VOTE), userQuests, nil)
 	if err != nil {
-		e.log.Fields(logger.Fields{"userID": req.UserID, "userQuests": userQuests}).Error(err, "[entity.generateUserQuestList] entity.finalizeUserQuestList() failed")
+		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.generateUserQuestList] entity.finalizeUserQuestList() failed")
 		return nil, err
 	}
-	e.log.Fields(logger.Fields{"userQuests": userQuests}).Infof("[entity.generateUserQuestList] creating %d quests for user %s", len(userQuests), req.UserID)
+	e.log.Infof("[entity.generateUserQuestList] creating %d quests for user %s", len(userQuests), req.UserID)
 	// save user quests list
 	err = e.repo.QuestUserList.UpsertMany(userQuests)
 	if err != nil {
 		e.log.Fields(logger.Fields{"list": userQuests}).Error(err, "[entity.generateUserQuestList] repo.QuestUserList.UpsertMany() failed")
 		return nil, err
 	}
-	e.log.Fields(logger.Fields{"userQuests": userQuests}).Infof("[entity.generateUserQuestList] created %d quests for user %s", len(userQuests), req.UserID)
+	e.log.Infof("[entity.generateUserQuestList] created %d quests for user %s", len(userQuests), req.UserID)
 	return userQuests, nil
 }
 
