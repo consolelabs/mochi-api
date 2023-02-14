@@ -53,6 +53,39 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
+// GetSupportedToken     godoc
+// @Summary     Get supported tokens
+// @Description Get supported tokens
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       address   query  string true  "token address"
+// @Param       chain   query  string true  "token chain"
+// @Success     200 {object} response.GetSupportedTokenResponse
+// @Router      /defi/token [get]
+func (h *Handler) GetSupportedToken(c *gin.Context) {
+	address := c.Query("address")
+	if address == "" {
+		h.log.Info("[handler.GetSupportedToken] - address is empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "address is required"})
+		return
+	}
+	chain := c.Query("chain")
+	if chain == "" {
+		h.log.Info("[handler.GetSupportedToken] - chain is empty")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "chain is required"})
+		return
+	}
+	token, err := h.entities.GetSupportedToken(address, chain)
+	if err != nil {
+		h.log.Error(err, "[handler.GetSupportedToken] - failed to get supported token")
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(token, nil, nil, nil))
+}
+
 // GetSupportedTokens     godoc
 // @Summary     Get supported tokens
 // @Description Get supported tokens

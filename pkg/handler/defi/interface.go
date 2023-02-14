@@ -11,6 +11,7 @@ type IHandler interface {
 	RemoveFromWatchlist(c *gin.Context)
 
 	GetSupportedTokens(c *gin.Context)
+	GetSupportedToken(c *gin.Context)
 	GetCoin(c *gin.Context)
 	SearchCoins(c *gin.Context)
 	CompareToken(c *gin.Context)

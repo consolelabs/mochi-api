@@ -1281,6 +1281,19 @@ definitions:
       user_discord_id:
         type: string
     type: object
+  model.UserWalletWatchlistItem:
+    properties:
+      address:
+        type: string
+      alias:
+        type: string
+      created_at:
+        type: string
+      net_worth:
+        type: number
+      user_id:
+        type: string
+    type: object
   request.AddNftWatchlistRequest:
     properties:
       chain:
@@ -1910,6 +1923,18 @@ definitions:
         type: string
       transfer_type:
         type: string
+    type: object
+  request.TrackWalletRequest:
+    properties:
+      address:
+        type: string
+      alias:
+        type: string
+      user_id:
+        type: string
+    required:
+    - address
+    - user_id
     type: object
   request.TradeOfferItem:
     properties:
@@ -2892,6 +2917,11 @@ definitions:
           $ref: '#/definitions/model.OnchainTipBotTransaction'
         type: array
     type: object
+  response.GetOneWalletResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserWalletWatchlistItem'
+    type: object
   response.GetRepostReactionConfigsResponse:
     properties:
       data:
@@ -2934,11 +2964,23 @@ definitions:
           type: string
         type: array
     type: object
+  response.GetSupportedTokenResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Token'
+    type: object
   response.GetSupportedTokensResponse:
     properties:
       data:
         items:
           $ref: '#/definitions/model.Token'
+        type: array
+    type: object
+  response.GetTrackingWalletsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.UserWalletWatchlistItem'
         type: array
     type: object
   response.GetTradeOfferResponse:
@@ -6719,6 +6761,32 @@ paths:
       summary: Get historical market chart
       tags:
       - Defi
+  /defi/token:
+    get:
+      consumes:
+      - application/json
+      description: Get supported tokens
+      parameters:
+      - description: token address
+        in: query
+        name: address
+        required: true
+        type: string
+      - description: token chain
+        in: query
+        name: chain
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSupportedTokenResponse'
+      summary: Get supported tokens
+      tags:
+      - Defi
   /defi/tokens:
     get:
       consumes:
@@ -7917,6 +7985,83 @@ paths:
       summary: Get user envelop streak
       tags:
       - User
+  /users/:id/wallets:
+    get:
+      consumes:
+      - application/json
+      description: Get user's trackng wallets
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTrackingWalletsResponse'
+      summary: Get user's trackng wallets
+      tags:
+      - Wallet
+    post:
+      consumes:
+      - application/json
+      description: Untrack a wallet
+      parameters:
+      - description: user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - in: query
+        name: address
+        type: string
+      - in: query
+        name: alias
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Untrack a wallet
+      tags:
+      - Wallet
+  /users/:id/wallets/:query:
+    get:
+      consumes:
+      - application/json
+      description: Find one user's trackng wallet
+      parameters:
+      - description: user Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: alias or address query
+        in: path
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetOneWalletResponse'
+      summary: Find one user's trackng wallet
+      tags:
+      - Wallet
   /users/{id}/transactions:
     get:
       consumes:
