@@ -16,6 +16,7 @@ import (
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) error {
@@ -105,6 +106,24 @@ func (e *Entity) GetAllSupportedToken(guildID string) (returnToken []model.Token
 	}
 
 	return returnToken, nil
+}
+
+func (e *Entity) GetSupportedToken(address, chain string) (*model.Token, error) {
+	chainId, err := strconv.Atoi(util.ConvertInputToChainId(chain))
+	if err != nil {
+		e.log.Fields(logger.Fields{"chain": chain}).Error(err, "[Entity][GetSupportedToken] strconv.Atoi failed")
+		return nil, baseerrs.ErrInvalidChain
+	}
+
+	token, err := e.repo.Token.GetByAddress(address, chainId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address}).Error(err, "[Entity][GetSupportedToken] repo.Token.GetByAddress failed")
+		if err == gorm.ErrRecordNotFound {
+			return nil, baseerrs.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	return token, nil
 }
 
 func (e *Entity) GetDefaultToken(guildID string) (*model.Token, error) {
