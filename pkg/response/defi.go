@@ -198,3 +198,15 @@ type GetFiatHistoricalExchangeRatesResponse struct {
 	From       string    `json:"from"`
 	To         string    `json:"to"`
 }
+
+type TokenPriceAlertResponseData struct {
+	Symbol      string  `json:"symbol"`
+	CoinGeckoID string  `json:"coin_gecko_id"`
+	AlertType   string  `json:"alert_type"`
+	Frequency   string  `json:"frequency"`
+	Price       float64 `json:"price"`
+}
+
+type AddTokenPriceAlertResponse struct {
+	Data *TokenPriceAlertResponseData `json:"data"`
+}

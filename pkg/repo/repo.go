@@ -92,6 +92,7 @@ import (
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
+	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
@@ -194,4 +195,5 @@ type Repo struct {
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigMixRole                   guildconfigmixrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
+	UserTokenPriceAlert                  usertokenpricealert.Store
 }

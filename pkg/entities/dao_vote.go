@@ -4,12 +4,13 @@ import (
 	"errors"
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateDaoVote(req request.CreateDaoVoteRequest) error {
