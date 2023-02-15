@@ -60,7 +60,6 @@ type GetFiatHistoricalExchangeRatesRequest struct {
 
 type AddTokenPriceAlertRequest struct {
 	UserID      string               `json:"user_id"`
-	Symbol      string               `json:"symbol"`
 	CoinGeckoID string               `json:"coin_gecko_id"`
 	AlertType   model.AlertType      `json:"alert_type" enums:"price_reaches,price_rises_above,price_drops_to,change_is_over,change_is_under"`
 	Frequency   model.AlertFrequency `json:"frequency" enums:"only_once,once_a_day,always"`

@@ -22,7 +22,6 @@ const (
 
 type UserTokenPriceAlert struct {
 	UserID      string         `json:"user_id"`
-	Symbol      string         `json:"symbol"`
 	CoinGeckoID string         `json:"coin_gecko_id"`
 	AlertType   AlertType      `json:"alert_type"`
 	Frequency   AlertFrequency `json:"frequency"`

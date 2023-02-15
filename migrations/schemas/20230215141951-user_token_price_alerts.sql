@@ -17,7 +17,6 @@ create table if not exists user_token_price_alerts
 (
     user_id       text,
     coin_gecko_id text,
-    symbol        text,
     alert_type    alert_type_options,
     frequency     alert_frequency_options,
     price         float8

@@ -625,7 +625,6 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	} else {
 		err = e.repo.UserTokenPriceAlert.Create(&model.UserTokenPriceAlert{
 			UserID:      req.UserID,
-			Symbol:      req.Symbol,
 			CoinGeckoID: req.CoinGeckoID,
 			AlertType:   req.AlertType,
 			Frequency:   req.Frequency,
