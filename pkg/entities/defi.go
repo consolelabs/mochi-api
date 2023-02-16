@@ -622,7 +622,8 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		fetchedAlert.AlertType = req.AlertType
 		fetchedAlert.Frequency = req.Frequency
 		fetchedAlert.Price = req.Price
-		fetchedAlert.SnoozedTo = time.Now().UTC()
+		fetchedAlert.SnoozedTo = time.Now()
+		fetchedAlert.UpdatedAt = time.Now()
 		err = e.repo.UserTokenPriceAlert.Update(&fetchedAlert)
 	} else {
 		err = e.repo.UserTokenPriceAlert.Create(&model.UserTokenPriceAlert{
@@ -631,7 +632,9 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 			AlertType: req.AlertType,
 			Frequency: req.Frequency,
 			Price:     req.Price,
-			SnoozedTo: time.Now().UTC(),
+			SnoozedTo: time.Now(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		})
 	}
 	if err != nil {

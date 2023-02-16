@@ -31,6 +31,8 @@ type UserTokenPriceAlert struct {
 	Frequency AlertFrequency `json:"frequency"`
 	Price     float64        `json:"price"`
 	SnoozedTo time.Time      `json:"snoozed_to"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }
 
 func (c AlertFrequency) IsValidAlertFrequency() error {
