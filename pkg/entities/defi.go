@@ -603,13 +603,14 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		return nil, err
 	}
 
-	_, err := e.repo.CoingeckoSupportedTokens.GetOne(req.CoinGeckoID)
+	// TODO: Update to search by Coincap API
+	_, err := e.repo.CoingeckoSupportedTokens.GetOne(req.CoincapID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req.coin_gecko_id": req.CoinGeckoID}).Error(err, "[entity.AddTokenPriceAlert] repo.CoingeckoSupportedTokens.GetOne() failed")
+		e.log.Fields(logger.Fields{"req.coincap_id": req.CoincapID}).Error(err, "[entity.AddTokenPriceAlert] repo.CoingeckoSupportedTokens.GetOne() failed")
 		return nil, err
 	}
 
-	listQ := usertokenpricealert.UserTokenPriceAlertQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
+	listQ := usertokenpricealert.UserTokenPriceAlertQuery{CoincapID: req.CoincapID, UserID: req.UserID}
 	items, total, err := e.repo.UserTokenPriceAlert.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddTokenPriceAlert] repo.UserTokenPriceAlert.List() failed")
@@ -621,14 +622,16 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		fetchedAlert.AlertType = req.AlertType
 		fetchedAlert.Frequency = req.Frequency
 		fetchedAlert.Price = req.Price
+		fetchedAlert.SnoozedTo = time.Now().UTC()
 		err = e.repo.UserTokenPriceAlert.Update(&fetchedAlert)
 	} else {
 		err = e.repo.UserTokenPriceAlert.Create(&model.UserTokenPriceAlert{
-			UserID:      req.UserID,
-			CoinGeckoID: req.CoinGeckoID,
-			AlertType:   req.AlertType,
-			Frequency:   req.Frequency,
-			Price:       req.Price,
+			UserID:    req.UserID,
+			CoincapID: req.CoincapID,
+			AlertType: req.AlertType,
+			Frequency: req.Frequency,
+			Price:     req.Price,
+			SnoozedTo: time.Now().UTC(),
 		})
 	}
 	if err != nil {
@@ -653,7 +656,7 @@ func (e *Entity) GetUserListPriceAlert(req request.GetUserListPriceAlertRequest)
 }
 
 func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest) error {
-	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserID, req.CoingeckoID)
+	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserID, req.CoincapID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}

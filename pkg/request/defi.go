@@ -59,11 +59,11 @@ type GetFiatHistoricalExchangeRatesRequest struct {
 }
 
 type AddTokenPriceAlertRequest struct {
-	UserID      string               `json:"user_id"`
-	CoinGeckoID string               `json:"coin_gecko_id"`
-	AlertType   model.AlertType      `json:"alert_type" enums:"price_reaches,price_rises_above,price_drops_to,change_is_over,change_is_under"`
-	Frequency   model.AlertFrequency `json:"frequency" enums:"only_once,once_a_day,always"`
-	Price       float64              `json:"price"`
+	UserID    string               `json:"user_id"`
+	CoincapID string               `json:"coincap_id"`
+	AlertType model.AlertType      `json:"alert_type" enums:"price_reaches,price_rises_above,price_drops_to,change_is_over,change_is_under"`
+	Frequency model.AlertFrequency `json:"frequency" enums:"only_once,once_a_day,always"`
+	Price     float64              `json:"price"`
 }
 
 type GetUserListPriceAlertRequest struct {
@@ -73,6 +73,6 @@ type GetUserListPriceAlertRequest struct {
 }
 
 type RemoveTokenPriceAlertRequest struct {
-	UserID      string `json:"user_id" form:"user_id" binding:"required"`
-	CoingeckoID string `json:"coin_gecko_id" form:"coin_gecko_id" binding:"required"`
+	UserID    string `json:"user_id" form:"user_id" binding:"required"`
+	CoincapID string `json:"coincap_id" form:"coincap_id" binding:"required"`
 }

@@ -16,10 +16,11 @@ create type alert_frequency_options as enum (
 create table if not exists user_token_price_alerts
 (
     user_id       text,
-    coin_gecko_id text,
+    coincap_id    text,
     alert_type    alert_type_options,
     frequency     alert_frequency_options,
-    price         float8
+    price         float8,
+    snoozed_to    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 create index user_token_price_alerts_user_id_index

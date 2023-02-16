@@ -25,8 +25,8 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	if q.UserID != "" {
 		db = db.Where("user_id = ?", q.UserID)
 	}
-	if q.CoinGeckoID != "" {
-		db = db.Where("coin_gecko_id = ?", q.CoinGeckoID)
+	if q.CoincapID != "" {
+		db = db.Where("coincap_id = ?", q.CoincapID)
 	}
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
@@ -35,11 +35,11 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Delete(userID, coingeckoID string) (int64, error) {
-	tx := pg.db.Where("user_id = ? AND coin_gecko_id ILIKE ?", userID, coingeckoID).Delete(&model.UserTokenPriceAlert{})
+func (pg *pg) Delete(userID, CoincapID string) (int64, error) {
+	tx := pg.db.Where("user_id = ? AND coincap_id ILIKE ?", userID, CoincapID).Delete(&model.UserTokenPriceAlert{})
 	return tx.RowsAffected, tx.Error
 }
 
 func (pg *pg) Update(item *model.UserTokenPriceAlert) error {
-	return pg.db.Where("user_id = ? AND coin_gecko_id = ?", item.UserID, item.CoinGeckoID).Save(item).Error
+	return pg.db.Where("user_id = ? AND coincap_id = ?", item.UserID, item.CoincapID).Save(item).Error
 }
