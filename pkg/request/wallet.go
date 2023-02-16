@@ -15,6 +15,7 @@ type TrackWalletRequest struct {
 	UserID  string `json:"user_id" binding:"required"`
 	Address string `json:"address" binding:"required"`
 	Alias   string `json:"alias"`
+	Type    string `json:"type" binding:"required"`
 }
 
 type UntrackWalletRequest struct {
@@ -26,9 +27,11 @@ type UntrackWalletRequest struct {
 type ListWalletAssetsRequest struct {
 	WalletBaseRequest
 	Address string `uri:"address" binding:"required"`
+	Type    string `uri:"type" binding:"required"`
 }
 
 type ListWalletTransactionsRequest struct {
 	WalletBaseRequest
 	Address string `uri:"address" binding:"required"`
+	Type    string `uri:"type" binding:"required"`
 }

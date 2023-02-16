@@ -44,10 +44,8 @@ type WalletTransactionData struct {
 	TxHash      string    `json:"tx_hash"`
 	ScanBaseUrl string    `json:"scan_base_url"`
 	SignedAt    time.Time `json:"signed_at"`
-	From        string    `json:"from"`
-	To          string    `json:"to"`
-	// NativeSymbol string                    `json:"native_symbol"`
-	// Amount      float64                   `json:"amount"`
+	// From        string                    `json:"from"`
+	// To          string                    `json:"to"`
 	Actions     []WalletTransactionAction `json:"actions"`
 	HasTransfer bool                      `json:"has_transfer"`
 	Successful  bool                      `json:"successful"`
