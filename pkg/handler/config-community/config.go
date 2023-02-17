@@ -86,9 +86,13 @@ func (h *Handler) CreateTwitterConfig(c *gin.Context) {
 func (h *Handler) GetTwitterHashtagConfig(c *gin.Context) {
 	guildId := c.Param("guild_id")
 	hashtags, err := h.entities.GetTwitterHashtagConfig(guildId)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
+		code := http.StatusInternalServerError
+		if err == gorm.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
 		h.log.Fields(logger.Fields{"guild_id": guildId}).Error(err, "[handler.GetTwitterHashtagConfig] - failed to get hashtags")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(hashtags, nil, nil, nil))
