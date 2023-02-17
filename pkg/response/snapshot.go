@@ -1,5 +1,7 @@
 package response
 
+import "time"
+
 type SnapshotProposalData struct {
 	ID      string                `json:"id"`
 	Title   string                `json:"title"`
@@ -24,4 +26,22 @@ type SnapshotSpaceDataResponse struct {
 type SnapshotProposalSpace struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type CommonwealthDiscussion struct {
+	ID        int64     `json:"id"`
+	Title     string    `json:"title"`
+	Plaintext string    `json:"plaintext"`
+	Chain     string    `json:"chain"`
+	Kind      string    `json:"kind"`
+	Stage     string    `json:"stage"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type CommonwealthThreadResponse struct {
+	Status string `json:"status"`
+	Result struct {
+		Threads *[]CommonwealthDiscussion `json:"threads"`
+		Count   int64                     `json:"count"`
+	}
 }

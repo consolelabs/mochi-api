@@ -296,3 +296,16 @@ func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walle
 	}
 	return balance, err
 }
+
+// Get all threads in a community
+func (e *Entity) GetAllCommonwealthThreads(communityId string) (*response.CommonwealthThreadResponse, error) {
+	return e.svc.Commonwealth.GetThreads(communityId)
+}
+
+func (e *Entity) GetAllCommonwealthData() ([]model.CommonwealthLatestData, error) {
+	return e.repo.CommonwealthLatestData.GetAll()
+}
+
+func (e *Entity) UpdateCommonwealthData(model model.CommonwealthLatestData) error {
+	return e.repo.CommonwealthLatestData.UpsertOne(model)
+}
