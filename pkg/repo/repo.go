@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
@@ -104,6 +105,7 @@ type Repo struct {
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
+	CommonwealthLatestData               commonwealthlastestdata.Store
 	DiscordGuilds                        discordguilds.Store
 	DiscordWalletVerification            discordwalletverification.Store
 	InviteHistories                      invitehistories.Store

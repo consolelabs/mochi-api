@@ -707,7 +707,7 @@ func (e *Entity) HandleSnapshotEvent(req *request.SnapshotEvent) error {
 		return err
 	}
 	// get guild configs
-	configs, err := e.repo.GuildConfigDaoTracker.GetAllBySpace(req.Space)
+	configs, err := e.repo.GuildConfigDaoTracker.GetAllBySpaceAndSource(req.Space, "snapshot")
 	if err != nil {
 		e.log.Fields(logger.Fields{"space": req.Space}).Error(err, "[repo.GuildConfigDaoTracker.GetAllBySpace] failed")
 		return err

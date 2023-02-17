@@ -641,12 +641,46 @@ func (d *Discord) NotifyNewProposal(channelID string, proposal response.Snapshot
 	if len(body) > 250 {
 		body = body[0:249] + "..."
 	}
+	title := proposal.Proposal.Title
+	if len(title) > 70 {
+		title = title[0:69] + "..."
+	}
 	// remove image file name
 	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
 	res := reg.ReplaceAllString(body, " ")
 	msgEmbed := discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", proposal.Proposal.Title),
+		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", title),
 		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Vote [here](https://snapshot.org/#/%s/proposal/%s)\n<:transaction:933341692667506718> Voting will close at: <t:%d>", res, proposal.Proposal.Space.ID, proposal.Proposal.ID, proposal.Proposal.End),
+		Color:       mochiLogColor,
+		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+	}
+	_, err := d.session.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
+		Content: "> @everyone",
+		Embed:   &msgEmbed,
+	})
+	if err != nil {
+		d.log.Error(err, "[discord.NotifyNewProposal] d.session.ChannelMessageSendEmbed() failed")
+	}
+	return err
+}
+
+func (d *Discord) NotifyNewCommonwealthDiscussion(channelID string, discussion response.CommonwealthDiscussion) error {
+	body := discussion.Plaintext
+	if len(body) > 250 {
+		body = body[0:249] + "..."
+	}
+	// remove image file name from body
+	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
+	res := reg.ReplaceAllString(body, " ")
+	// remove - from title
+	regT := regexp.MustCompile(`%20`)
+	title := regT.ReplaceAllString(body, " ")
+	if len(title) > 70 {
+		title = title[0:69] + "..."
+	}
+	msgEmbed := discordgo.MessageEmbed{
+		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", title),
+		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Join the discussion [here](https://commonwealth.im/%s/%s/%d)", res, discussion.Chain, discussion.Kind, discussion.ID),
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}

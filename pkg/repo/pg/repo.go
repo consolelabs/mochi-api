@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
@@ -121,6 +122,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DiscordUserTokenAlert:                discordusertokenalert.NewPG(db),
 		DiscordUserDevice:                    discorduserdevice.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
+		CommonwealthLatestData:               commonwealthlastestdata.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultCurrency:           guildconfigdefaultcurrency.NewPG(db),
 		GuildConfigDaoTracker:                guildconfigdaotracker.NewPG(db),
