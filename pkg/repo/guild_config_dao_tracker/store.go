@@ -20,6 +20,9 @@ func (pg *pg) GetAllByGuildID(guildId string) (models *[]model.GuildConfigDaoTra
 func (pg *pg) GetAllBySpace(space string) (models []model.GuildConfigDaoTracker, err error) {
 	return models, pg.db.Where("space = ?", space).Find(&models).Error
 }
+func (pg *pg) GetAllBySpaceAndSource(space, source string) (models []model.GuildConfigDaoTracker, err error) {
+	return models, pg.db.Where("space = ? AND source = ?", space, source).Find(&models).Error
+}
 func (pg *pg) DeleteByID(id string) error {
 	cfg := model.GuildConfigDaoTracker{}
 	return pg.db.Where("id = ?", id).Delete(&cfg).Error

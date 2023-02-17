@@ -194,6 +194,20 @@ func (mr *MockServiceMockRecorder) NotifyMemberLeave(req, jlChannelId interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyMemberLeave", reflect.TypeOf((*MockService)(nil).NotifyMemberLeave), req, jlChannelId)
 }
 
+// NotifyNewCommonwealthDiscussion mocks base method.
+func (m *MockService) NotifyNewCommonwealthDiscussion(channelID string, discussion response.CommonwealthDiscussion) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyNewCommonwealthDiscussion", channelID, discussion)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyNewCommonwealthDiscussion indicates an expected call of NotifyNewCommonwealthDiscussion.
+func (mr *MockServiceMockRecorder) NotifyNewCommonwealthDiscussion(channelID, discussion interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewCommonwealthDiscussion", reflect.TypeOf((*MockService)(nil).NotifyNewCommonwealthDiscussion), channelID, discussion)
+}
+
 // NotifyNewGuild mocks base method.
 func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
 	m.ctrl.T.Helper()

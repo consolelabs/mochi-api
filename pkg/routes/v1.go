@@ -131,8 +131,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			walletsGroup.POST("/track", h.Wallet.Track)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
-			walletsGroup.GET("/:address/assets", h.Wallet.ListAssets)
-			walletsGroup.GET("/:address/txns", h.Wallet.ListTransactions)
+			walletsGroup.GET("/:address/:type/assets", h.Wallet.ListAssets)
+			walletsGroup.GET("/:address/:type/txns", h.Wallet.ListTransactions)
 		}
 	}
 

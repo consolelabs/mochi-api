@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/covalent"
+	"github.com/defipod/mochi/pkg/service/solscan"
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]model.UserWalletWatchlistItem, error) {
@@ -26,34 +28,82 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.List() failed")
 		return nil, err
 	}
-	chainIDs := []int{1, 56, 137, 250}
 	for i, wallet := range wallets {
-		for _, chainID := range chainIDs {
-			res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, wallet.Address, 5)
+		// 1. solana wallet
+		if wallet.Type == "sol" {
+			err = e.calculateSolWalletNetWorth(&wallet)
 			if err != nil {
-				e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.GetTrackingWallets] svc.Covalent.GetHistoricalPortfolio() failed")
+				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateSolanaWalletNetWorth() failed")
 				return nil, err
 			}
-			if res.Data.Items == nil || len(res.Data.Items) == 0 {
-				continue
-			}
-			for _, asset := range res.Data.Items {
-				if asset.Holdings == nil || len(asset.Holdings) == 0 {
-					continue
-				}
-				latest := asset.Holdings[0]
-				if strings.EqualFold(asset.ContractTickerSymbol, "icy") {
-					bal, ok := new(big.Float).SetString(latest.Open.Balance)
-					if ok {
-						parsedBal, _ := bal.Float64()
-						latest.Open.Quote = 1.5 * parsedBal / math.Pow10(asset.ContractDecimals)
-					}
-				}
-				wallets[i].NetWorth += latest.Open.Quote
+		} else {
+			// 2. eth wallet
+			err := e.calculateEthWalletNetWorth(&wallet)
+			if err != nil {
+				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEthWalletNetWorth() failed")
+				return nil, err
 			}
 		}
+		wallets[i] = wallet
 	}
 	return wallets, nil
+}
+
+func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
+	solBalance, err := e.solana.Balance(wallet.Address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"addr": wallet.Address}).Error(err, "[entity.calculateSolWalletNetWorth] solana.Balance() failed")
+		return err
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice([]string{"solana"}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"id": "solana"}).Error(err, "[entity.calculateSolWalletNetWorth] svc.CoinGecko.GetCoinPrice() failed")
+		return err
+	}
+	wallet.NetWorth += solBalance * prices["solana"]
+	tokenBalances, err := e.svc.Solscan.GetTokenBalances(wallet.Address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": wallet.Address}).Error(err, "[entity.calculateSolWalletNetWorth] svc.Solscan.GetTokenBalances() failed")
+		return err
+	}
+	for _, tb := range tokenBalances {
+		metadata, err := e.svc.Solscan.GetTokenMetadata(tb.TokenAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"tokenAddress": tb.TokenAddress}).Error(err, "[entity.calculateSolWalletNetWorth] svc.Solscan.GetTokenMetadata() failed")
+			continue
+		}
+		wallet.NetWorth += tb.TokenAmount.UIAmount * metadata.Price
+	}
+	return nil
+}
+
+func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
+	chainIDs := []int{1, 56, 137, 250}
+	for _, chainID := range chainIDs {
+		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, wallet.Address, 5)
+		if err != nil {
+			e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Covalent.GetHistoricalPortfolio() failed")
+			return err
+		}
+		if res.Data.Items == nil || len(res.Data.Items) == 0 {
+			continue
+		}
+		for _, asset := range res.Data.Items {
+			if asset.Holdings == nil || len(asset.Holdings) == 0 {
+				continue
+			}
+			latest := asset.Holdings[0]
+			if strings.EqualFold(asset.ContractTickerSymbol, "icy") {
+				bal, ok := new(big.Float).SetString(latest.Open.Balance)
+				if ok {
+					parsedBal, _ := bal.Float64()
+					latest.Open.Quote = 1.5 * parsedBal / math.Pow10(asset.ContractDecimals)
+				}
+			}
+			wallet.NetWorth += latest.Open.Quote
+		}
+	}
+	return nil
 }
 
 func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalletWatchlistItem, error) {
@@ -80,6 +130,7 @@ func (e *Entity) TrackWallet(req request.TrackWalletRequest) error {
 		UserID:  req.UserID,
 		Address: req.Address,
 		Alias:   req.Alias,
+		Type:    req.Type,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.Create() failed")
@@ -96,12 +147,19 @@ func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
 }
 
 func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
+	if req.Type == "sol" {
+		return e.listSolWalletAssets(req)
+	}
+	return e.listEthWalletAssets(req)
+}
+
+func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
 	chainIDs := []int{1, 56, 137, 250}
 	var assets []response.WalletAssetData
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, req.Address, 5)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.ListWalletAssets] svc.Covalent.GetHistoricalPortfolio() failed")
+			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetHistoricalPortfolio() failed")
 			return nil, err
 		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
@@ -133,13 +191,63 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 	return assets, nil
 }
 
+func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
+	var res []response.WalletAssetData
+	solBalance, err := e.solana.Balance(req.Address)
+	if err != nil {
+		return nil, err
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice([]string{"solana"}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"id": "solana"}).Error(err, "[entity.listSolWalletAssets] svc.CoinGecko.GetCoinPrice() failed")
+		return nil, err
+	}
+	res = append(res, response.WalletAssetData{
+		ChainID:        999,
+		ContractName:   "Solana",
+		ContractSymbol: "SOL",
+		AssetBalance:   solBalance,
+		UsdBalance:     solBalance * prices["solana"],
+	})
+	tokenBalances, err := e.svc.Solscan.GetTokenBalances(req.Address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Solscan.GetTokenBalances() failed")
+		return nil, err
+	}
+	for _, tb := range tokenBalances {
+		metadata, err := e.svc.Solscan.GetTokenMetadata(tb.TokenAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"tokenAddress": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Solscan.GetTokenMetadata() failed")
+			continue
+		}
+		if tb.TokenAmount.UIAmount == 0 {
+			continue
+		}
+		res = append(res, response.WalletAssetData{
+			ChainID:        999,
+			ContractName:   tb.TokenName,
+			ContractSymbol: tb.TokenSymbol,
+			AssetBalance:   tb.TokenAmount.UIAmount,
+			UsdBalance:     tb.TokenAmount.UIAmount * metadata.Price,
+		})
+	}
+	return res, nil
+}
+
 func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+	if req.Type == "sol" {
+		return e.listSolWalletTxns(req)
+	}
+	return e.listEthWalletTxns(req)
+}
+
+func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
 	chainIDs := []int{1, 56, 137, 250}
 	var txns []response.WalletTransactionData
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.ListWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
+			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
 			return nil, err
 		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
@@ -148,15 +256,13 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 		for _, item := range res.Data.Items {
 			tx := response.WalletTransactionData{
 				ChainID:    chainID,
-				From:       item.FromAddress,
-				To:         item.ToAddress,
 				TxHash:     item.TxHash,
 				SignedAt:   item.BlockSignedAt,
 				Successful: item.Successful,
 			}
 			//
 			if err := e.parseCovalentTxData(item, &tx, req.Address); err != nil {
-				e.log.Fields(logger.Fields{"item": item, "tx": tx, "address": req.Address}).Error(err, "[entity.ListWalletTxns] entity.parseCovalentTxData() failed")
+				e.log.Fields(logger.Fields{"item": item, "tx": tx, "address": req.Address}).Error(err, "[entity.listEthWalletTxns] entity.parseCovalentTxData() failed")
 			}
 			txns = append(txns, tx)
 		}
@@ -165,6 +271,88 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 		return txns[i].SignedAt.Unix() > txns[j].SignedAt.Unix()
 	})
 	return txns, nil
+}
+
+func (e *Entity) listSolWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+	var res []response.WalletTransactionData
+	txns, err := e.svc.Solscan.GetTransactions(req.Address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": req.Address}).Error(err, "[entity.listSolWalletTxns] svc.Solscan.GetTransactions() failed")
+		return nil, err
+	}
+	for _, item := range txns {
+		data := response.WalletTransactionData{
+			ChainID:     999,
+			TxHash:      item.TxHash,
+			ScanBaseUrl: "https://solscan.io",
+			SignedAt:    time.Unix(int64(item.BlockTime), 0),
+			Successful:  false,
+		}
+		if strings.EqualFold(item.Status, "success") {
+			data.Successful = true
+		}
+		tx, err := e.svc.Solscan.GetTxDetails(item.TxHash)
+		if err != nil {
+			e.log.Fields(logger.Fields{"txHash": item.TxHash}).Error(err, "[entity.listSolWalletTxns] svc.Solscan.GetTxDetails() failed")
+			return nil, err
+		}
+		e.handleSolTransfers(req.Address, tx, &data)
+		e.handleSolTokenTransfers(req.Address, tx, &data)
+		res = append(res, data)
+	}
+	return res, nil
+}
+
+func (e *Entity) handleSolTransfers(address string, tx *solscan.TransactionDetailsResponse, res *response.WalletTransactionData) {
+	for _, transfer := range tx.SolTransfers {
+		value := new(big.Float).SetInt64(int64(transfer.Amount))
+		amount, _ := value.Float64()
+		amount /= math.Pow10(9)
+		if strings.EqualFold(transfer.Source, address) {
+			amount = 0 - amount
+		}
+		res.Actions = append(res.Actions, response.WalletTransactionAction{
+			Amount:         amount,
+			NativeTransfer: true,
+			Unit:           "SOL",
+			From:           transfer.Source,
+			To:             transfer.Destination,
+		})
+		res.HasTransfer = true
+	}
+}
+
+func (e *Entity) handleSolTokenTransfers(address string, tx *solscan.TransactionDetailsResponse, data *response.WalletTransactionData) {
+	for _, transfer := range tx.TokenTransfers {
+		value, ok := new(big.Float).SetString(transfer.Amount)
+		if !ok {
+			return
+		}
+		amount, _ := value.Float64()
+		amount /= math.Pow10(transfer.Token.Decimals)
+		if strings.EqualFold(transfer.SourceOwner, address) {
+			amount = 0 - amount
+		}
+		action := response.WalletTransactionAction{
+			Amount: amount,
+			Unit:   transfer.Token.Symbol,
+			From:   transfer.SourceOwner,
+			To:     transfer.DestinationOwner,
+			Contract: &response.ContractMetadata{
+				Address: transfer.Token.Address,
+			},
+		}
+		if action.Unit == "" {
+			contract, err := e.svc.Solscan.GetTokenMetadata(transfer.Token.Address)
+			if err != nil {
+				e.log.Fields(logger.Fields{"txHash": tx.TxHash}).Error(err, "[entity.listSolWalletTxns] svc.Solscan.GetTokenMetadata() failed")
+			} else {
+				action.Unit = contract.Symbol
+			}
+		}
+		data.Actions = append(data.Actions, action)
+		data.HasTransfer = true
+	}
 }
 
 func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *response.WalletTransactionData, addr string) error {
@@ -185,7 +373,6 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 			e.log.Errorf(err, "[getTxDetails] zero transaction amount %s", tx.Value)
 			return nil
 		}
-		// res.Type = "transfer_native"
 		res.HasTransfer = true
 		amount, _ := value.Float64()
 		amount /= math.Pow10(18)
@@ -196,6 +383,8 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 			Amount:         amount,
 			Unit:           nativeSymbol,
 			NativeTransfer: true,
+			From:           tx.FromAddress,
+			To:             tx.ToAddress,
 		})
 		return nil
 	}
