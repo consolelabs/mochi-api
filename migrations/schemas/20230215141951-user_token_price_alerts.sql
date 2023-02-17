@@ -15,18 +15,19 @@ create type alert_frequency_options as enum (
 );
 create table if not exists user_token_price_alerts
 (
-    user_id       text,
-    coincap_id    text,
-    alert_type    alert_type_options,
-    frequency     alert_frequency_options,
-    price         float8,
-    snoozed_to    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    user_discord_id       text,
+    symbol                text,
+    currency              text,
+    alert_type            alert_type_options,
+    frequency             alert_frequency_options,
+    price                 float8,
+    snoozed_to            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 create index user_token_price_alerts_user_id_index
-    on user_token_price_alerts (user_id);
+    on user_token_price_alerts (user_discord_id);
 
 -- +migrate Down
 DROP ENUM IF EXISTS alert_type_options;

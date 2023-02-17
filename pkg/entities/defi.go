@@ -589,6 +589,16 @@ func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExc
 }
 
 func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*response.AddTokenPriceAlertResponse, error) {
+	req.Price = util.RoundFloat(req.Price, 8)
+	req.Symbol = strings.ToUpper(req.Symbol)
+	if req.Price <= 0 || req.Symbol == "" {
+		e.log.Fields(logger.Fields{
+			"price":  req.Price,
+			"symbol": req.Symbol,
+		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert price or token symbol")
+		return nil, baseerrs.ErrBadRequest
+	}
+
 	if err := req.AlertType.IsValidAlertType(); err != nil {
 		e.log.Fields(logger.Fields{
 			"alert_type": req.AlertType,
@@ -603,14 +613,14 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		return nil, err
 	}
 
-	// TODO: Update to search by Coincap API
-	_, err := e.repo.CoingeckoSupportedTokens.GetOne(req.CoincapID)
+	var alertPair = req.Symbol + "USDT"
+	_, err, _ := e.svc.Binance.GetExchangeInfo(alertPair)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req.coincap_id": req.CoincapID}).Error(err, "[entity.AddTokenPriceAlert] repo.CoingeckoSupportedTokens.GetOne() failed")
+		e.log.Fields(logger.Fields{"req.symbol": req.Symbol}).Error(err, "[entity.AddTokenPriceAlert] e.svc.Binance.GetExchangeInfo() failed")
 		return nil, err
 	}
 
-	listQ := usertokenpricealert.UserTokenPriceAlertQuery{CoincapID: req.CoincapID, UserID: req.UserID}
+	listQ := usertokenpricealert.UserTokenPriceAlertQuery{Symbol: req.Symbol, UserDiscordID: req.UserDiscordID, Price: req.Price}
 	items, total, err := e.repo.UserTokenPriceAlert.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddTokenPriceAlert] repo.UserTokenPriceAlert.List() failed")
@@ -627,14 +637,15 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		err = e.repo.UserTokenPriceAlert.Update(&fetchedAlert)
 	} else {
 		err = e.repo.UserTokenPriceAlert.Create(&model.UserTokenPriceAlert{
-			UserID:    req.UserID,
-			CoincapID: req.CoincapID,
-			AlertType: req.AlertType,
-			Frequency: req.Frequency,
-			Price:     req.Price,
-			SnoozedTo: time.Now(),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			UserDiscordID: req.UserDiscordID,
+			Symbol:        req.Symbol,
+			AlertType:     req.AlertType,
+			Frequency:     req.Frequency,
+			Price:         req.Price,
+			SnoozedTo:     time.Now(),
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+			Currency:      "USDT",
 		})
 	}
 	if err != nil {
@@ -646,9 +657,9 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 
 func (e *Entity) GetUserListPriceAlert(req request.GetUserListPriceAlertRequest) (*[]model.UserTokenPriceAlert, error) {
 	q := usertokenpricealert.UserTokenPriceAlertQuery{
-		UserID: req.UserID,
-		Offset: req.Page * req.Size,
-		Limit:  req.Size,
+		UserDiscordID: req.UserDiscordID,
+		Offset:        req.Page * req.Size,
+		Limit:         req.Size,
 	}
 	list, _, err := e.repo.UserTokenPriceAlert.List(q)
 	if err != nil {
@@ -659,10 +670,22 @@ func (e *Entity) GetUserListPriceAlert(req request.GetUserListPriceAlertRequest)
 }
 
 func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest) error {
-	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserID, req.CoincapID)
+	req.Price = util.RoundFloat(req.Price, 8)
+	req.Symbol = strings.ToUpper(req.Symbol)
+	if req.Price <= 0 || req.Symbol == "" {
+		e.log.Fields(logger.Fields{
+			"user_discord_id": req.UserDiscordID,
+			"price":           req.Price,
+			"symbol":          req.Symbol,
+		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert price or token symbol")
+		return baseerrs.ErrBadRequest
+	}
+
+	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserDiscordID, req.Symbol, req.Price)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}
+
 	if rows == 0 {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] item not found")
 		return baseerrs.ErrRecordNotFound

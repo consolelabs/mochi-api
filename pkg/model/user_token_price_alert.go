@@ -25,14 +25,15 @@ const (
 )
 
 type UserTokenPriceAlert struct {
-	UserID    string         `json:"user_id"`
-	CoincapID string         `json:"coincap_id"`
-	AlertType AlertType      `json:"alert_type"`
-	Frequency AlertFrequency `json:"frequency"`
-	Price     float64        `json:"price"`
-	SnoozedTo time.Time      `json:"snoozed_to"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	UserDiscordID string         `json:"user_discord_id"`
+	Symbol        string         `json:"symbol"`
+	Currency      string         `json:"currency"`
+	AlertType     AlertType      `json:"alert_type"`
+	Frequency     AlertFrequency `json:"frequency"`
+	Price         float64        `json:"price"`
+	SnoozedTo     time.Time      `json:"snoozed_to"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
 func (c AlertFrequency) IsValidAlertFrequency() error {
