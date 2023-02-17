@@ -8,7 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
+	resp "github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -24,17 +24,52 @@ func NewService(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-var solscanBaseURL = "https://api.solscan.io/collection/id"
-var publicSolscanBaseURL = "https://public-api.solscan.io"
+var (
+	publicSolscanBaseURL = "https://public-api.solscan.io"
+	proSolscanBaseUrl    = "https://pro-api.solscan.io/v1.0"
+)
 
-func (s *solscan) GetSolanaCollection(collectionId string) (*model.SolanaCollectionMetadata, error) {
+func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataResponse, error) {
 	var client = &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s?collectionId=%s", solscanBaseURL, collectionId), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/nft/collection/list?search=%s", proSolscanBaseUrl, id), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := client.Do(req)
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("token", s.config.Solscan.Token)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	resBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	res := &resp.CollectionDataResponse{}
+	err = json.Unmarshal(resBody, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (s *solscan) GetNftTokenFromCollection(id, page string) (*resp.NftTokenDataResponse, error) {
+	var client = &http.Client{}
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/nft/collection/list_nft/%s?page=%s", proSolscanBaseUrl, id, page), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("token", s.config.Solscan.Token)
+
+	response, err := client.Do(request)
+
 	if err != nil {
 		return nil, err
 	}
@@ -45,12 +80,11 @@ func (s *solscan) GetSolanaCollection(collectionId string) (*model.SolanaCollect
 		return nil, err
 	}
 
-	res := &model.SolanaCollectionMetadata{}
-	err = json.Unmarshal(resBody, &res)
+	res := &resp.NftTokenDataResponse{}
+	err = json.Unmarshal(resBody, res)
 	if err != nil {
 		return nil, err
 	}
-
 	return res, nil
 }
 

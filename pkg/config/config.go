@@ -100,7 +100,8 @@ type Config struct {
 
 	APILayerAPIKey string
 
-	Kafka Kafka
+	Kafka   Kafka
+	Solscan Solscan
 }
 
 type MarketplaceBaseUrl struct {
@@ -109,6 +110,10 @@ type MarketplaceBaseUrl struct {
 	Painswap      string
 	BluemoveAptos string
 	BluemoveSui   string
+}
+
+type Solscan struct {
+	Token string
 }
 
 type MarketplaceApiKey struct {
@@ -261,6 +266,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Brokers: v.GetString("KAFKA_BROKERS"),
 			Topic:   v.GetString("KAFKA_TOPIC"),
 		},
+		Solscan: Solscan{
+			Token: v.GetString("SOLSCAN_TOKEN"),
+		},
 	}
 }
 
@@ -323,6 +331,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BLUEMOVE_SUI_BASE_URL", "https://3rd.console.so/bluemove/api")
 	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
+	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

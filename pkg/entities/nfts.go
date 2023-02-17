@@ -352,7 +352,8 @@ func (e *Entity) CheckIsSync(address string) (bool, error) {
 }
 
 func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
-	checkExistNFT, err := e.CheckExistNftCollection(req.Address)
+	collectionAddress := "solscan-" + req.Address
+	checkExistNFT, err := e.CheckExistNftCollection(collectionAddress)
 	if err != nil {
 		e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
 		return nil, err
@@ -363,20 +364,28 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	// get solana metadata collection from blockchain api
-	solanaCollection, err := e.svc.Solscan.GetSolanaCollection(req.Address)
+	solanaCollection, err := e.svc.Solscan.GetCollectionBySolscanId(req.Address)
 	if err != nil {
 		e.log.Errorf(err, "[e.svc.Solscan.GetSolanaCollection] failed to get solana collection: %v", err)
 		return nil, err
 	}
 
+	solToken, _ := e.svc.Solscan.GetNftTokenFromCollection(req.Address, "1")
+	collectionSymbol := ""
+	if len(solToken.Data.ListNfts) > 0 {
+		collectionSymbol = solToken.Data.ListNfts[0].NftSymbol
+	}
+
+	collectionName := solanaCollection.Data.Collections[0].NftCollectionName
+
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, _ := strconv.Atoi(convertedChainId)
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address:      solanaCollection.Data.Data.CollectionId,
-		ChainID:      chainID,
-		Name:         solanaCollection.Data.Data.Collection,
-		Symbol:       solanaCollection.Data.Data.Symbol,
+		Address: collectionAddress,
+		ChainID: chainID,
+		Name:    collectionName,
+		// Symbol:       solanaCollection.Data.Data.Symbol,
 		MessageID:    req.MessageID,
 		PriorityFlag: req.PriorityFlag,
 	})
@@ -386,7 +395,7 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	history := model.NftAddRequestHistory{
-		Address:   req.Address,
+		Address:   collectionAddress,
 		ChainID:   int64(chainID),
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
@@ -399,14 +408,14 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    solanaCollection.Data.Data.CollectionId,
-		Symbol:     solanaCollection.Data.Data.Symbol,
-		Name:       solanaCollection.Data.Data.Collection,
+		Address:    collectionAddress,
+		Symbol:     collectionSymbol,
+		Name:       collectionName,
 		ChainID:    convertedChainId,
 		ERCFormat:  "ERC721",
 		IsVerified: true,
 		Author:     req.Author,
-		Image:      solanaCollection.Data.Data.Avatar,
+		// Image:      solanaCollection.Data.Data.Avatar,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
