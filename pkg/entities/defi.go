@@ -613,6 +613,12 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		return nil, err
 	}
 
+	if req.AlertType == model.ChangeIsOver || req.AlertType == model.ChangeIsUnder {
+		req.Price = util.RoundFloat(req.Price, 0)
+	} else {
+		req.Price = util.RoundFloat(req.Price, 8)
+	}
+
 	var alertPair = req.Symbol + "USDT"
 	_, err, _ := e.svc.Binance.GetExchangeInfo(alertPair)
 	if err != nil {
