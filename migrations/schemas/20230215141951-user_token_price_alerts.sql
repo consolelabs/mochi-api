@@ -20,7 +20,7 @@ create table if not exists user_token_price_alerts
     alert_type    alert_type_options,
     frequency     alert_frequency_options,
     price         float8,
-    snoozed_to    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    snoozed_to    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
