@@ -5,6 +5,7 @@ import "github.com/defipod/mochi/pkg/model"
 type Store interface {
 	GetAllByGuildID(guildId string) (*[]model.GuildConfigDaoTracker, error)
 	GetAllBySpace(space string) ([]model.GuildConfigDaoTracker, error)
+	GetAllBySpaceAndSource(space, source string) ([]model.GuildConfigDaoTracker, error)
 	DeleteByID(id string) error
 	Upsert(model.GuildConfigDaoTracker) error
 }

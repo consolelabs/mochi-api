@@ -679,3 +679,12 @@ func ParseSnapshotURL(url string) string {
 	}
 	return url
 }
+
+func ParseCommonwealthURL(url string) string {
+	//https://commonwealth.im/ethereum/discussions
+	if strings.Contains(url, "commonwealth.im") {
+		args := strings.Split(url, "/")
+		return args[len(args)-2]
+	}
+	return url
+}
