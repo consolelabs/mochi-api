@@ -589,8 +589,6 @@ func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExc
 }
 
 func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*response.AddTokenPriceAlertResponse, error) {
-	req.Price = util.RoundFloat(req.Price, 8)
-	req.Symbol = strings.ToUpper(req.Symbol)
 	if req.Price <= 0 || req.Symbol == "" {
 		e.log.Fields(logger.Fields{
 			"price":  req.Price,
@@ -613,6 +611,7 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		return nil, err
 	}
 
+	req.Symbol = strings.ToUpper(req.Symbol)
 	if req.AlertType == model.ChangeIsOver || req.AlertType == model.ChangeIsUnder {
 		req.Price = util.RoundFloat(req.Price, 0)
 	} else {
@@ -676,7 +675,6 @@ func (e *Entity) GetUserListPriceAlert(req request.GetUserListPriceAlertRequest)
 }
 
 func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest) error {
-	req.Price = util.RoundFloat(req.Price, 8)
 	req.Symbol = strings.ToUpper(req.Symbol)
 	if req.Price <= 0 || req.Symbol == "" {
 		e.log.Fields(logger.Fields{
