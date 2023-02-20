@@ -333,7 +333,7 @@ func (h *Handler) ListAllChain(c *gin.Context) {
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
-// @Param       req body request.AddTokenPriceAlert true "request"
+// @Param       req body request.AddTokenPriceAlertRequest true "request"
 // @Success     200 {object} response.AddTokenPriceAlertResponse
 // @Router      /defi/price-alert [post]
 func (h *Handler) AddTokenPriceAlert(c *gin.Context) {

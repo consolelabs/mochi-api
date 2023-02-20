@@ -3506,6 +3506,13 @@ const docTemplate = `{
                         "name": "user_discord_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -3841,6 +3848,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/data/usage-stats/dao-tracker": {
+            "get": {
+                "description": "Get dao tracker usage across Mochi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Metric",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DaoTrackerSpaceCountResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/usage-stats/proposal": {
+            "get": {
+                "description": "Get proposal usage across Mochi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Metric",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildProposalUsageResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/chains": {
             "get": {
                 "description": "List All Chain",
@@ -4021,6 +4102,114 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetHistoricalMarketChartResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/price-alert": {
+            "get": {
+                "description": "Get user's price alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get user's price alerts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_discord_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListTokenPriceAlertResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add to user's price alert",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Add to user's price alert",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddTokenPriceAlertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.AddTokenPriceAlertResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove from user's price alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Remove from user's price alerts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
                         }
                     }
                 }
@@ -7362,6 +7551,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "source": {
+                    "type": "string"
+                },
                 "space": {
                     "type": "string"
                 },
@@ -8727,6 +8919,9 @@ const docTemplate = `{
                 "net_worth": {
                     "type": "number"
                 },
+                "type": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }
@@ -8782,6 +8977,38 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.AddTokenPriceAlertRequest": {
+            "type": "object",
+            "properties": {
+                "alert_type": {
+                    "type": "string",
+                    "enum": [
+                        "price_reaches",
+                        "price_rises_above",
+                        "price_drops_to",
+                        "change_is_over",
+                        "change_is_under"
+                    ]
+                },
+                "frequency": {
+                    "type": "string",
+                    "enum": [
+                        "only_once",
+                        "once_a_day",
+                        "always"
+                    ]
+                },
+                "price": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "user_discord_id": {
                     "type": "string"
                 }
             }
@@ -9699,6 +9926,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "address",
+                "type",
                 "user_id"
             ],
             "properties": {
@@ -9706,6 +9934,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "alias": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "user_id": {
@@ -10138,6 +10369,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.AddTokenPriceAlertResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.TokenPriceAlertResponseData"
+                }
+            }
+        },
         "response.AllTipBotTokensResponse": {
             "type": "object",
             "properties": {
@@ -10502,6 +10741,34 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
+                }
+            }
+        },
+        "response.DaoTrackerSpaceCountData": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "space": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DaoTrackerSpaceCountResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DaoTrackerSpaceCountData"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
@@ -11619,6 +11886,34 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GuildProposalUsageData": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "proposal_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.GuildProposalUsageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GuildProposalUsageData"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
         "response.GuildPruneExcludeList": {
             "type": "object",
             "properties": {
@@ -11938,19 +12233,31 @@ const docTemplate = `{
                 "image_cdn": {
                     "type": "string"
                 },
+                "last_sale_at": {
+                    "type": "string"
+                },
                 "last_sale_price": {
                     "$ref": "#/definitions/response.IndexerPrice"
                 },
                 "name": {
                     "type": "string"
                 },
-                "price_change_1d": {
-                    "type": "string"
-                },
                 "price_change_30d": {
                     "type": "string"
                 },
-                "price_change_7d": {
+                "price_change_365d": {
+                    "type": "string"
+                },
+                "price_change_90d": {
+                    "type": "string"
+                },
+                "price_change_percentage_30d": {
+                    "type": "string"
+                },
+                "price_change_percentage_365d": {
+                    "type": "string"
+                },
+                "price_change_percentage_90d": {
                     "type": "string"
                 },
                 "rarity_rank": {
@@ -12199,6 +12506,38 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "response.ListTokenPriceAlertResponse": {
+            "type": "object",
+            "properties": {
+                "alert_type": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "frequency": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "snoozed_to": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
                 }
             }
         },
@@ -12904,6 +13243,32 @@ const docTemplate = `{
                 },
                 "vote_config": {
                     "$ref": "#/definitions/model.DaoProposalVoteOption"
+                }
+            }
+        },
+        "response.TokenPriceAlertResponseData": {
+            "type": "object",
+            "properties": {
+                "alert_type": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "frequency": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "snoozed_to": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
                 }
             }
         },
