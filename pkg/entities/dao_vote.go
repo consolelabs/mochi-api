@@ -76,6 +76,10 @@ func (e *Entity) GetAllDaoProposalByUserId(userId string) (*[]model.DaoProposal,
 	return proposals, nil
 }
 
+func (e *Entity) GetAllDaoProposalByGuild(guildId string) (*[]model.DaoProposal, error) {
+	return e.repo.DaoProposal.GetAllByGuildId(guildId)
+}
+
 func (e *Entity) GetDaoVotesByUserId(userId string) (*[]model.DaoVote, error) {
 	votes, err := e.repo.DaoVote.GetByUserId(userId)
 	if err != nil {

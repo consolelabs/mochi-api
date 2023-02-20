@@ -119,3 +119,39 @@ func (h *Handler) MetricSupportedTokens(c *gin.Context, query string, guildId st
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(totalSupportedTokens, nil, nil, nil))
 }
+
+func (h *Handler) MetricProposalUsage(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "20"
+	}
+	res, err := h.entities.GetProposalUsage(page, size)
+	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.MetricProposalUsage] - failed to get proposal data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+func (h *Handler) MetricDaoTracker(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "20"
+	}
+	res, err := h.entities.GetDaoTrackerMetric(page, size)
+	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.MetricDaoTracker] - failed to get dao tracker data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

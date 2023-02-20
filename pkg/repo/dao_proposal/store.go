@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 type pg struct {
@@ -20,6 +21,13 @@ func (pg *pg) GetById(id int64) (model *model.DaoProposal, err error) {
 
 func (pg *pg) GetAllByCreatorId(userId string) (models *[]model.DaoProposal, err error) {
 	return models, pg.db.Where("creator_id = ?", userId).Find(&models).Error
+}
+func (pg *pg) GetAllWithCount(page int, size int) (models *[]response.ProposalCount, err error) {
+	return models, pg.db.Table("dao_proposal").Select("guild_id, COUNT(guild_id)").Group("guild_id").Offset(size * page).Limit(size).Order("count DESC").Scan(&models).Error
+}
+
+func (pg *pg) GetAllByGuildId(guildId string) (models *[]model.DaoProposal, err error) {
+	return models, pg.db.Where("guild_id = ?", guildId).Find(&models).Error
 }
 func (pg *pg) GetByCreatorIdAndProposalId(proposal int64, userId string) (models []model.DaoProposalWithView, err error) {
 	rows, err := pg.db.Table("dao_proposal").Joins("join view_dao_proposal ON id = ? AND creator_id = ? AND view_dao_proposal.proposal_id = ?", proposal, userId, proposal).Rows()

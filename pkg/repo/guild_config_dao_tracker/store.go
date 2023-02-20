@@ -2,6 +2,7 @@ package guild_config_dao_tracker
 
 import (
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -27,6 +28,10 @@ func (pg *pg) DeleteByID(id string) error {
 	cfg := model.GuildConfigDaoTracker{}
 	return pg.db.Where("id = ?", id).Delete(&cfg).Error
 }
+func (pg *pg) GetAllWithCount(page int, size int) (models []response.DaoTrackerSpaceCountData, err error) {
+	return models, pg.db.Table("guild_config_dao_trackers").Select("space, source, COUNT(space)").Group("space, source").Offset(size * page).Limit(size).Order("count DESC").Scan(&models).Error
+}
+
 func (pg *pg) Upsert(cfg model.GuildConfigDaoTracker) error {
 	tx := pg.db.Begin()
 
