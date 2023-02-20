@@ -397,6 +397,8 @@ definitions:
         type: string
       id:
         type: string
+      source:
+        type: string
       space:
         type: string
       updated_at:
@@ -1291,6 +1293,8 @@ definitions:
         type: string
       net_worth:
         type: number
+      type:
+        type: string
       user_id:
         type: string
     type: object
@@ -1327,6 +1331,29 @@ definitions:
       symbol:
         type: string
       user_id:
+        type: string
+    type: object
+  request.AddTokenPriceAlertRequest:
+    properties:
+      alert_type:
+        enum:
+        - price_reaches
+        - price_rises_above
+        - price_drops_to
+        - change_is_over
+        - change_is_under
+        type: string
+      frequency:
+        enum:
+        - only_once
+        - once_a_day
+        - always
+        type: string
+      price:
+        type: number
+      symbol:
+        type: string
+      user_discord_id:
         type: string
     type: object
   request.BalcklistChannelRepostConfigRequest:
@@ -1930,10 +1957,13 @@ definitions:
         type: string
       alias:
         type: string
+      type:
+        type: string
       user_id:
         type: string
     required:
     - address
+    - type
     - user_id
     type: object
   request.TradeOfferItem:
@@ -2213,6 +2243,11 @@ definitions:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
     type: object
+  response.AddTokenPriceAlertResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.TokenPriceAlertResponseData'
+    type: object
   response.AllTipBotTokensResponse:
     properties:
       data:
@@ -2448,6 +2483,24 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.GetUserCurrentUpvoteStreakResponse'
+    type: object
+  response.DaoTrackerSpaceCountData:
+    properties:
+      count:
+        type: integer
+      source:
+        type: string
+      space:
+        type: string
+    type: object
+  response.DaoTrackerSpaceCountResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.DaoTrackerSpaceCountData'
+        type: array
+      metadata:
+        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.DataFilterConfigByReaction:
     properties:
@@ -3168,6 +3221,24 @@ definitions:
       updated_at:
         type: string
     type: object
+  response.GuildProposalUsageData:
+    properties:
+      guild_id:
+        type: string
+      is_active:
+        type: boolean
+      proposal_count:
+        type: integer
+    type: object
+  response.GuildProposalUsageResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GuildProposalUsageData'
+        type: array
+      metadata:
+        $ref: '#/definitions/response.PaginationResponse'
+    type: object
   response.GuildPruneExcludeList:
     properties:
       guild_id:
@@ -3377,15 +3448,23 @@ definitions:
         type: string
       image_cdn:
         type: string
+      last_sale_at:
+        type: string
       last_sale_price:
         $ref: '#/definitions/response.IndexerPrice'
       name:
         type: string
-      price_change_1d:
-        type: string
-      price_change_7d:
-        type: string
       price_change_30d:
+        type: string
+      price_change_90d:
+        type: string
+      price_change_365d:
+        type: string
+      price_change_percentage_30d:
+        type: string
+      price_change_percentage_90d:
+        type: string
+      price_change_percentage_365d:
         type: string
       rarity_rank:
         type: integer
@@ -3546,6 +3625,27 @@ definitions:
         type: string
       success:
         type: boolean
+    type: object
+  response.ListTokenPriceAlertResponse:
+    properties:
+      alert_type:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      frequency:
+        type: string
+      price:
+        type: number
+      snoozed_to:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+      user_discord_id:
+        type: string
     type: object
   response.LogoutResponse:
     properties:
@@ -4002,6 +4102,23 @@ definitions:
         type: string
       vote_config:
         $ref: '#/definitions/model.DaoProposalVoteOption'
+    type: object
+  response.TokenPriceAlertResponseData:
+    properties:
+      alert_type:
+        type: string
+      currency:
+        type: string
+      frequency:
+        type: string
+      price:
+        type: number
+      snoozed_to:
+        type: string
+      symbol:
+        type: string
+      user_discord_id:
+        type: string
     type: object
   response.TransactionsResponse:
     properties:
@@ -6432,6 +6549,11 @@ paths:
         name: user_discord_id
         required: true
         type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -6638,6 +6760,54 @@ paths:
       summary: Metric
       tags:
       - Data
+  /data/usage-stats/dao-tracker:
+    get:
+      consumes:
+      - application/json
+      description: Get dao tracker usage across Mochi
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: size
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DaoTrackerSpaceCountResponse'
+      summary: Metric
+      tags:
+      - Data
+  /data/usage-stats/proposal:
+    get:
+      consumes:
+      - application/json
+      description: Get proposal usage across Mochi
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: size
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GuildProposalUsageResponse'
+      summary: Metric
+      tags:
+      - Data
   /defi/chains:
     get:
       consumes:
@@ -6759,6 +6929,76 @@ paths:
           schema:
             $ref: '#/definitions/response.GetHistoricalMarketChartResponse'
       summary: Get historical market chart
+      tags:
+      - Defi
+  /defi/price-alert:
+    delete:
+      consumes:
+      - application/json
+      description: Remove from user's price alerts
+      parameters:
+      - in: query
+        name: symbol
+        required: true
+        type: string
+      - in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's price alerts
+      tags:
+      - Defi
+    get:
+      consumes:
+      - application/json
+      description: Get user's price alerts
+      parameters:
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      - in: query
+        name: user_discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ListTokenPriceAlertResponse'
+      summary: Get user's price alerts
+      tags:
+      - Defi
+    post:
+      consumes:
+      - application/json
+      description: Add to user's price alert
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddTokenPriceAlertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.AddTokenPriceAlertResponse'
+      summary: Add to user's price alert
       tags:
       - Defi
   /defi/token:

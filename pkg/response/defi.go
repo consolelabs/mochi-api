@@ -213,3 +213,15 @@ type TokenPriceAlertResponseData struct {
 type AddTokenPriceAlertResponse struct {
 	Data *TokenPriceAlertResponseData `json:"data"`
 }
+
+type ListTokenPriceAlertResponse struct {
+	UserDiscordID string               `json:"user_discord_id"`
+	Symbol        string               `json:"symbol"`
+	Currency      string               `json:"currency"`
+	AlertType     model.AlertType      `json:"alert_type"`
+	Frequency     model.AlertFrequency `json:"frequency"`
+	Price         float64              `json:"price"`
+	SnoozedTo     time.Time            `json:"snoozed_to"`
+	CreatedAt     time.Time            `json:"created_at"`
+	UpdatedAt     time.Time            `json:"updated_at"`
+}

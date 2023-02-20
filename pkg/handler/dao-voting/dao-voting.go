@@ -32,23 +32,34 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Accept      json
 // @Produce     json
 // @Param       user_discord_id   query  string true  "Discord ID"
+// @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.GetAllDaoProposals
 // @Router      /dao-voting/proposals [get]
 func (h *Handler) GetProposals(c *gin.Context) {
 	userId := c.Query("user_discord_id")
-	if userId == "" {
-		h.log.Info("[handler.GetProposals] - discord id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id is required"), nil))
+	guildId := c.Query("guild_id")
+	if userId == "" && guildId == "" {
+		h.log.Info("[handler.GetProposals] - discord id and guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_discord_id or guild_id is required"), nil))
 		return
 	}
-
-	proposals, err := h.entities.GetAllDaoProposalByUserId(userId)
-	if err != nil {
-		h.log.Fields(logger.Fields{"discord_id": userId}).Error(err, "[handler.GetProposals] - failed to get proposals by discord id")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
+	if userId != "" {
+		proposals, err := h.entities.GetAllDaoProposalByUserId(userId)
+		if err != nil {
+			h.log.Fields(logger.Fields{"discord_id": userId}).Error(err, "[handler.GetProposals] - failed to get proposals by discord id")
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		c.JSON(http.StatusOK, response.CreateResponse(proposals, nil, nil, nil))
+	} else {
+		proposals, err := h.entities.GetAllDaoProposalByGuild(guildId)
+		if err != nil {
+			h.log.Fields(logger.Fields{"discord_id": userId}).Error(err, "[handler.GetProposals] - failed to get proposals by guild id")
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		c.JSON(http.StatusOK, response.CreateResponse(proposals, nil, nil, nil))
 	}
-	c.JSON(http.StatusOK, response.CreateResponse(proposals, nil, nil, nil))
 }
 
 // GetProposals     godoc

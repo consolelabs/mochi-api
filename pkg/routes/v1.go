@@ -50,6 +50,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		usageGroup := dataGroup.Group("/usage-stats")
 		{
 			usageGroup.GET("/gitbook", h.Data.AddGitbookClick)
+			usageGroup.GET("/proposal", h.Data.MetricProposalUsage)
+			usageGroup.GET("/dao-tracker", h.Data.MetricDaoTracker)
 		}
 		activitygroup := dataGroup.Group("/activities")
 		{
