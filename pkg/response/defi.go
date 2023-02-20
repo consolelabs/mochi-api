@@ -2,6 +2,7 @@ package response
 
 import (
 	"math/big"
+	"time"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -197,4 +198,18 @@ type GetFiatHistoricalExchangeRatesResponse struct {
 	Times      []string  `json:"times"`
 	From       string    `json:"from"`
 	To         string    `json:"to"`
+}
+
+type TokenPriceAlertResponseData struct {
+	UserDiscordID string    `json:"user_discord_id"`
+	Symbol        string    `json:"symbol"`
+	Currency      string    `json:"currency"`
+	AlertType     string    `json:"alert_type"`
+	Frequency     string    `json:"frequency"`
+	Price         float64   `json:"price"`
+	SnoozedTo     time.Time `json:"snoozed_to"`
+}
+
+type AddTokenPriceAlertResponse struct {
+	Data *TokenPriceAlertResponseData `json:"data"`
 }

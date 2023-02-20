@@ -367,6 +367,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			watchlistGroup.POST("", h.Defi.AddToWatchlist)
 			watchlistGroup.DELETE("", h.Defi.RemoveFromWatchlist)
 		}
+
+		priceAlertGroup := defiGroup.Group("/price-alert")
+		{
+			priceAlertGroup.GET("", h.Defi.GetUserListPriceAlert)
+			priceAlertGroup.POST("", h.Defi.AddTokenPriceAlert)
+			priceAlertGroup.DELETE("", h.Defi.RemoveTokenPriceAlert)
+		}
 	}
 
 	verifyGroup := v1.Group("/verify")

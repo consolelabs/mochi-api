@@ -96,6 +96,7 @@ import (
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
+	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
@@ -201,5 +202,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
 		GuildConfigMixRole:                   guildconfigmixrole.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
+		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),
 	}
 }
