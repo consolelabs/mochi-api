@@ -35,21 +35,6 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// GetHistoricalPortfolio mocks base method.
-func (m *MockService) GetHistoricalPortfolio(chainID int, address string, retry int) (*covalent.GetHistoricalPortfolioResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetHistoricalPortfolio", chainID, address, retry)
-	ret0, _ := ret[0].(*covalent.GetHistoricalPortfolioResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetHistoricalPortfolio indicates an expected call of GetHistoricalPortfolio.
-func (mr *MockServiceMockRecorder) GetHistoricalPortfolio(chainID, address, retry interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalPortfolio", reflect.TypeOf((*MockService)(nil).GetHistoricalPortfolio), chainID, address, retry)
-}
-
 // GetHistoricalTokenPrices mocks base method.
 func (m *MockService) GetHistoricalTokenPrices(chainID int, currency, address string) (*response.HistoricalTokenPricesResponse, error, int) {
 	m.ctrl.T.Helper()
@@ -64,6 +49,21 @@ func (m *MockService) GetHistoricalTokenPrices(chainID int, currency, address st
 func (mr *MockServiceMockRecorder) GetHistoricalTokenPrices(chainID, currency, address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalTokenPrices", reflect.TypeOf((*MockService)(nil).GetHistoricalTokenPrices), chainID, currency, address)
+}
+
+// GetTokenBalances mocks base method.
+func (m *MockService) GetTokenBalances(chainID int, address string, retry int) (*covalent.GetTokenBalancesResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTokenBalances", chainID, address, retry)
+	ret0, _ := ret[0].(*covalent.GetTokenBalancesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTokenBalances indicates an expected call of GetTokenBalances.
+func (mr *MockServiceMockRecorder) GetTokenBalances(chainID, address, retry interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTokenBalances", reflect.TypeOf((*MockService)(nil).GetTokenBalances), chainID, address, retry)
 }
 
 // GetTransactionsByAddress mocks base method.
