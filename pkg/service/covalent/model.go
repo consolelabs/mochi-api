@@ -127,3 +127,34 @@ type GetHistoricalPortfolioResponse struct {
 	ErrorMessage string                      `json:"error_message"`
 	ErrorCode    int                         `json:"error_code"`
 }
+
+type TokenBalanceItem struct {
+	ContractDecimals     int         `json:"contract_decimals"`
+	ContractName         string      `json:"contract_name"`
+	ContractTickerSymbol string      `json:"contract_ticker_symbol"`
+	ContractAddress      string      `json:"contract_address"`
+	LogoURL              string      `json:"logo_url"`
+	NativeToken          bool        `json:"native_token"`
+	Type                 string      `json:"type"`
+	Balance              string      `json:"balance"`
+	Quote                float64     `json:"quote"`
+	NftData              interface{} `json:"nft_data"`
+}
+
+type GetTokenBalancesData struct {
+	Address       string             `json:"address"`
+	UpdatedAt     time.Time          `json:"updated_at"`
+	NextUpdateAt  time.Time          `json:"next_update_at"`
+	QuoteCurrency string             `json:"quote_currency"`
+	ChainID       int                `json:"chain_id"`
+	ChainName     string             `json:"chain_name"`
+	Items         []TokenBalanceItem `json:"items"`
+	Pagination    interface{}        `json:"pagination"`
+}
+
+type GetTokenBalancesResponse struct {
+	Data         *GetTokenBalancesData `json:"data"`
+	Error        bool                  `json:"error"`
+	ErrorMessage string                `json:"error_message"`
+	ErrorCode    int                   `json:"error_code"`
+}

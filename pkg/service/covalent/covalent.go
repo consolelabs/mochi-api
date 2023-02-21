@@ -62,19 +62,19 @@ func (c *Covalent) GetTransactionsByAddress(chainID int, address string, size in
 	return res, nil
 }
 
-func (c *Covalent) GetHistoricalPortfolio(chainID int, address string, retry int) (*GetHistoricalPortfolioResponse, error) {
-	url := c.getFullUrl(fmt.Sprintf("/%d/address/%s/portfolio_v2/", chainID, address))
-	res := &GetHistoricalPortfolioResponse{}
+func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*GetTokenBalancesResponse, error) {
+	url := c.getFullUrl(fmt.Sprintf("/%d/address/%s/balances_v2/", chainID, address))
+	res := &GetTokenBalancesResponse{}
 	statusCode, err := util.FetchData(url, res)
 	if err != nil {
-		c.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[covalent.GetHistoricalPortfolio] util.FetchData() failed")
+		c.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[covalent.GetTokenBalances] util.FetchData() failed")
 		return nil, err
 	}
 	if res.Error {
 		if retry == 0 {
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
-			return c.GetHistoricalPortfolio(chainID, address, retry-1)
+			return c.GetTokenBalances(chainID, address, retry-1)
 		}
 	}
 	return res, nil

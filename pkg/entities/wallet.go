@@ -81,30 +81,38 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
 	chainIDs := []int{1, 56, 137, 250}
 	for _, chainID := range chainIDs {
-		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, wallet.Address, 5)
+		res, err := e.svc.Covalent.GetTokenBalances(chainID, wallet.Address, 3)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Covalent.GetHistoricalPortfolio() failed")
+			e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Covalent.GetTokenBalances() failed")
 			return err
 		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
 			continue
 		}
-		for _, asset := range res.Data.Items {
-			if asset.Holdings == nil || len(asset.Holdings) == 0 {
+		for _, item := range res.Data.Items {
+			if item.Type != "cryptocurrency" {
 				continue
 			}
-			latest := asset.Holdings[0]
-			if strings.EqualFold(asset.ContractTickerSymbol, "icy") && chainID == 137 {
-				bal, ok := new(big.Float).SetString(latest.Open.Balance)
-				if ok {
-					parsedBal, _ := bal.Float64()
-					latest.Open.Quote = 1.5 * parsedBal / math.Pow10(asset.ContractDecimals)
-				}
-			}
-			wallet.NetWorth += latest.Open.Quote
+			_, quote := e.calculateTokenBalance(item, chainID)
+			wallet.NetWorth += quote
 		}
 	}
 	return nil
+}
+
+func (e *Entity) calculateTokenBalance(item covalent.TokenBalanceItem, chainID int) (bal, quote float64) {
+	balance, ok := new(big.Float).SetString(item.Balance)
+	if !ok {
+		return
+	}
+	parsedBal, _ := balance.Float64()
+	bal = parsedBal / math.Pow10(item.ContractDecimals)
+	if strings.EqualFold(item.ContractTickerSymbol, "icy") && chainID == 137 {
+		quote = 1.5 * bal
+	} else {
+		quote = item.Quote
+	}
+	return
 }
 
 func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalletWatchlistItem, error) {
@@ -158,34 +166,25 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	chainIDs := []int{1, 56, 137, 250}
 	var assets []response.WalletAssetData
 	for _, chainID := range chainIDs {
-		res, err := e.svc.Covalent.GetHistoricalPortfolio(chainID, req.Address, 5)
+		res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetHistoricalPortfolio() failed")
+			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
 			return nil, err
 		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
 			continue
 		}
 		for _, item := range res.Data.Items {
-			if item.Holdings == nil || len(item.Holdings) == 0 {
+			if item.Type != "cryptocurrency" {
 				continue
 			}
-			latest := item.Holdings[0]
-			bal, ok := new(big.Float).SetString(latest.Open.Balance)
-			if !ok {
-				continue
-			}
-			parsedBal, _ := bal.Float64()
-			assetBal := parsedBal / math.Pow10(item.ContractDecimals)
-			if strings.EqualFold(item.ContractTickerSymbol, "icy") && chainID == 137 {
-				latest.Open.Quote = 1.5 * assetBal
-			}
+			bal, quote := e.calculateTokenBalance(item, chainID)
 			assets = append(assets, response.WalletAssetData{
 				ChainID:        chainID,
 				ContractName:   item.ContractName,
 				ContractSymbol: item.ContractTickerSymbol,
-				AssetBalance:   assetBal,
-				UsdBalance:     latest.Open.Quote,
+				AssetBalance:   bal,
+				UsdBalance:     quote,
 			})
 		}
 	}
