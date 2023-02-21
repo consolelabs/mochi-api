@@ -34,16 +34,17 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 			err = e.calculateSolWalletNetWorth(&wallet)
 			if err != nil {
 				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateSolanaWalletNetWorth() failed")
-				return nil, err
+				continue
 			}
 		} else {
 			// 2. eth wallet
 			err := e.calculateEthWalletNetWorth(&wallet)
 			if err != nil {
 				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEthWalletNetWorth() failed")
-				return nil, err
+				continue
 			}
 		}
+		wallet.FetchedData = true
 		wallets[i] = wallet
 	}
 	return wallets, nil
@@ -93,7 +94,7 @@ func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistIte
 				continue
 			}
 			latest := asset.Holdings[0]
-			if strings.EqualFold(asset.ContractTickerSymbol, "icy") {
+			if strings.EqualFold(asset.ContractTickerSymbol, "icy") && chainID == 137 {
 				bal, ok := new(big.Float).SetString(latest.Open.Balance)
 				if ok {
 					parsedBal, _ := bal.Float64()
@@ -176,7 +177,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			}
 			parsedBal, _ := bal.Float64()
 			assetBal := parsedBal / math.Pow10(item.ContractDecimals)
-			if strings.EqualFold(item.ContractTickerSymbol, "icy") {
+			if strings.EqualFold(item.ContractTickerSymbol, "icy") && chainID == 137 {
 				latest.Open.Quote = 1.5 * assetBal
 			}
 			assets = append(assets, response.WalletAssetData{
