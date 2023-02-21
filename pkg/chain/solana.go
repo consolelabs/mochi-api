@@ -49,15 +49,6 @@ func (s *Solana) Transfer(senderPK, recipientAddr string, amount float64, all bo
 		return txHash, 0, err
 	}
 
-	// handle case all
-	if all {
-		amount, err = s.Balance(fromAcc.PublicKey.String())
-		if err != nil {
-			s.logger.Error(err, "[solana.Transfer] s.Balance() failed")
-			return txHash, 0, err
-		}
-	}
-
 	// create a message
 	message := types.NewMessage(types.NewMessageParam{
 		FeePayer:        fromAcc.PublicKey,
@@ -71,12 +62,25 @@ func (s *Solana) Transfer(senderPK, recipientAddr string, amount float64, all bo
 		},
 	})
 
-	// estimate fee
-	// estimatedFee, err := s.client.GetFeeForMessage(context.Background(), message)
-	// if err != nil {
-	// 	s.logger.Error(err, "[solana.Transfer] s.client.GetFeeForMessage() failed")
-	// 	return txHash, 0, err
-	// }
+	// handle case all
+	if all {
+		amount, err = s.getTransferAllAmount(fromAcc, message)
+		if err != nil {
+			s.logger.Error(err, "[solana.Transfer] s.getTransferAllAmount() failed")
+			return txHash, 0, err
+		}
+		message = types.NewMessage(types.NewMessageParam{
+			FeePayer:        fromAcc.PublicKey,
+			RecentBlockhash: res.Blockhash,
+			Instructions: []types.Instruction{
+				sysprog.Transfer(sysprog.TransferParam{
+					From:   fromAcc.PublicKey,
+					To:     common.PublicKeyFromString(recipientAddr),
+					Amount: uint64(amount),
+				}),
+			},
+		})
+	}
 
 	// create tx by message + signer
 	tx, err := types.NewTransaction(types.NewTransactionParam{
@@ -95,4 +99,25 @@ func (s *Solana) Transfer(senderPK, recipientAddr string, amount float64, all bo
 		return txHash, 0, err
 	}
 	return txHash, amount, nil
+}
+
+func (s *Solana) getTransferAllAmount(fromAcc types.Account, msg types.Message) (float64, error) {
+	senderBal, err := s.Balance(fromAcc.PublicKey.String())
+	if err != nil {
+		s.logger.Error(err, "[solana.Transfer] s.Balance() failed")
+		return 0, err
+	}
+	amount := senderBal * 1e9
+	// estimate fee
+	estimatedFee, err := s.client.GetFeeForMessage(context.Background(), msg)
+	if err != nil {
+		s.logger.Error(err, "[solana.Transfer] s.client.GetFeeForMessage() failed")
+		return 0, err
+	}
+	return amount - float64(*estimatedFee), nil
+}
+
+func (s *Solana) GetCentralizedWalletAddress() string {
+	centralizedAccount, _ := types.AccountFromBase58(s.config.SolanaCentralizedWalletPrivateKey)
+	return string(centralizedAccount.PublicKey.String())
 }

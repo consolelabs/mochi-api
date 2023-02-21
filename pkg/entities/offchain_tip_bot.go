@@ -682,17 +682,38 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		return err
 	}
 
-	if !chain.IsEVM {
+	// sweep token for EVM chain
+	if chain.IsEVM {
+		tx, err := e.abi.SweepTokens(req.ToAddress, int64(req.ChainID), token)
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.abi.SweepTokens() failed")
+			return err
+		}
+		e.log.Infof("[entity.HandleIncomingDeposit] sucessfully sweep EVM tokens: %s", tx.Hash().Hex())
 		return nil
 	}
 
-	// sweep token for EVM chain
-	tx, err := e.abi.SweepTokens(req.ToAddress, int64(req.ChainID), token)
+	// sweep token for Solana
+	contract, err := e.repo.OffchainTipBotContract.GetByID(assignedContract.ContractID.String())
 	if err != nil {
-		e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.notifyDepositTx() failed")
+		e.log.Fields(logger.Fields{"contractID": assignedContract.ContractID.String()}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotContract.GetByID() failed")
 		return err
 	}
-	e.log.Infof("[entity.HandleIncomingDeposit] sweep tokens tx: %s", tx.Hash().Hex())
+	if contract.PrivateKey == "" {
+		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.HandleIncomingDeposit] Solana contract has no PK")
+		return nil
+	}
+	pk, err := util.DecodeCFB(e.cfg.SolanaPKSecretKey, contract.PrivateKey)
+	if err != nil {
+		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.HandleIncomingDeposit] util.DecodeCFB() failed")
+		return err
+	}
+	txHash, _, err := e.solana.Transfer(pk, e.solana.GetCentralizedWalletAddress(), 0, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.solana.Transfer() failed")
+		return err
+	}
+	e.log.Infof("[entity.HandleIncomingDeposit] sucessfully sweep Solana: %s", txHash)
 	return nil
 }
 
