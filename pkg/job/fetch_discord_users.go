@@ -32,7 +32,7 @@ func (j *fetchDiscordUsers) Run() error {
 	for _, guild := range guilds.Data {
 		guildUsers, err := j.entity.GetGuildUsersFromDiscord(guild.ID)
 		if err != nil {
-			j.log.Error(err, "failed to get guild users")
+			j.log.Fields(logger.Fields{"guild": guild.ID}).Error(err, "failed to get guild users")
 			continue
 		}
 

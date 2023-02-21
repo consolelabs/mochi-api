@@ -711,7 +711,7 @@ func (e *Entity) notifyDepositTx(amount float64, userID, explorerUrl, signature 
 	amountInUSD := amount * priceInUSD
 	balanceInUSD := userBal.Amount * priceInUSD
 	embed := &discordgo.MessageEmbed{
-		Title:       fmt.Sprintf(":arrow_heading_down: %s deposit confirmed", token.TokenName),
+		Title:       fmt.Sprintf("<:pointingdown:1058304350650384434> %s deposit confirmed", token.TokenName),
 		Description: fmt.Sprintf("Your **%s** (%s) deposit has been confirmed.", token.TokenName, token.TokenSymbol),
 		Fields: []*discordgo.MessageEmbedField{
 			{
