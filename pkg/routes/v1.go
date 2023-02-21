@@ -50,6 +50,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		usageGroup := dataGroup.Group("/usage-stats")
 		{
 			usageGroup.GET("/gitbook", h.Data.AddGitbookClick)
+			usageGroup.GET("/proposal", h.Data.MetricProposalUsage)
+			usageGroup.GET("/dao-tracker", h.Data.MetricDaoTracker)
 		}
 		activitygroup := dataGroup.Group("/activities")
 		{
@@ -366,6 +368,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			watchlistGroup.GET("", h.Defi.GetUserWatchlist)
 			watchlistGroup.POST("", h.Defi.AddToWatchlist)
 			watchlistGroup.DELETE("", h.Defi.RemoveFromWatchlist)
+		}
+
+		priceAlertGroup := defiGroup.Group("/price-alert")
+		{
+			priceAlertGroup.GET("", h.Defi.GetUserListPriceAlert)
+			priceAlertGroup.POST("", h.Defi.AddTokenPriceAlert)
+			priceAlertGroup.DELETE("", h.Defi.RemoveTokenPriceAlert)
 		}
 	}
 

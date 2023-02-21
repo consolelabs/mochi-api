@@ -326,3 +326,82 @@ func (h *Handler) ListAllChain(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(returnChain, nil, nil, nil))
 }
+
+// AddToWatchlist     godoc
+// @Summary     Add to user's price alert
+// @Description Add to user's price alert
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req body request.AddTokenPriceAlertRequest true "request"
+// @Success     200 {object} response.AddTokenPriceAlertResponse
+// @Router      /defi/price-alert [post]
+func (h *Handler) AddTokenPriceAlert(c *gin.Context) {
+	var req request.AddTokenPriceAlertRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.AddTokenPriceAlert] Bind() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.entities.AddTokenPriceAlert(req)
+	if err != nil {
+		h.log.Error(err, "[handler.AddTokenPriceAlert] entity.AddTokenPriceAlert() failed")
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+// GetUserListPriceAlert     godoc
+// @Summary     Get user's price alerts
+// @Description Get user's price alerts
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req query request.GetUserListPriceAlertRequest true "request"
+// @Success     200 {object} response.ListTokenPriceAlertResponse
+// @Router      /defi/price-alert [get]
+func (h *Handler) GetUserListPriceAlert(c *gin.Context) {
+	var req request.GetUserListPriceAlertRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetUserListPriceAlert] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.entities.GetUserListPriceAlert(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserListPriceAlert] entity.GetUserWatchlist() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+// RemoveTokenPriceAlert     godoc
+// @Summary     Remove from user's price alerts
+// @Description Remove from user's price alerts
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req query request.RemoveFromWatchlistRequest true "request"
+// @Success     200 {object} object
+// @Router      /defi/price-alert [delete]
+func (h *Handler) RemoveTokenPriceAlert(c *gin.Context) {
+	var req request.RemoveTokenPriceAlertRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.RemoveTokenPriceAlert] Bind() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err := h.entities.RemoveTokenPriceAlert(req)
+	if err != nil {
+		h.log.Error(err, "[handler.RemoveTokenPriceAlert] entity.RemoveTokenPriceAlert() failed")
+		code := http.StatusInternalServerError
+		if err == baseerrs.ErrRecordNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
+}

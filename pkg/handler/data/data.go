@@ -119,3 +119,59 @@ func (h *Handler) MetricSupportedTokens(c *gin.Context, query string, guildId st
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(totalSupportedTokens, nil, nil, nil))
 }
+
+// MetricProposalUsage   godoc
+// @Summary     Metric
+// @Description Get proposal usage across Mochi
+// @Tags        Data
+// @Accept      json
+// @Produce     json
+// @Param       page   query  string false  "page"
+// @Param       size   query  string false  "size"
+// @Success     200 {object} response.GuildProposalUsageResponse
+// @Router      /data/usage-stats/proposal [get]
+func (h *Handler) MetricProposalUsage(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "20"
+	}
+	res, err := h.entities.GetProposalUsage(page, size)
+	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.MetricProposalUsage] - failed to get proposal data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+// MetricDaoTracker   godoc
+// @Summary     Metric
+// @Description Get dao tracker usage across Mochi
+// @Tags        Data
+// @Accept      json
+// @Produce     json
+// @Param       page   query  string false  "page"
+// @Param       size   query  string false  "size"
+// @Success     200 {object} response.DaoTrackerSpaceCountResponse
+// @Router      /data/usage-stats/dao-tracker [get]
+func (h *Handler) MetricDaoTracker(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "20"
+	}
+	res, err := h.entities.GetDaoTrackerMetric(page, size)
+	if err != nil {
+		h.log.Fields(logger.Fields{"page": page, "size": size}).Error(err, "[handler.MetricDaoTracker] - failed to get dao tracker data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

@@ -309,3 +309,57 @@ func (e *Entity) GetAllCommonwealthData() ([]model.CommonwealthLatestData, error
 func (e *Entity) UpdateCommonwealthData(model model.CommonwealthLatestData) error {
 	return e.repo.CommonwealthLatestData.UpsertOne(model)
 }
+
+func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProposalUsageResponse, error) {
+	res := []response.GuildProposalUsageData{}
+	p, _ := strconv.Atoi(page)
+	sz, _ := strconv.Atoi(size)
+	ppsCount, err := e.repo.DaoProposal.GetAllWithCount(p, sz)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetProposalUsage] failed to get proposal count")
+		return nil, err
+	}
+	for _, pps := range *ppsCount {
+		active := true
+		cfg, err := e.repo.GuildConfigDaoProposal.GetByGuildId(pps.GuildId)
+		// has proposals but no config found -> deleted config
+		if err == gorm.ErrRecordNotFound || cfg == nil {
+			active = false
+		}
+		res = append(res, response.GuildProposalUsageData{
+			GuildId:       pps.GuildId,
+			ProposalCount: pps.Count,
+			IsActive:      active,
+		})
+	}
+	return &response.GuildProposalUsageResponse{
+		Pagination: response.PaginationResponse{
+			Pagination: model.Pagination{
+				Page: int64(p),
+				Size: int64(sz),
+			},
+			Total: int64(len(*ppsCount)),
+		},
+		Data: &res,
+	}, nil
+}
+
+func (e *Entity) GetDaoTrackerMetric(page string, size string) (*response.DaoTrackerSpaceCountResponse, error) {
+	p, _ := strconv.Atoi(page)
+	sz, _ := strconv.Atoi(size)
+	spaceCount, err := e.repo.GuildConfigDaoTracker.GetAllWithCount(p, sz)
+	if err != nil {
+		e.log.Errorf(err, "[e.GetProposalUsage] failed to get proposal count")
+		return nil, err
+	}
+	return &response.DaoTrackerSpaceCountResponse{
+		Pagination: response.PaginationResponse{
+			Pagination: model.Pagination{
+				Page: int64(p),
+				Size: int64(sz),
+			},
+			Total: int64(len(spaceCount)),
+		},
+		Data: &spaceCount,
+	}, nil
+}

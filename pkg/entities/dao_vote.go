@@ -4,12 +4,13 @@ import (
 	"errors"
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateDaoVote(req request.CreateDaoVoteRequest) error {
@@ -73,6 +74,10 @@ func (e *Entity) GetAllDaoProposalByUserId(userId string) (*[]model.DaoProposal,
 		return nil, err
 	}
 	return proposals, nil
+}
+
+func (e *Entity) GetAllDaoProposalByGuild(guildId string) (*[]model.DaoProposal, error) {
+	return e.repo.DaoProposal.GetAllByGuildId(guildId)
 }
 
 func (e *Entity) GetDaoVotesByUserId(userId string) (*[]model.DaoVote, error) {

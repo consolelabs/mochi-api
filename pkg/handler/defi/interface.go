@@ -17,4 +17,8 @@ type IHandler interface {
 	CompareToken(c *gin.Context)
 
 	ListAllChain(c *gin.Context)
+
+	AddTokenPriceAlert(c *gin.Context)
+	GetUserListPriceAlert(c *gin.Context)
+	RemoveTokenPriceAlert(c *gin.Context)
 }

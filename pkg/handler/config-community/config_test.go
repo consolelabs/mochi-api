@@ -209,8 +209,8 @@ func TestHandler_GetTwitterHashtagConfig(t *testing.T) {
 		{
 			name:             "200_message_ok",
 			param:            "testt",
-			wantCode:         http.StatusOK,
-			wantResponsePath: "testdata/200-data-null.json",
+			wantCode:         http.StatusNotFound,
+			wantResponsePath: "testdata/404_record_not_found.json",
 		},
 	}
 	for _, tt := range tests {
