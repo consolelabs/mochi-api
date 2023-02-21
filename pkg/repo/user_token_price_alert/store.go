@@ -12,7 +12,9 @@ type UserTokenPriceAlertQuery struct {
 
 type Store interface {
 	List(q UserTokenPriceAlertQuery) (items []model.UserTokenPriceAlert, total int64, err error)
+	GetOne(q UserTokenPriceAlertQuery) (item model.UserTokenPriceAlert, err error)
 	Create(item *model.UserTokenPriceAlert) error
 	Delete(userID, symbol string, price float64) (rows int64, err error)
 	Update(item *model.UserTokenPriceAlert) error
+	FetchListSymbol() ([]string, error)
 }

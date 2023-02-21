@@ -52,6 +52,17 @@ func (c AlertType) IsValidAlertType() error {
 	return errors.ErrInvalidAlertType
 }
 
+func (c AlertType) GetRedisKeyPrefix() string {
+	switch c {
+	case PriceDropsTo, ChangeIsUnder:
+		return "alert_direction_down"
+	case PriceReaches, PriceRisesAbove, ChangeIsOver:
+		return "alert_direction_up"
+	default:
+		return ""
+	}
+}
+
 func (UserTokenPriceAlert) TableName() string {
 	return "user_token_price_alerts"
 }

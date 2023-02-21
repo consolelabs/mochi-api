@@ -693,3 +693,22 @@ func (d *Discord) NotifyNewCommonwealthDiscussion(channelID string, discussion r
 	}
 	return err
 }
+
+func (d *Discord) SendDMUserPriceAlert(userID string) error {
+	privChan, err := d.session.UserChannelCreate(userID)
+	if err != nil {
+		d.log.Error(err, "[discord.SendDMUserPriceAlert] d.session.UserChannelCreate() failed")
+		return err
+	}
+	msg := &discordgo.MessageSend{
+		Embed: &discordgo.MessageEmbed{
+			Title: "Price Alert Triggered",
+			// Footer:      &discordgo.MessageEmbedFooter{Text: req.Username, IconURL: req.Avatar},
+			Description: fmt.Sprintf("Hi, your price alert has been triggered !"),
+			Color:       mochiLogColor,
+			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		},
+	}
+	d.session.ChannelMessageSendComplex(privChan.ID, msg)
+	return nil
+}

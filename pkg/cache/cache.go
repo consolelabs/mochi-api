@@ -2,6 +2,10 @@ package cache
 
 import (
 	"time"
+
+	"github.com/go-redis/redis/v8"
+
+	"github.com/defipod/mochi/pkg/response"
 )
 
 type Cache interface {
@@ -15,9 +19,13 @@ type Cache interface {
 	ZRemove(key string, value interface{}) error
 	GetString(key string) (string, error)
 	GetStringSorted(key, min, max string) []string
+	GetStringSortedWithScores(key, min, max string) []response.ZSetWithScoreData
 	GetInt(key string) (int, error)
 	GetBool(key string) (bool, error)
 
 	HashSet(key string, hash map[string]string, expiration time.Duration) error
 	HashGet(key string) (map[string]string, error)
+
+	Publish(channel string, payload interface{}) error
+	Subcribe(channel string) *redis.PubSub
 }

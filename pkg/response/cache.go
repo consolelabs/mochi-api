@@ -6,3 +6,8 @@ type SetUpvoteMessageCacheResponse struct {
 	ChannelID string `json:"channel_id"`
 	MessageID string `json:"message_id"`
 }
+
+type ZSetWithScoreData struct {
+	Score  float64 `json:"score"`
+	Member string  `json:"member"`
+}

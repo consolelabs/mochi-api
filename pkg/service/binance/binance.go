@@ -12,12 +12,14 @@ import (
 type Binance struct {
 	getExchangeInfoURL string
 	getSymbolKlinesURL string
+	getAvgPriceURL     string
 }
 
 func NewService() Service {
 	return &Binance{
 		getExchangeInfoURL: "https://api.binance.com/api/v3/exchangeInfo",
 		getSymbolKlinesURL: "https://api.binance.com/api/v3/uiKlines?symbol=%s&interval=1h&limit=168", // 168h = 7d
+		getAvgPriceURL:     "https://api.binance.com/api/v3/avgPrice",
 	}
 }
 
@@ -31,6 +33,20 @@ func (b *Binance) GetExchangeInfo(symbol string) (*response.GetExchangeInfoRespo
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, fmt.Errorf("binance.GetExchangeInfo() failed: %v", err), statusCode
+	}
+	return res, nil, http.StatusOK
+}
+
+func (b *Binance) GetAvgPriceBySymbol(symbol string) (*response.GetAvgPriceBySymbolResponse, error, int) {
+	symbol = strings.Replace(symbol, "/", "", 1)
+	res := &response.GetAvgPriceBySymbolResponse{}
+	url := b.getAvgPriceURL
+	if symbol != "" {
+		url = fmt.Sprintf("%s?symbol=%s", url, symbol)
+	}
+	statusCode, err := util.FetchData(url, res)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("binance.GetAvgPriceBySymbol() failed: %v", err), statusCode
 	}
 	return res, nil, http.StatusOK
 }

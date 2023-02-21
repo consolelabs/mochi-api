@@ -40,4 +40,7 @@ type Service interface {
 	NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error
 	NotifyNewCommonwealthDiscussion(channelID string, discussion response.CommonwealthDiscussion) error
 	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
+
+	// Price alert
+	SendDMUserPriceAlert(userID string) error
 }
