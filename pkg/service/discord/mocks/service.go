@@ -278,6 +278,20 @@ func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplyUpvoteMessage", reflect.TypeOf((*MockService)(nil).ReplyUpvoteMessage), msg, source)
 }
 
+// SendDMUserPriceAlert mocks base method.
+func (m *MockService) SendDMUserPriceAlert(userID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendDMUserPriceAlert", userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendDMUserPriceAlert indicates an expected call of SendDMUserPriceAlert.
+func (mr *MockServiceMockRecorder) SendDMUserPriceAlert(userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDMUserPriceAlert", reflect.TypeOf((*MockService)(nil).SendDMUserPriceAlert), userID)
+}
+
 // SendFeedback mocks base method.
 func (m *MockService) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
 	m.ctrl.T.Helper()
