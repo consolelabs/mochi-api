@@ -97,6 +97,7 @@ type Config struct {
 	CentralizedWalletAddress    string
 
 	SolanaCentralizedWalletPrivateKey string
+	SolanaPKSecretKey                 string
 
 	APILayerAPIKey string
 
@@ -260,6 +261,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CentralizedWalletAddress:    v.GetString("CENTRALIZED_WALLET_ADDRESS"),
 
 		SolanaCentralizedWalletPrivateKey: v.GetString("SOLANA_CENTRALIZED_WALLET_PK"),
+		SolanaPKSecretKey:                 v.GetString("SOLANA_PK_SECRET_KEY"),
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
 		Kafka: Kafka{
