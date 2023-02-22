@@ -42,5 +42,5 @@ type Service interface {
 	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
 
 	// Price alert
-	SendDMUserPriceAlert(userID string) error
+	SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error
 }

@@ -17,6 +17,7 @@ type Cache interface {
 
 	Remove(key string) error
 	ZRemove(key string, value interface{}) error
+	ZRemoveByScore(key, min, max string) error
 	GetString(key string) (string, error)
 	GetStringSorted(key, min, max string) []string
 	GetStringSortedWithScores(key, min, max string) []response.ZSetWithScoreData

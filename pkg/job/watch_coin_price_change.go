@@ -114,13 +114,13 @@ func (job *watchCoinPriceChanges) Run() error {
 			payload.Direction = direction
 			payload.Symbol = data.Symbol
 			payload.UserID = v.Member
-			cooldownKey := v.Member + ":" + data.Symbol
+			cooldownKey := fmt.Sprintf("%v:%v:%v", v.Member, data.Symbol, v.Score)
 			if cooldownMap[cooldownKey] {
 				continue
 			} else {
 				cooldownMap[cooldownKey] = true
-				time.AfterFunc(120*time.Second, func() {
-					job.log.Infof("User with ID %v - 2mins cool down end", v.Member)
+				time.AfterFunc(60*time.Second, func() {
+					job.log.Infof("User with ID %v - Symbol %v - Price %v - 60s cool down end", v.Member, data.Symbol, v.Score)
 					cooldownMap[cooldownKey] = false
 				})
 				job.cache.Publish(COMMUNICATION_CHANNEL, payload)

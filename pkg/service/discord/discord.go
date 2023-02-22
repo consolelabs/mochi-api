@@ -694,7 +694,20 @@ func (d *Discord) NotifyNewCommonwealthDiscussion(channelID string, discussion r
 	return err
 }
 
-func (d *Discord) SendDMUserPriceAlert(userID string) error {
+func (d *Discord) SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error {
+	var description string
+	switch alertType {
+	case model.PriceReaches:
+		description = fmt.Sprintf("%v reaches %v", symbol, price)
+	case model.PriceDropsTo:
+		description = fmt.Sprintf("%v is under %v", symbol, price)
+	case model.PriceRisesAbove:
+		description = fmt.Sprintf("%v rises above %v", symbol, price)
+	case model.ChangeIsOver:
+		description = fmt.Sprintf("%v is up by %v%%", symbol, price)
+	case model.ChangeIsUnder:
+		description = fmt.Sprintf("%v is down by %v%%", symbol, price)
+	}
 	privChan, err := d.session.UserChannelCreate(userID)
 	if err != nil {
 		d.log.Error(err, "[discord.SendDMUserPriceAlert] d.session.UserChannelCreate() failed")
@@ -702,9 +715,8 @@ func (d *Discord) SendDMUserPriceAlert(userID string) error {
 	}
 	msg := &discordgo.MessageSend{
 		Embed: &discordgo.MessageEmbed{
-			Title: "Price Alert Triggered",
-			// Footer:      &discordgo.MessageEmbedFooter{Text: req.Username, IconURL: req.Avatar},
-			Description: fmt.Sprintf("Hi, your price alert has been triggered !"),
+			Title:       "Your price alert is triggered",
+			Description: description,
 			Color:       mochiLogColor,
 			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		},

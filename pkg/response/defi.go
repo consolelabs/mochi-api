@@ -201,13 +201,14 @@ type GetFiatHistoricalExchangeRatesResponse struct {
 }
 
 type TokenPriceAlertResponseData struct {
-	UserDiscordID string    `json:"user_discord_id"`
-	Symbol        string    `json:"symbol"`
-	Currency      string    `json:"currency"`
-	AlertType     string    `json:"alert_type"`
-	Frequency     string    `json:"frequency"`
-	Price         float64   `json:"price"`
-	SnoozedTo     time.Time `json:"snoozed_to"`
+	UserDiscordID  string    `json:"user_discord_id"`
+	Symbol         string    `json:"symbol"`
+	Currency       string    `json:"currency"`
+	AlertType      string    `json:"alert_type"`
+	Frequency      string    `json:"frequency"`
+	Value          float64   `json:"value"`
+	PriceByPercent float64   `json:"price_by_percent"`
+	SnoozedTo      time.Time `json:"snoozed_to"`
 }
 
 type AddTokenPriceAlertResponse struct {

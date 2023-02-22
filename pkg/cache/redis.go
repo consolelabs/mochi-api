@@ -73,6 +73,10 @@ func (c *redisCache) ZRemove(key string, value interface{}) error {
 	return c.rdb.ZRem(context.Background(), key, value).Err()
 }
 
+func (c *redisCache) ZRemoveByScore(key, min, max string) error {
+	return c.rdb.ZRemRangeByScore(context.Background(), key, min, max).Err()
+}
+
 func (c *redisCache) GetString(key string) (string, error) {
 	res, err := c.rdb.Get(context.Background(), key).Result()
 	switch err {

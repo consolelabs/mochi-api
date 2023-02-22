@@ -73,8 +73,12 @@ func (e *Entity) GetPriceAlertZCache(symbol, trend, min, max string) []response.
 	return e.cache.GetStringSortedWithScores(fmt.Sprintf("alert_direction_%s:%s", trend, symbol), min, max)
 }
 
-func (e *Entity) RemovePriceAlertZCache(symbol, trend, value string) error {
-	return e.cache.ZRemove(fmt.Sprintf("alert_direction_%s:%s", trend, symbol), value)
+func (e *Entity) RemovePriceAlertZCache(symbol, trend, price string) error {
+	if trend == "up" {
+		return e.cache.ZRemoveByScore(fmt.Sprintf("alert_direction_%s:%s", trend, symbol), "0", price)
+	} else {
+		return e.cache.ZRemoveByScore(fmt.Sprintf("alert_direction_%s:%s", trend, symbol), price, "inf")
+	}
 }
 
 func (e *Entity) Publish(channel string, payload interface{}) error {

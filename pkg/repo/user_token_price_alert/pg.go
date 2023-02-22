@@ -21,7 +21,12 @@ func (pg *pg) Create(item *model.UserTokenPriceAlert) error {
 func (pg *pg) GetOne(q UserTokenPriceAlertQuery) (model.UserTokenPriceAlert, error) {
 	var item model.UserTokenPriceAlert
 	db := pg.db.Table("user_token_price_alerts")
-	return item, db.Where("user_discord_id = ? AND symbol = ? AND price = ?", q.UserDiscordID, q.Symbol, q.Price).First(&item).Error
+	if q.PriceByPercent != 0 {
+		db = db.Where("price_by_percent = ?", q.PriceByPercent)
+	} else {
+		db = db.Where("value = ?", q.Value)
+	}
+	return item, db.Where("user_discord_id = ? AND symbol = ?", q.UserDiscordID, q.Symbol).First(&item).Error
 }
 
 func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int64, error) {
@@ -34,8 +39,8 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	if q.Symbol != "" {
 		db = db.Where("symbol = ?", q.Symbol)
 	}
-	if q.Price != 0 {
-		db = db.Where("price = ?", q.Price)
+	if q.Value != 0 {
+		db = db.Where("value = ?", q.Value)
 	}
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
@@ -44,8 +49,14 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Delete(userID, symbol string, price float64) (int64, error) {
-	tx := pg.db.Where("user_discord_id = ? AND symbol ILIKE ? AND price = ?", userID, symbol, price).Delete(&model.UserTokenPriceAlert{})
+func (pg *pg) Delete(userID, symbol string, value, priceByPercent float64) (int64, error) {
+	db := pg.db.Table("user_token_price_alerts")
+	if priceByPercent != 0 {
+		db = db.Where("price_by_percent = ?", priceByPercent)
+	} else {
+		db = db.Where("value = ?", value)
+	}
+	tx := pg.db.Where("user_discord_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserTokenPriceAlert{})
 	return tx.RowsAffected, tx.Error
 }
 

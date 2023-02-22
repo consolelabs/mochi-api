@@ -71,12 +71,11 @@ func (job *watchDMNotifyPriceAlert) Run() error {
 
 func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPriceChangePayload) error {
 	req := request.RemoveTokenPriceAlertRequest{}
-	req.Price = payload.Price
+	req.Value = payload.Price
 	req.Symbol = payload.Symbol[0 : len(payload.Symbol)-4]
 	req.UserDiscordID = payload.UserID
 	alert, err := job.entity.GetSpecificAlert(req)
 	if err != nil {
-		job.log.Fields(logger.Fields{"req": req}).Error(err, "[job.HandleNotifyDiscordUser] entity.GetSpecificAlert() failed")
 		return err
 	}
 
@@ -86,8 +85,8 @@ func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPri
 		return nil
 	}
 
-	// TODO: Specify DM Message based on Alert Type
-	err = job.svc.Discord.SendDMUserPriceAlert(alert.UserDiscordID)
+	tradingPair := alert.Symbol + "/" + alert.Currency
+	err = job.svc.Discord.SendDMUserPriceAlert(alert.UserDiscordID, tradingPair, alert.AlertType, alert.Value)
 	if err != nil {
 		job.log.Fields(logger.Fields{"user_discord_id": alert.UserDiscordID}).Error(err, "[job.HandleNotifyDiscordUser] svc.Discord.SendDMUserPriceAlert() failed")
 		return err

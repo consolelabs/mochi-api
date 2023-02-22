@@ -589,9 +589,9 @@ func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExc
 }
 
 func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*response.AddTokenPriceAlertResponse, error) {
-	if req.Price <= 0 || req.Symbol == "" {
+	if req.Value <= 0 || req.Symbol == "" {
 		e.log.Fields(logger.Fields{
-			"price":  req.Price,
+			"price":  req.Value,
 			"symbol": req.Symbol,
 		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert price or token symbol")
 		return nil, baseerrs.ErrBadRequest
@@ -616,14 +616,14 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	req.Symbol = strings.ToUpper(req.Symbol)
 	if req.AlertType == model.ChangeIsOver || req.AlertType == model.ChangeIsUnder {
 		isPercent = true
-		req.Price = util.RoundFloat(req.Price, 1)
+		req.Value = util.RoundFloat(req.Value, 1)
 	} else {
-		req.Price = util.RoundFloat(req.Price, 8)
+		req.Value = util.RoundFloat(req.Value, 8)
 	}
 
 	// fetch req.Symbol's current price
 	var alertPair = req.Symbol + "USDT"
-	var alertPrice = req.Price
+	var alertPrice = req.Value
 	pairInfo, err, _ := e.svc.Binance.GetAvgPriceBySymbol(alertPair)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req.symbol": req.Symbol}).Error(err, "[entity.AddTokenPriceAlert] e.svc.Binance.GetExchangeInfo() failed")
@@ -635,7 +635,8 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		return nil, err
 	}
 	if isPercent {
-		alertPrice = currentPrice*req.Price + currentPrice // calculates target price to trigger alert
+		req.PriceByPercent = util.RoundFloat(currentPrice*req.Value/100+currentPrice, 8) // calculates target price to trigger alert
+		alertPrice = req.PriceByPercent
 	}
 
 	// Generate Redis alert key based on Alert Type
@@ -647,7 +648,7 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	alertKey = alertKey + ":" + strings.ToLower(alertPair)
 
 	// check a price was already configured ?
-	listQ := usertokenpricealert.UserTokenPriceAlertQuery{Symbol: req.Symbol, UserDiscordID: req.UserDiscordID, Price: req.Price}
+	listQ := usertokenpricealert.UserTokenPriceAlertQuery{Symbol: req.Symbol, UserDiscordID: req.UserDiscordID, Value: req.Value}
 	items, total, err := e.repo.UserTokenPriceAlert.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddTokenPriceAlert] repo.UserTokenPriceAlert.List() failed")
@@ -659,20 +660,22 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		var fetchedAlert = items[0]
 		fetchedAlert.AlertType = req.AlertType
 		fetchedAlert.Frequency = req.Frequency
-		fetchedAlert.Price = req.Price
+		fetchedAlert.Value = req.Value
+		fetchedAlert.PriceByPercent = req.PriceByPercent
 		fetchedAlert.UpdatedAt = time.Now().UTC()
 		err = e.repo.UserTokenPriceAlert.Update(&fetchedAlert)
 	} else {
 		err = e.repo.UserTokenPriceAlert.Create(&model.UserTokenPriceAlert{
-			UserDiscordID: req.UserDiscordID,
-			Symbol:        req.Symbol,
-			AlertType:     req.AlertType,
-			Frequency:     req.Frequency,
-			Price:         req.Price,
-			SnoozedTo:     time.Now().UTC(),
-			CreatedAt:     time.Now().UTC(),
-			UpdatedAt:     time.Now().UTC(),
-			Currency:      "USDT",
+			UserDiscordID:  req.UserDiscordID,
+			Symbol:         req.Symbol,
+			AlertType:      req.AlertType,
+			Frequency:      req.Frequency,
+			Value:          req.Value,
+			PriceByPercent: req.PriceByPercent,
+			SnoozedTo:      time.Now().UTC(),
+			CreatedAt:      time.Now().UTC(),
+			UpdatedAt:      time.Now().UTC(),
+			Currency:       "USDT",
 		})
 	}
 	if err != nil {
@@ -682,7 +685,7 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 
 	err = e.cache.ZSet(alertKey, req.UserDiscordID, alertPrice)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req.UserDiscordID": req.UserDiscordID, "req.Price": req.Price}).Error(err, "[entity.AddTokenPriceAlert] e.cache.ZSet() failed")
+		e.log.Fields(logger.Fields{"req.UserDiscordID": req.UserDiscordID, "req.Price": req.Value}).Error(err, "[entity.AddTokenPriceAlert] e.cache.ZSet() failed")
 		return nil, err
 	}
 
@@ -705,16 +708,18 @@ func (e *Entity) GetUserListPriceAlert(req request.GetUserListPriceAlertRequest)
 
 func (e *Entity) GetSpecificAlert(req request.RemoveTokenPriceAlertRequest) (*model.UserTokenPriceAlert, error) {
 	q := usertokenpricealert.UserTokenPriceAlertQuery{
-		UserDiscordID: req.UserDiscordID,
-		Price:         req.Price,
-		Symbol:        req.Symbol,
+		UserDiscordID:  req.UserDiscordID,
+		Value:          req.Value,
+		PriceByPercent: req.PriceByPercent,
+		Symbol:         req.Symbol,
 	}
 	item, err := e.repo.UserTokenPriceAlert.GetOne(q)
+	if err == gorm.ErrRecordNotFound {
+		q.PriceByPercent = q.Value
+		q.Value = 0
+		item, err = e.repo.UserTokenPriceAlert.GetOne(q)
+	}
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetSpecificAlert] repo.UserTokenPriceAlert.GetOne() ErrRecordNotFound")
-			return nil, baseerrs.ErrRecordNotFound
-		}
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetSpecificAlert] repo.UserTokenPriceAlert.GetOne() failed")
 		return nil, err
 	}
@@ -732,12 +737,18 @@ func (e *Entity) UpdateSpecificPriceAlert(item model.UserTokenPriceAlert) error 
 
 func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest) error {
 	req.Symbol = strings.ToUpper(req.Symbol)
-	if req.Price <= 0 || req.Symbol == "" {
+	if req.Symbol == "" {
 		e.log.Fields(logger.Fields{
-			"user_discord_id": req.UserDiscordID,
-			"price":           req.Price,
-			"symbol":          req.Symbol,
-		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert price or token symbol")
+			"symbol": req.Symbol,
+		}).Error(nil, "[Entity][RemoveTokenPriceAlert] invalid alert token symbol")
+		return baseerrs.ErrBadRequest
+	}
+
+	if req.Value <= 0 && req.PriceByPercent == 0 {
+		e.log.Fields(logger.Fields{
+			"price":            req.Value,
+			"price_by_percent": req.PriceByPercent,
+		}).Error(nil, "[Entity][RemoveTokenPriceAlert] invalid alert price")
 		return baseerrs.ErrBadRequest
 	}
 
@@ -747,7 +758,7 @@ func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest)
 		return baseerrs.ErrRecordNotFound
 	}
 
-	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserDiscordID, req.Symbol, req.Price)
+	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserDiscordID, req.Symbol, alert.Value, alert.PriceByPercent)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}
@@ -764,7 +775,13 @@ func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest)
 	} else {
 		direction = "down"
 	}
-	err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), direction, fmt.Sprintf("%v", req.Price))
+
+	if alert.PriceByPercent != 0 {
+		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), direction, fmt.Sprintf("%v", alert.PriceByPercent))
+	} else {
+		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), direction, fmt.Sprintf("%v", alert.Value))
+	}
+
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}
