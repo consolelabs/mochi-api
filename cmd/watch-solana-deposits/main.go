@@ -112,7 +112,7 @@ func getDepositRequest(hostAddr, signature string, retry int) (*request.TipBotDe
 		time.Sleep(1000)
 		return getDepositRequest(hostAddr, signature, retry+1)
 	}
-	if tx.Meta == nil || tx.Meta.PreBalances == nil || tx.Meta.PostBalances == nil {
+	if tx == nil || tx.Meta == nil || tx.Meta.PreBalances == nil || tx.Meta.PostBalances == nil {
 		log.Info("[getDepositRequest] no transaction balances data")
 		return nil, nil
 	}

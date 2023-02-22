@@ -13,6 +13,7 @@ type OffchainTipBotContract struct {
 	Status           int                  `json:"status"`
 	AssignStatus     int                  `json:"assign_status"`
 	CentralizeWallet string               `json:"centralize_wallet"`
+	PrivateKey       string               `json:"-"`
 	SweepedTime      *time.Time           `json:"sweeped_time"`
 	CreatedAt        time.Time            `json:"created_at"`
 	UpdatedAt        time.Time            `json:"updated_at"`
