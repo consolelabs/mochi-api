@@ -423,6 +423,7 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		Action:     req.TransferType,
 		ServiceFee: offchainToken.ServiceFee,
 		FeeAmount:  offchainToken.ServiceFee * req.Amount,
+		TxHash:     txHash,
 	}})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.OffchainTipBotTransferHistories.CreateTransferHistories] - failed to create transfer histories")
@@ -647,6 +648,7 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 			Amount:     amount,
 			Token:      offchainToken.TokenSymbol,
 			Action:     transferType,
+			TxHash:     req.TxHash,
 		},
 	}
 	_, err = e.repo.OffchainTipBotTransferHistories.CreateTransferHistories(histories)
