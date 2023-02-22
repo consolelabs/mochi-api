@@ -61,17 +61,19 @@ func NewWatchCoinPriceChange(e *entities.Entity, l logger.Logger) Job {
 func (job *watchCoinPriceChanges) Run() error {
 	var COMMUNICATION_CHANNEL = "channel_dm_price_alert"
 
-	alertSymbols, err := job.entity.GetListAlertSymbols()
-	if err != nil {
-		job.log.Error(err, "failed to fetch list alert tokens")
-		return err
-	}
-	paramStr := ""
-	for _, v := range alertSymbols {
-		paramStr += "/" + strings.ToLower(v) + "usdt@kline_1s"
-	}
+	// TODO: Refactor to dynamically fetch list of symbols from database
+	// alertSymbols, err := job.entity.GetListAlertSymbols()
+	// if err != nil {
+	// 	job.log.Error(err, "failed to fetch list alert tokens")
+	// 	return err
+	// }
+	// paramStr := ""
+	// for _, v := range alertSymbols {
+	// 	paramStr += "/" + strings.ToLower(v) + "usdt@kline_1s"
+	// }
+	// conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://stream.binance.com:9443/ws%s", paramStr), nil)
 
-	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://stream.binance.com:9443/ws%s", paramStr), nil)
+	conn, _, err := websocket.DefaultDialer.Dial("wss://stream.binance.com:9443/ws/bnbusdt@kline_1s/btcusdt@kline_1s/solusdt@kline_1s/ftmusdt@kline_1s/magicusdt@kline_1s", nil)
 	defer conn.Close()
 	if err != nil {
 		job.log.Error(err, "failed to connect to websocket")
@@ -106,9 +108,9 @@ func (job *watchCoinPriceChanges) Run() error {
 			direction = "down"
 			alertCache = job.entity.GetPriceAlertZCache(strings.ToLower(data.Symbol), direction, data.Data.CPrice, "inf")
 		}
-		job.log.Infof("Got data from %s - price %v :", tokenSymbol, data.Data.CPrice, alertCache)
 
 		for _, v := range alertCache {
+			job.log.Infof("Received %s - price %v :", tokenSymbol, data.Data.CPrice, alertCache)
 			payload := watchCoinPriceChangePayload{}
 			payload.Price = v.Score
 			payload.Direction = direction
