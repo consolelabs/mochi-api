@@ -7,7 +7,7 @@ import (
 
 type Store interface {
 	GetById(id int64) (*model.DaoProposal, error)
-	GetAllWithCount(page int, size int) (*[]response.ProposalCount, error)
+	GetUsageStatsWithPaging(page int, size int) (models *[]response.ProposalCount, total int64, err error)
 	GetAllByCreatorId(userId string) (*[]model.DaoProposal, error)
 	GetAllByGuildId(guildId string) (*[]model.DaoProposal, error)
 	GetByCreatorIdAndProposalId(proposal int64, userId string) (models []model.DaoProposalWithView, err error)

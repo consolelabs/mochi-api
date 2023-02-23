@@ -8391,6 +8391,9 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 },
+                "tx_hash": {
+                    "type": "string"
+                },
                 "updated_at": {
                     "type": "string"
                 }
@@ -8915,6 +8918,9 @@ const docTemplate = `{
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "fetched_data": {
+                    "type": "boolean"
                 },
                 "net_worth": {
                     "type": "number"
@@ -11890,6 +11896,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "guild_id": {
+                    "type": "string"
+                },
+                "guild_name": {
                     "type": "string"
                 },
                 "is_active": {

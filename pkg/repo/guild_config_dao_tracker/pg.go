@@ -9,7 +9,7 @@ type Store interface {
 	GetAllByGuildID(guildId string) (*[]model.GuildConfigDaoTracker, error)
 	GetAllBySpace(space string) ([]model.GuildConfigDaoTracker, error)
 	GetAllBySpaceAndSource(space, source string) ([]model.GuildConfigDaoTracker, error)
-	GetAllWithCount(page int, size int) ([]response.DaoTrackerSpaceCountData, error)
+	GetUsageStatsWithPaging(page int, size int) (models []response.DaoTrackerSpaceCountData, total int64, err error)
 	DeleteByID(id string) error
 	Upsert(model.GuildConfigDaoTracker) error
 }
