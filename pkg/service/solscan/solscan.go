@@ -9,7 +9,6 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	resp "github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 type solscan struct {
@@ -88,12 +87,37 @@ func (s *solscan) GetNftTokenFromCollection(id, page string) (*resp.NftTokenData
 	return res, nil
 }
 
+func (s *solscan) fetchSolscanData(url string, v any) error {
+	var client = &http.Client{}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("token", s.config.Solscan.Token)
+	res, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, v)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 func (s *solscan) GetTransactions(address string) ([]TransactionListItem, error) {
 	var res []TransactionListItem
 	url := fmt.Sprintf("%s/account/transactions?account=%s&limit=5", publicSolscanBaseURL, address)
-	statusCode, err := util.FetchData(url, &res)
+	err := s.fetchSolscanData(url, &res)
 	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[solscan.getTransactions] util.FetchData() failed")
+		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTransactions] s.fetchSolscanData() failed")
 		return nil, err
 	}
 	return res, nil
@@ -102,9 +126,9 @@ func (s *solscan) GetTransactions(address string) ([]TransactionListItem, error)
 func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
 	var res []TokenAmountItem
 	url := fmt.Sprintf("%s/account/tokens?account=%s", publicSolscanBaseURL, address)
-	statusCode, err := util.FetchData(url, &res)
+	err := s.fetchSolscanData(url, &res)
 	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[solscan.getTokenBalances] util.FetchData() failed")
+		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTokenBalances] s.fetchSolscanData() failed")
 		return nil, err
 	}
 	return res, nil
@@ -113,9 +137,9 @@ func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
 func (s *solscan) GetTokenMetadata(tokenAddress string) (*TokenMetadataResponse, error) {
 	res := &TokenMetadataResponse{}
 	url := fmt.Sprintf("%s/token/meta?tokenAddress=%s", publicSolscanBaseURL, tokenAddress)
-	statusCode, err := util.FetchData(url, res)
+	err := s.fetchSolscanData(url, &res)
 	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[solscan.GetTokenMetadata] util.FetchData() failed")
+		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.GetTokenMetadata] s.fetchSolscanData() failed")
 		return nil, err
 	}
 	return res, nil
@@ -124,9 +148,9 @@ func (s *solscan) GetTokenMetadata(tokenAddress string) (*TokenMetadataResponse,
 func (s *solscan) GetTxDetails(signature string) (*TransactionDetailsResponse, error) {
 	res := &TransactionDetailsResponse{}
 	url := fmt.Sprintf("%s/transaction/%s", publicSolscanBaseURL, signature)
-	statusCode, err := util.FetchData(url, res)
+	err := s.fetchSolscanData(url, &res)
 	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url, "status": statusCode}).Error(err, "[solscan.GetTxDetails] util.FetchData() failed")
+		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.GetTxDetails] s.fetchSolscanData() failed")
 		return nil, err
 	}
 	return res, nil
