@@ -73,7 +73,8 @@ func (job *watchCoinPriceChanges) Run() error {
 	// }
 	// conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://stream.binance.com:9443/ws%s", paramStr), nil)
 
-	conn, _, err := websocket.DefaultDialer.Dial("wss://stream.binance.com:9443/ws/bnbusdt@kline_1s/btcusdt@kline_1s/solusdt@kline_1s/ftmusdt@kline_1s/magicusdt@kline_1s", nil)
+	paramStr := "/bnbusdt@kline_1s/btcusdt@kline_1s/solusdt@kline_1s/ftmusdt@kline_1s/magicusdt@kline_1s/ethusdt@kline_1s/xrpusdt@kline_1s/filusdt@kline_1s"
+	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://stream.binance.com:9443/ws%s", paramStr), nil)
 	defer conn.Close()
 	if err != nil {
 		job.log.Error(err, "failed to connect to websocket")
