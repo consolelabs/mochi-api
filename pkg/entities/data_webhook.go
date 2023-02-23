@@ -267,31 +267,31 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 				return fmt.Errorf("cannot send message to sale channel. Error: %v", err)
 			}
 
-			sub := ""
-			if util.FormatCryptoPrice(*nftToken.LastPrice) != "0" {
-				sub = util.GetChangePnl(nftToken.Pnl) + fmt.Sprintf("%.2f", nftToken.SubPnlPer.Abs(nftToken.SubPnlPer))
-			}
+			// sub := ""
+			// if util.FormatCryptoPrice(*nftToken.LastPrice) != "0" {
+			// 	sub = util.GetChangePnl(nftToken.Pnl) + fmt.Sprintf("%.2f", nftToken.SubPnlPer.Abs(nftToken.SubPnlPer))
+			// }
 			// add sales message to database
-			err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
-				TokenName:         nftToken.Name,
-				CollectionName:    collection.Name,
-				Price:             util.FormatCryptoPrice(*nftToken.Price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
-				SellerAddress:     util.ShortenAddress(nftSale.From),
-				BuyerAddress:      util.ShortenAddress(nftSale.To),
-				Marketplace:       nftToken.Marketplace,
-				MarketplaceURL:    util.GetStringBetweenParentheses(nftToken.MarketplaceLink),
-				Image:             nftToken.Image,
-				TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
-				CollectionAddress: collection.Address,
-				TokenID:           nftToken.TokenID,
-				SubPnl:            sub,
-				Pnl:               util.FormatCryptoPrice(*nftToken.Pnl),
-				Hodl:              strconv.Itoa(util.SecondsToDays(nftSale.Hodl)),
-			})
-			if err != nil {
-				e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, nftToken.Name)
-				return fmt.Errorf("cannot handle mochi sales msg. Error: %v", err)
-			}
+			// err = e.HandleMochiSalesMessage(&request.TwitterSalesMessage{
+			// 	TokenName:         nftToken.Name,
+			// 	CollectionName:    collection.Name,
+			// 	Price:             util.FormatCryptoPrice(*nftToken.Price) + " " + strings.ToUpper(nftSale.Price.Token.Symbol),
+			// 	SellerAddress:     util.ShortenAddress(nftSale.From),
+			// 	BuyerAddress:      util.ShortenAddress(nftSale.To),
+			// 	Marketplace:       nftToken.Marketplace,
+			// 	MarketplaceURL:    util.GetStringBetweenParentheses(nftToken.MarketplaceLink),
+			// 	Image:             nftToken.Image,
+			// 	TxURL:             util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction),
+			// 	CollectionAddress: collection.Address,
+			// 	TokenID:           nftToken.TokenID,
+			// 	SubPnl:            sub,
+			// 	Pnl:               util.FormatCryptoPrice(*nftToken.Pnl),
+			// 	Hodl:              strconv.Itoa(util.SecondsToDays(nftSale.Hodl)),
+			// })
+			// if err != nil {
+			// 	e.log.Errorf(err, "[discord.ChannelMessageSendEmbeds] cannot handle mochi sales msg. CollectionName: %s, TokenName: %s", collection.Name, nftToken.Name)
+			// 	return fmt.Errorf("cannot handle mochi sales msg. Error: %v", err)
+			// }
 		}
 	}
 	return nil

@@ -13,12 +13,12 @@ type CollectionData struct {
 }
 
 type CollectionInfo struct {
-	NftCollectionUrl  string  `json:"nft_collection_url"`
-	NftCollectionId   string  `json:"nft_collection_id"`
-	NftCollectionName string  `json:"nft_collection_name"`
-	NumNfts           string  `json:"num_nfts"`
-	FloorPrice        float64 `json:"floor_price"`
-	Score             int64   `json:"score"`
+	NftCollectionUrl string  `json:"nft_collection_url"`
+	CollectionId     string  `json:"collection_id"`
+	CollectionName   string  `json:"collection_name"`
+	NumNfts          string  `json:"num_nfts"`
+	FloorPrice       float64 `json:"floor_price"`
+	Score            int64   `json:"score"`
 }
 
 type NftTokenDataResponse struct {
@@ -57,16 +57,23 @@ type NftTokenAttributes struct {
 }
 
 type AttributesSolscan struct {
-	TraitType string `json:"trait_type"`
-	Value     string `json:"value"`
+	TraitType string      `json:"trait_type"`
+	Value     interface{} `json:"value"`
 }
 
 type Properties struct {
-	Files    []File `json:"files"`
-	Category string `json:"category"`
+	Files    []File              `json:"files"`
+	Category string              `json:"category"`
+	Creators []PropertiesCreator `json:"creators"`
+}
+
+type PropertiesCreator struct {
+	Address string `json:"address"`
+	Share   int64  `json:"share"`
 }
 
 type File struct {
+	Url  string `json:"url"`
 	Uri  string `json:"uri"`
 	Type string `json:"type"`
 }
