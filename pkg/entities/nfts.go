@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -351,6 +353,47 @@ func (e *Entity) CheckIsSync(address string) (bool, error) {
 	return indexerContract.IsSynced, nil
 }
 
+type Temp struct {
+	CollectionId   string `json:"collection_id"`
+	CollectionName string `json:"collection_name"`
+}
+
+type TempData struct {
+	Data []Temp `json:"data"`
+}
+
+func (e *Entity) GetTop10kCollectionSolana() {
+	collectionsData := make([]Temp, 0)
+	startOffset := 0
+	i := 1
+	for startOffset <= 10000 {
+		if startOffset == 10000 {
+			break
+		}
+		e.log.Infof("Getting collection data, offset: ", startOffset)
+		collections, err := e.svc.Solscan.GetCollection(strconv.Itoa(startOffset))
+		if err != nil {
+			e.log.Errorf(err, "[e.svc.Solscan.GetCollection] failed to get collection: %v, offset: %d", err, startOffset)
+			return
+		}
+
+		for _, collection := range collections.Data {
+			collectionsData = append(collectionsData, Temp{CollectionId: collection.CollectionId, CollectionName: collection.CollectionName})
+		}
+
+		startOffset = startOffset + i*50
+	}
+
+	content, err := json.Marshal(TempData{Data: collectionsData})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = ioutil.WriteFile("solana_collection.json", content, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	collectionAddress := "solscan-" + req.Address
 	checkExistNFT, err := e.CheckExistNftCollection(collectionAddress)
@@ -370,22 +413,21 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, err
 	}
 
-	solToken, _ := e.svc.Solscan.GetNftTokenFromCollection(req.Address, "1")
 	collectionSymbol := ""
-	if len(solToken.Data.ListNfts) > 0 {
-		collectionSymbol = solToken.Data.ListNfts[0].NftSymbol
+	collectionName := ""
+	if len(solanaCollection.Data.Collections) > 0 {
+		collectionName = solanaCollection.Data.Collections[0].CollectionName
+		collectionSymbol = solanaCollection.Data.Collections[0].CollectionName
 	}
-
-	collectionName := solanaCollection.Data.Collections[0].NftCollectionName
 
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, _ := strconv.Atoi(convertedChainId)
 
 	err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
-		Address: collectionAddress,
-		ChainID: chainID,
-		Name:    collectionName,
-		// Symbol:       solanaCollection.Data.Data.Symbol,
+		Address:      collectionAddress,
+		ChainID:      chainID,
+		Name:         collectionName,
+		Symbol:       collectionSymbol,
 		MessageID:    req.MessageID,
 		PriorityFlag: req.PriorityFlag,
 	})
@@ -394,18 +436,18 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
 	}
 
-	history := model.NftAddRequestHistory{
-		Address:   collectionAddress,
-		ChainID:   int64(chainID),
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-		MessageID: req.MessageID,
-	}
-	err = e.repo.NftAddRequestHistory.UpsertOne(history)
-	if err != nil {
-		e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
-		return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
-	}
+	// history := model.NftAddRequestHistory{
+	// 	Address:   collectionAddress,
+	// 	ChainID:   int64(chainID),
+	// 	GuildID:   req.GuildID,
+	// 	ChannelID: req.ChannelID,
+	// 	MessageID: req.MessageID,
+	// }
+	// err = e.repo.NftAddRequestHistory.UpsertOne(history)
+	// if err != nil {
+	// 	e.log.Errorf(err, "[CreateERC721Contract] repo.NftAddRequestHistory.UpsertOne() failed")
+	// 	return nil, fmt.Errorf("Failed to create erc721 contract: %v", err)
+	// }
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
 		Address:    collectionAddress,
@@ -423,6 +465,22 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	}
 
 	return
+}
+
+func (e *Entity) UpdateFailCollection(id string) {
+	solanaCollection, err := e.svc.Solscan.GetCollectionBySolscanId(id)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Solscan.GetSolanaCollection] failed to get solana collection: %v", err)
+		return
+	}
+
+	collectionSymbol := ""
+	collectionName := ""
+	if len(solanaCollection.Data.Collections) > 0 {
+		collectionName = solanaCollection.Data.Collections[0].CollectionName
+		collectionSymbol = solanaCollection.Data.Collections[0].CollectionName
+	}
+	e.repo.NFTCollection.UpdateSolscanCollection("solscan-"+id, collectionName, collectionSymbol)
 }
 
 func (e *Entity) CreateBluemoveNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {

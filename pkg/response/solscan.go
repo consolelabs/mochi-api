@@ -13,12 +13,12 @@ type CollectionData struct {
 }
 
 type CollectionInfo struct {
-	NftCollectionUrl  string  `json:"nft_collection_url"`
-	NftCollectionId   string  `json:"nft_collection_id"`
-	NftCollectionName string  `json:"nft_collection_name"`
-	NumNfts           string  `json:"num_nfts"`
-	FloorPrice        float64 `json:"floor_price"`
-	Score             int64   `json:"score"`
+	NftCollectionUrl string  `json:"nft_collection_url"`
+	CollectionId     string  `json:"collection_id"`
+	CollectionName   string  `json:"collection_name"`
+	NumNfts          string  `json:"num_nfts"`
+	FloorPrice       float64 `json:"floor_price"`
+	Score            int64   `json:"score"`
 }
 
 type NftTokenDataResponse struct {
@@ -57,16 +57,44 @@ type NftTokenAttributes struct {
 }
 
 type AttributesSolscan struct {
-	TraitType string `json:"trait_type"`
-	Value     string `json:"value"`
+	TraitType string      `json:"trait_type"`
+	Value     interface{} `json:"value"`
 }
 
 type Properties struct {
-	Files    []File `json:"files"`
-	Category string `json:"category"`
+	Files    []File              `json:"files"`
+	Category string              `json:"category"`
+	Creators []PropertiesCreator `json:"creators"`
+}
+
+type PropertiesCreator struct {
+	Address string `json:"address"`
+	Share   int64  `json:"share"`
 }
 
 type File struct {
+	Url  string `json:"url"`
 	Uri  string `json:"uri"`
 	Type string `json:"type"`
+}
+
+type NftCollectionOverviewResponse struct {
+	Data   []NftCollectionOverview `json:"data"`
+	Code   int64                   `json:"code"`
+	Status int64                   `json:"status"`
+}
+
+type NftCollectionOverview struct {
+	CollectionId    string      `json:"collection_id"`
+	Volume          float64     `json:"volume"`
+	CollectionName  string      `json:"collection_name"`
+	NftImage        string      `json:"nft_image"`
+	NftFamily       string      `json:"nft_family"`
+	Items           string      `json:"items"`
+	Holders         string      `json:"holders"`
+	TotalAttributes string      `json:"total_attributes"`
+	FloorPrice      float64     `json:"floor_price"`
+	LastTradeTime   string      `json:"last_trade_time"`
+	LastTradeId     string      `json:"last_trade_id"`
+	Marketplaces    interface{} `json:"marketplaces"`
 }

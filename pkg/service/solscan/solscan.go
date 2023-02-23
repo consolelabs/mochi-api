@@ -29,6 +29,34 @@ var (
 	proSolscanBaseUrl    = "https://pro-api.solscan.io/v1.0"
 )
 
+func (s *solscan) GetCollection(offset string) (*resp.NftCollectionOverviewResponse, error) {
+	var client = &http.Client{}
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/public/nft/collection/overview?sort_by=volume&range=1&sort_order=desc&limit=50&offset=%s", proSolscanBaseUrl, offset), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	resBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	res := &resp.NftCollectionOverviewResponse{}
+	err = json.Unmarshal(resBody, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataResponse, error) {
 	var client = &http.Client{}
 	request, err := http.NewRequest("GET", fmt.Sprintf("%s/nft/collection/list?search=%s", proSolscanBaseUrl, id), nil)

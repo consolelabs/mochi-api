@@ -158,3 +158,7 @@ func (pg *pg) UpdateImage(address string, image string) error {
 func (pg *pg) TotalNftCollection() (count int64, err error) {
 	return count, pg.db.Table("nft_collections").Count(&count).Error
 }
+
+func (pg *pg) UpdateSolscanCollection(id, name, symbol string) {
+	pg.db.Table("nft_collections").Where("address=?", id).Updates(map[string]interface{}{"name": name, "symbol": symbol})
+}

@@ -20,4 +20,5 @@ type Store interface {
 	ListByGuildID(guildID string) ([]model.NFTCollection, error)
 	UpdateImage(address string, image string) error
 	TotalNftCollection() (count int64, err error)
+	UpdateSolscanCollection(id, name, symbol string)
 }
