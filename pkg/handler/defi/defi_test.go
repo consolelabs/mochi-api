@@ -224,7 +224,7 @@ func TestHandler_GetUserWatchlist(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/watchlist?user_id=%s", tt.userId), nil)
+			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/watchlist?user_id=%s&size=8", tt.userId), nil)
 			coingeckoMock.EXPECT().GetCoinsMarketData(tt.defaultTickers).Return(tt.coinGeckoDefaultTickersResponse, nil, 200).AnyTimes()
 
 			h.GetUserWatchlist(ctx)

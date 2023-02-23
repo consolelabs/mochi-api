@@ -1,5 +1,11 @@
 {
-  "data": [
+  "data": {
+    "metadata": {
+        "page": 0,
+        "size": 8,
+        "total": 1
+    },
+    "data": [
     {
       "id": "dogecoin",
       "name": "Dogecoin",
@@ -16,5 +22,6 @@
       "is_pair": false,
       "is_default": false
     }
-  ]
+    ]
+  }
 }
