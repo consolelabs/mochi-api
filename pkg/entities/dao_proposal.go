@@ -314,7 +314,7 @@ func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProp
 	res := []response.GuildProposalUsageData{}
 	p, _ := strconv.Atoi(page)
 	sz, _ := strconv.Atoi(size)
-	ppsCount, err := e.repo.DaoProposal.GetAllWithCount(p, sz)
+	ppsCount, total, err := e.repo.DaoProposal.GetUsageStatsWithPaging(p, sz)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetProposalUsage] failed to get proposal count")
 		return nil, err
@@ -328,6 +328,7 @@ func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProp
 		}
 		res = append(res, response.GuildProposalUsageData{
 			GuildId:       pps.GuildId,
+			GuildName:     pps.GuildName,
 			ProposalCount: pps.Count,
 			IsActive:      active,
 		})
@@ -338,7 +339,7 @@ func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProp
 				Page: int64(p),
 				Size: int64(sz),
 			},
-			Total: int64(len(*ppsCount)),
+			Total: total,
 		},
 		Data: &res,
 	}, nil
@@ -347,7 +348,7 @@ func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProp
 func (e *Entity) GetDaoTrackerMetric(page string, size string) (*response.DaoTrackerSpaceCountResponse, error) {
 	p, _ := strconv.Atoi(page)
 	sz, _ := strconv.Atoi(size)
-	spaceCount, err := e.repo.GuildConfigDaoTracker.GetAllWithCount(p, sz)
+	spaceCount, total, err := e.repo.GuildConfigDaoTracker.GetUsageStatsWithPaging(p, sz)
 	if err != nil {
 		e.log.Errorf(err, "[e.GetProposalUsage] failed to get proposal count")
 		return nil, err
@@ -358,7 +359,7 @@ func (e *Entity) GetDaoTrackerMetric(page string, size string) (*response.DaoTra
 				Page: int64(p),
 				Size: int64(sz),
 			},
-			Total: int64(len(spaceCount)),
+			Total: total,
 		},
 		Data: &spaceCount,
 	}, nil
