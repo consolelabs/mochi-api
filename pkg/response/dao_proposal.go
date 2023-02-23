@@ -7,8 +7,9 @@ type CreateDaoProposalResponse struct {
 }
 
 type ProposalCount struct {
-	GuildId string `json:"guild_id"`
-	Count   int64  `json:"count"`
+	GuildId   string `json:"guild_id"`
+	GuildName string `json:"guild_name"`
+	Count     int64  `json:"count"`
 }
 type GuildProposalUsageResponse struct {
 	Pagination PaginationResponse        `json:"metadata"`
@@ -17,6 +18,7 @@ type GuildProposalUsageResponse struct {
 
 type GuildProposalUsageData struct {
 	GuildId       string `json:"guild_id"`
+	GuildName     string `json:"guild_name"`
 	ProposalCount int64  `json:"proposal_count"`
 	IsActive      bool   `json:"is_active"`
 }

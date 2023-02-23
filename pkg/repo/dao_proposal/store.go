@@ -25,8 +25,9 @@ func (pg *pg) GetAllByCreatorId(userId string) (models *[]model.DaoProposal, err
 func (pg *pg) GetUsageStatsWithPaging(page int, size int) (models *[]response.ProposalCount, total int64, err error) {
 	return models, total, pg.db.Table("dao_proposal").
 		Count(&total).
-		Select("guild_id, COUNT(guild_id)").
-		Group("guild_id").
+		Select("guild_id, discord_guilds.name as guild_name, COUNT(guild_id)").
+		Joins("JOIN discord_guilds on discord_guilds.id = guild_id").
+		Group("guild_id, discord_guilds.name").
 		Offset(size * page).
 		Limit(size).
 		Order("count DESC").

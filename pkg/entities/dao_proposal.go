@@ -328,6 +328,7 @@ func (e *Entity) GetProposalUsage(page string, size string) (*response.GuildProp
 		}
 		res = append(res, response.GuildProposalUsageData{
 			GuildId:       pps.GuildId,
+			GuildName:     pps.GuildName,
 			ProposalCount: pps.Count,
 			IsActive:      active,
 		})
