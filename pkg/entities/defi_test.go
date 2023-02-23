@@ -47,12 +47,13 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 	coingeckoDefaultTickers := testhelper.WatchlistCoingeckoDefaultTickers()
 
 	tests := []struct {
-		name      string
-		req       request.GetUserWatchlistRequest
-		userItems []model.UserWatchlistItem
-		itemsStr  []string
-		want      []response.CoinMarketItemData
-		wantErr   bool
+		name         string
+		req          request.GetUserWatchlistRequest
+		userItems    []model.UserWatchlistItem
+		itemsStr     []string
+		coingeckoRes []response.CoinMarketItemData
+		want         *response.GetWatchlistResponse
+		wantErr      bool
 	}{
 		{
 			name: "success - default tokens",
@@ -61,7 +62,17 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 				Size:   7,
 			},
 			itemsStr: []string{"bitcoin", "ethereum", "binancecoin", "fantom", "internet-computer", "solana", "avalanche-2", "matic-network"},
-			want:     coingeckoDefaultTickers,
+			want: &response.GetWatchlistResponse{
+				Pagination: &response.PaginationResponse{
+					Total: 0,
+					Pagination: model.Pagination{
+						Page: 0,
+						Size: 7,
+					},
+				},
+				Data: coingeckoDefaultTickers,
+			},
+			coingeckoRes: coingeckoDefaultTickers,
 		},
 		{
 			name: "success - custom tokens",
@@ -77,7 +88,7 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 				},
 			},
 			itemsStr: []string{"bitcoin"},
-			want: []response.CoinMarketItemData{
+			coingeckoRes: []response.CoinMarketItemData{
 				{
 					ID:           "bitcoin",
 					Name:         "Bitcoin",
@@ -94,6 +105,34 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 					PriceChangePercentage24h:          0.33071,
 					PriceChangePercentage7dInCurrency: 2.281861441149524,
 					IsPair:                            false,
+				},
+			},
+			want: &response.GetWatchlistResponse{
+				Pagination: &response.PaginationResponse{
+					Total: 1,
+					Pagination: model.Pagination{
+						Page: 0,
+						Size: 7,
+					},
+				},
+				Data: []response.CoinMarketItemData{
+					{
+						ID:           "bitcoin",
+						Name:         "Bitcoin",
+						Symbol:       "btc",
+						CurrentPrice: 19238.62,
+						Image:        "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+						SparkLineIn7d: struct {
+							Price []float64 "json:\"price\""
+						}{
+							[]float64{
+								18861.78098812819, 19087.709424228065, 19165.140362664395,
+							},
+						},
+						PriceChangePercentage24h:          0.33071,
+						PriceChangePercentage7dInCurrency: 2.281861441149524,
+						IsPair:                            false,
+					},
 				},
 			},
 		},
@@ -111,7 +150,7 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 				},
 			},
 			itemsStr: []string{"bitcoin/doge"},
-			want: []response.CoinMarketItemData{
+			coingeckoRes: []response.CoinMarketItemData{
 				{
 					ID:           "bitcoin",
 					Name:         "Bitcoin",
@@ -130,6 +169,34 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 					IsPair:                            false,
 				},
 			},
+			want: &response.GetWatchlistResponse{
+				Pagination: &response.PaginationResponse{
+					Total: 1,
+					Pagination: model.Pagination{
+						Page: 0,
+						Size: 7,
+					},
+				},
+				Data: []response.CoinMarketItemData{
+					{
+						ID:           "bitcoin",
+						Name:         "Bitcoin",
+						Symbol:       "btc",
+						CurrentPrice: 19238.62,
+						Image:        "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+						SparkLineIn7d: struct {
+							Price []float64 "json:\"price\""
+						}{
+							[]float64{
+								18861.78098812819, 19087.709424228065, 19165.140362664395,
+							},
+						},
+						PriceChangePercentage24h:          0.33071,
+						PriceChangePercentage7dInCurrency: 2.281861441149524,
+						IsPair:                            false,
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -139,14 +206,14 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 				Offset: tt.req.Page * tt.req.Size,
 				Limit:  tt.req.Size,
 			}).Return(tt.userItems, int64(len(tt.userItems)), nil).AnyTimes()
-			mockServiceCoingecko.EXPECT().GetCoinsMarketData(tt.itemsStr).Return(tt.want, nil, 200).AnyTimes()
+			mockServiceCoingecko.EXPECT().GetCoinsMarketData(tt.itemsStr).Return(tt.coingeckoRes, nil, 200).AnyTimes()
 
 			got, err := e.GetUserWatchlist(tt.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetUserWatchlist() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, &tt.want) {
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Entity.GetUserWatchlist() = %v, want %v", got, tt.want)
 			}
 		})

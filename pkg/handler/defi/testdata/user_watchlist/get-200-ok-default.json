@@ -1,4 +1,10 @@
 {
+  "data": {
+    "metadata": {
+        "page": 0,
+        "size": 8,
+        "total": 0
+    },
   "data": [
     {
       "id": "bitcoin",
@@ -113,4 +119,5 @@
       "is_default": true
     }
   ]
+}
 }
