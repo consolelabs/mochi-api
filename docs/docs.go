@@ -11845,11 +11845,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
-                    "description": "Pagination *PaginationResponse  ` + "`" + `json:\"pagination\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.CoinMarketItemData"
                     }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },

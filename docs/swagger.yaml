@@ -3195,10 +3195,11 @@ definitions:
   response.GetWatchlistResponse:
     properties:
       data:
-        description: Pagination *PaginationResponse  `json:"pagination"`
         items:
           $ref: '#/definitions/response.CoinMarketItemData'
         type: array
+      metadata:
+        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.GetWelcomeChannelConfigResponse:
     properties:
