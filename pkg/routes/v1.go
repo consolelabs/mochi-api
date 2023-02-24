@@ -129,7 +129,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		walletsGroup := userGroup.Group("/:id/wallets")
 		{
-			walletsGroup.GET("", h.Wallet.List)
+			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
+			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets)
+			walletsGroup.POST("/generate-verification", h.Wallet.GenerateWalletVerification)
 			walletsGroup.POST("/track", h.Wallet.Track)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)

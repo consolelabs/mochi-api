@@ -172,16 +172,16 @@ func (h *Handler) GenerateVerification(c *gin.Context) {
 	data, statusCode, err := h.entities.GenerateVerification(req)
 	if err != nil {
 		respData := gin.H{"error": err.Error()}
-		if err.Error() == "already have a verified wallet" {
+		if statusCode == http.StatusConflict {
 			respData["address"] = data
 		}
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.GenerateVerification] - failed to generate verification")
-		c.JSON(statusCode, respData)
+		c.JSON(statusCode, response.CreateResponse[any](respData, nil, err, nil))
 		return
 	}
 
 	// TODO: use response.CreateResponse() to wrap response
-	c.JSON(http.StatusOK, response.GenerateVerificationResponse{Status: "ok", Code: data})
+	c.JSON(http.StatusOK, response.CreateResponse[any](response.GenerateVerificationResponse{Code: data}, nil, nil, nil))
 }
 
 // VerifyWalletAddress     godoc

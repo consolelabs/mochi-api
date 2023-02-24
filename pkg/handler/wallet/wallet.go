@@ -26,25 +26,59 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 	}
 }
 
-// List     			godoc
-// @Summary     Get user's trackng wallets
-// @Description Get user's trackng wallets
+// ListOwnedWallets     			godoc
+// @Summary     Get user's wallets
+// @Description Get user's wallets
 // @Tags        Wallet
 // @Accept      json
 // @Produce     json
-// @Param       id   path  string true  "user id"
+// @Param       guild_id   query  string true  "guild ID"
+// @Param       req   path  request.GetTrackingWalletsRequest true  "req"
 // @Success     200 {object} response.GetTrackingWalletsResponse
 // @Router      /users/:id/wallets [get]
-func (h *Handler) List(c *gin.Context) {
+func (h *Handler) ListOwnedWallets(c *gin.Context) {
 	var req request.GetTrackingWalletsRequest
 	if err := c.ShouldBindUri(&req); err != nil {
-		h.log.Error(err, "[handler.Wallet.List] ShouldBindUri() failed")
+		h.log.Error(err, "[handler.Wallet.ListOwned] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	req.GuildID = c.Query("guild_id")
+	if req.GuildID == "" {
+		err := errors.New("guild_id is required")
+		h.log.Error(err, "[handler.Wallet.ListOwned] not enough query params")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	req.IsOwner = true
+	items, err := h.entities.GetTrackingWallets(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListOwned] entity.GetTrackingWallets() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
+}
+
+// ListTrackingWallets godoc
+// @Summary     Get user's tracking wallets
+// @Description Get user's tracking wallets
+// @Tags        Wallet
+// @Accept      json
+// @Produce     json
+// @Param       req   path  request.GetTrackingWalletsRequest true  "req"
+// @Success     200 {object} response.GetTrackingWalletsResponse
+// @Router      /users/:id/wallets/tracking [get]
+func (h *Handler) ListTrackingWallets(c *gin.Context) {
+	var req request.GetTrackingWalletsRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.ListTracking] ShouldBindUri() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.List] entity.GetTrackingWallets() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -173,4 +207,29 @@ func (h *Handler) ListTransactions(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
+}
+
+func (h *Handler) GenerateWalletVerification(c *gin.Context) {
+	var uriReq request.WalletBaseRequest
+	if err := c.ShouldBindUri(&uriReq); err != nil {
+		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	var req request.GenerateWalletVerificationRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	req.UserID = uriReq.UserID
+
+	code, err := h.entities.GenerateWalletVerification(req)
+	if err != nil {
+		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] entity.GenerateWalletVerification() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.GenerateVerificationResponse{Code: code}, nil, nil, nil))
 }
