@@ -40,13 +40,15 @@ type WalletTransactionAction struct {
 }
 
 type WalletTransactionData struct {
-	ChainID     int       `json:"chain_id"`
-	TxHash      string    `json:"tx_hash"`
-	ScanBaseUrl string    `json:"scan_base_url"`
-	SignedAt    time.Time `json:"signed_at"`
-	// From        string                    `json:"from"`
-	// To          string                    `json:"to"`
+	ChainID     int                       `json:"chain_id"`
+	TxHash      string                    `json:"tx_hash"`
+	ScanBaseUrl string                    `json:"scan_base_url"`
+	SignedAt    time.Time                 `json:"signed_at"`
 	Actions     []WalletTransactionAction `json:"actions"`
 	HasTransfer bool                      `json:"has_transfer"`
 	Successful  bool                      `json:"successful"`
+}
+
+type GenerateWalletVerificationResponseData struct {
+	Code string `json:"code"`
 }

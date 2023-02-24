@@ -1123,7 +1123,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 	}
 	list, _, err := e.repo.UserNftWatchlistItem.List(q)
 	if err != nil {
-		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
+		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetNftWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
 	}
 
@@ -1135,13 +1135,13 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 	for _, itm := range list {
 		data, err := e.indexer.GetNFTCollectionTickersForWl(itm.CollectionAddress)
 		if err != nil {
-			e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] indexer.GetNFTCollectionTickersForWl failed")
+			e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetNftWatchlist] indexer.GetNFTCollectionTickersForWl failed")
 			return nil, err
 		}
 
 		collection, err := e.repo.NFTCollection.GetByAddressChainId(itm.CollectionAddress, strconv.Itoa(int(itm.ChainId)))
 		if err != nil {
-			e.log.Fields(logger.Fields{"CollectionAddress": itm.CollectionAddress, "ChainId": itm.ChainId}).Error(err, "[entity.GetUserWatchlist] repo.NFTCollection.GetByAddressChainId failed")
+			e.log.Fields(logger.Fields{"CollectionAddress": itm.CollectionAddress, "ChainId": itm.ChainId}).Error(err, "[entity.GetNftWatchlist] repo.NFTCollection.GetByAddressChainId failed")
 			return nil, err
 		}
 
@@ -1167,7 +1167,16 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 			floatFloorPrice7d, _ := bigFloatFloorPrice7d.Float64()
 			price = append(price, floatFloorPrice7d)
 		}
-		floatFloorPrice, _ := util.StringWeiToEther(data.Data.FloorPrice.Amount, int(data.Data.FloorPrice.Token.Decimals)).Float64()
+		// NFT collection does not have floor price
+		amount := "0"
+		decimals := 0
+		token := response.IndexerToken{}
+		if (data.Data.FloorPrice != nil){
+			amount = data.Data.FloorPrice.Amount
+			decimals = int(data.Data.FloorPrice.Token.Decimals)
+			token = data.Data.FloorPrice.Token
+		}
+		floatFloorPrice, _ := util.StringWeiToEther(amount, decimals).Float64()
 
 		priceChangePercentage7dInCurrency := 0.0
 		if len(price) > 0 {
@@ -1185,7 +1194,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 			},
 			FloorPrice:                        floatFloorPrice,
 			PriceChangePercentage7dInCurrency: priceChangePercentage7dInCurrency,
-			Token:                             data.Data.FloorPrice.Token,
+			Token:                             token,
 		}
 		res = append(res, itmRes)
 	}
