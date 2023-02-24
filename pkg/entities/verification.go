@@ -198,7 +198,6 @@ func (e *Entity) DeleteGuildConfigWalletVerificationMessage(guildID string) erro
 }
 
 func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (data string, statusCode int, err error) {
-
 	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -211,7 +210,7 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 	switch err {
 	case nil:
 		if !req.IsReverify {
-			return uw.Address, http.StatusBadRequest, fmt.Errorf("already have a verified wallet")
+			return uw.Address, http.StatusConflict, fmt.Errorf("already have a verified wallet")
 		}
 	case gorm.ErrRecordNotFound:
 		if req.IsReverify {
@@ -222,7 +221,6 @@ func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (
 	}
 
 	code := uuid.New().String()
-
 	if err := e.repo.DiscordWalletVerification.UpsertOne(
 		model.DiscordWalletVerification{
 			Code:          code,
@@ -246,6 +244,16 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 	if err := util.VerifySig(req.WalletAddress, req.Signature, fmt.Sprintf(
 		"This will help us connect your discord account to the wallet address.\n\nMochiBotCode=%s", req.Code)); err != nil {
 		return http.StatusBadRequest, err
+	}
+
+	// case add wallet
+	if verification.GuildID == "" {
+		err = e.handleWalletAddition(req.WalletAddress, *verification)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.VerifyWalletAddress] entity.handleWalletAddition() failed")
+			return http.StatusInternalServerError, err
+		}
+		return http.StatusOK, nil
 	}
 
 	_, err = e.repo.Users.GetOne(verification.UserDiscordID)
@@ -341,6 +349,28 @@ func (e *Entity) VerifyWalletAssignRole(verification *model.DiscordWalletVerific
 			}).Error(err, "[entities.VerifyWalletAssignRole] Failed to assign role to user")
 			return err
 		}
+	}
+	return nil
+}
+
+func (e *Entity) handleWalletAddition(walletAddress string, verification model.DiscordWalletVerification) error {
+	req := request.TrackWalletRequest{
+		UserID:    verification.UserDiscordID,
+		Address:   walletAddress,
+		Type:      "eth",
+		IsOwner:   true,
+		MessageID: verification.MessageID,
+		ChannelID: verification.ChannelID,
+	}
+	err := e.TrackWallet(req)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.handleWalletAddition] entity.TrackWallet() failed")
+		return err
+	}
+	err = e.repo.DiscordWalletVerification.DeleteByCode(verification.Code)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.handleWalletAddition] repo.DiscordWalletVerification.DeleteByCode() failed")
+		return err
 	}
 	return nil
 }

@@ -12,6 +12,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerr "github.com/defipod/mochi/pkg/model/errors"
@@ -20,10 +21,19 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/solscan"
+	"github.com/defipod/mochi/pkg/util"
+	"github.com/google/uuid"
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]model.UserWalletWatchlistItem, error) {
-	wallets, err := e.repo.UserWalletWatchlistItem.List(req.UserID)
+	if req.IsOwner {
+		// if error -> logging & ignore
+		if err := e.upsertVerifiedWallet(req); err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] entity.upsertVerifiedWallet() failed")
+		}
+	}
+	listQ := userwalletwatchlistitem.ListQuery{UserID: req.UserID, IsOwner: &req.IsOwner}
+	wallets, err := e.repo.UserWalletWatchlistItem.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.List() failed")
 		return nil, err
@@ -48,6 +58,46 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 		wallets[i] = wallet
 	}
 	return wallets, nil
+}
+
+func (e *Entity) upsertVerifiedWallet(req request.GetTrackingWalletsRequest) error {
+	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(req.UserID, req.GuildID)
+	// query failed -> exit
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWallet.GetOneByDiscordIDAndGuildID() failed")
+		return err
+	}
+
+	// user has linked wallet from verify channel
+	existing, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: userWallet.Address})
+	// if not exists -> create
+	if err == gorm.ErrRecordNotFound {
+		err = e.repo.UserWalletWatchlistItem.Create(&model.UserWalletWatchlistItem{
+			UserID:  req.UserID,
+			Address: userWallet.Address,
+			Type:    "eth",
+			IsOwner: true,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.Create() failed")
+			return err
+		}
+		return nil
+	}
+	// query failed -> exit
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.GetOne() failed")
+		return err
+	}
+	// if exists but is_owner = false -> update is_owner to true
+	if !existing.IsOwner {
+		err = e.repo.UserWalletWatchlistItem.UpdateOwnerFlag(req.UserID, userWallet.Address, true)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.UpdateOwnerFlag() failed")
+			return err
+		}
+	}
+	return nil
 }
 
 func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
@@ -125,26 +175,93 @@ func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalle
 }
 
 func (e *Entity) TrackWallet(req request.TrackWalletRequest) error {
-	wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: req.Alias})
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
-		return err
-	}
-	if err != gorm.ErrRecordNotFound && !strings.EqualFold(wallet.Address, req.Address) {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
-		return baseerr.ErrConflict
+	if req.Alias != "" {
+		wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: req.Alias})
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
+			return err
+		}
+		if err == nil && !strings.EqualFold(wallet.Address, req.Address) {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] alias has been used for another address")
+			return baseerr.ErrConflict
+		}
 	}
 
-	err = e.repo.UserWalletWatchlistItem.Create(&model.UserWalletWatchlistItem{
+	err := e.repo.UserWalletWatchlistItem.Create(&model.UserWalletWatchlistItem{
 		UserID:  req.UserID,
 		Address: req.Address,
 		Alias:   req.Alias,
 		Type:    req.Type,
+		IsOwner: req.IsOwner,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.Create() failed")
+		return err
 	}
-	return err
+	if req.ChannelID == "" || req.MessageID == "" {
+		return nil
+	}
+	err = e.notifyWalletAddition(req)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] entity.notifyWalletAddition() failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) notifyWalletAddition(req request.TrackWalletRequest) error {
+	description := fmt.Sprintf("Wallet `%s` was added succesfully!\n%s You can set a label for your wallet or add more wallets.", req.Address, util.GetEmoji("pointingdown"))
+	embed := &discordgo.MessageEmbed{
+		Color: 0x5cd97d,
+		Author: &discordgo.MessageEmbedAuthor{
+			Name:    "Successfully set!",
+			IconURL: "https://cdn.discordapp.com/emojis/933341948402618378.png?size=240&quality=lossless",
+		},
+		Description: description,
+	}
+	_, err := e.discord.ChannelMessageEditComplex(&discordgo.MessageEdit{
+		Channel: req.ChannelID,
+		ID:      req.MessageID,
+		Embeds:  []*discordgo.MessageEmbed{embed},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label:    "View Wallet",
+						Style:    discordgo.SecondaryButton,
+						CustomID: fmt.Sprintf("wallet_view_details-%s", req.Address),
+						Emoji: discordgo.ComponentEmoji{
+							Name: "wallet",
+							ID:   util.GetEmojiID("wallet"),
+						},
+					},
+					discordgo.Button{
+						Label:    "Rename Label",
+						Style:    discordgo.SecondaryButton,
+						CustomID: fmt.Sprintf("wallet_rename-%s-%s", req.UserID, req.Address),
+						Emoji: discordgo.ComponentEmoji{
+							Name: "pencil",
+							ID:   util.GetEmojiID("pencil"),
+						},
+					},
+					discordgo.Button{
+						Label:    "Add More",
+						Style:    discordgo.SecondaryButton,
+						CustomID: fmt.Sprintf("wallet_add_more-%s", req.UserID),
+						Emoji: discordgo.ComponentEmoji{
+							Name: "plus",
+							ID:   util.GetEmojiID("plus"),
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.notifyWalletAddition] discord.ChannelMessageEditComplex() failed")
+		return err
+	}
+	return nil
 }
 
 func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
@@ -515,4 +632,22 @@ func (*Entity) handleErc1155TransferBatch(address string, ev covalent.LogEvent, 
 	} else {
 		action.Unit = fmt.Sprintf("%s [%s]", action.Contract.Symbol, action.Unit)
 	}
+}
+
+func (e *Entity) GenerateWalletVerification(req request.GenerateWalletVerificationRequest) (string, error) {
+	code := uuid.New().String()
+	err := e.repo.DiscordWalletVerification.UpsertOne(
+		model.DiscordWalletVerification{
+			Code:          code,
+			UserDiscordID: req.UserID,
+			GuildID:       "",
+			CreatedAt:     time.Now(),
+			ChannelID:     req.ChannelID,
+			MessageID:     req.MessageID,
+		},
+	)
+	if err != nil {
+		e.log.Error(err, "[entity.GenerateWalletVerification] repo.DiscordWalletVerification.UpsertOne failed")
+	}
+	return code, err
 }

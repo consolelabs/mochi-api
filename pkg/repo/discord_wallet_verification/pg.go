@@ -20,14 +20,19 @@ func (pg *pg) GetOne(dicordID, guildID string) (*model.DiscordWalletVerification
 	return &dv, pg.db.Where("user_discord_id = ? and guild_id = ?", dicordID, guildID).First(&dv).Error
 }
 
+func (pg *pg) Create(v model.DiscordWalletVerification) error {
+	return pg.db.Create(&v).Error
+}
+
 func (pg *pg) UpsertOne(v model.DiscordWalletVerification) error {
 	tx := pg.db.Begin()
 	err := tx.Table("discord_wallet_verifications").Clauses(clause.OnConflict{
 		Columns: []clause.Column{
 			{Name: "user_discord_id"},
 			{Name: "guild_id"},
+			{Name: "code"},
 		},
-		DoUpdates: clause.AssignmentColumns([]string{"code", "created_at"}),
+		DoUpdates: clause.AssignmentColumns([]string{"created_at"}),
 	}).Create(&v).Error
 	if err != nil {
 		tx.Rollback()

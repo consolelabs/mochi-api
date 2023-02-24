@@ -230,7 +230,7 @@ func (e *Entity) NotifyTipFromPlatforms(req request.OffchainTransferRequest, amo
 				balsEmbed = append(balsEmbed, &discordgo.MessageEmbedField{
 					Name:   bal.Name,
 					Inline: true,
-					Value:  fmt.Sprintf("%s %.2f %s `$%.2f`", util.GetEmojiToken(bal.Symbol), bal.Balances, bal.Symbol, bal.BalancesInUSD),
+					Value:  fmt.Sprintf("%s %.2f %s `$%.2f`", util.GetEmoji(bal.Symbol), bal.Balances, bal.Symbol, bal.BalancesInUSD),
 				})
 			}
 
