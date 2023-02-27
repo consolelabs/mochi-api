@@ -1,11 +1,8 @@
 package model
 
 type User struct {
-	ID                     string         `json:"id" gorm:"primary_key"`
-	Username               string         `json:"username"`
-	InDiscordWalletAddress JSONNullString `json:"in_discord_wallet_address"`
-	InDiscordWalletNumber  JSONNullInt64  `json:"in_discord_wallet_number"`
-	NrOfJoin               int64          `json:"nr_of_join"`
-
+	ID         string       `json:"id" gorm:"primary_key"`
+	Username   string       `json:"username"`
+	NrOfJoin   int64        `json:"nr_of_join"`
 	GuildUsers []*GuildUser `json:"guild_users"`
 }
