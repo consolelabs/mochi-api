@@ -143,48 +143,33 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 		return false, nil
 	}
 
-	transferEvIdx := -1
-	for i, e := range tx.LogEvents {
-		if strings.EqualFold(e.Decoded.Name, "Transfer") {
-			transferEvIdx = i
-			break
+	for _, event := range tx.LogEvents {
+		if event.Decoded.Params == nil || len(event.Decoded.Params) == 0 {
+			l.Info("[getTxDetails] no event params")
+			return false, nil
 		}
-	}
-	if transferEvIdx < 0 {
-		l.Info("[getTxDetails] no Transfer log event")
-		return false, nil
-	}
-
-	event := tx.LogEvents[transferEvIdx]
-	if event.Decoded.Params == nil || len(event.Decoded.Params) == 0 {
-		l.Info("[getTxDetails] no event params")
-		return false, nil
-	}
-	decimals := event.SenderContractDecimals
-	tx.TokenSymbol = event.SenderContractTickerSymbol
-	for _, p := range event.Decoded.Params {
-		val, ok := p.Value.(string)
+		if !strings.EqualFold(event.Decoded.Signature, "Transfer(indexed address from, indexed address to, uint256 value)") {
+			l.Info("[getTxDetails] not erc20 transfer tx")
+			continue
+		}
+		to := event.Decoded.Params[1].Value.(string)
+		value := event.Decoded.Params[2].Value.(string)
+		if !strings.EqualFold(to, contractAddress) {
+			continue
+		}
+		amount, ok := new(big.Int).SetString(value, 10)
 		if !ok {
-			l.Info("[getTxDetails] value not string")
-			return false, nil
+			err := fmt.Errorf("invalid tx amount %s", value)
+			l.Error(err, "[getTxDetails] invalid erc20 transfer amount")
+			continue
 		}
-		if strings.EqualFold(p.Name, "to") && !strings.EqualFold(val, contractAddress) {
-			l.Info("[getTxDetails] different recipient address")
-			return false, nil
-		}
-		if strings.EqualFold(p.Name, "value") {
-			amount := new(big.Int)
-			amount, ok = amount.SetString(val, 10)
-			if !ok {
-				err := fmt.Errorf("invalid tx amount %s", p.Value)
-				l.Error(err, "[getTxDetails] invalid erc20 amount")
-				return false, err
-			}
-			tx.ToAddress = contractAddress
-			tx.TokenContract = event.SenderAddress
-			tx.Amount, _ = new(big.Float).SetInt(amount).Float64()
-			tx.Amount /= math.Pow10(decimals)
-		}
+		// assign deposit details
+		tx.TokenSymbol = event.SenderContractTickerSymbol
+		tx.ToAddress = to
+		tx.TokenContract = event.SenderAddress
+		tx.Amount, _ = new(big.Float).SetInt(amount).Float64()
+		tx.Amount /= math.Pow10(event.SenderContractDecimals)
+		break
 	}
 	return true, nil
 }
