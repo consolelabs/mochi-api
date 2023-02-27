@@ -2,6 +2,7 @@ package job
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -62,8 +63,9 @@ func (job *watchDMNotifyPriceAlert) Run() error {
 		if err := json.Unmarshal([]byte(msg.Payload), &data); err != nil {
 			panic(err)
 		}
-		job.log.Infof("Received %v", data)
-		job.HandleNotifyDiscordUser(data)
+		if err := job.HandleNotifyDiscordUser(data); err == nil {
+			job.log.Infof("Received %v", data)
+		}
 	}
 
 	return nil
@@ -93,6 +95,13 @@ func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPri
 	}
 
 	if alert.Frequency == model.OnlyOnce {
+		if strings.Contains(alert.AlertType.GetRedisKeyPrefix(), "up") {
+			req.PriceDirection = "up"
+		} else {
+			req.PriceDirection = "down"
+		}
+		req.Value = alert.Value
+		req.PriceByPercent = alert.PriceByPercent
 		err = job.entity.RemoveTokenPriceAlert(req)
 		if err != nil {
 			job.log.Fields(logger.Fields{"req": req}).Error(err, "[job.HandleNotifyDiscordUser] entity.RemoveTokenPriceAlert() failed")
@@ -102,7 +111,7 @@ func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPri
 	}
 	if alert.Frequency == model.OnceADay {
 		alert.SnoozedTo = util.StartOfDay(time.Now().AddDate(0, 0, 1)) // update to the start of next day
-		err = job.entity.UpdateSpecificPriceAlert(*alert)
+		job.entity.UpdateSpecificPriceAlert(*alert)
 		return nil
 	}
 

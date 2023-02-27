@@ -78,4 +78,5 @@ type RemoveTokenPriceAlertRequest struct {
 	Symbol         string  `json:"symbol" form:"symbol" binding:"required"`
 	Value          float64 `json:"value" form:"value" binding:"required"`
 	PriceByPercent float64 `json:"price_by_percent" form:"price_by_percent"`
+	PriceDirection string  `json:"price_direction" form:"price_direction"`
 }

@@ -75,11 +75,11 @@ func (job *watchCoinPriceChanges) Run() error {
 
 	paramStr := "/bnbusdt@kline_1s/btcusdt@kline_1s/solusdt@kline_1s/ftmusdt@kline_1s/magicusdt@kline_1s/ethusdt@kline_1s/xrpusdt@kline_1s/filusdt@kline_1s"
 	conn, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("wss://stream.binance.com:9443/ws%s", paramStr), nil)
-	defer conn.Close()
 	if err != nil {
 		job.log.Error(err, "failed to connect to websocket")
 		return err
 	}
+	defer conn.Close()
 
 	// binance will send ping message
 	conn.SetPingHandler(func(appData string) error {
@@ -98,7 +98,7 @@ func (job *watchCoinPriceChanges) Run() error {
 		if !strings.Contains(data.Symbol, "USDT") {
 			continue
 		}
-		alertCache := []response.ZSetWithScoreData{}
+		var alertCache []response.ZSetWithScoreData
 		openPrice, _ := strconv.ParseFloat(data.Data.OPrice, 64)
 		closePrice, _ := strconv.ParseFloat(data.Data.CPrice, 64)
 		tokenSymbol := data.Symbol[0 : len(data.Symbol)-4] //format: <symbol>USDT

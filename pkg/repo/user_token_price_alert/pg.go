@@ -49,19 +49,13 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Delete(userID, symbol string, value, priceByPercent float64) (int64, error) {
-	db := pg.db.Table("user_token_price_alerts")
-	if priceByPercent != 0 {
-		db = db.Where("price_by_percent = ?", priceByPercent)
-	} else {
-		db = db.Where("value = ?", value)
-	}
-	tx := pg.db.Where("user_discord_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserTokenPriceAlert{})
+func (pg *pg) Delete(userID, symbol string, value float64) (int64, error) {
+	tx := pg.db.Delete(&model.UserTokenPriceAlert{}, "user_discord_id = ? AND symbol ILIKE ? AND value = ?", userID, symbol, value)
 	return tx.RowsAffected, tx.Error
 }
 
 func (pg *pg) Update(item *model.UserTokenPriceAlert) error {
-	return pg.db.Where("user_discord_id = ? AND symbol = ?", item.UserDiscordID, item.Symbol).Save(item).Error
+	return pg.db.Where("user_discord_id = ? AND symbol = ? AND value = ? AND price_by_percent = ? ", item.UserDiscordID, item.Symbol, item.Value, item.PriceByPercent).Save(item).Error
 }
 
 func (pg *pg) FetchListSymbol() ([]string, error) {

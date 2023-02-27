@@ -593,7 +593,7 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		e.log.Fields(logger.Fields{
 			"price":  req.Value,
 			"symbol": req.Symbol,
-		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert price or token symbol")
+		}).Error(nil, "[Entity][AddTokenPriceAlert] invalid alert value or token symbol")
 		return nil, baseerrs.ErrBadRequest
 	}
 
@@ -616,9 +616,13 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	req.Symbol = strings.ToUpper(req.Symbol)
 	if req.AlertType == model.ChangeIsOver || req.AlertType == model.ChangeIsUnder {
 		isPercent = true
-		req.Value = util.RoundFloat(req.Value, 1)
+		req.Value = util.RoundFloat(req.Value, 2)
 	} else {
 		req.Value = util.RoundFloat(req.Value, 8)
+	}
+	if req.Value == 0 {
+		e.log.Fields(logger.Fields{"req.Value": req.Value}).Error(nil, "[entity.AddTokenPriceAlert] parse percentage value failed")
+		return nil, baseerrs.ErrInvalidAlertValue
 	}
 
 	// fetch req.Symbol's current price
@@ -634,6 +638,8 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddTokenPriceAlert] strconv.ParseFloat() failed")
 		return nil, err
 	}
+
+	// calculate trigger value if input value is percentage
 	if isPercent {
 		req.PriceByPercent = util.RoundFloat(currentPrice*req.Value/100+currentPrice, 8) // calculates target price to trigger alert
 		alertPrice = req.PriceByPercent
@@ -744,7 +750,7 @@ func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest)
 		return baseerrs.ErrBadRequest
 	}
 
-	if req.Value <= 0 && req.PriceByPercent == 0 {
+	if req.Value <= 0 {
 		e.log.Fields(logger.Fields{
 			"price":            req.Value,
 			"price_by_percent": req.PriceByPercent,
@@ -752,13 +758,7 @@ func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest)
 		return baseerrs.ErrBadRequest
 	}
 
-	alert, err := e.GetSpecificAlert(req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] entity.GetSpecificAlert() failed")
-		return baseerrs.ErrRecordNotFound
-	}
-
-	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserDiscordID, req.Symbol, alert.Value, alert.PriceByPercent)
+	rows, err := e.repo.UserTokenPriceAlert.Delete(req.UserDiscordID, req.Symbol, req.Value)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}
@@ -768,22 +768,14 @@ func (e *Entity) RemoveTokenPriceAlert(req request.RemoveTokenPriceAlertRequest)
 		return baseerrs.ErrRecordNotFound
 	}
 
-	// remove price alert from cache
-	var direction string
-	if strings.Contains(alert.AlertType.GetRedisKeyPrefix(), "up") {
-		direction = "up"
+	if req.PriceDirection != "" && req.PriceByPercent != 0 {
+		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), req.PriceDirection, fmt.Sprintf("%v", req.PriceByPercent))
 	} else {
-		direction = "down"
-	}
-
-	if alert.PriceByPercent != 0 {
-		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), direction, fmt.Sprintf("%v", alert.PriceByPercent))
-	} else {
-		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), direction, fmt.Sprintf("%v", alert.Value))
+		err = e.RemovePriceAlertZCache(strings.ToLower(req.Symbol+"USDT"), req.PriceDirection, fmt.Sprintf("%v", req.Value))
 	}
 
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
+		e.log.Fields(logger.Fields{"req.Symbol": req.Symbol, "req.Value": req.Value}).Error(err, "[entity.RemoveTokenPriceAlert] repo.UserTokenPriceAlert.Delete() failed")
 	}
 
 	return nil

@@ -18,6 +18,7 @@ var (
 	ErrInvalidVoteChoice         = NewStringError("Invalid vote choice", 400)
 	ErrInvalidAuthorityType      = NewStringError("Invalid authority type", 400)
 	ErrInvalidAlertType          = NewStringError("Invalid alert type - Must be in (price_reaches, price_rises_above, price_drops_to, change_is_over, change_is_under)", 400)
+	ErrInvalidAlertValue         = NewStringError("Invalid alert value - Must greater than 0.01 for percentage or 0 for price", 400)
 	ErrInvalidAlertFrequencyType = NewStringError("Invalid alert frequency type - Must be in (only_once, once_a_day, always)", 400)
 	ErrTokenNotFound             = NewStringError("Token not found", 404)
 	ErrXPRoleExisted             = NewStringError("XP role config already existed", 400)
