@@ -57,20 +57,11 @@ func (e *Entity) GetUser(discordID string) (*response.User, error) {
 		})
 	}
 
-	if user.InDiscordWalletAddress.String == "" {
-		if err = e.generateInDiscordWallet(user); err != nil {
-			err = fmt.Errorf("cannot generate in-discord wallet: %v", err)
-			return nil, err
-		}
-	}
-
 	res := &response.User{
-		ID:                     user.ID,
-		Username:               user.Username,
-		InDiscordWalletAddress: &user.InDiscordWalletAddress.String,
-		InDiscordWalletNumber:  &user.InDiscordWalletNumber.Int64,
-		GuildUsers:             guildUsers,
-		NrOfJoin:               user.NrOfJoin,
+		ID:         user.ID,
+		Username:   user.Username,
+		GuildUsers: guildUsers,
+		NrOfJoin:   user.NrOfJoin,
 	}
 	return res, nil
 }
@@ -562,43 +553,28 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 
 func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
 	u, err := e.repo.Users.GetOne(discordID)
-	switch err {
-	case gorm.ErrRecordNotFound:
-		u.ID = discordID
-		return e.createNewUser(u)
-	case nil:
-		return e.createNewUser(u)
-	default:
+	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"discord_id": discordID}).Error(err, "[entity.GetOneOrUpsertUser] repo.Users.GetOne() failed")
 		return nil, err
 	}
+	u.ID = discordID
+	return e.upserUser(u)
 }
 
-func (e *Entity) createNewUser(u *model.User) (*model.User, error) {
+func (e *Entity) upserUser(u *model.User) (*model.User, error) {
 	dcUser, err := e.discord.User(u.ID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"discord_id": u.ID}).Error(err, "[entity.createNewUser] discord.User() failed")
-		return nil, err
+		e.log.Fields(logger.Fields{"discord_id": u.ID}).Error(err, "[entity.upserUser] discord.User() failed")
 	}
 
-	switch {
-	case u.InDiscordWalletAddress.String == "":
+	if dcUser != nil && u.Username != dcUser.Username {
 		u.Username = dcUser.Username
-		if err := e.generateInDiscordWallet(u); err != nil {
-			e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.createNewUser] generateInDiscordWallet() failed")
-			return nil, err
-		}
-		return u, nil
-	case u.Username != dcUser.Username:
-		u.Username = dcUser.Username
-		if err := e.repo.Users.Upsert(u); err != nil {
-			e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.generateInDiscordWallet] repo.Users.Upsert() failed")
-			return nil, err
-		}
-		return u, nil
-	default:
-		return u, nil
 	}
+	if err := e.repo.Users.Upsert(u); err != nil {
+		e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.upserUser] repo.Users.Upsert() failed")
+		return nil, err
+	}
+	return u, nil
 }
 
 func (e *Entity) GetUserDevice(deviceID string) (*response.UserDeviceResponse, error) {

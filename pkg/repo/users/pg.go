@@ -16,32 +16,16 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) Upsert(user *model.User) error {
 	tx := pg.db.Begin()
-	onConflict := clause.OnConflict{
+	err := tx.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "id"}},
-		DoNothing: true,
-	}
-	if user.InDiscordWalletAddress.String != "" {
-		onConflict.DoNothing = false
-		onConflict.DoUpdates = clause.AssignmentColumns([]string{"in_discord_wallet_address", "in_discord_wallet_number"})
-	}
-	if user.Username != "" {
-		onConflict.DoNothing = false
-		onConflict.DoUpdates = append(onConflict.DoUpdates, clause.AssignmentColumns([]string{"username"})...)
-	}
-	err := tx.Clauses(onConflict).Create(user).Error
+		DoUpdates: clause.AssignmentColumns([]string{"username"}),
+	}).Create(user).Error
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
 
 	return tx.Commit().Error
-}
-
-func (pg *pg) GetLatestWalletNumber() int {
-	var result int
-	row := pg.db.Table("users").Select("max(in_discord_wallet_number)").Row()
-	row.Scan(&result)
-	return result
 }
 
 func (pg *pg) GetOne(discordID string) (*model.User, error) {

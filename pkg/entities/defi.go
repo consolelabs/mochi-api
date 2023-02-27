@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -38,27 +37,6 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.GetHistoricalMarketChart] entity.UpdateUserQuestProgress() failed")
 	}
 	return data, nil, http.StatusOK
-}
-
-func (e *Entity) generateInDiscordWallet(user *model.User) error {
-	if !user.InDiscordWalletAddress.Valid || user.InDiscordWalletAddress.String == "" {
-		inDiscordWalletNumber := e.repo.Users.GetLatestWalletNumber() + 1
-		inDiscordAddress, err := e.dcwallet.GetAccountByWalletNumber(inDiscordWalletNumber)
-		if err != nil {
-			err = fmt.Errorf("error getting wallet address: %v", err)
-			return err
-		}
-
-		user.InDiscordWalletNumber = model.JSONNullInt64{NullInt64: sql.NullInt64{Int64: int64(inDiscordWalletNumber), Valid: true}}
-		user.InDiscordWalletAddress = model.JSONNullString{NullString: sql.NullString{String: inDiscordAddress.Address.Hex(), Valid: true}}
-
-		if err := e.repo.Users.Upsert(user); err != nil {
-			e.log.Fields(logger.Fields{"user": user}).Error(err, "[entity.generateInDiscordWallet] repo.Users.Create() failed")
-			return err
-		}
-	}
-
-	return nil
 }
 
 func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {

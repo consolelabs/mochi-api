@@ -257,23 +257,16 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 	}
 
 	_, err = e.repo.Users.GetOne(verification.UserDiscordID)
-	switch err {
-	case nil:
-	case gorm.ErrRecordNotFound:
-		u := &model.User{
-			ID: verification.UserDiscordID,
-			GuildUsers: []*model.GuildUser{
-				{
-					GuildID: verification.GuildID,
-					UserID:  verification.UserDiscordID,
-				},
-			},
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.GetOne() failed")
+		return http.StatusInternalServerError, err
+	}
+	if err == gorm.ErrRecordNotFound {
+		err = e.repo.Users.Upsert(&model.User{ID: verification.UserDiscordID})
+		if err != nil {
+			e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.Upsert() failed")
+			return http.StatusInternalServerError, err
 		}
-		if err := e.generateInDiscordWallet(u); err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("failed to generate in-discord wallet: %v", err.Error())
-		}
-	default:
-		return http.StatusInternalServerError, fmt.Errorf("failed to get user: %v", err.Error())
 	}
 
 	uw, err := e.repo.UserWallet.GetOneByGuildIDAndAddress(verification.GuildID, req.WalletAddress)
