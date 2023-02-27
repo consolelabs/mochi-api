@@ -573,7 +573,7 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 	assignedContract, err := e.repo.OffchainTipBotContract.GetAssignContract(req.ToAddress, req.TokenSymbol)
 	if err != nil || assignedContract.UserID == "" {
 		e.log.Fields(logger.Fields{"address": req.ToAddress, "symbol": req.TokenSymbol}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotContract.GetAssignContract() failed")
-		return err
+		return nil
 	}
 
 	token, err := e.repo.Token.GetBySymbol(req.TokenSymbol, true)
@@ -634,29 +634,6 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		UserID:          &userID,
 	}
 
-	al, err := e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&activityLog)
-	if err != nil {
-		e.log.Fields(logger.Fields{"model": activityLog}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotActivityLogs.CreateActivityLog() failed")
-		return err
-	}
-
-	histories := []model.OffchainTipBotTransferHistory{
-		{
-			ReceiverID: userID,
-			LogID:      al.ID.String(),
-			Status:     consts.OffchainTipBotTrasferStatusSuccess,
-			Amount:     amount,
-			Token:      offchainToken.TokenSymbol,
-			Action:     transferType,
-			TxHash:     req.TxHash,
-		},
-	}
-	_, err = e.repo.OffchainTipBotTransferHistories.CreateTransferHistories(histories)
-	if err != nil {
-		e.log.Fields(logger.Fields{"histories": histories}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotTransferHistories.CreateTransferHistories() failed")
-		return err
-	}
-
 	// update recipient balance
 	_, err = e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(userID, tokenID)
 	if err == gorm.ErrRecordNotFound {
@@ -678,6 +655,31 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		e.log.Fields(logger.Fields{"sender": req}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotUserBalances.UpdateListUserBalances() failed")
 		return err
 	}
+
+	// store logs / histories
+	al, err := e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&activityLog)
+	if err != nil {
+		e.log.Fields(logger.Fields{"model": activityLog}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotActivityLogs.CreateActivityLog() failed")
+		return nil
+	}
+	histories := []model.OffchainTipBotTransferHistory{
+		{
+			ReceiverID: userID,
+			LogID:      al.ID.String(),
+			Status:     consts.OffchainTipBotTrasferStatusSuccess,
+			Amount:     amount,
+			Token:      offchainToken.TokenSymbol,
+			Action:     transferType,
+			TxHash:     req.TxHash,
+		},
+	}
+	_, err = e.repo.OffchainTipBotTransferHistories.CreateTransferHistories(histories)
+	if err != nil {
+		e.log.Fields(logger.Fields{"histories": histories}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotTransferHistories.CreateTransferHistories() failed")
+		return nil
+	}
+
+	// discord notification
 	err = e.notifyDepositTx(amount, userID, chain.ExplorerURL, req.TxHash, *offchainToken, priceInUSD)
 	if err != nil {
 		e.log.Fields(logger.Fields{"amount": amount, "userID": userID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.notifyDepositTx() failed")
