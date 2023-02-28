@@ -3,6 +3,7 @@ package job
 import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 )
 
@@ -52,13 +53,13 @@ func (j *fetchDiscordUsers) Run() error {
 
 	// create users
 	for _, req := range createUserRequests {
-		if _, err := j.entity.GetOneOrUpsertUser(req.ID); err != nil {
-			j.log.Fields(logger.Fields{"user": req}).Error(err, "failed to create user")
+		if err := j.entity.UpsertUser(&model.User{ID: req.ID, Username: req.Username}); err != nil {
+			j.log.Fields(logger.Fields{"user": req}).Error(err, "entity.UpsertUser() failed")
 			continue
 		}
 
 		if err := j.entity.CreateGuildUserIfNotExists(req.GuildID, req.ID, req.Nickname); err != nil {
-			j.log.Fields(logger.Fields{"user": req}).Error(err, "failed to create guild user")
+			j.log.Fields(logger.Fields{"user": req}).Error(err, "entity.CreateGuildUserIfNotExists() failed")
 			continue
 		}
 	}
