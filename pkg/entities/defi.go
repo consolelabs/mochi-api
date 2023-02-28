@@ -683,7 +683,6 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	}
 
 	err = e.cache.ZSet(alertKey, alertID, alertPrice)
-	e.log.Fields(logger.Fields{"alertKey": alertKey, "alertID": alertID, "alertPrice": alertPrice}).Info("[entity.AddTokenPriceAlert] e.cache.ZSet() is now processing")
 	if err != nil {
 		e.log.Fields(logger.Fields{"alertKey": alertKey, "alertID": alertID, "alertPrice": alertPrice}).Error(err, "[entity.AddTokenPriceAlert] e.cache.ZSet() failed")
 		return nil, err
