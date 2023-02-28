@@ -162,6 +162,7 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		e.log.Infof("Collection not exist yet, adding it to database")
 		e.handleNewCollectionFromSales(nftSale)
 		return nil
+
 	}
 
 	indexerTokenRes, err := e.indexer.GetNFTDetail(nftSale.Address, nftSale.TokenId)
@@ -243,6 +244,7 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 			Inline: true,
 		})
 	}
+
 	// finalize message nft sales
 	messageSale := []*discordgo.MessageEmbed{{
 		Author: &discordgo.MessageEmbedAuthor{
@@ -335,6 +337,10 @@ func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceReques
 		marketplaceLink = "[" + marketplace + "](" + util.GetURLMarketPlace(nftSale.Marketplace) + strings.ToLower(nftSale.Address) + ")"
 	}
 
+	tokenName := nftSale.Name
+	if tokenName == "" {
+		tokenName = collection.Name + " #" + nftSale.TokenId
+	}
 	// case indexer not have data in nft_token -> return
 	if indexerTokenRes == nil {
 		return &nftTokenModel{
@@ -346,7 +352,7 @@ func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceReques
 			Pnl:             pnl,
 			SubPnlDisplay:   subPnlDisplay,
 			SubPnlPer:       subPnlPer,
-			Name:            collection.Name + " #" + nftSale.TokenId,
+			Name:            tokenName,
 			RarityRate:      "N/A",
 			Image:           nftSale.Image,
 			Marketplace:     marketplace,

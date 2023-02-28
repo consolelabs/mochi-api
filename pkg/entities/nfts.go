@@ -375,8 +375,10 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 	if len(solToken.Data.ListNfts) > 0 {
 		collectionSymbol = solToken.Data.ListNfts[0].NftSymbol
 	}
-
-	collectionName := solanaCollection.Data.Collections[0].NftCollectionName
+	collectionName := ""
+	if len(solanaCollection.Data.Collections) > 0 {
+		collectionName = solanaCollection.Data.Collections[0].NftCollectionName
+	}
 
 	convertedChainId := util.ConvertChainToChainId(req.ChainID)
 	chainID, _ := strconv.Atoi(convertedChainId)
@@ -1171,7 +1173,7 @@ func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response
 		amount := "0"
 		decimals := 0
 		token := response.IndexerToken{}
-		if (data.Data.FloorPrice != nil){
+		if data.Data.FloorPrice != nil {
 			amount = data.Data.FloorPrice.Amount
 			decimals = int(data.Data.FloorPrice.Token.Decimals)
 			token = data.Data.FloorPrice.Token
