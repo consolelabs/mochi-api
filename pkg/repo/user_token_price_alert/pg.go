@@ -14,19 +14,13 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Create(item *model.UserTokenPriceAlert) error {
-	return pg.db.Create(item).Error
+func (pg *pg) Create(item *model.UserTokenPriceAlert) (int, error) {
+	return item.ID, pg.db.Create(&item).Error
 }
 
-func (pg *pg) GetOne(q UserTokenPriceAlertQuery) (model.UserTokenPriceAlert, error) {
-	var item model.UserTokenPriceAlert
-	db := pg.db.Table("user_token_price_alerts")
-	if q.PriceByPercent != 0 {
-		db = db.Where("price_by_percent = ?", q.PriceByPercent)
-	} else {
-		db = db.Where("value = ?", q.Value)
-	}
-	return item, db.Where("user_discord_id = ? AND symbol = ?", q.UserDiscordID, q.Symbol).First(&item).Error
+func (pg *pg) GetById(ID int) (model.UserTokenPriceAlert, error) {
+	var user model.UserTokenPriceAlert
+	return user, pg.db.Table("user_token_price_alerts").First(&user, ID).Error
 }
 
 func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int64, error) {
@@ -49,16 +43,11 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Delete(userID, symbol string, value float64) (int64, error) {
-	tx := pg.db.Delete(&model.UserTokenPriceAlert{}, "user_discord_id = ? AND symbol ILIKE ? AND value = ?", userID, symbol, value)
-	return tx.RowsAffected, tx.Error
+func (pg *pg) DeleteByID(alertID int) error {
+	tx := pg.db.Delete(&model.UserTokenPriceAlert{}, "id = ?", alertID)
+	return tx.Error
 }
 
 func (pg *pg) Update(item *model.UserTokenPriceAlert) error {
 	return pg.db.Where("user_discord_id = ? AND symbol = ? AND value = ? AND price_by_percent = ? ", item.UserDiscordID, item.Symbol, item.Value, item.PriceByPercent).Save(item).Error
-}
-
-func (pg *pg) FetchListSymbol() ([]string, error) {
-	var symbols []string
-	return symbols, pg.db.Table("user_token_price_alerts").Distinct().Pluck("symbol", &symbols).Error
 }

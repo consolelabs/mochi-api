@@ -25,7 +25,7 @@ type watchCoinPriceChanges struct {
 }
 
 type watchCoinPriceChangePayload struct {
-	UserID    string  `json:"user_id"`
+	AlertID   string  `json:"alert_id"`
 	Price     float64 `json:"price"`
 	Symbol    string  `json:"symbol"`
 	Direction string  `json:"direction"`
@@ -116,14 +116,14 @@ func (job *watchCoinPriceChanges) Run() error {
 			payload.Price = v.Score
 			payload.Direction = direction
 			payload.Symbol = data.Symbol
-			payload.UserID = v.Member
+			payload.AlertID = v.Member
 			cooldownKey := fmt.Sprintf("%v:%v:%v", v.Member, data.Symbol, v.Score)
 			if cooldownMap[cooldownKey] {
 				continue
 			} else {
 				cooldownMap[cooldownKey] = true
-				time.AfterFunc(60*time.Second, func() {
-					job.log.Infof("User with ID %v - Symbol %v - Price %v - 60s cool down end", v.Member, data.Symbol, v.Score)
+				time.AfterFunc(30*time.Second, func() {
+					job.log.Infof("Alert with ID %v - Symbol %v - Price %v - 30s cool down end", v.Member, data.Symbol, v.Score)
 					cooldownMap[cooldownKey] = false
 				})
 				job.cache.Publish(COMMUNICATION_CHANNEL, payload)
