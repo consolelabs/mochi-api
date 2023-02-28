@@ -262,9 +262,9 @@ func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (in
 		return http.StatusInternalServerError, err
 	}
 	if err == gorm.ErrRecordNotFound {
-		err = e.repo.Users.Upsert(&model.User{ID: verification.UserDiscordID})
+		err = e.repo.Users.UpsertMany([]model.User{{ID: verification.UserDiscordID}})
 		if err != nil {
-			e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.Upsert() failed")
+			e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.UpsertMany() failed")
 			return http.StatusInternalServerError, err
 		}
 	}

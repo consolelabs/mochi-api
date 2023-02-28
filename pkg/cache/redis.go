@@ -2,9 +2,12 @@ package cache
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+
+	"github.com/defipod/mochi/pkg/response"
 )
 
 type redisCache struct {
@@ -70,6 +73,10 @@ func (c *redisCache) ZRemove(key string, value interface{}) error {
 	return c.rdb.ZRem(context.Background(), key, value).Err()
 }
 
+func (c *redisCache) ZRemoveByScore(key, min, max string) error {
+	return c.rdb.ZRemRangeByScore(context.Background(), key, min, max).Err()
+}
+
 func (c *redisCache) GetString(key string) (string, error) {
 	res, err := c.rdb.Get(context.Background(), key).Result()
 	switch err {
@@ -87,6 +94,21 @@ func (c *redisCache) GetStringSorted(key, min, max string) []string {
 		Min: min,
 		Max: max,
 	}).Val()
+}
+
+func (c *redisCache) GetStringSortedWithScores(key, min, max string) []response.ZSetWithScoreData {
+	results := c.rdb.ZRangeByScoreWithScores(context.Background(), key, &redis.ZRangeBy{
+		Min: min,
+		Max: max,
+	}).Val()
+	parsedResults := make([]response.ZSetWithScoreData, 0, len(results))
+	for _, v := range results {
+		value := response.ZSetWithScoreData{}
+		value.Member = fmt.Sprintf("%v", v.Member)
+		value.Score = v.Score
+		parsedResults = append(parsedResults, value)
+	}
+	return parsedResults
 }
 
 func (c *redisCache) GetInt(key string) (int, error) {
@@ -127,4 +149,17 @@ func (c *redisCache) HashGet(key string) (map[string]string, error) {
 	default:
 		return nil, err
 	}
+}
+
+func (c *redisCache) Publish(channel string, payload interface{}) error {
+	err := c.rdb.Publish(context.Background(), channel, payload).Err()
+	if err != nil {
+		panic(err)
+	}
+	return nil
+}
+
+func (c *redisCache) Subcribe(channel string) *redis.PubSub {
+	subcriber := c.rdb.Subscribe(context.Background(), channel)
+	return subcriber
 }

@@ -177,9 +177,24 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		return err
 	}
 
+	from := strings.ToLower(nftSale.From)
+	if nftSale.ChainId == 999 {
+		from = nftSale.From
+	}
+
+	to := strings.ToLower(nftSale.To)
+	if nftSale.ChainId == 999 {
+		to = nftSale.To
+	}
+
+	tx := strings.ToLower(nftSale.Transaction)
+	if nftSale.ChainId == 999 {
+		tx = nftSale.Transaction
+	}
+
 	txUrl := ""
 	if nftSale.Transaction != "" {
-		txUrl = "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + strings.ToLower(nftSale.Transaction) + ")"
+		txUrl = "[" + util.ShortenAddress(nftSale.Transaction) + "]" + "(" + util.GetTransactionUrl(nftSale.Marketplace) + tx + ")"
 	}
 
 	data := []*discordgo.MessageEmbedField{
@@ -201,12 +216,12 @@ func (e *Entity) NotifySaleMarketplace(nftSale request.NotifySaleMarketplaceRequ
 		},
 		{
 			Name:   "From",
-			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.From) + ")",
+			Value:  "[" + util.ShortenAddress(nftSale.From) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + from + ")",
 			Inline: true,
 		},
 		{
 			Name:   "To",
-			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + strings.ToLower(nftSale.To) + ")",
+			Value:  "[" + util.ShortenAddress(nftSale.To) + "]" + "(" + util.GetWalletUrl(nftSale.Marketplace) + to + ")",
 			Inline: true,
 		},
 		{
@@ -424,14 +439,17 @@ func (e *Entity) handleNewCollectionFromSales(nftSale request.NotifySaleMarketpl
 			PriorityFlag: false,
 		})
 	case 999:
-		e.CreateSolanaNFTCollection(request.CreateNFTCollectionRequest{
-			Address:      nftSale.Address,
-			ChainID:      strconv.Itoa(int(nftSale.ChainId)),
-			Author:       "393034938028392449",
-			GuildID:      "891310117658705931",
-			MessageID:    nftSale.Address,
-			PriorityFlag: false,
-		})
+		nftSaleAddress := strings.Split(nftSale.Address, "solscan-")
+		if len(nftSaleAddress) > 0 {
+			e.CreateSolanaNFTCollection(request.CreateNFTCollectionRequest{
+				Address:      nftSaleAddress[1],
+				ChainID:      strconv.Itoa(int(nftSale.ChainId)),
+				Author:       "393034938028392449",
+				GuildID:      "891310117658705931",
+				MessageID:    nftSale.Address,
+				PriorityFlag: false,
+			})
+		}
 	default:
 		e.CreateEVMNFTCollection(request.CreateNFTCollectionRequest{
 			Address:      nftSale.Address,

@@ -174,27 +174,33 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 
 	byteData, err := data.MarshalJSON()
 	if err != nil {
-		h.log.Error(err, "[handler.handleGuildCreate] - failed to json marshal data")
+		h.log.Error(err, "[handler.handleGuildCreate] data.MarshalJSON() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := discordgo.Unmarshal(byteData, &req); err != nil {
-		h.log.Error(err, "[handler.handleGuildCreate] - failed to unmarshal data")
+		h.log.Error(err, "[handler.handleGuildCreate] discordgo.Unmarshal() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] - failed to init default token configs")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultTokenConfigs() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultActivityConfigs() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] - failed to init default activity configs")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
+	users, err := h.entities.FetchAndSaveGuildMembers(req.GuildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.FetchAndSaveGuildMembers() failed")
+	} else {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "users": users}).Error(err, "[handler.handleGuildCreate] entity.FetchAndSaveGuildMembers() done")
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))

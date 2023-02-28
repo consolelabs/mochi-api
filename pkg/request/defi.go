@@ -59,11 +59,12 @@ type GetFiatHistoricalExchangeRatesRequest struct {
 }
 
 type AddTokenPriceAlertRequest struct {
-	UserDiscordID string               `json:"user_discord_id"`
-	Symbol        string               `json:"symbol"`
-	AlertType     model.AlertType      `json:"alert_type" enums:"price_reaches,price_rises_above,price_drops_to,change_is_over,change_is_under"`
-	Frequency     model.AlertFrequency `json:"frequency" enums:"only_once,once_a_day,always"`
-	Price         float64              `json:"price"`
+	UserDiscordID  string               `json:"user_discord_id"`
+	Symbol         string               `json:"symbol"`
+	AlertType      model.AlertType      `json:"alert_type" enums:"price_reaches,price_rises_above,price_drops_to,change_is_over,change_is_under"`
+	Frequency      model.AlertFrequency `json:"frequency" enums:"only_once,once_a_day,always"`
+	Value          float64              `json:"value"`
+	PriceByPercent float64              `json:"price_by_percent"`
 }
 
 type GetUserListPriceAlertRequest struct {
@@ -73,7 +74,9 @@ type GetUserListPriceAlertRequest struct {
 }
 
 type RemoveTokenPriceAlertRequest struct {
-	UserDiscordID string  `json:"user_discord_id" form:"user_discord_id" binding:"required"`
-	Symbol        string  `json:"symbol" form:"symbol" binding:"required"`
-	Price         float64 `json:"price" form:"price" binding:"required"`
+	UserDiscordID  string  `json:"user_discord_id" form:"user_discord_id" binding:"required"`
+	Symbol         string  `json:"symbol" form:"symbol" binding:"required"`
+	Value          float64 `json:"value" form:"value" binding:"required"`
+	PriceByPercent float64 `json:"price_by_percent" form:"price_by_percent"`
+	PriceDirection string  `json:"price_direction" form:"price_direction"`
 }

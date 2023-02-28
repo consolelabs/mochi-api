@@ -558,15 +558,12 @@ func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
 		return nil, err
 	}
 	u.ID = discordID
-	return u, e.UpsertUser(u)
-}
-
-func (e *Entity) UpsertUser(u *model.User) error {
-	err := e.repo.Users.Upsert(u)
+	err = e.repo.Users.UpsertMany([]model.User{*u})
 	if err != nil {
-		e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.UpsertUser] repo.Users.Upsert() failed")
+		e.log.Fields(logger.Fields{"user": *u}).Error(err, "[entity.GetOneOrUpsertUser] repo.Users.UpsertMany() failed")
+		return nil, err
 	}
-	return err
+	return u, nil
 }
 
 func (e *Entity) GetUserDevice(deviceID string) (*response.UserDeviceResponse, error) {
@@ -661,4 +658,28 @@ func (e *Entity) TotalVerifiedWallets(guildId string) (*response.Metric, error) 
 		TotalVerifiedWallets:  totalVerfiedWallets,
 		ServerVerifiedWallets: guildVerifiedWallets,
 	}, nil
+}
+
+func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
+	members, err := e.GetGuildUsersFromDiscord(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.FetchAndSaveGuildMembers] entity.GetGuildUsersFromDiscord() failed")
+		return 0, err
+	}
+	upsertUsersPayload := make([]model.User, 0, len(members))
+	upsertGuildUsersPayload := make([]model.GuildUser, 0, len(members))
+	for _, m := range members {
+		upsertUsersPayload = append(upsertUsersPayload, model.User{ID: m.User.ID, Username: m.User.Username})
+		upsertGuildUsersPayload = append(upsertGuildUsersPayload, model.GuildUser{UserID: m.User.ID, Nickname: m.Nickname, GuildID: guildID})
+	}
+
+	if err = e.repo.Users.UpsertMany(upsertUsersPayload); err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID, "users": len(upsertUsersPayload)}).Error(err, "[entity.FetchAndSaveGuildMembers] repo.Users.UpsertMany() failed")
+		return 0, err
+	}
+	if err = e.repo.GuildUsers.UpsertMany(upsertGuildUsersPayload); err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID, "gUsers": len(upsertGuildUsersPayload)}).Error(err, "[entity.FetchAndSaveGuildMembers] repo.GuildUsers.UpsertMany() failed")
+		return 0, err
+	}
+	return len(members), nil
 }
