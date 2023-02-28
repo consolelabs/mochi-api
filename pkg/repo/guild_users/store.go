@@ -8,4 +8,5 @@ type Store interface {
 	CountByGuildUser(guildId, userId string) (int64, error)
 	FirstOrCreate(guildUser *model.GuildUser) error
 	Create(guildUser *model.GuildUser) error
+	UpsertMany(guildUsers []model.GuildUser) error
 }
