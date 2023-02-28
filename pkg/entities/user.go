@@ -558,23 +558,15 @@ func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
 		return nil, err
 	}
 	u.ID = discordID
-	return e.upserUser(u)
+	return u, e.UpsertUser(u)
 }
 
-func (e *Entity) upserUser(u *model.User) (*model.User, error) {
-	dcUser, err := e.discord.User(u.ID)
+func (e *Entity) UpsertUser(u *model.User) error {
+	err := e.repo.Users.Upsert(u)
 	if err != nil {
-		e.log.Fields(logger.Fields{"discord_id": u.ID}).Error(err, "[entity.upserUser] discord.User() failed")
+		e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.UpsertUser] repo.Users.Upsert() failed")
 	}
-
-	if dcUser != nil && u.Username != dcUser.Username {
-		u.Username = dcUser.Username
-	}
-	if err := e.repo.Users.Upsert(u); err != nil {
-		e.log.Fields(logger.Fields{"user": u}).Error(err, "[entity.upserUser] repo.Users.Upsert() failed")
-		return nil, err
-	}
-	return u, nil
+	return err
 }
 
 func (e *Entity) GetUserDevice(deviceID string) (*response.UserDeviceResponse, error) {
