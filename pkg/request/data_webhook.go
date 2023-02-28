@@ -28,6 +28,7 @@ type NotifySaleMarketplaceRequest struct {
 	LastPrice   TokenModel `json:"last_price"`
 	ChainId     int64      `json:"chain_id"`
 	Image       string     `json:"image"`
+	Name        string     `json:"name"`
 }
 
 type TokenModel struct {
