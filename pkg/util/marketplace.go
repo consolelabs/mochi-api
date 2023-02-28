@@ -37,6 +37,8 @@ func GetTransactionUrl(marketplace string) (urlMarketPlace string) {
 		return "https://etherscan.io/tx/"
 	case "okx":
 		return "https://www.oklink.com/en/okc/tx/"
+	case "magiceden":
+		return "https://solscan.io/tx/"
 	default:
 		return ""
 	}
@@ -58,6 +60,8 @@ func GetWalletUrl(marketplace string) (urlMarketPlace string) {
 		return "https://etherscan.io/address/"
 	case "okx":
 		return "https://www.oklink.com/en/middle/multi-search?key="
+	case "magiceden":
+		return "https://solscan.io/account/"
 	default:
 		return ""
 	}
