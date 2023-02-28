@@ -38,3 +38,13 @@ type WebsocketKlinesData struct {
 	QuoteAssetVolume string `json:"q"`
 	NumOfTrades      int64  `json:"n"`
 }
+
+type WebsocketAggTradeDataResponse struct {
+	Symbol string `json:"s"`
+	Price  string `json:"p"`
+}
+
+type GetAvgPriceBySymbolResponse struct {
+	Mins  int64  `json:"mins"`
+	Price string `json:"price"`
+}

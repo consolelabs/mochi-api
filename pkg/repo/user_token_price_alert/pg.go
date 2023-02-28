@@ -18,6 +18,17 @@ func (pg *pg) Create(item *model.UserTokenPriceAlert) error {
 	return pg.db.Create(item).Error
 }
 
+func (pg *pg) GetOne(q UserTokenPriceAlertQuery) (model.UserTokenPriceAlert, error) {
+	var item model.UserTokenPriceAlert
+	db := pg.db.Table("user_token_price_alerts")
+	if q.PriceByPercent != 0 {
+		db = db.Where("price_by_percent = ?", q.PriceByPercent)
+	} else {
+		db = db.Where("value = ?", q.Value)
+	}
+	return item, db.Where("user_discord_id = ? AND symbol = ?", q.UserDiscordID, q.Symbol).First(&item).Error
+}
+
 func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int64, error) {
 	var items []model.UserTokenPriceAlert
 	var total int64
@@ -28,8 +39,8 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	if q.Symbol != "" {
 		db = db.Where("symbol = ?", q.Symbol)
 	}
-	if q.Price != 0 {
-		db = db.Where("price = ?", q.Price)
+	if q.Value != 0 {
+		db = db.Where("value = ?", q.Value)
 	}
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
@@ -38,11 +49,16 @@ func (pg *pg) List(q UserTokenPriceAlertQuery) ([]model.UserTokenPriceAlert, int
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Delete(userID, symbol string, price float64) (int64, error) {
-	tx := pg.db.Where("user_discord_id = ? AND symbol ILIKE ? AND price = ?", userID, symbol, price).Delete(&model.UserTokenPriceAlert{})
+func (pg *pg) Delete(userID, symbol string, value float64) (int64, error) {
+	tx := pg.db.Delete(&model.UserTokenPriceAlert{}, "user_discord_id = ? AND symbol ILIKE ? AND value = ?", userID, symbol, value)
 	return tx.RowsAffected, tx.Error
 }
 
 func (pg *pg) Update(item *model.UserTokenPriceAlert) error {
-	return pg.db.Where("user_discord_id = ? AND symbol = ?", item.UserDiscordID, item.Symbol).Save(item).Error
+	return pg.db.Where("user_discord_id = ? AND symbol = ? AND value = ? AND price_by_percent = ? ", item.UserDiscordID, item.Symbol, item.Value, item.PriceByPercent).Save(item).Error
+}
+
+func (pg *pg) FetchListSymbol() ([]string, error) {
+	var symbols []string
+	return symbols, pg.db.Table("user_token_price_alerts").Distinct().Pluck("symbol", &symbols).Error
 }
