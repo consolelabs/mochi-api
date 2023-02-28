@@ -1,6 +1,7 @@
 package users
 
 import (
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -25,6 +26,22 @@ func (pg *pg) Upsert(user *model.User) error {
 		return err
 	}
 
+	return tx.Commit().Error
+}
+
+func (pg *pg) UpsertMany(users []model.User) error {
+	log := logger.NewLogrusLogger()
+	tx := pg.db.Begin()
+	for _, user := range users {
+		err := tx.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoUpdates: clause.AssignmentColumns([]string{"username"}),
+		}).Create(&user).Error
+		if err != nil {
+			log.Error(err, "[users.UpsertMany] failed")
+			continue
+		}
+	}
 	return tx.Commit().Error
 }
 
