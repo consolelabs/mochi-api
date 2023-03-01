@@ -544,9 +544,11 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 	if req.TokenSymbol == "" {
 		req.TokenSymbol = chain.Currency
 	}
-	assignedContract, err := e.repo.OffchainTipBotContract.GetAssignContract(req.ToAddress, req.TokenSymbol)
+	signedAtUnixMs := req.SignedAt.UnixMilli()
+	getContractAssignmentQ := offchain_tip_bot_contract.GetAssignContractQuery{Address: req.ToAddress, TokenSymbol: req.TokenSymbol, SignedAt: &signedAtUnixMs}
+	assignedContract, err := e.repo.OffchainTipBotContract.GetAssignContract(getContractAssignmentQ)
 	if err != nil || assignedContract.UserID == "" {
-		e.log.Fields(logger.Fields{"address": req.ToAddress, "symbol": req.TokenSymbol}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotContract.GetAssignContract() failed")
+		e.log.Fields(logger.Fields{"getContractAssignmentQ": getContractAssignmentQ}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotContract.GetAssignContract() failed")
 		return nil
 	}
 
@@ -660,38 +662,45 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 		return err
 	}
 
-	// sweep token for EVM chain
-	if chain.IsEVM {
+	// sweep tokens
+	return e.sweepTokens(req, assignedContract.ContractID.String(), token, chain.IsEVM)
+}
+
+func (e *Entity) sweepTokens(req request.TipBotDepositRequest, contractID string, token model.Token, isEVM bool) error {
+	// EVM
+	if isEVM {
 		tx, err := e.abi.SweepTokens(req.ToAddress, int64(req.ChainID), token)
 		if err != nil {
-			e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.abi.SweepTokens() failed")
+			e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": token}).Error(err, "[entity.sweepTokens] e.abi.SweepTokens() failed")
 			return err
 		}
-		e.log.Infof("[entity.HandleIncomingDeposit] sucessfully sweep EVM tokens: %s", tx.Hash().Hex())
+		e.repo.OffchainTipBotContract.UpdateSweepTime(contractID, time.Now())
+		e.log.Infof("[entity.sweepTokens] sucessfully sweep EVM tokens: %s", tx.Hash().Hex())
 		return nil
 	}
 
-	// sweep token for Solana
-	contract, err := e.repo.OffchainTipBotContract.GetByID(assignedContract.ContractID.String())
+	// 2. Solana
+	contract, err := e.repo.OffchainTipBotContract.GetByID(contractID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"contractID": assignedContract.ContractID.String()}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotContract.GetByID() failed")
+		e.log.Fields(logger.Fields{"contractID": contractID}).Error(err, "[entity.sweepTokens] repo.OffchainTipBotContract.GetByID() failed")
 		return err
 	}
 	if contract.PrivateKey == "" {
-		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.HandleIncomingDeposit] Solana contract has no PK")
+		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.sweepTokens] Solana contract has no PK")
 		return nil
 	}
 	pk, err := util.DecodeCFB(e.cfg.SolanaPKSecretKey, contract.PrivateKey)
 	if err != nil {
-		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.HandleIncomingDeposit] util.DecodeCFB() failed")
+		e.log.Fields(logger.Fields{"contract": req.ToAddress}).Infof("[entity.sweepTokens] util.DecodeCFB() failed")
 		return err
 	}
 	txHash, _, err := e.solana.Transfer(pk, e.solana.GetCentralizedWalletAddress(), 0, true)
 	if err != nil {
-		e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.solana.Transfer() failed")
+		e.log.Fields(logger.Fields{"address": req.ToAddress, "chainID": req.ChainID}).Error(err, "[entity.sweepTokens] e.solana.Transfer() failed")
 		return err
 	}
-	e.log.Infof("[entity.HandleIncomingDeposit] sucessfully sweep Solana: %s", txHash)
+	e.repo.OffchainTipBotContract.UpdateSweepTime(contractID, time.Now())
+	e.log.Infof("[entity.sweepTokens] sucessfully sweep Solana: %s", txHash)
 	return nil
 }
 
@@ -734,6 +743,6 @@ func (e *Entity) notifyDepositTx(amount float64, userID, explorerUrl, signature 
 	return err
 }
 
-func (e *Entity) GetLatestDepositTx(req request.GetLatestDepositRequest) (*model.OffchainTipBotDepositLog, error) {
-	return e.repo.OffchainTipBotDepositLog.GetLatestByChainIDAndContract(req.ChainID, req.ContractAddress)
+func (e *Entity) GetOneDepositTx(chainID string, txHash string) (*model.OffchainTipBotDepositLog, error) {
+	return e.repo.OffchainTipBotDepositLog.GetOne(chainID, txHash)
 }

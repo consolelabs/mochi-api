@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strings"
 
-	"gorm.io/gorm"
-
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -51,17 +49,11 @@ func (job *watchEvmDeposits) Run() error {
 			log.Info("[watchEvmDeposits] no chainID")
 			continue
 		}
-		transactionsRes, err := covalentSvc.GetTransactionsByAddress(*contract.Chain.ChainID, contract.ContractAddress, 1000, 3)
+		chainID := *contract.Chain.ChainID
+		contractAddr := contract.ContractAddress
+		transactionsRes, err := covalentSvc.GetTransactionsByAddress(chainID, contractAddr, 1000, 3)
 		if err != nil {
 			log.Error(err, "[watchEvmDeposits] covalentSvc.GetTransactionsByAddress() failed")
-			continue
-		}
-		latestDeposit, err := job.entity.GetLatestDepositTx(request.GetLatestDepositRequest{
-			ChainID:         contract.ChainID.String(),
-			ContractAddress: contract.ContractAddress,
-		})
-		if err != nil && err != gorm.ErrRecordNotFound {
-			log.Error(err, "[watchEvmDeposits] job.entity.GetLatestDepositTx() failed")
 			continue
 		}
 
@@ -70,16 +62,15 @@ func (job *watchEvmDeposits) Run() error {
 			if !item.Successful {
 				continue
 			}
-			if latestDeposit.SignedAt.Unix() >= item.BlockSignedAt.Unix() {
+			// if tx already existed (handled) -> skip
+			_, err := job.entity.GetOneDepositTx(contract.ChainID.String(), item.TxHash)
+			if err == nil {
 				continue
 			}
-			if strings.EqualFold(latestDeposit.TxHash, item.TxHash) {
-				continue
-			}
-			isDeposit, err := job.getTxDetails(&item, contract.ContractAddress)
+			isDeposit, err := job.getTxDetails(&item, contractAddr)
 			if err != nil {
 				log.Error(err, "[watchEvmDeposits] getTxDetails() failed")
-				return err
+				continue
 			}
 			if !isDeposit {
 				l.Fields(logger.Fields{"txHash": item.TxHash}).Error(err, "[watchEvmDeposits] not deposit transaction")
@@ -93,11 +84,13 @@ func (job *watchEvmDeposits) Run() error {
 			return newTxs[i].BlockSignedAt.Unix() < newTxs[j].BlockSignedAt.Unix()
 		})
 
+		l.Fields(logger.Fields{"contract": contractAddr}).Infof("[watchEvmDeposits] found %d new deposit transactions on chain %d", len(newTxs), chainID)
 		for _, newTx := range newTxs {
+			l.Fields(logger.Fields{"tx": newTx, "chain": chainID}).Info("[watchEvmDeposits] detect new deposit tx")
 			req := request.TipBotDepositRequest{
 				ChainID:       *contract.Chain.ChainID,
 				FromAddress:   newTx.FromAddress,
-				ToAddress:     contract.ContractAddress,
+				ToAddress:     contractAddr,
 				TokenSymbol:   newTx.TokenSymbol,
 				TokenContract: newTx.TokenContract,
 				Amount:        newTx.Amount,
@@ -108,7 +101,7 @@ func (job *watchEvmDeposits) Run() error {
 			err := job.entity.HandleIncomingDeposit(req)
 			if err != nil {
 				l.Fields(logger.Fields{"req": req}).Error(err, "[watchEvmDeposits] job.entity.HandleIncomingDeposit() failed")
-				break
+				continue
 			}
 		}
 	}
@@ -143,6 +136,7 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 		return false, nil
 	}
 
+	var isDeposit bool
 	for _, event := range tx.LogEvents {
 		if event.Decoded.Params == nil || len(event.Decoded.Params) == 0 {
 			l.Info("[getTxDetails] no event params")
@@ -169,7 +163,8 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 		tx.TokenContract = event.SenderAddress
 		tx.Amount, _ = new(big.Float).SetInt(amount).Float64()
 		tx.Amount /= math.Pow10(event.SenderContractDecimals)
+		isDeposit = true
 		break
 	}
-	return true, nil
+	return isDeposit, nil
 }
