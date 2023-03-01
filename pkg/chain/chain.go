@@ -12,6 +12,7 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -71,31 +72,27 @@ func (ch *Chain) nativeBalance(address string, token model.Token) (float64, erro
 }
 
 func (ch *Chain) TransferOnchain(toAcc accounts.Account, amount float64, token model.Token, nonce int, all bool) (*types.Transaction, float64, error) {
-	var (
-		t   *types.Transaction
-		err error
-	)
-
 	switch token.IsNative {
 	case true:
-		t, amount, err = ch.transferNativeOnchain(toAcc, amount, token, nonce, all)
+		return ch.transferNativeOnchain(toAcc, amount, token, nonce, all)
 	default:
-		t, amount, err = ch.transferErc20TokenOnchain(toAcc, amount, token, nonce, all)
+		return ch.transferErc20TokenOnchain(toAcc, amount, token, nonce, all)
 	}
-
-	return t, amount, err
 }
 
 func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	privateKey, err := crypto.HexToECDSA(ch.config.CentralizedWalletPrivateKey)
 	if err != nil {
+		ch.log.Error(err, "[transferNativeOnchain] crypto.HexToECDSA() failed")
 		return nil, 0, err
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return nil, 0, errors.New("error casting public key to ECDSA")
+		err = errors.New("error casting public key to ECDSA")
+		ch.log.Error(err, "[transferNativeOnchain] "+err.Error())
+		return nil, 0, err
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -103,6 +100,7 @@ func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, t
 	if prevTxNonce < 0 {
 		nonce, err = ch.client.PendingNonceAt(context.Background(), fromAddress)
 		if err != nil {
+			ch.log.Error(err, "[transferNativeOnchain] client.PendingNonceAt() failed")
 			return nil, 0, err
 		}
 	}
@@ -121,7 +119,9 @@ func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, t
 	maxTxFee := float64(gasPrice.Int64()) * float64(gasLimit) / float64(math.Pow10(18))
 	if all {
 		if balance <= maxTxFee {
-			return nil, 0, errors.New("insufficient funds for gas")
+			err = errors.New("insufficient funds for gas")
+			ch.log.Error(err, "[transferNativeOnchain] "+err.Error())
+			return nil, 0, err
 		}
 		amount = balance - maxTxFee
 	}
@@ -135,17 +135,31 @@ func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, t
 
 	chainID, err := ch.client.NetworkID(context.Background())
 	if err != nil {
+		ch.log.Error(err, "[transferNativeOnchain] client.NetworkID() failed")
 		return nil, 0, err
 	}
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
+		ch.log.Error(err, "[transferNativeOnchain] types.SignTx() failed")
 		return nil, 0, err
 	}
 
+	logWithHash := ch.log.Fields(logger.Fields{"hash": signedTx.Hash().Hex()})
 	err = ch.client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
+		logWithHash.Error(err, "[transferNativeOnchain] client.SendTransaction() failed")
 		return nil, 0, err
+	}
+
+	receipt, err := bind.WaitMined(context.Background(), ch.client, signedTx)
+	if err != nil {
+		logWithHash.Error(err, "[transferNativeOnchain] bind.WaitMined() failed")
+		return nil, 0, err
+	}
+	if receipt.Status == types.ReceiptStatusFailed {
+		logWithHash.Error(err, "[transferNativeOnchain] receipt status === failed")
+		return nil, 0, errors.New("unknown reason")
 	}
 
 	return signedTx, amount, nil
@@ -154,13 +168,16 @@ func (ch *Chain) transferNativeOnchain(toAcc accounts.Account, amount float64, t
 func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float64, token model.Token, prevTxNonce int, all bool) (*types.Transaction, float64, error) {
 	privateKey, err := crypto.HexToECDSA(ch.config.CentralizedWalletPrivateKey)
 	if err != nil {
+		ch.log.Error(err, "[transferErc20TokenOnchain] crypto.HexToECDSA() failed")
 		return nil, 0, err
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return nil, 0, errors.New("error casting public key to ECDSA")
+		err = errors.New("error casting public key to ECDSA")
+		ch.log.Error(err, "[transferErc20TokenOnchain] "+err.Error())
+		return nil, 0, err
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -168,6 +185,7 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 	if prevTxNonce < 0 {
 		nonce, err = ch.client.PendingNonceAt(context.Background(), fromAddress)
 		if err != nil {
+			ch.log.Error(err, "[transferErc20TokenOnchain] client.PendingNonceAt() failed")
 			return nil, 0, err
 		}
 	}
@@ -175,6 +193,7 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 	value := big.NewInt(0) // in wei (0 eth)
 	gasPrice, err := ch.client.SuggestGasPrice(context.Background())
 	if err != nil {
+		ch.log.Error(err, "[transferErc20TokenOnchain] client.SuggestGasPrice() failed")
 		return nil, 0, err
 	}
 
@@ -201,7 +220,9 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 	amt.SetString(strconv.FormatFloat(math.Pow10(token.Decimals)*amount, 'f', 6, 64), 10)
 
 	if !all && balance < amount {
-		return nil, 0, errors.New("balance is not enough")
+		err = errors.New("balance is not enough")
+		ch.log.Error(err, "[transferErc20TokenOnchain] "+err.Error())
+		return nil, 0, err
 	}
 
 	paddedAmount := common.LeftPadBytes(amt.Bytes(), 32)
@@ -216,6 +237,7 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 		Data: data,
 	})
 	if err != nil {
+		ch.log.Error(err, "[transferErc20TokenOnchain] client.EstimateGas() failed")
 		return nil, 0, err
 	}
 	gasLimit *= 3
@@ -224,17 +246,31 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 
 	chainID, err := ch.client.NetworkID(context.Background())
 	if err != nil {
+		ch.log.Error(err, "[transferErc20TokenOnchain] client.NetworkID() failed")
 		return nil, 0, err
 	}
 
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
+		ch.log.Error(err, "[transferErc20TokenOnchain] types.SignTx() failed")
 		return nil, 0, err
 	}
 
+	logWithHash := ch.log.Fields(logger.Fields{"hash": signedTx.Hash().Hex()})
 	err = ch.client.SendTransaction(context.Background(), signedTx)
 	if err != nil {
+		logWithHash.Error(err, "[transferErc20TokenOnchain] client.SendTransaction() failed")
 		return nil, 0, err
+	}
+
+	receipt, err := bind.WaitMined(context.Background(), ch.client, signedTx)
+	if err != nil {
+		logWithHash.Error(err, "[transferErc20TokenOnchain] bind.WaitMined() failed")
+		return nil, 0, err
+	}
+	if receipt.Status == types.ReceiptStatusFailed {
+		logWithHash.Error(err, "[transferErc20TokenOnchain] receipt status === failed")
+		return nil, 0, errors.New("unknown reason")
 	}
 
 	return signedTx, amount, nil

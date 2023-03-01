@@ -185,6 +185,9 @@ func (e *Entity) TrackWallet(req request.TrackWalletRequest) error {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TrackWallet] alias has been used for another address")
 			return baseerr.ErrConflict
 		}
+		if err == nil {
+			req.Alias = wallet.Alias
+		}
 	}
 
 	err := e.repo.UserWalletWatchlistItem.Create(&model.UserWalletWatchlistItem{
