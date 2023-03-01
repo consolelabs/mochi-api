@@ -5,3 +5,9 @@ type ListQuery struct {
 	IsEVM          *bool
 	SupportDeposit *bool
 }
+
+type GetAssignContractQuery struct {
+	Address     string
+	TokenSymbol string
+	SignedAt    *int64
+}

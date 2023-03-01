@@ -1,7 +1,6 @@
 package offchain_tip_bot_deposit_log
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -15,14 +14,9 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetLatestByChainIDAndContract(chainID, contractAddress string) (*model.OffchainTipBotDepositLog, error) {
+func (pg *pg) GetOne(chainID, txHash string) (*model.OffchainTipBotDepositLog, error) {
 	var rs model.OffchainTipBotDepositLog
-	return &rs, pg.db.Where("chain_id::TEXT = ? AND to_address = ?", chainID, contractAddress).Order("signed_at DESC").First(&rs).Error
-}
-
-func (pg *pg) GetByID(chainID uuid.UUID, txHash string) (*model.OffchainTipBotDepositLog, error) {
-	var rs model.OffchainTipBotDepositLog
-	return &rs, pg.db.Where("chain_id = ? AND tx_hash = ?", chainID, txHash).First(&rs).Error
+	return &rs, pg.db.Where("chain_id::TEXT = ? AND tx_hash ILIKE ?", chainID, txHash).First(&rs).Error
 }
 
 func (pg *pg) CreateMany(list []model.OffchainTipBotDepositLog) error {

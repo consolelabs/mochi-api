@@ -14,7 +14,7 @@ type OffchainTipBotAssignContract struct {
 	ChainID                uuid.UUID               `json:"chain_id"`
 	UserID                 string                  `json:"user_id"`
 	ContractID             uuid.UUID               `json:"contract_id"`
-	Status                 int                     `json:"status" gorm:"default:0"`
+	CreatedAt              time.Time               `json:"created_at"`
 	ExpiredTime            time.Time               `json:"expired_time"`
 	OffchainTipBotContract *OffchainTipBotContract `json:"contract" gorm:"foreignkey:ContractID"`
 }
@@ -38,7 +38,7 @@ func (o *OffchainTipBotAssignContract) AfterCreate(tx *gorm.DB) (err error) {
 		ChainID:     o.ChainID,
 		UserID:      o.UserID,
 		ContractID:  o.ContractID,
-		Status:      o.Status,
+		CreatedAt:   o.CreatedAt,
 		ExpiredTime: o.ExpiredTime,
 	}).Error; err != nil {
 		return err
