@@ -241,6 +241,10 @@ func (ch *Chain) transferErc20TokenOnchain(toAcc accounts.Account, amount float6
 		return nil, 0, err
 	}
 	gasLimit *= 3
+	// TODO: temp workaround -> find other generic solution
+	if strings.EqualFold(token.Symbol, "fbomb") {
+		gasLimit = uint64(1000000)
+	}
 
 	tx := types.NewTransaction(nonce, tokenAddress, value, gasLimit, gasPrice, data)
 
