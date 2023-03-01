@@ -12,7 +12,7 @@ type OffchainTipBotAssignContractLog struct {
 	ChainID     uuid.UUID `json:"chain_id" swaggertype:"string"`
 	UserID      string    `json:"user_id"`
 	ContractID  uuid.UUID `json:"contract_id" swaggertype:"string"`
-	Status      int       `json:"status" gorm:"default:0"`
+	CreatedAt   time.Time `json:"created_at"`
 	ExpiredTime time.Time `json:"expired_time"`
 }
 

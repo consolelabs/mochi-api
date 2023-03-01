@@ -51,13 +51,29 @@ func (pg *pg) DeleteExpiredAssignContract() error {
 	return pg.db.Delete(&model.OffchainTipBotAssignContract{}, "expired_time < ?", time.Now()).Error
 }
 
-func (pg *pg) GetAssignContract(address, tokenSymbol string) (*model.OffchainTipBotAssignContract, error) {
-	result := model.OffchainTipBotAssignContract{}
-	return &result, pg.db.Table("offchain_tip_bot_assign_contract").
+func (pg *pg) GetAssignContract(q GetAssignContractQuery) (*model.OffchainTipBotAssignContract, error) {
+	result := &model.OffchainTipBotAssignContract{}
+	db := pg.db.Table("offchain_tip_bot_assign_contract").
 		Select("offchain_tip_bot_assign_contract.*").
 		Joins("JOIN offchain_tip_bot_contracts ON offchain_tip_bot_assign_contract.contract_id = offchain_tip_bot_contracts.id").
-		Joins("JOIN offchain_tip_bot_tokens ON offchain_tip_bot_assign_contract.token_id = offchain_tip_bot_tokens.id").
-		Where("offchain_tip_bot_contracts.contract_address = ?", address).
-		Where("offchain_tip_bot_tokens.token_symbol ILIKE ?", tokenSymbol).
-		Where("offchain_tip_bot_assign_contract.expired_time > now()").First(&result).Error
+		Joins("JOIN offchain_tip_bot_tokens ON offchain_tip_bot_assign_contract.token_id = offchain_tip_bot_tokens.id")
+	if q.Address != "" {
+		db = db.Where("offchain_tip_bot_contracts.contract_address = ?", q.Address)
+	}
+	if q.TokenSymbol != "" {
+		db = db.Where("offchain_tip_bot_tokens.token_symbol ILIKE ?", q.TokenSymbol)
+	}
+	// get assigned contract at the given time OR get current assigned
+	if q.SignedAt != nil {
+		db = db.
+			Where("EXTRACT(EPOCH FROM offchain_tip_bot_assign_contract.created_at) * 1000 <= ?", *q.SignedAt).
+			Where("? <= EXTRACT(EPOCH FROM offchain_tip_bot_assign_contract.expired_time) * 1000", *q.SignedAt)
+	} else {
+		db = db.Where("offchain_tip_bot_assign_contract.expired_time > now()")
+	}
+	return result, db.First(result).Error
+}
+
+func (pg *pg) UpdateSweepTime(contractID string, sweepTime time.Time) error {
+	return pg.db.Model(&model.OffchainTipBotContract{}).Where("id::TEXT = ?", contractID).Update("sweeped_time", sweepTime).Error
 }
