@@ -25,6 +25,7 @@ const (
 )
 
 type UserTokenPriceAlert struct {
+	ID             int            `json:"id"`
 	UserDiscordID  string         `json:"user_discord_id"`
 	Symbol         string         `json:"symbol"`
 	Currency       string         `json:"currency"`
