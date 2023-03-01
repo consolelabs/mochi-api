@@ -387,13 +387,13 @@ func (h *Handler) GetUserListPriceAlert(c *gin.Context) {
 // @Success     200 {object} object
 // @Router      /defi/price-alert [delete]
 func (h *Handler) RemoveTokenPriceAlert(c *gin.Context) {
-	var req request.RemoveTokenPriceAlertRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
-		h.log.Error(err, "[handler.RemoveTokenPriceAlert] Bind() failed")
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	alertID := c.Query("id")
+	if alertID == "" {
+		h.log.Info("[handler.RemoveTokenPriceAlert] - id is required")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
 		return
 	}
-	err := h.entities.RemoveTokenPriceAlert(req)
+	err := h.entities.RemoveTokenPriceAlert(alertID)
 	if err != nil {
 		h.log.Error(err, "[handler.RemoveTokenPriceAlert] entity.RemoveTokenPriceAlert() failed")
 		code := http.StatusInternalServerError

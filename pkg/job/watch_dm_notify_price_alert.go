@@ -2,7 +2,6 @@ package job
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -12,7 +11,6 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -72,11 +70,7 @@ func (job *watchDMNotifyPriceAlert) Run() error {
 }
 
 func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPriceChangePayload) error {
-	req := request.RemoveTokenPriceAlertRequest{}
-	req.Value = payload.Price
-	req.Symbol = payload.Symbol[0 : len(payload.Symbol)-4]
-	req.UserDiscordID = payload.UserID
-	alert, err := job.entity.GetSpecificAlert(req)
+	alert, err := job.entity.GetSpecificAlert(payload.AlertID)
 	if err != nil {
 		return err
 	}
@@ -95,16 +89,9 @@ func (job *watchDMNotifyPriceAlert) HandleNotifyDiscordUser(payload watchCoinPri
 	}
 
 	if alert.Frequency == model.OnlyOnce {
-		if strings.Contains(alert.AlertType.GetRedisKeyPrefix(), "up") {
-			req.PriceDirection = "up"
-		} else {
-			req.PriceDirection = "down"
-		}
-		req.Value = alert.Value
-		req.PriceByPercent = alert.PriceByPercent
-		err = job.entity.RemoveTokenPriceAlert(req)
+		err = job.entity.RemoveTokenPriceAlert(payload.AlertID)
 		if err != nil {
-			job.log.Fields(logger.Fields{"req": req}).Error(err, "[job.HandleNotifyDiscordUser] entity.RemoveTokenPriceAlert() failed")
+			job.log.Fields(logger.Fields{}).Error(err, "[job.HandleNotifyDiscordUser] entity.RemoveTokenPriceAlert() failed")
 			return err
 		}
 		return nil
