@@ -11,6 +11,11 @@ type GetExchangeInfoResponse struct {
 	Symbols  []ExchangeSymbolResponse `json:"symbols"`
 }
 
+type GetTickerPriceResponse struct {
+	Symbol string `json:"symbol"`
+	Price  string `json:"price"`
+}
+
 type GetKlinesDataResponse struct {
 	OpenTime         int64
 	OPrice           string
