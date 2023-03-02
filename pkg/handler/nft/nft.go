@@ -640,6 +640,8 @@ func (h *Handler) GetSuggestionNFTCollections(c *gin.Context) {
 		return
 	}
 
+	h.log.Infof("DEBUG PROD: [handler.GetSuggestionNFTCollections] Checking req: ", query)
+
 	collections, err := h.entities.GetSuggestionNftCollections(query)
 	if err != nil {
 		h.log.Fields(logger.Fields{"query": query}).Error(err, "[handler.GetSuggestionNFTCollections] entities.GetSuggestionNftCollections() failed")
