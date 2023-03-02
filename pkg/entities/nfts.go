@@ -1060,10 +1060,20 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 
 func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*response.NftWatchlistSuggest, *model.NFTCollection, error) {
 	// get collection
+	e.log.Infof("DEBUG PROD: [handler.GetSuggestionNFTCollections] Checking req: ", req)
+
 	suggest := []response.CollectionSuggestions{}
 	collections, err := e.repo.NFTCollection.GetBySymbolorName(req.CollectionSymbol)
+
+	e.log.Info("DEBUG PROD: [entities.SuggestCollection] GetBySymbolorName()")
+	for i, collection := range collections {
+		e.log.Info("DEBUG PROD: [entities.SuggestCollection] Result of query database")
+		e.log.Infof("DEBUG PROD: [entities.SuggestCollection] ", i, " - ", collection.Address, " - ", collection.Symbol, " - ", collection.Name)
+	}
+
 	// cannot find collection => return suggested collections
 	if err != nil || len(collections) == 0 {
+		e.log.Info("DEBUG PROD: [entities.SuggestCollection] In case cant find collection")
 		suggest, err = e.GetNFTSuggestion(req.CollectionSymbol, "")
 		if err != nil {
 			e.log.Errorf(err, "[repo.NFTCollection.GetBySymbolorName] failed to get nft collection by symbol %s", req.CollectionSymbol)
@@ -1076,6 +1086,7 @@ func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*respons
 
 	// found multiple symbols => only suggest those
 	if len(collections) > 1 {
+		e.log.Info("DEBUG PROD: [entities.SuggestCollection] In case find multiple collections")
 		var defaultSymbol *response.CollectionSuggestions
 		// check default symbol
 		symbols, _ := e.GetDefaultCollectionSymbol(req.GuildID)
@@ -1102,6 +1113,8 @@ func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*respons
 			DefaultSymbol: defaultSymbol,
 		}, nil, nil
 	}
+
+	e.log.Info("DEBUG PROD: [entities.SuggestCollection] In case find 1 collection")
 	return nil, &collections[0], nil
 }
 
