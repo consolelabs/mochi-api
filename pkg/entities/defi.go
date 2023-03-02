@@ -303,9 +303,10 @@ func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest)
 
 func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
 	q := userwatchlistitem.UserWatchlistQuery{
-		UserID: req.UserID,
-		Offset: req.Page * req.Size,
-		Limit:  req.Size,
+		UserID:      req.UserID,
+		CoinGeckoID: req.CoinGeckoID,
+		Offset:      req.Page * req.Size,
+		Limit:       req.Size,
 	}
 	list, total, err := e.repo.UserWatchlistItem.List(q)
 	if err != nil {
