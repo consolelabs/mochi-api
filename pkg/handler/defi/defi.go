@@ -405,3 +405,30 @@ func (h *Handler) RemoveTokenPriceAlert(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
 }
+
+// GetCoin     godoc
+// @Summary     Get coin data from Binance Exchange
+// @Description Get coin data from Binance Exchange
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       symbol   path  string true  "Coin ID"
+// @Success     200 {object} response.GetCoinResponseWrapper
+// @Router      /defi/coins/binance/{symbol} [get]
+func (h *Handler) GetBinanceCoinData(c *gin.Context) {
+	symbol := c.Param("symbol")
+	if symbol == "" {
+		h.log.Info("[handler.GetBinanceCoinData] - symbol missing")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
+		return
+	}
+
+	data, err, statusCode := h.entities.GetBinanceCoinPrice(symbol)
+	if err != nil {
+		h.log.Error(err, "[handler.GetBinanceCoinData] - failed to get coin data")
+		c.JSON(statusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

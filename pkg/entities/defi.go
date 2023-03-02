@@ -615,10 +615,10 @@ func (e *Entity) AddTokenPriceAlert(req request.AddTokenPriceAlertRequest) (*res
 	// fetch req.Symbol's current price
 	var alertPair = req.Symbol + "USDT"
 	var alertPrice = req.Value
-	pairInfo, err, _ := e.svc.Binance.GetAvgPriceBySymbol(alertPair)
+	pairInfo, err, _ := e.svc.Binance.GetTickerPrice(alertPair)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req.symbol": req.Symbol}).Error(err, "[entity.AddTokenPriceAlert] e.svc.Binance.GetExchangeInfo() failed")
-		return nil, err
+		e.log.Fields(logger.Fields{"req.symbol": req.Symbol}).Error(err, "[entity.AddTokenPriceAlert] e.svc.Binance.GetTickerPrice() failed")
+		return nil, baseerrs.ErrTokenNotFound
 	}
 	currentPrice, err := strconv.ParseFloat(pairInfo.Price, 64)
 	if err != nil {
@@ -768,4 +768,15 @@ func (e *Entity) RemoveTokenPriceAlert(alertIDStr string) error {
 	}
 
 	return nil
+}
+
+func (e *Entity) GetBinanceCoinPrice(symbol string) (*response.GetTickerPriceResponse, error, int) {
+	searchPair := strings.ToUpper(symbol + "usdt")
+	data, err, statusCode := e.svc.Binance.GetTickerPrice(searchPair)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req.Symbol": searchPair}).Error(err, "[entity.GetBinanceCoinData] e.svc.Binance.GetAvgPriceBySymbol() failed")
+		return nil, baseerrs.ErrTokenNotFound, statusCode
+	}
+
+	return data, nil, http.StatusOK
 }
