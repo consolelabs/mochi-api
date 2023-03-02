@@ -361,6 +361,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.Defi.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.Defi.GetCoin)
+		defiGroup.GET("/coins/binance/:symbol", h.Defi.GetBinanceCoinData)
 		defiGroup.GET("/coins", h.Defi.SearchCoins)
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
 		defiGroup.GET("/chains", h.Defi.ListAllChain)
