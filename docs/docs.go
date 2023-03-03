@@ -1001,6 +1001,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-channels/dao-tracker/cw-discussion-subs": {
+            "post": {
+                "description": "Subscribe commonwealth discussion",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Subscribe commonwealth discussion",
+                "parameters": [
+                    {
+                        "description": "Create cw discussion subscription request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateCommonwealthDiscussionSubscription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateCommonwealthDiscussionSubscription"
+                        }
+                    }
+                }
+            }
+        },
         "/config-channels/dao-tracker/{guild_id}": {
             "get": {
                 "description": "Get dao tracker channel config",
@@ -4292,6 +4326,11 @@ const docTemplate = `{
                 "summary": "Get user's watchlist",
                 "parameters": [
                     {
+                        "type": "string",
+                        "name": "coin_gecko_id",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "name": "page",
                         "in": "query"
@@ -6073,7 +6112,7 @@ const docTemplate = `{
         },
         "/users/:id/wallets": {
             "get": {
-                "description": "Get user's trackng wallets",
+                "description": "Get user's wallets",
                 "consumes": [
                     "application/json"
                 ],
@@ -6083,14 +6122,23 @@ const docTemplate = `{
                 "tags": [
                     "Wallet"
                 ],
-                "summary": "Get user's trackng wallets",
+                "summary": "Get user's wallets",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
-                        "name": "id",
-                        "in": "path",
+                        "description": "guild ID",
+                        "name": "guild_id",
+                        "in": "query",
                         "required": true
+                    },
+                    {
+                        "description": "req",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GetTrackingWalletsRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -6183,6 +6231,40 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetOneWalletResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/:id/wallets/tracking": {
+            "get": {
+                "description": "Get user's tracking wallets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallet"
+                ],
+                "summary": "Get user's tracking wallets",
+                "parameters": [
+                    {
+                        "description": "req",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GetTrackingWalletsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTrackingWalletsResponse"
                         }
                     }
                 }
@@ -7110,6 +7192,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CommonwealthDiscussionSubscription": {
+            "type": "object",
+            "properties": {
+                "discordThreadID": {
+                    "type": "string"
+                },
+                "discussionID": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.ConfigXpLevel": {
             "type": "object",
             "properties": {
@@ -7964,18 +8060,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.JSONNullInt64": {
-            "type": "object",
-            "properties": {
-                "int64": {
-                    "type": "integer"
-                },
-                "valid": {
-                    "description": "Valid is true if Int64 is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
         "model.JSONNullString": {
             "type": "object",
             "properties": {
@@ -8215,14 +8299,14 @@ const docTemplate = `{
                 "contract_id": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "expired_time": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
-                },
-                "status": {
-                    "type": "integer"
                 },
                 "token_id": {
                     "type": "string"
@@ -8285,12 +8369,6 @@ const docTemplate = `{
         "model.OffchainTipBotContract": {
             "type": "object",
             "properties": {
-                "assign_status": {
-                    "type": "integer"
-                },
-                "centralize_wallet": {
-                    "type": "string"
-                },
                 "chain": {
                     "$ref": "#/definitions/model.OffchainTipBotChain"
                 },
@@ -8305,9 +8383,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "status": {
-                    "type": "integer"
                 },
                 "sweeped_time": {
                     "type": "string"
@@ -8798,12 +8873,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "in_discord_wallet_address": {
-                    "$ref": "#/definitions/model.JSONNullString"
-                },
-                "in_discord_wallet_number": {
-                    "$ref": "#/definitions/model.JSONNullInt64"
-                },
                 "nr_of_join": {
                     "type": "integer"
                 },
@@ -8922,6 +8991,9 @@ const docTemplate = `{
                 "fetched_data": {
                     "type": "boolean"
                 },
+                "is_owner": {
+                    "type": "boolean"
+                },
                 "net_worth": {
                     "type": "number"
                 },
@@ -9008,7 +9080,7 @@ const docTemplate = `{
                         "always"
                     ]
                 },
-                "price": {
+                "price_by_percent": {
                     "type": "number"
                 },
                 "symbol": {
@@ -9016,6 +9088,9 @@ const docTemplate = `{
                 },
                 "user_discord_id": {
                     "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },
@@ -9179,6 +9254,21 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.CreateCommonwealthDiscussionSubscription": {
+            "type": "object",
+            "required": [
+                "discord_thread_id",
+                "discussion_id"
+            ],
+            "properties": {
+                "discord_thread_id": {
+                    "type": "string"
+                },
+                "discussion_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -9595,6 +9685,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.GetTrackingWalletsRequest": {
+            "type": "object",
+            "required": [
+                "userID"
+            ],
+            "properties": {
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
         "request.GuildConfigDefaultNftTickerRequest": {
             "type": "object",
             "properties": {
@@ -9940,6 +10041,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "alias": {
+                    "type": "string"
+                },
+                "channel_id": {
+                    "type": "string"
+                },
+                "is_owner": {
+                    "type": "boolean"
+                },
+                "message_id": {
                     "type": "string"
                 },
                 "type": {
@@ -10667,6 +10777,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "type": "string"
+                }
+            }
+        },
+        "response.CreateCommonwealthDiscussionSubscription": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.CommonwealthDiscussionSubscription"
                 }
             }
         },
@@ -13269,7 +13387,7 @@ const docTemplate = `{
                 "frequency": {
                     "type": "string"
                 },
-                "price": {
+                "price_by_percent": {
                     "type": "number"
                 },
                 "snoozed_to": {
@@ -13280,6 +13398,9 @@ const docTemplate = `{
                 },
                 "user_discord_id": {
                     "type": "string"
+                },
+                "value": {
+                    "type": "number"
                 }
             }
         },
@@ -13370,12 +13491,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
-                },
-                "in_discord_wallet_address": {
-                    "type": "string"
-                },
-                "in_discord_wallet_number": {
-                    "type": "integer"
                 },
                 "nr_of_join": {
                     "type": "integer"

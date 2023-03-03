@@ -7,6 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
@@ -203,5 +204,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigMixRole:                   guildconfigmixrole.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
 		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),
+		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
 	}
 }

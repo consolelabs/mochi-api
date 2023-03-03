@@ -664,30 +664,64 @@ func (d *Discord) NotifyNewProposal(channelID string, proposal response.Snapshot
 	return err
 }
 
-func (d *Discord) NotifyNewCommonwealthDiscussion(channelID string, discussion response.CommonwealthDiscussion) error {
-	body := discussion.Plaintext
+func (d *Discord) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error {
+	body := req.Discussion.Plaintext
 	if len(body) > 250 {
 		body = body[0:249] + "..."
 	}
 	// remove image file name from body
 	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
-	res := reg.ReplaceAllString(body, " ")
+	description := reg.ReplaceAllString(body, " ")
 	// remove - from title
 	regT := regexp.MustCompile(`%20`)
 	title := regT.ReplaceAllString(body, " ")
 	if len(title) > 70 {
 		title = title[0:69] + "..."
 	}
-	msgEmbed := discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", title),
-		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Join the discussion [here](https://commonwealth.im/%s/%s/%d)", res, discussion.Chain, discussion.Kind, discussion.ID),
-		Color:       mochiLogColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-	}
-	_, err := d.session.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
+	discussionLink := fmt.Sprintf("https://commonwealth.im/%s/%s/%d)", req.Discussion.Chain, req.Discussion.Kind, req.Discussion.ID)
+	msgSend := discordgo.MessageSend{
 		Content: "> @everyone",
-		Embed:   &msgEmbed,
-	})
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Author: &discordgo.MessageEmbedAuthor{
+					Name:    req.Community.Name,
+					URL:     req.Community.Website,
+					IconURL: req.Community.IconURL,
+				},
+				Title:       title,
+				Description: description,
+				Color:       mochiLogColor,
+				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+				Footer: &discordgo.MessageEmbedFooter{
+					Text:    "commonwealth.im",
+					IconURL: "https://commonwealth.im/static/brand_assets/512x512.svg",
+				},
+			},
+		},
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label:    "Join Thread",
+						Style:    discordgo.PrimaryButton,
+						Disabled: false,
+						CustomID: fmt.Sprintf("proposal-join-thread-%s-%s-%d", "commonwealth", req.Community.CommunityID, req.Discussion.ID),
+						Emoji: discordgo.ComponentEmoji{
+							Name: "conversation",
+							ID:   "1078633892493410334",
+						},
+					},
+					discordgo.Button{
+						Label:    "Go To The Discussion",
+						Style:    discordgo.LinkButton,
+						Disabled: false,
+						URL:      discussionLink,
+					},
+				},
+			},
+		},
+	}
+	_, err := d.session.ChannelMessageSendComplex(req.ChannelID, &msgSend)
 	if err != nil {
 		d.log.Error(err, "[discord.NotifyNewProposal] d.session.ChannelMessageSendEmbed() failed")
 	}

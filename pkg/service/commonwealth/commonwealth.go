@@ -20,6 +20,16 @@ func NewService() Service {
 	}
 }
 
+func (c *Commonwealth) GetCommunities(id string) (*response.ListCommonwealthCommunities, error) {
+	res := &response.ListCommonwealthCommunities{}
+	url := c.baseUrl + "communities?community_id=" + id
+	statusCode, err := util.FetchData(url, res)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to get commnunities")
+	}
+	return res, nil
+}
+
 func (c *Commonwealth) CheckCommunityExist(id string) bool {
 	url := c.baseUrl + "communities?community_id=" + id
 	client := &http.Client{Timeout: time.Second * 30}

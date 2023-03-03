@@ -744,3 +744,29 @@ func (h *Handler) UpsertGuildConfigDaoTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
 }
+
+// CreateCommonwealthDiscussionSubscription     godoc
+// @Summary     Subscribe commonwealth discussion
+// @Description Subscribe commonwealth discussion
+// @Tags        Data
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateCommonwealthDiscussionSubscription true "Create cw discussion subscription request"
+// @Success     200 {object} response.CreateCommonwealthDiscussionSubscription
+// @Router      /config-channels/dao-tracker/cw-discussion-subs [post]
+func (h *Handler) CreateCommonwealthDiscussionSubscription(c *gin.Context) {
+	var req request.CreateCommonwealthDiscussionSubscription
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CommonwealthDiscussionSubscription] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	sub, err := h.entities.CreateCommonwealthDiscussionSubscription(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CommonwealthDiscussionSubscription] - failed to create cw discussion subscription")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(sub, nil, nil, nil))
+}

@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 )
@@ -65,15 +66,18 @@ func (job *commonwealthProposalData) Run() error {
 		for _, thr := range newThreads {
 			for _, cfg := range configs {
 				wg.Add(1)
-				go notifyDiscord(cfg.ChannelID, thr, job.entity, &wg)
+				go func(channelId string, discussion response.CommonwealthDiscussion, community model.CommonwealthLatestData) {
+					defer wg.Done()
+					req := request.NewCommonwealthDiscussionRequest{
+						ChannelID:  channelId,
+						Discussion: discussion,
+						Community:  community,
+					}
+					job.service.Discord.NotifyNewCommonwealthDiscussion(req)
+				}(cfg.ChannelID, thr, data)
 			}
 		}
 	}
 	wg.Wait()
 	return nil
-}
-
-func notifyDiscord(channelId string, thread response.CommonwealthDiscussion, e *entities.Entity, wg *sync.WaitGroup) {
-	defer wg.Done()
-	e.GetSvc().Discord.NotifyNewCommonwealthDiscussion(channelId, thread)
 }
