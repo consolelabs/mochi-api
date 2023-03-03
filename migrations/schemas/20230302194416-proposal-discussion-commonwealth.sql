@@ -7,9 +7,11 @@ ALTER TABLE commonwealth_latest_data
     ADD COLUMN icon_url TEXT;
 
 CREATE TABLE IF NOT EXISTS commonwealth_discussion_subscriptions (
-    id SERIAL PRIMARY KEY,
-    discord_thread_id TEXT UNIQUE,
-    discussion_id INTEGER NOT NULL
+    id                  SERIAL PRIMARY KEY,
+    discord_thread_id   TEXT UNIQUE,
+    discussion_id       INTEGER NOT NULL,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS commonwealth_discussion_subs_discussion_index on commonwealth_discussion_subscriptions(discussion_id);

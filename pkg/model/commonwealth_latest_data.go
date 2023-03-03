@@ -14,7 +14,9 @@ type CommonwealthLatestData struct {
 }
 
 type CommonwealthDiscussionSubscription struct {
-	ID              int64  `json:"id"`
-	DiscussionID    int64  `json:"discussion_id"`
-	DiscordThreadID string `json:"discord_thread_id"`
+	ID              int64     `json:"id"`
+	DiscussionID    int64     `json:"discussion_id"`
+	DiscordThreadID string    `json:"discord_thread_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
