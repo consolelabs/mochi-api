@@ -35,4 +35,5 @@ type IHandler interface {
 	GetGuildConfigDaoTracker(c *gin.Context)
 	DeleteGuildConfigDaoTracker(c *gin.Context)
 	UpsertGuildConfigDaoTracker(c *gin.Context)
+	CreateCommonwealthDiscussionSubscription(c *gin.Context)
 }

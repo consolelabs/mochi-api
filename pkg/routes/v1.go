@@ -237,9 +237,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.DELETE("/proposal", h.ConfigChannel.DeleteGuildConfigDaoProposal)
 		configChannelGroup.POST("/proposal", h.ConfigChannel.CreateProposalChannelConfig)
 		// config dao tracker channel
-		configChannelGroup.GET("/dao-tracker/:guild_id", h.ConfigChannel.GetGuildConfigDaoTracker)
-		configChannelGroup.DELETE("/dao-tracker", h.ConfigChannel.DeleteGuildConfigDaoTracker)
-		configChannelGroup.POST("/dao-tracker", h.ConfigChannel.UpsertGuildConfigDaoTracker)
+		configDaoTrackerGroup := configChannelGroup.Group("/dao-tracker")
+		{
+			configDaoTrackerGroup.GET("/:guild_id", h.ConfigChannel.GetGuildConfigDaoTracker)
+			configDaoTrackerGroup.DELETE("", h.ConfigChannel.DeleteGuildConfigDaoTracker)
+			configDaoTrackerGroup.POST("", h.ConfigChannel.UpsertGuildConfigDaoTracker)
+			configDaoTrackerGroup.POST("cw-discussion-subs", h.ConfigChannel.CreateCommonwealthDiscussionSubscription)
+		}
 	}
 
 	configRoleGroup := v1.Group("/config-roles")

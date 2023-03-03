@@ -32,3 +32,7 @@ type DaoTrackerSpaceCountData struct {
 	Count  int64  `json:"count"`
 	Source string `json:"source"`
 }
+
+type CreateCommonwealthDiscussionSubscription struct {
+	Data *model.CommonwealthDiscussionSubscription `json:"data"`
+}

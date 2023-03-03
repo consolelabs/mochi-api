@@ -45,3 +45,21 @@ type CommonwealthThreadResponse struct {
 		Count   int64                     `json:"count"`
 	}
 }
+
+type CommonwealthCommunity struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Website     string `json:"website"`
+	IconURL     string `json:"icon_url"`
+}
+
+type CommonwealthCommunityResult struct {
+	Communities []CommonwealthCommunity `json:"communities"`
+	Count       int64                   `json:"count"`
+}
+
+type ListCommonwealthCommunities struct {
+	Status string                       `json:"status"`
+	Result *CommonwealthCommunityResult `json:"result"`
+}
