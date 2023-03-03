@@ -6,6 +6,7 @@ package mock_offchain_tip_bot_contract
 
 import (
 	reflect "reflect"
+	time "time"
 
 	model "github.com/defipod/mochi/pkg/model"
 	offchain_tip_bot_contract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
@@ -65,18 +66,18 @@ func (mr *MockStoreMockRecorder) DeleteExpiredAssignContract() *gomock.Call {
 }
 
 // GetAssignContract mocks base method.
-func (m *MockStore) GetAssignContract(address, tokenSymbol string) (*model.OffchainTipBotAssignContract, error) {
+func (m *MockStore) GetAssignContract(arg0 offchain_tip_bot_contract.GetAssignContractQuery) (*model.OffchainTipBotAssignContract, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAssignContract", address, tokenSymbol)
+	ret := m.ctrl.Call(m, "GetAssignContract", arg0)
 	ret0, _ := ret[0].(*model.OffchainTipBotAssignContract)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAssignContract indicates an expected call of GetAssignContract.
-func (mr *MockStoreMockRecorder) GetAssignContract(address, tokenSymbol interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAssignContract(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAssignContract", reflect.TypeOf((*MockStore)(nil).GetAssignContract), address, tokenSymbol)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAssignContract", reflect.TypeOf((*MockStore)(nil).GetAssignContract), arg0)
 }
 
 // GetByAddress mocks base method.
@@ -122,4 +123,18 @@ func (m *MockStore) List(arg0 offchain_tip_bot_contract.ListQuery) ([]model.Offc
 func (mr *MockStoreMockRecorder) List(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockStore)(nil).List), arg0)
+}
+
+// UpdateSweepTime mocks base method.
+func (m *MockStore) UpdateSweepTime(contractID string, sweepTime time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSweepTime", contractID, sweepTime)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateSweepTime indicates an expected call of UpdateSweepTime.
+func (mr *MockStoreMockRecorder) UpdateSweepTime(contractID, sweepTime interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSweepTime", reflect.TypeOf((*MockStore)(nil).UpdateSweepTime), contractID, sweepTime)
 }
