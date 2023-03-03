@@ -1395,34 +1395,60 @@ func (e *Entity) DeleteGuildConfigDaoTracker(req request.DeleteGuildConfigDaoTra
 }
 
 func (e *Entity) UpsertGuildConfigDaoTracker(req request.UpsertGuildConfigDaoTracer) error {
-	spaceId := ""
-	source := "snapshot"
 	if strings.Contains(req.SnapshotURL, "snapshot") {
-		// check dao space is valid
-		spaceId = util.ParseSnapshotURL(req.SnapshotURL)
-		proposalSpace, err := e.svc.Snapshot.GetSpace(spaceId)
-		if err != nil || proposalSpace.Space == nil {
-			e.log.Fields(logger.Fields{"space": spaceId}).Info("proposal space id invalid")
-			return fmt.Errorf("proposal space id invalid")
-		}
+		return e.upsertSnapshotTracker(req)
 	} else if strings.Contains(req.SnapshotURL, "commonwealth") {
-		// check dao community is valid
-		source = "commonwealth"
-		spaceId = util.ParseCommonwealthURL(req.SnapshotURL)
-		if !e.svc.Commonwealth.CheckCommunityExist(spaceId) {
-			e.log.Fields(logger.Fields{"space": spaceId}).Info("proposal space id invalid")
-			return fmt.Errorf("proposal space id invalid")
-		}
-		// add unique community id
-		err := e.repo.CommonwealthLatestData.UpsertOne(model.CommonwealthLatestData{
-			CommunityID: spaceId,
-			LatestAt:    time.Now(),
-		})
-		if err != nil {
-			e.log.Errorf(err, "[e.repo.CommonwealthLatestData.UpsertOne] failed")
-		}
+		return e.upsertCommonwealthTracker(req)
 	}
+	e.log.Fields(logger.Fields{"req": req}).Info("invalid space url")
+	return fmt.Errorf("invalid space url")
+}
 
+func (e *Entity) upsertSnapshotTracker(req request.UpsertGuildConfigDaoTracer) error {
+	source := "snapshot"
+	spaceId := util.ParseSnapshotURL(req.SnapshotURL)
+	proposalSpace, err := e.svc.Snapshot.GetSpace(spaceId)
+	if err != nil || proposalSpace.Space == nil {
+		e.log.Fields(logger.Fields{"space": spaceId}).Info("proposal space id invalid")
+		return fmt.Errorf("proposal space id invalid")
+	}
+	return e.repo.GuildConfigDaoTracker.Upsert(model.GuildConfigDaoTracker{
+		GuildID:   req.GuildID,
+		ChannelID: req.ChannelID,
+		Source:    source,
+		Space:     spaceId,
+	})
+}
+
+func (e *Entity) upsertCommonwealthTracker(req request.UpsertGuildConfigDaoTracer) error {
+	source := "commonwealth"
+	spaceId := util.ParseCommonwealthURL(req.SnapshotURL)
+	res, err := e.svc.Commonwealth.GetCommunities(spaceId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"space": spaceId}).Errorf(err, "proposal space id invalid")
+		return err
+	}
+	if len(res.Result.Communities) == 0 {
+		e.log.Fields(logger.Fields{"space": spaceId}).Info("proposal space id invalid")
+		return fmt.Errorf("proposal space id invalid")
+	}
+	community := res.Result.Communities[0]
+	iconUrl := ""
+	if community.IconURL != "" {
+		iconUrl = fmt.Sprintf("https://commonwealth.im%s", community.IconURL)
+	}
+	commonwealthData := model.CommonwealthLatestData{
+		CommunityID: community.ID,
+		Name:        community.Name,
+		Description: community.Description,
+		IconURL:     iconUrl,
+		Website:     community.Website,
+		LatestAt:    time.Now(),
+	}
+	if err = e.repo.CommonwealthLatestData.UpsertOne(commonwealthData); err != nil {
+		e.log.Errorf(err, "[e.repo.CommonwealthLatestData.UpsertOne] failed")
+		return err
+	}
 	return e.repo.GuildConfigDaoTracker.Upsert(model.GuildConfigDaoTracker{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,

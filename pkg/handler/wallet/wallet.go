@@ -33,7 +33,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "guild ID"
-// @Param       req   path  request.GetTrackingWalletsRequest true  "req"
+// @Param       req   body  request.GetTrackingWalletsRequest true  "req"
 // @Success     200 {object} response.GetTrackingWalletsResponse
 // @Router      /users/:id/wallets [get]
 func (h *Handler) ListOwnedWallets(c *gin.Context) {
@@ -66,7 +66,7 @@ func (h *Handler) ListOwnedWallets(c *gin.Context) {
 // @Tags        Wallet
 // @Accept      json
 // @Produce     json
-// @Param       req   path  request.GetTrackingWalletsRequest true  "req"
+// @Param       req   body  request.GetTrackingWalletsRequest true  "req"
 // @Success     200 {object} response.GetTrackingWalletsResponse
 // @Router      /users/:id/wallets/tracking [get]
 func (h *Handler) ListTrackingWallets(c *gin.Context) {

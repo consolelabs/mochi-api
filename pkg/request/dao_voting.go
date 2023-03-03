@@ -57,3 +57,8 @@ type UpsertGuildConfigDaoTracer struct {
 	ChannelID   string `json:"channel_id"`
 	SnapshotURL string `json:"snapshot_url"`
 }
+
+type CreateCommonwealthDiscussionSubscription struct {
+	DiscordThreadID string `json:"discord_thread_id" binding:"required"`
+	DiscussionID    int64  `json:"discussion_id" binding:"required"`
+}

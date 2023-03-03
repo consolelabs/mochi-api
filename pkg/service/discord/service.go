@@ -38,7 +38,7 @@ type Service interface {
 	// DAO voting
 	SendMessage(channelID string, msgSend discordgo.MessageSend) error
 	NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error
-	NotifyNewCommonwealthDiscussion(channelID string, discussion response.CommonwealthDiscussion) error
+	NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error
 	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
 
 	// Price alert
