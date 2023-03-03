@@ -53,6 +53,11 @@ func (job *commonwealthProposalData) Run() error {
 		// update commonwealth latest data
 		job.entity.UpdateCommonwealthData(model.CommonwealthLatestData{
 			CommunityID: data.CommunityID,
+			Name:        data.Name,
+			Description: data.Description,
+			IconURL:     data.IconURL,
+			Website:     data.Website,
+			PostCount:   data.PostCount,
 			LatestAt:    newThreads[0].CreatedAt,
 		})
 		// get matching config

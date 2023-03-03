@@ -678,7 +678,7 @@ func (d *Discord) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDis
 	if len(title) > 70 {
 		title = title[0:69] + "..."
 	}
-	discussionLink := fmt.Sprintf("https://commonwealth.im/%s/%s/%d)", req.Discussion.Chain, req.Discussion.Kind, req.Discussion.ID)
+	discussionLink := fmt.Sprintf("https://commonwealth.im/%s/%s/%d", req.Discussion.Chain, req.Discussion.Kind, req.Discussion.ID)
 	msgSend := discordgo.MessageSend{
 		Content: "> @everyone",
 		Embeds: []*discordgo.MessageEmbed{
@@ -694,7 +694,7 @@ func (d *Discord) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDis
 				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 				Footer: &discordgo.MessageEmbedFooter{
 					Text:    "commonwealth.im",
-					IconURL: "https://commonwealth.im/static/brand_assets/512x512.svg",
+					IconURL: "https://pbs.twimg.com/profile_images/1562880197376020480/6R_gefq8_400x400.jpg",
 				},
 			},
 		},
@@ -705,7 +705,7 @@ func (d *Discord) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDis
 						Label:    "Join Thread",
 						Style:    discordgo.PrimaryButton,
 						Disabled: false,
-						CustomID: fmt.Sprintf("proposal-join-thread-%s-%s-%d", "commonwealth", req.Community.CommunityID, req.Discussion.ID),
+						CustomID: fmt.Sprintf("proposal_join_thread_commonwealth-%s-%d", req.Community.CommunityID, req.Discussion.ID),
 						Emoji: discordgo.ComponentEmoji{
 							Name: "conversation",
 							ID:   "1078633892493410334",
