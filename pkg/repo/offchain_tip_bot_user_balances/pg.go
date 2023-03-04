@@ -27,27 +27,6 @@ func (pg *pg) GetUserBalanceByTokenID(userID string, tokenID uuid.UUID) (*model.
 	return &balance, pg.db.Preload("Token").First(&balance, "user_id = ? AND token_id = ?", userID, tokenID).Error
 }
 
-func (pg *pg) UpdateUserBalance(balance *model.OffchainTipBotUserBalance) error {
-	return pg.db.Table("offchain_tip_bot_user_balances").Where("user_id = ? and token_id = ?", balance.UserID, balance.TokenID).Update("amount", balance.Amount).Error
-}
-
-func (pg *pg) UpdateListUserBalances(listUserID []string, tokenID uuid.UUID, amount float64) error {
-	return pg.db.Table("offchain_tip_bot_user_balances").Where("user_id IN ? and token_id = ?", listUserID, tokenID).UpdateColumn("amount", gorm.Expr("amount + ?", amount)).Error
-}
-
-func (pg *pg) CreateIfNotExists(model *model.OffchainTipBotUserBalance) error {
-	tx := pg.db.Begin()
-	err := tx.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "user_id"}, {Name: "token_id"}},
-		DoNothing: true,
-	}).Create(model).Error
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	return tx.Commit().Error
-}
-
 func (pg *pg) SumAmountByTokenId() ([]response.TotalOffchainBalancesInDB, error) {
 	rows, err := pg.db.Raw(
 		`
@@ -80,4 +59,23 @@ func (pg *pg) SumAmountByTokenId() ([]response.TotalOffchainBalancesInDB, error)
 		totalOffchainBalances = append(totalOffchainBalances, t)
 	}
 	return totalOffchainBalances, nil
+}
+
+func (pg *pg) UpsertBatch(list []model.OffchainTipBotUserBalance) error {
+	tx := pg.db.Begin()
+	for i, item := range list {
+		err := tx.Clauses(
+			clause.OnConflict{
+				Columns:   []clause.Column{{Name: "token_id"}, {Name: "user_id"}},
+				DoUpdates: clause.Assignments(map[string]interface{}{"amount": gorm.Expr("offchain_tip_bot_user_balances.amount + ?", item.ChangedAmount)}),
+			},
+			clause.Returning{Columns: []clause.Column{{Name: "amount"}}},
+		).Create(&item).Error
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		list[i] = item
+	}
+	return tx.Commit().Error
 }

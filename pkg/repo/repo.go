@@ -71,6 +71,7 @@ import (
 	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
+	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
 	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
 	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	"github.com/defipod/mochi/pkg/repo/quest"
@@ -174,6 +175,7 @@ type Repo struct {
 	TradeOffer                           tradeoffer.Store
 	QuestStreak                          queststreak.Store
 	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
+	OffchainTipBotUserBalanceSnapshot    offchaintipbotuserbalancesnapshot.Store
 	GuildBlacklistChannelRepostConfigs   guildblacklistchannelrepostconfigs.Store
 	OffchainTipBotTokens                 offchaintipbottokens.Store
 	OffchainTipBotActivityLogs           offchaintipbotactivitylogs.Store

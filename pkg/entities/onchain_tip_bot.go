@@ -83,23 +83,19 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 	}
 
 	// update sender balanace
-	err = e.repo.OffchainTipBotUserBalances.UpdateUserBalance(&model.OffchainTipBotUserBalance{UserID: req.Sender, TokenID: supportedToken.ID, Amount: userBal.Amount - req.Amount})
+	batch := []model.OffchainTipBotUserBalance{{UserID: req.Sender, TokenID: supportedToken.ID, ChangedAmount: -req.Amount}}
+	err = e.UpsertBatchOfUserBalances("tip-onchain", supportedToken.TokenSymbol, batch)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.SubmitOnchainTransfer] repo.OffchainTipBotUserBalances.UpdateUserBalance() failed")
-		return nil, err
-	}
-
-	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{supportedToken.CoinGeckoID}, "usd")
-	if err != nil {
-		e.log.Fields(logger.Fields{"token": supportedToken.CoinGeckoID}).Error(err, "[entity.SubmitOnchainTransfer] svc.CoinGecko.GetCoinPrice() failed")
+		e.log.Fields(logger.Fields{
+			"totalAmount": req.Amount, "amountEach": amountEach, "sender": req.Sender,
+			"recipients": len(req.Recipients), "token": supportedToken.TokenSymbol,
+		}).Error(err, "[entity.SubmitOnchainTransfer] entity.UpsertBatchOfUserBalances() failed")
 		return nil, err
 	}
 
 	// create pending transactions
 	list := make([]*model.OnchainTipBotTransaction, len(req.Recipients))
-	res := make([]response.SubmitOnchainTransfer, len(req.Recipients))
 	for i, r := range req.Recipients {
-		// store new onchain tx
 		list[i] = &model.OnchainTipBotTransaction{
 			SenderDiscordID:    req.Sender,
 			RecipientDiscordID: r,
@@ -115,7 +111,22 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 			Image:              req.Image,
 			Status:             "pending",
 		}
-		// response data
+	}
+	if err := e.repo.OnchainTipBotTransaction.UpsertMany(list); err != nil {
+		e.log.Fields(logger.Fields{"list": list}).Error(err, "[entity.SubmitOnchainTransfer] repo.OnchainTipBotTransaction.UpsertMany() failed")
+		return nil, err
+	}
+
+	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{supportedToken.CoinGeckoID}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": supportedToken.CoinGeckoID}).Error(err, "[entity.SubmitOnchainTransfer] svc.CoinGecko.GetCoinPrice() failed")
+		return nil, err
+	}
+
+	// dm recipient
+	res := make([]response.SubmitOnchainTransfer, len(req.Recipients))
+	for i, r := range req.Recipients {
+		e.notifyPendingTransfer(r)
 		res[i] = response.SubmitOnchainTransfer{
 			SenderID:    req.Sender,
 			RecipientID: r,
@@ -123,15 +134,6 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 			Symbol:      supportedToken.TokenSymbol,
 			AmountInUSD: amountEach * tokenPrice[supportedToken.CoinGeckoID],
 		}
-	}
-	if err := e.repo.OnchainTipBotTransaction.UpsertMany(list); err != nil {
-		e.log.Fields(logger.Fields{"list": list}).Error(err, "[entity.SubmitOnchainTransfer] repo.OnchainTipBotTransaction.UpsertMany() failed")
-		return nil, err
-	}
-
-	// dm recipient
-	for _, r := range req.Recipients {
-		e.notifyPendingTransfer(r)
 	}
 
 	// notify tip to channel
@@ -200,7 +202,7 @@ func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (
 		e.log.Fields(logger.Fields{"token": tx.TokenSymbol}).Error(err, "[entity.ClaimOnchainTransfer] repo.OffchainTipBotTokens.GetBySymbol() failed")
 		return nil, err
 	}
-	al, err := e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&model.OffchainTipBotActivityLog{
+	log := &model.OffchainTipBotActivityLog{
 		UserID:          &tx.SenderDiscordID,
 		GuildID:         &tx.GuildID,
 		ChannelID:       &tx.ChannelID,
@@ -215,7 +217,8 @@ func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (
 		FailReason:      "",
 		Image:           tx.Image,
 		Message:         message,
-	})
+	}
+	err = e.repo.OffchainTipBotActivityLogs.CreateActivityLog(log)
 	if err != nil {
 		e.log.Fields(logger.Fields{"tx": tx}).Error(err, "[entity.ClaimOnchainTransfer] repo.OffchainTipBotActivityLogs.CreateActivityLog() failed")
 		return nil, err
@@ -226,7 +229,7 @@ func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (
 			SenderID:   &tx.SenderDiscordID,
 			ReceiverID: tx.RecipientDiscordID,
 			GuildID:    tx.GuildID,
-			LogID:      al.ID.String(),
+			LogID:      log.ID.String(),
 			Status:     consts.OffchainTipBotTrasferStatusSuccess,
 			Amount:     tx.Amount,
 			Token:      supportedToken.TokenSymbol,

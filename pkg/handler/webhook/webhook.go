@@ -187,13 +187,9 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 
 	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultTokenConfigs() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
 	}
 	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultActivityConfigs() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
 	}
 
 	users, err := h.entities.FetchAndSaveGuildMembers(req.GuildID)

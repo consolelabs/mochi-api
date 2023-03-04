@@ -116,7 +116,7 @@ func TestEntity_GetUserBalances(t *testing.T) {
 				coinPrice: map[string]float64{},
 				err:       nil,
 			},
-			want:    []response.GetUserBalances{},
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -141,7 +141,7 @@ func TestEntity_GetUserBalances(t *testing.T) {
 				coinPrice: nil,
 				err:       errors.New("error"),
 			},
-			want:    []response.GetUserBalances{},
+			want:    nil,
 			wantErr: true,
 		},
 	}

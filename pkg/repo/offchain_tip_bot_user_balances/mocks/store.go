@@ -36,20 +36,6 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// CreateIfNotExists mocks base method.
-func (m *MockStore) CreateIfNotExists(model *model.OffchainTipBotUserBalance) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateIfNotExists", model)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateIfNotExists indicates an expected call of CreateIfNotExists.
-func (mr *MockStoreMockRecorder) CreateIfNotExists(model interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateIfNotExists", reflect.TypeOf((*MockStore)(nil).CreateIfNotExists), model)
-}
-
 // GetUserBalanceByTokenID mocks base method.
 func (m *MockStore) GetUserBalanceByTokenID(userID string, tokenID uuid.UUID) (*model.OffchainTipBotUserBalance, error) {
 	m.ctrl.T.Helper()
@@ -95,30 +81,16 @@ func (mr *MockStoreMockRecorder) SumAmountByTokenId() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SumAmountByTokenId", reflect.TypeOf((*MockStore)(nil).SumAmountByTokenId))
 }
 
-// UpdateListUserBalances mocks base method.
-func (m *MockStore) UpdateListUserBalances(listUserID []string, tokenID uuid.UUID, amount float64) error {
+// UpsertBatch mocks base method.
+func (m *MockStore) UpsertBatch(list []model.OffchainTipBotUserBalance) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateListUserBalances", listUserID, tokenID, amount)
+	ret := m.ctrl.Call(m, "UpsertBatch", list)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateListUserBalances indicates an expected call of UpdateListUserBalances.
-func (mr *MockStoreMockRecorder) UpdateListUserBalances(listUserID, tokenID, amount interface{}) *gomock.Call {
+// UpsertBatch indicates an expected call of UpsertBatch.
+func (mr *MockStoreMockRecorder) UpsertBatch(list interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateListUserBalances", reflect.TypeOf((*MockStore)(nil).UpdateListUserBalances), listUserID, tokenID, amount)
-}
-
-// UpdateUserBalance mocks base method.
-func (m *MockStore) UpdateUserBalance(balance *model.OffchainTipBotUserBalance) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUserBalance", balance)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateUserBalance indicates an expected call of UpdateUserBalance.
-func (mr *MockStoreMockRecorder) UpdateUserBalance(balance interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserBalance", reflect.TypeOf((*MockStore)(nil).UpdateUserBalance), balance)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertBatch", reflect.TypeOf((*MockStore)(nil).UpsertBatch), list)
 }
