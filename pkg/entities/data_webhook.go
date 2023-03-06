@@ -440,7 +440,7 @@ func (e *Entity) handleNewCollectionFromSales(nftSale request.NotifySaleMarketpl
 		})
 	case 999:
 		nftSaleAddress := strings.Split(nftSale.Address, "solscan-")
-		if len(nftSaleAddress) > 0 {
+		if len(nftSaleAddress) > 1 {
 			e.CreateSolanaNFTCollection(request.CreateNFTCollectionRequest{
 				Address:      nftSaleAddress[1],
 				ChainID:      strconv.Itoa(int(nftSale.ChainId)),
