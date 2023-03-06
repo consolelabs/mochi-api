@@ -36,12 +36,11 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // CreateActivityLog mocks base method.
-func (m *MockStore) CreateActivityLog(al *model.OffchainTipBotActivityLog) (*model.OffchainTipBotActivityLog, error) {
+func (m *MockStore) CreateActivityLog(al *model.OffchainTipBotActivityLog) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateActivityLog", al)
-	ret0, _ := ret[0].(*model.OffchainTipBotActivityLog)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // CreateActivityLog indicates an expected call of CreateActivityLog.

@@ -118,6 +118,7 @@ gen-mock:
 	@mockgen -source=./pkg/repo/offchain_tip_bot_contract/store.go -destination=./pkg/repo/offchain_tip_bot_contract/mocks/store.go
 	@mockgen -source=./pkg/repo/offchain_tip_bot_activity_logs/store.go -destination=./pkg/repo/offchain_tip_bot_activity_logs/mocks/store.go
 	@mockgen -source=./pkg/repo/offchain_tip_bot_user_balances/store.go -destination=./pkg/repo/offchain_tip_bot_user_balances/mocks/store.go
+	@mockgen -source=./pkg/repo/offchain_tip_bot_user_balance_snapshot/store.go -destination=./pkg/repo/offchain_tip_bot_user_balance_snapshot/mocks/store.go
 	@mockgen -source=./pkg/repo/offchain_tip_bot_transfer_histories/store.go -destination=./pkg/repo/offchain_tip_bot_transfer_histories/mocks/store.go
 
 

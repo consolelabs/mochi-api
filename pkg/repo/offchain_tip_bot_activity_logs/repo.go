@@ -14,8 +14,8 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) CreateActivityLog(al *model.OffchainTipBotActivityLog) (*model.OffchainTipBotActivityLog, error) {
-	return al, pg.db.Create(al).Error
+func (pg *pg) CreateActivityLog(al *model.OffchainTipBotActivityLog) error {
+	return pg.db.Create(al).Error
 }
 
 func (pg *pg) List(q ListQuery) ([]model.OffchainTipBotActivityLog, error) {

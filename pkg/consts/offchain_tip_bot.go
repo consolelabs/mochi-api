@@ -7,5 +7,6 @@ const (
 	OffchainTipBotTrasferStatusFail                = "fail"
 	OffchainTipBotFailReasonNotEnoughBalance       = "Not enough balance"
 	OffchainTipBotFailReasonTokenNotSupported      = "Token not supported"
+	OffchainTipBotFailReasonInvalidAmount          = "Invalid amount"
 	OffchainTipBotTransferTypeTip                  = "tip"
 )

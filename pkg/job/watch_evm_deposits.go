@@ -140,7 +140,7 @@ func (job *watchEvmDeposits) getTxDetails(tx *covalent.TransactionItemData, cont
 	for _, event := range tx.LogEvents {
 		if event.Decoded.Params == nil || len(event.Decoded.Params) == 0 {
 			l.Info("[getTxDetails] no event params")
-			return false, nil
+			continue
 		}
 		if !strings.EqualFold(event.Decoded.Signature, "Transfer(indexed address from, indexed address to, uint256 value)") {
 			l.Info("[getTxDetails] not erc20 transfer tx")

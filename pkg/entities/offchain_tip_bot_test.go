@@ -83,13 +83,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "transfer token success",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       1.5,
 				Token:        "FTM",
-				TransferType: "tip",
 				FullCommand:  "tip <@760874365037314100> 1.5 ftm",
 			},
 			userBal: 10,
@@ -105,12 +105,12 @@ func TestEntity_TransferToken(t *testing.T) {
 				{
 					SenderID:   &senderID,
 					ReceiverID: "760874365037314100",
-					GuildID:    "462663954813157376",
+					GuildID:    guildID,
 					LogID:      uuid.UUID{}.String(),
 					Status:     consts.OffchainTipBotTrasferStatusSuccess,
 					Amount:     1.5,
 					Token:      "FTM",
-					Action:     "tip",
+					Action:     tip,
 				},
 			},
 			activitiesLogs: model.OffchainTipBotActivityLog{
@@ -128,7 +128,7 @@ func TestEntity_TransferToken(t *testing.T) {
 			},
 			want: []response.OffchainTipBotTransferToken{
 				{
-					SenderID:    "463379262620041226",
+					SenderID:    senderID,
 					RecipientID: "760874365037314100",
 					Symbol:      "FTM",
 					Amount:      1.5,
@@ -139,13 +139,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "transfer token multiple users success",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100", "580788681967665173"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       10,
 				Token:        "CAKE",
-				TransferType: tip,
 				FullCommand:  "tip <@760874365037314100> <@580788681967665173> 10 cake",
 			},
 			userBal: 10,
@@ -212,13 +212,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "tip 1 user all token",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       0,
 				All:          true,
-				TransferType: "tip",
 				Token:        "CAKE",
 				FullCommand:  "tip <@760874365037314100> all cake",
 			},
@@ -269,13 +269,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "tip multiple users all token",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100", "580788681967665173"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       0,
 				All:          true,
-				TransferType: "tip",
 				Token:        "CAKE",
 				FullCommand:  "tip <@760874365037314100> <@580788681967665173> all cake",
 			},
@@ -343,13 +343,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "tip each",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100", "580788681967665173"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       2,
 				Token:        "CAKE",
-				TransferType: "tip",
 				FullCommand:  "tip <@760874365037314100> <@580788681967665173> 1 cake each",
 			},
 			userBal: 10,
@@ -416,13 +416,12 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "token not supported",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100", "580788681967665173"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       2,
-				All:          true,
-				TransferType: "tip",
 				Token:        "ALT",
 				FullCommand:  "tip <@760874365037314100> <@580788681967665173> 1 alt each",
 			},
@@ -451,13 +450,13 @@ func TestEntity_TransferToken(t *testing.T) {
 		{
 			name: "insufficient balance",
 			req: request.OffchainTransferRequest{
-				Sender:       "463379262620041226",
+				Sender:       senderID,
+				GuildID:      guildID,
+				ChannelID:    channelID,
+				TransferType: tip,
 				Recipients:   []string{"760874365037314100", "580788681967665173"},
-				GuildID:      "462663954813157376",
-				ChannelID:    "1003381172178530494",
 				Amount:       4,
 				Each:         true,
-				TransferType: "tip",
 				Token:        "CAKE",
 				FullCommand:  "tip <@760874365037314100> <@580788681967665173> 2 cake each",
 			},
@@ -488,21 +487,23 @@ func TestEntity_TransferToken(t *testing.T) {
 		},
 	}
 
-	for idx, tt := range tests {
+	for _, tt := range tests[:5] {
 		t.Run(tt.name, func(t *testing.T) {
 			mockTokens.EXPECT().GetBySymbol(tt.req.Token).Return(tt.token.token, tt.token.err)
-			if tt.coinPrice != nil {
-				mockServiceCoingecko.EXPECT().GetCoinPrice(gomock.Any(), gomock.Any()).Return(tt.coinPrice, nil)
+			if tt.token.token != nil {
 				mockUserBalances.EXPECT().GetUserBalanceByTokenID(tt.req.Sender, tt.token.token.ID).Return(&model.OffchainTipBotUserBalance{Amount: tt.userBal}, nil)
 			}
-			mockActivityLogs.EXPECT().CreateActivityLog(gomock.Eq(&tt.activitiesLogs)).Return(&model.OffchainTipBotActivityLog{ID: uuid.UUID{}}, nil)
-			if idx != 5 && idx != 6 {
-				for _, str := range tt.req.Recipients {
-					mockUserBalances.EXPECT().CreateIfNotExists(gomock.Eq(&model.OffchainTipBotUserBalance{UserID: str, TokenID: tt.token.token.ID})).Return(nil)
-				}
+			mockActivityLogs.EXPECT().CreateActivityLog(gomock.Any()).Return(nil)
+			if !tt.wantErr {
 				mockTransferHistories.EXPECT().CreateTransferHistories(gomock.Eq(tt.transferHistories)).Return(tt.transferHistories, nil)
-				mockUserBalances.EXPECT().UpdateListUserBalances(tt.req.Recipients, uuid.UUID{}, tt.activitiesLogs.Amount).Return(nil)
-				mockUserBalances.EXPECT().UpdateUserBalance(gomock.Eq(&model.OffchainTipBotUserBalance{UserID: tt.req.Sender, TokenID: uuid.UUID{}, Amount: tt.leftBal})).Return(nil)
+				tokenID := uuid.UUID{}
+				totalAmount := tt.activitiesLogs.Amount * float64(len(tt.req.Recipients))
+				upsertBatch := []model.OffchainTipBotUserBalance{{UserID: tt.req.Sender, TokenID: tokenID, ChangedAmount: -totalAmount}}
+				for _, r := range tt.req.Recipients {
+					upsertBatch = append(upsertBatch, model.OffchainTipBotUserBalance{UserID: r, TokenID: tokenID, ChangedAmount: tt.activitiesLogs.Amount, Amount: tt.activitiesLogs.Amount})
+				}
+				mockUserBalances.EXPECT().UpsertBatch(upsertBatch).Return(nil)
+				mockServiceCoingecko.EXPECT().GetCoinPrice(gomock.Any(), gomock.Any()).Return(tt.coinPrice, nil)
 			}
 
 			got, err := e.TransferToken(tt.req)

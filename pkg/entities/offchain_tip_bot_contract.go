@@ -14,18 +14,19 @@ func (e *Entity) OffchainTipBotDeleteExpiredAssignContract() (err error) {
 	return e.repo.OffchainTipBotContract.DeleteExpiredAssignContract()
 }
 
-func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances, err error) {
+func (e *Entity) GetUserBalances(userID string) ([]response.GetUserBalances, error) {
 	userBals, err := e.repo.OffchainTipBotUserBalances.GetUserBalances(userID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"userID": userID}).Error(err, "[repo.OffchainTipBotUserBalances.GetUserBalances] - failed to get user balances")
-		return []response.GetUserBalances{}, err
+		return nil, err
 	}
 
 	listCoinIDs := []string{}
+	res := make([]response.GetUserBalances, 0, len(userBals))
 	for _, userBal := range userBals {
 		coinID := userBal.Token.CoinGeckoID
 		listCoinIDs = append(listCoinIDs, coinID)
-		bals = append(bals, response.GetUserBalances{
+		res = append(res, response.GetUserBalances{
 			ID:       coinID,
 			Name:     userBal.Token.TokenName,
 			Symbol:   userBal.Token.TokenSymbol,
@@ -37,13 +38,13 @@ func (e *Entity) GetUserBalances(userID string) (bals []response.GetUserBalances
 	tokenPrices, err := e.svc.CoinGecko.GetCoinPrice(listCoinIDs, "usd")
 	if err != nil {
 		e.log.Fields(logger.Fields{"listCoinIDs": listCoinIDs}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
-		return []response.GetUserBalances{}, err
+		return nil, err
 	}
 
-	for i, bal := range bals {
-		bals[i].RateInUSD = tokenPrices[bal.ID]
-		bals[i].BalancesInUSD = tokenPrices[bal.ID] * bal.Balances
+	for i, bal := range res {
+		res[i].RateInUSD = tokenPrices[bal.ID]
+		res[i].BalancesInUSD = tokenPrices[bal.ID] * bal.Balances
 	}
 
-	return bals, nil
+	return res, nil
 }
