@@ -186,6 +186,15 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
 			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
 		}
+		advertiseGroup := communityGroup.Group("/advertise")
+		{
+			advertiseGroup.GET("", h.Community.GetAllAd)
+			advertiseGroup.GET("/:id", h.Community.GetAdById)
+			advertiseGroup.POST("", h.Community.CreateAd)
+			advertiseGroup.POST("/init", h.Community.InitAdSubmission)
+			advertiseGroup.DELETE("", h.Community.DeleteAdById)
+			advertiseGroup.PUT("", h.Community.UpdateAdById)
+		}
 	}
 
 	configGroup := v1.Group("/configs")

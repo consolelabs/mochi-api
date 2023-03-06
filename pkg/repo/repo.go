@@ -92,6 +92,7 @@ import (
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
+	usersubmittedad "github.com/defipod/mochi/pkg/repo/user_submitted_ad"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
@@ -116,6 +117,7 @@ type Repo struct {
 	GuildUsers                           guildusers.Store
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
+	UserSubmittedAd                      usersubmittedad.Store
 	DiscordUserTokenAlert                discordusertokenalert.Store
 	DiscordUserDevice                    discorduserdevice.Store
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store

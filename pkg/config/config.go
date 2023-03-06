@@ -56,11 +56,13 @@ type Config struct {
 
 	RedisURL string
 
-	MochiGuildID           string
-	MochiLogChannelID      string
-	MochiSaleChannelID     string
-	MochiActivityChannelID string
-	MochiFeedbackChannelID string
+	MochiGuildID                string
+	MochiLogChannelID           string
+	MochiSaleChannelID          string
+	MochiActivityChannelID      string
+	MochiFeedbackChannelID      string
+	MochiAdDiscussionCategoryID string
+	MochiAdDiscussionChannelID  string
 
 	MoralisXApiKey string
 
@@ -204,11 +206,13 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 		RedisURL:                v.GetString("REDIS_URL"),
 
-		MochiGuildID:           v.GetString("MOCHI_GUILD_ID"),
-		MochiLogChannelID:      v.GetString("MOCHI_LOG_CHANNEL_ID"),
-		MochiSaleChannelID:     v.GetString("MOCHI_SALE_CHANNEL_ID"),
-		MochiActivityChannelID: v.GetString("MOCHI_ACTIVITY_CHANNEL_ID"),
-		MochiFeedbackChannelID: v.GetString("MOCHI_FEEDBACK_CHANNEL_ID"),
+		MochiGuildID:                v.GetString("MOCHI_GUILD_ID"),
+		MochiLogChannelID:           v.GetString("MOCHI_LOG_CHANNEL_ID"),
+		MochiSaleChannelID:          v.GetString("MOCHI_SALE_CHANNEL_ID"),
+		MochiActivityChannelID:      v.GetString("MOCHI_ACTIVITY_CHANNEL_ID"),
+		MochiFeedbackChannelID:      v.GetString("MOCHI_FEEDBACK_CHANNEL_ID"),
+		MochiAdDiscussionCategoryID: v.GetString("MOCHI_AD_DISCUSSION_CATEGORY_ID"),
+		MochiAdDiscussionChannelID:  v.GetString("MOCHI_AD_DISCUSSION_CHANNEL_ID"),
 
 		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
 
