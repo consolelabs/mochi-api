@@ -52,24 +52,10 @@ type TokenMetadataResponse struct {
 }
 
 type TransactionDetailsResponse struct {
-	BlockTime    int      `json:"blockTime"`
-	Slot         int      `json:"slot"`
-	TxHash       string   `json:"txHash"`
-	Fee          int      `json:"fee"`
-	Status       string   `json:"status"`
-	Lamport      int      `json:"lamport"`
-	Signer       []string `json:"signer"`
-	LogMessage   []string `json:"logMessage"`
-	InputAccount []struct {
-		Account     string `json:"account"`
-		Signer      bool   `json:"signer"`
-		Writable    bool   `json:"writable"`
-		PreBalance  int    `json:"preBalance"`
-		PostBalance int    `json:"postBalance"`
-	} `json:"inputAccount"`
-	RecentBlockhash string `json:"recentBlockhash"`
-	Version         string `json:"version"`
-	TokenTransfers  []struct {
+	TxHash         string `json:"txHash"`
+	Fee            int    `json:"fee"`
+	Status         string `json:"status"`
+	TokenTransfers []struct {
 		Source           string `json:"source"`
 		Destination      string `json:"destination"`
 		SourceOwner      string `json:"source_owner"`
@@ -88,7 +74,4 @@ type TransactionDetailsResponse struct {
 		Destination string `json:"destination"`
 		Amount      int    `json:"amount"`
 	} `json:"solTransfers"`
-	// SerumTransactions   []interface{} `json:"serumTransactions"`
-	// RaydiumTransactions []interface{} `json:"raydiumTransactions"`
-	// UnknownTransfers    []interface{} `json:"unknownTransfers"`
 }
