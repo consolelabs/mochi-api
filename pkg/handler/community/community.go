@@ -680,3 +680,146 @@ func (h *Handler) DeleteLevelUpMessage(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// GetAllAd     godoc
+// @Summary     Get all submitted ads
+// @Description Get all submitted ads
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetAllUserSubmittedAdResponse
+// @Router      /community/advertise [get]
+func (h *Handler) GetAllAd(c *gin.Context) {
+	data, _, err := h.entities.GetAllAd()
+	if err != nil {
+		h.log.Error(err, "[handler.GetAllAd] entity.GetAllAd() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// GetAdById     godoc
+// @Summary     Get submitted ad
+// @Description Get submitted ad
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       id   query  string true  "ad's id, or 'random'"
+// @Success     200 {object} response.GetUserSubmittedAdResponse
+// @Router      /community/advertise [get]
+func (h *Handler) GetAdById(c *gin.Context) {
+	id := c.Param("id")
+	data, err := h.entities.GetAdById(id)
+	if err != nil {
+		h.log.Error(err, "[handler.GetAdById] entity.GetAdById() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// CreateAd     godoc
+// @Summary     Create ad submission
+// @Description Create ad submission
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       req  query request.InsertUserAd true "Create ad submission"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/advertise [post]
+func (h *Handler) CreateAd(c *gin.Context) {
+	req := request.InsertUserAd{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.CreateAd] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	err := h.entities.CreateAd(req)
+	if err != nil {
+		h.log.Error(err, "[handler.CreateAd] entity.CreateAd() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// InitAdSubmission     godoc
+// @Summary     Init ad submission
+// @Description Init ad submission
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       req  query request.InitAdSubmission true "Initiate ad submission"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/advertise/init [post]
+func (h *Handler) InitAdSubmission(c *gin.Context) {
+	req := request.InitAdSubmission{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.CreateAd] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	err := h.entities.InitAdSubmission(req)
+	if err != nil {
+		h.log.Error(err, "[handler.CreateAd] entity.CreateAd() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// DeleteLevelUpMessage     godoc
+// @Summary     Delete ad submission
+// @Description Delete ad submission
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       req  query request.DeleteUserAd true "Delete ad submission"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/advertise [delete]
+func (h *Handler) DeleteAdById(c *gin.Context) {
+	req := request.DeleteUserAd{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.DeleteAdById] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := h.entities.DeleteAdById(req); err != nil {
+		h.log.Error(err, "[handler.DeleteAdById] entities.DeleteAdById() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// UpdateAdById     godoc
+// @Summary     Update ad submission
+// @Description Update ad submission
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       req  query request.UpdateUserAd true "Update ad submission"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/advertise [put]
+func (h *Handler) UpdateAdById(c *gin.Context) {
+	req := request.UpdateUserAd{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.UpdateAdById] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if req.Status != "approved" && req.Status != "rejected" {
+		err := errors.New("invalid request")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateAdById] invalid request body")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := h.entities.UpdateAdById(req); err != nil {
+		h.log.Error(err, "[handler.UpdateAdById] entities.UpdateAdById() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+
+}

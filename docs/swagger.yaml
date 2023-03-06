@@ -110,12 +110,16 @@ definitions:
     type: object
   model.CommonwealthDiscussionSubscription:
     properties:
-      discordThreadID:
+      created_at:
         type: string
-      discussionID:
+      discord_thread_id:
+        type: string
+      discussion_id:
         type: integer
       id:
         type: integer
+      updated_at:
+        type: string
     type: object
   model.ConfigXpLevel:
     properties:
@@ -2640,6 +2644,13 @@ definitions:
           $ref: '#/definitions/response.TwitterHashtag'
         type: array
     type: object
+  response.GetAllUserSubmittedAdResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GetAllUserSubmittedAdResponse'
+        type: array
+    type: object
   response.GetAssignedContract:
     properties:
       data:
@@ -3188,6 +3199,25 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.User'
+    type: object
+  response.GetUserSubmittedAdResponse:
+    properties:
+      ad_channel_id:
+        type: string
+      creator_id:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      introduction:
+        type: string
+      name:
+        type: string
+      string:
+        type: string
     type: object
   response.GetUserUpvoteLeaderboardResponse:
     properties:
@@ -4341,6 +4371,96 @@ paths:
       summary: Set or overwrite an upvote message cache
       tags:
       - Cache
+  /community/advertise:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ad submission
+      parameters:
+      - in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete ad submission
+      tags:
+      - Community
+    get:
+      consumes:
+      - application/json
+      description: Get submitted ad
+      parameters:
+      - description: ad's id, or 'random'
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetUserSubmittedAdResponse'
+      summary: Get submitted ad
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Create ad submission
+      parameters:
+      - in: query
+        name: creator_id
+        type: string
+      - in: query
+        name: description
+        type: string
+      - in: query
+        name: image
+        type: string
+      - in: query
+        name: introduction
+        type: string
+      - in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create ad submission
+      tags:
+      - Community
+    put:
+      consumes:
+      - application/json
+      description: Update ad submission
+      parameters:
+      - in: query
+        name: id
+        type: integer
+      - in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Update ad submission
+      tags:
+      - Community
   /community/feedback:
     get:
       consumes:
@@ -6913,6 +7033,27 @@ paths:
           schema:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin
+      tags:
+      - Defi
+  /defi/coins/binance/{symbol}:
+    get:
+      consumes:
+      - application/json
+      description: Get coin data from Binance Exchange
+      parameters:
+      - description: Coin ID
+        in: path
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCoinResponseWrapper'
+      summary: Get coin data from Binance Exchange
       tags:
       - Defi
   /defi/coins/compare:
