@@ -39,7 +39,7 @@ func LoadTestDB(seedPath string) *gorm.DB {
 			testfixtures.Directory(seedPath),
 		)
 		if err != nil {
-			l.Fatalf(err, "failed to load fixture")
+			l.Fatalf(err, "testfixtures.New() failed")
 			return
 		}
 

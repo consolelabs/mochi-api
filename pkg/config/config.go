@@ -50,7 +50,7 @@ type Config struct {
 	BscScanAPIKey string
 
 	CovalentBaseUrl string
-	CovalentAPIKey  string
+	CovalentAPIKeys []string
 
 	DiscordToken string
 
@@ -197,7 +197,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BscScanAPIKey: v.GetString("BSC_SCAN_API_KEY"),
 
 		CovalentBaseUrl: v.GetString("COVALENT_BASE_URL"),
-		CovalentAPIKey:  v.GetString("COVALENT_API_KEY"),
+		CovalentAPIKeys: strings.Split(v.GetString("COVALENT_API_KEYS"), ","),
 
 		DiscordToken: v.GetString("DISCORD_TOKEN"),
 

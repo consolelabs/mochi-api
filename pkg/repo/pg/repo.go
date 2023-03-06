@@ -74,6 +74,7 @@ import (
 	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
+	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
 	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
 	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	"github.com/defipod/mochi/pkg/repo/quest"
@@ -177,6 +178,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		TradeOffer:                           tradeoffer.NewPG(db),
 		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
+		OffchainTipBotUserBalanceSnapshot:    offchaintipbotuserbalancesnapshot.NewPG(db),
 		GuildBlacklistChannelRepostConfigs:   guildblacklistchannelrepostconfigs.NewPG(db),
 		OffchainTipBotTokens:                 offchaintipbottokens.NewPG(db),
 		OffchainTipBotActivityLogs:           offchaintipbotactivitylogs.NewPG(db),

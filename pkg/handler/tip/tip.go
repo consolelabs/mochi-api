@@ -310,7 +310,7 @@ func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.SubmitOnchainTransferRequest true "req"
 // @Success     200 {object} response.SubmitOnchainTransferResponse
-// @Router      /tip/onchain/transfer [post]
+// @Router      /tip/onchain/submit [post]
 func (h *Handler) SubmitOnchainTransfer(c *gin.Context) {
 	req := request.SubmitOnchainTransferRequest{}
 	if err := c.ShouldBindJSON(&req); err != nil {
