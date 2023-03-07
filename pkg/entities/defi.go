@@ -39,30 +39,6 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) sendTransferLogs(req request.TransferRequest, res []response.InDiscordWalletTransferResponse) error {
-	if req.GuildID == "" || len(res) == 0 {
-		return nil
-	}
-	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
-	if err != nil {
-		return err
-	}
-
-	token := strings.ToUpper(res[0].Cryptocurrency)
-	var description string
-	if req.TransferType == "withdraw" {
-		description = fmt.Sprintf("<@%s> has made a withdrawal of **%g %s** to address `%s`", res[0].FromDiscordID, res[0].Amount, token, req.Recipients[0])
-	} else {
-		var recipients []string
-		for _, tx := range res {
-			recipients = append(recipients, fmt.Sprintf("<@%s>", tx.ToDiscordID))
-		}
-		recipientsStr := strings.Join(recipients, ", ")
-		description = fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", res[0].FromDiscordID, recipientsStr, res[0].Amount, token, req.ChannelID)
-	}
-	return e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, req.Sender, strings.ToUpper(req.TransferType), description)
-}
-
 func (e *Entity) balances(address string, tokens []model.Token) (map[string]float64, error) {
 	balances := make(map[string]float64, 0)
 	for _, token := range tokens {
@@ -126,15 +102,16 @@ func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, i
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-		return nil, err
+	if query != "skull" {
+		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+			return nil, err
+		}
+		if err == nil {
+			return []model.CoingeckoSupportedTokens{*token}, nil
+		}
 	}
-	if err == nil {
-		return []model.CoingeckoSupportedTokens{*token}, nil
-	}
-
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {

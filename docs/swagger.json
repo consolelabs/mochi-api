@@ -108,6 +108,187 @@
                 }
             }
         },
+        "/community/advertise": {
+            "get": {
+                "description": "Get submitted ad",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Get submitted ad",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ad's id, or 'random'",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserSubmittedAdResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update ad submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Update ad submission",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create ad submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Create ad submission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "creator_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "description",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "image",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "introduction",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "is_podtown_ad",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete ad submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Delete ad submission",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/advertise/init": {
+            "post": {
+                "description": "Init ad submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Init ad submission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "channel_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/community/feedback": {
             "get": {
                 "description": "Get users' feedbacks",
@@ -4003,6 +4184,38 @@
                 }
             }
         },
+        "/defi/coins/binance/{symbol}": {
+            "get": {
+                "description": "Get coin data from Binance Exchange",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get coin data from Binance Exchange",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Coin ID",
+                        "name": "symbol",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetCoinResponseWrapper"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/coins/compare": {
             "get": {
                 "description": "Compare token",
@@ -5798,7 +6011,7 @@
                 }
             }
         },
-        "/tip/onchain/transfer": {
+        "/tip/onchain/submit": {
             "post": {
                 "description": "Onchain Tip Bot - Submit transfer transaction",
                 "consumes": [
@@ -7187,14 +7400,20 @@
         "model.CommonwealthDiscussionSubscription": {
             "type": "object",
             "properties": {
-                "discordThreadID": {
+                "created_at": {
                     "type": "string"
                 },
-                "discussionID": {
+                "discord_thread_id": {
+                    "type": "string"
+                },
+                "discussion_id": {
                     "type": "integer"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -11058,6 +11277,17 @@
                 }
             }
         },
+        "response.GetAllUserSubmittedAdResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetAllUserSubmittedAdResponse"
+                    }
+                }
+            }
+        },
         "response.GetAssignedContract": {
             "type": "object",
             "properties": {
@@ -11907,6 +12137,38 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.User"
+                }
+            }
+        },
+        "response.GetUserSubmittedAdResponse": {
+            "type": "object",
+            "properties": {
+                "ad_channel_id": {
+                    "type": "string"
+                },
+                "creator_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "introduction": {
+                    "type": "string"
+                },
+                "is_podtown_ad": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "string": {
+                    "type": "string"
                 }
             }
         },

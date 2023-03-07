@@ -28,4 +28,11 @@ type IHandler interface {
 	UpsertLevelUpMessage(c *gin.Context)
 	GetLevelUpMessage(c *gin.Context)
 	DeleteLevelUpMessage(c *gin.Context)
+
+	GetAllAd(c *gin.Context)
+	GetAdById(c *gin.Context)
+	CreateAd(c *gin.Context)
+	InitAdSubmission(c *gin.Context)
+	DeleteAdById(c *gin.Context)
+	UpdateAdById(c *gin.Context)
 }

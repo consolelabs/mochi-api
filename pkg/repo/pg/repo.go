@@ -96,6 +96,7 @@ import (
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
+	usersubmittedad "github.com/defipod/mochi/pkg/repo/user_submitted_ad"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
@@ -143,6 +144,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
 		TwitterPost:                          twitterpost.NewPG(db),
+		UserSubmittedAd:                      usersubmittedad.NewPG(db),
 		TwitterPostStreak:                    twitterpoststreak.NewPG(db),
 		UserFeedback:                         userfeedback.NewPG(db),
 		Activity:                             activity.NewPG(db),
