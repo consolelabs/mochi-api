@@ -63,6 +63,7 @@ func (e *Entity) CreateAd(req request.InsertUserAd) error {
 		Name:         req.Name,
 		Description:  req.Description,
 		Image:        req.Image,
+		IsPodtownAd:  req.IsPodtownAd,
 	})
 	if err != nil {
 		e.log.Errorf(err, "[entities.CreateAd] e.repo.UserSubmittedAd.CreateOne failed")

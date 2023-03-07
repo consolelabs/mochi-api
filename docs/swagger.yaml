@@ -3214,6 +3214,8 @@ definitions:
         type: string
       introduction:
         type: string
+      is_podtown_ad:
+        type: boolean
       name:
         type: string
       string:
@@ -4428,6 +4430,9 @@ paths:
         name: introduction
         type: string
       - in: query
+        name: is_podtown_ad
+        type: boolean
+      - in: query
         name: name
         type: string
       produces:
@@ -4459,6 +4464,28 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Update ad submission
+      tags:
+      - Community
+  /community/advertise/init:
+    post:
+      consumes:
+      - application/json
+      description: Init ad submission
+      parameters:
+      - in: query
+        name: channel_id
+        type: string
+      - in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Init ad submission
       tags:
       - Community
   /community/feedback:
@@ -8266,7 +8293,7 @@ paths:
       summary: Onchain Tip Bot - Submit transfer transaction
       tags:
       - Tip
-  /tip/onchain/transfer:
+  /tip/onchain/submit:
     post:
       consumes:
       - application/json
