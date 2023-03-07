@@ -432,3 +432,28 @@ func (h *Handler) GetBinanceCoinData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// AddCoingeckoTokenAlias    godoc
+// @Summary     Add to user's watchlist
+// @Description Add to user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req body request.AddToWatchlistRequest true "request"
+// @Success     200 {object} response.AddToWatchlistResponse
+// @Router      /defi/coins/alias [post]
+func (h *Handler) AddCoingeckoTokenAlias(c *gin.Context) {
+	var req request.AddCoingeckoTokenAlias
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.AddCoingeckoTokenAlias] Bind() failed")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.entities.AddCoingeckoTokenAlias(req); err != nil {
+		h.log.Error(err, "[handler.AddCoingeckoTokenAlias] entity.AddCoingeckoTokenAlias() failed")
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](nil, nil, nil, nil))
+}

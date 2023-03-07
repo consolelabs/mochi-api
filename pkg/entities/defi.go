@@ -126,12 +126,18 @@ func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, i
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
+	alias, err := e.repo.CoingeckoTokenAlias.GetOne(query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.UserRequestCoingeckoAlias.GetOne() failed")
+		return nil, err
+	}
+
 	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
 		return nil, err
 	}
-	if err == nil {
+	if err == nil && alias.Alias == "" {
 		return []model.CoingeckoSupportedTokens{*token}, nil
 	}
 
@@ -780,4 +786,22 @@ func (e *Entity) GetBinanceCoinPrice(symbol string) (*response.GetTickerPriceRes
 	}
 
 	return data, nil, http.StatusOK
+}
+
+func (e *Entity) AddCoingeckoTokenAlias(req request.AddCoingeckoTokenAlias) error {
+	if req.Alias == "" {
+		e.log.Fields(logger.Fields{
+			"req": req,
+		}).Error(nil, "[Entity][AddCoingeckoTokenAlias] alias is missing")
+		return baseerrs.ErrBadRequest
+	}
+
+	if err := e.repo.CoingeckoTokenAlias.SetAlias(req.Alias); err != nil {
+		e.log.Fields(logger.Fields{
+			"req": req,
+		}).Error(nil, "[Entity][AddCoingeckoTokenAlias] repo.CoingeckoTokenAlias.SetAlias() failed")
+		return err
+	}
+
+	return nil
 }

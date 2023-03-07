@@ -377,6 +377,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins/binance/:symbol", h.Defi.GetBinanceCoinData)
 		defiGroup.GET("/coins", h.Defi.SearchCoins)
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
+		defiGroup.POST("/coins/alias", h.Defi.AddCoingeckoTokenAlias)
 		defiGroup.GET("/chains", h.Defi.ListAllChain)
 
 		watchlistGroup := defiGroup.Group("/watchlist")
