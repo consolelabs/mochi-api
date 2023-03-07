@@ -102,15 +102,16 @@ func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, i
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-		return nil, err
+	if query != "skull" {
+		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+			return nil, err
+		}
+		if err == nil {
+			return []model.CoingeckoSupportedTokens{*token}, nil
+		}
 	}
-	if err == nil {
-		return []model.CoingeckoSupportedTokens{*token}, nil
-	}
-
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {
