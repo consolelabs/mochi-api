@@ -166,10 +166,6 @@ func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakC
 }
 
 func (d *Discord) SendGuildActivityLogs(channelID, userID, title, description string) error {
-	if channelID == "" {
-		return nil
-	}
-
 	dcUser, err := d.session.User(userID)
 	if err != nil {
 		d.log.Errorf(err, "[SendGuildActivityLogs] - get discord user failed %s", userID)

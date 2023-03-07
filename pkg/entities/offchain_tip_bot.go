@@ -143,6 +143,8 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 	// notify tip to other platform: twitter, telegram, ...
 	e.NotifyTipFromPlatforms(req, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID])
 
+	e.sendTipBotLogs(log, supportedToken.TokenSymbol, "")
+
 	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
 }
 
@@ -386,6 +388,8 @@ func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*r
 		}})
 	}
 
+	e.sendTipBotLogs(successLog, offchainToken.TokenSymbol, "")
+
 	return &response.OffchainTipBotWithdraw{
 		UserDiscordID:  req.Recipient,
 		ToAddress:      req.RecipientAddress,
@@ -509,7 +513,6 @@ func (e *Entity) GetContracts(req request.TipBotGetContractsRequest) ([]model.Of
 	return contracts, nil
 }
 
-// TODO: refactor
 func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 	e.log.Fields(logger.Fields{"txHash": req.TxHash, "chainID": req.ChainID}).Info("receiving new deposit ...")
 	chain, err := e.repo.OffchainTipBotChain.GetByChainID(req.ChainID)
@@ -598,7 +601,6 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 	err = e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&log)
 	if err != nil {
 		e.log.Fields(logger.Fields{"model": log}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotActivityLogs.CreateActivityLog() failed")
-		return nil
 	}
 	histories := []model.OffchainTipBotTransferHistory{
 		{
@@ -614,18 +616,21 @@ func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {
 	_, err = e.repo.OffchainTipBotTransferHistories.CreateTransferHistories(histories)
 	if err != nil {
 		e.log.Fields(logger.Fields{"histories": histories}).Error(err, "[entity.HandleIncomingDeposit] repo.OffchainTipBotTransferHistories.CreateTransferHistories() failed")
-		return nil
 	}
 
 	// discord notification
 	err = e.notifyDepositTx(amount, userID, chain.ExplorerURL, req.TxHash, *offchainToken, priceInUSD)
 	if err != nil {
 		e.log.Fields(logger.Fields{"amount": amount, "userID": userID, "token": *offchainToken}).Error(err, "[entity.HandleIncomingDeposit] e.notifyDepositTx() failed")
-		return err
 	}
 
 	// sweep tokens
-	return e.sweepTokens(req, assignedContract.ContractID.String(), token, chain.IsEVM)
+	err = e.sweepTokens(req, assignedContract.ContractID.String(), token, chain.IsEVM)
+	if err != nil {
+		e.log.Fields(logger.Fields{"contract": req.ToAddress, "userID": userID, "token": req.TokenSymbol}).Error(err, "[entity.HandleIncomingDeposit] e.sweepTokens() failed")
+	}
+	e.sendTipBotLogs(log, offchainToken.TokenSymbol, req.FromAddress)
+	return nil
 }
 
 func (e *Entity) sweepTokens(req request.TipBotDepositRequest, contractID string, token model.Token, isEVM bool) error {
@@ -685,14 +690,14 @@ func (e *Entity) notifyDepositTx(amount float64, userID, explorerUrl, signature 
 		Description: fmt.Sprintf("Your **%s** (%s) deposit has been confirmed.", token.TokenName, token.TokenSymbol),
 		Fields: []*discordgo.MessageEmbedField{
 			{
-				Name:  "Deposited",
+				Name:   "Deposited",
 				Inline: true,
-				Value: fmt.Sprintf("%.6f %s\n`$%.2f`", amount, token.TokenSymbol, amountInUSD),
+				Value:  fmt.Sprintf("%.6f %s\n`$%.2f`", amount, token.TokenSymbol, amountInUSD),
 			},
 			{
-				Name:  "Balance",
+				Name:   "Balance",
 				Inline: true,
-				Value: fmt.Sprintf("%.6f %s\n`$%.2f`", userBal.Amount, token.TokenSymbol, balanceInUSD),
+				Value:  fmt.Sprintf("%.6f %s\n`$%.2f`", userBal.Amount, token.TokenSymbol, balanceInUSD),
 			},
 			{
 				Name:  "Transaction ID",
@@ -731,6 +736,50 @@ func (e *Entity) UpsertBatchOfUserBalances(action, tokenSymbol string, list []mo
 	err = e.repo.OffchainTipBotUserBalanceSnapshot.CreateBatch(snapshots)
 	if err != nil {
 		e.log.Fields(logger.Fields{"batch": len(list)}).Error(err, "[entity.UpsertBatchOfUserBalances] repo.OffchainTipBotUserBalanceSnapshot.CreateBatch() failed")
+	}
+	return nil
+}
+
+func (e *Entity) sendTipBotLogs(log model.OffchainTipBotActivityLog, token, depositSource string) error {
+	if log.GuildID == nil || *log.GuildID == "" || *log.GuildID == "DM" {
+		return nil
+	}
+	guild, err := e.repo.DiscordGuilds.GetByID(*log.GuildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": *log.GuildID}).Error(err, "[entity.sendTipBotLogs] repo.DiscordGuilds.GetByID() failed")
+		return err
+	}
+	if guild.LogChannel == "" {
+		return nil
+	}
+
+	token = strings.ToUpper(token)
+	senderID := *log.UserID
+	amount := log.Amount
+
+	var description string
+	switch *log.Action {
+	case "tip":
+		var recipients []string
+		for _, r := range log.Receiver {
+			recipients = append(recipients, fmt.Sprintf("<@%s>", r))
+		}
+		recipientsStr := strings.Join(recipients, ",")
+		description = fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", senderID, recipientsStr, amount, token, *log.ChannelID)
+		if len(description) > 2000 {
+			description = fmt.Sprintf("<@%s> has sent %d people **%g %s** each at <#%s>", senderID, len(recipients), amount, token, *log.ChannelID)
+		}
+	case "withdraw":
+		description = fmt.Sprintf("<@%s> has made a withdrawal of **%g %s** to address `%s` at <#%s>", senderID, log.Amount, token, log.Receiver[0], *log.ChannelID)
+	case "deposit":
+		description = fmt.Sprintf("<@%s> has just deposited **%g %s** from address `%s`", senderID, log.Amount, token, depositSource)
+	case "airdrop":
+		description = fmt.Sprintf("<@%s> has just airdropped **%g %s** at <#%s>", senderID, log.Amount, token, *log.ChannelID)
+	}
+	err = e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, senderID, strings.ToUpper(*log.Action), description)
+	if err != nil {
+		e.log.Fields(logger.Fields{"activity": log}).Error(err, "[entity.sendTipBotLogs] svc.Discord.SendGuildActivityLogs() failed")
+		return err
 	}
 	return nil
 }
