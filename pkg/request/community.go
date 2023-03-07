@@ -6,6 +6,7 @@ type InsertUserAd struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
 	Image        string `json:"image"`
+	IsPodtownAd  bool   `json:"is_podtown_ad"`
 }
 
 type InitAdSubmission struct {

@@ -214,6 +214,11 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "boolean",
+                        "name": "is_podtown_ad",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "name",
                         "in": "query"
@@ -244,6 +249,41 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/community/advertise/init": {
+            "post": {
+                "description": "Init ad submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Init ad submission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "channel_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "guild_id",
                         "in": "query"
                     }
                 ],
@@ -5979,7 +6019,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tip/onchain/transfer": {
+        "/tip/onchain/submit": {
             "post": {
                 "description": "Onchain Tip Bot - Submit transfer transaction",
                 "consumes": [
@@ -12128,6 +12168,9 @@ const docTemplate = `{
                 },
                 "introduction": {
                     "type": "string"
+                },
+                "is_podtown_ad": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
