@@ -97,6 +97,7 @@ import (
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
+	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
@@ -204,4 +205,5 @@ type Repo struct {
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
+	UserTokenSupportRequest              usertokensupportrequest.Store
 }

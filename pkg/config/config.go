@@ -63,6 +63,7 @@ type Config struct {
 	MochiFeedbackChannelID      string
 	MochiAdDiscussionCategoryID string
 	MochiAdDiscussionChannelID  string
+	MochiTokenRequestChannelID  string
 
 	MoralisXApiKey string
 
@@ -213,6 +214,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		MochiFeedbackChannelID:      v.GetString("MOCHI_FEEDBACK_CHANNEL_ID"),
 		MochiAdDiscussionCategoryID: v.GetString("MOCHI_AD_DISCUSSION_CATEGORY_ID"),
 		MochiAdDiscussionChannelID:  v.GetString("MOCHI_AD_DISCUSSION_CHANNEL_ID"),
+		MochiTokenRequestChannelID:  v.GetString("MOCHI_TOKEN_REQUEST_CHANNEL_ID"),
 
 		MoralisXApiKey: v.GetString("MORALIS_X_API_KEY"),
 
