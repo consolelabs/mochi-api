@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -185,7 +186,8 @@ func (e *Entity) DeleteGuildConfigWalletVerificationMessage(guildID string) erro
 
 	if verificationMsg.DiscordMessageID != "" {
 		err = e.discord.ChannelMessageDelete(verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
-		if err != nil {
+		// case user deleted channel
+		if err != nil && !strings.Contains(err.Error(),"Not Found"){
 			return fmt.Errorf("failed to delete discord message: %v", err.Error())
 		}
 	}
