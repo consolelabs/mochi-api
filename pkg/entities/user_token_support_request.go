@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"gorm.io/gorm"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -12,7 +14,6 @@ import (
 	tokenSuportReq "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSupportRequest) (*model.UserTokenSupportRequest, error) {
