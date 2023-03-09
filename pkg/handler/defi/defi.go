@@ -2,7 +2,9 @@ package defi
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -431,4 +433,81 @@ func (h *Handler) GetBinanceCoinData(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// CreateUserTokenSupportRequest     godoc
+// @Summary     Request support token
+// @Description Request support token
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       Request body  request.CreateUserTokenSupportRequest true  "Create user token support request"
+// @Success     200 {object} response.CreateUserTokenSupportRequest
+// @Router      /defi/token-support [post]
+func (h *Handler) CreateUserTokenSupportRequest(c *gin.Context) {
+	req := &request.CreateUserTokenSupportRequest{}
+	if err := c.ShouldBindJSON(req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateUserTokenSupportRequest] - c.ShouldBindJSON failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	res, err := h.entities.CreateUserTokenSupportRequest(*req)
+	if err != nil {
+		h.log.Error(err, "[handler.CreateUserTokenSupportRequest] - entities.CreateUserTokenSupportRequest failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+// ApproveUserTokenSupportRequest     godoc
+// @Summary     Approve support token request
+// @Description Approve support token request
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       id path int true  "Support Token Request ID"
+// @Success     200 {object} response.CreateUserTokenSupportRequest
+// @Router      /defi/token-support/{id}/approve [put]
+func (h *Handler) ApproveUserTokenSupportRequest(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.ApproveUserTokenSupportRequest] - invalid id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("invalid request id"), nil))
+		return
+	}
+	res, err := h.entities.ApproveTokenSupportRequest(id)
+	if err != nil {
+		h.log.Error(err, "[handler.ApproveUserTokenSupportRequest] - entities.ApproveTokenSupportRequest() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
+// RejectUserTokenSupportRequest     godoc
+// @Summary     Reject support token request
+// @Description Reject support token request
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       id path  int true  "Support Token Request ID"
+// @Success     200 {object} response.CreateUserTokenSupportRequest
+// @Router      /defi/token-support/{id}/reject [put]
+func (h *Handler) RejectUserTokenSupportRequest(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RejectTokenSupportRequest] - invalid id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("invalid request id"), nil))
+		return
+	}
+	res, err := h.entities.RejectTokenSupportRequest(id)
+	if err != nil {
+		h.log.Error(err, "[handler.RejectTokenSupportRequest] - entities.RejectTokenSupportRequest() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }

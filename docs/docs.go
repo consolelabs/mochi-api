@@ -4501,6 +4501,104 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/token-support": {
+            "post": {
+                "description": "Request support token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Request support token",
+                "parameters": [
+                    {
+                        "description": "Create user token support request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateUserTokenSupportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateUserTokenSupportRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/token-support/{id}/approve": {
+            "put": {
+                "description": "Approve support token request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Approve support token request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Support Token Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateUserTokenSupportRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/token-support/{id}/reject": {
+            "put": {
+                "description": "Reject support token request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Reject support token request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Support Token Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateUserTokenSupportRequest"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/tokens": {
             "get": {
                 "description": "Get supported tokens",
@@ -9171,6 +9269,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserTokenSupportRequest": {
+            "type": "object",
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "token_address": {
+                    "type": "string"
+                },
+                "token_chain_id": {
+                    "type": "integer"
+                },
+                "token_name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserWallet": {
             "type": "object",
             "properties": {
@@ -9795,6 +9928,37 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateUserTokenSupportRequest": {
+            "type": "object",
+            "required": [
+                "channel_id",
+                "message_id",
+                "token_address",
+                "token_chain",
+                "token_name",
+                "user_discord_id"
+            ],
+            "properties": {
+                "channel_id": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "token_address": {
+                    "type": "string"
+                },
+                "token_chain": {
+                    "type": "string"
+                },
+                "token_name": {
+                    "type": "string"
+                },
+                "user_discord_id": {
                     "type": "string"
                 }
             }
@@ -11076,6 +11240,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.SaleBotTwitterConfig"
+                }
+            }
+        },
+        "response.CreateUserTokenSupportRequest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserTokenSupportRequest"
                 }
             }
         },

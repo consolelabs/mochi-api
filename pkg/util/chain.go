@@ -118,7 +118,7 @@ func ConvertInputToChainId(input string) string {
 	}
 
 	for k, v := range mapChainIdChain {
-		if v == input {
+		if v == strings.ToLower(input) {
 			chainId = k
 		}
 	}
