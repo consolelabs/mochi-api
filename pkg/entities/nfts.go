@@ -1092,12 +1092,14 @@ func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*respons
 		symbols, _ := e.GetDefaultCollectionSymbol(req.GuildID)
 		for _, col := range collections {
 			// if found default symbol
+			chainId, _ := strconv.Atoi(col.ChainID)
 			if len(symbols) != 0 && checkIsDefaultSymbol(symbols, &col) {
 				def := response.CollectionSuggestions{
 					Address: col.Address,
 					Chain:   util.ConvertChainIDToChain(col.ChainID),
 					Name:    col.Name,
 					Symbol:  col.Symbol,
+					ChainId: int64(chainId),
 				}
 				defaultSymbol = &def
 			}
@@ -1106,6 +1108,7 @@ func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*respons
 				Symbol:  col.Symbol,
 				Address: col.Address,
 				Chain:   util.ConvertChainIDToChain(col.ChainID),
+				ChainId: int64(chainId),
 			})
 		}
 		return &response.NftWatchlistSuggest{
