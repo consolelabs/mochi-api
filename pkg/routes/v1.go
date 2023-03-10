@@ -371,6 +371,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/tokens", h.Defi.GetSupportedTokens)
 		defiGroup.GET("/token", h.Defi.GetSupportedToken)
 
+		tokenSupportReqGroup := defiGroup.Group("/token-support")
+		{
+			tokenSupportReqGroup.POST("", h.Defi.CreateUserTokenSupportRequest)
+			tokenSupportReqGroup.PUT("/:id/approve", h.Defi.ApproveUserTokenSupportRequest)
+			tokenSupportReqGroup.PUT("/:id/reject", h.Defi.RejectUserTokenSupportRequest)
+		}
+
 		// Data from CoinGecko
 		defiGroup.GET("/market-chart", h.Defi.GetHistoricalMarketChart)
 		defiGroup.GET("/coins/:id", h.Defi.GetCoin)

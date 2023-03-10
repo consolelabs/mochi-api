@@ -178,7 +178,7 @@ type CoinMarketItemData struct {
 }
 
 type GetWatchlistResponse struct {
-	Pagination *PaginationResponse 	`json:"metadata"`
+	Pagination *PaginationResponse  `json:"metadata"`
 	Data       []CoinMarketItemData `json:"data"`
 }
 
@@ -225,4 +225,8 @@ type ListTokenPriceAlertResponse struct {
 	SnoozedTo     time.Time            `json:"snoozed_to"`
 	CreatedAt     time.Time            `json:"created_at"`
 	UpdatedAt     time.Time            `json:"updated_at"`
+}
+
+type CreateUserTokenSupportRequest struct {
+	Data *model.UserTokenSupportRequest `json:"data"`
 }
