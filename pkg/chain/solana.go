@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"math/big"
 
 	"github.com/portto/solana-go-sdk/client"
 	"github.com/portto/solana-go-sdk/common"
@@ -36,6 +37,21 @@ func (s *Solana) Balance(address string) (float64, error) {
 		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[solana.Balance] client.GetBalance() failed")
 	}
 	return float64(balance) / 1e9, err
+}
+
+func (s *Solana) GetTokenBalance(walletAddress, tokenAddress string) (*big.Int, error) {
+	balances, err := s.client.GetTokenAccountsByOwner(context.Background(), walletAddress)
+	if err != nil {
+		s.logger.Fields(logger.Fields{"walletAddress": walletAddress}).Error(err, "[solana.Balance] client.GetBalance() failed")
+	}
+	var bal uint64
+	for _, v := range balances {
+		if v.Mint == common.PublicKeyFromString(tokenAddress) {
+			bal = v.Amount
+			break
+		}
+	}
+	return new(big.Int).SetUint64(bal), err
 }
 
 func (s *Solana) Transfer(senderPK, recipientAddr string, amount float64, all bool) (string, float64, error) {
