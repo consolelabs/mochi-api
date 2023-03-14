@@ -325,29 +325,6 @@ func (e *Entity) calculateNFTBalance(chainId int64, tokenAddress, walletAddress 
 	return balance, err
 }
 
-// func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress, discordID string) (*big.Int, error) {
-// 	chainIdStr := strconv.FormatInt(chainId, 10)
-// 	token := model.Token{
-// 		Address: tokenAddress,
-// 		ChainID: int(chainId),
-// 	}
-// 	balanceOf, err := e.GetTokenBalanceFunc(chainIdStr, token)
-// 	if err != nil {
-// 		e.log.Fields(logger.Fields{
-// 			"token": token,
-// 		}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
-// 		return nil, err
-// 	}
-// 	balance, err := balanceOf(walletAddress)
-// 	if err != nil {
-// 		e.log.Fields(logger.Fields{
-// 			"wallletAddress": walletAddress,
-// 		}).Error(err, "[entities.TokenHolderStatus] - get user balance failed")
-// 		return nil, err
-// 	}
-// 	return balance, err
-// }
-
 func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress, discordID string) (*big.Int, error) {
 	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID)
 	if err != nil {
