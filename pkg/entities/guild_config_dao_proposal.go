@@ -178,7 +178,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		}).Error(err, "[entity.CreateProposalChannelConfig] e.repo.DaoGuidelineMessages.GetByAuthority failed")
 		return nil, err
 	}
-	msgDescription := fmt.Sprintf(messageTempl.Message, req.RequiredAmount, symbol)
+	msgDescription := fmt.Sprintf(messageTempl.Message, requiredAmount.Text(10), symbol)
 	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription, "tokenholder"); err != nil {
 		return nil, err
 	}
