@@ -359,9 +359,7 @@ func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress
 	for _, addr := range walletAddrs {
 		go func(chainId int64, tokenAddress, currentWallet string) {
 			defer wg.Done()
-			e.log.Infof("GET TOKEN %s BALANCE OF %s", tokenAddress, currentWallet)
 			bal, err := e.fetchTokenBalanceByChain(chainId, tokenAddress, currentWallet)
-			e.log.Infof("GOT %s TOKEN %s BALANCE OF %s", bal.Text(10), tokenAddress, currentWallet)
 			if err == nil {
 				bals <- bal
 			}
