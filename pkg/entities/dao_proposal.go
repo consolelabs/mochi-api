@@ -45,13 +45,23 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 	if config.Type != nil && *config.Type == model.CryptoToken {
 		optionId = &tokenOptId
 	}
+
+	token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainID))
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"walletAddress": config.Address,
+			"chainId":       config.ChainID,
+		}).Error(err, "[entities.CreateDaoProposal] - repo.Token.GetByAddress failed")
+		return nil, err
+	}
+	requiredAmtBig := big.NewInt(1).Mul(big.NewInt(1), math.BigPow(10, int64(token.Decimals))).Text(10)
 	proposalVoteOption := model.DaoProposalVoteOption{
 		ProposalId:     daoProposal.Id,
 		Address:        config.Address,
 		ChainId:        config.ChainID,
 		Symbol:         config.Symbol,
 		VoteOptionId:   optionId,
-		RequiredAmount: "1",
+		RequiredAmount: requiredAmtBig,
 	}
 
 	_, err = e.repo.DaoProposalVoteOption.Create(&proposalVoteOption)
