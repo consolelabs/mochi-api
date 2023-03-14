@@ -16,6 +16,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
 	"github.com/defipod/mochi/pkg/service/snapshot"
@@ -42,6 +43,7 @@ type Service struct {
 	Binance      binance.Service
 	APILayer     apilayer.Service
 	Bluemove     bluemove.Service
+	MochiProfile mochiprofile.Service
 }
 
 func NewService(
@@ -71,5 +73,6 @@ func NewService(
 		Binance:      binance.NewService(),
 		APILayer:     apilayer.NewService(&cfg),
 		Bluemove:     bluemove.New(&cfg, log),
+		MochiProfile: mochiprofile.NewService(&cfg, log),
 	}, nil
 }

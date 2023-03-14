@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"sync"
 
+	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/ethereum/go-ethereum/common/math"
 	"gorm.io/gorm"
 )
 
@@ -143,6 +146,8 @@ func (e *Entity) TokenHolderStatus(query request.TokenHolderStatusRequest) (*res
 	}
 }
 
+// We still keep using user_wallet here to help keep backward compatibility
+// In the future when all user data is migrated to MochiProfile service, we can remove the user_wallet
 func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
 	if query.GuildID == "" {
 		return nil, errs.ErrInvalidDiscordGuildID
@@ -179,10 +184,11 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 		}, nil
 	}
 
-	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, config.Address, config.ChainID)
+	userBalance, err := e.calculateUserBalance(*config.Type, walletAddress, query.UserID, config.Address, config.ChainID)
 	if err != nil {
 		return nil, err
 	}
+	e.log.Infof("USER BALANCE %s", userBalance.Text(10))
 	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
 	if !ok {
 		err = fmt.Errorf("cannot convert big int from string")
@@ -194,6 +200,19 @@ func (e *Entity) tokenHolderStatusForCreatingProposal(walletAddress string, quer
 	}
 	isQualified = userBalance.Cmp(requiredAmountBigInt) != -1
 	userHoldingAmount := userBalance.Text(10)
+	token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainID))
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"walletAddress": config.Address,
+			"chainId":       config.ChainID,
+		}).Error(err, "[entities.TokenHolderStatus] - repo.Token.GetByAddress failed")
+		return nil, err
+	}
+	// Convert to floating type
+	requiredAmtFloat := new(big.Float).SetInt(requiredAmountBigInt)
+	decimalsFloat := new(big.Float).SetInt(math.BigPow(10, int64(token.Decimals)))
+	requiredAmtText, _ := requiredAmtFloat.Quo(requiredAmtFloat, decimalsFloat).Float64()
+	config.RequiredAmount = fmt.Sprintf("%.2f", requiredAmtText)
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
@@ -230,7 +249,7 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		}, nil
 	}
 
-	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, config.Address, config.ChainId)
+	userBalance, err := e.calculateUserBalance(voteOption.Type, walletAddress, query.UserID, config.Address, config.ChainId)
 	if err != nil {
 		return nil, err
 	}
@@ -244,7 +263,23 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 		return nil, err
 	}
 	isQualified = userBalance.Cmp(requiredAmountBigInt) != -1
+
+	token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainId))
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"walletAddress": config.Address,
+			"chainId":       config.ChainId,
+		}).Error(err, "[entities.TokenHolderStatus] - repo.Token.GetByAddress failed")
+		return nil, err
+	}
+	// Convert to floating type
+	requiredAmtFloat := new(big.Float).SetInt(requiredAmountBigInt)
+	decimalsFloat := new(big.Float).SetInt(math.BigPow(10, int64(token.Decimals)))
+	requiredAmtText, _ := requiredAmtFloat.Quo(requiredAmtFloat, decimalsFloat).Float64()
+	config.RequiredAmount = fmt.Sprintf("%.2f", requiredAmtText)
+
 	userHoldingAmount := userBalance.Text(10)
+
 	return &response.TokenHolderStatus{
 		Data: &response.TokenHolderStatusData{
 			IsWalletConnected: true,
@@ -255,37 +290,30 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 	}, nil
 }
 
-func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walletAddress, tokenAddress string, chainId int64) (*big.Int, error) {
-	// TODO: Add calculate off-chain balance
-	chainIdStr := strconv.FormatInt(chainId, 10)
-	var balanceOf func(string) (*big.Int, error)
-	var err error
+func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walletAddress, discordID, tokenAddress string, chainId int64) (*big.Int, error) {
 	switch votingType {
 	case model.NFT:
-		nftConfig := model.NFTCollectionConfig{
-			ChainID:   chainIdStr,
-			Address:   tokenAddress,
-			ERCFormat: "erc721",
-		}
-		balanceOf, err = e.GetNFTBalanceFunc(nftConfig)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"config": nftConfig,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
-			return nil, err
-		}
+		return e.calculateNFTBalance(chainId, tokenAddress, walletAddress)
 	case model.CryptoToken:
-		token := model.Token{
-			Address: tokenAddress,
-			ChainID: int(chainId),
-		}
-		balanceOf, err = e.GetTokenBalanceFunc(chainIdStr, token)
-		if err != nil {
-			e.log.Fields(logger.Fields{
-				"token": token,
-			}).Error(err, "[entities.TokenHolderStatus] - e.GetTokenBalanceFunc failed")
-			return nil, err
-		}
+		return e.calcuateTokenBalance(chainId, tokenAddress, walletAddress, discordID)
+	default:
+		return nil, fmt.Errorf("invalid voting type")
+	}
+}
+
+func (e *Entity) calculateNFTBalance(chainId int64, tokenAddress, walletAddress string) (*big.Int, error) {
+	chainIdStr := strconv.FormatInt(chainId, 10)
+	nftConfig := model.NFTCollectionConfig{
+		ChainID:   chainIdStr,
+		Address:   tokenAddress,
+		ERCFormat: "erc721",
+	}
+	balanceOf, err := e.GetNFTBalanceFunc(nftConfig)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"config": nftConfig,
+		}).Error(err, "[entities.TokenHolderStatus] - e.GetNFTBalanceFunc failed")
+		return nil, err
 	}
 	balance, err := balanceOf(walletAddress)
 	if err != nil {
@@ -295,6 +323,87 @@ func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walle
 		return nil, err
 	}
 	return balance, err
+}
+
+func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress, discordID string) (*big.Int, error) {
+	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
+		return nil, err
+	}
+	includedPlatform := "evm-chain"
+	if chainId == 999 {
+		includedPlatform = "solana-chain"
+	}
+	var walletAddrs []string
+	// add the old evm wallet address in user_wallet table for backward compatibility
+	// should remove this after migrated all user profile to Mochi Profile service
+	if includedPlatform == "evm-chain" {
+		walletAddrs = append(walletAddrs, walletAddress)
+	}
+	for _, p := range profiles.AssociatedAccounts {
+		if p.Platform == includedPlatform && p.PlatformIdentifier != walletAddress {
+			walletAddrs = append(walletAddrs, p.PlatformIdentifier)
+		}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(walletAddrs))
+	bals := make(chan *big.Int)
+	go func() {
+		wg.Wait()
+		close(bals)
+	}()
+
+	// Fetch balance concurrently
+	for _, addr := range walletAddrs {
+		go func(chainId int64, tokenAddress, currentWallet string) {
+			defer wg.Done()
+			bal, err := e.fetchTokenBalanceByChain(chainId, tokenAddress, currentWallet)
+			if err == nil {
+				bals <- bal
+			}
+		}(chainId, tokenAddress, addr)
+	}
+
+	totalBalances := big.NewInt(0)
+	for b := range bals {
+		totalBalances = big.NewInt(0).Add(totalBalances, b)
+	}
+
+	return totalBalances, nil
+}
+
+func (e *Entity) fetchTokenBalanceByChain(chainId int64, tokenAddress, walletAddress string) (*big.Int, error) {
+	log := e.log.Fields(logger.Fields{"chainID": chainId, "tokenAddress": tokenAddress, "walletAddress": walletAddress})
+	switch chainId {
+	case 999: // SOL
+		client := chain.NewSolanaClient(&e.cfg, e.log)
+		bal, err := client.GetTokenBalance(walletAddress, tokenAddress)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenbalanceByChain] solClient.GetTokenBalance failed")
+			return nil, err
+		}
+		return bal, nil
+	case 1, 10, 56, 137, 250, 42161: //EVM
+		token := model.Token{
+			Address: tokenAddress,
+			ChainID: int(chainId),
+		}
+		balanceOf, err := e.GetTokenBalanceFunc(strconv.FormatInt(chainId, 10), token)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - e.GetTokenBalanceFunc failed")
+			return nil, err
+		}
+		balance, err := balanceOf(walletAddress)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - get user balance failed")
+			return nil, err
+		}
+		return balance, err
+	default:
+		return nil, fmt.Errorf("chain is not supported")
+	}
 }
 
 // Get all threads in a community

@@ -67,7 +67,8 @@ type Config struct {
 
 	MoralisXApiKey string
 
-	IndexerServerHost string
+	IndexerServerHost      string
+	MochiProfileServerHost string
 
 	PodtownServerHost string
 
@@ -221,6 +222,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		IndexerServerHost: v.GetString("INDEXER_SERVER_HOST"),
 
 		PodtownServerHost: v.GetString("PODTOWN_SERVER_HOST"),
+
+		MochiProfileServerHost: v.GetString("MOCHI_PROFILE_SERVER_HOST"),
 
 		RpcUrl: RpcUrl{
 			Eth:      v.GetString("ETH_RPC"),
