@@ -3,15 +3,15 @@ package mochiprofile
 import "time"
 
 type GetProfileByDiscordResponse struct {
-	ID                 int                 `json:"id"`
+	ID                 string              `json:"id"`
 	AssociatedAccounts []AssociatedAccount `json:"associated_accounts"`
 	CreatedAt          time.Time           `json:"created_at"`
 	UpdatedAt          time.Time           `json:"updated_at"`
 }
 
 type AssociatedAccount struct {
-	ID                 int       `json:"id"`
-	ProfileID          int       `json:"profile_id"`
+	ID                 string    `json:"id"`
+	ProfileID          string    `json:"profile_id"`
 	Platform           string    `json:"platform"`
 	PlatformIdentifier string    `json:"platform_identifier"`
 	CreatedAt          time.Time `json:"created_at"`
