@@ -155,7 +155,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		symbol = collection.Symbol
 		requiredAmount = big.NewInt(int64(req.RequiredAmount))
 	case model.CryptoToken:
-		token, err := e.repo.Token.GetBySymbol(req.Chain, true)
+		token, err := e.repo.Token.GetByAddress(req.Address, chainIdNumber)
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				return nil, errors.ErrInvalidTokenContract
@@ -178,7 +178,7 @@ func (e *Entity) createConfigDaoProposalWithTokenHolderAuthority(req request.Cre
 		}).Error(err, "[entity.CreateProposalChannelConfig] e.repo.DaoGuidelineMessages.GetByAuthority failed")
 		return nil, err
 	}
-	msgDescription := fmt.Sprintf(messageTempl.Message, requiredAmount.Text(10), symbol)
+	msgDescription := fmt.Sprintf(messageTempl.Message, fmt.Sprintf("%.2f", req.RequiredAmount), symbol)
 	if err := e.sendGuidelineMessage(guidelineChannel.ID, msgDescription, "tokenholder"); err != nil {
 		return nil, err
 	}
