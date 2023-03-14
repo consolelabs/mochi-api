@@ -263,30 +263,8 @@ func (e *Entity) tokenHolderStatusForVoting(walletAddress string, query request.
 	if err != nil {
 		return nil, err
 	}
-	requiredAmountBigInt, ok := new(big.Int).SetString(config.RequiredAmount, 10)
-	if !ok {
-		err = fmt.Errorf("cannot convert big int from string")
-		e.log.Fields(logger.Fields{
-			"requiredAmount": config.RequiredAmount,
-			"base":           10,
-		}).Error(err, "[entities.TokenHolderStatus] - new(big.Int).SetString failed")
-		return nil, err
-	}
-	isQualified = userBalance.Cmp(requiredAmountBigInt) != -1
-
-	token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainId))
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"walletAddress": config.Address,
-			"chainId":       config.ChainId,
-		}).Error(err, "[entities.TokenHolderStatus] - repo.Token.GetByAddress failed")
-		return nil, err
-	}
-	// Convert to floating type
-	requiredAmtFloat := new(big.Float).SetInt(requiredAmountBigInt)
-	decimalsFloat := new(big.Float).SetInt(math.BigPow(10, int64(token.Decimals)))
-	requiredAmtText, _ := requiredAmtFloat.Quo(requiredAmtFloat, decimalsFloat).Float64()
-	config.RequiredAmount = fmt.Sprintf("%.2f", requiredAmtText)
+	// Just need user balance > 0
+	isQualified = userBalance.Cmp(big.NewInt(0)) == 1
 
 	userHoldingAmount := userBalance.Text(10)
 
