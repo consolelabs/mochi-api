@@ -10,7 +10,7 @@ import (
 
 // NewRoutes ...
 func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
-	// asdsda
+	// API for Mpchi interface
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
 	authGroup := v1.Group("/auth")
