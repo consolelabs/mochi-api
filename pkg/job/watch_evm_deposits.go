@@ -51,7 +51,7 @@ func (job *watchEvmDeposits) Run() error {
 		}
 		chainID := *contract.Chain.ChainID
 		contractAddr := contract.ContractAddress
-		transactionsRes, err := covalentSvc.GetTransactionsByAddress(chainID, contractAddr, 1000, 3)
+		transactionsRes, err := covalentSvc.GetTransactionsByAddress(chainID, contractAddr, 100, 3)
 		if err != nil {
 			log.Error(err, "[watchEvmDeposits] covalentSvc.GetTransactionsByAddress() failed")
 			continue
