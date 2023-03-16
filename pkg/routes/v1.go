@@ -402,6 +402,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		gasTrackerGroup := defiGroup.Group("/gas-tracker")
 		{
 			gasTrackerGroup.GET("", h.Defi.GetGasTracker)
+			gasTrackerGroup.GET("/:chain", h.Defi.GetChainGasTracker)
 		}
 	}
 
