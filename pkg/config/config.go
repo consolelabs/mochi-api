@@ -105,8 +105,9 @@ type Config struct {
 
 	APILayerAPIKey string
 
-	Kafka   Kafka
-	Solscan Solscan
+	Kafka         Kafka
+	Solscan       Solscan
+	ChainExplorer ChainExplorer
 }
 
 type MarketplaceBaseUrl struct {
@@ -136,6 +137,12 @@ type RpcUrl struct {
 	Onus     string
 }
 
+type ChainExplorer struct {
+	PolygonScanApiKey string
+	FtmScanApiKey     string
+	EtherScanApiKey   string
+	BscScanApiKey     string
+}
 type Kafka struct {
 	Brokers string
 	Topic   string
@@ -279,6 +286,12 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		},
 		Solscan: Solscan{
 			Token: v.GetString("SOLSCAN_TOKEN"),
+		},
+		ChainExplorer: ChainExplorer{
+			FtmScanApiKey:     v.GetString("FTMSCAN_API_KEY"),
+			EtherScanApiKey:   v.GetString("ETHERSCAN_API_KEY"),
+			BscScanApiKey:     v.GetString("BSCSCAN_API_KEY"),
+			PolygonScanApiKey: v.GetString("POLYGONSCAN_API_KEY"),
 		},
 	}
 }

@@ -399,6 +399,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			priceAlertGroup.POST("", h.Defi.AddTokenPriceAlert)
 			priceAlertGroup.DELETE("", h.Defi.RemoveTokenPriceAlert)
 		}
+		gasTrackerGroup := defiGroup.Group("/gas-tracker")
+		{
+			gasTrackerGroup.GET("", h.Defi.GetGasTracker)
+		}
 	}
 
 	verifyGroup := v1.Group("/verify")
