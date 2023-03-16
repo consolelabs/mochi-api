@@ -779,3 +779,15 @@ func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
 
 	return data, nil
 }
+
+func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse, error) {
+	chainModel, err := e.repo.Chain.GetByShortName(chain)
+
+	data, err := e.svc.ChainExplorer.GetGasTracker([]model.Chain{*chainModel})
+	if err != nil {
+		e.log.Error(err, "[entity.GetChainGasTracker] e.svc.GasTracker.GetGasTracker() failed")
+		return nil, err
+	}
+
+	return &data[0], nil
+}

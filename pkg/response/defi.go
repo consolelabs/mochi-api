@@ -235,6 +235,10 @@ type GasTrackerResponseData struct {
 	Data []GasTrackerResponse `json:"data"`
 }
 
+type ChainGasTrackerResponseData struct {
+	Data *GasTrackerResponse `json:"data"`
+}
+
 type GasTrackerResponse struct {
 	Chain           string `json:"chain"`
 	SafeGasPrice    string `json:"safe_gas_price"`
