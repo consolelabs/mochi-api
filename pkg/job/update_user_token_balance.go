@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/service"
 )
 
 type updateUserTokenBalances struct {
@@ -15,7 +16,7 @@ type updateUserTokenBalances struct {
 	log    logger.Logger
 }
 
-func NewUpdateUserTokenBalancesJob(e *entities.Entity, l logger.Logger) Job {
+func NewUpdateUserTokenBalancesJob(e *entities.Entity, l logger.Logger, svc service.Service) Job {
 	return &updateUserTokenBalances{
 		entity: e,
 		log:    l,

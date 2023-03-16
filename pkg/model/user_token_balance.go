@@ -1,10 +1,9 @@
 package model
 
 type UserTokenBalance struct {
-	UserAddress string         `json:"user_address"`
-	ChainType   JSONNullString `json:"chain_type"`
-	TokenID     int            `json:"token_id"`
-	Balance     float64        `json:"balance"`
+	UserDiscordID string `json:"user_discord_id"`
+	TokenID       int    `json:"token_id"`
+	Balance       string `json:"balance" gorm:"type:numeric"`
 }
 
 type UserTokenBalancesByGuild struct {

@@ -6,14 +6,15 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/ethereum/go-ethereum/common/math"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/ethereum/go-ethereum/common/math"
-	"gorm.io/gorm"
 )
 
 func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*model.DaoProposal, error) {
@@ -283,7 +284,7 @@ func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walle
 	case model.NFT:
 		return e.calculateNFTBalance(chainId, tokenAddress, walletAddress)
 	case model.CryptoToken:
-		return e.calcuateTokenBalance(chainId, tokenAddress, walletAddress, discordID)
+		return e.CalculateTokenBalance(chainId, tokenAddress, discordID)
 	default:
 		return nil, fmt.Errorf("invalid voting type")
 	}
@@ -313,7 +314,7 @@ func (e *Entity) calculateNFTBalance(chainId int64, tokenAddress, walletAddress 
 	return balance, err
 }
 
-func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress, discordID string) (*big.Int, error) {
+func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID string) (*big.Int, error) {
 	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
@@ -324,13 +325,8 @@ func (e *Entity) calcuateTokenBalance(chainId int64, tokenAddress, walletAddress
 		includedPlatform = "solana-chain"
 	}
 	var walletAddrs []string
-	// add the old evm wallet address in user_wallet table for backward compatibility
-	// should remove this after migrated all user profile to Mochi Profile service
-	if includedPlatform == "evm-chain" {
-		walletAddrs = append(walletAddrs, walletAddress)
-	}
 	for _, p := range profiles.AssociatedAccounts {
-		if p.Platform == includedPlatform && p.PlatformIdentifier != walletAddress {
+		if p.Platform == includedPlatform {
 			walletAddrs = append(walletAddrs, p.PlatformIdentifier)
 		}
 	}
