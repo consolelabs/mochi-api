@@ -36,11 +36,14 @@ type Service interface {
 	DeleteChannel(channelId string) error
 
 	// DAO voting
-	SendMessage(channelID string, msgSend discordgo.MessageSend) error
 	NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error
 	NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error
 	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
 
 	// Price alert
 	SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error
+
+	// Common func
+	SendMessage(channelID string, msgSend discordgo.MessageSend) error
+	SendDM(userID string, payload discordgo.MessageSend) error
 }

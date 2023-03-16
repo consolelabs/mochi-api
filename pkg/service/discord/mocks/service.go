@@ -278,6 +278,20 @@ func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplyUpvoteMessage", reflect.TypeOf((*MockService)(nil).ReplyUpvoteMessage), msg, source)
 }
 
+// SendDM mocks base method.
+func (m *MockService) SendDM(userID string, payload discordgo.MessageSend) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendDM", userID, payload)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendDM indicates an expected call of SendDM.
+func (mr *MockServiceMockRecorder) SendDM(userID, payload interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDM", reflect.TypeOf((*MockService)(nil).SendDM), userID, payload)
+}
+
 // SendDMUserPriceAlert mocks base method.
 func (m *MockService) SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error {
 	m.ctrl.T.Helper()
