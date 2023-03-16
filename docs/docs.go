@@ -4331,6 +4331,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/gas-tracker/{chain}": {
+            "get": {
+                "description": "Get gas tracker of one chain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get gas tracker of one chain",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ChainGasTrackerResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/market-chart": {
             "get": {
                 "description": "Get historical market chart",
@@ -10907,6 +10930,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.OffchainTipBotToken"
                     }
+                }
+            }
+        },
+        "response.ChainGasTrackerResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GasTrackerResponse"
                 }
             }
         },

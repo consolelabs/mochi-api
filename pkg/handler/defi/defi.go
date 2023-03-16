@@ -530,3 +530,29 @@ func (h *Handler) GetGasTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(gasTracker, nil, nil, nil))
 }
+
+// GetChainGasTracker     godoc
+// @Summary     Get gas tracker of one chain
+// @Description Get gas tracker of one chain
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.ChainGasTrackerResponseData
+// @Router      /defi/gas-tracker/{chain} [get]
+func (h *Handler) GetChainGasTracker(c *gin.Context) {
+	chain := c.Param("chain")
+	if chain == "" {
+		h.log.Error(fmt.Errorf("chain is empty"), "[handler.GetChainGasTracker] - chain is empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("chain is required"), nil))
+		return
+	}
+
+	gasTracker, err := h.entities.GetChainGasTracker(chain)
+	if err != nil {
+		h.log.Error(err, "[handler.GetGasTracker] - entities.GetGasTracker() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(gasTracker, nil, nil, nil))
+}

@@ -28,4 +28,5 @@ type IHandler interface {
 	RejectUserTokenSupportRequest(c *gin.Context)
 
 	GetGasTracker(c *gin.Context)
+	GetChainGasTracker(c *gin.Context)
 }

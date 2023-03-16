@@ -2326,6 +2326,11 @@ definitions:
           $ref: '#/definitions/model.OffchainTipBotToken'
         type: array
     type: object
+  response.ChainGasTrackerResponseData:
+    properties:
+      data:
+        $ref: '#/definitions/response.GasTrackerResponse'
+    type: object
   response.ClaimOnchainTransfer:
     properties:
       amount:
@@ -7205,6 +7210,21 @@ paths:
           schema:
             $ref: '#/definitions/response.GasTrackerResponseData'
       summary: Get gas tracker of all chain
+      tags:
+      - Defi
+  /defi/gas-tracker/{chain}:
+    get:
+      consumes:
+      - application/json
+      description: Get gas tracker of one chain
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ChainGasTrackerResponseData'
+      summary: Get gas tracker of one chain
       tags:
       - Defi
   /defi/market-chart:
