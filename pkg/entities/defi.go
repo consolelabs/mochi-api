@@ -758,3 +758,13 @@ func (e *Entity) GetBinanceCoinPrice(symbol string) (*response.GetTickerPriceRes
 
 	return data, nil, http.StatusOK
 }
+
+func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
+	data, err := e.svc.ChainExplorer.GetGasTracker()
+	if err != nil {
+		e.log.Error(err, "[entity.GetGasTracker] e.svc.GasTracker.GetGasTracker() failed")
+		return nil, err
+	}
+
+	return data, nil
+}

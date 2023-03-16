@@ -230,3 +230,17 @@ type ListTokenPriceAlertResponse struct {
 type CreateUserTokenSupportRequest struct {
 	Data *model.UserTokenSupportRequest `json:"data"`
 }
+
+type GasTrackerResponseData struct {
+	Data []GasTrackerResponse `json:"data"`
+}
+
+type GasTrackerResponse struct {
+	Chain           string `json:"chain"`
+	SafeGasPrice    string `json:"safe_gas_price"`
+	ProposeGasPrice string `json:"propose_gas_price"`
+	FastGasPrice    string `json:"fast_gas_price"`
+	EstSafeTime     string `json:"est_safe_time"`
+	EstProposeTime  string `json:"est_propose_time"`
+	EstFastTime     string `json:"est_fast_time"`
+}
