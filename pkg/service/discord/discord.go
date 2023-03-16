@@ -754,3 +754,19 @@ func (d *Discord) SendDMUserPriceAlert(userID, symbol string, alertType model.Al
 	d.session.ChannelMessageSendComplex(privChan.ID, msg)
 	return nil
 }
+
+func (d *Discord) SendDM(userID string, payload discordgo.MessageSend) error {
+	privChan, err := d.session.UserChannelCreate(userID)
+	if err != nil {
+		d.log.Error(err, "[discord.SendDM] d.session.UserChannelCreate() failed")
+		return err
+	}
+	if _, err := d.session.ChannelMessageSendComplex(privChan.ID, &payload); err != nil {
+		d.log.Fields(logger.Fields{
+			"userID":  userID,
+			"payload": payload,
+		}).Error(err, "[discord.SendDM] d.session.ChannelMessageSendComplex() failed")
+		return err
+	}
+	return nil
+}

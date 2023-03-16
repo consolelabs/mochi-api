@@ -47,6 +47,16 @@ func (pg *pg) Update(req *model.UserTokenSupportRequest) error {
 	return pg.db.Save(&req).Error
 }
 
+func (pg *pg) UpdateWithHook(req *model.UserTokenSupportRequest, afterUpdateFn func(id int) error) error {
+	tx := pg.db.Begin()
+	tx = tx.Save(&req)
+	if err := afterUpdateFn(req.ID); err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
+}
+
 func (pg *pg) Delete(id int) error {
 	return pg.db.Delete(&model.UserTokenSupportRequest{}, id).Error
 }
