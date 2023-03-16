@@ -78,7 +78,17 @@ func (e *Entity) updateStatusTokenRequest(id int, status model.TokenSupportReque
 		return nil, err
 	}
 	req.Status = status
-	if err := e.repo.UserTokenSupportRequest.Update(req); err != nil {
+	err = e.repo.UserTokenSupportRequest.UpdateWithHook(req, func(id int) error {
+		switch status {
+		case model.TokenSupportApproved:
+			return e.notifyDiscordTokenApproved(*req)
+		case model.TokenSupportRejected:
+			return e.notifyDiscordTokenRejected(*req)
+		default:
+			return fmt.Errorf("invalid token support status")
+		}
+	})
+	if err != nil {
 		e.log.Fields(logger.Fields{
 			"id":     id,
 			"status": status,
@@ -125,6 +135,51 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 		},
 	}
 	if err := e.svc.Discord.SendMessage(e.cfg.MochiTokenRequestChannelID, msgSend); err != nil {
+		e.log.Fields(logger.Fields{
+			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
+			"msg":                msgSend,
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendMessage failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) notifyDiscordTokenApproved(req model.UserTokenSupportRequest) error {
+	description := fmt.Sprintf("Your token request for %s has been approved! Now you can make %s transaction with $tip and $airdrop! <:pumpeet:930840081554624632>", req.TokenName, req.TokenName)
+	msgSend := discordgo.MessageSend{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Title:       "<:approve:1013775501757780098> Your token has been approved",
+				Description: description,
+				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+				Type:        discordgo.EmbedTypeArticle,
+			},
+		},
+	}
+	if err := e.svc.Discord.SendMessage(req.ChannelID, msgSend); err != nil {
+		e.log.Fields(logger.Fields{
+			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
+			"msg":                msgSend,
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendMessage failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) notifyDiscordTokenRejected(req model.UserTokenSupportRequest) error {
+	description := fmt.Sprintf("Because of some technical barrier, we regret to inform you that your token %s can’t be supported!\n", req.TokenName) +
+		"Please check out and try some supported token by $token list. <:nekolove:>"
+	msgSend := discordgo.MessageSend{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Title:       "<:revoke:967285238055174195> Your token has been rejected",
+				Description: description,
+				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
+				Type:        discordgo.EmbedTypeArticle,
+			},
+		},
+	}
+	if err := e.svc.Discord.SendDM(req.UserDiscordID, msgSend); err != nil {
 		e.log.Fields(logger.Fields{
 			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
 			"msg":                msgSend,
