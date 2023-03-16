@@ -9,6 +9,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -25,28 +26,22 @@ func NewService(cfg config.Config, log logger.Logger) Service {
 }
 
 var (
-	listChainSupportGasTracker = []string{"ftm", "bsc", "ether", "polygon"}
+	listChainSupportGasTracker = []string{"ftm", "bsc", "eth", "polygon"}
 )
 
-func (c *chainExplorer) GetGasTracker() ([]response.GasTrackerResponse, error) {
-	var chainExplorerBaseURL, apiKey string
+func (c *chainExplorer) GetGasTracker(listChain []model.Chain) ([]response.GasTrackerResponse, error) {
+	apiKey := ""
 	gasTrackerResp := make([]response.GasTrackerResponse, 0)
-	for _, chain := range listChainSupportGasTracker {
-		if chain == "ether" {
-			chainExplorerBaseURL = fmt.Sprintf("https://api.%sscan.io/api", chain)
-		} else {
-			chainExplorerBaseURL = fmt.Sprintf("https://api.%sscan.com/api", chain)
-		}
+	for _, chain := range listChain {
+		apiKey = c.getChainApiKey(chain.ShortName)
 
-		apiKey = c.getChainApiKey(chain)
-
-		gasTracker, err := c.executeGetGasTracker(chainExplorerBaseURL, apiKey)
+		gasTracker, err := c.executeGetGasTracker(chain.APIBaseURL, apiKey)
 		if err != nil {
 			c.log.Fields(logger.Fields{"chain": chain}).Error(err, "failed to get gas tracker")
 			return nil, err
 		}
 		gasTrackerResp = append(gasTrackerResp, response.GasTrackerResponse{
-			Chain:           strings.ToUpper(chain[0:3]),
+			Chain:           strings.ToUpper(chain.ShortName[0:3]),
 			SafeGasPrice:    gasTracker.Result.SafeGasPrice,
 			ProposeGasPrice: gasTracker.Result.ProposeGasPrice,
 			FastGasPrice:    gasTracker.Result.FastGasPrice,
@@ -65,7 +60,7 @@ func (c *chainExplorer) getChainApiKey(chain string) string {
 		return c.cfg.ChainExplorer.FtmScanApiKey
 	case "bsc":
 		return c.cfg.ChainExplorer.BscScanApiKey
-	case "ether":
+	case "eth":
 		return c.cfg.ChainExplorer.EtherScanApiKey
 	case "polygon":
 		return c.cfg.ChainExplorer.PolygonScanApiKey
@@ -75,7 +70,7 @@ func (c *chainExplorer) getChainApiKey(chain string) string {
 }
 func (c *chainExplorer) executeGetGasTracker(url, apiKey string) (*response.ChainExplorerGasTracker, error) {
 	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s?module=gastracker&action=gasoracle&apikey=%s", url, apiKey), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%smodule=gastracker&action=gasoracle&apikey=%s", url, apiKey), nil)
 	if err != nil {
 		return nil, err
 	}

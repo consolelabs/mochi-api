@@ -760,7 +760,18 @@ func (e *Entity) GetBinanceCoinPrice(symbol string) (*response.GetTickerPriceRes
 }
 
 func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
-	data, err := e.svc.ChainExplorer.GetGasTracker()
+	listChainSupportGasTracker := []string{"ftm", "bsc", "eth", "polygon"}
+	listChain := make([]model.Chain, 0)
+	for _, chainSp := range listChainSupportGasTracker {
+		chain, err := e.repo.Chain.GetByShortName(chainSp)
+		if err != nil {
+			e.log.Fields(logger.Fields{"chain": chain}).Error(err, "[entity.GetGasTracker] repo.Chain.GetByShortName() failed")
+			return nil, err
+		}
+		listChain = append(listChain, *chain)
+	}
+
+	data, err := e.svc.ChainExplorer.GetGasTracker(listChain)
 	if err != nil {
 		e.log.Error(err, "[entity.GetGasTracker] e.svc.GasTracker.GetGasTracker() failed")
 		return nil, err
