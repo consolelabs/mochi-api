@@ -4308,6 +4308,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/gas-tracker": {
+            "get": {
+                "description": "Get gas tracker of all chain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get gas tracker of all chain",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GasTrackerResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/market-chart": {
             "get": {
                 "description": "Get historical market chart",
@@ -11392,6 +11415,43 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.DiscordUserTokenAlert"
+                    }
+                }
+            }
+        },
+        "response.GasTrackerResponse": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "type": "string"
+                },
+                "est_fast_time": {
+                    "type": "string"
+                },
+                "est_propose_time": {
+                    "type": "string"
+                },
+                "est_safe_time": {
+                    "type": "string"
+                },
+                "fast_gas_price": {
+                    "type": "string"
+                },
+                "propose_gas_price": {
+                    "type": "string"
+                },
+                "safe_gas_price": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GasTrackerResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GasTrackerResponse"
                     }
                 }
             }

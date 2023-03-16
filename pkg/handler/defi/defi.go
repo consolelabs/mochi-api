@@ -511,3 +511,22 @@ func (h *Handler) RejectUserTokenSupportRequest(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
+
+// GetGasTracker     godoc
+// @Summary     Get gas tracker of all chain
+// @Description Get gas tracker of all chain
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GasTrackerResponseData
+// @Router      /defi/gas-tracker [get]
+func (h *Handler) GetGasTracker(c *gin.Context) {
+	gasTracker, err := h.entities.GetGasTracker()
+	if err != nil {
+		h.log.Error(err, "[handler.GetGasTracker] - entities.GetGasTracker() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(gasTracker, nil, nil, nil))
+}

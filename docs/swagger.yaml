@@ -2655,6 +2655,30 @@ definitions:
           $ref: '#/definitions/model.DiscordUserTokenAlert'
         type: array
     type: object
+  response.GasTrackerResponse:
+    properties:
+      chain:
+        type: string
+      est_fast_time:
+        type: string
+      est_propose_time:
+        type: string
+      est_safe_time:
+        type: string
+      fast_gas_price:
+        type: string
+      propose_gas_price:
+        type: string
+      safe_gas_price:
+        type: string
+    type: object
+  response.GasTrackerResponseData:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.GasTrackerResponse'
+        type: array
+    type: object
   response.GenerateVerificationResponse:
     properties:
       code:
@@ -7166,6 +7190,21 @@ paths:
           schema:
             $ref: '#/definitions/response.CompareTokenResponse'
       summary: Compare token
+      tags:
+      - Defi
+  /defi/gas-tracker:
+    get:
+      consumes:
+      - application/json
+      description: Get gas tracker of all chain
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GasTrackerResponseData'
+      summary: Get gas tracker of all chain
       tags:
       - Defi
   /defi/market-chart:
