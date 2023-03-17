@@ -34,22 +34,18 @@ func (pg *pg) Delete(id int) error {
 	return pg.db.Delete(&model.GuildConfigTokenRole{}, "id = ?", id).Error
 }
 
-func (pg *pg) ListAllTokenConfigs() ([]model.Token, error) {
+func (pg *pg) ListAllTokenConfigs(guildID string) ([]model.Token, error) {
 	var tokens []model.Token
-	rows, err := pg.db.Raw(`
-	SELECT DISTINCT ON (guild_config_token_roles.token_id)
-		guild_config_token_roles.token_id,
-		tokens.name,
-		tokens.address,
-		tokens.decimals,
-		tokens.chain_id
-	FROM
-		guild_config_token_roles
-		INNER JOIN tokens ON guild_config_token_roles.token_id = tokens.id
-	GROUP BY
-		tokens.id,
-		guild_config_token_roles.id;
-	`).Rows()
+	query := pg.db.Table("guild_config_token_roles").
+		Distinct("guild_config_token_roles.token_id").
+		Select("guild_config_token_roles.token_id, tokens.name, tokens.address, tokens.decimals, tokens.chain_id").
+		Joins("INNER JOIN tokens ON guild_config_token_roles.token_id = tokens.id").
+		Group("tokens.id, guild_config_token_roles.id")
+
+	if guildID != "" {
+		query = query.Where("guild_config_token_roles.guild_id = ?", guildID)
+	}
+	rows, err := query.Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -62,4 +58,24 @@ func (pg *pg) ListAllTokenConfigs() ([]model.Token, error) {
 	}
 
 	return tokens, nil
+}
+
+func (pg *pg) ListConfigGuildIds() ([]string, error) {
+	var guildIds []string
+	rows, err := pg.db.Table("guild_config_token_roles").
+		Distinct("guild_id").
+		Select("guild_id").
+		Rows()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var tmp string
+		if err := rows.Scan(&tmp); err != nil {
+			return nil, err
+		}
+		guildIds = append(guildIds, tmp)
+	}
+
+	return guildIds, nil
 }

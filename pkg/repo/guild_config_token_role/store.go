@@ -8,5 +8,6 @@ type Store interface {
 	ListByGuildID(guildID string) ([]model.GuildConfigTokenRole, error)
 	Update(*model.GuildConfigTokenRole) error
 	Delete(id int) error
-	ListAllTokenConfigs() ([]model.Token, error)
+	ListAllTokenConfigs(guildID string) ([]model.Token, error)
+	ListConfigGuildIds() ([]string, error)
 }

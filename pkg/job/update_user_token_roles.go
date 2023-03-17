@@ -1,10 +1,15 @@
 package job
 
 import (
+	"math/big"
+
+	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
+	"github.com/ethereum/go-ethereum/common/math"
 )
 
 type updateUserTokenRoles struct {
@@ -22,24 +27,24 @@ func NewUpdateUserTokenRolesJob(e *entities.Entity, svc *service.Service, l logg
 }
 
 func (job *updateUserTokenRoles) Run() error {
-	guilds, err := job.entity.GetGuilds()
+	guildIds, err := job.entity.ListTokenRoleConfigGuildIds()
 	if err != nil {
-		job.log.Error(err, "entity.GetGuilds failed")
+		job.log.Error(err, "entity.ListTokenRoleConfigGuildIds failed")
 		return err
 	}
 
-	for _, guild := range guilds.Data {
-		_, err := job.entity.GetGuildById(guild.ID)
+	for _, guildId := range guildIds {
+		_, err := job.entity.GetGuildById(guildId)
 		if util.IsAcceptableErr(err) {
-			job.log.Fields(logger.Fields{"guildId": guild.ID}).Infof("entity.GetGuildById - bot has no permission or access to this guild: %v", err)
+			job.log.Fields(logger.Fields{"guildId": guildId}).Infof("entity.GetGuildById - bot has no permission or access to this guild: %v", err)
 			continue
 		}
 		if err != nil {
-			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "entity.GetGuildById failed")
+			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
 			continue
 		}
-		if err := job.updateTokenRoles(guild.ID); err != nil {
-			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
+		if err := job.updateTokenRoles(guildId); err != nil {
+			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "Run failed")
 		}
 	}
 
@@ -71,12 +76,11 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 		return err
 	}
 
-	rolesToAdd, err := job.entity.ListMemberTokenRolesToAdd(trConfigs, guildID)
+	rolesToAdd, err := job.listMemberTokenRolesToAdd(guildID, trConfigs, members)
 	if err != nil {
-		l.Error(err, "[updateTokenRole] entity.ListMemberNFTRolesToAdd failed")
+		l.Error(err, "[updateTokenRole] job.listMemberTokenRolesToAdd failed")
 		return err
 	}
-
 	for _, member := range members {
 		for _, roleID := range member.Roles {
 			if isTokenRoles[roleID] {
@@ -84,7 +88,6 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 					delete(rolesToAdd, [2]string{member.User.ID, roleID})
 					continue
 				}
-
 				gMemberRoleLog := job.log.Fields(logger.Fields{
 					"guildId": guildID,
 					"userId":  member.User.ID,
@@ -143,7 +146,56 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 	return nil
 }
 
-func (job *updateUserTokenRoles) userBalances() (map[string]string, error) {
+func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs []model.GuildConfigTokenRole, members []*discordgo.Member) (map[[2]string]bool, error) {
+	tokens, err := job.entity.ListAllConfigTokens(guildID)
+	if err != nil {
+		job.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Job.UpdateUserTokenRoles] entity.ListAllConfigTokens() failed")
+		return nil, err
+	}
+	userBals := make(map[struct {
+		UserID  string
+		TokenID int
+	}]*big.Int)
+	for _, mem := range members {
+		for _, token := range tokens {
+			bal, err := job.entity.CalculateTokenBalance(int64(token.ChainID), token.Address, mem.User.ID)
+			if err != nil {
+				job.log.Error(err, "[Job.UpdateUserTokenRoles] entity.CalculateTokenBalance() failed")
+				continue
+			}
+			userBals[struct {
+				UserID  string
+				TokenID int
+			}{UserID: mem.User.ID, TokenID: token.ID}] = bal
+		}
+	}
 
-	return nil, nil
+	userRolesByToken := make(map[struct {
+		UserID  string
+		TokenID int
+	}]string)
+	for _, mem := range members {
+		for _, cfg := range cfgs {
+			userBal := userBals[struct {
+				UserID  string
+				TokenID int
+			}{UserID: mem.User.ID, TokenID: cfg.TokenID}]
+			decimalsBigFloat := new(big.Float).SetInt(math.BigPow(10, int64(cfg.Token.Decimals)))
+			requiredAmountBigFloat := new(big.Float).Mul(big.NewFloat(cfg.RequiredAmount), decimalsBigFloat)
+			requiredAmount := new(big.Int)
+			requiredAmountBigFloat.Int(requiredAmount)
+			if userBal.Cmp(requiredAmount) != -1 {
+				userRolesByToken[struct {
+					UserID  string
+					TokenID int
+				}{UserID: mem.User.ID, TokenID: cfg.TokenID}] = cfg.RoleID
+			}
+		}
+	}
+
+	rolesToAdd := make(map[[2]string]bool)
+	for k, v := range userRolesByToken {
+		rolesToAdd[[2]string{k.UserID, v}] = true
+	}
+	return rolesToAdd, nil
 }

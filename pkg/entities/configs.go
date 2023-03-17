@@ -1286,26 +1286,13 @@ func (e *Entity) RemoveGuildTokenRole(id int) error {
 	return nil
 }
 
-func (e *Entity) ListAllConfigTokens() ([]model.Token, error) {
-	tokens, err := e.repo.GuildConfigTokenRole.ListAllTokenConfigs()
+func (e *Entity) ListAllConfigTokens(guildID string) ([]model.Token, error) {
+	tokens, err := e.repo.GuildConfigTokenRole.ListAllTokenConfigs(guildID)
 	if err != nil {
 		e.log.Error(err, "[e.ListAllConfigTokens] - repo.GuildConfigTokenRole.ListAllTokenConfigs failed")
 		return nil, err
 	}
 	return tokens, nil
-}
-
-func (e *Entity) ListMemberTokenRolesToAdd(listConfigTokenRoles []model.GuildConfigTokenRole, guildID string) (map[[2]string]bool, error) {
-	mrs, err := e.repo.UserTokenBalance.GetUserTokenBalancesByUserInGuild(guildID)
-	if err != nil {
-		return nil, err
-	}
-	rolesToAdd := make(map[[2]string]bool)
-
-	for _, mr := range mrs {
-		rolesToAdd[[2]string{mr.UserDiscordID, mr.RoleID}] = true
-	}
-	return rolesToAdd, nil
 }
 
 func (e *Entity) CreateGuildXPRole(req request.CreateGuildXPRole) (*model.GuildConfigXPRole, error) {
@@ -1455,4 +1442,13 @@ func (e *Entity) upsertCommonwealthTracker(req request.UpsertGuildConfigDaoTrace
 		Source:    source,
 		Space:     spaceId,
 	})
+}
+
+func (e *Entity) ListTokenRoleConfigGuildIds() ([]string, error) {
+	guildIds, err := e.repo.GuildConfigTokenRole.ListConfigGuildIds()
+	if err != nil {
+		e.log.Error(err, "[e.ListTokenRoleConfigGuildIds] - repo.GuildConfigTokenRole.ListConfigGuildIds failed")
+		return nil, err
+	}
+	return guildIds, nil
 }

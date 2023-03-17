@@ -98,7 +98,6 @@ import (
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usersubmittedad "github.com/defipod/mochi/pkg/repo/user_submitted_ad"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
-	usertokenbalance "github.com/defipod/mochi/pkg/repo/user_token_balance"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
@@ -199,7 +198,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
 		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
-		UserTokenBalance:                     usertokenbalance.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Envelop:                              envelop.NewPG(db),
 		GuildConfigXPRole:                    guildconfigxprole.NewPG(db),
