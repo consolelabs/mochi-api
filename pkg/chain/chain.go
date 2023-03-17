@@ -22,6 +22,7 @@ import (
 	"golang.org/x/crypto/sha3"
 
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/contracts/erc20"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -347,9 +348,10 @@ func (ch *Chain) RawNativeBalance(address string, token model.Token) (*big.Int, 
 }
 
 func (ch *Chain) RawErc20TokenBalance(address string, token model.Token) (*big.Int, error) {
-	tokenBalance, err := ch.scan.TokenBalance(token.Address, address)
+	erc20, err := erc20.NewErc20Caller(common.HexToAddress(token.Address), ch.client)
+	tokenBalance, err := erc20.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
 		return nil, err
 	}
-	return tokenBalance.Int(), nil
+	return tokenBalance, nil
 }
