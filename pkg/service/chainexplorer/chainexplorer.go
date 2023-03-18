@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
@@ -41,7 +40,7 @@ func (c *chainExplorer) GetGasTracker(listChain []model.Chain) ([]response.GasTr
 			return nil, err
 		}
 		gasTrackerResp = append(gasTrackerResp, response.GasTrackerResponse{
-			Chain:           strings.ToUpper(chain.ShortName[0:3]),
+			Chain:           chain.Name,
 			SafeGasPrice:    gasTracker.Result.SafeGasPrice,
 			ProposeGasPrice: gasTracker.Result.ProposeGasPrice,
 			FastGasPrice:    gasTracker.Result.FastGasPrice,
