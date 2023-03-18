@@ -38,3 +38,7 @@ func (e *Entity) LinkUserTelegramWithDiscord(req request.LinkUserTelegramWithDis
 		Data: nil,
 	}, nil
 }
+
+func (e *Entity) GetUserTelegramByUsername(username string) (*model.UserTelegram, error) {
+	return e.repo.UserTelegram.GetByUsername(username)
+}
