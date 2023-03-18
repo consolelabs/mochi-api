@@ -17,6 +17,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
 	"github.com/defipod/mochi/pkg/handler/nft"
+	"github.com/defipod/mochi/pkg/handler/telegram"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
 	"github.com/defipod/mochi/pkg/handler/verify"
@@ -48,6 +49,7 @@ type Handler struct {
 	DaoVoting         daovoting.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
 	Wallet            wallet.IHandler
+	Telegram          telegram.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -73,5 +75,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		DaoVoting:         daovoting.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
 		Wallet:            wallet.New(entities, logger),
+		Telegram:          telegram.New(entities, logger),
 	}
 }
