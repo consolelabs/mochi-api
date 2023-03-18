@@ -94,6 +94,7 @@ import (
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usersubmittedad "github.com/defipod/mochi/pkg/repo/user_submitted_ad"
+	usertelegram "github.com/defipod/mochi/pkg/repo/user_telegram"
 	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
@@ -204,4 +205,5 @@ type Repo struct {
 	UserTokenPriceAlert                  usertokenpricealert.Store
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
+	UserTelegram                         usertelegram.Store
 }

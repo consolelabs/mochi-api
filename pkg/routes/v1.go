@@ -497,4 +497,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		dataWebhookGroup.POST("/notify-nft-sync", h.Webhook.NotifyNftCollectionSync)
 		dataWebhookGroup.POST("/notify-sale-marketplace", h.Webhook.NotifySaleMarketplace)
 	}
+
+	telegramGroup := v1.Group("/telegram")
+	{
+		telegramGroup.GET("/:username", h.Telegram.GetByUsername)
+	}
 }
