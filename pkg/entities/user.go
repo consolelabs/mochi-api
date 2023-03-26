@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -287,15 +288,34 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 	return e.repo.GuildConfigActivity.UpsertMany(configs)
 }
 
-func (e *Entity) GetTopUsers(guildID, userID string, limit, page int) (*response.TopUser, error) {
+func (e *Entity) GetTopUsers(guildID, userID string, limit, page int, platform string) (*response.TopUser, error) {
 	offset := page * limit
 	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
+	guildMembersMap := make(map[string]*discordgo.Member)
+	// Just load guild member for web UI
+	if strings.EqualFold(platform, "web") {
+		guildMembers, err := e.svc.Discord.GetGuildMembers(guildID)
+		if err != nil {
+			return nil, err
+		}
+
+		guildMembersMap = make(map[string]*discordgo.Member)
+		for _, m := range guildMembers {
+			guildMembersMap[m.User.ID] = m
+		}
+	}
+
 	for i := range leaderboard {
 		item := &leaderboard[i]
+
+		if member, ok := guildMembersMap[item.UserID]; ok {
+			item.GuildMember = member
+		}
+
 		currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, false)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, err

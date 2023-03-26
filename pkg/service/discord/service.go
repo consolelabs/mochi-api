@@ -46,4 +46,7 @@ type Service interface {
 	// Common func
 	SendMessage(channelID string, msgSend discordgo.MessageSend) error
 	SendDM(userID string, payload discordgo.MessageSend) error
+
+	// Guild
+	GetGuildMembers(guildID string) ([]*discordgo.Member, error)
 }
