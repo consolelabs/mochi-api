@@ -776,11 +776,13 @@ func (d *Discord) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 
 	next := true
 
+	lastID := ""
+
 	for next {
-		members, err := d.session.GuildMembers(guildID, "", 1000)
+		members, err := d.session.GuildMembers(guildID, lastID, 1000)
 		if err != nil {
 			d.log.Error(err, "[discord.GetGuildMembers] d.session.GuildMembers() failed")
-			return nil, err
+			break
 		}
 
 		result = append(result, members...)
@@ -788,6 +790,8 @@ func (d *Discord) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 		if len(members) < 1000 {
 			next = false
 		}
+
+		lastID = members[len(members)-1].User.ID
 	}
 
 	return result, nil
