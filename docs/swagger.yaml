@@ -2972,6 +2972,8 @@ definitions:
         type: array
       global_xp:
         type: boolean
+      icon:
+        type: string
       id:
         type: string
       log_channel:
@@ -8966,6 +8968,10 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Platform
+        in: query
+        name: platform
+        type: string
       produces:
       - application/json
       responses:

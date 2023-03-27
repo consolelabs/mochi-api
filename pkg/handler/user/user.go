@@ -199,6 +199,7 @@ func (h *Handler) GetMyInfo(c *gin.Context) {
 // @Param       user_id query     string true "User ID"
 // @Param       page query     int false "Page" default(0)
 // @Param       limit query     int false "Limit" default(10)
+// @Param       platform query     string false "Platform"
 // @Success     200 {object} response.TopUser
 // @Router      /users/top [get]
 func (h *Handler) GetTopUsers(c *gin.Context) {

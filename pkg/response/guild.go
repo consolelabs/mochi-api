@@ -19,6 +19,7 @@ type GetGuildResponse struct {
 	LogChannelID string   `json:"log_channel_id"`
 	GlobalXP     bool     `json:"global_xp"`
 	Active       bool     `json:"active"`
+	Icon         string   `json:"icon"`
 }
 
 type ListAllCustomTokenResponse struct {
