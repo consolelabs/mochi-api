@@ -96,6 +96,21 @@ func (mr *MockServiceMockRecorder) DeleteChannel(channelId interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChannel", reflect.TypeOf((*MockService)(nil).DeleteChannel), channelId)
 }
 
+// GetGuild mocks base method.
+func (m *MockService) GetGuild(guildID string) (*discordgo.Guild, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGuild", guildID)
+	ret0, _ := ret[0].(*discordgo.Guild)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGuild indicates an expected call of GetGuild.
+func (mr *MockServiceMockRecorder) GetGuild(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuild", reflect.TypeOf((*MockService)(nil).GetGuild), guildID)
+}
+
 // GetGuildMembers mocks base method.
 func (m *MockService) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 	m.ctrl.T.Helper()

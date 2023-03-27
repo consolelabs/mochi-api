@@ -792,3 +792,16 @@ func (d *Discord) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 
 	return result, nil
 }
+
+func (d *Discord) GetGuild(guildID string) (*discordgo.Guild, error) {
+	guild, err := d.session.Guild(guildID)
+	if err != nil {
+		d.log.Error(err, "[discord.GetGuild] d.session.Guild() failed")
+		return nil, err
+	}
+
+	// build guild icon url
+	guild.Icon = discordgo.EndpointGuildIcon(guildID, guild.Icon)
+
+	return guild, nil
+}

@@ -6812,6 +6812,12 @@ const docTemplate = `{
                         "description": "Limit",
                         "name": "limit",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Platform",
+                        "name": "platform",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -11919,6 +11925,9 @@ const docTemplate = `{
                 },
                 "global_xp": {
                     "type": "boolean"
+                },
+                "icon": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "string"

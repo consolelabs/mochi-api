@@ -20,6 +20,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
+	mock_discord_service "github.com/defipod/mochi/pkg/service/discord/mocks"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 )
@@ -36,7 +37,9 @@ func TestEntity_GetGuild(t *testing.T) {
 		cfg      config.Config
 	}
 	type args struct {
-		guildID string
+		guildID                  string
+		expGetDiscordGuildResult *discordgo.Guild
+		expGetDiscordGuildErr    error
 	}
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -45,6 +48,15 @@ func TestEntity_GetGuild(t *testing.T) {
 	r := pg.NewRepo(s.DB())
 	dGuilds := mock_discord_guilds.NewMockStore(ctrl)
 	r.DiscordGuilds = dGuilds
+
+	discordSvc := mock_discord_service.NewMockService(ctrl)
+
+	svc, err := service.NewService(cfg, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	svc.Discord = discordSvc
 
 	tests := []struct {
 		name    string
@@ -57,9 +69,14 @@ func TestEntity_GetGuild(t *testing.T) {
 			name: "test get guils succesfully",
 			fields: fields{
 				repo: r,
+				svc:  svc,
 			},
 			args: args{
 				guildID: "981128899280908299",
+				expGetDiscordGuildResult: &discordgo.Guild{
+					Icon: "icon.png",
+				},
+				expGetDiscordGuildErr: nil,
 			},
 			want: &response.GetGuildResponse{
 				ID:        "981128899280908299",
@@ -67,13 +84,29 @@ func TestEntity_GetGuild(t *testing.T) {
 				BotScopes: model.JSONArrayString{"*"},
 				GlobalXP:  false,
 				Active:    true,
+				Icon:      "icon.png",
 			},
 			wantErr: false,
+		},
+		{
+			name: "test get guils failed when get more guild infos from discord",
+			fields: fields{
+				repo: r,
+				svc:  svc,
+			},
+			args: args{
+				guildID:                  "981128899280908299",
+				expGetDiscordGuildResult: nil,
+				expGetDiscordGuildErr:    errors.New("cannot get guild info from discord"),
+			},
+			want:    nil,
+			wantErr: true,
 		},
 		{
 			name: "case guildId not exists, cannot find",
 			fields: fields{
 				repo: r,
+				svc:  svc,
 			},
 			args: args{
 				guildID: "abc",
@@ -90,7 +123,8 @@ func TestEntity_GetGuild(t *testing.T) {
 		GlobalXP:  false,
 	}
 
-	dGuilds.EXPECT().GetByID("981128899280908299").Return(&discordGuild, nil).AnyTimes()
+	dGuilds.EXPECT().GetByID("981128899280908299").Return(&discordGuild, nil)
+	dGuilds.EXPECT().GetByID("981128899280908299").Return(&discordGuild, nil)
 	dGuilds.EXPECT().GetByID("abc").Return(nil, errors.New("cannot find guild id"))
 
 	for _, tt := range tests {
@@ -105,6 +139,11 @@ func TestEntity_GetGuild(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
+
+			if tt.args.expGetDiscordGuildResult != nil || tt.args.expGetDiscordGuildErr != nil {
+				discordSvc.EXPECT().GetGuild(tt.args.guildID).Return(tt.args.expGetDiscordGuildResult, tt.args.expGetDiscordGuildErr)
+			}
+
 			got, err := e.GetGuild(tt.args.guildID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetGuild() error = %v, wantErr %v", err, tt.wantErr)

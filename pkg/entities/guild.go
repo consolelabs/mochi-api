@@ -76,6 +76,11 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		return nil, err
 	}
 
+	discordGuildInfo, err := e.svc.Discord.GetGuild(guildID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &response.GetGuildResponse{
 		ID:           guild.ID,
 		Name:         guild.Name,
@@ -85,6 +90,7 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 		LogChannelID: guild.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
 		GlobalXP:     guild.GlobalXP,
 		Active:       true,
+		Icon:         discordGuildInfo.Icon,
 	}, nil
 }
 
