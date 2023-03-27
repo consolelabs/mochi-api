@@ -6810,7 +6810,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
+                            "$ref": "#/definitions/response.TopUser"
                         }
                     }
                 }
@@ -7409,6 +7409,63 @@
     "definitions": {
         "big.Float": {
             "type": "object"
+        },
+        "discordgo.Member": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "The hash of the avatar for the guild member, if any.",
+                    "type": "string"
+                },
+                "communication_disabled_until": {
+                    "description": "The time at which the member's timeout will expire.\nTime in the past or nil if the user is not timed out.",
+                    "type": "string"
+                },
+                "deaf": {
+                    "description": "Whether the member is deafened at a guild level.",
+                    "type": "boolean"
+                },
+                "guild_id": {
+                    "description": "The guild ID on which the member exists.",
+                    "type": "string"
+                },
+                "joined_at": {
+                    "description": "The time at which the member joined the guild.",
+                    "type": "string"
+                },
+                "mute": {
+                    "description": "Whether the member is muted at a guild level.",
+                    "type": "boolean"
+                },
+                "nick": {
+                    "description": "The nickname of the member, if they have one.",
+                    "type": "string"
+                },
+                "pending": {
+                    "description": "Is true while the member hasn't accepted the membership screen.",
+                    "type": "boolean"
+                },
+                "permissions": {
+                    "description": "Total permissions of the member in the channel, including overrides, returned when in the interaction object.",
+                    "type": "string",
+                    "example": "0"
+                },
+                "premium_since": {
+                    "description": "When the user used their Nitro boost on the server",
+                    "type": "string"
+                },
+                "roles": {
+                    "description": "A list of IDs of the roles which are possessed by the member.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user": {
+                    "description": "The underlying user on which the member is based.",
+                    "$ref": "#/definitions/discordgo.User"
+                }
+            }
         },
         "discordgo.User": {
             "type": "object",
@@ -8409,6 +8466,41 @@
                     "items": {
                         "$ref": "#/definitions/model.GuildRole"
                     }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.GuildUserXP": {
+            "type": "object",
+            "properties": {
+                "guild": {
+                    "$ref": "#/definitions/model.DiscordGuild"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "guild_member": {
+                    "$ref": "#/definitions/discordgo.Member"
+                },
+                "guild_rank": {
+                    "type": "integer"
+                },
+                "level": {
+                    "type": "integer"
+                },
+                "nr_of_actions": {
+                    "type": "integer"
+                },
+                "progress": {
+                    "type": "number"
+                },
+                "total_xp": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
                 },
                 "user_id": {
                     "type": "string"
@@ -13918,6 +14010,23 @@
                 },
                 "value": {
                     "type": "number"
+                }
+            }
+        },
+        "response.TopUser": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "$ref": "#/definitions/model.GuildUserXP"
+                },
+                "leaderboard": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildUserXP"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
