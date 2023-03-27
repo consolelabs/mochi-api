@@ -3,6 +3,7 @@ package entities
 import (
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -22,6 +23,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
+	mock_discord_service "github.com/defipod/mochi/pkg/service/discord/mocks"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	mock_processor "github.com/defipod/mochi/pkg/service/processor/mocks"
@@ -178,10 +180,12 @@ func TestEntity_GetTopUsers(t *testing.T) {
 	}
 
 	type args struct {
-		guildID string
-		userID  string
-		limit   int
-		page    int
+		guildID          string
+		userID           string
+		limit            int
+		page             int
+		platform         string
+		expDiscordSvcErr error
 	}
 
 	ctrl := gomock.NewController(t)
@@ -197,6 +201,15 @@ func TestEntity_GetTopUsers(t *testing.T) {
 
 	r.GuildUserXP = uXp
 	r.DiscordGuilds = dcG
+
+	discordSvc := mock_discord_service.NewMockService(ctrl)
+
+	svc, err := service.NewService(cfg, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	svc.Discord = discordSvc
 
 	userXP := model.GuildUserXP{
 		GuildID: "981128899280908299",
@@ -246,6 +259,48 @@ func TestEntity_GetTopUsers(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "test get successfully web",
+			fields: fields{
+				repo: r,
+				svc:  svc,
+			},
+			args: args{
+				guildID:  "981128899280908299",
+				userID:   "963641551416881183",
+				limit:    5,
+				page:     0,
+				platform: "web",
+			},
+			want: &response.TopUser{
+				Metadata: response.PaginationResponse{
+					Pagination: model.Pagination{
+						Page: 0,
+						Size: 5,
+					},
+					Total: 100,
+				},
+				Author:      &userXP,
+				Leaderboard: leaderboard,
+			},
+			wantErr: false,
+		},
+		{
+			name: "failed web - get discord guild members failed",
+			fields: fields{
+				repo: r,
+				svc:  svc,
+			},
+			args: args{
+				guildID:          "981128899280908299",
+				userID:           "963641551416881183",
+				limit:            5,
+				page:             0,
+				platform:         "web",
+				expDiscordSvcErr: errors.New("failed to get discord guild members"),
+			},
+			wantErr: true,
+		},
+		{
 			name: "test user does not exist",
 			fields: fields{
 				repo: r,
@@ -272,7 +327,12 @@ func TestEntity_GetTopUsers(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, tt.args.limit, tt.args.page)
+
+			if strings.EqualFold(tt.args.platform, "web") {
+				discordSvc.EXPECT().GetGuildMembers(gomock.Any()).Return([]*discordgo.Member{}, tt.args.expDiscordSvcErr)
+			}
+
+			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, tt.args.limit, tt.args.page, tt.args.platform)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetTopUsers() error = %v, wantErr %v", err, tt.wantErr)
 				return

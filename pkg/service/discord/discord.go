@@ -770,3 +770,25 @@ func (d *Discord) SendDM(userID string, payload discordgo.MessageSend) error {
 	}
 	return nil
 }
+
+func (d *Discord) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
+	result := []*discordgo.Member{}
+
+	next := true
+
+	for next {
+		members, err := d.session.GuildMembers(guildID, "", 1000)
+		if err != nil {
+			d.log.Error(err, "[discord.GetGuildMembers] d.session.GuildMembers() failed")
+			return nil, err
+		}
+
+		result = append(result, members...)
+
+		if len(members) < 1000 {
+			next = false
+		}
+	}
+
+	return result, nil
+}
