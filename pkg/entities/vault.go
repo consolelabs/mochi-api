@@ -5,7 +5,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 )
 
-func (e *Entity) CreateVault(req *request.CreateVaultRequest) error {
+func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, error) {
 	return e.repo.Vault.Create(&model.Vault{
 		GuildId:   req.GuildId,
 		Name:      req.Name,

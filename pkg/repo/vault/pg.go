@@ -14,8 +14,8 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) Create(vault *model.Vault) error {
-	return pg.db.Create(vault).Error
+func (pg *pg) Create(vault *model.Vault) (*model.Vault, error) {
+	return vault, pg.db.Create(vault).Error
 }
 
 func (pg *pg) GetByGuildId(guildId string) (vaults []model.Vault, err error) {
