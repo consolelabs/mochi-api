@@ -7,7 +7,6 @@
     },
     "author": {
       "guild_id": "552427722551459840",
-      "guild_member": null,
       "user_id": "393034938028392449",
       "total_xp": 7,
       "level": 0,
@@ -30,11 +29,15 @@
     "leaderboard": [
       {
         "guild_id": "552427722551459840",
-        "guild_member": null,
         "user_id": "393034938028392449",
         "total_xp": 7,
         "level": 0,
-        "user": null,
+        "user": {
+          "guild_users": [ ],
+          "id": "393034938028392449",
+          "nr_of_join": 0,
+          "username": "rainy"
+        },
         "guild": null,
         "guild_rank": 1,
         "nr_of_actions": 1,
