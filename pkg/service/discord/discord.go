@@ -797,6 +797,16 @@ func (d *Discord) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
 	return result, nil
 }
 
+func (d *Discord) GetUser(userID string) (*discordgo.User, error) {
+	user, err := d.session.User(userID)
+	if err != nil {
+		d.log.Error(err, "[discord.GetGuild] d.session.Guild() failed")
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (d *Discord) GetGuild(guildID string) (*discordgo.Guild, error) {
 	guild, err := d.session.Guild(guildID)
 	if err != nil {

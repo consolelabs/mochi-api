@@ -373,6 +373,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		tokenSupportReqGroup := defiGroup.Group("/token-support")
 		{
+			tokenSupportReqGroup.GET("", h.Defi.GetUserRequestTokens)
 			tokenSupportReqGroup.POST("", h.Defi.CreateUserTokenSupportRequest)
 			tokenSupportReqGroup.PUT("/:id/approve", h.Defi.ApproveUserTokenSupportRequest)
 			tokenSupportReqGroup.PUT("/:id/reject", h.Defi.RejectUserTokenSupportRequest)

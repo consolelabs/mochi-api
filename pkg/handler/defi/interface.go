@@ -23,6 +23,7 @@ type IHandler interface {
 	GetUserListPriceAlert(c *gin.Context)
 	RemoveTokenPriceAlert(c *gin.Context)
 
+	GetUserRequestTokens(c *gin.Context)
 	CreateUserTokenSupportRequest(c *gin.Context)
 	ApproveUserTokenSupportRequest(c *gin.Context)
 	RejectUserTokenSupportRequest(c *gin.Context)

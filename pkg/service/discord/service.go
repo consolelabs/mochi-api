@@ -50,4 +50,7 @@ type Service interface {
 	// Guild
 	GetGuildMembers(guildID string) ([]*discordgo.Member, error)
 	GetGuild(guildID string) (*discordgo.Guild, error)
+
+	// User
+	GetUser(userID string) (*discordgo.User, error)
 }
