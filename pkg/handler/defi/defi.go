@@ -435,6 +435,34 @@ func (h *Handler) GetBinanceCoinData(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
+// GetUserRequestTokens     godoc
+// @Summary     Get tokens requested by user
+// @Description Get tokens requested by user
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetSupportedTokensResponse
+// @Router      /defi/token-support [get]
+func (h *Handler) GetUserRequestTokens(c *gin.Context) {
+	page := c.Query("page")
+	size := c.Query("size")
+	status := c.Query("status")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "15"
+	}
+	tokens, pagination, err := h.entities.GetUserRequestTokens(request.GetUserSupportTokenRequest{Page: page, Size: size, Status: status})
+	if err != nil {
+		h.log.Error(err, "[handler.GetSupportedTokens] - failed to get supported tokens")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(tokens, pagination, nil, nil))
+}
+
 // CreateUserTokenSupportRequest     godoc
 // @Summary     Request support token
 // @Description Request support token

@@ -141,6 +141,21 @@ func (mr *MockServiceMockRecorder) GetGuildRoles(guildID interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildRoles", reflect.TypeOf((*MockService)(nil).GetGuildRoles), guildID)
 }
 
+// GetUser mocks base method.
+func (m *MockService) GetUser(userID string) (*discordgo.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUser", userID)
+	ret0, _ := ret[0].(*discordgo.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUser indicates an expected call of GetUser.
+func (mr *MockServiceMockRecorder) GetUser(userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockService)(nil).GetUser), userID)
+}
+
 // NotifyAddNewCollection mocks base method.
 func (m *MockService) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image string) error {
 	m.ctrl.T.Helper()

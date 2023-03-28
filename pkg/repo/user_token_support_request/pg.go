@@ -14,16 +14,24 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) List(q ListQuery) ([]model.UserTokenSupportRequest, error) {
-	var requests []model.UserTokenSupportRequest
-	db := pg.db
+func (pg *pg) List(q ListQuery) ([]model.UserTokenSupportRequest, int64, error) {
+	var items []model.UserTokenSupportRequest
+	var total int64
+	db := pg.db.Table("user_token_support_requests")
 	if q.TokenAddress != "" {
 		db = db.Where("token_address = ?", q.TokenAddress)
 	}
 	if q.TokenChainID != nil {
 		db = db.Where("token_chain_id = ?", *q.TokenChainID)
 	}
-	return requests, db.Find(&requests).Error
+	if q.Status != "" {
+		db = db.Where("status = ?", q.Status)
+	}
+	db = db.Count(&total).Offset(q.Offset)
+	if q.Limit != 0 {
+		db = db.Limit(q.Limit)
+	}
+	return items, total, db.Find(&items).Error
 }
 
 func (pg *pg) Create(req *model.UserTokenSupportRequest) error {

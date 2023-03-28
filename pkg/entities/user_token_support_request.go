@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,10 +12,28 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
-	tokenSuportReq "github.com/defipod/mochi/pkg/repo/user_token_support_request"
+	tokenSupportReq "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
+
+func (e *Entity) GetUserRequestTokens(req request.GetUserSupportTokenRequest) (tokens []model.UserTokenSupportRequest, pagination *response.PaginationResponse, err error) {
+	page, _ := strconv.Atoi(req.Page)
+	size, _ := strconv.Atoi(req.Size)
+	tokens, total, err := e.repo.UserTokenSupportRequest.List(tokenSupportReq.ListQuery{Offset: page * size, Limit: size, Status: req.Status})
+	if err != nil {
+		err = fmt.Errorf("failed to get user requested tokens - err: %v", err)
+		return nil, nil, err
+	}
+	return tokens, &response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: int64(page),
+			Size: int64(size),
+		},
+		Total: total,
+	}, nil
+}
 
 func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSupportRequest) (*model.UserTokenSupportRequest, error) {
 	chainIdStr := util.ConvertInputToChainId(req.TokenChain)
@@ -23,7 +42,7 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		e.log.Fields(logger.Fields{"req": req}).Error(errors.ErrInvalidChain, "invalid chain")
 		return nil, errors.ErrInvalidChain
 	}
-	reqs, err := e.repo.UserTokenSupportRequest.List(tokenSuportReq.ListQuery{TokenChainID: &chainId, TokenAddress: req.TokenAddress})
+	reqs, _, err := e.repo.UserTokenSupportRequest.List(tokenSupportReq.ListQuery{TokenChainID: &chainId, TokenAddress: req.TokenAddress})
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"ChainID":      chainId,
@@ -99,15 +118,27 @@ func (e *Entity) updateStatusTokenRequest(id int, status model.TokenSupportReque
 }
 
 func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUserTokenSupportRequest) error {
+	guild, _ := e.svc.Discord.GetGuild(req.GuildID)
+	user, _ := e.svc.Discord.GetUser(req.UserDiscordID)
+
+	guildName := req.GuildID
+	userName := req.UserDiscordID
+	if guild != nil {
+		guildName = guild.Name
+	}
+	if user != nil {
+		userName = fmt.Sprintf("%s#%s", user.Username, user.Discriminator)
+	}
+
 	description := fmt.Sprintf("<@%s> wants to add the following token into his/her server.\n\n", req.UserDiscordID) +
-		"Server ID\n" +
-		fmt.Sprintf("```%s```", req.GuildID) +
-		"User ID\n" +
-		fmt.Sprintf("```%s```", req.UserDiscordID) +
+		"Guild name\n" +
+		fmt.Sprintf("```%s```", guildName) +
+		"Submitter\n" +
+		fmt.Sprintf("```%s```", userName) +
 		"Token address\n" +
 		fmt.Sprintf("```%s```", req.TokenAddress) +
 		"Chain name\n" +
-		fmt.Sprintf("```%s```", req.TokenChain)
+		fmt.Sprintf("```%s```", strings.ToUpper(req.TokenChain))
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -147,7 +178,7 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 }
 
 func (e *Entity) notifyDiscordTokenApproved(req model.UserTokenSupportRequest) error {
-	description := fmt.Sprintf("Your token request for address %s has been approved! Now you can make transaction with $tip and $airdrop! <:pumpeet:930840081554624632>", req.TokenAddress)
+	description := fmt.Sprintf("Your token request for %s has been approved! Now you can make %s transaction with $tip and $airdrop! <:pumpeet:930840081554624632>", req.Symbol, req.Symbol)
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -169,7 +200,7 @@ func (e *Entity) notifyDiscordTokenApproved(req model.UserTokenSupportRequest) e
 }
 
 func (e *Entity) notifyDiscordTokenRejected(req model.UserTokenSupportRequest) error {
-	description := fmt.Sprintf("Because of some technical barrier, we regret to inform you that your token with address %s can’t be supported!\n", req.TokenAddress) +
+	description := fmt.Sprintf("Because of some technical barrier, we regret to inform you that your token %s can’t be supported!\n", req.TokenAddress) +
 		"Please check out and try some supported token by $token list. <:nekolove:>"
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
