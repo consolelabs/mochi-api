@@ -8,3 +8,9 @@ type CreateUserTokenSupportRequest struct {
 	TokenAddress  string `json:"token_address,omitempty" binding:"required"`
 	TokenChain    string `json:"token_chain,omitempty" binding:"required"`
 }
+
+type GetUserSupportTokenRequest struct {
+	Status string `json:"status" form:"status"`
+	Page   string `json:"page" form:"page"`
+	Size   string `json:"size" form:"size"`
+}
