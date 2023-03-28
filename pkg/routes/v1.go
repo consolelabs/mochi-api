@@ -102,6 +102,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 		// api to contact with discord
 		guildGroup.POST("/:guild_id/channels", h.Guild.CreateGuildChannel)
+		guildGroup.GET("/:guild_id/roles", h.Guild.GetGuildRoles)
 	}
 
 	userGroup := v1.Group("/users")

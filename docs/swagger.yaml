@@ -2,51 +2,6 @@ basePath: /api/v1
 definitions:
   big.Float:
     type: object
-  discordgo.Member:
-    properties:
-      avatar:
-        description: The hash of the avatar for the guild member, if any.
-        type: string
-      communication_disabled_until:
-        description: |-
-          The time at which the member's timeout will expire.
-          Time in the past or nil if the user is not timed out.
-        type: string
-      deaf:
-        description: Whether the member is deafened at a guild level.
-        type: boolean
-      guild_id:
-        description: The guild ID on which the member exists.
-        type: string
-      joined_at:
-        description: The time at which the member joined the guild.
-        type: string
-      mute:
-        description: Whether the member is muted at a guild level.
-        type: boolean
-      nick:
-        description: The nickname of the member, if they have one.
-        type: string
-      pending:
-        description: Is true while the member hasn't accepted the membership screen.
-        type: boolean
-      permissions:
-        description: Total permissions of the member in the channel, including overrides,
-          returned when in the interaction object.
-        example: "0"
-        type: string
-      premium_since:
-        description: When the user used their Nitro boost on the server
-        type: string
-      roles:
-        description: A list of IDs of the roles which are possessed by the member.
-        items:
-          type: string
-        type: array
-      user:
-        $ref: '#/definitions/discordgo.User'
-        description: The underlying user on which the member is based.
-    type: object
   discordgo.User:
     properties:
       accent_color:
@@ -709,17 +664,21 @@ definitions:
     type: object
   model.GuildUser:
     properties:
+      avatar:
+        type: string
       guild_id:
         type: string
       id:
         type: string
       invited_by:
         type: string
+      joined_at:
+        type: string
       nickname:
         type: string
       roles:
         items:
-          $ref: '#/definitions/model.GuildRole'
+          type: string
         type: array
       user_id:
         type: string
@@ -730,8 +689,6 @@ definitions:
         $ref: '#/definitions/model.DiscordGuild'
       guild_id:
         type: string
-      guild_member:
-        $ref: '#/definitions/discordgo.Member'
       guild_rank:
         type: integer
       level:
@@ -1338,6 +1295,8 @@ definitions:
         type: string
       created_at:
         type: string
+      guild_id:
+        type: string
       id:
         type: integer
       message_id:
@@ -1348,8 +1307,6 @@ definitions:
         type: string
       token_chain_id:
         type: integer
-      token_name:
-        type: string
       updated_at:
         type: string
       user_discord_id:
@@ -1774,22 +1731,22 @@ definitions:
     properties:
       channel_id:
         type: string
+      guild_id:
+        type: string
       message_id:
         type: string
       token_address:
         type: string
       token_chain:
         type: string
-      token_name:
-        type: string
       user_discord_id:
         type: string
     required:
     - channel_id
+    - guild_id
     - message_id
     - token_address
     - token_chain
-    - token_name
     - user_discord_id
     type: object
   request.DeleteDiscordUserAlertRequest:
@@ -2720,6 +2677,36 @@ definitions:
       permissions:
         example: "0"
         type: string
+    type: object
+  response.DiscordGuildRole:
+    properties:
+      color:
+        type: integer
+      hoist:
+        type: boolean
+      icon:
+        type: string
+      id:
+        type: string
+      managed:
+        type: boolean
+      mentionable:
+        type: boolean
+      name:
+        type: string
+      permissions:
+        type: string
+      position:
+        type: integer
+      unicode_emoji:
+        type: string
+    type: object
+  response.DiscordGuildRoles:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.DiscordGuildRole'
+        type: array
     type: object
   response.DiscordUserTokenAlertResponse:
     properties:
@@ -7744,6 +7731,27 @@ paths:
       summary: List all guild custom token
       tags:
       - Guild
+  /guilds/{guild_id}/roles:
+    get:
+      consumes:
+      - application/json
+      description: Update guild
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DiscordGuildRoles'
+      summary: Update guild
+      tags:
+      - Guild
   /guilds/{guild_id}/stats:
     get:
       consumes:
@@ -8968,9 +8976,13 @@ paths:
         in: query
         name: limit
         type: integer
-      - description: Platform
+      - description: Query to search by name
         in: query
-        name: platform
+        name: query
+        type: string
+      - description: ASC / DESC
+        in: query
+        name: sort
         type: string
       produces:
       - application/json

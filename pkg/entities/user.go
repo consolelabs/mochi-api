@@ -1,10 +1,10 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -288,32 +288,28 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 	return e.repo.GuildConfigActivity.UpsertMany(configs)
 }
 
-func (e *Entity) GetTopUsers(guildID, userID string, limit, page int, platform string) (*response.TopUser, error) {
+func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page int) (*response.TopUser, error) {
 	offset := page * limit
-	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, limit, offset)
+	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, query, sort, limit, offset)
 	if err != nil {
 		return nil, err
-	}
-
-	guildMembersMap := make(map[string]*discordgo.Member)
-	// Just load guild member for web UI
-	if strings.EqualFold(platform, "web") {
-		guildMembers, err := e.svc.Discord.GetGuildMembers(guildID)
-		if err != nil {
-			return nil, err
-		}
-
-		guildMembersMap = make(map[string]*discordgo.Member)
-		for _, m := range guildMembers {
-			guildMembersMap[m.User.ID] = m
-		}
 	}
 
 	for i := range leaderboard {
 		item := &leaderboard[i]
 
-		if member, ok := guildMembersMap[item.UserID]; ok {
-			item.GuildMember = member
+		if item.User != nil && len(item.User.GuildUsers) > 0 {
+			memberInfo := item.User.GuildUsers[0]
+
+			rolesByte := memberInfo.Roles
+
+			roles := make([]string, 0)
+
+			if err := json.Unmarshal(rolesByte, &roles); err != nil {
+				return nil, err
+			}
+
+			item.User.GuildUsers[0].RoleSlice = roles
 		}
 
 		currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, false)
@@ -690,7 +686,21 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 	upsertGuildUsersPayload := make([]model.GuildUser, 0, len(members))
 	for _, m := range members {
 		upsertUsersPayload = append(upsertUsersPayload, model.User{ID: m.User.ID, Username: m.User.Username})
-		upsertGuildUsersPayload = append(upsertGuildUsersPayload, model.GuildUser{UserID: m.User.ID, Nickname: m.Nickname, GuildID: guildID})
+
+		roles, err := json.Marshal(m.Roles)
+		if err != nil {
+			e.log.Fields(logger.Fields{"guildID": guildID, "user": m.User.ID}).Error(err, "[entity.FetchAndSaveGuildMembers] json.Marshal() failed")
+			return 0, err
+		}
+
+		upsertGuildUsersPayload = append(upsertGuildUsersPayload, model.GuildUser{
+			UserID:   m.User.ID,
+			Nickname: m.Nickname,
+			GuildID:  guildID,
+			Avatar:   m.Avatar,
+			JoinedAt: m.JoinedAt,
+			Roles:    roles,
+		})
 	}
 
 	if err = e.repo.Users.UpsertMany(upsertUsersPayload); err != nil {

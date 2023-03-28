@@ -13,8 +13,8 @@ setup:
 	cp .env.sample .env
 	make init
 
-init: 
-	go install github.com/rubenv/sql-migrate/...@latest	
+init:
+	go install github.com/rubenv/sql-migrate/...@latest
 	make remove-infras
 	docker-compose up -d
 	@echo "Waiting for database connection..."
@@ -44,7 +44,7 @@ dev:
 
 air:
 	air -c .air.toml
-	
+
 test:
 	make migrate-test
 	@PROJECT_PATH=$(shell pwd) go test -cover ./...
@@ -130,4 +130,3 @@ setup-githook:
 
 gen-swagger:
 	swag init  --parseDependency -g ./cmd/server/main.go
-	
