@@ -20,6 +20,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/telegram"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
+	"github.com/defipod/mochi/pkg/handler/vault"
 	"github.com/defipod/mochi/pkg/handler/verify"
 	"github.com/defipod/mochi/pkg/handler/wallet"
 	"github.com/defipod/mochi/pkg/handler/webhook"
@@ -50,6 +51,7 @@ type Handler struct {
 	ConfigTwitterSale configtwittersales.IHandler
 	Wallet            wallet.IHandler
 	Telegram          telegram.IHandler
+	Vault             vault.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -76,5 +78,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
 		Wallet:            wallet.New(entities, logger),
 		Telegram:          telegram.New(entities, logger),
+		Vault:             vault.New(entities, logger),
 	}
 }
