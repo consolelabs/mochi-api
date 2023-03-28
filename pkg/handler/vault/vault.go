@@ -32,14 +32,14 @@ func (h *Handler) CreateVault(c *gin.Context) {
 		return
 	}
 
-	err := h.entities.CreateVault(&req)
+	vault, err := h.entities.CreateVault(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(err, "[handler.CreateVault] - failed to create vault")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+	c.JSON(http.StatusOK, response.CreateResponse[any](vault, nil, nil, nil))
 }
 func (h *Handler) GetVault(c *gin.Context) {
 	guildId := c.Query("guild_id")
