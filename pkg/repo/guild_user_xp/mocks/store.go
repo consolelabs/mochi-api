@@ -65,16 +65,16 @@ func (mr *MockStoreMockRecorder) GetOne(guildID, userID interface{}) *gomock.Cal
 }
 
 // GetTopUsers mocks base method.
-func (m *MockStore) GetTopUsers(guildID string, limit, offset int) ([]model.GuildUserXP, error) {
+func (m *MockStore) GetTopUsers(guildID, query, sort string, limit, offset int) ([]model.GuildUserXP, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTopUsers", guildID, limit, offset)
+	ret := m.ctrl.Call(m, "GetTopUsers", guildID, query, sort, limit, offset)
 	ret0, _ := ret[0].([]model.GuildUserXP)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTopUsers indicates an expected call of GetTopUsers.
-func (mr *MockStoreMockRecorder) GetTopUsers(guildID, limit, offset interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetTopUsers(guildID, query, sort, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTopUsers", reflect.TypeOf((*MockStore)(nil).GetTopUsers), guildID, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTopUsers", reflect.TypeOf((*MockStore)(nil).GetTopUsers), guildID, query, sort, limit, offset)
 }

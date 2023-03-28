@@ -3,7 +3,6 @@ package entities
 import (
 	"errors"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -180,12 +179,10 @@ func TestEntity_GetTopUsers(t *testing.T) {
 	}
 
 	type args struct {
-		guildID          string
-		userID           string
-		limit            int
-		page             int
-		platform         string
-		expDiscordSvcErr error
+		guildID string
+		userID  string
+		limit   int
+		page    int
 	}
 
 	ctrl := gomock.NewController(t)
@@ -218,7 +215,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 
 	leaderboard := []model.GuildUserXP{}
 
-	uXp.EXPECT().GetTopUsers(gomock.Any(), gomock.Any(), gomock.Any()).Return(leaderboard, nil).AnyTimes()
+	uXp.EXPECT().GetTopUsers(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(leaderboard, nil).AnyTimes()
 
 	dcGValue := model.DiscordGuild{}
 
@@ -259,48 +256,6 @@ func TestEntity_GetTopUsers(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "test get successfully web",
-			fields: fields{
-				repo: r,
-				svc:  svc,
-			},
-			args: args{
-				guildID:  "981128899280908299",
-				userID:   "963641551416881183",
-				limit:    5,
-				page:     0,
-				platform: "web",
-			},
-			want: &response.TopUser{
-				Metadata: response.PaginationResponse{
-					Pagination: model.Pagination{
-						Page: 0,
-						Size: 5,
-					},
-					Total: 100,
-				},
-				Author:      &userXP,
-				Leaderboard: leaderboard,
-			},
-			wantErr: false,
-		},
-		{
-			name: "failed web - get discord guild members failed",
-			fields: fields{
-				repo: r,
-				svc:  svc,
-			},
-			args: args{
-				guildID:          "981128899280908299",
-				userID:           "963641551416881183",
-				limit:            5,
-				page:             0,
-				platform:         "web",
-				expDiscordSvcErr: errors.New("failed to get discord guild members"),
-			},
-			wantErr: true,
-		},
-		{
 			name: "test user does not exist",
 			fields: fields{
 				repo: r,
@@ -328,11 +283,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 				cfg:      tt.fields.cfg,
 			}
 
-			if strings.EqualFold(tt.args.platform, "web") {
-				discordSvc.EXPECT().GetGuildMembers(gomock.Any()).Return([]*discordgo.Member{}, tt.args.expDiscordSvcErr)
-			}
-
-			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, tt.args.limit, tt.args.page, tt.args.platform)
+			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, "", "", tt.args.limit, tt.args.page)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetTopUsers() error = %v, wantErr %v", err, tt.wantErr)
 				return
