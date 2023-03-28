@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -40,9 +40,9 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 	}
 	tokenReq := &model.UserTokenSupportRequest{
 		UserDiscordID: req.UserDiscordID,
+		GuildID:       req.GuildID,
 		ChannelID:     req.ChannelID,
 		MessageID:     req.MessageID,
-		TokenName:     req.TokenName,
 		TokenAddress:  req.TokenAddress,
 		TokenChainID:  chainId,
 		Status:        model.TokenSupportPending,
@@ -100,8 +100,10 @@ func (e *Entity) updateStatusTokenRequest(id int, status model.TokenSupportReque
 
 func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUserTokenSupportRequest) error {
 	description := fmt.Sprintf("<@%s> wants to add the following token into his/her server.\n\n", req.UserDiscordID) +
-		"Token name\n" +
-		fmt.Sprintf("```%s```", req.TokenName) +
+		"Server ID\n" +
+		fmt.Sprintf("```%s```", req.GuildID) +
+		"User ID\n" +
+		fmt.Sprintf("```%s```", req.UserDiscordID) +
 		"Token address\n" +
 		fmt.Sprintf("```%s```", req.TokenAddress) +
 		"Chain name\n" +
@@ -145,7 +147,7 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 }
 
 func (e *Entity) notifyDiscordTokenApproved(req model.UserTokenSupportRequest) error {
-	description := fmt.Sprintf("Your token request for %s has been approved! Now you can make %s transaction with $tip and $airdrop! <:pumpeet:930840081554624632>", req.TokenName, req.TokenName)
+	description := fmt.Sprintf("Your token request for address %s has been approved! Now you can make transaction with $tip and $airdrop! <:pumpeet:930840081554624632>", req.TokenAddress)
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -156,18 +158,18 @@ func (e *Entity) notifyDiscordTokenApproved(req model.UserTokenSupportRequest) e
 			},
 		},
 	}
-	if err := e.svc.Discord.SendMessage(req.ChannelID, msgSend); err != nil {
+	if err := e.svc.Discord.SendDM(req.UserDiscordID, msgSend); err != nil {
 		e.log.Fields(logger.Fields{
 			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
 			"msg":                msgSend,
-		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendMessage failed")
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendDM failed")
 		return err
 	}
 	return nil
 }
 
 func (e *Entity) notifyDiscordTokenRejected(req model.UserTokenSupportRequest) error {
-	description := fmt.Sprintf("Because of some technical barrier, we regret to inform you that your token %s can’t be supported!\n", req.TokenName) +
+	description := fmt.Sprintf("Because of some technical barrier, we regret to inform you that your token with address %s can’t be supported!\n", req.TokenAddress) +
 		"Please check out and try some supported token by $token list. <:nekolove:>"
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
@@ -183,7 +185,7 @@ func (e *Entity) notifyDiscordTokenRejected(req model.UserTokenSupportRequest) e
 		e.log.Fields(logger.Fields{
 			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
 			"msg":                msgSend,
-		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendMessage failed")
+		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendDM failed")
 		return err
 	}
 	return nil
