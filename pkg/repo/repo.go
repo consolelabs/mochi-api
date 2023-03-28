@@ -102,6 +102,7 @@ import (
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
+	"github.com/defipod/mochi/pkg/repo/vault"
 )
 
 type Repo struct {
@@ -206,4 +207,5 @@ type Repo struct {
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	UserTelegram                         usertelegram.Store
+	Vault                                vault.Store
 }

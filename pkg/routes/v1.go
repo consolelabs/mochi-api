@@ -502,4 +502,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		telegramGroup.GET("/:username", h.Telegram.GetByUsername)
 	}
+
+	vaultGroup := v1.Group("/vault")
+	{
+		vaultGroup.GET("", h.Vault.GetVault)
+		vaultGroup.POST("", h.Vault.CreateVault)
+	}
 }

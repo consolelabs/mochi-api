@@ -105,6 +105,7 @@ import (
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
+	"github.com/defipod/mochi/pkg/repo/vault"
 )
 
 // NewRepo new pg repo implementation
@@ -211,5 +212,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
 		UserTokenSupportRequest:              usertokensupportrequest.NewPG(db),
 		UserTelegram:                         usertelegram.NewPG(db),
+		Vault:                                vault.NewPG(db),
 	}
 }
