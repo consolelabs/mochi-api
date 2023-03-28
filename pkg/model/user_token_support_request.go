@@ -13,9 +13,9 @@ const (
 type UserTokenSupportRequest struct {
 	ID            int                       `json:"id"`
 	UserDiscordID string                    `json:"user_discord_id"`
+	GuildID       string                    `json:"guild_id"`
 	ChannelID     string                    `json:"channel_id"`
 	MessageID     string                    `json:"message_id"`
-	TokenName     string                    `json:"token_name"`
 	TokenAddress  string                    `json:"token_address"`
 	TokenChainID  int                       `json:"token_chain_id"`
 	Status        TokenSupportRequestStatus `json:"status"`
