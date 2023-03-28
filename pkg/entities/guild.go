@@ -210,3 +210,34 @@ func (e *Entity) TotalServers() (*response.Metric, error) {
 
 	return &response.Metric{TotalServers: int64(len(discordGuilds))}, nil
 }
+
+func (e *Entity) GetGuildRoles(guildID string) (*response.DiscordGuildRoles, error) {
+	guildRoles, err := e.svc.Discord.GetGuildRoles(guildID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := response.DiscordGuildRoles{}
+
+	for _, role := range guildRoles {
+		icon := ""
+		if role.Icon != "" {
+			icon = fmt.Sprintf("https://cdn.discordapp.com/role-icons/%s/%s.png", role.ID, role.Icon)
+		}
+
+		resp = append(resp, &response.DiscordGuildRole{
+			ID:           role.ID,
+			Name:         role.Name,
+			Color:        role.Color,
+			Hoist:        role.Hoist,
+			Icon:         icon,
+			UnicodeEmoji: role.UnicodeEmoji,
+			Position:     role.Position,
+			Permissions:  role.Permissions,
+			Managed:      role.Managed,
+			Mentionable:  role.Mentionable,
+		})
+	}
+
+	return &resp, nil
+}

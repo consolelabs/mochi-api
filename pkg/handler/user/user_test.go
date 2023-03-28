@@ -262,7 +262,7 @@ func TestHandler_GetUserProfile(t *testing.T) {
 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
 			require.NoError(t, err)
 
-			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetUserProfile] response mismatched")
+			require.JSONEqf(t, string(expRespRaw), w.Body.String(), "[Handler.GetUserProfile] response mismatched")
 		})
 	}
 }
@@ -315,7 +315,7 @@ func TestHandler_GetTopUsers(t *testing.T) {
 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
 			require.NoError(t, err)
 
-			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.GetTopUsers] response mismatched")
+			require.JSONEqf(t, string(expRespRaw), w.Body.String(), "[Handler.GetTopUsers] response mismatched")
 		})
 	}
 }

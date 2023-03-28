@@ -31,13 +31,28 @@ func (e *Entity) GetGuildUsersFromDiscord(guildID string) ([]response.DiscordGui
 				continue
 			}
 
+			var avatar string
+			if member.Avatar != "" {
+				avatar = discordgo.EndpointGuildMemberAvatar(guildID, member.User.ID, member.Avatar)
+			} else if member.User.Avatar != "" {
+				avatar = discordgo.EndpointUserAvatar(member.User.ID, member.User.Avatar)
+			}
+
+			nickName := member.Nick
+			if nickName == "" {
+				nickName = member.User.Username
+			}
+
 			members = append(members, response.DiscordGuildUser{
 				User: &response.DiscordUser{
 					ID:       member.User.ID,
 					Username: member.User.Username,
 				},
 				GuildID:  guildID,
-				Nickname: member.Nick,
+				Nickname: nickName,
+				JoinedAt: member.JoinedAt,
+				Avatar:   avatar,
+				Roles:    member.Roles,
 			})
 		}
 

@@ -126,6 +126,21 @@ func (mr *MockServiceMockRecorder) GetGuildMembers(guildID interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildMembers", reflect.TypeOf((*MockService)(nil).GetGuildMembers), guildID)
 }
 
+// GetGuildRoles mocks base method.
+func (m *MockService) GetGuildRoles(guildID string) ([]*model.DiscordGuildRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGuildRoles", guildID)
+	ret0, _ := ret[0].([]*model.DiscordGuildRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGuildRoles indicates an expected call of GetGuildRoles.
+func (mr *MockServiceMockRecorder) GetGuildRoles(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildRoles", reflect.TypeOf((*MockService)(nil).GetGuildRoles), guildID)
+}
+
 // GetUser mocks base method.
 func (m *MockService) GetUser(userID string) (*discordgo.User, error) {
 	m.ctrl.T.Helper()

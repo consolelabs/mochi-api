@@ -10,4 +10,5 @@ type IHandler interface {
 	CreateGuildChannel(c *gin.Context)
 	ListMyGuilds(c *gin.Context)
 	UpdateGuild(c *gin.Context)
+	GetGuildRoles(c *gin.Context)
 }

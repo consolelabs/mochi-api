@@ -199,7 +199,8 @@ func (h *Handler) GetMyInfo(c *gin.Context) {
 // @Param       user_id query     string true "User ID"
 // @Param       page query     int false "Page" default(0)
 // @Param       limit query     int false "Limit" default(10)
-// @Param       platform query     string false "Platform"
+// @Param       query query     string false "Query to search by name"
+// @Param       sort query     string false "ASC / DESC"
 // @Success     200 {object} response.TopUser
 // @Router      /users/top [get]
 func (h *Handler) GetTopUsers(c *gin.Context) {
@@ -228,6 +229,10 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 		return
 	}
 
+	query := c.Query("query")
+
+	sort := c.Query("sort")
+
 	limitStr := c.Query("limit")
 	if limitStr == "" {
 		limitStr = "10"
@@ -240,12 +245,7 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 		return
 	}
 
-	platform := c.Query("platform")
-	if platform == "" {
-		platform = "default"
-	}
-
-	data, err := h.entities.GetTopUsers(guildID, userID, limit, page, platform)
+	data, err := h.entities.GetTopUsers(guildID, userID, query, sort, limit, page)
 	if err != nil {
 		h.log.Fields(logger.Fields{"page": pageStr, "limit": limit, "guildID": guildID, "userID": userID}).Error(err, "[handler.GetTopUsers] - failed to get top users")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

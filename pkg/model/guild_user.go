@@ -1,9 +1,9 @@
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type GuildUser struct {
@@ -12,7 +12,10 @@ type GuildUser struct {
 	UserID    string        `json:"user_id" gorm:"uique_index:idx_guild_user_guild_id_user_id"`
 	Nickname  string        `json:"nickname"`
 	InvitedBy string        `json:"invited_by"`
-	Roles     []GuildRole   `json:"roles" gorm:"many2many:guild_user_role;foreignKey:UserID;joinForeignKey:UserID;References:ID;joinReferences:RoleID"`
+	Avatar    string        `json:"avatar"`
+	JoinedAt  time.Time     `json:"joined_at"`
+	Roles     []byte        `json:"-" gorm:"roles"`
+	RoleSlice []string      `json:"roles" gorm:"-"`
 }
 
 type GuildUserRole struct {
@@ -20,30 +23,4 @@ type GuildUserRole struct {
 	GuildID int64         `json:"guild_id"`
 	UserID  int64         `json:"user_id"`
 	RoleID  int64         `json:"role_id"`
-}
-
-func (u *GuildUser) BeforeCreate(tx *gorm.DB) (err error) {
-	cols := []clause.Column{}
-	colsNames := []string{}
-	for _, field := range tx.Statement.Schema.PrimaryFields {
-		cols = append(cols, clause.Column{Name: field.DBName})
-		colsNames = append(colsNames, field.DBName)
-	}
-
-	tx.Statement.AddClause(clause.OnConflict{
-		Columns:   cols,
-		DoNothing: true,
-	})
-
-	tx.Statement.AddClause(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "guild_id"},
-			{Name: "user_id"},
-		},
-		DoUpdates: []clause.Assignment{
-			{Column: clause.Column{Name: "invited_by"}, Value: u.InvitedBy},
-		},
-	})
-
-	return nil
 }

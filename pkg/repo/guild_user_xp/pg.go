@@ -24,7 +24,17 @@ func (pg *pg) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {
 	return result, pg.db.Where("guild_id = ?", guildID).Find(&result).Error
 }
 
-func (pg *pg) GetTopUsers(guildID string, limit, offset int) ([]model.GuildUserXP, error) {
+func (pg *pg) GetTopUsers(guildID, query, sort string, limit, offset int) ([]model.GuildUserXP, error) {
 	var userXPs []model.GuildUserXP
-	return userXPs, pg.db.Where("guild_id = ?", guildID).Preload("User").Offset(offset).Limit(limit).Order("guild_rank").Find(&userXPs).Error
+	q := pg.db.Where("guild_id = ?", guildID).Preload("User").Preload("User.GuildUsers", "guild_id=?", guildID).Offset(offset).Limit(limit).Order("guild_rank")
+
+	if query != "" {
+		q = q.Where("username LIKE ?", "%"+query+"%")
+	}
+
+	if sort != "" {
+		q = q.Order("total_xp " + sort)
+	}
+
+	return userXPs, q.Find(&userXPs).Error
 }

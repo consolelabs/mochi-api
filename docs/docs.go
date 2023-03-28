@@ -5052,6 +5052,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/guilds/{guild_id}/roles": {
+            "get": {
+                "description": "Update guild",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guild"
+                ],
+                "summary": "Update guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DiscordGuildRoles"
+                        }
+                    }
+                }
+            }
+        },
         "/guilds/{guild_id}/stats": {
             "get": {
                 "description": "Get guild stats",
@@ -6815,8 +6847,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Platform",
-                        "name": "platform",
+                        "description": "Query to search by name",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ASC / DESC",
+                        "name": "sort",
                         "in": "query"
                     }
                 ],
@@ -7423,63 +7461,6 @@ const docTemplate = `{
     "definitions": {
         "big.Float": {
             "type": "object"
-        },
-        "discordgo.Member": {
-            "type": "object",
-            "properties": {
-                "avatar": {
-                    "description": "The hash of the avatar for the guild member, if any.",
-                    "type": "string"
-                },
-                "communication_disabled_until": {
-                    "description": "The time at which the member's timeout will expire.\nTime in the past or nil if the user is not timed out.",
-                    "type": "string"
-                },
-                "deaf": {
-                    "description": "Whether the member is deafened at a guild level.",
-                    "type": "boolean"
-                },
-                "guild_id": {
-                    "description": "The guild ID on which the member exists.",
-                    "type": "string"
-                },
-                "joined_at": {
-                    "description": "The time at which the member joined the guild.",
-                    "type": "string"
-                },
-                "mute": {
-                    "description": "Whether the member is muted at a guild level.",
-                    "type": "boolean"
-                },
-                "nick": {
-                    "description": "The nickname of the member, if they have one.",
-                    "type": "string"
-                },
-                "pending": {
-                    "description": "Is true while the member hasn't accepted the membership screen.",
-                    "type": "boolean"
-                },
-                "permissions": {
-                    "description": "Total permissions of the member in the channel, including overrides, returned when in the interaction object.",
-                    "type": "string",
-                    "example": "0"
-                },
-                "premium_since": {
-                    "description": "When the user used their Nitro boost on the server",
-                    "type": "string"
-                },
-                "roles": {
-                    "description": "A list of IDs of the roles which are possessed by the member.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "user": {
-                    "description": "The underlying user on which the member is based.",
-                    "$ref": "#/definitions/discordgo.User"
-                }
-            }
         },
         "discordgo.User": {
             "type": "object",
@@ -8463,6 +8444,9 @@ const docTemplate = `{
         "model.GuildUser": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "guild_id": {
                     "type": "string"
                 },
@@ -8472,13 +8456,16 @@ const docTemplate = `{
                 "invited_by": {
                     "type": "string"
                 },
+                "joined_at": {
+                    "type": "string"
+                },
                 "nickname": {
                     "type": "string"
                 },
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.GuildRole"
+                        "type": "string"
                     }
                 },
                 "user_id": {
@@ -8494,9 +8481,6 @@ const docTemplate = `{
                 },
                 "guild_id": {
                     "type": "string"
-                },
-                "guild_member": {
-                    "$ref": "#/definitions/discordgo.Member"
                 },
                 "guild_rank": {
                     "type": "integer"
@@ -9422,6 +9406,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "guild_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -9436,9 +9423,6 @@ const docTemplate = `{
                 },
                 "token_chain_id": {
                     "type": "integer"
-                },
-                "token_name": {
-                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -10080,14 +10064,17 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "channel_id",
+                "guild_id",
                 "message_id",
                 "token_address",
                 "token_chain",
-                "token_name",
                 "user_discord_id"
             ],
             "properties": {
                 "channel_id": {
+                    "type": "string"
+                },
+                "guild_id": {
                     "type": "string"
                 },
                 "message_id": {
@@ -10097,9 +10084,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token_chain": {
-                    "type": "string"
-                },
-                "token_name": {
                     "type": "string"
                 },
                 "user_discord_id": {
@@ -11534,6 +11518,52 @@ const docTemplate = `{
                 "permissions": {
                     "type": "string",
                     "example": "0"
+                }
+            }
+        },
+        "response.DiscordGuildRole": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "integer"
+                },
+                "hoist": {
+                    "type": "boolean"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "managed": {
+                    "type": "boolean"
+                },
+                "mentionable": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "unicode_emoji": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DiscordGuildRoles": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DiscordGuildRole"
+                    }
                 }
             }
         },

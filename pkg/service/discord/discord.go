@@ -1,6 +1,7 @@
 package discord
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -818,4 +819,20 @@ func (d *Discord) GetGuild(guildID string) (*discordgo.Guild, error) {
 	guild.Icon = discordgo.EndpointGuildIcon(guildID, guild.Icon)
 
 	return guild, nil
+}
+
+func (d *Discord) GetGuildRoles(guildID string) ([]*model.DiscordGuildRole, error) {
+	resp, err := d.session.Request("GET", discordgo.EndpointGuildRoles(guildID), nil)
+	if err != nil {
+		d.log.Error(err, "[discord.GetGuildRoles] d.session.Request() failed")
+		return nil, err
+	}
+
+	var roles []*model.DiscordGuildRole
+	if err := json.Unmarshal(resp, &roles); err != nil {
+		d.log.Error(err, "[discord.GetGuildRoles] json.Unmarshal() failed")
+		return nil, err
+	}
+
+	return roles, nil
 }

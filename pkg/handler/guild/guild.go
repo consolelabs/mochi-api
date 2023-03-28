@@ -217,3 +217,30 @@ func (h *Handler) UpdateGuild(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// UpdateGuild      godoc
+// @Summary     Update guild
+// @Description Update guild
+// @Tags        Guild
+// @Accept      json
+// @Produce     json
+// @Param       guild_id path string                     true "Guild ID"
+// @Success     200        {object} response.DiscordGuildRoles
+// @Router      /guilds/{guild_id}/roles [get]
+func (h *Handler) GetGuildRoles(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetGuildRoles] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	roles, err := h.entities.GetGuildRoles(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildRoles] - failed to get guild roles")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(roles, nil, nil, nil))
+}
