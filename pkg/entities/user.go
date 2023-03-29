@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"sort"
+	"strconv"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -332,13 +334,18 @@ func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page in
 		return nil, err
 	}
 
+	total, err := e.repo.GuildUserXP.GetTotalTopUsersCount(guildID, query)
+	if err != nil {
+		return nil, err
+	}
+
 	return &response.TopUser{
 		Metadata: response.PaginationResponse{
 			Pagination: model.Pagination{
 				Page: int64(page),
 				Size: int64(limit),
 			},
-			Total: 100,
+			Total: total,
 		},
 		Author:      author,
 		Leaderboard: leaderboard,
@@ -685,7 +692,27 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 	upsertUsersPayload := make([]model.User, 0, len(members))
 	upsertGuildUsersPayload := make([]model.GuildUser, 0, len(members))
 	for _, m := range members {
-		upsertUsersPayload = append(upsertUsersPayload, model.User{ID: m.User.ID, Username: m.User.Username})
+		upsertUsersPayload = append(upsertUsersPayload, model.User{
+			ID:            m.User.ID,
+			Username:      m.User.Username,
+			Discriminator: m.User.Discriminator,
+		})
+
+		sort.SliceStable(m.Roles, func(i, j int) bool {
+			roleI, err := strconv.ParseInt(m.Roles[i], 10, 64)
+			if err != nil {
+				e.log.Fields(logger.Fields{"guildID": guildID, "user": m.User.ID}).Error(err, "[entity.FetchAndSaveGuildMembers] strconv.ParseInt() failed")
+				return false
+			}
+
+			roleJ, err := strconv.ParseInt(m.Roles[j], 10, 64)
+			if err != nil {
+				e.log.Fields(logger.Fields{"guildID": guildID, "user": m.User.ID}).Error(err, "[entity.FetchAndSaveGuildMembers] strconv.ParseInt() failed")
+				return false
+			}
+
+			return roleI > roleJ
+		})
 
 		roles, err := json.Marshal(m.Roles)
 		if err != nil {

@@ -3,9 +3,10 @@ package response
 import "time"
 
 type DiscordUser struct {
-	ID       string `json:"id"`
-	Username string `json:"username"`
-	Bot      bool   `json:"bot"`
+	ID            string `json:"id"`
+	Username      string `json:"username"`
+	Bot           bool   `json:"bot"`
+	Discriminator string `json:"discriminator"`
 }
 
 type DiscordGuildUser struct {

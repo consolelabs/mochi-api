@@ -3,7 +3,7 @@
     "metadata": {
       "page": 0,
       "size": 10,
-      "total": 100
+      "total": 1
     },
     "author": {
       "guild_id": "552427722551459840",
@@ -33,7 +33,19 @@
         "total_xp": 7,
         "level": 0,
         "user": {
-          "guild_users": [ ],
+          "discriminator": "",
+          "guild_users": [
+            {
+              "avatar": "",
+              "guild_id": "552427722551459840",
+              "id": "0006d63b-4c22-42fb-b448-90083e97da9c",
+              "invited_by": "",
+              "joined_at": "0001-01-01T00:00:00Z",
+              "nickname": "bien",
+              "roles": [ ],
+              "user_id": "393034938028392449"
+            }
+          ],
           "id": "393034938028392449",
           "nr_of_join": 0,
           "username": "rainy"
