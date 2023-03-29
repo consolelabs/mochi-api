@@ -2,9 +2,14 @@ package token
 
 import "github.com/defipod/mochi/pkg/model"
 
+type ListQuery struct {
+	Offset int
+	Limit  int
+}
+
 type Store interface {
 	GetBySymbol(symbol string, botSupported bool) (model.Token, error)
-	GetAllSupported() ([]model.Token, error)
+	GetAllSupported(q ListQuery) ([]model.Token, int64, error)
 	GetByAddress(address string, chainID int) (*model.Token, error)
 	GetDefaultTokens() ([]model.Token, error)
 	CreateOne(token *model.Token) error

@@ -21,9 +21,15 @@ func (pg *pg) GetBySymbol(symbol string, botSupported bool) (model.Token, error)
 	return token, pg.db.Preload("Chain").First(&token, "lower(symbol) = lower(?) AND discord_bot_supported = ?", symbol, botSupported).Error
 }
 
-func (pg *pg) GetAllSupported() ([]model.Token, error) {
+func (pg *pg) GetAllSupported(q ListQuery) ([]model.Token, int64, error) {
 	var tokens []model.Token
-	return tokens, pg.db.Preload("Chain").Where("discord_bot_supported = TRUE").Order("id ASC").Find(&tokens).Error
+	var total int64
+	db := pg.db.Model(&model.Token{}).Preload("Chain").Where("discord_bot_supported = TRUE").Order("id ASC")
+	db = db.Count(&total).Offset(q.Offset)
+	if q.Limit != 0 {
+		db = db.Limit(q.Limit)
+	}
+	return tokens, total, db.Find(&tokens).Error
 }
 
 func (pg *pg) GetByAddress(address string, chainID int) (*model.Token, error) {
