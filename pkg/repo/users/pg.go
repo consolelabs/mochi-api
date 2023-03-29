@@ -35,7 +35,7 @@ func (pg *pg) UpsertMany(users []model.User) error {
 	for _, user := range users {
 		err := tx.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
-			DoUpdates: clause.AssignmentColumns([]string{"username"}),
+			DoUpdates: clause.AssignmentColumns([]string{"username", "discriminator"}),
 		}).Create(&user).Error
 		if err != nil {
 			log.Error(err, "[users.UpsertMany] failed")
