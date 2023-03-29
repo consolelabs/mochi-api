@@ -1232,6 +1232,8 @@ definitions:
     type: object
   model.User:
     properties:
+      discriminator:
+        type: string
       guild_users:
         items:
           $ref: '#/definitions/model.GuildUser'
@@ -1303,10 +1305,14 @@ definitions:
         type: string
       status:
         type: string
+      symbol:
+        type: string
       token_address:
         type: string
       token_chain_id:
         type: integer
+      token_name:
+        type: string
       updated_at:
         type: string
       user_discord_id:
@@ -2700,13 +2706,6 @@ definitions:
         type: integer
       unicode_emoji:
         type: string
-    type: object
-  response.DiscordGuildRoles:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.DiscordGuildRole'
-        type: array
     type: object
   response.DiscordUserTokenAlertResponse:
     properties:
@@ -4382,6 +4381,8 @@ definitions:
     type: object
   response.User:
     properties:
+      discriminator:
+        type: string
       guild_users:
         items:
           $ref: '#/definitions/response.GetGuildUserResponse'
@@ -7423,6 +7424,20 @@ paths:
       tags:
       - Defi
   /defi/token-support:
+    get:
+      consumes:
+      - application/json
+      description: Get tokens requested by user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetSupportedTokensResponse'
+      summary: Get tokens requested by user
+      tags:
+      - Defi
     post:
       consumes:
       - application/json
@@ -7748,7 +7763,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DiscordGuildRoles'
+            items:
+              $ref: '#/definitions/response.DiscordGuildRole'
+            type: array
       summary: Update guild
       tags:
       - Guild

@@ -4548,6 +4548,27 @@ const docTemplate = `{
             }
         },
         "/defi/token-support": {
+            "get": {
+                "description": "Get tokens requested by user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get tokens requested by user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetSupportedTokensResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Request support token",
                 "consumes": [
@@ -5078,7 +5099,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DiscordGuildRoles"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.DiscordGuildRole"
+                            }
                         }
                     }
                 }
@@ -9309,6 +9333,9 @@ const docTemplate = `{
         "model.User": {
             "type": "object",
             "properties": {
+                "discriminator": {
+                    "type": "string"
+                },
                 "guild_users": {
                     "type": "array",
                     "items": {
@@ -9418,11 +9445,17 @@ const docTemplate = `{
                 "status": {
                     "type": "string"
                 },
+                "symbol": {
+                    "type": "string"
+                },
                 "token_address": {
                     "type": "string"
                 },
                 "token_chain_id": {
                     "type": "integer"
+                },
+                "token_name": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -11553,17 +11586,6 @@ const docTemplate = `{
                 },
                 "unicode_emoji": {
                     "type": "string"
-                }
-            }
-        },
-        "response.DiscordGuildRoles": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.DiscordGuildRole"
-                    }
                 }
             }
         },
@@ -14156,6 +14178,9 @@ const docTemplate = `{
         "response.User": {
             "type": "object",
             "properties": {
+                "discriminator": {
+                    "type": "string"
+                },
                 "guild_users": {
                     "type": "array",
                     "items": {

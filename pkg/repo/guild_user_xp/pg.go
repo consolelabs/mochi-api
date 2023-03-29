@@ -29,7 +29,7 @@ func (pg *pg) GetTopUsers(guildID, query, sort string, limit, offset int) ([]mod
 	q := pg.db.Where("guild_id = ?", guildID).Preload("User").Preload("User.GuildUsers", "guild_id=?", guildID).Offset(offset).Limit(limit)
 
 	if query != "" {
-		q = q.Where("username LIKE ?", "%"+query+"%")
+		q = q.Where("username LIKE ? OR nickname LIKE ?", "%"+query+"%", "%"+query+"%")
 	}
 
 	if sort != "" {
@@ -39,4 +39,15 @@ func (pg *pg) GetTopUsers(guildID, query, sort string, limit, offset int) ([]mod
 	}
 
 	return userXPs, q.Find(&userXPs).Error
+}
+
+func (pg *pg) GetTotalTopUsersCount(guildID, query string) (int64, error) {
+	var count int64
+	q := pg.db.Model(&model.GuildUserXP{}).Where("guild_id = ?", guildID)
+
+	if query != "" {
+		q = q.Where("username LIKE ? OR nickname LIKE ?", "%"+query+"%", "%"+query+"%")
+	}
+
+	return count, q.Count(&count).Error
 }
