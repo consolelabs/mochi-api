@@ -30,12 +30,12 @@ func (pg *pg) GetTopUsers(guildID, query, sort string, limit, offset int) ([]mod
 
 	if query != "" {
 		q = q.Where("username LIKE ?", "%"+query+"%")
-	} else {
-		q = q.Order("guild_rank")
 	}
 
 	if sort != "" {
 		q = q.Order("total_xp " + sort)
+	} else {
+		q = q.Order("guild_rank")
 	}
 
 	return userXPs, q.Find(&userXPs).Error
