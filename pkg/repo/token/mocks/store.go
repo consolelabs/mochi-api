@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	token "github.com/defipod/mochi/pkg/repo/token"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -79,18 +80,19 @@ func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
 }
 
 // GetAllSupported mocks base method.
-func (m *MockStore) GetAllSupported() ([]model.Token, error) {
+func (m *MockStore) GetAllSupported(q token.ListQuery) ([]model.Token, int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllSupported")
+	ret := m.ctrl.Call(m, "GetAllSupported", q)
 	ret0, _ := ret[0].([]model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetAllSupported indicates an expected call of GetAllSupported.
-func (mr *MockStoreMockRecorder) GetAllSupported() *gomock.Call {
+func (mr *MockStoreMockRecorder) GetAllSupported(q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupported", reflect.TypeOf((*MockStore)(nil).GetAllSupported))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupported", reflect.TypeOf((*MockStore)(nil).GetAllSupported), q)
 }
 
 // GetByAddress mocks base method.
