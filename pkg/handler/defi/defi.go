@@ -97,14 +97,22 @@ func (h *Handler) GetSupportedToken(c *gin.Context) {
 // @Success     200 {object} response.GetSupportedTokensResponse
 // @Router      /defi/tokens [get]
 func (h *Handler) GetSupportedTokens(c *gin.Context) {
-	tokens, err := h.entities.GetSupportedTokens()
+	page := c.Query("page")
+	size := c.Query("size")
+	if page == "" {
+		page = "0"
+	}
+	if size == "" {
+		size = "15"
+	}
+	tokens, pagination, err := h.entities.GetSupportedTokens(page, size)
 	if err != nil {
 		h.log.Error(err, "[handler.GetSupportedTokens] - failed to get supported tokens")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(tokens, pagination, nil, nil))
 }
 
 // GetCoin     godoc

@@ -16,6 +16,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	"github.com/defipod/mochi/pkg/repo/token"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
@@ -83,11 +84,20 @@ func (e *Entity) transferOnchain(toAccount accounts.Account, amount float64, tok
 	return signedTx, amount, nil
 }
 
-func (e *Entity) GetSupportedTokens() (tokens []model.Token, err error) {
-	tokens, err = e.repo.Token.GetAllSupported()
+func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pagination *response.PaginationResponse, err error) {
+	pageInt, _ := strconv.Atoi(page)
+	sizeInt, _ := strconv.Atoi(size)
+	tokens, total, err := e.repo.Token.GetAllSupported(token.ListQuery{Offset: pageInt * sizeInt, Limit: sizeInt})
 	if err != nil {
 		err = fmt.Errorf("failed to get supported tokens - err: %v", err)
 		return
+	}
+	pagination = &response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: int64(pageInt),
+			Size: int64(sizeInt),
+		},
+		Total: total,
 	}
 	return
 }
