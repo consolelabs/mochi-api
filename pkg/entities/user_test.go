@@ -216,6 +216,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 	leaderboard := []model.GuildUserXP{}
 
 	uXp.EXPECT().GetTopUsers(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(leaderboard, nil).AnyTimes()
+	uXp.EXPECT().GetTotalTopUsersCount(gomock.Any(), gomock.Any()).Return(int64(len(leaderboard)), nil).AnyTimes()
 
 	dcGValue := model.DiscordGuild{}
 
@@ -248,7 +249,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 						Page: 0,
 						Size: 5,
 					},
-					Total: 100,
+					Total: 0,
 				},
 				Author:      &userXP,
 				Leaderboard: leaderboard,

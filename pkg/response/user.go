@@ -9,10 +9,11 @@ import (
 )
 
 type User struct {
-	ID         string                  `json:"id"`
-	Username   string                  `json:"username"`
-	GuildUsers []*GetGuildUserResponse `json:"guild_users"`
-	NrOfJoin   int64                   `json:"nr_of_join"`
+	ID            string                  `json:"id"`
+	Username      string                  `json:"username"`
+	GuildUsers    []*GetGuildUserResponse `json:"guild_users"`
+	NrOfJoin      int64                   `json:"nr_of_join"`
+	Discriminator string                  `json:"discriminator"`
 }
 
 type GetGuildUserResponse struct {

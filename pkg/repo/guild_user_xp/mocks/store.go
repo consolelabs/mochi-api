@@ -78,3 +78,18 @@ func (mr *MockStoreMockRecorder) GetTopUsers(guildID, query, sort, limit, offset
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTopUsers", reflect.TypeOf((*MockStore)(nil).GetTopUsers), guildID, query, sort, limit, offset)
 }
+
+// GetTotalTopUsersCount mocks base method.
+func (m *MockStore) GetTotalTopUsersCount(guildID, query string) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTotalTopUsersCount", guildID, query)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTotalTopUsersCount indicates an expected call of GetTotalTopUsersCount.
+func (mr *MockStoreMockRecorder) GetTotalTopUsersCount(guildID, query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalTopUsersCount", reflect.TypeOf((*MockStore)(nil).GetTotalTopUsersCount), guildID, query)
+}

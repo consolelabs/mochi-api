@@ -45,8 +45,9 @@ func (e *Entity) GetGuildUsersFromDiscord(guildID string) ([]response.DiscordGui
 
 			members = append(members, response.DiscordGuildUser{
 				User: &response.DiscordUser{
-					ID:       member.User.ID,
-					Username: member.User.Username,
+					ID:            member.User.ID,
+					Username:      member.User.Username,
+					Discriminator: member.User.Discriminator,
 				},
 				GuildID:  guildID,
 				Nickname: nickName,
