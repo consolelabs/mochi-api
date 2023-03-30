@@ -103,6 +103,8 @@ import (
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
+	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
+	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 )
 
 type Repo struct {
@@ -208,4 +210,6 @@ type Repo struct {
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	UserTelegram                         usertelegram.Store
 	Vault                                vault.Store
+	VaultInfo                            vaultinfo.Store
+	VaultConfig                          vaultconfig.Store
 }
