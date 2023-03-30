@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/http"
 	"sort"
-	"strconv"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -684,6 +683,23 @@ func (e *Entity) TotalVerifiedWallets(guildId string) (*response.Metric, error) 
 }
 
 func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
+	roles, err := e.svc.Discord.GetGuildRoles(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.FetchAndSaveGuildMembers] entity.GetGuildRolesFromDiscord() failed")
+		return 0, err
+	}
+
+	// Sort roles by position DESC
+	sort.Slice(roles, func(i, j int) bool {
+		return roles[i].Position > roles[j].Position
+	})
+
+	// Create a map of roleID to position
+	rolePositionMap := make(map[string]int)
+	for _, r := range roles {
+		rolePositionMap[r.ID] = r.Position
+	}
+
 	members, err := e.GetGuildUsersFromDiscord(guildID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.FetchAndSaveGuildMembers] entity.GetGuildUsersFromDiscord() failed")
@@ -698,20 +714,15 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 			Discriminator: m.User.Discriminator,
 		})
 
+		// Map each member role to proper position
+		userRolePositionMap := make(map[string]int)
+		for _, r := range m.Roles {
+			userRolePositionMap[r] = rolePositionMap[r]
+		}
+
+		// Sort roles by position DESC
 		sort.SliceStable(m.Roles, func(i, j int) bool {
-			roleI, err := strconv.ParseInt(m.Roles[i], 10, 64)
-			if err != nil {
-				e.log.Fields(logger.Fields{"guildID": guildID, "user": m.User.ID}).Error(err, "[entity.FetchAndSaveGuildMembers] strconv.ParseInt() failed")
-				return false
-			}
-
-			roleJ, err := strconv.ParseInt(m.Roles[j], 10, 64)
-			if err != nil {
-				e.log.Fields(logger.Fields{"guildID": guildID, "user": m.User.ID}).Error(err, "[entity.FetchAndSaveGuildMembers] strconv.ParseInt() failed")
-				return false
-			}
-
-			return roleI > roleJ
+			return userRolePositionMap[m.Roles[i]] > userRolePositionMap[m.Roles[j]]
 		})
 
 		roles, err := json.Marshal(m.Roles)
