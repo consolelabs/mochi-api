@@ -23,13 +23,22 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 	}
 }
 
+// GetSwapRoutes     godoc
+// @Summary     Get swap route for token pairs
+// @Description Get swap route for token pairs
+// @Tags        Swap
+// @Accept      json
+// @Produce     json
+// @Param       from   query  string true  "from token symbol"
+// @Param       to   query  string true  "to token symbol"
+// @Param       amount   query  string true  "from amount value"
+// @Success     200 {object} response.KyberSwapRoutes
+// @Router      /swap/route [get]
 func (h *Handler) GetSwapRoutes(c *gin.Context) {
-	var req request.GetSwapRouteRequest
-
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
+	req := request.GetSwapRouteRequest{
+		From:   c.Query("from"),
+		To:     c.Query("to"),
+		Amount: c.Query("amount"),
 	}
 
 	data, err := h.entities.GetSwapRoutes(&req)

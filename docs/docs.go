@@ -6080,6 +6080,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/swap/route": {
+            "get": {
+                "description": "Get swap route for token pairs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Swap"
+                ],
+                "summary": "Get swap route for token pairs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "from token symbol",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "to token symbol",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from amount value",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.KyberSwapRoutes"
+                        }
+                    }
+                }
+            }
+        },
         "/tip/assign-contract": {
             "post": {
                 "description": "Create an assign contract when user want to deposit a specific token to contract",
@@ -11600,6 +11646,23 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ExtraFee": {
+            "type": "object",
+            "properties": {
+                "chargeFeeBy": {
+                    "type": "string"
+                },
+                "feeAmount": {
+                    "type": "string"
+                },
+                "feeReceiver": {
+                    "type": "string"
+                },
+                "isImBps": {
+                    "type": "boolean"
+                }
+            }
+        },
         "response.GasTrackerResponse": {
             "type": "object",
             "properties": {
@@ -13157,6 +13220,20 @@ const docTemplate = `{
                 }
             }
         },
+        "response.KyberSwapRoutes": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/response.RouteSummaryData"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "response.LinkUserTelegramWithDiscordResponse": {
             "type": "object",
             "properties": {
@@ -13938,6 +14015,101 @@ const docTemplate = `{
                 },
                 "role": {
                     "$ref": "#/definitions/response.Role"
+                }
+            }
+        },
+        "response.RouteElement": {
+            "type": "object",
+            "properties": {
+                "amountOut": {
+                    "type": "string"
+                },
+                "exchange": {
+                    "type": "string"
+                },
+                "extra": {},
+                "limitReturnAmount": {
+                    "type": "string"
+                },
+                "pool": {
+                    "type": "string"
+                },
+                "poolExtra": {},
+                "poolLength": {
+                    "type": "integer"
+                },
+                "poolType": {
+                    "type": "string"
+                },
+                "swapAmount": {
+                    "type": "string"
+                },
+                "tokenIn": {
+                    "type": "string"
+                },
+                "tokenOut": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.RouteSummary": {
+            "type": "object",
+            "properties": {
+                "amountIn": {
+                    "type": "string"
+                },
+                "amountInUsd": {
+                    "type": "string"
+                },
+                "amountOut": {
+                    "type": "string"
+                },
+                "amountOutUsd": {
+                    "type": "string"
+                },
+                "extraFee": {
+                    "$ref": "#/definitions/response.ExtraFee"
+                },
+                "gas": {
+                    "type": "string"
+                },
+                "gasPrice": {
+                    "type": "string"
+                },
+                "gasUsd": {
+                    "type": "string"
+                },
+                "route": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/response.RouteElement"
+                        }
+                    }
+                },
+                "tokenIn": {
+                    "type": "string"
+                },
+                "tokenInMarketPriceAvailable": {
+                    "type": "boolean"
+                },
+                "tokenOut": {
+                    "type": "string"
+                },
+                "tokenOutMarketPriceAvailable": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.RouteSummaryData": {
+            "type": "object",
+            "properties": {
+                "routeSummary": {
+                    "$ref": "#/definitions/response.RouteSummary"
+                },
+                "routerAddress": {
+                    "type": "string"
                 }
             }
         },
