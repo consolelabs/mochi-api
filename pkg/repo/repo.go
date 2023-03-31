@@ -87,6 +87,8 @@ import (
 	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
+	"github.com/defipod/mochi/pkg/repo/treasurer"
+	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -212,4 +214,6 @@ type Repo struct {
 	Vault                                vault.Store
 	VaultInfo                            vaultinfo.Store
 	VaultConfig                          vaultconfig.Store
+	Treasurer                            treasurer.Store
+	TreasurerRequest                     treasurerrequest.Store
 }
