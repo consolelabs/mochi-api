@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/k0kubun/pp"
-
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
@@ -28,7 +26,6 @@ func New(cfg *config.Config, l logger.Logger) Service {
 }
 
 func (k *kyberService) GetSwapRoutes(amount string) (*response.KyberSwapRoutes, error) {
-	pp.Println(amount)
 	var client = &http.Client{}
 	request, err := http.NewRequest("GET", fmt.Sprintf("%s/ethereum/api/v1/routes?tokenIn=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&tokenOut=0xdAC17F958D2ee523a2206206994597C13D831ec7&amountIn=%s", k.kyberBaseUrl, amount), nil)
 	if err != nil {

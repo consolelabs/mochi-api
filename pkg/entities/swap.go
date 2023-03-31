@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/k0kubun/pp"
-
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -18,8 +16,6 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Kybe
 	if err != nil {
 		return nil, err
 	}
-	pp.Println("check data")
-	pp.Println(swapRoutes)
 
 	return swapRoutes, nil
 }
