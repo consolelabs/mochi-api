@@ -9,4 +9,6 @@ type IHandler interface {
 	CreateConfigChannel(c *gin.Context)
 	GetVaultConfigChannel(c *gin.Context)
 	CreateConfigThreshold(c *gin.Context)
+	AddTreasurerToVault(c *gin.Context)
+	CreateAddTreasurerRequest(c *gin.Context)
 }

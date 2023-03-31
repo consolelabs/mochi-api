@@ -6,4 +6,6 @@ type Store interface {
 	Create(vault *model.Vault) (*model.Vault, error)
 	GetByGuildId(guildId string) ([]model.Vault, error)
 	UpdateThreshold(vault *model.Vault) (*model.Vault, error)
+	GetById(id int64) (vault *model.Vault, err error)
+	GetByNameAndGuildId(name string, guildId string) (vault *model.Vault, err error)
 }
