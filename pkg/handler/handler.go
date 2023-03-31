@@ -17,6 +17,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
 	"github.com/defipod/mochi/pkg/handler/nft"
+	"github.com/defipod/mochi/pkg/handler/swap"
 	"github.com/defipod/mochi/pkg/handler/telegram"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
@@ -52,6 +53,7 @@ type Handler struct {
 	Wallet            wallet.IHandler
 	Telegram          telegram.IHandler
 	Vault             vault.IHandler
+	Swap              swap.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -79,5 +81,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Wallet:            wallet.New(entities, logger),
 		Telegram:          telegram.New(entities, logger),
 		Vault:             vault.New(entities, logger),
+		Swap:              swap.New(entities, logger),
 	}
 }
