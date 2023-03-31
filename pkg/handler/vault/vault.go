@@ -144,7 +144,7 @@ func (h *Handler) CreateAddTreasurerRequest(c *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"guildID": req.GuildId, "userDiscordId": req.UserDiscordId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - user not found")
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](gin.H{"error": "This vault is not exist yet"}, nil, nil, nil))
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
 			return
 		}
 
@@ -169,18 +169,18 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "request not exist") {
 			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - request not found")
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](gin.H{"error": "This request is not exist"}, nil, nil, nil))
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This request is not exist"})
 			return
 		}
 		if strings.Contains(err.Error(), "duplicate key value") {
 			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - user already in vault")
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](gin.H{"error": "This user is already added to this vault"}, nil, nil, nil))
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This user is already added to this vault"})
 			return
 		}
 
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - user not found")
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](gin.H{"error": "This vault is not exist yet"}, nil, nil, nil))
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
 			return
 		}
 

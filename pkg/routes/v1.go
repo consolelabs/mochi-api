@@ -519,4 +519,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			treasurerGroup.POST("", h.Vault.AddTreasurerToVault)
 		}
 	}
+
+	swapGroup := v1.Group("/swap")
+	{
+		swapGroup.POST("/route", h.Swap.GetSwapRoutes)
+	}
 }

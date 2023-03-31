@@ -17,6 +17,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/kyber"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
@@ -46,6 +47,7 @@ type Service struct {
 	Bluemove      bluemove.Service
 	MochiProfile  mochiprofile.Service
 	ChainExplorer chainexplorer.Service
+	Kyber         kyber.Service
 }
 
 func NewService(
@@ -77,5 +79,6 @@ func NewService(
 		Bluemove:      bluemove.New(&cfg, log),
 		MochiProfile:  mochiprofile.NewService(&cfg, log),
 		ChainExplorer: chainexplorer.NewService(cfg, log),
+		Kyber:         kyber.New(&cfg, log),
 	}, nil
 }
