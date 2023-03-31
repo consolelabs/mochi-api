@@ -9,5 +9,5 @@
 
 echo "Starting pre-commit before push"
 echo "1. Running go test"
-# make test
+make test
 
