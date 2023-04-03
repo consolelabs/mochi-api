@@ -688,3 +688,20 @@ func ParseCommonwealthURL(url string) string {
 	}
 	return url
 }
+
+func FloatToBigInt(val float64, decimals int64) *big.Int {
+	bigval := new(big.Float)
+	bigval.SetFloat64(val)
+
+	decimalValue := math.Pow(10, float64(decimals))
+
+	coin := new(big.Float)
+	coin.SetInt(big.NewInt(int64(math.Floor(decimalValue))))
+
+	bigval.Mul(bigval, coin)
+
+	result := new(big.Int)
+	bigval.Int(result) // store converted number in result
+
+	return result
+}

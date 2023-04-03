@@ -57,6 +57,7 @@ import (
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	kyberswapsupportedtokens "github.com/defipod/mochi/pkg/repo/kyberswap_supported_tokens"
 	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
@@ -216,4 +217,5 @@ type Repo struct {
 	VaultConfig                          vaultconfig.Store
 	Treasurer                            treasurer.Store
 	TreasurerRequest                     treasurerrequest.Store
+	KyberswapSupportedToken              kyberswapsupportedtokens.Store
 }

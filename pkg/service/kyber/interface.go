@@ -3,5 +3,5 @@ package kyber
 import "github.com/defipod/mochi/pkg/response"
 
 type Service interface {
-	GetSwapRoutes(amount string) (*response.KyberSwapRoutes, error)
+	GetSwapRoutes(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error)
 }
