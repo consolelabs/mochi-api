@@ -24,7 +24,7 @@ func (pg *pg) GetBySymbol(symbol string, botSupported bool) (model.Token, error)
 func (pg *pg) GetAllSupported(q ListQuery) ([]model.Token, int64, error) {
 	var tokens []model.Token
 	var total int64
-	db := pg.db.Model(&model.Token{}).Preload("Chain").Where("discord_bot_supported = TRUE").Order("id ASC")
+	db := pg.db.Model(&model.Token{}).Preload("Chain").Where("discord_bot_supported = TRUE").Order("name ASC")
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)
