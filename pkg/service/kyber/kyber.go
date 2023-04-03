@@ -25,9 +25,9 @@ func New(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-func (k *kyberService) GetSwapRoutes(amount string) (*response.KyberSwapRoutes, error) {
+func (k *kyberService) GetSwapRoutes(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error) {
 	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/ethereum/api/v1/routes?tokenIn=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&tokenOut=0xdAC17F958D2ee523a2206206994597C13D831ec7&amountIn=%s", k.kyberBaseUrl, amount), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/api/v1/routes?tokenIn=%s&tokenOut=%s&amountIn=%s", k.kyberBaseUrl, chain, fromAddress, toAddress, amount), nil)
 	if err != nil {
 		return nil, err
 	}
