@@ -60,6 +60,7 @@ import (
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
 	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
+	kyberswapsupportedtokens "github.com/defipod/mochi/pkg/repo/kyberswap_supported_tokens"
 	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
 	mochinftsales "github.com/defipod/mochi/pkg/repo/mochi_nft_sales"
@@ -92,6 +93,7 @@ import (
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
+	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -221,5 +223,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		VaultConfig:                          vaultconfig.NewPG(db),
 		Treasurer:                            treasurer.NewPG(db),
 		TreasurerRequest:                     treasurerrequest.NewPG(db),
+		KyberswapSupportedToken:              kyberswapsupportedtokens.NewPG(db),
+		TreasurerSubmission:                  treasurersubmission.NewPG(db),
 	}
 }
