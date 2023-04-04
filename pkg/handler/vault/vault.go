@@ -192,6 +192,25 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse[any](treasurer, nil, nil, nil))
 }
 
+func (h *Handler) RemoveTreasurerFromVault(c *gin.Context) {
+	var req request.AddTreasurerToVaultRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.RemoveTreasurerFromVault] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	treasurer, err := h.entities.RemoveTreasurerFromVault(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.RemoveTreasurerFromVault] - failed to remove treasurer from vault")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](treasurer, nil, nil, nil))
+}
+
 func (h *Handler) CreateTreasurerSubmission(c *gin.Context) {
 	var req request.CreateTreasurerSubmission
 
