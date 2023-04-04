@@ -132,8 +132,8 @@ func (h *Handler) CreateConfigThreshold(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse[any](vaultConfigChannel, nil, nil, nil))
 }
 
-func (h *Handler) CreateAddTreasurerRequest(c *gin.Context) {
-	var req request.CreateAddTreasurerRequest
+func (h *Handler) CreateTreasurerRequest(c *gin.Context) {
+	var req request.CreateTreasurerRequest
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildId, "userDiscordId": req.UserDiscordId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -143,12 +143,12 @@ func (h *Handler) CreateAddTreasurerRequest(c *gin.Context) {
 	treasurerReq, err := h.entities.CreateAddTreasurerRequest(&req)
 	if err != nil {
 		if strings.Contains(err.Error(), "vault not exist") {
-			h.log.Fields(logger.Fields{"guildID": req.GuildId, "userDiscordId": req.UserDiscordId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - user not found")
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - user not found")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
 			return
 		}
 
-		h.log.Fields(logger.Fields{"guildID": req.GuildId, "userDiscordId": req.UserDiscordId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to create add treasurer req")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to create add treasurer req")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -160,7 +160,7 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 	var req request.AddTreasurerToVaultRequest
 
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - failed to read JSON")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -168,26 +168,51 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 	treasurer, err := h.entities.AddTreasurerToVault(&req)
 	if err != nil {
 		if strings.Contains(err.Error(), "request not exist") {
-			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - request not found")
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - request not found")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "This request is not exist"})
 			return
 		}
 		if strings.Contains(err.Error(), "duplicate key value") {
-			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - user already in vault")
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - user already in vault")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "This user is already added to this vault"})
 			return
 		}
 
 		if strings.Contains(err.Error(), "vault not exist") {
-			h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - user not found")
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - user not found")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
 			return
 		}
 
-		h.log.Fields(logger.Fields{"requestId": req.RequestId}).Error(err, "[handler.AddTreasurerToVault] - failed to add treasurer to vault")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - failed to add treasurer to vault")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](treasurer, nil, nil, nil))
+}
+
+func (h *Handler) CreateTreasurerSubmission(c *gin.Context) {
+	var req request.CreateTreasurerSubmission
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateTreasurerSubmission] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	treasurerSubmission, err := h.entities.CreateTreasurerSubmission(&req)
+	if err != nil {
+		if strings.Contains(err.Error(), "submission already processed") {
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateTreasurerSubmission] - user not found")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This submission is already processed"})
+			return
+		}
+
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateTreasurerSubmission] - failed to create treasurer submission")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](treasurerSubmission, nil, nil, nil))
 }

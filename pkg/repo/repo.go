@@ -90,6 +90,7 @@ import (
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
+	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -218,4 +219,5 @@ type Repo struct {
 	Treasurer                            treasurer.Store
 	TreasurerRequest                     treasurerrequest.Store
 	KyberswapSupportedToken              kyberswapsupportedtokens.Store
+	TreasurerSubmission                  treasurersubmission.Store
 }
