@@ -2,7 +2,6 @@ package entities
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 	"time"
 
@@ -206,16 +205,20 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	}
 
 	totalApprovedSubmission := 0
+	totalRejectedSubmisison := 0
 	for _, submission := range submissions {
 		if submission.Status == consts.TreasurerSubmissionStatusApproved {
 			totalApprovedSubmission++
+		}
+		if submission.Status == consts.TreasurerSubmissionStatusRejected {
+			totalRejectedSubmisison++
 		}
 	}
 
 	submission.GuildId = submissions[0].GuildId
 	submission.Vault = submissions[0].Vault
 	threshold, _ := strconv.ParseFloat(submissions[0].Vault.Threshold, 64)
-	percentage := math.Ceil(float64(totalApprovedSubmission)/float64(len(submissions))) * 100
+	percentage := float64(totalApprovedSubmission) / float64(len(submissions)) * 100
 
 	resp = &response.CreateTreasurerSubmissionResponse{
 		Submission: *submission,
@@ -232,5 +235,94 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		resp.VoteResult.IsApproved = true
 	}
 
+	// notify treasurer about process voting
+	treasurers, err := e.repo.Treasurer.GetByVaultId(req.VaultId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Treasurer.GetByVaultId failed")
+		return nil, err
+	}
+	for _, treasurer := range treasurers {
+		msg := discordgo.MessageSend{
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:       "<:bell:1087564962941124679> Mochi notifications",
+					Description: fmt.Sprintf("<@%s> approved for request #%d", req.Sumitter, req.RequestId),
+					Fields: []*discordgo.MessageEmbedField{
+						{
+							Name:   "Approved",
+							Value:  fmt.Sprintf("<:approve_vault:1090242787435356271> `%d/%d`", totalApprovedSubmission, len(submissions)),
+							Inline: true,
+						},
+						{
+							Name:   "Rejected",
+							Value:  fmt.Sprintf("<:revoke:1077631119073230970> `%d`", totalRejectedSubmisison),
+							Inline: true,
+						},
+						{
+							Name:   "Waiting",
+							Value:  fmt.Sprintf("<:clock:1080757110146605086> `%d`", len(submissions)-totalApprovedSubmission-totalRejectedSubmisison),
+							Inline: true,
+						},
+					},
+					Color: 0xFCD3C1,
+					Thumbnail: &discordgo.MessageEmbedThumbnail{
+						URL: "https://cdn.discordapp.com/attachments/1090195482506174474/1090905984299442246/image.png",
+					},
+					Timestamp: time.Now().Format("2006-01-02T15:04:05Z"),
+					Footer: &discordgo.MessageEmbedFooter{
+						Text: "Type /feedback to report",
+					},
+				},
+			},
+		}
+		err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
+			continue
+		}
+	}
+
 	return resp, nil
+}
+
+func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultRequest) (*model.Treasurer, error) {
+	treasurer, err := e.repo.Treasurer.Delete(&model.Treasurer{
+		GuildId:       req.GuildId,
+		VaultId:       req.VaultId,
+		UserDiscordId: req.UserDiscordID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.Treasurer.Create failed")
+		return nil, err
+	}
+
+	// send msg to channel
+	vault, err := e.repo.Vault.GetById(req.VaultId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.Vault.GetById failed")
+		return nil, err
+	}
+
+	err = e.svc.Discord.SendMessage(req.ChannelId, discordgo.MessageSend{
+		Embeds: []*discordgo.MessageEmbed{
+			{
+				Title:       "<:approve_vault:1090242787435356271> Treasurer was successfullly removed",
+				Description: fmt.Sprintf("<@%s> has been removed from **%s vault**", req.UserDiscordID, vault.Name),
+				Color:       0xFCD3C1,
+				Thumbnail: &discordgo.MessageEmbedThumbnail{
+					URL: "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png",
+				},
+				Timestamp: time.Now().Format("2006-01-02T15:04:05Z"),
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: "Type /feedback to report",
+				},
+			},
+		},
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.svc.Discord.SendMessage failed")
+		return nil, err
+	}
+
+	return treasurer, nil
 }
