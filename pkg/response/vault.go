@@ -15,6 +15,7 @@ type CreateTreasurerSubmissionResponse struct {
 type VoteResult struct {
 	TotalApprovedSubmission int64  `json:"total_approved_submission"`
 	TotalSubmission         int64  `json:"total_submission"`
+	TotalVote               int64  `json:"total_vote"`
 	Threshold               string `json:"threshold"`
 	Percentage              string `json:"percentage"`
 	IsApproved              bool   `json:"is_approved"`
