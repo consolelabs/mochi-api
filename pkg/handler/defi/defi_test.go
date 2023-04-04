@@ -209,6 +209,8 @@ func TestHandler_GetUserWatchlist(t *testing.T) {
 					},
 					PriceChangePercentage24h:          0.53837,
 					PriceChangePercentage7dInCurrency: -1.6547840760734636,
+					MarketCap:                         0,
+					MarketCapRank:                     0,
 					IsPair:                            false,
 				},
 			},
@@ -225,7 +227,7 @@ func TestHandler_GetUserWatchlist(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
 			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/watchlist?user_id=%s&size=8", tt.userId), nil)
-			coingeckoMock.EXPECT().GetCoinsMarketData(tt.defaultTickers).Return(tt.coinGeckoDefaultTickersResponse, nil, 200).AnyTimes()
+			coingeckoMock.EXPECT().GetCoinsMarketData(tt.defaultTickers, true).Return(tt.coinGeckoDefaultTickersResponse, nil, 200).AnyTimes()
 
 			h.GetUserWatchlist(ctx)
 			require.Equal(t, tt.wantCode, w.Code)

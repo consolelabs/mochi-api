@@ -592,3 +592,21 @@ func (h *Handler) GetChainGasTracker(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(gasTracker, nil, nil, nil))
 }
+
+// GetCoinsMarketData     godoc
+// @Summary     Get coins market data of top coins
+// @Description Get coins market data of top coins
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetCoinsMarketDataResponse
+// @Router      /defi/market-data [get]
+func (h *Handler) GetCoinsMarketData(c *gin.Context) {
+	data, err := h.entities.GetCoinsMarketData()
+	if err != nil {
+		h.log.Error(err, "[handler.GetCoinsMarketData] entity.GetCoinsMarketData() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

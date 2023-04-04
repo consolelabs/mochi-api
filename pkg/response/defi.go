@@ -168,6 +168,8 @@ type CoinMarketItemData struct {
 	Symbol        string  `json:"symbol"`
 	CurrentPrice  float64 `json:"current_price"`
 	Image         string  `json:"image"`
+	MarketCap     float64 `json:"market_cap"`
+	MarketCapRank int64   `json:"market_cap_rank"`
 	SparkLineIn7d struct {
 		Price []float64 `json:"price"`
 	} `json:"sparkline_in_7d"`
@@ -247,4 +249,8 @@ type GasTrackerResponse struct {
 	EstSafeTime     string `json:"est_safe_time"`
 	EstProposeTime  string `json:"est_propose_time"`
 	EstFastTime     string `json:"est_fast_time"`
+}
+
+type GetCoinsMarketDataResponse struct {
+	Data []CoinMarketItemData `json:"data"`
 }
