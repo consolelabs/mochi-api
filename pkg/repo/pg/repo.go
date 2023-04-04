@@ -93,6 +93,7 @@ import (
 	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
+	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
@@ -223,5 +224,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Treasurer:                            treasurer.NewPG(db),
 		TreasurerRequest:                     treasurerrequest.NewPG(db),
 		KyberswapSupportedToken:              kyberswapsupportedtokens.NewPG(db),
+		TreasurerSubmission:                  treasurersubmission.NewPG(db),
 	}
 }

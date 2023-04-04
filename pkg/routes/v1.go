@@ -515,8 +515,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		vaultGroup.PUT("/config/threshold", h.Vault.CreateConfigThreshold)
 		treasurerGroup := vaultGroup.Group("/treasurer")
 		{
-			treasurerGroup.POST("/request", h.Vault.CreateAddTreasurerRequest)
+			treasurerGroup.POST("/request", h.Vault.CreateTreasurerRequest)
 			treasurerGroup.POST("", h.Vault.AddTreasurerToVault)
+			treasurerGroup.POST("/submission", h.Vault.CreateTreasurerSubmission)
 		}
 	}
 
