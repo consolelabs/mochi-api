@@ -96,15 +96,15 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 		return err
 	}
 
-	action := "added"
+	action := consts.TreasurerAddedAction
 	thumbnail := "https://cdn.discordapp.com/attachments/1090195482506174474/1092703907911847976/image.png"
-	if req.Type == "remove" {
-		action = "removed"
+	if req.Type == consts.TreasurerRemoveType {
+		action = consts.TreasurerRemovedAction
 		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
 	}
 
 	var msg discordgo.MessageSend
-	if req.Status == "success" {
+	if req.Status == consts.TreasurerStatusSuccess {
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
