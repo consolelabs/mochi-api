@@ -103,13 +103,23 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
 	}
 
+	err = sendNotifyTreasurerResult(req.Status, req.UserDiscordID, action, vault.Name, thumbnail, req.ChannelId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - sendNotifyTreasurerResult failed")
+		return err
+	}
+
+	return nil
+}
+
+func sendNotifyTreasurerResult(status, userDiscrodId, action, vaultName, thumbnail, channelId string) error {
 	var msg discordgo.MessageSend
-	if req.Status == consts.TreasurerStatusSuccess {
+	if status == consts.TreasurerStatusSuccess {
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Title:       fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfullly %s", action),
-					Description: fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vault.Name),
+					Description: fmt.Sprintf("<@%s> has been %s to **%s vault**", userDiscrodId, action, vaultName),
 					Color:       0xFCD3C1,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
 						URL: thumbnail,
@@ -126,7 +136,7 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Title:       fmt.Sprintf("<:revoke:967285238055174195> Treasurer was not %s", action),
-					Description: fmt.Sprintf("<@%s> has not been %s to **%s vault**", req.UserDiscordID, action, vault.Name),
+					Description: fmt.Sprintf("<@%s> has not been %s to **%s vault**", userDiscrodId, action, vaultName),
 					Color:       0xFCD3C1,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
 						URL: thumbnail,
@@ -140,9 +150,9 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 		}
 	}
 
-	err = e.svc.Discord.SendMessage(req.ChannelId, msg)
+	err := e.svc.Discord.SendMessage(channelId, msg)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.svc.Discord.SendMessage failed")
+		e.log.Fields(logger.Fields{"msg": msg, "channelId": channelId}).Errorf(err, "[entity.AddTreasurerToVault] - e.svc.Discord.SendMessage failed")
 		return err
 	}
 	return nil
