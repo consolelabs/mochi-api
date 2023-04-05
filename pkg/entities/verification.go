@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -405,7 +406,7 @@ func (e *Entity) AssignVerifiedRole(userDiscordID, guildID string) error {
 
 	shouldAssignRole := false
 	for _, acc := range profile.AssociatedAccounts {
-		if acc.Platform == "evm-chain" || acc.Platform == "solana-chain" {
+		if acc.Platform == mochiprofile.PlatformEVM || acc.Platform == mochiprofile.PlatformSol {
 			shouldAssignRole = true
 			break
 		}

@@ -15,6 +15,7 @@ import (
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 )
 
 func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*model.DaoProposal, error) {
@@ -320,9 +321,9 @@ func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID st
 		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
 		return nil, err
 	}
-	includedPlatform := "evm-chain"
+	includedPlatform := mochiprofile.PlatformEVM
 	if chainId == 999 {
-		includedPlatform = "solana-chain"
+		includedPlatform = mochiprofile.PlatformSol
 	}
 	var walletAddrs []string
 	for _, p := range profiles.AssociatedAccounts {
