@@ -44,6 +44,7 @@ type CreateTreasurerRequest struct {
 }
 
 type CreateTreasurerSubmission struct {
+	Type      string `json:"type" binding:"required"`
 	VaultId   int64  `json:"vault_id" binding:"required"`
 	RequestId int64  `json:"request_id" binding:"required"`
 	Sumitter  string `json:"submitter" binding:"required"`
