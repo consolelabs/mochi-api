@@ -10,4 +10,8 @@ var (
 	TreasurerSubmissionStatusPending  = "pending"
 	TreasurerSubmissionStatusApproved = "approved"
 	TreasurerSubmissionStatusRejected = "rejected"
+
+	TreasurerAddedAction   = "added"
+	TreasurerRemovedAction = "removed"
+	TreasurerStatusSuccess = "success"
 )

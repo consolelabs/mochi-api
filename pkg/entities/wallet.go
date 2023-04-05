@@ -10,9 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerr "github.com/defipod/mochi/pkg/model/errors"
@@ -22,7 +23,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/google/uuid"
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]model.UserWalletWatchlistItem, error) {

@@ -387,6 +387,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins", h.Defi.SearchCoins)
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
 		defiGroup.GET("/chains", h.Defi.ListAllChain)
+		defiGroup.GET("/market-data", h.Defi.GetCoinsMarketData)
 
 		watchlistGroup := defiGroup.Group("/watchlist")
 		{
@@ -519,6 +520,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			treasurerGroup.POST("", h.Vault.AddTreasurerToVault)
 			treasurerGroup.DELETE("", h.Vault.RemoveTreasurerFromVault)
 			treasurerGroup.POST("/submission", h.Vault.CreateTreasurerSubmission)
+			treasurerGroup.POST("/result", h.Vault.CreateTreasurerResult)
 		}
 	}
 

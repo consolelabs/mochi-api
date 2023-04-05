@@ -1,27 +1,29 @@
 {
   "data": {
     "metadata": {
-        "page": 0,
-        "size": 8,
-        "total": 1
+      "page": 0,
+      "size": 8,
+      "total": 1
     },
     "data": [
-    {
-      "id": "dogecoin",
-      "name": "Dogecoin",
-      "symbol": "doge",
-      "current_price": 0.060343,
-      "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
-      "sparkline_in_7d": {
-        "price": [
-          0.06083622964800758, 0.06103991568695497, 0.061043175854199744
-        ]
-      },
-      "price_change_percentage_24h": 0.53837,
-      "price_change_percentage_7d_in_currency": -1.6547840760734636,
-      "is_pair": false,
-      "is_default": false
-    }
+      {
+        "id": "dogecoin",
+        "name": "Dogecoin",
+        "symbol": "doge",
+        "current_price": 0.060343,
+        "image": "https://assets.coingecko.com/coins/images/5/large/dogecoin.png?1547792256",
+        "sparkline_in_7d": {
+          "price": [
+            0.06083622964800758, 0.06103991568695497, 0.061043175854199744
+          ]
+        },
+        "price_change_percentage_24h": 0.53837,
+        "price_change_percentage_7d_in_currency": -1.6547840760734636,
+        "market_cap": 0,
+        "market_cap_rank": 0,
+        "is_pair": false,
+        "is_default": false
+      }
     ]
   }
 }

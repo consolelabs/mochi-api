@@ -321,7 +321,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 	// CoinGeckoAPI | get ticker market data
 	data := make([]response.CoinMarketItemData, 0)
 	if len(tickers) > 0 {
-		cgData, err, code := e.svc.CoinGecko.GetCoinsMarketData(tickers)
+		cgData, err, code := e.svc.CoinGecko.GetCoinsMarketData(tickers, true)
 		if err != nil {
 			e.log.Fields(logger.Fields{"ids": tickers, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
 			return nil, err
@@ -792,6 +792,10 @@ func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
 
 func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse, error) {
 	chainModel, err := e.repo.Chain.GetByShortName(chain)
+	if err != nil {
+		e.log.Error(err, "[entity.GetChainGasTracker] repo.Chain.GetByShortName() failed")
+		return nil, err
+	}
 
 	data, err := e.svc.ChainExplorer.GetGasTracker([]model.Chain{*chainModel})
 	if err != nil {
@@ -800,4 +804,14 @@ func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse,
 	}
 
 	return &data[0], nil
+}
+
+func (e *Entity) GetCoinsMarketData() ([]response.CoinMarketItemData, error) {
+	// top 100 coins market data
+	data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false)
+	if err != nil {
+		e.log.Fields(logger.Fields{"status": status}).Error(err, "[entity.GetCoinsMarketData] e.svc.CoinGecko.GetCoinsMarketData() failed")
+		return nil, err
+	}
+	return data, nil
 }
