@@ -216,3 +216,30 @@ func (h *Handler) VerifyWalletAddress(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseStatus{Status: "ok"}, nil, nil, nil))
 }
+
+// AssignRole     godoc
+// @Summary     Assign verified role if user has verified wallet address
+// @Description Assign verified role if user has verified wallet address
+// @Tags        Verification
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.AssignVerifiedRoleRequest true "Assign verified role request"
+// @Success     200 {object} response.ResponseStatus
+// @Router      /verify/assign-role [post]
+func (h *Handler) AssignVerifiedRole(c *gin.Context) {
+	var req request.AssignVerifiedRoleRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AssignVerifiedRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.AssignVerifiedRole(req.UserDiscordID, req.GuildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AssignVerifiedRole] - failed to assign verified role")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusCreated, response.CreateResponse(response.ResponseStatus{Status: "ok"}, nil, nil, nil))
+}

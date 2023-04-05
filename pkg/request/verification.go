@@ -88,3 +88,8 @@ func (input *VerifyWalletAddressRequest) Validate() error {
 
 	return nil
 }
+
+type AssignVerifiedRoleRequest struct {
+	UserDiscordID string `json:"user_discord_id" binding:"required"`
+	GuildID       string `json:"guild_id" binding:"required"`
+}

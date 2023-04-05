@@ -187,7 +187,7 @@ func (e *Entity) DeleteGuildConfigWalletVerificationMessage(guildID string) erro
 	if verificationMsg.DiscordMessageID != "" {
 		err = e.discord.ChannelMessageDelete(verificationMsg.VerifyChannelID, verificationMsg.DiscordMessageID)
 		// case user deleted channel
-		if err != nil && !strings.Contains(err.Error(),"Not Found"){
+		if err != nil && !strings.Contains(err.Error(), "Not Found") {
 			return fmt.Errorf("failed to delete discord message: %v", err.Error())
 		}
 	}
@@ -365,6 +365,79 @@ func (e *Entity) handleWalletAddition(walletAddress string, verification model.D
 	err = e.repo.DiscordWalletVerification.DeleteByCode(verification.Code)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.handleWalletAddition] repo.DiscordWalletVerification.DeleteByCode() failed")
+		return err
+	}
+	return nil
+}
+
+func (e *Entity) AssignVerifiedRole(userDiscordID, guildID string) error {
+	guildConfigVerification, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(guildID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{
+				"guild_id": guildID,
+			}).Info("[entities.AssignVerifiedRole] Guild does not have config verification")
+			return nil
+		}
+		e.log.Fields(logger.Fields{
+			"guild_id": guildID,
+		}).Error(err, "[entities.AssignVerifiedRole] Failed to get guild config verification")
+		return err
+	}
+
+	// Skip assign if guild does not have config verified role
+	if guildConfigVerification.VerifyRoleID == "" {
+		e.log.Fields(logger.Fields{
+			"guild_id": guildID,
+		}).Info("[entities.AssignVerifiedRole] Guild does not have config verification channel")
+		return nil
+	}
+
+	// Get user mochi profile
+	profile, err := e.svc.MochiProfile.GetByDiscordID(userDiscordID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guild_id":        guildID,
+			"user_discord_id": userDiscordID,
+		}).Error(err, "[entities.AssignVerifiedRole] Failed to get user profile")
+		return err
+	}
+
+	shouldAssignRole := false
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == "evm-chain" || acc.Platform == "solana-chain" {
+			shouldAssignRole = true
+			break
+		}
+	}
+
+	if !shouldAssignRole {
+		err = fmt.Errorf("user does not have any verified wallet")
+		e.log.Fields(logger.Fields{
+			"discord_id": userDiscordID,
+			"guild_id":   guildID,
+			"profile_id": profile.ID,
+		}).Error(err, "[entities.AssignVerifiedRole] user does not have any verified wallet")
+		return err
+	}
+
+	// assign role to user
+	err = e.discord.GuildMemberRoleAdd(guildID, userDiscordID, guildConfigVerification.VerifyRoleID)
+	if err != nil {
+		// allow acceptable error like bot not have access to assign role
+		if util.IsAcceptableErr(err) {
+			e.log.Fields(logger.Fields{
+				"guild_id":        guildID,
+				"user_discord_id": userDiscordID,
+				"verify_role_id":  guildConfigVerification.VerifyRoleID,
+			}).Infof("[entities.VerifyWalletAssignRole] Acceptable errors: %v", err)
+			return nil
+		}
+		e.log.Fields(logger.Fields{
+			"guild_id":        guildID,
+			"user_discord_id": userDiscordID,
+			"verify_role_id":  guildConfigVerification.VerifyRoleID,
+		}).Error(err, "[entities.VerifyWalletAssignRole] Failed to assign role to user")
 		return err
 	}
 	return nil
