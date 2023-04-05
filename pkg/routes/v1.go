@@ -387,6 +387,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins", h.Defi.SearchCoins)
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
 		defiGroup.GET("/chains", h.Defi.ListAllChain)
+		defiGroup.GET("/market-data", h.Defi.GetCoinsMarketData)
 
 		watchlistGroup := defiGroup.Group("/watchlist")
 		{

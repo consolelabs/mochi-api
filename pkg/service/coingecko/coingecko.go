@@ -30,7 +30,7 @@ func NewService(cfg *config.Config) Service {
 		getCoinURL:         "https://pro-api.coingecko.com/api/v3/coins/%s?x_cg_pro_api_key=" + apiKey,
 		getPriceURL:        "https://pro-api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&x_cg_pro_api_key=" + apiKey,
 		getCoinOhlc:        "https://pro-api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd&x_cg_pro_api_key=" + apiKey,
-		getCoinsMarketData: "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=7d&x_cg_pro_api_key=" + apiKey,
+		getCoinsMarketData: "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=%t&price_change_percentage=7d&x_cg_pro_api_key=" + apiKey,
 		getSupportedCoins:  "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
 	}
 }
@@ -104,9 +104,9 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [
 	return resp, nil, http.StatusOK
 }
 
-func (c *CoinGecko) GetCoinsMarketData(ids []string) ([]response.CoinMarketItemData, error, int) {
+func (c *CoinGecko) GetCoinsMarketData(ids []string, sparkline bool) ([]response.CoinMarketItemData, error, int) {
 	var res []response.CoinMarketItemData
-	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ",")), &res)
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ","), sparkline), &res)
 	if err != nil {
 		return nil, err, statusCode
 	}

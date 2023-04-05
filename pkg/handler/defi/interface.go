@@ -16,6 +16,7 @@ type IHandler interface {
 	SearchCoins(c *gin.Context)
 	CompareToken(c *gin.Context)
 	GetBinanceCoinData(c *gin.Context)
+	GetCoinsMarketData(c *gin.Context)
 
 	ListAllChain(c *gin.Context)
 

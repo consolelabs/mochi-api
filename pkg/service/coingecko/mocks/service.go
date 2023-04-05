@@ -67,9 +67,9 @@ func (mr *MockServiceMockRecorder) GetCoinPrice(coinIDs, currency interface{}) *
 }
 
 // GetCoinsMarketData mocks base method.
-func (m *MockService) GetCoinsMarketData(ids []string) ([]response.CoinMarketItemData, error, int) {
+func (m *MockService) GetCoinsMarketData(ids []string, sparkline bool) ([]response.CoinMarketItemData, error, int) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCoinsMarketData", ids)
+	ret := m.ctrl.Call(m, "GetCoinsMarketData", ids, sparkline)
 	ret0, _ := ret[0].([]response.CoinMarketItemData)
 	ret1, _ := ret[1].(error)
 	ret2, _ := ret[2].(int)
@@ -77,9 +77,9 @@ func (m *MockService) GetCoinsMarketData(ids []string) ([]response.CoinMarketIte
 }
 
 // GetCoinsMarketData indicates an expected call of GetCoinsMarketData.
-func (mr *MockServiceMockRecorder) GetCoinsMarketData(ids interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetCoinsMarketData(ids, sparkline interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinsMarketData", reflect.TypeOf((*MockService)(nil).GetCoinsMarketData), ids)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinsMarketData", reflect.TypeOf((*MockService)(nil).GetCoinsMarketData), ids, sparkline)
 }
 
 // GetHistoricalMarketData mocks base method.
