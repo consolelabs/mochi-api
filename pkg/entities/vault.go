@@ -2,6 +2,7 @@ package entities
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -96,14 +97,11 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 		return err
 	}
 
-	action := consts.TreasurerAddedAction
-	thumbnail := "https://cdn.discordapp.com/attachments/1090195482506174474/1092703907911847976/image.png"
-	if req.Type == consts.TreasurerRemoveType {
-		action = consts.TreasurerRemovedAction
-		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
-	}
+	action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
 
-	err = sendNotifyTreasurerResult(req.Status, req.UserDiscordID, action, vault.Name, thumbnail, req.ChannelId)
+	msg := prepareMessageNotifyTreasurerResult(req.Status, req.UserDiscordID, action, vault.Name, thumbnail)
+
+	err = sendNotifyTreasurerResult(msg, req.ChannelId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - sendNotifyTreasurerResult failed")
 		return err
@@ -112,8 +110,17 @@ func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest
 	return nil
 }
 
-func sendNotifyTreasurerResult(status, userDiscrodId, action, vaultName, thumbnail, channelId string) error {
-	var msg discordgo.MessageSend
+func prepareParamNotifyTreasurerResult(notifyType string) (action, thumbnail string) {
+	action = consts.TreasurerAddedAction
+	thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092703907911847976/image.png"
+	if notifyType == consts.TreasurerRemoveType {
+		action = consts.TreasurerRemovedAction
+		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
+	}
+	return action, thumbnail
+}
+
+func prepareMessageNotifyTreasurerResult(status, userDiscrodId, action, vaultName, thumbnail string) (msg discordgo.MessageSend) {
 	if status == consts.TreasurerStatusSuccess {
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
@@ -149,7 +156,10 @@ func sendNotifyTreasurerResult(status, userDiscrodId, action, vaultName, thumbna
 			},
 		}
 	}
+	return msg
+}
 
+func sendNotifyTreasurerResult(msg discordgo.MessageSend, channelId string) error {
 	err := e.svc.Discord.SendMessage(channelId, msg)
 	if err != nil {
 		e.log.Fields(logger.Fields{"msg": msg, "channelId": channelId}).Errorf(err, "[entity.AddTreasurerToVault] - e.svc.Discord.SendMessage failed")
@@ -260,16 +270,19 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	submission.Vault = submissions[0].Vault
 	threshold, _ := strconv.ParseFloat(submissions[0].Vault.Threshold, 64)
 	percentage := float64(totalApprovedSubmission) / float64(len(submissions)) * 100
+	allowedRejectVote := int64(len(submissions)) - int64(math.Ceil(float64(len(submissions))*threshold/100))
 
 	resp = &response.CreateTreasurerSubmissionResponse{
 		Submission: *submission,
 		VoteResult: response.VoteResult{
-			IsApproved:              false,
-			TotalApprovedSubmission: int64(totalApprovedSubmission),
-			TotalVote:               int64(totalApprovedSubmission + totalRejectedSubmisison),
-			TotalSubmission:         int64(len(submissions)),
-			Percentage:              fmt.Sprintf("%.2f", percentage),
-			Threshold:               fmt.Sprintf("%.2f", threshold),
+			IsApproved:                false,
+			TotalApprovedSubmission:   int64(totalApprovedSubmission),
+			TotalRejectedSubmisison:   int64(totalRejectedSubmisison),
+			AllowedRejectedSubmisison: allowedRejectVote,
+			TotalVote:                 int64(totalApprovedSubmission + totalRejectedSubmisison),
+			TotalSubmission:           int64(len(submissions)),
+			Percentage:                fmt.Sprintf("%.2f", percentage),
+			Threshold:                 fmt.Sprintf("%.2f", threshold),
 		},
 	}
 
@@ -321,6 +334,27 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
 			continue
+		}
+
+		// DM result to user
+		if resp.VoteResult.IsApproved {
+			action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
+			msg := prepareMessageNotifyTreasurerResult(consts.TreasurerStatusSuccess, submissions[0].TreasurerRequest.UserDiscordId, action, submissions[0].Vault.Name, thumbnail)
+			err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
+				continue
+			}
+		} else {
+			if int64(totalRejectedSubmisison) > allowedRejectVote {
+				action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
+				msg := prepareMessageNotifyTreasurerResult(consts.TreasurerStatusFail, submissions[0].TreasurerRequest.UserDiscordId, action, submissions[0].Vault.Name, thumbnail)
+				err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
+				if err != nil {
+					e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
+					continue
+				}
+			}
 		}
 	}
 
