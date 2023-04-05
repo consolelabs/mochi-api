@@ -4400,6 +4400,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/market-data": {
+            "get": {
+                "description": "Get coins market data of top coins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get coins market data of top coins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetCoinsMarketDataResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/price-alert": {
             "get": {
                 "description": "Get user's price alerts",
@@ -7173,6 +7196,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/verify/assign-role": {
+            "post": {
+                "description": "Assign verified role if user has verified wallet address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Verification"
+                ],
+                "summary": "Assign verified role if user has verified wallet address",
+                "parameters": [
+                    {
+                        "description": "Assign verified role request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AssignVerifiedRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/verify/config": {
             "put": {
                 "description": "Update guild config wallet verification message",
@@ -9653,6 +9710,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AssignVerifiedRoleRequest": {
+            "type": "object",
+            "required": [
+                "guild_id",
+                "user_discord_id"
+            ],
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.BalcklistChannelRepostConfigRequest": {
             "type": "object",
             "properties": {
@@ -11198,6 +11270,12 @@ const docTemplate = `{
                 "is_pair": {
                     "type": "boolean"
                 },
+                "market_cap": {
+                    "type": "number"
+                },
+                "market_cap_rank": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -11820,6 +11898,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.GetCoinResponse"
+                }
+            }
+        },
+        "response.GetCoinsMarketDataResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinMarketItemData"
+                    }
                 }
             }
         },

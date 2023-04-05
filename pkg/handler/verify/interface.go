@@ -9,4 +9,5 @@ type IHandler interface {
 	DeleteGuildConfigWalletVerificationMessage(c *gin.Context)
 	GenerateVerification(c *gin.Context)
 	VerifyWalletAddress(c *gin.Context)
+	AssignVerifiedRole(c *gin.Context)
 }
