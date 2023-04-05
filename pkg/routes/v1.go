@@ -417,6 +417,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.DELETE("/config", h.Verify.DeleteGuildConfigWalletVerificationMessage)
 		verifyGroup.POST("/generate", h.Verify.GenerateVerification)
 		verifyGroup.POST("", h.Verify.VerifyWalletAddress)
+		verifyGroup.POST("/assign-role", h.Verify.AssignVerifiedRole)
 	}
 
 	nftsGroup := v1.Group("/nfts")
