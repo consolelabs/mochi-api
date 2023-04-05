@@ -14,4 +14,5 @@ var (
 	TreasurerAddedAction   = "added"
 	TreasurerRemovedAction = "removed"
 	TreasurerStatusSuccess = "success"
+	TreasurerStatusFail    = "fail"
 )
