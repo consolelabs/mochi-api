@@ -255,8 +255,6 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		return nil, err
 	}
 
-	//
-
 	totalApprovedSubmission := 0
 	totalRejectedSubmisison := 0
 	for _, submission := range submissions {
