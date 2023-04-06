@@ -33,5 +33,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Kybe
 		return nil, err
 	}
 
+	swapRoutes.Data.TokenIn = *fromToken
+	swapRoutes.Data.TokenOut = *toToken
 	return swapRoutes, nil
 }

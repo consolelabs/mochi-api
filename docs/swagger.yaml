@@ -712,6 +712,29 @@ definitions:
         description: Valid is true if String is not NULL
         type: boolean
     type: object
+  model.KyberswapSupportedToken:
+    properties:
+      address:
+        type: string
+      chain_id:
+        type: integer
+      chain_name:
+        type: string
+      created_at:
+        type: string
+      decimals:
+        type: integer
+      id:
+        type: integer
+      logo_uri:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.MixRoleNFTRequirement:
     properties:
       created_at:
@@ -4331,6 +4354,10 @@ definitions:
         $ref: '#/definitions/response.RouteSummary'
       routerAddress:
         type: string
+      tokenIn:
+        $ref: '#/definitions/model.KyberswapSupportedToken'
+      tokenOut:
+        $ref: '#/definitions/model.KyberswapSupportedToken'
     type: object
   response.SearchCoinResponse:
     properties:

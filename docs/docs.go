@@ -8644,6 +8644,41 @@ const docTemplate = `{
                 }
             }
         },
+        "model.KyberswapSupportedToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "chain_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "decimals": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo_uri": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.MixRoleNFTRequirement": {
             "type": "object",
             "properties": {
@@ -14199,6 +14234,12 @@ const docTemplate = `{
                 },
                 "routerAddress": {
                     "type": "string"
+                },
+                "tokenIn": {
+                    "$ref": "#/definitions/model.KyberswapSupportedToken"
+                },
+                "tokenOut": {
+                    "$ref": "#/definitions/model.KyberswapSupportedToken"
                 }
             }
         },
