@@ -1,5 +1,7 @@
 package response
 
+import "github.com/defipod/mochi/pkg/model"
+
 type KyberSwapRoutes struct {
 	Code    int64            `json:"code"`
 	Message string           `json:"message"`
@@ -7,8 +9,10 @@ type KyberSwapRoutes struct {
 }
 
 type RouteSummaryData struct {
-	RouteSummary  RouteSummary `json:"routeSummary"`
-	RouterAddress string       `json:"routerAddress"`
+	RouteSummary  RouteSummary                  `json:"routeSummary"`
+	RouterAddress string                        `json:"routerAddress"`
+	TokenIn       model.KyberswapSupportedToken `json:"tokenIn"`
+	TokenOut      model.KyberswapSupportedToken `json:"tokenOut"`
 }
 
 type RouteSummary struct {
