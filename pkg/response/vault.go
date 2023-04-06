@@ -1,6 +1,10 @@
 package response
 
-import "github.com/defipod/mochi/pkg/model"
+import (
+	"time"
+
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type CreateTreasurerRequestResponse struct {
 	Request   model.TreasurerRequest `json:"request"`
@@ -21,4 +25,45 @@ type VoteResult struct {
 	Threshold                 string `json:"threshold"`
 	Percentage                string `json:"percentage"`
 	IsApproved                bool   `json:"is_approved"`
+}
+
+type VaultDetailResponse struct {
+	WalletAddress     string             `json:"wallet_address"`
+	CurrentRequest    []VaultTransaction `json:"current_request"`
+	Balance           []Balance          `json:"balance"`
+	MyNft             []MyNft            `json:"my_nft"`
+	EstimatedTotal    string             `json:"estimated_total"`
+	Treasurer         []model.Treasurer  `json:"treasurer"`
+	RecentTransaction []VaultTransaction `json:"recent_transaction"`
+}
+
+type VaultTransaction struct {
+	TotalApprovedSubmission int64     `json:"total_approved_submission"`
+	TotalSubmission         int64     `json:"total_submission"`
+	Action                  string    `json:"action"`
+	Target                  string    `json:"target"`
+	ExpiredDate             time.Time `json:"expired_date"`
+	Date                    time.Time `json:"date"`
+	Amount                  string    `json:"amount"`
+	Token                   string    `json:"token"`
+}
+
+type Balance struct {
+	TokenName   string `json:"token_name"`
+	Token       string `json:"token"`
+	Amount      string `json:"amount"`
+	AmountInUsd string `json:"amount_in_usd"`
+}
+
+type MyNft struct {
+	CollectionName  string `json:"collection_name"`
+	CollectionImage string `json:"collection_image"`
+	Chain           string `json:"chain"`
+	Total           int64  `json:"total"`
+	Nft             []Nft  `json:"nft"`
+}
+
+type Nft struct {
+	Name string `json:"name"`
+	Id   string `json:"id"`
 }
