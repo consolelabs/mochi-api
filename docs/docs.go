@@ -6137,13 +6137,25 @@ const docTemplate = `{
                         "name": "amount",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "chain name",
+                        "name": "chain_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "chain id",
+                        "name": "chain_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.KyberSwapRoutes"
+                            "$ref": "#/definitions/response.SwapRouteResponseData"
                         }
                     }
                 }
@@ -8105,6 +8117,23 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "model.ExtraFee": {
+            "type": "object",
+            "properties": {
+                "chargeFeeBy": {
+                    "type": "string"
+                },
+                "feeAmount": {
+                    "type": "string"
+                },
+                "feeReceiver": {
+                    "type": "string"
+                },
+                "isImBps": {
+                    "type": "boolean"
                 }
             }
         },
@@ -11759,23 +11788,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.ExtraFee": {
-            "type": "object",
-            "properties": {
-                "chargeFeeBy": {
-                    "type": "string"
-                },
-                "feeAmount": {
-                    "type": "string"
-                },
-                "feeReceiver": {
-                    "type": "string"
-                },
-                "isImBps": {
-                    "type": "boolean"
-                }
-            }
-        },
         "response.GasTrackerResponse": {
             "type": "object",
             "properties": {
@@ -13344,20 +13356,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.KyberSwapRoutes": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/response.RouteSummaryData"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "response.LinkUserTelegramWithDiscordResponse": {
             "type": "object",
             "properties": {
@@ -14173,6 +14171,9 @@ const docTemplate = `{
                 },
                 "tokenOut": {
                     "type": "string"
+                },
+                "tokenOutSymbol": {
+                    "type": "string"
                 }
             }
         },
@@ -14192,7 +14193,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "extraFee": {
-                    "$ref": "#/definitions/response.ExtraFee"
+                    "$ref": "#/definitions/model.ExtraFee"
                 },
                 "gas": {
                     "type": "string"
@@ -14223,23 +14224,6 @@ const docTemplate = `{
                 },
                 "tokenOutMarketPriceAvailable": {
                     "type": "boolean"
-                }
-            }
-        },
-        "response.RouteSummaryData": {
-            "type": "object",
-            "properties": {
-                "routeSummary": {
-                    "$ref": "#/definitions/response.RouteSummary"
-                },
-                "routerAddress": {
-                    "type": "string"
-                },
-                "tokenIn": {
-                    "$ref": "#/definitions/model.KyberswapSupportedToken"
-                },
-                "tokenOut": {
-                    "$ref": "#/definitions/model.KyberswapSupportedToken"
                 }
             }
         },
@@ -14293,6 +14277,45 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.SubmitOnchainTransfer"
                     }
+                }
+            }
+        },
+        "response.SwapRoute": {
+            "type": "object",
+            "properties": {
+                "routeSummary": {
+                    "$ref": "#/definitions/response.RouteSummary"
+                },
+                "routerAddress": {
+                    "type": "string"
+                },
+                "tokenIn": {
+                    "$ref": "#/definitions/model.KyberswapSupportedToken"
+                },
+                "tokenOut": {
+                    "$ref": "#/definitions/model.KyberswapSupportedToken"
+                }
+            }
+        },
+        "response.SwapRouteResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/response.SwapRoute"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SwapRouteResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.SwapRouteResponse"
                 }
             }
         },

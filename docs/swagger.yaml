@@ -362,6 +362,17 @@ definitions:
       user_id:
         type: string
     type: object
+  model.ExtraFee:
+    properties:
+      chargeFeeBy:
+        type: string
+      feeAmount:
+        type: string
+      feeReceiver:
+        type: string
+      isImBps:
+        type: boolean
+    type: object
   model.GuildConfigActivity:
     properties:
       active:
@@ -2751,17 +2762,6 @@ definitions:
           $ref: '#/definitions/model.DiscordUserTokenAlert'
         type: array
     type: object
-  response.ExtraFee:
-    properties:
-      chargeFeeBy:
-        type: string
-      feeAmount:
-        type: string
-      feeReceiver:
-        type: string
-      isImBps:
-        type: boolean
-    type: object
   response.GasTrackerResponse:
     properties:
       chain:
@@ -3776,15 +3776,6 @@ definitions:
       data:
         $ref: '#/definitions/response.UserInvitesAggregation'
     type: object
-  response.KyberSwapRoutes:
-    properties:
-      code:
-        type: integer
-      data:
-        $ref: '#/definitions/response.RouteSummaryData'
-      message:
-        type: string
-    type: object
   response.LinkUserTelegramWithDiscordResponse:
     properties:
       data:
@@ -4314,6 +4305,8 @@ definitions:
         type: string
       tokenOut:
         type: string
+      tokenOutSymbol:
+        type: string
     type: object
   response.RouteSummary:
     properties:
@@ -4326,7 +4319,7 @@ definitions:
       amountOutUsd:
         type: string
       extraFee:
-        $ref: '#/definitions/response.ExtraFee'
+        $ref: '#/definitions/model.ExtraFee'
       gas:
         type: string
       gasPrice:
@@ -4347,17 +4340,6 @@ definitions:
         type: string
       tokenOutMarketPriceAvailable:
         type: boolean
-    type: object
-  response.RouteSummaryData:
-    properties:
-      routeSummary:
-        $ref: '#/definitions/response.RouteSummary'
-      routerAddress:
-        type: string
-      tokenIn:
-        $ref: '#/definitions/model.KyberswapSupportedToken'
-      tokenOut:
-        $ref: '#/definitions/model.KyberswapSupportedToken'
     type: object
   response.SearchCoinResponse:
     properties:
@@ -4392,6 +4374,31 @@ definitions:
         items:
           $ref: '#/definitions/response.SubmitOnchainTransfer'
         type: array
+    type: object
+  response.SwapRoute:
+    properties:
+      routeSummary:
+        $ref: '#/definitions/response.RouteSummary'
+      routerAddress:
+        type: string
+      tokenIn:
+        $ref: '#/definitions/model.KyberswapSupportedToken'
+      tokenOut:
+        $ref: '#/definitions/model.KyberswapSupportedToken'
+    type: object
+  response.SwapRouteResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/response.SwapRoute'
+      message:
+        type: string
+    type: object
+  response.SwapRouteResponseData:
+    properties:
+      data:
+        $ref: '#/definitions/response.SwapRouteResponse'
     type: object
   response.TickerData:
     properties:
@@ -8602,13 +8609,21 @@ paths:
         name: amount
         required: true
         type: string
+      - description: chain name
+        in: query
+        name: chain_name
+        type: string
+      - description: chain id
+        in: query
+        name: chain_id
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.KyberSwapRoutes'
+            $ref: '#/definitions/response.SwapRouteResponseData'
       summary: Get swap route for token pairs
       tags:
       - Swap
