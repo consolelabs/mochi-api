@@ -25,3 +25,7 @@ func (pg *pg) CreateBatchs(models []model.KyberswapSupportedToken) error {
 func (pg *pg) GetByTokenChain(symbol string, chainId int64, chainName string) (model *model.KyberswapSupportedToken, err error) {
 	return model, pg.db.Where("lower(symbol) = ? AND (chain_id = ? OR chain_name = ?)", strings.ToLower(symbol), chainId, chainName).First(&model).Error
 }
+
+func (pg *pg) GetByAddressChain(address string, chainId int64, chainName string) (model *model.KyberswapSupportedToken, err error) {
+	return model, pg.db.Where("address = ? AND (chain_id = ? OR chain_name = ?)", address, chainId, chainName).First(&model).Error
+}
