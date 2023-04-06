@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,6 +15,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, error) {
@@ -69,11 +71,36 @@ func (e *Entity) CreateVaultConfigChannel(req *request.CreateVaultConfigChannelR
 }
 
 func (e *Entity) CreateConfigThreshold(req *request.CreateConfigThresholdRequest) (*model.Vault, error) {
-	return e.repo.Vault.UpdateThreshold(&model.Vault{
+	vault, err := e.repo.Vault.GetByNameAndGuildId(req.Name, req.GuildId)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("vault not found")
+		}
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateConfigThreshold] - e.repo.Vault.GetByNameAndGuildId failed")
+		return nil, err
+	}
+
+	_, err = e.repo.Vault.UpdateThreshold(&model.Vault{
 		GuildId:   req.GuildId,
 		Name:      req.Name,
 		Threshold: req.Threshold,
 	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateConfigThreshold] - e.repo.Vault.UpdateThreshold failed")
+		return nil, err
+	}
+
+	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
+		GuildId:   req.GuildId,
+		VaultId:   vault.Id,
+		Action:    consts.TreasurerConfigThresholdType,
+		Threshold: req.Threshold,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
+		return nil, err
+	}
+	return vault, nil
 }
 
 func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*model.Treasurer, error) {
@@ -84,6 +111,17 @@ func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.Create failed")
+		return nil, err
+	}
+
+	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
+		GuildId: req.GuildId,
+		VaultId: req.VaultId,
+		Action:  consts.TreasurerAddType,
+		Target:  req.UserDiscordID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
 		return nil, err
 	}
 
@@ -358,6 +396,15 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		}
 	}
 
+	// update request status
+	if resp.VoteResult.IsApproved {
+		err = e.repo.TreasurerRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerRequest.UpdateStatus failed")
+			return nil, err
+		}
+	}
+
 	return resp, nil
 }
 
@@ -369,6 +416,17 @@ func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultReques
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.Treasurer.Create failed")
+		return nil, err
+	}
+
+	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
+		GuildId: req.GuildId,
+		VaultId: req.VaultId,
+		Action:  consts.TreasurerRemoveType,
+		Target:  req.UserDiscordID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.VaultTransaction.Create failed")
 		return nil, err
 	}
 
@@ -385,10 +443,50 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		return nil, err
 	}
 
+	// get treasurers
 	treasurers, err := e.repo.Treasurer.GetByGuildIdAndVaultId(guildId, vault.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.Treasurer.GetByGuildIdAndVaultName failed")
 		return nil, err
+	}
+
+	// get current request
+	currentRequest, err := e.repo.TreasurerRequest.GetCurrentRequest(vault.Id, guildId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.TreasurerRequest.GetCurrentRequest failed")
+		return nil, err
+	}
+
+	currentRequestResponse := make([]response.CurrentRequest, 0)
+	for _, req := range currentRequest {
+		totalApprovedSubmisison := 0
+		for _, sub := range req.TreasurerSubmission {
+			if sub.Status == consts.TreasurerSubmissionStatusApproved {
+				totalApprovedSubmisison++
+			}
+		}
+		currentRequestResponse = append(currentRequestResponse, response.CurrentRequest{
+			Target:                  req.UserDiscordId,
+			Action:                  util.Capitalize(req.Type),
+			TotalSubmission:         int64(len(req.TreasurerSubmission)),
+			TotalApprovedSubmission: int64(totalApprovedSubmisison),
+		})
+	}
+
+	// get recent transaction
+	recentTransactions, err := e.repo.VaultTransaction.GetRecentTx(vault.Id, guildId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.VaultTransaction.GetRecentTx failed")
+		return nil, err
+	}
+	recentTxResponse := make([]response.VaultTransaction, 0)
+	for _, tx := range recentTransactions {
+		recentTxResponse = append(recentTxResponse, response.VaultTransaction{
+			Action:    util.Capitalize(strings.Replace(tx.Action, "_", " ", -1)),
+			Target:    tx.Target,
+			Date:      tx.CreatedAt,
+			Threshold: tx.Threshold,
+		})
 	}
 
 	return &response.VaultDetailResponse{
@@ -446,58 +544,8 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 				},
 			},
 		},
-		Treasurer: treasurers,
-		RecentTransaction: []response.VaultTransaction{
-			{
-				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Amount: "1.56",
-				Token:  "ETH",
-				Action: "Sent",
-				Date:   time.Now(),
-			},
-			{
-				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Amount: "1.56",
-				Token:  "ETH",
-				Action: "Sent",
-				Date:   time.Now(),
-			},
-			{
-				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Amount: "1.56",
-				Token:  "ETH",
-				Action: "Sent",
-				Date:   time.Now(),
-			},
-			{
-				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Amount: "1.56",
-				Token:  "ETH",
-				Action: "Received",
-				Date:   time.Now(),
-			},
-		},
-		CurrentRequest: []response.VaultTransaction{
-			{
-				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Amount:                  "1.56",
-				Token:                   "ETH",
-				Action:                  "Sent",
-				TotalApprovedSubmission: 2,
-				TotalSubmission:         6,
-			},
-			{
-				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Action:                  "Add",
-				TotalApprovedSubmission: 2,
-				TotalSubmission:         6,
-			},
-			{
-				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-				Action:                  "Remove",
-				TotalApprovedSubmission: 2,
-				TotalSubmission:         6,
-			},
-		},
+		Treasurer:         treasurers,
+		RecentTransaction: recentTxResponse,
+		CurrentRequest:    currentRequestResponse,
 	}, nil
 }

@@ -112,6 +112,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
 	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
+	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
 )
 
 // NewRepo new pg repo implementation
@@ -225,5 +226,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		TreasurerRequest:                     treasurerrequest.NewPG(db),
 		KyberswapSupportedToken:              kyberswapsupportedtokens.NewPG(db),
 		TreasurerSubmission:                  treasurersubmission.NewPG(db),
+		VaultTransaction:                     vaulttransaction.NewPG(db),
 	}
 }

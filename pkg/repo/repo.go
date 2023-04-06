@@ -109,6 +109,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
 	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
+	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
 )
 
 type Repo struct {
@@ -220,4 +221,5 @@ type Repo struct {
 	TreasurerRequest                     treasurerrequest.Store
 	KyberswapSupportedToken              kyberswapsupportedtokens.Store
 	TreasurerSubmission                  treasurersubmission.Store
+	VaultTransaction                     vaulttransaction.Store
 }

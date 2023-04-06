@@ -29,7 +29,7 @@ type VoteResult struct {
 
 type VaultDetailResponse struct {
 	WalletAddress     string             `json:"wallet_address"`
-	CurrentRequest    []VaultTransaction `json:"current_request"`
+	CurrentRequest    []CurrentRequest   `json:"current_request"`
 	Balance           []Balance          `json:"balance"`
 	MyNft             []MyNft            `json:"my_nft"`
 	EstimatedTotal    string             `json:"estimated_total"`
@@ -38,12 +38,20 @@ type VaultDetailResponse struct {
 }
 
 type VaultTransaction struct {
+	Action    string    `json:"action"`
+	Target    string    `json:"target"`
+	Date      time.Time `json:"date"`
+	Amount    string    `json:"amount"`
+	Token     string    `json:"token"`
+	Threshold string    `json:"threshold"`
+}
+
+type CurrentRequest struct {
 	TotalApprovedSubmission int64     `json:"total_approved_submission"`
 	TotalSubmission         int64     `json:"total_submission"`
 	Action                  string    `json:"action"`
 	Target                  string    `json:"target"`
 	ExpiredDate             time.Time `json:"expired_date"`
-	Date                    time.Time `json:"date"`
 	Amount                  string    `json:"amount"`
 	Token                   string    `json:"token"`
 }
