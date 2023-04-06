@@ -254,3 +254,21 @@ func (h *Handler) CreateTreasurerResult(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](gin.H{"message": "ok"}, nil, nil, nil))
 }
+
+func (h *Handler) GetVaultDetail(c *gin.Context) {
+	vaultName := c.Query("vaultName")
+	guildId := c.Query("guildId")
+
+	vaultDetail, err := h.entities.GetVaultDetail(vaultName, guildId)
+	if err != nil {
+		if strings.Contains(err.Error(), "vault not exist") {
+			h.log.Fields(logger.Fields{"vaultName": vaultName, "guildId": guildId}).Error(err, "[handler.AddTreasurerToVault] - user not found")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
+			return
+		}
+		h.log.Fields(logger.Fields{"vaultName": vaultName, "guildId": guildId}).Error(err, "[handler.GetVaultDetail] - failed to get vault detail")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](vaultDetail, nil, nil, nil))
+}

@@ -523,6 +523,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			treasurerGroup.POST("/submission", h.Vault.CreateTreasurerSubmission)
 			treasurerGroup.POST("/result", h.Vault.CreateTreasurerResult)
 		}
+		vaultGroup.GET("/detail", h.Vault.GetVaultDetail)
 	}
 
 	swapGroup := v1.Group("/swap")

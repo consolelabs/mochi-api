@@ -374,3 +374,130 @@ func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultReques
 
 	return treasurer, nil
 }
+
+func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetailResponse, error) {
+	vault, err := e.repo.Vault.GetByNameAndGuildId(vaultName, guildId)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, fmt.Errorf("vault not exist")
+		}
+		e.log.Fields(logger.Fields{"vaultName": vaultName}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Vault.GetByNameAndGuildId failed")
+		return nil, err
+	}
+
+	treasurers, err := e.repo.Treasurer.GetByGuildIdAndVaultId(guildId, vault.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.Treasurer.GetByGuildIdAndVaultName failed")
+		return nil, err
+	}
+
+	return &response.VaultDetailResponse{
+		WalletAddress:  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+		EstimatedTotal: "254.667",
+		Balance: []response.Balance{
+			{
+				TokenName:   "Ethereum",
+				Token:       "ETH",
+				Amount:      "54.0865",
+				AmountInUsd: "275524.61",
+			},
+			{
+				TokenName:   "Buttcoin",
+				Token:       "BUTT",
+				Amount:      "54.0865",
+				AmountInUsd: "4.2569",
+			},
+		},
+		MyNft: []response.MyNft{
+			{
+				CollectionName:  "Crypto Duckies",
+				CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
+				Chain:           "ETH",
+				Total:           3,
+				Nft: []response.Nft{
+					{
+						Name: "duckie",
+						Id:   "94",
+					},
+					{
+						Name: "duckie",
+						Id:   "308",
+					},
+					{
+						Name: "duckie",
+						Id:   "750",
+					},
+				},
+			},
+			{
+				CollectionName:  "Crypto Kitties",
+				CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
+				Chain:           "ETH",
+				Total:           2,
+				Nft: []response.Nft{
+					{
+						Name: "kittie",
+						Id:   "834",
+					},
+					{
+						Name: "kittie",
+						Id:   "750",
+					},
+				},
+			},
+		},
+		Treasurer: treasurers,
+		RecentTransaction: []response.VaultTransaction{
+			{
+				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Amount: "1.56",
+				Token:  "ETH",
+				Action: "Sent",
+				Date:   time.Now(),
+			},
+			{
+				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Amount: "1.56",
+				Token:  "ETH",
+				Action: "Sent",
+				Date:   time.Now(),
+			},
+			{
+				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Amount: "1.56",
+				Token:  "ETH",
+				Action: "Sent",
+				Date:   time.Now(),
+			},
+			{
+				Target: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Amount: "1.56",
+				Token:  "ETH",
+				Action: "Received",
+				Date:   time.Now(),
+			},
+		},
+		CurrentRequest: []response.VaultTransaction{
+			{
+				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Amount:                  "1.56",
+				Token:                   "ETH",
+				Action:                  "Sent",
+				TotalApprovedSubmission: 2,
+				TotalSubmission:         6,
+			},
+			{
+				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Action:                  "Add",
+				TotalApprovedSubmission: 2,
+				TotalSubmission:         6,
+			},
+			{
+				Target:                  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+				Action:                  "Remove",
+				TotalApprovedSubmission: 2,
+				TotalSubmission:         6,
+			},
+		},
+	}, nil
+}
