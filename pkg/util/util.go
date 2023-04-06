@@ -28,6 +28,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/ethereum/go-ethereum/common"
@@ -704,4 +705,10 @@ func FloatToBigInt(val float64, decimals int64) *big.Int {
 	bigval.Int(result) // store converted number in result
 
 	return result
+}
+
+func Capitalize(str string) string {
+	runes := []rune(str)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }
