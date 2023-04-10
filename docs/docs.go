@@ -11180,10 +11180,7 @@ const docTemplate = `{
                 "guild_id": {
                     "type": "string"
                 },
-                "mention_role": {
-                    "type": "boolean"
-                },
-                "mention_username": {
+                "is_active": {
                     "type": "boolean"
                 },
                 "user_id": {

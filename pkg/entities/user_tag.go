@@ -13,11 +13,10 @@ import (
 
 func (e *Entity) UpsertUserTag(req request.UpsertUserTag) (*model.UserTag, error) {
 	tagme, err := e.repo.UserTag.UpsertOne(model.UserTag{
-		UserId:          req.UserId,
-		GuildId:         req.GuildId,
-		MentionUsername: req.MentionUsername,
-		MentionRole:     req.MentionRole,
-		UpdatedAt:       time.Now(),
+		UserId:    req.UserId,
+		GuildId:   req.GuildId,
+		IsActive:  req.IsActive,
+		UpdatedAt: time.Now(),
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpsertUserTag] e.repo.UserTag.UpsertOne failed")
