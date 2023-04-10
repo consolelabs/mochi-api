@@ -23,8 +23,7 @@ type UpdateUserAd struct {
 }
 
 type UpsertUserTag struct {
-	UserId          string `json:"user_id"`
-	GuildId         string `json:"guild_id"`
-	MentionUsername bool   `json:"mention_username"`
-	MentionRole     bool   `json:"mention_role"`
+	UserId   string `json:"user_id"`
+	GuildId  string `json:"guild_id"`
+	IsActive bool   `json:"is_active"`
 }
