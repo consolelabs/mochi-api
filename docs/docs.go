@@ -1041,6 +1041,76 @@ const docTemplate = `{
                 }
             }
         },
+        "/community/tagme": {
+            "get": {
+                "description": "Get tagme",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Get tagme",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upsert user tag",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Community"
+                ],
+                "summary": "Upsert user tag",
+                "parameters": [
+                    {
+                        "description": "Upsert user tag request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertUserTag"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/community/twitter": {
             "post": {
                 "description": "Create twitter post",
@@ -11100,6 +11170,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ios_noti_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpsertUserTag": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "mention_role": {
+                    "type": "boolean"
+                },
+                "mention_username": {
+                    "type": "boolean"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

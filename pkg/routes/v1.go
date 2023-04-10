@@ -196,6 +196,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			advertiseGroup.DELETE("", h.Community.DeleteAdById)
 			advertiseGroup.PUT("", h.Community.UpdateAdById)
 		}
+		tagmeGroup := communityGroup.Group("/tagme")
+		{
+			tagmeGroup.GET("", h.Community.GetUserTag)
+			tagmeGroup.POST("", h.Community.UpsertUserTag)
+		}
+
 	}
 
 	configGroup := v1.Group("/configs")

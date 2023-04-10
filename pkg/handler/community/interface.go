@@ -35,4 +35,7 @@ type IHandler interface {
 	InitAdSubmission(c *gin.Context)
 	DeleteAdById(c *gin.Context)
 	UpdateAdById(c *gin.Context)
+
+	GetUserTag(c *gin.Context)
+	UpsertUserTag(c *gin.Context)
 }

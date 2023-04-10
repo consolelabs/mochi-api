@@ -823,3 +823,60 @@ func (h *Handler) UpdateAdById(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 
 }
+
+// UpsertUserTag     godoc
+// @Summary     Upsert user tag
+// @Description Upsert user tag
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       body body request.UpsertUserTag true "Upsert user tag request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/tagme [post]
+func (h *Handler) UpsertUserTag(c *gin.Context) {
+	req := request.UpsertUserTag{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.UpsertUserTag] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.UpsertUserTag(req)
+	if err != nil {
+		h.log.Error(err, "[handler.UpsertTagme] entity.UpsertTagme() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// GetUserTag   godoc
+// @Summary     Get tagme
+// @Description Get tagme
+// @Tags        Community
+// @Accept      json
+// @Produce     json
+// @Param       user_id   query  string true  "User ID"
+// @Param       guild_id   query  string false  "Guild ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /community/tagme [get]
+func (h *Handler) GetUserTag(c *gin.Context) {
+	userID := c.Query("user_id")
+	if userID == "" {
+		h.log.Info("[handler.GetUserTag] missing user_id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
+		return
+	}
+
+	guildID := c.Query("guild_id")
+
+	tag, err := h.entities.GetUserTag(userID, guildID)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserTag] entity.GetUserTag() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(tag, nil, nil, nil))
+}
