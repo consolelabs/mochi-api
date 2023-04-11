@@ -1,9 +1,7 @@
 package abi
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -12,6 +10,5 @@ import (
 type Service interface {
 	GetNameAndSymbol(address string, chainId int64) (name string, symbol string, err error)
 	SweepTokens(contractAddr string, chainID int64, token model.Token) (*types.Transaction, error)
-	PrepareTxOpts(client *ethclient.Client) (*bind.TransactOpts, error)
 	SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error)
 }

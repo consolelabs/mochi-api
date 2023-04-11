@@ -8,7 +8,10 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	request "github.com/defipod/mochi/pkg/request"
+	bind "github.com/ethereum/go-ethereum/accounts/abi/bind"
 	types "github.com/ethereum/go-ethereum/core/types"
+	ethclient "github.com/ethereum/go-ethereum/ethclient"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -49,6 +52,36 @@ func (m *MockService) GetNameAndSymbol(address string, chainId int64) (string, s
 func (mr *MockServiceMockRecorder) GetNameAndSymbol(address, chainId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNameAndSymbol", reflect.TypeOf((*MockService)(nil).GetNameAndSymbol), address, chainId)
+}
+
+// PrepareTxOpts mocks base method.
+func (m *MockService) PrepareTxOpts(client *ethclient.Client) (*bind.TransactOpts, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PrepareTxOpts", client)
+	ret0, _ := ret[0].(*bind.TransactOpts)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PrepareTxOpts indicates an expected call of PrepareTxOpts.
+func (mr *MockServiceMockRecorder) PrepareTxOpts(client interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PrepareTxOpts", reflect.TypeOf((*MockService)(nil).PrepareTxOpts), client)
+}
+
+// SwapTokenOnKyber mocks base method.
+func (m *MockService) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SwapTokenOnKyber", req)
+	ret0, _ := ret[0].(*types.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SwapTokenOnKyber indicates an expected call of SwapTokenOnKyber.
+func (mr *MockServiceMockRecorder) SwapTokenOnKyber(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SwapTokenOnKyber", reflect.TypeOf((*MockService)(nil).SwapTokenOnKyber), req)
 }
 
 // SweepTokens mocks base method.

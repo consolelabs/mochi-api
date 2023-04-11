@@ -105,7 +105,8 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 	}, nil
 }
 
-func (e *Entity) BuildSwapRoutes(req request.BuildRouteRequest) (*response.BuildRoute, error) {
+func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
+	// build route kyber
 	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
 		Recipient:         req.Recipient,
 		Sender:            req.Sender,
@@ -119,38 +120,15 @@ func (e *Entity) BuildSwapRoutes(req request.BuildRouteRequest) (*response.Build
 		return nil, err
 	}
 
-	return buildRouteResp, nil
-}
+	bigIntAmount, _ := new(big.Int).SetString(buildRouteResp.Data.AmountIn, 10)
 
-func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
-	// get from token
-	fromToken, err := e.repo.KyberswapSupportedToken.GetByTokenChain(req.From, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get from token")
-		return nil, err
-	}
-	// get to token
-	toToken, err := e.repo.KyberswapSupportedToken.GetByTokenChain(req.To, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get to token")
-		return nil, err
-	}
-	// convert string float to string big int
-	amount, _ := strconv.ParseFloat(req.Amount, 64)
-	bigIntAmount := util.FloatToBigInt(amount, int64(fromToken.Decimals))
-
-	minReturnAmount, _ := new(big.Int).SetString(req.MinReturnAmount, 10)
-
+	// send payload to mochi-pay
 	e.svc.Abi.SwapTokenOnKyber(request.KyberSwapRequest{
-		FromTokenAddress:   fromToken.Address,
-		ToTokenAddress:     toToken.Address,
-		Amount:             bigIntAmount,
-		ChainName:          req.ChainName,
-		CentralizedAddress: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-		RouterAddress:      req.RouterAddress,
-		EncodedData:        req.EncodedData,
-		Gas:                req.Gas,
-		MinReturnAmount:    minReturnAmount,
+		Amount:        bigIntAmount,
+		ChainName:     req.ChainName,
+		RouterAddress: buildRouteResp.Data.RouterAddress,
+		EncodedData:   buildRouteResp.Data.Data,
+		Gas:           buildRouteResp.Data.Gas,
 	})
 	return nil, nil
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -36,6 +37,7 @@ func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount st
 	}
 
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
 
 	resp, err := client.Do(request)
 
@@ -64,6 +66,7 @@ func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount
 	}
 
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
 
 	resp, err := client.Do(request)
 
@@ -113,6 +116,7 @@ func (k *kyberService) BuildSwapRoutes(chainName string, req *request.KyberBuild
 	}
 
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("source", consts.ClientID)
 
 	resp, err := client.Do(request)
 	if err != nil {

@@ -161,48 +161,6 @@ func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.
 	return tx, nil
 }
 
-func (e *abiEntity) PrepareTxOpts(client *ethclient.Client) (*bind.TransactOpts, error) {
-	privateKey, err := crypto.HexToECDSA(e.config.CentralizedWalletPrivateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	publicKey := privateKey.Public()
-
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return nil, errors.New("error casting public key to ECDSA")
-	}
-
-	centralizedAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-
-	nonce, err := client.PendingNonceAt(context.Background(), centralizedAddress)
-	if err != nil {
-		return nil, err
-	}
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	networkID, err := client.NetworkID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, networkID)
-	if err != nil {
-		return nil, err
-	}
-
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(300000)
-	auth.GasPrice = gasPrice
-
-	return auth, nil
-}
-
 func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error) {
 	// l := logger.NewLogrusLogger()
 	chainID := util.ConvertChainNameToChainId(req.ChainName)
