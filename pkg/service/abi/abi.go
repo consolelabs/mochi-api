@@ -5,9 +5,9 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"log"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/k0kubun/pp"
 
 	"github.com/defipod/mochi/pkg/config"
 	abi "github.com/defipod/mochi/pkg/contract/erc721"
@@ -205,11 +204,11 @@ func (e *abiEntity) PrepareTxOpts(client *ethclient.Client) (*bind.TransactOpts,
 }
 
 func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error) {
-	pp.Println(req)
 	// l := logger.NewLogrusLogger()
 	chainID := util.ConvertChainNameToChainId(req.ChainName)
 	rpcUrl := e.selectRpcUrl(chainID)
 
+	// rpcUrl = https://rpc.ankr.com/fantom
 	client, err := ethclient.Dial(rpcUrl)
 	if err != nil {
 		return nil, err
@@ -232,21 +231,22 @@ func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Trans
 		return nil, err
 	}
 
-	gasLimit := uint64(300000)
+	gasInt, _ := strconv.Atoi(req.Gas)
+	gasLimit := uint64(gasInt) * 5
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		return nil, err
 	}
-
-	value := big.NewInt(10000000000000000)
-	toAddress := common.HexToAddress(req.RouterAddress)
-	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, []byte(req.EncodedData))
 
 	networkID, err := client.NetworkID(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
+	data := common.FromHex(req.EncodedData)
+
+	//
+	tx := types.NewTransaction(nonce, common.HexToAddress(req.RouterAddress), big.NewInt(req.Amount.Int64()), gasLimit, gasPrice, data)
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(networkID), privateKey)
 	if err != nil {
 		log.Fatal(err)
@@ -255,8 +255,6 @@ func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Trans
 	ts := types.Transactions{signedTx}
 	rawTxBytes, _ := rlp.EncodeToBytes(ts[0])
 	rawTxHex := hex.EncodeToString(rawTxBytes)
-
-	pp.Println(rawTxHex)
 
 	// send tx
 	rawTxSendBytes, _ := hex.DecodeString(rawTxHex)
@@ -269,32 +267,6 @@ func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Trans
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("tx sent: %s", txSend.Hash().Hex())
-
-	// _, err = e.PrepareTxOpts(client)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// aggregatorDescription := aggregatorkyber.MetaAggregationRouterV2SwapDescriptionV2{
-	// 	SrcToken:     common.HexToAddress(req.FromTokenAddress),
-	// 	DstToken:     common.HexToAddress(req.ToTokenAddress),
-	// 	FeeReceivers: []common.Address{common.HexToAddress(req.CentralizedAddress)},
-	// 	FeeAmounts:   []*big.Int{big.NewInt(0)}, //
-	// 	DstReceiver:  common.HexToAddress(req.CentralizedAddress),
-	// 	Amount:       req.Amount,
-	// 	// Flags: ,
-	// 	// Permit: ,
-	// }
-
-	// kyberContract, err := aggregatorkyber.NewAggregatorkyber(common.HexToAddress(address), client)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// swap function
-	// tx, err := kyberContract.Swap(auth)
 
 	return nil, nil
 }

@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"math/big"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -138,6 +139,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	amount, _ := strconv.ParseFloat(req.Amount, 64)
 	bigIntAmount := util.FloatToBigInt(amount, int64(fromToken.Decimals))
 
+	minReturnAmount, _ := new(big.Int).SetString(req.MinReturnAmount, 10)
+
 	e.svc.Abi.SwapTokenOnKyber(request.KyberSwapRequest{
 		FromTokenAddress:   fromToken.Address,
 		ToTokenAddress:     toToken.Address,
@@ -146,6 +149,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		CentralizedAddress: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
 		RouterAddress:      req.RouterAddress,
 		EncodedData:        req.EncodedData,
+		Gas:                req.Gas,
+		MinReturnAmount:    minReturnAmount,
 	})
 	return nil, nil
 }

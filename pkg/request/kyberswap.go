@@ -23,12 +23,14 @@ type KyberBuildSwapRouteRequest struct {
 }
 
 type SwapRequest struct {
-	From          string `json:"from" binding:"required"`
-	To            string `json:"to" binding:"required"`
-	Amount        string `json:"amount" binding:"required"`
-	ChainName     string `json:"chain_name" binding:"required"`
-	EncodedData   string `json:"encoded_data" binding:"required"`
-	RouterAddress string `json:"router_address" binding:"required"`
+	From            string `json:"from" binding:"required"`
+	To              string `json:"to" binding:"required"`
+	Amount          string `json:"amount" binding:"required"`
+	ChainName       string `json:"chain_name" binding:"required"`
+	Gas             string `json:"gas" binding:"required"`
+	MinReturnAmount string `json:"min_return_amount" binding:"required"`
+	EncodedData     string `json:"encoded_data" binding:"required"`
+	RouterAddress   string `json:"router_address" binding:"required"`
 }
 
 type KyberSwapRequest struct {
@@ -39,4 +41,6 @@ type KyberSwapRequest struct {
 	CentralizedAddress string   `json:"centralized_address"`
 	EncodedData        string   `json:"encoded_data" binding:"required"`
 	RouterAddress      string   `json:"router_address" binding:"required"`
+	Gas                string   `json:"gas" binding:"required"`
+	MinReturnAmount    *big.Int `json:"min_return_amount" binding:"required"`
 }
