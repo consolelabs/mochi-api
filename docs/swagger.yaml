@@ -1145,6 +1145,62 @@ definitions:
       user_id:
         type: string
     type: object
+  model.RouteElement:
+    properties:
+      amountOut:
+        type: string
+      exchange:
+        type: string
+      extra: {}
+      limitReturnAmount:
+        type: string
+      pool:
+        type: string
+      poolExtra: {}
+      poolLength:
+        type: integer
+      poolType:
+        type: string
+      swapAmount:
+        type: string
+      tokenIn:
+        type: string
+      tokenOut:
+        type: string
+    type: object
+  model.RouteSummary:
+    properties:
+      amountIn:
+        type: string
+      amountInUsd:
+        type: string
+      amountOut:
+        type: string
+      amountOutUsd:
+        type: string
+      extraFee:
+        $ref: '#/definitions/model.ExtraFee'
+      gas:
+        type: string
+      gasPrice:
+        type: string
+      gasUsd:
+        type: string
+      route:
+        items:
+          items:
+            $ref: '#/definitions/model.RouteElement'
+          type: array
+        type: array
+      tokenIn:
+        type: string
+      tokenInMarketPriceAvailable:
+        type: boolean
+      tokenOut:
+        type: string
+      tokenOutMarketPriceAvailable:
+        type: boolean
+    type: object
   model.SaleBotMarketplace:
     properties:
       id:
@@ -2090,6 +2146,18 @@ definitions:
         type: string
       transfer_type:
         type: string
+    type: object
+  request.SwapRequest:
+    properties:
+      chainName:
+        type: string
+      routeSummary:
+        $ref: '#/definitions/model.RouteSummary'
+      userDiscordId:
+        type: string
+    required:
+    - chainName
+    - userDiscordId
     type: object
   request.TrackWalletRequest:
     properties:
@@ -8643,6 +8711,28 @@ paths:
       summary: Add to user's nft watchlist
       tags:
       - NFT
+  /swap:
+    post:
+      consumes:
+      - application/json
+      description: Execute swap token
+      parameters:
+      - description: swap request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.SwapRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Execute swap token
+      tags:
+      - Swap
   /swap/route:
     get:
       consumes:

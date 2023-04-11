@@ -22,14 +22,15 @@ type BuildRoute struct {
 }
 
 type BuildRouteData struct {
-	AmountIn     string       `json:"amountIn"`
-	AmountInUsd  string       `json:"amountInUsd"`
-	AmountOut    string       `json:"amountOut"`
-	AmountOutUsd string       `json:"amountOutUsd"`
-	Gas          string       `json:"gas"`
-	GasUsd       string       `json:"gasUsd"`
-	OutputChange OutputChange `json:"outputChange"`
-	Data         string       `json:"data"`
+	AmountIn      string       `json:"amountIn"`
+	AmountInUsd   string       `json:"amountInUsd"`
+	AmountOut     string       `json:"amountOut"`
+	AmountOutUsd  string       `json:"amountOutUsd"`
+	Gas           string       `json:"gas"`
+	GasUsd        string       `json:"gasUsd"`
+	OutputChange  OutputChange `json:"outputChange"`
+	Data          string       `json:"data"`
+	RouterAddress string       `json:"routerAddress"`
 }
 
 type OutputChange struct {
