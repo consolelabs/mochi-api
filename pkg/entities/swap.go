@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"math/big"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -108,8 +107,8 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	// build route kyber
 	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
-		Recipient:         req.Recipient,
-		Sender:            req.Sender,
+		Recipient:         e.cfg.CentralizedWalletAddress,
+		Sender:            e.cfg.CentralizedWalletAddress,
 		Source:            "kyberswap",
 		SkipSimulateTx:    false,
 		SlippageTolerance: 50,
@@ -120,15 +119,40 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
-	bigIntAmount, _ := new(big.Int).SetString(buildRouteResp.Data.AmountIn, 10)
+	fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
+		return nil, err
+	}
+	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
+		return nil, err
+	}
+
+	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
+		return nil, err
+	}
 
 	// send payload to mochi-pay
-	e.svc.Abi.SwapTokenOnKyber(request.KyberSwapRequest{
-		Amount:        bigIntAmount,
+	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
+		ProfileId:     profile.ID,
+		FromToken:     fromToken.Symbol,
+		ToToken:       toToken.Symbol,
+		ChainId:       util.ConvertChainNameToChainId(req.ChainName),
+		AmountIn:      buildRouteResp.Data.AmountIn,
+		AmountOut:     buildRouteResp.Data.AmountOut,
 		ChainName:     req.ChainName,
+		Address:       e.cfg.CentralizedWalletAddress,
 		RouterAddress: buildRouteResp.Data.RouterAddress,
 		EncodedData:   buildRouteResp.Data.Data,
 		Gas:           buildRouteResp.Data.Gas,
 	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")
+		return nil, err
+	}
 	return nil, nil
 }

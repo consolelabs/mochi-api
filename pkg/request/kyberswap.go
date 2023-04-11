@@ -1,8 +1,6 @@
 package request
 
 import (
-	"math/big"
-
 	"github.com/defipod/mochi/pkg/model"
 )
 
@@ -16,9 +14,15 @@ type KyberBuildSwapRouteRequest struct {
 }
 
 type KyberSwapRequest struct {
-	Amount        *big.Int `json:"amount" binding:"required"`
-	ChainName     string   `json:"chain_name" binding:"required"`
-	EncodedData   string   `json:"encoded_data" binding:"required"`
-	RouterAddress string   `json:"router_address" binding:"required"`
-	Gas           string   `json:"gas" binding:"required"`
+	ProfileId     string `json:"profile_id"`
+	Address       string `json:"address"`
+	FromToken     string `json:"from_token"`
+	ToToken       string `json:"to_token"`
+	ChainId       int64  `json:"chain_id"`
+	AmountIn      string `json:"amount_in"`
+	AmountOut     string `json:"amount_out"`
+	ChainName     string `json:"chain_name"`
+	EncodedData   string `json:"encoded_data"`
+	RouterAddress string `json:"router_address"`
+	Gas           string `json:"gas"`
 }

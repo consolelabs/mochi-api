@@ -6173,6 +6173,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/swap": {
+            "post": {
+                "description": "Execute swap token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Swap"
+                ],
+                "summary": "Execute swap token",
+                "parameters": [
+                    {
+                        "description": "swap request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SwapRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/swap/route": {
             "get": {
                 "description": "Get swap route for token pairs",
@@ -9385,6 +9419,90 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RouteElement": {
+            "type": "object",
+            "properties": {
+                "amountOut": {
+                    "type": "string"
+                },
+                "exchange": {
+                    "type": "string"
+                },
+                "extra": {},
+                "limitReturnAmount": {
+                    "type": "string"
+                },
+                "pool": {
+                    "type": "string"
+                },
+                "poolExtra": {},
+                "poolLength": {
+                    "type": "integer"
+                },
+                "poolType": {
+                    "type": "string"
+                },
+                "swapAmount": {
+                    "type": "string"
+                },
+                "tokenIn": {
+                    "type": "string"
+                },
+                "tokenOut": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RouteSummary": {
+            "type": "object",
+            "properties": {
+                "amountIn": {
+                    "type": "string"
+                },
+                "amountInUsd": {
+                    "type": "string"
+                },
+                "amountOut": {
+                    "type": "string"
+                },
+                "amountOutUsd": {
+                    "type": "string"
+                },
+                "extraFee": {
+                    "$ref": "#/definitions/model.ExtraFee"
+                },
+                "gas": {
+                    "type": "string"
+                },
+                "gasPrice": {
+                    "type": "string"
+                },
+                "gasUsd": {
+                    "type": "string"
+                },
+                "route": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/model.RouteElement"
+                        }
+                    }
+                },
+                "tokenIn": {
+                    "type": "string"
+                },
+                "tokenInMarketPriceAvailable": {
+                    "type": "boolean"
+                },
+                "tokenOut": {
+                    "type": "string"
+                },
+                "tokenOutMarketPriceAvailable": {
+                    "type": "boolean"
+                }
+            }
+        },
         "model.SaleBotMarketplace": {
             "type": "object",
             "properties": {
@@ -10821,6 +10939,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.SwapRequest": {
+            "type": "object",
+            "required": [
+                "chainName",
+                "userDiscordId"
+            ],
+            "properties": {
+                "chainName": {
+                    "type": "string"
+                },
+                "routeSummary": {
+                    "$ref": "#/definitions/model.RouteSummary"
+                },
+                "userDiscordId": {
                     "type": "string"
                 }
             }

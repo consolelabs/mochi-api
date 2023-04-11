@@ -3,26 +3,20 @@ package abi
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
 	"errors"
-	"log"
 	"math/big"
-	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rlp"
 
 	"github.com/defipod/mochi/pkg/config"
 	abi "github.com/defipod/mochi/pkg/contract/erc721"
 	"github.com/defipod/mochi/pkg/contracts/deposit"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 type abiEntity struct {
@@ -159,72 +153,4 @@ func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.
 		log.Info("sweep tokens tx succeeded")
 	}
 	return tx, nil
-}
-
-func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error) {
-	// l := logger.NewLogrusLogger()
-	chainID := util.ConvertChainNameToChainId(req.ChainName)
-	rpcUrl := e.selectRpcUrl(chainID)
-
-	// rpcUrl = https://rpc.ankr.com/fantom
-	client, err := ethclient.Dial(rpcUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	privateKey, err := crypto.HexToECDSA(e.config.CentralizedWalletPrivateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	publicKey := privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return nil, errors.New("error casting public key to ECDSA")
-	}
-
-	centralizedAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-	nonce, err := client.PendingNonceAt(context.Background(), centralizedAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	gasInt, _ := strconv.Atoi(req.Gas)
-	gasLimit := uint64(gasInt) * 5
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	networkID, err := client.NetworkID(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	data := common.FromHex(req.EncodedData)
-
-	//
-	tx := types.NewTransaction(nonce, common.HexToAddress(req.RouterAddress), big.NewInt(req.Amount.Int64()), gasLimit, gasPrice, data)
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(networkID), privateKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ts := types.Transactions{signedTx}
-	rawTxBytes, _ := rlp.EncodeToBytes(ts[0])
-	rawTxHex := hex.EncodeToString(rawTxBytes)
-
-	// send tx
-	rawTxSendBytes, _ := hex.DecodeString(rawTxHex)
-
-	txSend := new(types.Transaction)
-
-	rlp.DecodeBytes(rawTxSendBytes, &txSend)
-
-	err = client.SendTransaction(context.Background(), txSend)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return nil, nil
 }

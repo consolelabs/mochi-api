@@ -11,8 +11,7 @@ type GetSwapRouteRequest struct {
 }
 
 type SwapRequest struct {
-	ChainName    string             `json:"chainName" binding:"required"`
-	Recipient    string             `json:"recipient" binding:"required"`
-	Sender       string             `json:"sender" binding:"required"`
-	RouteSummary model.RouteSummary `json:"routeSummary"`
+	UserDiscordId string             `json:"userDiscordId" binding:"required"`
+	ChainName     string             `json:"chainName" binding:"required"`
+	RouteSummary  model.RouteSummary `json:"routeSummary"`
 }
