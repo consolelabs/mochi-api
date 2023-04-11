@@ -2320,6 +2320,15 @@ definitions:
       ios_noti_token:
         type: string
     type: object
+  request.UpsertUserTag:
+    properties:
+      guild_id:
+        type: string
+      is_active:
+        type: boolean
+      user_id:
+        type: string
+    type: object
   request.UpsertVoteChannelConfigRequest:
     properties:
       channel_id:
@@ -5257,6 +5266,52 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: edit message repost
+      tags:
+      - Community
+  /community/tagme:
+    get:
+      consumes:
+      - application/json
+      description: Get tagme
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Get tagme
+      tags:
+      - Community
+    post:
+      consumes:
+      - application/json
+      description: Upsert user tag
+      parameters:
+      - description: Upsert user tag request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertUserTag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Upsert user tag
       tags:
       - Community
   /community/twitter:
