@@ -514,18 +514,12 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 			return nil, err
 		}
 
-		roles, err := json.Marshal(invitee.Roles)
-		if err != nil {
-			e.log.Fields(logger.Fields{"userID": invitee.User.ID, "username": invitee.User.Username}).Error(err, "[entity.FetchAndSaveGuildMembers] json.Marshal() failed")
-			return nil, err
-		}
-
 		if err := e.repo.GuildUsers.Create(&model.GuildUser{
 			GuildID:   invitee.GuildID,
 			UserID:    invitee.User.ID,
 			Nickname:  invitee.Nick,
 			InvitedBy: res.InviterID,
-			Roles:     roles,
+			// Roles:     roles,
 		}); err != nil {
 			e.log.Fields(logger.Fields{
 				"guildID":         invitee.GuildID,
