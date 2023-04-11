@@ -535,5 +535,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	swapGroup := v1.Group("/swap")
 	{
 		swapGroup.GET("/route", h.Swap.GetSwapRoutes)
+		swapGroup.POST("/route/build", h.Swap.BuildSwapRoutes)
+		swapGroup.POST("", h.Swap.ExecuteSwapRoutes)
 	}
 }

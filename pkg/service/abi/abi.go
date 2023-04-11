@@ -3,7 +3,10 @@ package abi
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/hex"
 	"errors"
+	"fmt"
+	"log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -11,12 +14,16 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/k0kubun/pp"
 
 	"github.com/defipod/mochi/pkg/config"
 	abi "github.com/defipod/mochi/pkg/contract/erc721"
 	"github.com/defipod/mochi/pkg/contracts/deposit"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type abiEntity struct {
@@ -153,4 +160,141 @@ func (e *abiEntity) SweepTokens(contractAddr string, chainID int64, token model.
 		log.Info("sweep tokens tx succeeded")
 	}
 	return tx, nil
+}
+
+func (e *abiEntity) PrepareTxOpts(client *ethclient.Client) (*bind.TransactOpts, error) {
+	privateKey, err := crypto.HexToECDSA(e.config.CentralizedWalletPrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey := privateKey.Public()
+
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("error casting public key to ECDSA")
+	}
+
+	centralizedAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+
+	nonce, err := client.PendingNonceAt(context.Background(), centralizedAddress)
+	if err != nil {
+		return nil, err
+	}
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	networkID, err := client.NetworkID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, networkID)
+	if err != nil {
+		return nil, err
+	}
+
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)
+	auth.GasLimit = uint64(300000)
+	auth.GasPrice = gasPrice
+
+	return auth, nil
+}
+
+func (e *abiEntity) SwapTokenOnKyber(req request.KyberSwapRequest) (*types.Transaction, error) {
+	pp.Println(req)
+	// l := logger.NewLogrusLogger()
+	chainID := util.ConvertChainNameToChainId(req.ChainName)
+	rpcUrl := e.selectRpcUrl(chainID)
+
+	client, err := ethclient.Dial(rpcUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKey, err := crypto.HexToECDSA(e.config.CentralizedWalletPrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return nil, errors.New("error casting public key to ECDSA")
+	}
+
+	centralizedAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), centralizedAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	gasLimit := uint64(300000)
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	value := big.NewInt(10000000000000000)
+	toAddress := common.HexToAddress(req.RouterAddress)
+	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, []byte(req.EncodedData))
+
+	networkID, err := client.NetworkID(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(networkID), privateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ts := types.Transactions{signedTx}
+	rawTxBytes, _ := rlp.EncodeToBytes(ts[0])
+	rawTxHex := hex.EncodeToString(rawTxBytes)
+
+	pp.Println(rawTxHex)
+
+	// send tx
+	rawTxSendBytes, _ := hex.DecodeString(rawTxHex)
+
+	txSend := new(types.Transaction)
+
+	rlp.DecodeBytes(rawTxSendBytes, &txSend)
+
+	err = client.SendTransaction(context.Background(), txSend)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("tx sent: %s", txSend.Hash().Hex())
+
+	// _, err = e.PrepareTxOpts(client)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// aggregatorDescription := aggregatorkyber.MetaAggregationRouterV2SwapDescriptionV2{
+	// 	SrcToken:     common.HexToAddress(req.FromTokenAddress),
+	// 	DstToken:     common.HexToAddress(req.ToTokenAddress),
+	// 	FeeReceivers: []common.Address{common.HexToAddress(req.CentralizedAddress)},
+	// 	FeeAmounts:   []*big.Int{big.NewInt(0)}, //
+	// 	DstReceiver:  common.HexToAddress(req.CentralizedAddress),
+	// 	Amount:       req.Amount,
+	// 	// Flags: ,
+	// 	// Permit: ,
+	// }
+
+	// kyberContract, err := aggregatorkyber.NewAggregatorkyber(common.HexToAddress(address), client)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// swap function
+	// tx, err := kyberContract.Swap(auth)
+
+	return nil, nil
 }

@@ -60,3 +60,39 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
+
+func (h *Handler) BuildSwapRoutes(c *gin.Context) {
+	var req request.BuildRouteRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.BuildSwapRoutes] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	buildRouteResp, err := h.entities.BuildSwapRoutes(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.BuildSwapRoutes] - failed to build swap route")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](buildRouteResp, nil, nil, nil))
+}
+
+func (h *Handler) ExecuteSwapRoutes(c *gin.Context) {
+	var req request.SwapRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ExecuteSwapRoutes] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	_, err := h.entities.Swap(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.BuildSwapRoutes] - failed to build swap route")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any]("ok", nil, nil, nil))
+}

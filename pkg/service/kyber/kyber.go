@@ -1,6 +1,7 @@
 package kyber
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -95,4 +97,38 @@ func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount
 			},
 		},
 	}, nil
+}
+
+func (k *kyberService) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	jsonBody := bytes.NewBuffer(body)
+
+	var client = &http.Client{}
+	request, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/api/v1/route/build", k.kyberBaseUrl, chainName), jsonBody)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &response.BuildRoute{}
+	err = json.Unmarshal(resBody, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
