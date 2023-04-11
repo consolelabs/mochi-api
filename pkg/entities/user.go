@@ -519,7 +519,6 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 			UserID:    invitee.User.ID,
 			Nickname:  invitee.Nick,
 			InvitedBy: res.InviterID,
-			// Roles:     roles,
 		}); err != nil {
 			e.log.Fields(logger.Fields{
 				"guildID":         invitee.GuildID,
