@@ -513,6 +513,7 @@ func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discord
 				Error(err, "[Entity][CreateInvite] GetOneOrUpsertUser() failed to create user for invitee")
 			return nil, err
 		}
+
 		if err := e.repo.GuildUsers.Create(&model.GuildUser{
 			GuildID:   invitee.GuildID,
 			UserID:    invitee.User.ID,

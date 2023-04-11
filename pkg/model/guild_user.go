@@ -14,7 +14,7 @@ type GuildUser struct {
 	InvitedBy string        `json:"invited_by"`
 	Avatar    string        `json:"avatar"`
 	JoinedAt  time.Time     `json:"joined_at"`
-	Roles     []byte        `json:"-" gorm:"roles"`
+	Roles     []byte        `json:"-" gorm:"roles type:jsonb;default:'[]';not null"`
 	RoleSlice []string      `json:"roles" gorm:"-"`
 }
 
