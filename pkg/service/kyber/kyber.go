@@ -110,7 +110,11 @@ func (k *kyberService) BuildSwapRoutes(chainName string, req *request.KyberBuild
 	jsonBody := bytes.NewBuffer(body)
 
 	var client = &http.Client{}
-	request, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/api/v1/route/build", k.kyberBaseUrl, chainName), jsonBody)
+	url := fmt.Sprintf("%s/%s/api/v1/route/build", k.kyberBaseUrl, chainName)
+	k.logger.Info("check kyberswap data:")
+	k.logger.Infof("url: ", url)
+	k.logger.Fields(logger.Fields{"req": req}).Infof("check req payload")
+	request, err := http.NewRequest("POST", url, jsonBody)
 	if err != nil {
 		return nil, err
 	}
