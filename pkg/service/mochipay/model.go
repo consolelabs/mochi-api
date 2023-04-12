@@ -31,3 +31,30 @@ type ErrorResponse struct {
 	StatusCode int    `json:"status_code"`
 	ErrorCode  string `json:"error_code"`
 }
+
+type GetBalanceDataResponse struct {
+	Data []GetBalanceResponse `json:"data"`
+}
+
+type GetBalanceResponse struct {
+	Id        string          `json:"id"`
+	ProfileId string          `json:"profile_id"`
+	TokenId   string          `json:"token_id"`
+	Amount    string          `json:"amount"`
+	CreatedAt string          `json:"created_at"`
+	UpdatedAt string          `json:"updated_at"`
+	Token     GetBalanceToken `json:"token"`
+}
+
+type GetBalanceToken struct {
+	Id      string      `json:"id"`
+	Name    string      `json:"name"`
+	Symbol  string      `json:"symbol"`
+	Decimal int64       `json:"decimal"`
+	ChainId int64       `json:"chain_id"`
+	Native  bool        `json:"native"`
+	Address string      `json:"address"`
+	Icon    string      `json:"icon"`
+	Price   float64     `json:"price"`
+	Chain   interface{} `json:"chain"`
+}

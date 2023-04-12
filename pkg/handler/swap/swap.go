@@ -3,6 +3,7 @@ package swap
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -81,6 +82,10 @@ func (h *Handler) ExecuteSwapRoutes(c *gin.Context) {
 
 	_, err := h.entities.Swap(req)
 	if err != nil {
+		if strings.Contains(err.Error(), "insufficient balance") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient balance"})
+			return
+		}
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.BuildSwapRoutes] - failed to build swap route")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return

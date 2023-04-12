@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -106,6 +107,30 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 }
 
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
+	// get profile
+	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
+		return nil, err
+	}
+
+	// get balance
+	balance, err := e.svc.MochiPay.GetBalance(profile.ID, req.RouteSummary.TokenOut)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
+		return nil, err
+	}
+	if len(balance.Data) == 0 {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
+		return nil, fmt.Errorf("insufficient balance")
+	}
+
+	amountSwap, _ := util.StringToBigInt(req.RouteSummary.AmountOut)
+	bal, _ := util.StringToBigInt(balance.Data[0].Amount)
+	if amountSwap.Cmp(bal) == 1 {
+		return nil, fmt.Errorf("insufficient balance")
+	}
+
 	// build route kyber
 	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
 		Recipient:         e.cfg.CentralizedWalletAddress,
@@ -128,12 +153,6 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
-		return nil, err
-	}
-
-	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
 		return nil, err
 	}
 
