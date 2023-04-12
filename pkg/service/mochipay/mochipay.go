@@ -69,3 +69,47 @@ func (m *MochiPay) SwapMochiPay(req request.KyberSwapRequest) error {
 
 	return nil
 }
+
+func (m *MochiPay) GetBalance(profileId, token string) (*GetBalanceDataResponse, error) {
+	client := &http.Client{}
+	url := fmt.Sprintf("%s/api/v1/mochi-wallet/%s/balances/%s", m.config.MochiPayServerHost, profileId, token)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return nil, err
+	}
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &GetBalanceDataResponse{}
+	err = json.Unmarshal(body, res)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return res, nil
+}
