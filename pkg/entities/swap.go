@@ -140,6 +140,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	// send payload to mochi-pay
 	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
 		ProfileId:     profile.ID,
+		OriginId:      req.UserDiscordId,
+		Platform:      consts.PlatformDiscord,
 		FromToken:     fromToken.Symbol,
 		ToToken:       toToken.Symbol,
 		ChainId:       util.ConvertChainNameToChainId(req.ChainName),
