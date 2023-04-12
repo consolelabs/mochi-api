@@ -60,3 +60,30 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
+
+// ExecuteSwapRoutes     godoc
+// @Summary     Execute swap token
+// @Description Execute swap token
+// @Tags        Swap
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.SwapRequest true "swap request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /swap [post]
+func (h *Handler) ExecuteSwapRoutes(c *gin.Context) {
+	var req request.SwapRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ExecuteSwapRoutes] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	_, err := h.entities.Swap(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.BuildSwapRoutes] - failed to build swap route")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

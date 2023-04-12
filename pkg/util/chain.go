@@ -124,3 +124,34 @@ func ConvertInputToChainId(input string) string {
 	}
 	return ConvertChainToChainId(chainId)
 }
+
+func ConvertChainNameToChainId(chainName string) int64 {
+	switch chainName {
+	case "ethereum":
+		return 1
+	case "fantom":
+		return 250
+	case "bsc":
+		return 56
+	case "polygon":
+		return 137
+	case "avalanche":
+		return 43114
+	case "arbitrum":
+		return 42161
+	case "optimism":
+		return 10
+	case "bttc":
+		return 199
+	case "oasis":
+		return 42262
+	case "cronos":
+		return 25
+	case "velas":
+		return 106
+	case "aurora":
+		return 1313161554
+	default:
+		return 1
+	}
+}

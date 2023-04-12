@@ -3,6 +3,8 @@ package entities
 import (
 	"strconv"
 
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -51,9 +53,12 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 		newRouteElement := make([]response.RouteElement, 0)
 		for _, routeEle := range route {
 			toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(routeEle.TokenOut, int64(req.ChainId), req.ChainName)
-			if err != nil {
+			if err != nil && err != gorm.ErrRecordNotFound {
 				e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
 				return nil, err
+			}
+			if err == gorm.ErrRecordNotFound {
+				toToken = toTokenOverview
 			}
 			newRouteElement = append(newRouteElement, response.RouteElement{
 				Pool:              routeEle.Pool,
@@ -97,5 +102,57 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 			},
 		},
 	}, nil
+}
 
+func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
+	// build route kyber
+	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
+		Recipient:         e.cfg.CentralizedWalletAddress,
+		Sender:            e.cfg.CentralizedWalletAddress,
+		Source:            "kyberswap",
+		SkipSimulateTx:    false,
+		SlippageTolerance: 50,
+		RouteSummary:      req.RouteSummary,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
+		return nil, err
+	}
+
+	fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
+		return nil, err
+	}
+	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
+		return nil, err
+	}
+
+	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
+		return nil, err
+	}
+
+	// send payload to mochi-pay
+	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
+		ProfileId:     profile.ID,
+		FromToken:     fromToken.Symbol,
+		ToToken:       toToken.Symbol,
+		ChainId:       util.ConvertChainNameToChainId(req.ChainName),
+		AmountIn:      buildRouteResp.Data.AmountIn,
+		AmountOut:     buildRouteResp.Data.AmountOut,
+		ChainName:     req.ChainName,
+		Address:       e.cfg.CentralizedWalletAddress,
+		RouterAddress: buildRouteResp.Data.RouterAddress,
+		EncodedData:   buildRouteResp.Data.Data,
+		Gas:           buildRouteResp.Data.Gas,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")
+		return nil, err
+	}
+	return nil, nil
 }
