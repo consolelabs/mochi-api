@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -109,7 +110,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
 		Recipient:         e.cfg.CentralizedWalletAddress,
 		Sender:            e.cfg.CentralizedWalletAddress,
-		Source:            "kyberswap",
+		Source:            consts.ClientID,
 		SkipSimulateTx:    false,
 		SlippageTolerance: 50,
 		RouteSummary:      req.RouteSummary,
