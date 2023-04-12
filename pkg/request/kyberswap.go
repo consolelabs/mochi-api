@@ -15,6 +15,8 @@ type KyberBuildSwapRouteRequest struct {
 
 type KyberSwapRequest struct {
 	ProfileId     string `json:"profile_id"`
+	OriginId      string `json:"origin_id"`
+	Platform      string `json:"platform"`
 	Address       string `json:"address"`
 	FromToken     string `json:"from_token"`
 	ToToken       string `json:"to_token"`
