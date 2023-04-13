@@ -120,6 +120,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
 		return nil, err
 	}
+
 	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
@@ -137,7 +138,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, fmt.Errorf("insufficient balance")
 	}
 
-	amountSwap, _ := util.StringToBigInt(req.RouteSummary.AmountOut)
+	amountSwap, _ := util.StringToBigInt(req.RouteSummary.AmountIn)
 	bal, _ := util.StringToBigInt(balance.Data[0].Amount)
 	if amountSwap.Cmp(bal) == 1 {
 		return nil, fmt.Errorf("insufficient balance")
