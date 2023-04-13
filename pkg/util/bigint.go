@@ -13,3 +13,9 @@ func StringToBigInt(s string) (*big.Int, error) {
 	}
 	return n, nil
 }
+
+func BigIntToFloat(bigInt *big.Int, decimal float64) (intVal float64, fracVal big.Accuracy) {
+	floatVal := new(big.Float).SetInt(bigInt)
+	intVal, fracVal = new(big.Float).Quo(floatVal, big.NewFloat(decimal)).Float64()
+	return
+}

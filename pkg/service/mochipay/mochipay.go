@@ -113,3 +113,42 @@ func (m *MochiPay) GetBalance(profileId, token string) (*GetBalanceDataResponse,
 
 	return res, nil
 }
+
+func (m *MochiPay) Transfer(req request.MochiPayTransferRequest) error {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	jsonBody := bytes.NewBuffer(payload)
+
+	client := &http.Client{}
+	url := fmt.Sprintf("%s/api/v1/transfer", m.config.MochiPayServerHost)
+	request, err := http.NewRequest("POST", url, jsonBody)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return err
+	}
+	return nil
+}
