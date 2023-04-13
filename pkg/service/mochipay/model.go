@@ -51,7 +51,7 @@ type GetBalanceToken struct {
 	Name    string      `json:"name"`
 	Symbol  string      `json:"symbol"`
 	Decimal int64       `json:"decimal"`
-	ChainId int64       `json:"chain_id"`
+	ChainId string      `json:"chain_id"`
 	Native  bool        `json:"native"`
 	Address string      `json:"address"`
 	Icon    string      `json:"icon"`

@@ -114,8 +114,20 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
+	// get token
+	fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
+		return nil, err
+	}
+	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
+		return nil, err
+	}
+
 	// get balance
-	balance, err := e.svc.MochiPay.GetBalance(profile.ID, req.RouteSummary.TokenOut)
+	balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
 		return nil, err
@@ -142,17 +154,6 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
-		return nil, err
-	}
-
-	fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
-		return nil, err
-	}
-	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
 		return nil, err
 	}
 
