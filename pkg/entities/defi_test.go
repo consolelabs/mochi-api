@@ -474,9 +474,9 @@ func TestEntity_GetCoinData(t *testing.T) {
 				MarketCapRank:   2,
 				AssetPlatformID: "",
 				Image: response.CoinImage{
-					Thumb:  "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1595348880",
-					Small:  "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
-					Larget: "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
+					Thumb: "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1595348880",
+					Small: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+					Large: "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880",
 				},
 				MarketData: response.MarketData{
 					CurrentPrice: map[string]float64{
