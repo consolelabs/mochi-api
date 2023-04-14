@@ -26,3 +26,7 @@ func (pg *pg) GetAll() (rs []model.OffchainTipBotToken, err error) {
 func (pg *pg) UpdateTokenFee(symbol string, serviceFee float64) error {
 	return pg.db.Table("offchain_tip_bot_tokens").Where("token_symbol = ?", symbol).Update("service_fee", serviceFee).Error
 }
+
+func (pg *pg) Create(t *model.OffchainTipBotToken) error {
+	return pg.db.Create(t).Error
+}

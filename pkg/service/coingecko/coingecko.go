@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -20,6 +21,8 @@ type CoinGecko struct {
 	getCoinOhlc        string
 	getCoinsMarketData string
 	getSupportedCoins  string
+	getAssetPlatforms  string
+	getCoinByContract  string
 }
 
 func NewService(cfg *config.Config) Service {
@@ -32,6 +35,8 @@ func NewService(cfg *config.Config) Service {
 		getCoinOhlc:        "https://pro-api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd&x_cg_pro_api_key=" + apiKey,
 		getCoinsMarketData: "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=%t&price_change_percentage=7d&x_cg_pro_api_key=" + apiKey,
 		getSupportedCoins:  "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
+		getAssetPlatforms:  "https://pro-api.coingecko.com/api/v3/asset_platforms?x_cg_pro_api_key=" + apiKey,
+		getCoinByContract:  "https://pro-api.coingecko.com/api/v3/coins/%s/contract/%s?x_cg_pro_api_key=" + apiKey,
 	}
 }
 
@@ -120,4 +125,28 @@ func (c *CoinGecko) GetSupportedCoins() ([]response.CoingeckoSupportedTokenRespo
 		return nil, fmt.Errorf("failed to fetch supported coins list: %v", err), statusCode
 	}
 	return data, nil, http.StatusOK
+}
+
+func (c *CoinGecko) GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error) {
+	var res []response.AssetPlatformResponseData
+	status, err := util.FetchData(c.getAssetPlatforms, &res)
+	if err != nil || status != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch asset platforms with status %d: %v", status, err)
+	}
+	for _, p := range res {
+		if p.ChainIdentifier != nil && *p.ChainIdentifier == int64(chainId) {
+			return &p, nil
+		}
+	}
+	return nil, errors.New("asset platform not found")
+}
+
+func (c *CoinGecko) GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error) {
+	var res response.GetCoinByContractResponseData
+	url := fmt.Sprintf(c.getCoinByContract, platformId, contractAddress)
+	status, err := util.FetchData(url, &res)
+	if err != nil || status != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch asset platforms with status %d: %v", status, err)
+	}
+	return &res, nil
 }

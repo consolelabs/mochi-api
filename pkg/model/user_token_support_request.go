@@ -18,6 +18,9 @@ type UserTokenSupportRequest struct {
 	MessageID     string                    `json:"message_id"`
 	TokenName     string                    `json:"token_name"`
 	Symbol        string                    `json:"symbol"`
+	CoinGeckoID   string                    `json:"coin_gecko_id"`
+	Decimal       int                       `json:"decimal"`
+	Icon          string                    `json:"icon"`
 	TokenAddress  string                    `json:"token_address"`
 	TokenChainID  int                       `json:"token_chain_id"`
 	Status        TokenSupportRequestStatus `json:"status"`

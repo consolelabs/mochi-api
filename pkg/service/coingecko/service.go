@@ -12,4 +12,6 @@ type Service interface {
 	GetHistoryCoinInfo(sourceSymbol string, interval string) (res [][]float64, err error, statusCode int)
 	GetCoinsMarketData(ids []string, sparkline bool) (res []response.CoinMarketItemData, err error, statusCode int)
 	GetSupportedCoins() (res []response.CoingeckoSupportedTokenResponse, err error, statusCode int)
+	GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error)
+	GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error)
 }
