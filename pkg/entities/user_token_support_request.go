@@ -59,19 +59,26 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		return nil, errors.ErrTokenRequestExisted
 	}
 
-	platform, err := e.svc.CoinGecko.GetAssetPlatform(chainId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetAssetPlatform() failed")
-		return nil, err
+	var platformID string
+	// special handling for solana
+	if chainId == 999 {
+		platformID = "solana"
+	} else {
+		platform, err := e.svc.CoinGecko.GetAssetPlatform(chainId)
+		if err != nil {
+			e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetAssetPlatform() failed")
+			return nil, err
+		}
+		platformID = platform.ID
 	}
 
-	coin, err := e.svc.CoinGecko.GetCoinByContract(platform.ID, req.TokenAddress)
+	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, req.TokenAddress)
 	if err != nil {
 		e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetCoinByContract() failed")
 		return nil, err
 	}
 
-	platformDetail, ok := coin.DetailPlatforms[platform.ID]
+	platformDetail, ok := coin.DetailPlatforms[platformID]
 	var decimal int
 	if ok {
 		decimal = platformDetail.DecimalPlace
@@ -125,13 +132,14 @@ func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequ
 
 	// create token in mochi-pay
 	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
-		Id:      offchainToken.ID.String(),
-		Name:    offchainToken.TokenName,
-		Symbol:  offchainToken.TokenSymbol,
-		Decimal: int64(req.Decimal),
-		ChainId: fmt.Sprint(req.TokenChainID),
-		Address: req.TokenAddress,
-		Icon:    req.Icon,
+		Id:          offchainToken.ID.String(),
+		Name:        offchainToken.TokenName,
+		Symbol:      offchainToken.TokenSymbol,
+		Decimal:     int64(req.Decimal),
+		ChainId:     fmt.Sprint(req.TokenChainID),
+		Address:     req.TokenAddress,
+		Icon:        req.Icon,
+		CoinGeckoId: req.CoinGeckoID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"token": offchainToken}).Error(err, "[entity.ApproveTokenSupportRequest] svc.MochiPay.CreateToken() failed")
