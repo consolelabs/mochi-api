@@ -8,5 +8,5 @@ type CreateTokenRequest struct {
 	ChainId     string `json:"chain_id"`
 	Address     string `json:"address"`
 	Icon        string `json:"icon"`
-	CoinGeckoId string `json:"-"`
+	CoinGeckoId string `json:"coin_gecko_id"`
 }
