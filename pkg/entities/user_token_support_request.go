@@ -15,6 +15,7 @@ import (
 	tokenSupportReq "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -57,6 +58,31 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		}).Error(errors.ErrTokenRequestExisted, "[entity.CreateUserTokenSupportRequest] token request already existed")
 		return nil, errors.ErrTokenRequestExisted
 	}
+
+	var platformID string
+	// special handling for solana
+	if chainId == 999 {
+		platformID = "solana"
+	} else {
+		platform, err := e.svc.CoinGecko.GetAssetPlatform(chainId)
+		if err != nil {
+			e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetAssetPlatform() failed")
+			return nil, err
+		}
+		platformID = platform.ID
+	}
+
+	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, req.TokenAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetCoinByContract() failed")
+		return nil, err
+	}
+
+	platformDetail, ok := coin.DetailPlatforms[platformID]
+	var decimal int
+	if ok {
+		decimal = platformDetail.DecimalPlace
+	}
 	tokenReq := &model.UserTokenSupportRequest{
 		UserDiscordID: req.UserDiscordID,
 		GuildID:       req.GuildID,
@@ -65,6 +91,11 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		TokenAddress:  req.TokenAddress,
 		TokenChainID:  chainId,
 		Status:        model.TokenSupportPending,
+		CoinGeckoID:   coin.ID,
+		TokenName:     coin.Name,
+		Symbol:        coin.Symbol,
+		Decimal:       decimal,
+		Icon:          coin.Image.Large,
 	}
 	err = e.repo.UserTokenSupportRequest.CreateWithHook(tokenReq, func(id int) error {
 		return e.notifyDiscordTokenRequest(id, req)
@@ -77,6 +108,44 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 }
 
 func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequest, error) {
+	req, err := e.repo.UserTokenSupportRequest.Get(id)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"id": id,
+		}).Error(err, "[entity.ApproveTokenSupportRequest] repo.UserTokenSupportRequest.Get() failed")
+		return nil, err
+	}
+
+	// TODO: remove after migrating token to mochi pay
+	offchainToken := &model.OffchainTipBotToken{
+		TokenName:   req.TokenName,
+		TokenSymbol: req.Symbol,
+		CoinGeckoID: req.CoinGeckoID,
+		Icon:        &req.Icon,
+		Status:      1,
+	}
+	err = e.repo.OffchainTipBotTokens.Create(offchainToken)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": offchainToken}).Error(err, "[entity.ApproveTokenSupportRequest] repo.OffchainTipBotTokens.Create() failed")
+		return nil, err
+	}
+
+	// create token in mochi-pay
+	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
+		Id:          offchainToken.ID.String(),
+		Name:        offchainToken.TokenName,
+		Symbol:      offchainToken.TokenSymbol,
+		Decimal:     int64(req.Decimal),
+		ChainId:     fmt.Sprint(req.TokenChainID),
+		Address:     req.TokenAddress,
+		Icon:        req.Icon,
+		CoinGeckoId: req.CoinGeckoID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": offchainToken}).Error(err, "[entity.ApproveTokenSupportRequest] svc.MochiPay.CreateToken() failed")
+		return nil, err
+	}
+
 	return e.updateStatusTokenRequest(id, model.TokenSupportApproved)
 }
 
@@ -171,7 +240,7 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 		e.log.Fields(logger.Fields{
 			"guidelineChannelID": e.cfg.MochiTokenRequestChannelID,
 			"msg":                msgSend,
-		}).Error(err, "[entity.CreateProposalChannelConfig] e.svc.Discord.SendMessage failed")
+		}).Error(err, "[entity.notifyDiscordTokenRequest] e.svc.Discord.SendMessage failed")
 		return err
 	}
 	return nil

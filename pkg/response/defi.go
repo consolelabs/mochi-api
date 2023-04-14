@@ -90,9 +90,9 @@ type MarketData struct {
 }
 
 type CoinImage struct {
-	Thumb  string `json:"thumb"`
-	Small  string `json:"small"`
-	Larget string `json:"large"`
+	Thumb string `json:"thumb"`
+	Small string `json:"small"`
+	Large string `json:"large"`
 }
 
 type CoinDescription struct {
@@ -253,4 +253,22 @@ type GasTrackerResponse struct {
 
 type GetCoinsMarketDataResponse struct {
 	Data []CoinMarketItemData `json:"data"`
+}
+
+type AssetPlatformResponseData struct {
+	ChainIdentifier *int64 `json:"chain_identifier"`
+	ID              string `json:"id"`
+}
+
+type GetCoinByContractResponseData struct {
+	ID              string                            `json:"id"`
+	Name            string                            `json:"name"`
+	Symbol          string                            `json:"symbol"`
+	DetailPlatforms map[string]CoinPlatformDetailData `json:"detail_platforms"`
+	Image           CoinImage                         `json:"image"`
+}
+
+type CoinPlatformDetailData struct {
+	DecimalPlace    int    `json:"decimal_place"`
+	ContractAddress string `json:"contract_address"`
 }
