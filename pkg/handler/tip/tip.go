@@ -4,15 +4,12 @@ import (
 	"errors"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
-	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -27,154 +24,6 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 		entities: entities,
 		log:      logger,
 	}
-}
-
-func (h *Handler) OffchainTipBotListAllChains(c *gin.Context) {
-	tokenID := c.Query("token_id")
-	tokenSymbol := c.Query("token_symbol")
-	returnChain, err := h.entities.OffchainTipBotListAllChains(
-		offchaintipbotchain.Filter{
-			TokenID:     tokenID,
-			TokenSymbol: tokenSymbol,
-		},
-	)
-	if err != nil {
-		h.log.Error(err, "[handler.OffchainTipBotListAllChains] - failed to list chains")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(returnChain, nil, nil, nil))
-}
-
-// AddContract   godoc
-// @Summary     OffChain Tip Bot - Create an assign contract
-// @Description Create an assign contract when user want to deposit a specific token to contract
-// @Tags        Tip
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.CreateAssignContract true "Create assign contract request"
-// @Success     200 {object} response.GetAssignedContract
-// @Router      /tip/assign-contract [post]
-func (h *Handler) OffchainTipBotCreateAssignContract(c *gin.Context) {
-	body := request.CreateAssignContract{}
-
-	if err := c.BindJSON(&body); err != nil {
-		h.log.Fields(logger.Fields{"body": body}).Error(err, "[handler.CreateDefaultRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	chains, err := h.entities.OffchainTipBotListAllChains(
-		offchaintipbotchain.Filter{
-			TokenSymbol:         body.TokenSymbol,
-			IsContractAvailable: true,
-			UserID:              body.UserID,
-		},
-	)
-	if err == gorm.ErrRecordNotFound {
-		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to list chains")
-		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	if err != nil {
-		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to list chains")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if len(chains) == 0 {
-		err := errors.New("contract not found or already assigned")
-		h.log.Errorf(err, "[handler.OffchainTipBotCreateAssignContract] - %s", err.Error())
-		c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	ac := &model.OffchainTipBotAssignContract{
-		ChainID:     chains[0].ID,
-		UserID:      body.UserID,
-		ExpiredTime: time.Now().Add(3 * time.Hour),
-	}
-	for _, t := range chains[0].Tokens {
-		if strings.EqualFold(strings.ToLower(t.TokenSymbol), strings.ToLower(body.TokenSymbol)) {
-			ac.TokenID = t.ID
-			break
-		}
-	}
-	var userAssignedContract *model.OffchainTipBotAssignContract
-	for _, contract := range chains[0].Contracts {
-		ac.ContractID = contract.ID
-		userAssignedContract, err = h.entities.OffchainTipBotCreateAssignContract(ac)
-		if err == nil {
-			break
-		}
-	}
-	if err != nil {
-		h.log.Error(err, "[handler.OffchainTipBotCreateAssignContract] - failed to create assign contract")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(userAssignedContract, nil, nil, nil))
-}
-
-// GetUserBalances     godoc
-// @Summary     Get offchain user bals
-// @Description Get offchain user bals
-// @Tags        Tip
-// @Accept      json
-// @Produce     json
-// @Param       user_id query     string true "user ID"
-// @Success     200 {object} response.GetUserBalancesResponse
-// @Router      /tip/balances [get]
-func (h *Handler) GetUserBalances(c *gin.Context) {
-	userID := c.Query("user_id")
-
-	if userID == "" {
-		h.log.Info("[handler.GetUserBalances] - missing user id")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
-		return
-	}
-
-	userBalances, err := h.entities.GetUserBalances(userID)
-	if err != nil {
-		h.log.Error(err, "[handler.GetUserBalances] - failed to get user balances")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(userBalances, nil, nil, nil))
-}
-
-// OffchainTipBotWithdraw     godoc
-// @Summary     OffChain Tip Bot - Withdraw
-// @Description OffChain Tip Bot - Withdraw
-// @Tags        Tip
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.OffchainWithdrawRequest true "Withdraw token request"
-// @Success     200 {object} response.OffchainTipBotWithdrawResponse
-// @Router      /tip/withdraw [post]
-func (h *Handler) OffchainTipBotWithdraw(c *gin.Context) {
-	req := request.OffchainWithdrawRequest{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.OffchainTipBotWithdraw] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	res, err := h.entities.OffchainTipBotWithdraw(req)
-	if err != nil {
-		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-			return
-		}
-		h.log.Error(err, "[handler.OffchainTipBotWithdraw] - failed to withdraw")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // TransferToken   godoc
@@ -208,54 +57,6 @@ func (h *Handler) TransferToken(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }
 
-func (h *Handler) TotalBalances(c *gin.Context) {
-	totalBalances, err := h.entities.TotalBalances()
-	if err != nil {
-		h.log.Error(err, "[handler.TotalBalances] - failed to get total balances")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(totalBalances, nil, nil, nil))
-}
-
-func (h *Handler) TotalOffchainBalances(c *gin.Context) {
-	totalOffchainBalances, err := h.entities.TotalOffchainBalances()
-	if err != nil {
-		h.log.Error(err, "[handler.TotalOffchainBalances] - failed to get total offchain balances")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(totalOffchainBalances, nil, nil, nil))
-}
-
-func (h *Handler) TotalFee(c *gin.Context) {
-	totalFee, err := h.entities.TotalFee()
-	if err != nil {
-		h.log.Error(err, "[handler.TotalFee] - failed to get total fee")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(totalFee, nil, nil, nil))
-}
-
-func (h *Handler) UpdateTokenFee(c *gin.Context) {
-	req := request.OffchainUpdateTokenFee{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateTokenFee] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err := h.entities.UpdateTokenFee(req)
-	if err != nil {
-		h.log.Error(err, "[handler.UpdateTokenFee] - failed to update token fee")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
 // GetAllTipBotTokens     godoc
 // @Summary     Get all offchain tip bot tokens
 // @Description Get all offchain tip bot tokens
@@ -273,33 +74,6 @@ func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
-}
-
-// GetTransactionsByQuery     godoc
-// @Summary     Get transactions history by query
-// @Description Get transactions history by query
-// @Tags        Tip
-// @Accept      json
-// @Produce     json
-// @Param       guild_id   query  string true  "guild ID"
-// @Param       token   query  string true  "token"
-// @Success     200 {object} response.TransactionsResponse
-// @Router      /tip/history [get]
-func (h *Handler) GetTransactionHistoryByQuery(c *gin.Context) {
-	guildId := c.Query("guild_id")
-	token := c.Query("token")
-	if guildId == "" || token == "" {
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("missing query parameters"), nil))
-		return
-	}
-	transactions, err := h.entities.GetTransactionsByGuildIdAndToken(guildId, token)
-	if err != nil {
-		h.log.Error(err, "[handler.GetUserTransactionsByQuery] - failed to get transactions by query")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(transactions, nil, nil, nil))
-	return
 }
 
 // SubmitOnchainTransfer   godoc

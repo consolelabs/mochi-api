@@ -77,17 +77,3 @@ func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol)
 }
-
-// UpdateTokenFee mocks base method.
-func (m *MockStore) UpdateTokenFee(symbol string, serviceFee float64) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTokenFee", symbol, serviceFee)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateTokenFee indicates an expected call of UpdateTokenFee.
-func (mr *MockStoreMockRecorder) UpdateTokenFee(symbol, serviceFee interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTokenFee", reflect.TypeOf((*MockStore)(nil).UpdateTokenFee), symbol, serviceFee)
-}

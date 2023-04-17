@@ -10,9 +10,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -179,6 +176,19 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 	return e.MappingTransferTokenResponse(req.Token, amountEachRecipient, tokenPrice[supportedToken.CoinGeckoID], transferHistories), nil
 }
 
+func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, price float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {
+	for _, transferHistory := range transferHistories {
+		res = append(res, response.OffchainTipBotTransferToken{
+			SenderID:    *transferHistory.SenderID,
+			RecipientID: transferHistory.ReceiverID,
+			Amount:      amount,
+			Symbol:      tokenSymbol,
+			AmountInUSD: amount * price,
+		})
+	}
+	return res
+}
+
 func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRecipient float64) {
 	if req.TransferType != consts.OffchainTipBotTransferTypeTip {
 		return
@@ -285,263 +295,8 @@ func (e *Entity) NotifyTipFromPlatforms(req request.OffchainTransferRequest, amo
 	}
 }
 
-func (e *Entity) MappingTransferTokenResponse(tokenSymbol string, amount float64, price float64, transferHistories []model.OffchainTipBotTransferHistory) (res []response.OffchainTipBotTransferToken) {
-	for _, transferHistory := range transferHistories {
-		res = append(res, response.OffchainTipBotTransferToken{
-			SenderID:    *transferHistory.SenderID,
-			RecipientID: transferHistory.ReceiverID,
-			Amount:      amount,
-			Symbol:      tokenSymbol,
-			AmountInUSD: amount * price,
-		})
-	}
-	return res
-}
-
-func (e *Entity) OffchainTipBotWithdraw(req request.OffchainWithdrawRequest) (*response.OffchainTipBotWithdraw, error) {
-	al := model.OffchainTipBotActivityLog{
-		UserID:          &req.Recipient,
-		GuildID:         &req.GuildID,
-		ChannelID:       &req.ChannelID,
-		Action:          &req.TransferType,
-		Receiver:        []string{req.RecipientAddress},
-		NumberReceivers: 1,
-		Duration:        &req.Duration,
-		Amount:          req.Amount,
-		FullCommand:     &req.FullCommand,
-	}
-	// check supported tokens
-	offchainToken, err := e.repo.OffchainTipBotTokens.GetBySymbol(req.Token)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.OffchainTipBotWithdraw] repo.OffchainTipBotTokens.GetBySymbol() failed")
-		return nil, err
-	}
-	if err == gorm.ErrRecordNotFound {
-		al.Status = consts.OffchainTipBotTrasferStatusFail
-		al.FailReason = consts.OffchainTipBotFailReasonTokenNotSupported
-		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&al)
-		return nil, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
-	}
-	al.ServiceFee = offchainToken.ServiceFee
-	al.FeeAmount = offchainToken.ServiceFee * req.Amount
-	al.TokenID = offchainToken.ID.String()
-
-	// check recipient balance
-	insufficientBalanceLog := al
-	insufficientBalanceLog.Status = consts.OffchainTipBotTrasferStatusFail
-	insufficientBalanceLog.FailReason = consts.OffchainTipBotFailReasonNotEnoughBalance
-	recipientBal, err := e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(req.Recipient, offchainToken.ID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Recipient}).Error(err, "[entity.OffchainTipBotWithdraw] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
-		return nil, err
-	}
-	if err == gorm.ErrRecordNotFound {
-		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&insufficientBalanceLog)
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
-
-	// TODO: need another approach
-	if req.All {
-		req.Amount = util.RoundFloat(recipientBal.Amount/(1+offchainToken.ServiceFee), 5)
-		// avoid round up lead to insufficent bal
-		if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
-			req.Amount = req.Amount - 0.00001
-		}
-		al.FeeAmount = offchainToken.ServiceFee * req.Amount
-	}
-
-	if float64(recipientBal.Amount) < req.Amount+offchainToken.ServiceFee*req.Amount {
-		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&insufficientBalanceLog)
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
-
-	// temp get from old tokens because not have flow from coingecko to offchain_tip_bot_tokens yet
-	token, err := e.repo.Token.GetBySymbol(req.Token, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.OffchainTipBotWithdraw] repo.Token.GetBySymbol() failed")
-		return nil, err
-	}
-
-	// execute tx
-	var (
-		withdrawalAmount  *big.Float
-		transactionFee    float64
-		transferredAmount float64
-		txHash            string
-		txErr             error
-	)
-	if strings.ToLower(req.Token) == "sol" {
-		txHash, transferredAmount, txErr = e.solana.Transfer(e.cfg.SolanaCentralizedWalletPrivateKey, req.RecipientAddress, req.Amount, false)
-	} else {
-		var signedTx *types.Transaction
-		signedTx, transferredAmount, txErr = e.transferOnchain(accounts.Account{Address: common.HexToAddress(req.RecipientAddress)}, req.Amount, token, -1, false)
-		if signedTx != nil {
-			txHash = signedTx.Hash().Hex()
-			withdrawalAmount = util.WeiToEther(signedTx.Value())
-			transactionFee, _ = util.WeiToEther(new(big.Int).Sub(signedTx.Cost(), signedTx.Value())).Float64()
-		}
-	}
-	if txErr != nil {
-		failedTxLog := al
-		failedTxLog.Status = consts.OffchainTipBotTrasferStatusFail
-		failedTxLog.FailReason = fmt.Sprintf("%s [%s]", txErr.Error(), txHash)
-		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&failedTxLog)
-		e.log.Fields(logger.Fields{"txHash": txHash, "amount": transferredAmount, "token": req.Token}).Error(txErr, "[entity.OffchainTipBotWithdraw] transfer tx failed")
-		return nil, txErr
-	}
-
-	// update author balance
-	batch := []model.OffchainTipBotUserBalance{{UserID: req.Recipient, TokenID: offchainToken.ID, ChangedAmount: -transferredAmount - offchainToken.ServiceFee*req.Amount}}
-	err = e.UpsertBatchOfUserBalances(req.TransferType, offchainToken.TokenSymbol, batch)
-	if err != nil {
-		e.log.Fields(logger.Fields{"batch": batch}).Error(err, "[entity.OffchainTipBotWithdraw] entity.UpsertBatchOfUserBalances() failed")
-		return nil, err
-	}
-
-	// execute tx success -> create offchain_tip_bot_activity_logs + offchain_tip_bot_transfer_histories and update offchain_tip_bot_user_balances
-	successLog := al
-	successLog.Status = consts.OffchainTipBotTrasferStatusSuccess
-	successLog.Amount = transferredAmount
-	err = e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&successLog)
-	if err == nil {
-		e.repo.OffchainTipBotTransferHistories.CreateTransferHistories([]model.OffchainTipBotTransferHistory{{
-			SenderID:   &req.Recipient,
-			ReceiverID: req.Recipient,
-			GuildID:    req.GuildID,
-			LogID:      successLog.ID.String(),
-			Status:     consts.OffchainTipBotTrasferStatusSuccess,
-			Amount:     transferredAmount,
-			Token:      offchainToken.TokenSymbol,
-			Action:     req.TransferType,
-			ServiceFee: offchainToken.ServiceFee,
-			FeeAmount:  offchainToken.ServiceFee * req.Amount,
-			TxHash:     txHash,
-		}})
-	}
-
-	e.sendTipBotLogs(successLog, offchainToken.TokenSymbol, "")
-
-	return &response.OffchainTipBotWithdraw{
-		UserDiscordID:  req.Recipient,
-		ToAddress:      req.RecipientAddress,
-		Amount:         transferredAmount,
-		Symbol:         req.Token,
-		TxHash:         txHash,
-		TxUrl:          fmt.Sprintf("%s/%s", token.Chain.TxBaseURL, txHash),
-		WithdrawAmount: withdrawalAmount,
-		TransactionFee: transactionFee,
-	}, nil
-}
-
-func (e *Entity) TotalBalances() ([]response.TotalBalances, error) {
-	tokens, err := e.repo.Token.GetAll()
-	if err != nil {
-		e.log.Error(err, "[entities.migrateBalance] - failed to get supported tokens")
-		return nil, err
-	}
-	balances, err := e.balances("0x4ec16127E879464bEF6ab310084FAcEC1E4Fe465", tokens)
-	if err != nil {
-		e.log.Error(err, "[entities.migrateBalance] - failed to get balance")
-		return nil, err
-	}
-
-	totalBalances := make([]response.TotalBalances, 0)
-
-	for key, value := range balances {
-		coingeckoID := ""
-		// select coingecko id
-		for _, t := range tokens {
-			if t.Symbol == key {
-				coingeckoID = t.CoinGeckoID
-			}
-		}
-		// get coingecko price
-		var tokenPrice float64
-
-		tokenPrices, err := e.svc.CoinGecko.GetCoinPrice([]string{coingeckoID}, "usd")
-		if err != nil {
-			e.log.Fields(logger.Fields{"token": key}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
-			return nil, err
-		}
-		if len(tokenPrices) > 0 {
-			tokenPrice = tokenPrices[coingeckoID]
-		} else {
-			tokenPrice = 1.0
-		}
-
-		if value > 0 {
-			totalBalances = append(totalBalances, response.TotalBalances{
-				Symbol:      key,
-				Amount:      value,
-				AmountInUsd: value * tokenPrice,
-			})
-		}
-
-	}
-
-	return totalBalances, nil
-}
-
-func (e *Entity) TotalOffchainBalances() ([]response.TotalOffchainBalances, error) {
-	// cal exist offchain balance
-	totalOffchainBalances, err := e.repo.OffchainTipBotUserBalances.SumAmountByTokenId()
-	if err != nil {
-		e.log.Error(err, "[e.repo.TotalOffchainBalances] - failed to get total offchain balance")
-		return nil, err
-	}
-
-	mappingTotalOffchainBalances := make([]response.TotalOffchainBalances, 0)
-
-	for _, totalOffchainBalance := range totalOffchainBalances {
-		// get coingecko price
-		var tokenPrice float64
-		tokenPrices, err := e.svc.CoinGecko.GetCoinPrice([]string{totalOffchainBalance.CoinGeckoId}, "usd")
-		if err != nil {
-			e.log.Fields(logger.Fields{"token": totalOffchainBalance.CoinGeckoId}).Error(err, "[svc.CoinGecko.GetCoinPrice] - failed to get coin price from Coingecko")
-			return nil, err
-		}
-		if len(tokenPrices) > 0 {
-			tokenPrice = tokenPrices[totalOffchainBalance.CoinGeckoId]
-		} else {
-			tokenPrice = 1.0
-		}
-
-		mappingTotalOffchainBalances = append(mappingTotalOffchainBalances, response.TotalOffchainBalances{
-			Symbol:      totalOffchainBalance.TokenSymbol,
-			Amount:      totalOffchainBalance.Total,
-			AmountInUsd: totalOffchainBalance.Total * tokenPrice,
-		})
-	}
-	return mappingTotalOffchainBalances, nil
-}
-
-func (e *Entity) TotalFee() ([]response.TotalFeeWithdraw, error) {
-	return e.repo.OffchainTipBotTransferHistories.TotalFeeFromWithdraw()
-}
-
-func (e *Entity) UpdateTokenFee(req request.OffchainUpdateTokenFee) error {
-	return e.repo.OffchainTipBotTokens.UpdateTokenFee(req.Symbol, req.ServiceFee)
-}
-
 func (e *Entity) GetAllTipBotTokens() ([]model.OffchainTipBotToken, error) {
 	return e.repo.OffchainTipBotTokens.GetAll()
-}
-
-func (e *Entity) GetContracts(req request.TipBotGetContractsRequest) ([]model.OffchainTipBotContract, error) {
-	contracts, err := e.repo.OffchainTipBotContract.List(offchain_tip_bot_contract.ListQuery{ChainID: req.ChainID, IsEVM: req.IsEVM, SupportDeposit: req.SupportDeposit})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetContracts] repo.OffchainTipBotContract.List() failed")
-		return nil, err
-	}
-	for i, c := range contracts {
-		chain, err := e.repo.OffchainTipBotChain.GetByID(c.ChainID)
-		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": c.ChainID}).Error(err, "[entity.GetContracts] repo.OffchainTipBotChain.GetByID() failed")
-			return nil, err
-		}
-		contracts[i].Chain = &chain
-	}
-	return contracts, nil
 }
 
 func (e *Entity) HandleIncomingDeposit(req request.TipBotDepositRequest) error {

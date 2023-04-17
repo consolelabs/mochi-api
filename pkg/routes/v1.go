@@ -61,23 +61,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	tipBotGroup := v1.Group("/tip")
 	{
-		// watch total balances
-		tipBotGroup.GET("/total-balances", h.Tip.TotalBalances)
-		tipBotGroup.GET("/total-offchain-balances", h.Tip.TotalOffchainBalances)
-		tipBotGroup.GET("/total-fees", h.Tip.TotalFee)
-		offchainTipBotTokensGroup := tipBotGroup.Group("/tokens")
-		{
-			offchainTipBotTokensGroup.GET("", h.Tip.GetAllTipBotTokens)
-			offchainTipBotTokensGroup.PUT("", h.Tip.UpdateTokenFee)
-		}
 		// offchain tip bot
-		tipBotGroup.GET("/chains", h.Tip.OffchainTipBotListAllChains)
-		tipBotGroup.POST("/assign-contract", h.Tip.OffchainTipBotCreateAssignContract)
-		tipBotGroup.GET("/balances", h.Tip.GetUserBalances)
-		tipBotGroup.POST("/withdraw", h.Tip.OffchainTipBotWithdraw)
-		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
 		tipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
-		tipBotGroup.GET("/history", h.Tip.GetTransactionHistoryByQuery)
+		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
 
 		onchainGroup := tipBotGroup.Group("/onchain")
 		{
