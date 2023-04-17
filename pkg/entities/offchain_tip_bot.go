@@ -124,7 +124,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 	insufficientBalanceLog.Amount = amountEachRecipient
 	mpReqs.Amount = make([]string, len(req.Recipients))
 	for i := range mpReqs.Amount {
-		mpReqs.Amount[i] = strconv.FormatFloat(amountEachRecipient, 'f', 2, 64)
+		mpReqs.Amount[i] = strconv.FormatFloat(amountEachRecipient, 'f', 4, 64)
 	}
 
 	err = e.svc.MochiPay.Transfer(mpReqs)
