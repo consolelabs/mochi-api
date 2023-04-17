@@ -2,13 +2,8 @@ package entities
 
 import (
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 )
-
-func (e *Entity) OffchainTipBotCreateAssignContract(ac *model.OffchainTipBotAssignContract) (userAssignedContract *model.OffchainTipBotAssignContract, err error) {
-	return e.repo.OffchainTipBotContract.CreateAssignContract(ac)
-}
 
 func (e *Entity) OffchainTipBotDeleteExpiredAssignContract() (err error) {
 	return e.repo.OffchainTipBotContract.DeleteExpiredAssignContract()
