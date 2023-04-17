@@ -91,7 +91,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) ([]response.
 	insufficientBalanceLog := log
 	insufficientBalanceLog.Status = consts.OffchainTipBotTrasferStatusFail
 	insufficientBalanceLog.FailReason = consts.OffchainTipBotFailReasonNotEnoughBalance
-	senderBalance, err := e.svc.MochiPay.GetBalance(senderProfile.ID, req.Token)
+	senderBalance, err := e.svc.MochiPay.GetBalance(senderProfile.ID, req.Token, "0")
 	if err != nil {
 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&insufficientBalanceLog)
 		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferToken] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")

@@ -70,9 +70,9 @@ func (m *MochiPay) SwapMochiPay(req request.KyberSwapRequest) error {
 	return nil
 }
 
-func (m *MochiPay) GetBalance(profileId, token string) (*GetBalanceDataResponse, error) {
+func (m *MochiPay) GetBalance(profileId, token, chainId string) (*GetBalanceDataResponse, error) {
 	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/mochi-wallet/%s/balances/%s", m.config.MochiPayServerHost, profileId, token)
+	url := fmt.Sprintf("%s/api/v1/mochi-wallet/%s/balances/%s/%s", m.config.MochiPayServerHost, profileId, token, chainId)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

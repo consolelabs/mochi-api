@@ -127,8 +127,10 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
+	chainId := util.ConvertChainNameToChainId(req.ChainName)
+
 	// get balance
-	balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol)
+	balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
 		return nil, err
@@ -165,7 +167,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		Platform:      consts.PlatformDiscord,
 		FromToken:     fromToken.Symbol,
 		ToToken:       toToken.Symbol,
-		ChainId:       util.ConvertChainNameToChainId(req.ChainName),
+		ChainId:       chainId,
 		AmountIn:      buildRouteResp.Data.AmountIn,
 		AmountOut:     buildRouteResp.Data.AmountOut,
 		ChainName:     req.ChainName,
