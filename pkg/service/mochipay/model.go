@@ -37,24 +37,33 @@ type GetBalanceDataResponse struct {
 }
 
 type GetBalanceResponse struct {
-	Id        string          `json:"id"`
-	ProfileId string          `json:"profile_id"`
-	TokenId   string          `json:"token_id"`
-	Amount    string          `json:"amount"`
-	CreatedAt string          `json:"created_at"`
-	UpdatedAt string          `json:"updated_at"`
-	Token     GetBalanceToken `json:"token"`
+	Id        string `json:"id"`
+	ProfileId string `json:"profile_id"`
+	TokenId   string `json:"token_id"`
+	Amount    string `json:"amount"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	Token     Token  `json:"token"`
 }
 
-type GetBalanceToken struct {
-	Id      string      `json:"id"`
-	Name    string      `json:"name"`
-	Symbol  string      `json:"symbol"`
-	Decimal int64       `json:"decimal"`
-	ChainId string      `json:"chain_id"`
-	Native  bool        `json:"native"`
-	Address string      `json:"address"`
-	Icon    string      `json:"icon"`
-	Price   float64     `json:"price"`
-	Chain   interface{} `json:"chain"`
+type Token struct {
+	Id          string      `json:"id"`
+	Name        string      `json:"name"`
+	Symbol      string      `json:"symbol"`
+	Decimal     int64       `json:"decimal"`
+	ChainId     string      `json:"chain_id"`
+	Native      bool        `json:"native"`
+	Address     string      `json:"address"`
+	Icon        string      `json:"icon"`
+	Price       float64     `json:"price"`
+	Chain       interface{} `json:"chain"`
+	CoinGeckoId string      `json:"coin_gecko_id"`
+}
+
+type ListTokensResponse struct {
+	Data []Token `json:"data"`
+}
+
+type GetTokenResponse struct {
+	Data *Token `json:"data"`
 }

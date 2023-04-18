@@ -162,7 +162,7 @@ func (m *MochiPay) CreateToken(req CreateTokenRequest) error {
 	jsonBody := bytes.NewBuffer(payload)
 
 	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/tokens", m.config.MochiPayServerHost)
+	url := fmt.Sprintf("%s/api/v1/%s/tokens", m.config.MochiPayServerHost, req.ChainId)
 	request, err := http.NewRequest("POST", url, jsonBody)
 	if err != nil {
 		return err
@@ -191,4 +191,63 @@ func (m *MochiPay) CreateToken(req CreateTokenRequest) error {
 	}
 
 	return nil
+}
+
+func (m *MochiPay) ListTokens(symbol string) ([]Token, error) {
+	url := fmt.Sprintf("%s/api/v1/tokens", m.config.MochiPayServerHost)
+	if symbol != "" {
+		url += "?symbol=" + symbol
+	}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &ListTokensResponse{}
+	err = json.Unmarshal(responseBody, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Data, nil
+}
+
+func (m *MochiPay) GetToken(symbol, chainId string) (*Token, error) {
+	url := fmt.Sprintf("%s/api/v1/%s/tokens/%s", m.config.MochiPayServerHost, chainId, symbol)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &GetTokenResponse{}
+	err = json.Unmarshal(responseBody, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Data, nil
 }

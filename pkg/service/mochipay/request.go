@@ -10,3 +10,8 @@ type CreateTokenRequest struct {
 	Icon        string `json:"icon"`
 	CoinGeckoId string `json:"coin_gecko_id"`
 }
+
+type GetTokenRequest struct {
+	Symbol  string `json:"symbol"`
+	ChainId string `json:"chain_id"`
+}
