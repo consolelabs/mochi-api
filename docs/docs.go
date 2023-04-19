@@ -4483,6 +4483,26 @@ const docTemplate = `{
                     "Defi"
                 ],
                 "summary": "Get coins market data of top coins",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "page_size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -6265,111 +6285,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/tip/assign-contract": {
-            "post": {
-                "description": "Create an assign contract when user want to deposit a specific token to contract",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "OffChain Tip Bot - Create an assign contract",
-                "parameters": [
-                    {
-                        "description": "Create assign contract request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateAssignContract"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAssignedContract"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/balances": {
-            "get": {
-                "description": "Get offchain user bals",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Get offchain user bals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserBalancesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/history": {
-            "get": {
-                "description": "Get transactions history by query",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Get transactions history by query",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TransactionsResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/tip/onchain/claim": {
             "post": {
                 "description": "Onchain Tip Bot - Submit transfer transaction",
@@ -6603,40 +6518,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.OffchainTipBotTransferTokenResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/withdraw": {
-            "post": {
-                "description": "OffChain Tip Bot - Withdraw",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "OffChain Tip Bot - Withdraw",
-                "parameters": [
-                    {
-                        "description": "Withdraw token request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.OffchainWithdrawRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.OffchainTipBotWithdrawResponse"
                         }
                     }
                 }
@@ -7702,9 +7583,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "big.Float": {
-            "type": "object"
-        },
         "discordgo.User": {
             "type": "object",
             "properties": {
@@ -9027,111 +8905,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OffchainTipBotAssignContract": {
-            "type": "object",
-            "properties": {
-                "chain_id": {
-                    "type": "string"
-                },
-                "contract": {
-                    "$ref": "#/definitions/model.OffchainTipBotContract"
-                },
-                "contract_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "expired_time": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.OffchainTipBotChain": {
-            "type": "object",
-            "properties": {
-                "chain_id": {
-                    "type": "integer"
-                },
-                "chain_name": {
-                    "type": "string"
-                },
-                "contracts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotContract"
-                    }
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "explorer_url": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_evm": {
-                    "type": "boolean"
-                },
-                "rpc_url": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                },
-                "support_deposit": {
-                    "type": "boolean"
-                },
-                "tokens": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotToken"
-                    }
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.OffchainTipBotContract": {
-            "type": "object",
-            "properties": {
-                "chain": {
-                    "$ref": "#/definitions/model.OffchainTipBotChain"
-                },
-                "chain_id": {
-                    "type": "string"
-                },
-                "contract_address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "sweeped_time": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.OffchainTipBotToken": {
             "type": "object",
             "properties": {
@@ -9785,10 +9558,19 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "coin_gecko_id": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
+                "decimal": {
+                    "type": "integer"
+                },
                 "guild_id": {
+                    "type": "string"
+                },
+                "icon": {
                     "type": "string"
                 },
                 "id": {
@@ -10125,17 +9907,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "webhook_url": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CreateAssignContract": {
-            "type": "object",
-            "properties": {
-                "token_symbol": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -10774,44 +10545,6 @@ const docTemplate = `{
                     }
                 },
                 "sender": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "transfer_type": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.OffchainWithdrawRequest": {
-            "type": "object",
-            "properties": {
-                "all": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "duration": {
-                    "type": "integer"
-                },
-                "each": {
-                    "type": "boolean"
-                },
-                "full_command": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "recipient": {
-                    "type": "string"
-                },
-                "recipient_address": {
                     "type": "string"
                 },
                 "token": {
@@ -11563,7 +11296,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "price_change_percentage_1h_in_currency": {
+                    "type": "number"
+                },
                 "price_change_percentage_24h": {
+                    "type": "number"
+                },
+                "price_change_percentage_24h_in_currency": {
                     "type": "number"
                 },
                 "price_change_percentage_7d_in_currency": {
@@ -12114,14 +11853,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.GetAllUserSubmittedAdResponse"
                     }
-                }
-            }
-        },
-        "response.GetAssignedContract": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.OffchainTipBotAssignContract"
                 }
             }
         },
@@ -14204,43 +13935,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.OffchainTipBotTransferToken"
                     }
-                }
-            }
-        },
-        "response.OffchainTipBotWithdraw": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "to_address": {
-                    "type": "string"
-                },
-                "transaction_fee": {
-                    "type": "number"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "tx_url": {
-                    "type": "string"
-                },
-                "user_discord_id": {
-                    "type": "string"
-                },
-                "withdraw_amount": {
-                    "$ref": "#/definitions/big.Float"
-                }
-            }
-        },
-        "response.OffchainTipBotWithdrawResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.OffchainTipBotWithdraw"
                 }
             }
         },
