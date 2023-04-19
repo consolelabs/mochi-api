@@ -78,8 +78,8 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 			})
 		}
 		newRoute = append(newRoute, newRouteElement)
-
 	}
+
 	return &response.SwapRouteResponse{
 		Code:    swapRoutes.Code,
 		Message: swapRoutes.Message,
@@ -147,16 +147,9 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	}
 
 	// build route kyber
-	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
-		Recipient:         e.cfg.CentralizedWalletAddress,
-		Sender:            e.cfg.CentralizedWalletAddress,
-		Source:            consts.ClientID,
-		SkipSimulateTx:    false,
-		SlippageTolerance: 50,
-		RouteSummary:      req.RouteSummary,
-	})
+	buildRouteResp, err := e.buildSwapRoute(req)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[swap.buildSwapRoute] - cannot build swap routes")
 		return nil, err
 	}
 
@@ -175,10 +168,41 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		RouterAddress: buildRouteResp.Data.RouterAddress,
 		EncodedData:   buildRouteResp.Data.Data,
 		Gas:           buildRouteResp.Data.Gas,
+		AccountPK:     buildRouteResp.Data.AccountPK,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")
 		return nil, err
 	}
 	return nil, nil
+}
+
+func (e *Entity) buildSwapRoute(req request.SwapRequest) (buildRouteResp *response.BuildRoute, err error) {
+	solanaCentralizedAddress := e.solana.GetCentralizedWalletAddress()
+
+	if req.ChainName == "solana" {
+		buildRouteResp, err = e.svc.Kyber.BuildSwapRoutesSol(req.ChainName, solanaCentralizedAddress, &request.KyberBuildSwapRouteRequest{
+			RouteSummary: req.RouteSummary,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutesSol] - cannot build swap routes solana")
+			return nil, err
+		}
+
+	} else {
+		buildRouteResp, err = e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
+			Recipient:         e.cfg.CentralizedWalletAddress,
+			Sender:            e.cfg.CentralizedWalletAddress,
+			Source:            consts.ClientID,
+			SkipSimulateTx:    false,
+			SlippageTolerance: 50,
+			RouteSummary:      req.RouteSummary,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes evm")
+			return nil, err
+		}
+	}
+
+	return buildRouteResp, nil
 }

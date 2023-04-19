@@ -1,6 +1,8 @@
 package response
 
-import "github.com/defipod/mochi/pkg/model"
+import (
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type KyberSwapRoutes struct {
 	Code    int64            `json:"code"`
@@ -31,6 +33,8 @@ type BuildRouteData struct {
 	OutputChange  OutputChange `json:"outputChange"`
 	Data          string       `json:"data"`
 	RouterAddress string       `json:"routerAddress"`
+	// this is used for solana
+	AccountPK string `json:"account"`
 }
 
 type OutputChange struct {
@@ -47,4 +51,5 @@ type KyberSwapRoutesSol struct {
 	AmountOutUsd    float64                `json:"amountOutUsd"`
 	ReceivedUsd     float64                `json:"receivedUsd"`
 	Swaps           [][]model.RouteElement `json:"swaps"`
+	EncodedMessage  string                 `json:"encodedMessage"`
 }

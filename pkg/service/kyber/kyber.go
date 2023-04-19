@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/portto/solana-go-sdk/types"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
@@ -85,6 +87,7 @@ func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount
 	if err != nil {
 		return nil, err
 	}
+
 	return &response.KyberSwapRoutes{
 		Code:    0,
 		Message: "successfully",
@@ -139,4 +142,46 @@ func (k *kyberService) BuildSwapRoutes(chainName string, req *request.KyberBuild
 		return nil, err
 	}
 	return res, nil
+}
+
+func (k *kyberService) BuildSwapRoutesSol(chainName, centralizedAddress string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+	// create key pair for programState
+	wallet := types.NewAccount()
+	programState := wallet.PublicKey.ToBase58()
+
+	var client = &http.Client{}
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/route/encode?tokenIn=%s&tokenOut=%s&amountIn=%s&to=%s&programState=%s&clientData=%s", k.kyberBaseUrl, chainName, req.RouteSummary.TokenIn, req.RouteSummary.TokenOut, req.RouteSummary.AmountIn, centralizedAddress, programState, consts.ClientID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+
+	resp, err := client.Do(request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	res := &response.KyberSwapRoutesSol{}
+	err = json.Unmarshal(resBody, res)
+	if err != nil {
+		return nil, err
+	}
+	return &response.BuildRoute{
+		Code:    0,
+		Message: "successfully",
+		Data: response.BuildRouteData{
+			AmountIn:      res.InputAmount,
+			AmountOut:     res.OutputAmount,
+			Data:          res.EncodedMessage,
+			RouterAddress: programState,
+			AccountPK:     string(wallet.PrivateKey),
+		},
+	}, nil
 }

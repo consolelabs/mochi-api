@@ -179,4 +179,5 @@ require (
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
+	github.com/k0kubun/pp v3.0.1+incompatible
 )
