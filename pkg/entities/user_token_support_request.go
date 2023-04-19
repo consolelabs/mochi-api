@@ -124,11 +124,6 @@ func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequ
 		Icon:        &req.Icon,
 		Status:      1,
 	}
-	err = e.repo.OffchainTipBotTokens.Create(offchainToken)
-	if err != nil {
-		e.log.Fields(logger.Fields{"token": offchainToken}).Error(err, "[entity.ApproveTokenSupportRequest] repo.OffchainTipBotTokens.Create() failed")
-		return nil, err
-	}
 
 	// create token in mochi-pay
 	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{

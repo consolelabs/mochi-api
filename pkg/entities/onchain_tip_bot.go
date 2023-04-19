@@ -148,8 +148,6 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 		Each:         req.Each,
 		All:          req.All,
 		TransferType: req.TransferType,
-		FullCommand:  req.FullCommand,
-		Duration:     req.Duration,
 		Image:        req.Image,
 		Message:      req.Message,
 	}

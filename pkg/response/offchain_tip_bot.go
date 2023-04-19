@@ -20,11 +20,11 @@ type GetUserBalancesResponse struct {
 }
 
 type OffchainTipBotTransferToken struct {
-	SenderID    string  `json:"sender_id"`
-	RecipientID string  `json:"recipient_id"`
-	Amount      float64 `json:"amount"`
-	Symbol      string  `json:"symbol"`
-	AmountInUSD float64 `json:"amount_in_usd"`
+	// SenderID    string  `json:"sender_id"`
+	// Recipients  string  `json:"recipient_id"`
+	AmountEach  float64 `json:"amount_each"`
+	TotalAmount float64 `json:"total_amount"`
+	// Token       *mochipay.Token `json:"token"`
 }
 
 type OffchainTipBotTransferTokenResponse struct {

@@ -13,10 +13,9 @@ type OffchainTransferRequest struct {
 	Each         bool     `json:"each"`
 	All          bool     `json:"all"`
 	TransferType string   `json:"transfer_type"`
-	FullCommand  string   `json:"full_command"`
-	Duration     int      `json:"duration"`
 	Message      string   `json:"message"`
 	Image        string   `json:"image"`
+	ChainID      string   `json:"chain_id"`
 }
 type OffchainWithdrawRequest struct {
 	Recipient        string  `json:"recipient"`
