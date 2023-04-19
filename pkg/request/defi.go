@@ -73,3 +73,9 @@ type GetUserListPriceAlertRequest struct {
 	Page          int    `json:"page" form:"page"`
 	Size          int    `json:"size" form:"size"`
 }
+
+type GetMarketDataRequest struct {
+	Page     string `json:"page" form:"page,default=1"`
+	PageSize string `json:"page_size" form:"page_size,default=100"`
+	Order    string `json:"order" form:"order"`
+}

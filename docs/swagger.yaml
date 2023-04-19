@@ -1,7 +1,5 @@
 basePath: /api/v1
 definitions:
-  big.Float:
-    type: object
   discordgo.User:
     properties:
       accent_color:
@@ -887,75 +885,6 @@ definitions:
       value:
         type: string
     type: object
-  model.OffchainTipBotAssignContract:
-    properties:
-      chain_id:
-        type: string
-      contract:
-        $ref: '#/definitions/model.OffchainTipBotContract'
-      contract_id:
-        type: string
-      created_at:
-        type: string
-      expired_time:
-        type: string
-      id:
-        type: string
-      token_id:
-        type: string
-      user_id:
-        type: string
-    type: object
-  model.OffchainTipBotChain:
-    properties:
-      chain_id:
-        type: integer
-      chain_name:
-        type: string
-      contracts:
-        items:
-          $ref: '#/definitions/model.OffchainTipBotContract'
-        type: array
-      created_at:
-        type: string
-      currency:
-        type: string
-      explorer_url:
-        type: string
-      id:
-        type: string
-      is_evm:
-        type: boolean
-      rpc_url:
-        type: string
-      status:
-        type: integer
-      support_deposit:
-        type: boolean
-      tokens:
-        items:
-          $ref: '#/definitions/model.OffchainTipBotToken'
-        type: array
-      updated_at:
-        type: string
-    type: object
-  model.OffchainTipBotContract:
-    properties:
-      chain:
-        $ref: '#/definitions/model.OffchainTipBotChain'
-      chain_id:
-        type: string
-      contract_address:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: string
-      sweeped_time:
-        type: string
-      updated_at:
-        type: string
-    type: object
   model.OffchainTipBotToken:
     properties:
       coin_gecko_id:
@@ -1385,9 +1314,15 @@ definitions:
     properties:
       channel_id:
         type: string
+      coin_gecko_id:
+        type: string
       created_at:
         type: string
+      decimal:
+        type: integer
       guild_id:
+        type: string
+      icon:
         type: string
       id:
         type: integer
@@ -1609,13 +1544,6 @@ definitions:
       log_channel:
         type: string
       webhook_url:
-        type: string
-    type: object
-  request.CreateAssignContract:
-    properties:
-      token_symbol:
-        type: string
-      user_id:
         type: string
     type: object
   request.CreateCommonwealthDiscussionSubscription:
@@ -2037,31 +1965,6 @@ definitions:
           type: string
         type: array
       sender:
-        type: string
-      token:
-        type: string
-      transfer_type:
-        type: string
-    type: object
-  request.OffchainWithdrawRequest:
-    properties:
-      all:
-        type: boolean
-      amount:
-        type: number
-      channel_id:
-        type: string
-      duration:
-        type: integer
-      each:
-        type: boolean
-      full_command:
-        type: string
-      guild_id:
-        type: string
-      recipient:
-        type: string
-      recipient_address:
         type: string
       token:
         type: string
@@ -2551,9 +2454,13 @@ definitions:
         type: integer
       name:
         type: string
+      price_change_percentage_1h_in_currency:
+        type: number
       price_change_percentage_7d_in_currency:
         type: number
       price_change_percentage_24h:
+        type: number
+      price_change_percentage_24h_in_currency:
         type: number
       sparkline_in_7d:
         properties:
@@ -2908,11 +2815,6 @@ definitions:
         items:
           $ref: '#/definitions/response.GetAllUserSubmittedAdResponse'
         type: array
-    type: object
-  response.GetAssignedContract:
-    properties:
-      data:
-        $ref: '#/definitions/model.OffchainTipBotAssignContract'
     type: object
   response.GetCoinResponse:
     properties:
@@ -4260,30 +4162,6 @@ definitions:
         items:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
-    type: object
-  response.OffchainTipBotWithdraw:
-    properties:
-      amount:
-        type: number
-      symbol:
-        type: string
-      to_address:
-        type: string
-      transaction_fee:
-        type: number
-      tx_hash:
-        type: string
-      tx_url:
-        type: string
-      user_discord_id:
-        type: string
-      withdraw_amount:
-        $ref: '#/definitions/big.Float'
-    type: object
-  response.OffchainTipBotWithdrawResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.OffchainTipBotWithdraw'
     type: object
   response.PaginationResponse:
     properties:
@@ -7593,6 +7471,21 @@ paths:
       consumes:
       - application/json
       description: Get coins market data of top coins
+      parameters:
+      - description: page
+        in: query
+        name: page
+        type: string
+      - description: page_size
+        in: query
+        name: page_size
+        type: string
+      - description: 'accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc,
+          price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc,
+          price_change_percentage_24h_desc'
+        in: query
+        name: order
+        type: string
       produces:
       - application/json
       responses:
@@ -8772,76 +8665,6 @@ paths:
       summary: Get swap route for token pairs
       tags:
       - Swap
-  /tip/assign-contract:
-    post:
-      consumes:
-      - application/json
-      description: Create an assign contract when user want to deposit a specific
-        token to contract
-      parameters:
-      - description: Create assign contract request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateAssignContract'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetAssignedContract'
-      summary: OffChain Tip Bot - Create an assign contract
-      tags:
-      - Tip
-  /tip/balances:
-    get:
-      consumes:
-      - application/json
-      description: Get offchain user bals
-      parameters:
-      - description: user ID
-        in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserBalancesResponse'
-      summary: Get offchain user bals
-      tags:
-      - Tip
-  /tip/history:
-    get:
-      consumes:
-      - application/json
-      description: Get transactions history by query
-      parameters:
-      - description: guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      - description: token
-        in: query
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TransactionsResponse'
-      summary: Get transactions history by query
-      tags:
-      - Tip
   /tip/onchain/{user_id}/balances:
     get:
       consumes:
@@ -8995,28 +8818,6 @@ paths:
           schema:
             $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
       summary: OffChain Tip Bot - Transfer token
-      tags:
-      - Tip
-  /tip/withdraw:
-    post:
-      consumes:
-      - application/json
-      description: OffChain Tip Bot - Withdraw
-      parameters:
-      - description: Withdraw token request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.OffchainWithdrawRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.OffchainTipBotWithdrawResponse'
-      summary: OffChain Tip Bot - Withdraw
       tags:
       - Tip
   /users:

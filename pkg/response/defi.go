@@ -173,10 +173,12 @@ type CoinMarketItemData struct {
 	SparkLineIn7d struct {
 		Price []float64 `json:"price"`
 	} `json:"sparkline_in_7d"`
-	PriceChangePercentage24h          float64 `json:"price_change_percentage_24h"`
-	PriceChangePercentage7dInCurrency float64 `json:"price_change_percentage_7d_in_currency"`
-	IsPair                            bool    `json:"is_pair"`
-	IsDefault                         bool    `json:"is_default"`
+	PriceChangePercentage24h           float64 `json:"price_change_percentage_24h"`
+	PriceChangePercentage7dInCurrency  float64 `json:"price_change_percentage_7d_in_currency"`
+	PriceChangePercentage1hInCurrency  float64 `json:"price_change_percentage_1h_in_currency"`
+	PriceChangePercentage24hInCurrency float64 `json:"price_change_percentage_24h_in_currency"`
+	IsPair                             bool    `json:"is_pair"`
+	IsDefault                          bool    `json:"is_default"`
 }
 
 type GetWatchlistResponse struct {

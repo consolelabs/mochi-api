@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -321,7 +322,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 	// CoinGeckoAPI | get ticker market data
 	data := make([]response.CoinMarketItemData, 0)
 	if len(tickers) > 0 {
-		cgData, err, code := e.svc.CoinGecko.GetCoinsMarketData(tickers, true)
+		cgData, err, code := e.svc.CoinGecko.GetCoinsMarketData(tickers, true, "1", "100")
 		if err != nil {
 			e.log.Fields(logger.Fields{"ids": tickers, "code": code}).Error(err, "[entity.GetUserWatchlist] svc.CoinGecko.GetCoinsMarketData() failed")
 			return nil, err
@@ -806,12 +807,48 @@ func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse,
 	return &data[0], nil
 }
 
-func (e *Entity) GetCoinsMarketData() ([]response.CoinMarketItemData, error) {
+func (e *Entity) GetCoinsMarketData(req request.GetMarketDataRequest) ([]response.CoinMarketItemData, error) {
 	// top 100 coins market data
-	data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false)
+	data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false, req.Page, req.PageSize)
 	if err != nil {
 		e.log.Fields(logger.Fields{"status": status}).Error(err, "[entity.GetCoinsMarketData] e.svc.CoinGecko.GetCoinsMarketData() failed")
 		return nil, err
 	}
+
+	// currently support order by price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc
+	if req.Order != "" {
+		data = orderCoinsMarketData(data, req.Order)
+	}
+
 	return data, nil
+}
+
+func orderCoinsMarketData(data []response.CoinMarketItemData, order string) []response.CoinMarketItemData {
+	switch order {
+	case "price_change_percentage_7d_asc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage7dInCurrency < data[j].PriceChangePercentage7dInCurrency
+		})
+	case "price_change_percentage_7d_desc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage7dInCurrency > data[j].PriceChangePercentage7dInCurrency
+		})
+	case "price_change_percentage_1h_asc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage1hInCurrency < data[j].PriceChangePercentage1hInCurrency
+		})
+	case "price_change_percentage_1h_desc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage1hInCurrency > data[j].PriceChangePercentage1hInCurrency
+		})
+	case "price_change_percentage_24h_asc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage24hInCurrency < data[j].PriceChangePercentage24hInCurrency
+		})
+	case "price_change_percentage_24h_desc":
+		sort.Slice(data, func(i, j int) bool {
+			return data[i].PriceChangePercentage24hInCurrency > data[j].PriceChangePercentage24hInCurrency
+		})
+	}
+	return data
 }

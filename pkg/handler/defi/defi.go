@@ -599,10 +599,20 @@ func (h *Handler) GetChainGasTracker(c *gin.Context) {
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
+// @Param       page   query  string false  "page"
+// @Param       page_size   query  string false  "page_size"
+// @Param       order   query  string false  "accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc"
 // @Success     200 {object} response.GetCoinsMarketDataResponse
 // @Router      /defi/market-data [get]
 func (h *Handler) GetCoinsMarketData(c *gin.Context) {
-	data, err := h.entities.GetCoinsMarketData()
+	req := request.GetMarketDataRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "c.ShouldBindQuery() - cannot parse query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf(err.Error()), nil))
+		return
+	}
+
+	data, err := h.entities.GetCoinsMarketData(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetCoinsMarketData] entity.GetCoinsMarketData() failed")
 		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
