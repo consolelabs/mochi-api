@@ -57,25 +57,6 @@ func (h *Handler) TransferToken(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(transferHistories, nil, nil, nil))
 }
 
-// GetAllTipBotTokens     godoc
-// @Summary     Get all offchain tip bot tokens
-// @Description Get all offchain tip bot tokens
-// @Tags        Tip
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.AllTipBotTokensResponse
-// @Router      /tip/tokens [get]
-func (h *Handler) GetAllTipBotTokens(c *gin.Context) {
-	tokens, err := h.entities.GetAllTipBotTokens()
-	if err != nil {
-		h.log.Error(err, "[handler.GetAllTipBotTokens] - failed to get all tip bot tokens")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
-}
-
 // SubmitOnchainTransfer   godoc
 // @Summary     Onchain Tip Bot - Submit transfer transaction
 // @Description Onchain Tip Bot - Submit transfer transaction

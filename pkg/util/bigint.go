@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"math"
 	"math/big"
 )
 
@@ -14,8 +15,9 @@ func StringToBigInt(s string) (*big.Int, error) {
 	return n, nil
 }
 
-func BigIntToFloat(bigInt *big.Int, decimal float64) (intVal float64, fracVal big.Accuracy) {
-	floatVal := new(big.Float).SetInt(bigInt)
-	intVal, fracVal = new(big.Float).Quo(floatVal, big.NewFloat(decimal)).Float64()
+func BigIntToFloat(v *big.Int, decimal int) (f float64) {
+	x := new(big.Float).SetInt(v)
+	y := new(big.Float).SetFloat64(math.Pow10(decimal))
+	f, _ = new(big.Float).Quo(x, y).Float64()
 	return
 }
