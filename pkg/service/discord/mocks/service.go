@@ -421,17 +421,17 @@ func (mr *MockServiceMockRecorder) SendMessage(channelID, msgSend interface{}) *
 }
 
 // SendTipActivityLogs mocks base method.
-func (m *MockService) SendTipActivityLogs(channelID, userID, title, description, image string) error {
+func (m *MockService) SendTipActivityLogs(channelID, userID, author, description, image string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, title, description, image)
+	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, author, description, image)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendTipActivityLogs indicates an expected call of SendTipActivityLogs.
-func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, title, description, image interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, author, description, image interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, title, description, image)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, author, description, image)
 }
 
 // SendUpdateRolesLog mocks base method.
