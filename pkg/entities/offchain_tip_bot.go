@@ -20,6 +20,7 @@ import (
 
 // TODO@anhnh: define error codes
 func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.OffchainTipBotTransferToken, error) {
+	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := request.MochiPayTransferRequest{}
 	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender)
@@ -90,7 +91,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
-		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', 4, 64)
+		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
 	}
 
 	err = e.svc.MochiPay.Transfer(transferReq)
@@ -99,7 +100,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}
 
 	// notify tip to channel
-	e.sendLogNotify(req, amountEach)
+	e.sendLogNotify(req, int(token.Decimal))
 
 	// tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{req.Token}, "usd")
 	// if err != nil {
@@ -118,7 +119,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}, nil
 }
 
-func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRecipient float64) {
+func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int) {
 	if req.TransferType != consts.OffchainTipBotTransferTypeTip && req.TransferType != consts.OffchainTipBotTransferTypeAirdrop {
 		return
 	}
@@ -141,15 +142,15 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 			switch req.TransferType {
 			case "tip":
 				name = "Someone sent out money"
-				descriptionFormat = "<@%s> has just sent %s **%g %s** at <#%s>"
+				descriptionFormat = "<@%s> has just sent %s **%s %s** at <#%s>"
 				if req.Each {
-					descriptionFormat = "<@%s> has just sent %s **%g %s** each at <#%s>"
+					descriptionFormat = "<@%s> has just sent %s **%s %s** each at <#%s>"
 				}
 			case "airdrop":
 				name = "Someone dropped money"
-				descriptionFormat = "<@%s> has just airdropped %s **%g %s** at <#%s>"
+				descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
 			}
-			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, req.AmountString, strings.ToUpper(req.Token), req.ChannelID)
 			if req.Message != "" {
 				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
 			}
