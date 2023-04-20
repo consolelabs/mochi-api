@@ -1452,3 +1452,66 @@ func (e *Entity) ListTokenRoleConfigGuildIds() ([]string, error) {
 	}
 	return guildIds, nil
 }
+
+func (e *Entity) GetGuildConfigTipRange(guildID string) (*response.GuildConfigTipRangeResponse, error) {
+	data, err := e.repo.GuildConfigTipRange.GetByGuildID(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetGuildConfigTipRange] - repo.GuildConfigTipRange.GetByGuildID() failed")
+		return nil, err
+	}
+
+	return &response.GuildConfigTipRangeResponse{
+		GuildID:   data.GuildID,
+		Min:       data.Min,
+		Max:       data.Max,
+		UpdatedAt: data.UpdatedAt,
+	}, err
+}
+
+func (e *Entity) UpsertGuildConfigTipRange(req request.UpsertGuildConfigTipRangeRequest) (*response.GuildConfigTipRangeResponse, error) {
+	config, err := e.repo.GuildConfigTipRange.GetByGuildID(req.GuildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.UpdateGuildConfigTipRange] - repo.GuildConfigTipRange.GetByGuildID() failed")
+		return nil, err
+	}
+	//create if not exists
+	if err == gorm.ErrRecordNotFound {
+		config = &model.GuildConfigTipRange{
+			GuildID: req.GuildID,
+		}
+	}
+	if req.Max != nil {
+		config.Max = req.Max
+	}
+	if req.Min != nil {
+		config.Min = req.Min
+	}
+
+	if (config.Max != nil && config.Min != nil) && *config.Min > *config.Max {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.UpdateGuildConfigTipRange] - invalid amount")
+		return nil, errors.ErrBadRequest
+	}
+	config.UpdatedAt = time.Now()
+
+	data, err := e.repo.GuildConfigTipRange.UpsertOne(config)
+	if err != nil {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.UpdateGuildConfigTipRange] - repo.GuildConfigTipRange.UpsertOne() failed")
+		return nil, err
+	}
+
+	return &response.GuildConfigTipRangeResponse{
+		GuildID:   data.GuildID,
+		Min:       data.Min,
+		Max:       data.Max,
+		UpdatedAt: data.UpdatedAt,
+	}, nil
+}
+
+func (e *Entity) RemoveGuildConfigTipRange(guildID string) error {
+	if err := e.repo.GuildConfigTipRange.Remove(guildID); err != nil {
+		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[Entity][RemoveGuildConfigTipRange] GuildConfigTipRange.Remove() failed")
+		return err
+	}
+
+	return nil
+}

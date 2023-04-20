@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
@@ -91,6 +92,31 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
 		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', 4, 64)
+	}
+
+	//validate tip range
+	tipRangeConfig, err := e.repo.GuildConfigTipRange.GetByGuildID(req.GuildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[entity.TransferToken] repo.GuildConfigTipRange.GetByGuildID() failed")
+		return nil, errors.New("get price coingecko failed")
+	}
+
+	if tipRangeConfig != nil {
+		//TODO: move this get tokenPrice block code out if using for others validate
+		tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{token.CoinGeckoId}, "usd")
+		if err != nil {
+			e.log.Fields(logger.Fields{"token": token.CoinGeckoId}).Error(err, "[entity.TransferToken] svc.CoinGecko.GetCoinPrice() failed")
+		}
+
+		//only validate if have tokenPrice && tipRangeConfig
+		if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId] > 0 {
+			if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId]*amountEach < *tipRangeConfig.Min {
+				return nil, errors.New("tip amount < min tip range")
+			}
+			if tipRangeConfig.Max != nil && tokenPrice[token.CoinGeckoId]*amountEach > *tipRangeConfig.Max {
+				return nil, errors.New("tip amount > max tip range")
+			}
+		}
 	}
 
 	err = e.svc.MochiPay.Transfer(transferReq)

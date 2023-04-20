@@ -356,6 +356,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			monikerGroup.DELETE("", h.ConfigDefi.DeleteMonikerConfig)
 			monikerGroup.GET("/default", h.ConfigDefi.GetDefaultMoniker)
 		}
+		tipRangeGroup := configDefiGroup.Group("/tip-range")
+		{
+			tipRangeGroup.POST("", h.ConfigDefi.UpsertGuildConfigTipRange)
+			tipRangeGroup.GET("/:guild_id", h.ConfigDefi.GetGuildConfigTipRangeByGuildId)
+			tipRangeGroup.DELETE("/:guild_id", h.ConfigDefi.RemoveGuildConfigTipRange)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
