@@ -31,7 +31,7 @@ type Discord struct {
 
 const (
 	mochiLogColor       = 0xFCD3C1
-  mochiLogColor2      = 0xFFDC50
+	mochiTipLogColor    = 0xFFDC50
 	mochiUpvoteMsgColor = 0x47ffc2
 	mochiErrorColor     = 0xD94F50
 	mochiSuccessColor   = 0x5cd97d
@@ -293,21 +293,21 @@ func (d *Discord) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _typ
 		return err
 	}
 
-  description := fmt.Sprintf("<@%s> has been assigned a new role\n<:_:1090477901725577287>**Type**: %s\n<:_:1098461538609799278>**Role**: <@&%s>", userID, _type, roleID)
+	description := fmt.Sprintf("<@%s> has been assigned a new role\n<:_:1090477901725577287>**Type**: %s\n<:_:1098461538609799278>**Role**: <@&%s>", userID, _type, roleID)
 	msgEmbed := discordgo.MessageEmbed{
-    Author:     &discordgo.MessageEmbedAuthor{
+		Author: &discordgo.MessageEmbedAuthor{
 			IconURL: "https://cdn.discordapp.com/emojis/1090477916132999270.png?size=240&quality=lossless",
-      Name: "New role granted"
-    },
+			Name:    "New role granted",
+		},
 		Description: description,
 		Color:       mochiLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: member.AvatarURL(""),
 		},
-    Footer: &discordgo.MessageEmbedFooter{
-      Text: "Try /tip or /airdrop to send out money"
-    }
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: "Try /tip or /airdrop to send out money",
+		},
 	}
 
 	_, err = d.session.ChannelMessageSendEmbed(logChannelID, &msgEmbed)
@@ -484,7 +484,7 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 	return nil
 }
 
-func (d *Discord) SendTipActivityLogs(channelID, userID, author, description, image string) error {
+func (d *Discord) SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error {
 	if channelID == "" {
 		return nil
 	}
@@ -496,7 +496,7 @@ func (d *Discord) SendTipActivityLogs(channelID, userID, author, description, im
 	msgEmbed := discordgo.MessageEmbed{
 		Author:      author,
 		Description: description,
-		Color:       mochiLogColor,
+		Color:       mochiTipLogColor,
 		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: dcUser.AvatarURL(""),
@@ -738,7 +738,7 @@ func (d *Discord) SendDMUserPriceAlert(userID, symbol string, alertType model.Al
 	case model.PriceReaches:
 		description = fmt.Sprintf("%v reaches %v", symbol, price)
 	case model.PriceDropsTo:
-    description = fmt.Sprintf("<:_:1058304303888093194> %v is under %v", symbol, price)
+		description = fmt.Sprintf("<:_:1058304303888093194> %v is under %v", symbol, price)
 	case model.PriceRisesAbove:
 		description = fmt.Sprintf("<:_:1058304334779125780> %v rises above %v", symbol, price)
 	case model.ChangeIsOver:
@@ -753,19 +753,19 @@ func (d *Discord) SendDMUserPriceAlert(userID, symbol string, alertType model.Al
 	}
 	msg := &discordgo.MessageSend{
 		Embed: &discordgo.MessageEmbed{
-      Author:      &discordgo.MessageEmbedAuthor{
-        Name: fmt.Sprintf("%s price has changed", symbol)
-			  IconURL: "https://cdn.discordapp.com/emojis/1095990150342918205.gif?size=240&quality=lossless",
-      },
-      Thumbnail:   &discordgo.MessageEmbedThumbnail{
-        URL: "https://cdn.discordapp.com/attachments/984660970624409630/1098472181631045742/Mochi_Pose_14.png"
-      },
+			Author: &discordgo.MessageEmbedAuthor{
+				Name:    fmt.Sprintf("%s price has changed", symbol),
+				IconURL: "https://cdn.discordapp.com/emojis/1095990150342918205.gif?size=240&quality=lossless",
+			},
+			Thumbnail: &discordgo.MessageEmbedThumbnail{
+				URL: "https://cdn.discordapp.com/attachments/984660970624409630/1098472181631045742/Mochi_Pose_14.png",
+			},
 			Description: description,
-			Color:       mochiLogColor2,
+			Color:       mochiTipLogColor,
 			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-      Footer:      &discordgo.MessageEmbedFooter{
-        Text: "Try /alert to setup new alert"
-      }
+			Footer: &discordgo.MessageEmbedFooter{
+				Text: "Try /alert to setup new alert",
+			},
 		},
 	}
 	d.session.ChannelMessageSendComplex(privChan.ID, msg)

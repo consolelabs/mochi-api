@@ -109,7 +109,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 }
 
 func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRecipient float64) {
-	if req.TransferType != consts.OffchainTipBotTransferTypeTip || req.TransferType != "airdrop" {
+	if req.TransferType != consts.OffchainTipBotTransferTypeTip && req.TransferType != consts.OffchainTipBotTransferTypeAirdrop {
 		return
 	}
 	// Do not return error here, just log it
@@ -126,27 +126,27 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 				recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
 			}
 			recipientsStr := strings.Join(recipients, ", ")
-      descriptionFormat := ""
-      name := ""
-      switch req.TransferType {
-      case "tip":
-        name = "Someone sent out money"
-        descriptionFormat = "<@%s> has just sent %s **%g %s** at <#%s>"
-        if req.Each {
-          descriptionFormat = "<@%s> has just sent %s **%g %s** each at <#%s>"
-        }
-      case "airdrop":
-        name = "Someone dropped money"
-        descriptionFormat = "<@%s> has just airdropped %s **%g %s** at <#%s>"
-      }
+			descriptionFormat := ""
+			name := ""
+			switch req.TransferType {
+			case "tip":
+				name = "Someone sent out money"
+				descriptionFormat = "<@%s> has just sent %s **%g %s** at <#%s>"
+				if req.Each {
+					descriptionFormat = "<@%s> has just sent %s **%g %s** each at <#%s>"
+				}
+			case "airdrop":
+				name = "Someone dropped money"
+				descriptionFormat = "<@%s> has just airdropped %s **%g %s** at <#%s>"
+			}
 			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
 			if req.Message != "" {
 				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
 			}
-      author := &discordgo.MessageEmbedAuthor{
-        Name: name,
-        IconURL: "https://cdn.discordapp.com/emojis/1093923019988148354.gif?size=240&quality=lossless"
-      }
+			author := &discordgo.MessageEmbedAuthor{
+				Name:    name,
+				IconURL: "https://cdn.discordapp.com/emojis/1093923019988148354.gif?size=240&quality=lossless",
+			}
 
 			err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, author, description, req.Image)
 			if err != nil {

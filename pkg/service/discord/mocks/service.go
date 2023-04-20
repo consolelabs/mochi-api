@@ -421,7 +421,7 @@ func (mr *MockServiceMockRecorder) SendMessage(channelID, msgSend interface{}) *
 }
 
 // SendTipActivityLogs mocks base method.
-func (m *MockService) SendTipActivityLogs(channelID, userID, author, description, image string) error {
+func (m *MockService) SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, author, description, image)
 	ret0, _ := ret[0].(error)
