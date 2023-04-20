@@ -129,7 +129,7 @@ func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequ
 	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
 		Id:          offchainToken.ID.String(),
 		Name:        offchainToken.TokenName,
-		Symbol:      offchainToken.TokenSymbol,
+		Symbol:      strings.ToUpper(offchainToken.TokenSymbol),
 		Decimal:     int64(req.Decimal),
 		ChainId:     fmt.Sprint(req.TokenChainID),
 		Address:     req.TokenAddress,
