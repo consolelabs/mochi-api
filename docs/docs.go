@@ -4802,6 +4802,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/trending": {
+            "get": {
+                "description": "Get trending search of coins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get trending search of coins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTrendingSearch"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/watchlist": {
             "get": {
                 "description": "Get user's watchlist",
@@ -6417,29 +6440,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetOnchainTransfersResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/tokens": {
-            "get": {
-                "description": "Get all offchain tip bot tokens",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Get all offchain tip bot tokens",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.AllTipBotTokensResponse"
                         }
                     }
                 }
@@ -10514,17 +10514,14 @@ const docTemplate = `{
                 "amount": {
                     "type": "number"
                 },
+                "chain_id": {
+                    "type": "string"
+                },
                 "channel_id": {
                     "type": "string"
                 },
-                "duration": {
-                    "type": "integer"
-                },
                 "each": {
                     "type": "boolean"
-                },
-                "full_command": {
-                    "type": "string"
                 },
                 "guild_id": {
                     "type": "string"
@@ -11172,17 +11169,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.AllTipBotTokensResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotToken"
-                    }
-                }
-            }
-        },
         "response.ChainGasTrackerResponseData": {
             "type": "object",
             "properties": {
@@ -11244,6 +11230,44 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.QuestUserReward"
                     }
+                }
+            }
+        },
+        "response.Coin": {
+            "type": "object",
+            "properties": {
+                "coin_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "large": {
+                    "type": "string"
+                },
+                "market_cap_rank": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_btc": {
+                    "type": "number"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "slug": {
+                    "type": "string"
+                },
+                "small": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "thumb": {
+                    "type": "string"
                 }
             }
         },
@@ -12523,6 +12547,28 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.TradeOffer"
+                }
+            }
+        },
+        "response.GetTrendingSearch": {
+            "type": "object",
+            "properties": {
+                "coins": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetTrendingSearchCoin"
+                    }
+                },
+                "exchanges": {
+                    "description": "this field coingecko return empty"
+                }
+            }
+        },
+        "response.GetTrendingSearchCoin": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "$ref": "#/definitions/response.Coin"
                 }
             }
         },
@@ -13910,20 +13956,12 @@ const docTemplate = `{
         "response.OffchainTipBotTransferToken": {
             "type": "object",
             "properties": {
-                "amount": {
+                "amount_each": {
+                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
                     "type": "number"
                 },
-                "amount_in_usd": {
+                "total_amount": {
                     "type": "number"
-                },
-                "recipient_id": {
-                    "type": "string"
-                },
-                "sender_id": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
                 }
             }
         },

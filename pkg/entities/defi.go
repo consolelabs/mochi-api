@@ -852,3 +852,13 @@ func orderCoinsMarketData(data []response.CoinMarketItemData, order string) []re
 	}
 	return data
 }
+
+func (e *Entity) GetTrendingSearch() (*response.GetTrendingSearch, error) {
+	data, err := e.svc.CoinGecko.GetTrendingSearch()
+	if err != nil {
+		e.log.Error(err, "[entity.GetTrendingSearch] repo.TrendingSearch.Get() failed")
+		return nil, err
+	}
+
+	return data, nil
+}

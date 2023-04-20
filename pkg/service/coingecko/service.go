@@ -14,4 +14,5 @@ type Service interface {
 	GetSupportedCoins() (res []response.CoingeckoSupportedTokenResponse, err error, statusCode int)
 	GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error)
 	GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error)
+	GetTrendingSearch() (*response.GetTrendingSearch, error)
 }

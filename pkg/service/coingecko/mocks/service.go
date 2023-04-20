@@ -159,3 +159,18 @@ func (mr *MockServiceMockRecorder) GetSupportedCoins() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedCoins", reflect.TypeOf((*MockService)(nil).GetSupportedCoins))
 }
+
+// GetTrendingSearch mocks base method.
+func (m *MockService) GetTrendingSearch() (*response.GetTrendingSearch, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTrendingSearch")
+	ret0, _ := ret[0].(*response.GetTrendingSearch)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTrendingSearch indicates an expected call of GetTrendingSearch.
+func (mr *MockServiceMockRecorder) GetTrendingSearch() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrendingSearch", reflect.TypeOf((*MockService)(nil).GetTrendingSearch))
+}
