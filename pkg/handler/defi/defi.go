@@ -620,3 +620,21 @@ func (h *Handler) GetCoinsMarketData(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// GetTrendingSearch     godoc
+// @Summary     Get trending search of coins
+// @Description Get trending search of coins
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.GetTrendingSearch
+// @Router      /defi/trending [get]
+func (h *Handler) GetTrendingSearch(c *gin.Context) {
+	data, err := h.entities.GetTrendingSearch()
+	if err != nil {
+		h.log.Error(err, "[handler.GetTrendingCoins] entity.GetTrendingCoins() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

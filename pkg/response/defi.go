@@ -274,3 +274,26 @@ type CoinPlatformDetailData struct {
 	DecimalPlace    int    `json:"decimal_place"`
 	ContractAddress string `json:"contract_address"`
 }
+
+type GetTrendingSearch struct {
+	Coins     []GetTrendingSearchCoin `json:"coins"`
+	Exchanges interface{}             `json:"exchanges"` // this field coingecko return empty
+}
+
+type GetTrendingSearchCoin struct {
+	Item Coin `json:"item"`
+}
+
+type Coin struct {
+	Id            string  `json:"id"`
+	CoinId        int64   `json:"coin_id"`
+	Name          string  `json:"name"`
+	Symbol        string  `json:"symbol"`
+	MarketCapRank int64   `json:"market_cap_rank"`
+	Thumb         string  `json:"thumb"`
+	Small         string  `json:"small"`
+	Large         string  `json:"large"`
+	Slug          string  `json:"slug"`
+	PriceBtc      float64 `json:"price_btc"`
+	Score         int64   `json:"score"`
+}

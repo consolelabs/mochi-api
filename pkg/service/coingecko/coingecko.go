@@ -23,6 +23,7 @@ type CoinGecko struct {
 	getSupportedCoins  string
 	getAssetPlatforms  string
 	getCoinByContract  string
+	getTrendingSearch  string
 }
 
 func NewService(cfg *config.Config) Service {
@@ -37,6 +38,7 @@ func NewService(cfg *config.Config) Service {
 		getSupportedCoins:  "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
 		getAssetPlatforms:  "https://pro-api.coingecko.com/api/v3/asset_platforms?x_cg_pro_api_key=" + apiKey,
 		getCoinByContract:  "https://pro-api.coingecko.com/api/v3/coins/%s/contract/%s?x_cg_pro_api_key=" + apiKey,
+		getTrendingSearch:  "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
 	}
 }
 
@@ -147,6 +149,15 @@ func (c *CoinGecko) GetCoinByContract(platformId, contractAddress string) (*resp
 	status, err := util.FetchData(url, &res)
 	if err != nil || status != http.StatusOK {
 		return nil, fmt.Errorf("failed to fetch asset platforms with status %d: %v", status, err)
+	}
+	return &res, nil
+}
+
+func (c *CoinGecko) GetTrendingSearch() (*response.GetTrendingSearch, error) {
+	var res response.GetTrendingSearch
+	status, err := util.FetchData(c.getTrendingSearch, &res)
+	if err != nil || status != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}
 	return &res, nil
 }

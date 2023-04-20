@@ -1944,14 +1944,12 @@ definitions:
         type: boolean
       amount:
         type: number
+      chain_id:
+        type: string
       channel_id:
         type: string
-      duration:
-        type: integer
       each:
         type: boolean
-      full_command:
-        type: string
       guild_id:
         type: string
       image:
@@ -2374,13 +2372,6 @@ definitions:
       data:
         $ref: '#/definitions/response.TokenPriceAlertResponseData'
     type: object
-  response.AllTipBotTokensResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.OffchainTipBotToken'
-        type: array
-    type: object
   response.ChainGasTrackerResponseData:
     properties:
       data:
@@ -2421,6 +2412,31 @@ definitions:
         items:
           $ref: '#/definitions/model.QuestUserReward'
         type: array
+    type: object
+  response.Coin:
+    properties:
+      coin_id:
+        type: integer
+      id:
+        type: string
+      large:
+        type: string
+      market_cap_rank:
+        type: integer
+      name:
+        type: string
+      price_btc:
+        type: number
+      score:
+        type: integer
+      slug:
+        type: string
+      small:
+        type: string
+      symbol:
+        type: string
+      thumb:
+        type: string
     type: object
   response.CoinDescription:
     properties:
@@ -3247,6 +3263,20 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.TradeOffer'
+    type: object
+  response.GetTrendingSearch:
+    properties:
+      coins:
+        items:
+          $ref: '#/definitions/response.GetTrendingSearchCoin'
+        type: array
+      exchanges:
+        description: this field coingecko return empty
+    type: object
+  response.GetTrendingSearchCoin:
+    properties:
+      item:
+        $ref: '#/definitions/response.Coin'
     type: object
   response.GetTwitterBlackListResponse:
     properties:
@@ -4145,16 +4175,13 @@ definitions:
     type: object
   response.OffchainTipBotTransferToken:
     properties:
-      amount:
+      amount_each:
+        description: |-
+          SenderID    string  `json:"sender_id"`
+          Recipients  string  `json:"recipient_id"`
         type: number
-      amount_in_usd:
+      total_amount:
         type: number
-      recipient_id:
-        type: string
-      sender_id:
-        type: string
-      symbol:
-        type: string
     type: object
   response.OffchainTipBotTransferTokenResponse:
     properties:
@@ -7685,6 +7712,21 @@ paths:
       summary: Get supported tokens
       tags:
       - Defi
+  /defi/trending:
+    get:
+      consumes:
+      - application/json
+      description: Get trending search of coins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTrendingSearch'
+      summary: Get trending search of coins
+      tags:
+      - Defi
   /defi/watchlist:
     delete:
       consumes:
@@ -8752,21 +8794,6 @@ paths:
           schema:
             $ref: '#/definitions/response.SubmitOnchainTransferResponse'
       summary: Onchain Tip Bot - Submit transfer transaction
-      tags:
-      - Tip
-  /tip/tokens:
-    get:
-      consumes:
-      - application/json
-      description: Get all offchain tip bot tokens
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.AllTipBotTokensResponse'
-      summary: Get all offchain tip bot tokens
       tags:
       - Tip
   /tip/transactions:
