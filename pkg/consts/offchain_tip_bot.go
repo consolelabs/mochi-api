@@ -11,4 +11,5 @@ const (
 	OffchainTipBotFailReasonInvalidAmount          = "Invalid amount"
 	OffchainTipBotFailReasonMochiPayTransferFailed = "Mochi Pay transfer failed"
 	OffchainTipBotTransferTypeTip                  = "tip"
+	OffchainTipBotTransferTypeAirdrop              = "airdrop"
 )
