@@ -31,4 +31,5 @@ type IHandler interface {
 
 	GetGasTracker(c *gin.Context)
 	GetChainGasTracker(c *gin.Context)
+	GetTrendingSearch(c *gin.Context)
 }

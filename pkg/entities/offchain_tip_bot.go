@@ -62,22 +62,32 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		return nil, err
 	}
 
-	amount, err := util.StringToBigInt(senderBalance.Data[0].Amount)
+	bal, err := util.StringToBigInt(senderBalance.Data[0].Amount)
 	if err != nil {
 		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
 	}
 
-	if amount.Cmp(big.NewInt(0)) != 1 {
+	if bal.Cmp(big.NewInt(0)) != 1 {
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
-	// case transfer all
-	fVal := util.BigIntToFloat(amount, int(senderBalance.Data[0].Token.Decimal))
+	// if transfer all -> amount = sender balance
+	fBal := util.BigIntToFloat(bal, int(senderBalance.Data[0].Token.Decimal))
 	if req.All {
-		req.Amount = fVal
+		req.Amount = fBal
 	}
 
-	amountEach := req.Amount / float64(len(req.Recipients))
+	// calculate transferred amount for each recipient
+	var amountEach float64
+	if req.Each && !req.All {
+		amountEach = req.Amount
+	} else {
+		amountEach = req.Amount / float64(len(req.Recipients))
+	}
+	if fBal < amountEach {
+		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+	}
+
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
 		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', 4, 64)

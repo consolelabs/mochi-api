@@ -206,7 +206,7 @@ func TestEntity_GetUserWatchlist(t *testing.T) {
 				Offset: tt.req.Page * tt.req.Size,
 				Limit:  tt.req.Size,
 			}).Return(tt.userItems, int64(len(tt.userItems)), nil).AnyTimes()
-			mockServiceCoingecko.EXPECT().GetCoinsMarketData(tt.itemsStr, true).Return(tt.coingeckoRes, nil, 200).AnyTimes()
+			mockServiceCoingecko.EXPECT().GetCoinsMarketData(tt.itemsStr, true, "1", "100").Return(tt.coingeckoRes, nil, 200).AnyTimes()
 
 			got, err := e.GetUserWatchlist(tt.req)
 			if (err != nil) != tt.wantErr {

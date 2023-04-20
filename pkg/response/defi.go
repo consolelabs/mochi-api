@@ -173,10 +173,12 @@ type CoinMarketItemData struct {
 	SparkLineIn7d struct {
 		Price []float64 `json:"price"`
 	} `json:"sparkline_in_7d"`
-	PriceChangePercentage24h          float64 `json:"price_change_percentage_24h"`
-	PriceChangePercentage7dInCurrency float64 `json:"price_change_percentage_7d_in_currency"`
-	IsPair                            bool    `json:"is_pair"`
-	IsDefault                         bool    `json:"is_default"`
+	PriceChangePercentage24h           float64 `json:"price_change_percentage_24h"`
+	PriceChangePercentage7dInCurrency  float64 `json:"price_change_percentage_7d_in_currency"`
+	PriceChangePercentage1hInCurrency  float64 `json:"price_change_percentage_1h_in_currency"`
+	PriceChangePercentage24hInCurrency float64 `json:"price_change_percentage_24h_in_currency"`
+	IsPair                             bool    `json:"is_pair"`
+	IsDefault                          bool    `json:"is_default"`
 }
 
 type GetWatchlistResponse struct {
@@ -271,4 +273,27 @@ type GetCoinByContractResponseData struct {
 type CoinPlatformDetailData struct {
 	DecimalPlace    int    `json:"decimal_place"`
 	ContractAddress string `json:"contract_address"`
+}
+
+type GetTrendingSearch struct {
+	Coins     []GetTrendingSearchCoin `json:"coins"`
+	Exchanges interface{}             `json:"exchanges"` // this field coingecko return empty
+}
+
+type GetTrendingSearchCoin struct {
+	Item Coin `json:"item"`
+}
+
+type Coin struct {
+	Id            string  `json:"id"`
+	CoinId        int64   `json:"coin_id"`
+	Name          string  `json:"name"`
+	Symbol        string  `json:"symbol"`
+	MarketCapRank int64   `json:"market_cap_rank"`
+	Thumb         string  `json:"thumb"`
+	Small         string  `json:"small"`
+	Large         string  `json:"large"`
+	Slug          string  `json:"slug"`
+	PriceBtc      float64 `json:"price_btc"`
+	Score         int64   `json:"score"`
 }
