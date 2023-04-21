@@ -2533,6 +2533,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-defi/tip-range": {
+            "post": {
+                "description": "Upsert config tip range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Upsert config tip range",
+                "parameters": [
+                    {
+                        "description": "Upsert config tip range",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpsertGuildConfigTipRangeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildConfigTipRangeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-defi/tip-range/{guild_id}": {
+            "get": {
+                "description": "Get config tip range by guild id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Get config tip range by guild id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GuildConfigTipRangeResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove config tip range",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Remove config tip range",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/config-defi/tokens": {
             "get": {
                 "description": "Get guild tokens",
@@ -10956,6 +11052,20 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpsertGuildConfigTipRangeRequest": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                }
+            }
+        },
         "request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
@@ -12880,6 +12990,26 @@ const docTemplate = `{
                 },
                 "tip_bot_token": {
                     "$ref": "#/definitions/model.OffchainTipBotToken"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.GuildConfigTipRangeResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
                 },
                 "updated_at": {
                     "type": "string"

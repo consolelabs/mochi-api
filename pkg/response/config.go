@@ -186,3 +186,11 @@ type CreateGuildMixRole struct {
 type ListGuildMixRoles struct {
 	Data []model.GuildConfigMixRole `json:"data"`
 }
+
+type GuildConfigTipRangeResponse struct {
+	GuildID   string    `json:"guild_id"`
+	Min       *float64  `json:"min,omitempty"`
+	Max       *float64  `json:"max,omitempty"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
+}

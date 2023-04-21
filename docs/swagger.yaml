@@ -2234,6 +2234,15 @@ definitions:
       snapshot_url:
         type: string
     type: object
+  request.UpsertGuildConfigTipRangeRequest:
+    properties:
+      guild_id:
+        type: string
+      max:
+        type: number
+      min:
+        type: number
+    type: object
   request.UpsertGuildDefaultCurrencyRequest:
     properties:
       Symbol:
@@ -3477,6 +3486,19 @@ definitions:
         type: string
       tip_bot_token:
         $ref: '#/definitions/model.OffchainTipBotToken'
+      updated_at:
+        type: string
+    type: object
+  response.GuildConfigTipRangeResponse:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      max:
+        type: number
+      min:
+        type: number
       updated_at:
         type: string
     type: object
@@ -6215,6 +6237,69 @@ paths:
           schema:
             $ref: '#/definitions/response.MonikerConfigResponse'
       summary: Get default moniker
+      tags:
+      - ConfigDefi
+  /config-defi/tip-range:
+    post:
+      consumes:
+      - application/json
+      description: Upsert config tip range
+      parameters:
+      - description: Upsert config tip range
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpsertGuildConfigTipRangeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GuildConfigTipRangeResponse'
+      summary: Upsert config tip range
+      tags:
+      - ConfigDefi
+  /config-defi/tip-range/{guild_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove config tip range
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Remove config tip range
+      tags:
+      - ConfigDefi
+    get:
+      consumes:
+      - application/json
+      description: Get config tip range by guild id
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GuildConfigTipRangeResponse'
+      summary: Get config tip range by guild id
       tags:
       - ConfigDefi
   /config-defi/tokens:
