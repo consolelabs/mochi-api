@@ -93,7 +93,7 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		Status:        model.TokenSupportPending,
 		CoinGeckoID:   coin.ID,
 		TokenName:     coin.Name,
-		Symbol:        coin.Symbol,
+		Symbol:        strings.ToUpper(coin.Symbol),
 		Decimal:       decimal,
 		Icon:          coin.Image.Large,
 	}
@@ -124,12 +124,17 @@ func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequ
 		Icon:        &req.Icon,
 		Status:      1,
 	}
+	err = e.repo.OffchainTipBotTokens.Create(offchainToken)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": offchainToken}).Error(err, "[entity.ApproveTokenSupportRequest] repo.OffchainTipBotTokens.Create() failed")
+		return nil, err
+	}
 
 	// create token in mochi-pay
 	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
 		Id:          offchainToken.ID.String(),
 		Name:        offchainToken.TokenName,
-		Symbol:      strings.ToUpper(offchainToken.TokenSymbol),
+		Symbol:      offchainToken.TokenSymbol,
 		Decimal:     int64(req.Decimal),
 		ChainId:     fmt.Sprint(req.TokenChainID),
 		Address:     req.TokenAddress,
