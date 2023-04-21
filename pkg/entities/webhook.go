@@ -137,7 +137,7 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 
 func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
 	// TODO(trkhoi): temp keep hardcode of Pod Town emoji, remove when it has been added to the database
-	guildConfigGms, err := e.repo.GuildConfigGmGn.GetAllByGuildID(message.GuildID)
+	guildConfigGms, err := e.repo.GuildConfigGmGn.GetLatestByGuildID(message.GuildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}

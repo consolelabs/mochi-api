@@ -20,6 +20,10 @@ func (pg *pg) GetAllByGuildID(guildID string) ([]model.GuildConfigGmGn, error) {
 	return config, pg.db.Table("guild_config_gm_gn").Where("guild_id = ?", guildID).Find(&config).Error
 }
 
+func (pg *pg) GetLatestByGuildID(guildID string) (config []model.GuildConfigGmGn, err error) {
+	return config, pg.db.Table("guild_config_gm_gn").Where("guild_id = ?", guildID).Order("created_at desc").Limit(1).Find(&config).Error
+}
+
 func (pg *pg) GetByGuildID(guildID string) (*model.GuildConfigGmGn, error) {
 	config := &model.GuildConfigGmGn{}
 	return config, pg.db.Table("guild_config_gm_gn").Where("guild_id = ?", guildID).First(config).Error
