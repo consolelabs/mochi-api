@@ -9,6 +9,7 @@ type OffchainTransferRequest struct {
 	GuildID      string   `json:"guild_id"`
 	ChannelID    string   `json:"channel_id"`
 	Amount       float64  `json:"amount"`
+	AmountString string   `json:"amount_string"`
 	Token        string   `json:"token"`
 	Each         bool     `json:"each"`
 	All          bool     `json:"all"`
