@@ -78,6 +78,21 @@ func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
 }
 
+// GetLatestByGuildID mocks base method.
+func (m *MockStore) GetLatestByGuildID(guildID string) ([]model.GuildConfigGmGn, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLatestByGuildID", guildID)
+	ret0, _ := ret[0].([]model.GuildConfigGmGn)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLatestByGuildID indicates an expected call of GetLatestByGuildID.
+func (mr *MockStoreMockRecorder) GetLatestByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestByGuildID", reflect.TypeOf((*MockStore)(nil).GetLatestByGuildID), guildID)
+}
+
 // UpsertOne mocks base method.
 func (m *MockStore) UpsertOne(config *model.GuildConfigGmGn) error {
 	m.ctrl.T.Helper()

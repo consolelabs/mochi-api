@@ -25,4 +25,8 @@ type IHandler interface {
 	GetGuildDefaultCurrency(c *gin.Context)
 	UpsertGuildDefaultCurrency(c *gin.Context)
 	DeleteGuildDefaultCurrency(c *gin.Context)
+
+	UpsertGuildConfigTipRange(c *gin.Context)
+	GetGuildConfigTipRangeByGuildId(c *gin.Context)
+	RemoveGuildConfigTipRange(c *gin.Context)
 }

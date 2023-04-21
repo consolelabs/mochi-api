@@ -356,6 +356,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			monikerGroup.DELETE("", h.ConfigDefi.DeleteMonikerConfig)
 			monikerGroup.GET("/default", h.ConfigDefi.GetDefaultMoniker)
 		}
+		tipRangeGroup := configDefiGroup.Group("/tip-range")
+		{
+			tipRangeGroup.POST("", h.ConfigDefi.UpsertGuildConfigTipRange)
+			tipRangeGroup.GET("/:guild_id", h.ConfigDefi.GetGuildConfigTipRangeByGuildId)
+			tipRangeGroup.DELETE("/:guild_id", h.ConfigDefi.RemoveGuildConfigTipRange)
+		}
 	}
 
 	defiGroup := v1.Group("/defi")
@@ -380,6 +386,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/coins/compare", h.Defi.CompareToken)
 		defiGroup.GET("/chains", h.Defi.ListAllChain)
 		defiGroup.GET("/market-data", h.Defi.GetCoinsMarketData)
+		defiGroup.GET("/all-market-data", h.Defi.GetAllCoinsMarketData)
 		defiGroup.GET("/trending", h.Defi.GetTrendingSearch)
 
 		watchlistGroup := defiGroup.Group("/watchlist")

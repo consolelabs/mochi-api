@@ -46,6 +46,7 @@ import (
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
+	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
@@ -229,5 +230,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		TreasurerSubmission:                  treasurersubmission.NewPG(db),
 		VaultTransaction:                     vaulttransaction.NewPG(db),
 		UserTag:                              usertag.NewPG(db),
+		GuildConfigTipRange:                  guildconfigtiprange.NewPG(db),
 	}
 }

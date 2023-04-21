@@ -478,3 +478,91 @@ func (h *Handler) DeleteGuildDefaultCurrency(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// GetGuildConfigTipRangeByGuildId     godoc
+// @Summary     Get config tip range by guild id
+// @Description Get config tip range by guild id
+// @Tags        ConfigDefi
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GuildConfigTipRangeResponse
+// @Router      /config-defi/tip-range/{guild_id} [get]
+func (h *Handler) GetGuildConfigTipRangeByGuildId(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.GetGuildConfigTipRangeByGuildId] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.GetGuildConfigTipRange(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetGuildConfigTipRangeByGuildId] - failed to get tip range config")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// UpsertGuildConfigTipRange     godoc
+// @Summary     Upsert config tip range
+// @Description Upsert config tip range
+// @Tags        ConfigDefi
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UpsertGuildConfigTipRangeRequest true "Upsert config tip range"
+// @Success     200 {object} response.GuildConfigTipRangeResponse
+// @Router      /config-defi/tip-range [post]
+func (h *Handler) UpsertGuildConfigTipRange(c *gin.Context) {
+	var req request.UpsertGuildConfigTipRangeRequest
+	err := c.BindJSON(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildConfigTipRange] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
+		return
+	}
+
+	err = req.Validate()
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildConfigTipRange] - failed to validate")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	resp, err := h.entities.UpsertGuildConfigTipRange(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.UpsertGuildConfigTipRange] - failed to upsert tip range value")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](resp, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+}
+
+// RemoveGuildConfigTipRange     godoc
+// @Summary     Remove config tip range
+// @Description Remove config tip range
+// @Tags        ConfigDefi
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-defi/tip-range/{guild_id} [delete]
+func (h *Handler) RemoveGuildConfigTipRange(c *gin.Context) {
+	guildID := c.Param("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.RemoveGuildConfigTipRange] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	if err := h.entities.RemoveGuildConfigTipRange(guildID); err != nil {
+		h.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[handler.RemoveGuildConfigTipRange] - failed to remove tip range")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

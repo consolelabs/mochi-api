@@ -823,6 +823,32 @@ func (e *Entity) GetCoinsMarketData(req request.GetMarketDataRequest) ([]respons
 	return data, nil
 }
 
+func (e *Entity) GetAllCoinsMarketData(req request.GetMarketDataRequest) ([]response.CoinMarketItemData, error) {
+	var res []response.CoinMarketItemData
+	size := 250
+	page := 0
+	// coingecko not support sorting in all list token, just support sorting by page (sort in page 1 with 100 token)
+	// TODO(trkhoi): find another way to avoid spamming call api
+	for {
+		if page >= 4 {
+			break
+		}
+		data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false, fmt.Sprint(page), fmt.Sprint(size))
+		if err != nil {
+			e.log.Fields(logger.Fields{"status": status}).Error(err, "[entity.GetCoinsMarketData] e.svc.CoinGecko.GetCoinsMarketData() failed")
+			return nil, err
+		}
+		res = append(res, data...)
+		page++
+	}
+
+	// currently support order by price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc
+	if req.Order != "" {
+		res = orderCoinsMarketData(res, req.Order)
+	}
+
+	return res, nil
+}
 func orderCoinsMarketData(data []response.CoinMarketItemData, order string) []response.CoinMarketItemData {
 	switch order {
 	case "price_change_percentage_7d_asc":

@@ -1,6 +1,10 @@
 package request
 
-import "github.com/defipod/mochi/pkg/model"
+import (
+	"fmt"
+
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type UpsertGmConfigRequest struct {
 	GuildID   string `json:"guild_id"`
@@ -177,4 +181,21 @@ type CreateGuildXPRole struct {
 	GuildID string `json:"guild_id" binding:"required"`
 	RoleID  string `json:"role_id" binding:"required"`
 	XP      int    `json:"xp"`
+}
+
+type UpsertGuildConfigTipRangeRequest struct {
+	GuildID string   `json:"guild_id"`
+	Min     *float64 `json:"min"`
+	Max     *float64 `json:"max"`
+}
+
+func (r *UpsertGuildConfigTipRangeRequest) Validate() error {
+	if r.Max != nil && *r.Max <= 0 {
+		return fmt.Errorf("max value is invalid")
+	}
+	if r.Min != nil && *r.Min < 0 {
+		return fmt.Errorf("min value is invalid")
+	}
+
+	return nil
 }
