@@ -33,7 +33,7 @@ func (e *Entity) GetGmConfig(guildID string) (*model.GuildConfigGmGn, error) {
 }
 
 func (e *Entity) UpsertGmConfig(req request.UpsertGmConfigRequest) error {
-	if err := e.repo.GuildConfigGmGn.UpsertOne(&model.GuildConfigGmGn{
+	if err := e.repo.GuildConfigGmGn.CreateOne(&model.GuildConfigGmGn{
 		GuildID:   req.GuildID,
 		ChannelID: req.ChannelID,
 		Msg:       req.Msg,
