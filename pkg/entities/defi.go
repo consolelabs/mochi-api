@@ -826,11 +826,11 @@ func (e *Entity) GetCoinsMarketData(req request.GetMarketDataRequest) ([]respons
 func (e *Entity) GetAllCoinsMarketData(req request.GetMarketDataRequest) ([]response.CoinMarketItemData, error) {
 	var res []response.CoinMarketItemData
 	size := 250
-	page := 0
+	page := 1
 	// coingecko not support sorting in all list token, just support sorting by page (sort in page 1 with 100 token)
 	// TODO(trkhoi): find another way to avoid spamming call api
 	for {
-		if page >= 4 {
+		if page >= 5 {
 			break
 		}
 		data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false, fmt.Sprint(page), fmt.Sprint(size))
