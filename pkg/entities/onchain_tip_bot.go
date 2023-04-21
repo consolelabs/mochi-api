@@ -151,7 +151,7 @@ func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest)
 		Image:        req.Image,
 		Message:      req.Message,
 	}
-	e.sendLogNotify(notifyReq, amountEach)
+	e.sendLogNotify(notifyReq, 0)
 
 	// notify tip to other platform: twitter, telegram, ...
 	e.NotifyTipFromPlatforms(notifyReq, amountEach, tokenPrice[supportedToken.CoinGeckoID])

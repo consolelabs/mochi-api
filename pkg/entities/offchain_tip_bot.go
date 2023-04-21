@@ -20,6 +20,7 @@ import (
 
 // TODO@anhnh: define error codes
 func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.OffchainTipBotTransferToken, error) {
+	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := request.MochiPayTransferRequest{}
 	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender)
@@ -90,7 +91,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
-		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', 4, 64)
+		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
 	}
 
 	err = e.svc.MochiPay.Transfer(transferReq)
@@ -99,7 +100,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}
 
 	// notify tip to channel
-	e.sendLogNotify(req, amountEach)
+	e.sendLogNotify(req, int(token.Decimal))
 
 	// tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{req.Token}, "usd")
 	// if err != nil {
@@ -109,7 +110,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	// notify tip to other platform: twitter, telegram, ...
 	// e.NotifyTipFromPlatforms(req, amountEach, tokenPrice[token.CoinGeckoId])
 
-	e.sendTipBotLogs(req, token.Symbol, "")
+	// e.sendTipBotLogs(req, token.Symbol, "")
 
 	return &response.OffchainTipBotTransferToken{
 		AmountEach:  amountEach,
@@ -118,8 +119,8 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}, nil
 }
 
-func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRecipient float64) {
-	if req.TransferType != consts.OffchainTipBotTransferTypeTip {
+func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int) {
+	if req.TransferType != consts.OffchainTipBotTransferTypeTip && req.TransferType != consts.OffchainTipBotTransferTypeAirdrop {
 		return
 	}
 	// Do not return error here, just log it
@@ -136,17 +137,29 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, amountEachRe
 				recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
 			}
 			recipientsStr := strings.Join(recipients, ", ")
-			descriptionFormat := "<@%s> has sent %s **%g %s** at <#%s>"
-			if len(req.Recipients) > 1 {
-				descriptionFormat = "<@%s> has sent %s **%g %s** each at <#%s>"
+			descriptionFormat := ""
+			name := ""
+			switch req.TransferType {
+			case "tip":
+				name = "Someone sent out money"
+				descriptionFormat = "<@%s> has just sent %s **%s %s** at <#%s>"
+				if req.Each {
+					descriptionFormat = "<@%s> has just sent %s **%s %s** each at <#%s>"
+				}
+			case "airdrop":
+				name = "Someone dropped money"
+				descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
 			}
-			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachRecipient, strings.ToUpper(req.Token), req.ChannelID)
+			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, req.AmountString, strings.ToUpper(req.Token), req.ChannelID)
 			if req.Message != "" {
-				description += fmt.Sprintf(" with messge\n\n  <:conversation:1032608818930139249> **%s**", req.Message)
+				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
 			}
-			title := fmt.Sprintf("<:tip:933384794627248128> %s <:tip:933384794627248128>", strings.ToUpper(req.TransferType))
+			author := &discordgo.MessageEmbedAuthor{
+				Name:    name,
+				IconURL: "https://cdn.discordapp.com/emojis/1093923019988148354.gif?size=240&quality=lossless",
+			}
 
-			err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, title, description, req.Image)
+			err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, author, description, req.Image)
 			if err != nil {
 				e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelID}).Error(err, "[entity.sendLogNotify] discord.ChannelMessageSendEmbed() failed")
 			}
