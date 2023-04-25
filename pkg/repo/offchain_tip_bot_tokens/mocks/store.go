@@ -34,6 +34,20 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// Create mocks base method.
+func (m *MockStore) Create(arg0 *model.OffchainTipBotToken) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockStoreMockRecorder) Create(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockStore)(nil).Create), arg0)
+}
+
 // GetBySymbol mocks base method.
 func (m *MockStore) GetBySymbol(symbol string) (*model.OffchainTipBotToken, error) {
 	m.ctrl.T.Helper()

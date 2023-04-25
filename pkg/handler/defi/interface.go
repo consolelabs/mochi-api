@@ -17,7 +17,6 @@ type IHandler interface {
 	CompareToken(c *gin.Context)
 	GetBinanceCoinData(c *gin.Context)
 	GetCoinsMarketData(c *gin.Context)
-	GetAllCoinsMarketData(c *gin.Context)
 
 	ListAllChain(c *gin.Context)
 
@@ -33,4 +32,5 @@ type IHandler interface {
 	GetGasTracker(c *gin.Context)
 	GetChainGasTracker(c *gin.Context)
 	GetTrendingSearch(c *gin.Context)
+	TopGainerLoser(c *gin.Context)
 }

@@ -4303,6 +4303,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/all-market-data": {
+            "get": {
+                "description": "Get all coins market data of top coins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get all coins market data of top coins",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetCoinsMarketDataResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/chains": {
             "get": {
                 "description": "List All Chain",
@@ -4893,6 +4924,37 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetSupportedTokensResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/top-gainer-loser": {
+            "get": {
+                "description": "Get top 300 gainer and loser",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get top 300 gainer and loser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "default: 24h, accepted value: 1h, 24h, 7d, 14d, 30d, 60d, 1y",
+                        "name": "duration",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTopGainerLoser"
                         }
                     }
                 }
@@ -10610,6 +10672,9 @@ const docTemplate = `{
                 "amount": {
                     "type": "number"
                 },
+                "amount_string": {
+                    "type": "string"
+                },
                 "chain_id": {
                     "type": "string"
                 },
@@ -12638,6 +12703,70 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Token"
                     }
+                }
+            }
+        },
+        "response.GetTopGainerLoser": {
+            "type": "object",
+            "properties": {
+                "top_gainers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetTopGainerLoserCoin"
+                    }
+                },
+                "top_losers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.GetTopGainerLoserCoin"
+                    }
+                }
+            }
+        },
+        "response.GetTopGainerLoserCoin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "market_cap_rank": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "usd": {
+                    "type": "number"
+                },
+                "usd_14d_change": {
+                    "type": "number"
+                },
+                "usd_1h_change": {
+                    "type": "number"
+                },
+                "usd_1y_change": {
+                    "type": "number"
+                },
+                "usd_24h_change": {
+                    "type": "number"
+                },
+                "usd_24h_vol": {
+                    "type": "number"
+                },
+                "usd_30d_change": {
+                    "type": "number"
+                },
+                "usd_60d_change": {
+                    "type": "number"
+                },
+                "usd_7d_change": {
+                    "type": "number"
                 }
             }
         },

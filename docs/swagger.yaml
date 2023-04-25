@@ -1944,6 +1944,8 @@ definitions:
         type: boolean
       amount:
         type: number
+      amount_string:
+        type: string
       chain_id:
         type: string
       channel_id:
@@ -3260,6 +3262,48 @@ definitions:
         items:
           $ref: '#/definitions/model.Token'
         type: array
+    type: object
+  response.GetTopGainerLoser:
+    properties:
+      top_gainers:
+        items:
+          $ref: '#/definitions/response.GetTopGainerLoserCoin'
+        type: array
+      top_losers:
+        items:
+          $ref: '#/definitions/response.GetTopGainerLoserCoin'
+        type: array
+    type: object
+  response.GetTopGainerLoserCoin:
+    properties:
+      id:
+        type: string
+      image:
+        type: string
+      market_cap_rank:
+        type: integer
+      name:
+        type: string
+      symbol:
+        type: string
+      usd:
+        type: number
+      usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1h_change:
+        type: number
+      usd_1y_change:
+        type: number
+      usd_24h_change:
+        type: number
+      usd_24h_vol:
+        type: number
+      usd_30d_change:
+        type: number
+      usd_60d_change:
+        type: number
     type: object
   response.GetTrackingWalletsResponse:
     properties:
@@ -7404,6 +7448,28 @@ paths:
       summary: Metric
       tags:
       - Data
+  /defi/all-market-data:
+    get:
+      consumes:
+      - application/json
+      description: Get all coins market data of top coins
+      parameters:
+      - description: 'accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc,
+          price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc,
+          price_change_percentage_24h_desc'
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetCoinsMarketDataResponse'
+      summary: Get all coins market data of top coins
+      tags:
+      - Defi
   /defi/chains:
     get:
       consumes:
@@ -7795,6 +7861,26 @@ paths:
           schema:
             $ref: '#/definitions/response.GetSupportedTokensResponse'
       summary: Get supported tokens
+      tags:
+      - Defi
+  /defi/top-gainer-loser:
+    get:
+      consumes:
+      - application/json
+      description: Get top 300 gainer and loser
+      parameters:
+      - description: 'default: 24h, accepted value: 1h, 24h, 7d, 14d, 30d, 60d, 1y'
+        in: query
+        name: duration
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTopGainerLoser'
+      summary: Get top 300 gainer and loser
       tags:
       - Defi
   /defi/trending:
