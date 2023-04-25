@@ -621,32 +621,6 @@ func (h *Handler) GetCoinsMarketData(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
-// GetAllCoinsMarketData     godoc
-// @Summary     Get all coins market data of top coins
-// @Description Get all coins market data of top coins
-// @Tags        Defi
-// @Accept      json
-// @Produce     json
-// @Param       order   query  string false  "accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc"
-// @Success     200 {object} response.GetCoinsMarketDataResponse
-// @Router      /defi/all-market-data [get]
-func (h *Handler) GetAllCoinsMarketData(c *gin.Context) {
-	req := request.GetMarketDataRequest{}
-	if err := c.ShouldBindQuery(&req); err != nil {
-		h.log.Error(err, "c.ShouldBindQuery() - cannot parse query")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf(err.Error()), nil))
-		return
-	}
-
-	data, err := h.entities.GetAllCoinsMarketData(req)
-	if err != nil {
-		h.log.Error(err, "[handler.GetAllCoinsMarketData] entity.GetAllCoinsMarketData() failed")
-		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-}
-
 // GetTrendingSearch     godoc
 // @Summary     Get trending search of coins
 // @Description Get trending search of coins
@@ -659,6 +633,32 @@ func (h *Handler) GetTrendingSearch(c *gin.Context) {
 	data, err := h.entities.GetTrendingSearch()
 	if err != nil {
 		h.log.Error(err, "[handler.GetTrendingCoins] entity.GetTrendingCoins() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// TopGainerLoser     godoc
+// @Summary     Get top 300 gainer and loser
+// @Description Get top 300 gainer and loser
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       duration   query  string false  "default: 24h, accepted value: 1h, 24h, 7d, 14d, 30d, 60d, 1y"
+// @Success     200 {object} response.GetTopGainerLoser
+// @Router      /defi/top-gainer-loser [get]
+func (h *Handler) TopGainerLoser(c *gin.Context) {
+	req := request.TopGainerLoserRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "c.ShouldBindQuery() - cannot parse query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf(err.Error()), nil))
+		return
+	}
+
+	data, err := h.entities.GetTopLoserGainer(req)
+	if err != nil {
+		h.log.Error(err, "[handler.TopGainerLoser] entity.GetTopLoserGainer() failed")
 		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

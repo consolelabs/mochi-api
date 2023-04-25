@@ -160,6 +160,21 @@ func (mr *MockServiceMockRecorder) GetSupportedCoins() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedCoins", reflect.TypeOf((*MockService)(nil).GetSupportedCoins))
 }
 
+// GetTopLoserGainer mocks base method.
+func (m *MockService) GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTopLoserGainer", req)
+	ret0, _ := ret[0].(*response.GetTopGainerLoser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTopLoserGainer indicates an expected call of GetTopLoserGainer.
+func (mr *MockServiceMockRecorder) GetTopLoserGainer(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTopLoserGainer", reflect.TypeOf((*MockService)(nil).GetTopLoserGainer), req)
+}
+
 // GetTrendingSearch mocks base method.
 func (m *MockService) GetTrendingSearch() (*response.GetTrendingSearch, error) {
 	m.ctrl.T.Helper()
