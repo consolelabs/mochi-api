@@ -297,3 +297,25 @@ type Coin struct {
 	PriceBtc      float64 `json:"price_btc"`
 	Score         int64   `json:"score"`
 }
+
+type GetTopGainerLoser struct {
+	TopGainers []GetTopGainerLoserCoin `json:"top_gainers"`
+	TopLosers  []GetTopGainerLoserCoin `json:"top_losers"`
+}
+
+type GetTopGainerLoserCoin struct {
+	Id            string  `json:"id"`
+	Name          string  `json:"name"`
+	Symbol        string  `json:"symbol"`
+	Image         string  `json:"image"`
+	MarketCapRank int64   `json:"market_cap_rank"`
+	Usd           float64 `json:"usd"`
+	Usd24hVol     float64 `json:"usd_24h_vol"`
+	Usd24hChange  float64 `json:"usd_24h_change"`
+	Usd7dChange   float64 `json:"usd_7d_change"`
+	Usd1hChange   float64 `json:"usd_1h_change"`
+	Usd14dChange  float64 `json:"usd_14d_change"`
+	Usdh30dChange float64 `json:"usd_30d_change"`
+	Usd60dChange  float64 `json:"usd_60d_change"`
+	Usd1yChange   float64 `json:"usd_1y_change"`
+}

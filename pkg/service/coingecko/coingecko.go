@@ -24,6 +24,7 @@ type CoinGecko struct {
 	getAssetPlatforms  string
 	getCoinByContract  string
 	getTrendingSearch  string
+	getTopGainerLoser  string
 }
 
 func NewService(cfg *config.Config) Service {
@@ -39,6 +40,7 @@ func NewService(cfg *config.Config) Service {
 		getAssetPlatforms:  "https://pro-api.coingecko.com/api/v3/asset_platforms?x_cg_pro_api_key=" + apiKey,
 		getCoinByContract:  "https://pro-api.coingecko.com/api/v3/coins/%s/contract/%s?x_cg_pro_api_key=" + apiKey,
 		getTrendingSearch:  "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
+		getTopGainerLoser:  "https://pro-api.coingecko.com/api/v3/coins/top_gainers_losers?vs_currency=usd&duration=%s&top_coins=300&x_cg_pro_api_key=" + apiKey,
 	}
 }
 
@@ -156,6 +158,16 @@ func (c *CoinGecko) GetCoinByContract(platformId, contractAddress string) (*resp
 func (c *CoinGecko) GetTrendingSearch() (*response.GetTrendingSearch, error) {
 	var res response.GetTrendingSearch
 	status, err := util.FetchData(c.getTrendingSearch, &res)
+	if err != nil || status != http.StatusOK {
+		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
+	}
+	return &res, nil
+}
+
+func (c *CoinGecko) GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error) {
+	var res response.GetTopGainerLoser
+	url := fmt.Sprintf(c.getTopGainerLoser, req.Duration)
+	status, err := util.FetchData(url, &res)
 	if err != nil || status != http.StatusOK {
 		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}

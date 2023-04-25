@@ -79,3 +79,7 @@ type GetMarketDataRequest struct {
 	PageSize string `json:"page_size" form:"page_size,default=100"`
 	Order    string `json:"order" form:"order"`
 }
+
+type TopGainerLoserRequest struct {
+	Duration string `json:"duration" form:"duration,default=24h"`
+}

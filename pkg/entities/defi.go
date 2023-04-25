@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -815,74 +814,23 @@ func (e *Entity) GetCoinsMarketData(req request.GetMarketDataRequest) ([]respons
 		return nil, err
 	}
 
-	// currently support order by price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc
-	if req.Order != "" {
-		data = orderCoinsMarketData(data, req.Order)
-	}
-
 	return data, nil
-}
-
-func (e *Entity) GetAllCoinsMarketData(req request.GetMarketDataRequest) ([]response.CoinMarketItemData, error) {
-	var res []response.CoinMarketItemData
-	size := 250
-	page := 1
-	// coingecko not support sorting in all list token, just support sorting by page (sort in page 1 with 100 token)
-	// TODO(trkhoi): find another way to avoid spamming call api
-	for {
-		if page >= 5 {
-			break
-		}
-		data, err, status := e.svc.CoinGecko.GetCoinsMarketData([]string{}, false, fmt.Sprint(page), fmt.Sprint(size))
-		if err != nil {
-			e.log.Fields(logger.Fields{"status": status}).Error(err, "[entity.GetCoinsMarketData] e.svc.CoinGecko.GetCoinsMarketData() failed")
-			return nil, err
-		}
-		res = append(res, data...)
-		page++
-	}
-
-	// currently support order by price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc
-	if req.Order != "" {
-		res = orderCoinsMarketData(res, req.Order)
-	}
-
-	return res, nil
-}
-func orderCoinsMarketData(data []response.CoinMarketItemData, order string) []response.CoinMarketItemData {
-	switch order {
-	case "price_change_percentage_7d_asc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage7dInCurrency < data[j].PriceChangePercentage7dInCurrency
-		})
-	case "price_change_percentage_7d_desc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage7dInCurrency > data[j].PriceChangePercentage7dInCurrency
-		})
-	case "price_change_percentage_1h_asc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage1hInCurrency < data[j].PriceChangePercentage1hInCurrency
-		})
-	case "price_change_percentage_1h_desc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage1hInCurrency > data[j].PriceChangePercentage1hInCurrency
-		})
-	case "price_change_percentage_24h_asc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage24hInCurrency < data[j].PriceChangePercentage24hInCurrency
-		})
-	case "price_change_percentage_24h_desc":
-		sort.Slice(data, func(i, j int) bool {
-			return data[i].PriceChangePercentage24hInCurrency > data[j].PriceChangePercentage24hInCurrency
-		})
-	}
-	return data
 }
 
 func (e *Entity) GetTrendingSearch() (*response.GetTrendingSearch, error) {
 	data, err := e.svc.CoinGecko.GetTrendingSearch()
 	if err != nil {
 		e.log.Error(err, "[entity.GetTrendingSearch] repo.TrendingSearch.Get() failed")
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (e *Entity) GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error) {
+	data, err := e.svc.CoinGecko.GetTopLoserGainer(req)
+	if err != nil {
+		e.log.Error(err, "[entity.GetTopLoserGainer] e.svc.GetTopLoserGainer() failed")
 		return nil, err
 	}
 

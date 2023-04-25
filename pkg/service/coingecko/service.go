@@ -15,4 +15,5 @@ type Service interface {
 	GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error)
 	GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error)
 	GetTrendingSearch() (*response.GetTrendingSearch, error)
+	GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error)
 }
