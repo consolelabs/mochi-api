@@ -133,13 +133,13 @@ func (d *Discord) NotifyGmStreak(channelID string, userDiscordID string, streakC
 	approveIcon := ""
 	if streakCount <= 100 {
 		for i := 0; i < streakCount; i++ {
-			approveIcon += "<:approve:933341948402618378>"
+			approveIcon += "<:approve:1077631110047080478>"
 		}
 	} else {
 		for i := 0; i < 100; i++ {
-			approveIcon += "<:approve:933341948402618378>"
+			approveIcon += "<:approve:1077631110047080478>"
 		}
-		approveIcon += "(+" + strconv.Itoa(int(streakCount-100)) + "<:approve:933341948402618378>)"
+		approveIcon += "(+" + strconv.Itoa(int(streakCount-100)) + "<:approve:1077631110047080478>)"
 	}
 
 	msgEmbed := discordgo.MessageEmbed{
