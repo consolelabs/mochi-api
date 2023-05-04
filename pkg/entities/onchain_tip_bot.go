@@ -20,144 +20,144 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest) ([]response.SubmitOnchainTransfer, error) {
-	// validate transfer
-	message := fmt.Sprintf("[Transfer onchain to %s] %s", req.Recipients, req.Message)
-	amountEach := req.Amount / float64(len(req.Recipients))
-	supportedToken, err := e.repo.OffchainTipBotTokens.GetBySymbol(strings.ToUpper(req.Token))
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&model.OffchainTipBotActivityLog{
-				UserID:          &req.Sender,
-				GuildID:         &req.GuildID,
-				ChannelID:       &req.ChannelID,
-				Action:          &req.TransferType,
-				Receiver:        req.Recipients,
-				NumberReceivers: 1,
-				Duration:        &req.Duration,
-				Amount:          amountEach,
-				Status:          consts.OffchainTipBotTrasferStatusFail,
-				FullCommand:     &req.FullCommand,
-				FailReason:      consts.OffchainTipBotFailReasonTokenNotSupported,
-				Image:           req.Image,
-				Message:         message,
-			})
-			return nil, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
-		}
-		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.SubmitOnchainTransfer] repo.OffchainTipBotTokens.GetBySymbol() failed")
-		return nil, err
-	}
+// func (e *Entity) SubmitOnchainTransfer(req request.SubmitOnchainTransferRequest) ([]response.SubmitOnchainTransfer, error) {
+// 	// validate transfer
+// 	message := fmt.Sprintf("[Transfer onchain to %s] %s", req.Recipients, req.Message)
+// 	amountEach := req.Amount / float64(len(req.Recipients))
+// 	supportedToken, err := e.repo.OffchainTipBotTokens.GetBySymbol(strings.ToUpper(req.Token))
+// 	if err != nil {
+// 		if err == gorm.ErrRecordNotFound {
+// 			e.repo.OffchainTipBotActivityLogs.CreateActivityLog(&model.OffchainTipBotActivityLog{
+// 				UserID:          &req.Sender,
+// 				GuildID:         &req.GuildID,
+// 				ChannelID:       &req.ChannelID,
+// 				Action:          &req.TransferType,
+// 				Receiver:        req.Recipients,
+// 				NumberReceivers: 1,
+// 				Duration:        &req.Duration,
+// 				Amount:          amountEach,
+// 				Status:          consts.OffchainTipBotTrasferStatusFail,
+// 				FullCommand:     &req.FullCommand,
+// 				FailReason:      consts.OffchainTipBotFailReasonTokenNotSupported,
+// 				Image:           req.Image,
+// 				Message:         message,
+// 			})
+// 			return nil, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
+// 		}
+// 		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.SubmitOnchainTransfer] repo.OffchainTipBotTokens.GetBySymbol() failed")
+// 		return nil, err
+// 	}
 
-	insufficientBal := &model.OffchainTipBotActivityLog{
-		UserID:          &req.Sender,
-		GuildID:         &req.GuildID,
-		ChannelID:       &req.ChannelID,
-		Action:          &req.TransferType,
-		Receiver:        req.Recipients,
-		NumberReceivers: len(req.Recipients),
-		TokenID:         supportedToken.ID.String(),
-		Duration:        &req.Duration,
-		Amount:          amountEach,
-		Status:          consts.OffchainTipBotTrasferStatusFail,
-		FullCommand:     &req.FullCommand,
-		FailReason:      consts.OffchainTipBotFailReasonNotEnoughBalance,
-		Image:           req.Image,
-		Message:         message,
-	}
-	userBal, err := e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(req.Sender, supportedToken.ID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			e.repo.OffchainTipBotActivityLogs.CreateActivityLog(insufficientBal)
-			return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-		}
-		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.SubmitOnchainTransfer] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
-		return nil, err
-	}
-	if req.All {
-		req.Amount = userBal.Amount
-		amountEach = req.Amount / float64(len(req.Recipients))
-	}
-	if userBal.Amount == 0 || float64(userBal.Amount) < req.Amount {
-		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(insufficientBal)
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
+// 	insufficientBal := &model.OffchainTipBotActivityLog{
+// 		UserID:          &req.Sender,
+// 		GuildID:         &req.GuildID,
+// 		ChannelID:       &req.ChannelID,
+// 		Action:          &req.TransferType,
+// 		Receiver:        req.Recipients,
+// 		NumberReceivers: len(req.Recipients),
+// 		TokenID:         supportedToken.ID.String(),
+// 		Duration:        &req.Duration,
+// 		Amount:          amountEach,
+// 		Status:          consts.OffchainTipBotTrasferStatusFail,
+// 		FullCommand:     &req.FullCommand,
+// 		FailReason:      consts.OffchainTipBotFailReasonNotEnoughBalance,
+// 		Image:           req.Image,
+// 		Message:         message,
+// 	}
+// 	userBal, err := e.repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID(req.Sender, supportedToken.ID)
+// 	if err != nil {
+// 		if err == gorm.ErrRecordNotFound {
+// 			e.repo.OffchainTipBotActivityLogs.CreateActivityLog(insufficientBal)
+// 			return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+// 		}
+// 		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.SubmitOnchainTransfer] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
+// 		return nil, err
+// 	}
+// 	if req.All {
+// 		req.Amount = userBal.Amount
+// 		amountEach = req.Amount / float64(len(req.Recipients))
+// 	}
+// 	if userBal.Amount == 0 || float64(userBal.Amount) < req.Amount {
+// 		e.repo.OffchainTipBotActivityLogs.CreateActivityLog(insufficientBal)
+// 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+// 	}
 
-	// update sender balanace
-	batch := []model.OffchainTipBotUserBalance{{UserID: req.Sender, TokenID: supportedToken.ID, ChangedAmount: -req.Amount}}
-	err = e.UpsertBatchOfUserBalances("tip-onchain", supportedToken.TokenSymbol, batch)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"totalAmount": req.Amount, "amountEach": amountEach, "sender": req.Sender,
-			"recipients": len(req.Recipients), "token": supportedToken.TokenSymbol,
-		}).Error(err, "[entity.SubmitOnchainTransfer] entity.UpsertBatchOfUserBalances() failed")
-		return nil, err
-	}
+// 	// update sender balanace
+// 	batch := []model.OffchainTipBotUserBalance{{UserID: req.Sender, TokenID: supportedToken.ID, ChangedAmount: -req.Amount}}
+// 	err = e.UpsertBatchOfUserBalances("tip-onchain", supportedToken.TokenSymbol, batch)
+// 	if err != nil {
+// 		e.log.Fields(logger.Fields{
+// 			"totalAmount": req.Amount, "amountEach": amountEach, "sender": req.Sender,
+// 			"recipients": len(req.Recipients), "token": supportedToken.TokenSymbol,
+// 		}).Error(err, "[entity.SubmitOnchainTransfer] entity.UpsertBatchOfUserBalances() failed")
+// 		return nil, err
+// 	}
 
-	// create pending transactions
-	list := make([]*model.OnchainTipBotTransaction, len(req.Recipients))
-	for i, r := range req.Recipients {
-		list[i] = &model.OnchainTipBotTransaction{
-			SenderDiscordID:    req.Sender,
-			RecipientDiscordID: r,
-			GuildID:            req.GuildID,
-			ChannelID:          req.ChannelID,
-			Amount:             amountEach,
-			TokenSymbol:        req.Token,
-			Each:               req.Each,
-			All:                req.All,
-			TransferType:       req.TransferType,
-			FullCommand:        req.FullCommand,
-			Message:            req.Message,
-			Image:              req.Image,
-			Status:             "pending",
-		}
-	}
-	if err := e.repo.OnchainTipBotTransaction.UpsertMany(list); err != nil {
-		e.log.Fields(logger.Fields{"list": list}).Error(err, "[entity.SubmitOnchainTransfer] repo.OnchainTipBotTransaction.UpsertMany() failed")
-		return nil, err
-	}
+// 	// create pending transactions
+// 	list := make([]*model.OnchainTipBotTransaction, len(req.Recipients))
+// 	for i, r := range req.Recipients {
+// 		list[i] = &model.OnchainTipBotTransaction{
+// 			SenderDiscordID:    req.Sender,
+// 			RecipientDiscordID: r,
+// 			GuildID:            req.GuildID,
+// 			ChannelID:          req.ChannelID,
+// 			Amount:             amountEach,
+// 			TokenSymbol:        req.Token,
+// 			Each:               req.Each,
+// 			All:                req.All,
+// 			TransferType:       req.TransferType,
+// 			FullCommand:        req.FullCommand,
+// 			Message:            req.Message,
+// 			Image:              req.Image,
+// 			Status:             "pending",
+// 		}
+// 	}
+// 	if err := e.repo.OnchainTipBotTransaction.UpsertMany(list); err != nil {
+// 		e.log.Fields(logger.Fields{"list": list}).Error(err, "[entity.SubmitOnchainTransfer] repo.OnchainTipBotTransaction.UpsertMany() failed")
+// 		return nil, err
+// 	}
 
-	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{supportedToken.CoinGeckoID}, "usd")
-	if err != nil {
-		e.log.Fields(logger.Fields{"token": supportedToken.CoinGeckoID}).Error(err, "[entity.SubmitOnchainTransfer] svc.CoinGecko.GetCoinPrice() failed")
-		return nil, err
-	}
+// 	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{supportedToken.CoinGeckoID}, "usd")
+// 	if err != nil {
+// 		e.log.Fields(logger.Fields{"token": supportedToken.CoinGeckoID}).Error(err, "[entity.SubmitOnchainTransfer] svc.CoinGecko.GetCoinPrice() failed")
+// 		return nil, err
+// 	}
 
-	// dm recipient
-	res := make([]response.SubmitOnchainTransfer, len(req.Recipients))
-	for i, r := range req.Recipients {
-		e.notifyPendingTransfer(r)
-		res[i] = response.SubmitOnchainTransfer{
-			SenderID:    req.Sender,
-			RecipientID: r,
-			Amount:      amountEach,
-			Symbol:      supportedToken.TokenSymbol,
-			AmountInUSD: amountEach * tokenPrice[supportedToken.CoinGeckoID],
-		}
-	}
+// 	// dm recipient
+// 	res := make([]response.SubmitOnchainTransfer, len(req.Recipients))
+// 	for i, r := range req.Recipients {
+// 		e.notifyPendingTransfer(r)
+// 		res[i] = response.SubmitOnchainTransfer{
+// 			SenderID:    req.Sender,
+// 			RecipientID: r,
+// 			Amount:      amountEach,
+// 			Symbol:      supportedToken.TokenSymbol,
+// 			AmountInUSD: amountEach * tokenPrice[supportedToken.CoinGeckoID],
+// 		}
+// 	}
 
-	// notify tip to channel
-	notifyReq := request.OffchainTransferRequest{
-		Sender:       req.Sender,
-		Recipients:   req.Recipients,
-		Platform:     req.Platform,
-		GuildID:      req.GuildID,
-		ChannelID:    req.ChannelID,
-		Amount:       req.Amount,
-		Token:        req.Token,
-		Each:         req.Each,
-		All:          req.All,
-		TransferType: req.TransferType,
-		Image:        req.Image,
-		Message:      req.Message,
-	}
-	e.sendLogNotify(notifyReq, 0)
+// 	// notify tip to channel
+// 	notifyReq := request.OffchainTransferRequest{
+// 		Sender:       req.Sender,
+// 		Recipients:   req.Recipients,
+// 		Platform:     req.Platform,
+// 		GuildID:      req.GuildID,
+// 		ChannelID:    req.ChannelID,
+// 		Amount:       req.Amount,
+// 		Token:        req.Token,
+// 		Each:         req.Each,
+// 		All:          req.All,
+// 		TransferType: req.TransferType,
+// 		Image:        req.Image,
+// 		Message:      req.Message,
+// 	}
+// 	e.sendLogNotify(notifyReq, 0)
 
-	// notify tip to other platform: twitter, telegram, ...
-	e.NotifyTipFromPlatforms(notifyReq, amountEach, tokenPrice[supportedToken.CoinGeckoID])
+// 	// notify tip to other platform: twitter, telegram, ...
+// 	e.NotifyTipFromPlatforms(notifyReq, amountEach, tokenPrice[supportedToken.CoinGeckoID])
 
-	return res, nil
-}
+// 	return res, nil
+// }
 
 func (e *Entity) ClaimOnchainTransfer(req request.ClaimOnchainTransferRequest) (*response.ClaimOnchainTransfer, error) {
 	tx, err := e.repo.OnchainTipBotTransaction.GetOnePending(req.ClaimID)

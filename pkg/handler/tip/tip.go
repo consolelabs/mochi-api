@@ -66,27 +66,27 @@ func (h *Handler) TransferToken(c *gin.Context) {
 // @Param       Request  body request.SubmitOnchainTransferRequest true "req"
 // @Success     200 {object} response.SubmitOnchainTransferResponse
 // @Router      /tip/onchain/submit [post]
-func (h *Handler) SubmitOnchainTransfer(c *gin.Context) {
-	req := request.SubmitOnchainTransferRequest{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.SubmitOnchainTransfer] ShouldBindJSON() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+// func (h *Handler) SubmitOnchainTransfer(c *gin.Context) {
+// 	req := request.SubmitOnchainTransferRequest{}
+// 	if err := c.ShouldBindJSON(&req); err != nil {
+// 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.SubmitOnchainTransfer] ShouldBindJSON() failed")
+// 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+// 		return
+// 	}
 
-	data, err := h.entities.SubmitOnchainTransfer(req)
-	if err != nil {
-		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-			return
-		}
-		h.log.Error(err, "[handler.SubmitOnchainTransfer] entity.SubmitOnchainTransfer() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+// 	data, err := h.entities.SubmitOnchainTransfer(req)
+// 	if err != nil {
+// 		if strings.Contains(err.Error(), "Token not supported") || strings.Contains(err.Error(), "Not enough balance") {
+// 			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+// 			return
+// 		}
+// 		h.log.Error(err, "[handler.SubmitOnchainTransfer] entity.SubmitOnchainTransfer() failed")
+// 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+// 		return
+// 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-}
+// 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+// }
 
 // ClaimOnchainTransfer   godoc
 // @Summary     Onchain Tip Bot - Submit transfer transaction

@@ -3,13 +3,10 @@ package entities
 import (
 	"errors"
 	"fmt"
-	"math/big"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
@@ -19,33 +16,25 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-// TODO@anhnh: define error codes
 func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.OffchainTipBotTransferToken, error) {
 	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
-	transferReq := request.MochiPayTransferRequest{}
 	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender)
 	if err != nil {
 		return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
 	}
 
-	transferReq.From = &request.Wallet{
+	fromWallet := &request.Wallet{
 		ProfileGlobalId: senderProfile.ID,
 	}
 
-	for _, v := range req.Recipients {
+	toWallets := make([]*request.Wallet, len(req.Recipients))
+	for i, v := range req.Recipients {
 		profile, err := e.svc.MochiProfile.GetByDiscordID(v)
 		if err != nil {
 			return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
 		}
-		transferReq.Tos = append(transferReq.Tos, &request.Wallet{
-			ProfileGlobalId: profile.ID,
-		})
-	}
-
-	// validate amount
-	if !req.All && req.Amount == 0 {
-		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
+		toWallets[i] = &request.Wallet{ProfileGlobalId: profile.ID}
 	}
 
 	// validate token
@@ -54,71 +43,71 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.TransferToken] svc.MochiPay.GetToken() failed")
 		return nil, err
 	}
-	transferReq.TokenId = token.Id
-	transferReq.Note = req.Message
+
+	// get sender balance
+	// res, err := e.svc.MochiPay.GetBalance(senderProfile.ID, req.Token, req.ChainID)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferToken] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
+	// 	return nil, err
+	// }
+	// if len(res.Data) == 0 {
+	// 	return nil, errors.New("insufficient balance")
+	// }
+	// balanceInWei, ok := new(big.Float).SetString(res.Data[0].Amount)
+	// if !ok {
+	// 	return nil, errors.New("invalid balance amount")
+	// }
+
+	// parse amount
+	// eachAmount, ok := new(big.Float).SetString(req.EachAmount)
+	// if !ok {
+	// 	return nil, errors.New("invalid each amount")
+	// }
+	// eachAmountInWei := new(big.Float).Mul(eachAmount, new(big.Float).SetFloat64(math.Pow10(18)))
+	// totalAmountInWei := new(big.Float).Mul(eachAmountInWei, new(big.Float).SetInt64(int64(len(req.Recipients))))
 
 	// validate balance
-	senderBalance, err := e.svc.MochiPay.GetBalance(senderProfile.ID, req.Token, req.ChainID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferToken] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
-		return nil, err
+	// if balanceInWei.Cmp(totalAmountInWei) == -1 {
+	// 	return nil, errors.New("insufficient balance")
+	// }
+
+	amount := make([]string, len(req.Recipients))
+	for i := range req.Recipients {
+		amount[i] = req.EachAmount
 	}
 
-	bal, err := util.StringToBigInt(senderBalance.Data[0].Amount)
-	if err != nil {
-		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
-	}
-
-	if bal.Cmp(big.NewInt(0)) != 1 {
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
-
-	// if transfer all -> amount = sender balance
-	fBal := util.BigIntToFloat(bal, int(senderBalance.Data[0].Token.Decimal))
-	if req.All {
-		req.Amount = fBal
-	}
-
-	// calculate transferred amount for each recipient
-	var amountEach float64
-	if req.Each && !req.All {
-		amountEach = req.Amount
-	} else {
-		amountEach = req.Amount / float64(len(req.Recipients))
-	}
-	if fBal < amountEach {
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
-
-	transferReq.Amount = make([]string, len(req.Recipients))
-	for i := range transferReq.Amount {
-		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
+	transferReq := request.MochiPayTransferRequest{
+		From:    fromWallet,
+		Tos:     toWallets,
+		TokenId: token.Id,
+		Note:    req.Message,
+		Amount:  amount,
 	}
 
 	//validate tip range
-	tipRangeConfig, err := e.repo.GuildConfigTipRange.GetByGuildID(req.GuildID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[entity.TransferToken] repo.GuildConfigTipRange.GetByGuildID() failed")
-		return nil, errors.New("get price coingecko failed")
-	}
+	// tipRangeConfig, err := e.repo.GuildConfigTipRange.GetByGuildID(req.GuildID)
+	// if err != nil && err != gorm.ErrRecordNotFound {
+	// 	e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[entity.TransferToken] repo.GuildConfigTipRange.GetByGuildID() failed")
+	// 	return nil, errors.New("get price coingecko failed")
+	// }
 
-	if tipRangeConfig != nil {
-		//TODO: move this get tokenPrice block code out if using for others validate
-		tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{token.CoinGeckoId}, "usd")
-		if err != nil {
-			e.log.Fields(logger.Fields{"token": token.CoinGeckoId}).Error(err, "[entity.TransferToken] svc.CoinGecko.GetCoinPrice() failed")
-		}
+	// if tipRangeConfig != nil {
+	// 	//TODO: move this get tokenPrice block code out if using for others validate
+	// 	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{token.CoinGeckoId}, "usd")
+	// 	if err != nil {
+	// 		e.log.Fields(logger.Fields{"token": token.CoinGeckoId}).Error(err, "[entity.TransferToken] svc.CoinGecko.GetCoinPrice() failed")
+	// 	}
 
-		//only validate if have tokenPrice && tipRangeConfig
-		if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId] > 0 {
-			if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId]*amountEach < *tipRangeConfig.Min {
-				return nil, errors.New("tip amount < min tip range")
-			}
-			if tipRangeConfig.Max != nil && tokenPrice[token.CoinGeckoId]*amountEach > *tipRangeConfig.Max {
-				return nil, errors.New("tip amount > max tip range")
-			}
-		}
-	}
+	// 	//only validate if have tokenPrice && tipRangeConfig
+	// 	if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId] > 0 {
+	// 		if tipRangeConfig.Min != nil && tokenPrice[token.CoinGeckoId]*amountEach < *tipRangeConfig.Min {
+	// 			return nil, errors.New("tip amount < min tip range")
+	// 		}
+	// 		if tipRangeConfig.Max != nil && tokenPrice[token.CoinGeckoId]*amountEach > *tipRangeConfig.Max {
+	// 			return nil, errors.New("tip amount > max tip range")
+	// 		}
+	// 	}
+	// }
 
 	err = e.svc.MochiPay.Transfer(transferReq)
 	if err != nil {
@@ -138,11 +127,13 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 
 	// e.sendTipBotLogs(req, token.Symbol, "")
 
-	return &response.OffchainTipBotTransferToken{
-		AmountEach:  amountEach,
-		TotalAmount: req.Amount,
-		// Token:       token,
-	}, nil
+	// return &response.OffchainTipBotTransferToken{
+	// 	AmountEach:  amountEach,
+	// 	TotalAmount: req.Amount,
+	// 	// Token:       token,
+	// }, nil
+
+	return nil, nil
 }
 
 func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int) {
@@ -176,7 +167,7 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int)
 				name = "Someone dropped money"
 				descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
 			}
-			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, req.AmountString, strings.ToUpper(req.Token), req.ChannelID)
+			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, req.TotalAmount, strings.ToUpper(req.Token), req.ChannelID)
 			if req.Message != "" {
 				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
 			}
@@ -371,46 +362,46 @@ func (e *Entity) UpsertBatchOfUserBalances(action, tokenSymbol string, list []mo
 	return nil
 }
 
-func (e *Entity) sendTipBotLogs(req request.OffchainTransferRequest, token, depositSource string) error {
-	if req.GuildID == "" || req.GuildID == "DM" {
-		return nil
-	}
-	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[entity.sendTipBotLogs] repo.DiscordGuilds.GetByID() failed")
-		return err
-	}
-	if guild.LogChannel == "" {
-		return nil
-	}
+// func (e *Entity) sendTipBotLogs(req request.OffchainTransferRequest, token, depositSource string) error {
+// 	if req.GuildID == "" || req.GuildID == "DM" {
+// 		return nil
+// 	}
+// 	guild, err := e.repo.DiscordGuilds.GetByID(req.GuildID)
+// 	if err != nil {
+// 		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[entity.sendTipBotLogs] repo.DiscordGuilds.GetByID() failed")
+// 		return err
+// 	}
+// 	if guild.LogChannel == "" {
+// 		return nil
+// 	}
 
-	token = strings.ToUpper(token)
-	senderID := req.Sender
-	amount := req.Amount
+// 	token = strings.ToUpper(token)
+// 	senderID := req.Sender
+// 	amount := req.TotalAmountString
 
-	var description string
-	switch req.TransferType {
-	case "tip":
-		var recipients []string
-		for _, r := range req.Recipients {
-			recipients = append(recipients, fmt.Sprintf("<@%s>", r))
-		}
-		recipientsStr := strings.Join(recipients, ",")
-		description = fmt.Sprintf("<@%s> has sent %s **%g %s** each at <#%s>", senderID, recipientsStr, amount, token, req.ChannelID)
-		if len(description) > 2000 {
-			description = fmt.Sprintf("<@%s> has sent %d people **%g %s** each at <#%s>", senderID, len(recipients), amount, token, req.ChannelID)
-		}
-	// case "withdraw":
-	// 	description = fmt.Sprintf("<@%s> has made a withdrawal of **%g %s** to address `%s` at <#%s>", senderID, log.Amount, token, log.Receiver[0], *log.ChannelID)
-	// case "deposit":
-	// 	description = fmt.Sprintf("<@%s> has just deposited **%g %s** from address `%s`", senderID, log.Amount, token, depositSource)
-	case "airdrop":
-		description = fmt.Sprintf("<@%s> has just airdropped **%g %s** at <#%s>", senderID, req.Amount, token, req.ChannelID)
-	}
-	err = e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, senderID, strings.ToUpper(req.TransferType), description)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.sendTipBotLogs] svc.Discord.SendGuildActivityLogs() failed")
-		return err
-	}
-	return nil
-}
+// 	var description string
+// 	switch req.TransferType {
+// 	case "tip":
+// 		var recipients []string
+// 		for _, r := range req.Recipients {
+// 			recipients = append(recipients, fmt.Sprintf("<@%s>", r))
+// 		}
+// 		recipientsStr := strings.Join(recipients, ",")
+// 		description = fmt.Sprintf("<@%s> has sent %s **%s %s** each at <#%s>", senderID, recipientsStr, amount, token, req.ChannelID)
+// 		if len(description) > 2000 {
+// 			description = fmt.Sprintf("<@%s> has sent %d people **%s %s** each at <#%s>", senderID, len(recipients), amount, token, req.ChannelID)
+// 		}
+// 	// case "withdraw":
+// 	// 	description = fmt.Sprintf("<@%s> has made a withdrawal of **%g %s** to address `%s` at <#%s>", senderID, log.Amount, token, log.Receiver[0], *log.ChannelID)
+// 	// case "deposit":
+// 	// 	description = fmt.Sprintf("<@%s> has just deposited **%g %s** from address `%s`", senderID, log.Amount, token, depositSource)
+// 	case "airdrop":
+// 		description = fmt.Sprintf("<@%s> has just airdropped **%s %s** at <#%s>", senderID, req.TotalAmount, token, req.ChannelID)
+// 	}
+// 	err = e.svc.Discord.SendGuildActivityLogs(guild.LogChannel, senderID, strings.ToUpper(req.TransferType), description)
+// 	if err != nil {
+// 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.sendTipBotLogs] svc.Discord.SendGuildActivityLogs() failed")
+// 		return err
+// 	}
+// 	return nil
+// }

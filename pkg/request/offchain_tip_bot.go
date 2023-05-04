@@ -8,15 +8,17 @@ type OffchainTransferRequest struct {
 	Platform     string   `json:"platform"`
 	GuildID      string   `json:"guild_id"`
 	ChannelID    string   `json:"channel_id"`
-	Amount       float64  `json:"amount"`
-	AmountString string   `json:"amount_string"`
 	Token        string   `json:"token"`
 	Each         bool     `json:"each"`
-	All          bool     `json:"all"`
 	TransferType string   `json:"transfer_type"`
 	Message      string   `json:"message"`
 	Image        string   `json:"image"`
 	ChainID      string   `json:"chain_id"`
+	TotalAmount  string   `json:"total_amount"`
+	AmountString string   `json:"amount_string"`
+	EachAmount   string   `json:"each_amount"`
+	// TotalAmountString string   `json:"total_amount_string"`
+	// All          bool     `json:"all"`
 }
 type OffchainWithdrawRequest struct {
 	Recipient        string  `json:"recipient"`
