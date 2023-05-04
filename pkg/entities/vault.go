@@ -490,7 +490,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 	}
 
 	return &response.VaultDetailResponse{
-		WalletAddress:     "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+		WalletAddress:     "",
 		EstimatedTotal:    "",
 		Balance:           []response.Balance{},
 		MyNft:             []response.MyNft{},
