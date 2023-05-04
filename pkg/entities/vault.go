@@ -490,59 +490,59 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 	}
 
 	return &response.VaultDetailResponse{
-		WalletAddress:  "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
-		EstimatedTotal: "254.667",
+		WalletAddress: "0x140dd183e18ba39bd9BE82286ea2d96fdC48117A",
+		// EstimatedTotal: "254.667",
 		Balance: []response.Balance{
-			{
-				TokenName:   "Ethereum",
-				Token:       "ETH",
-				Amount:      "54.0865",
-				AmountInUsd: "275524.61",
-			},
-			{
-				TokenName:   "Buttcoin",
-				Token:       "BUTT",
-				Amount:      "54.0865",
-				AmountInUsd: "4.2569",
-			},
+			// {
+			// 	TokenName:   "Ethereum",
+			// 	Token:       "ETH",
+			// 	Amount:      "54.0865",
+			// 	AmountInUsd: "275524.61",
+			// },
+			// {
+			// 	TokenName:   "Buttcoin",
+			// 	Token:       "BUTT",
+			// 	Amount:      "54.0865",
+			// 	AmountInUsd: "4.2569",
+			// },
 		},
 		MyNft: []response.MyNft{
-			{
-				CollectionName:  "Crypto Duckies",
-				CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
-				Chain:           "ETH",
-				Total:           3,
-				Nft: []response.Nft{
-					{
-						Name: "duckie",
-						Id:   "94",
-					},
-					{
-						Name: "duckie",
-						Id:   "308",
-					},
-					{
-						Name: "duckie",
-						Id:   "750",
-					},
-				},
-			},
-			{
-				CollectionName:  "Crypto Kitties",
-				CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
-				Chain:           "ETH",
-				Total:           2,
-				Nft: []response.Nft{
-					{
-						Name: "kittie",
-						Id:   "834",
-					},
-					{
-						Name: "kittie",
-						Id:   "750",
-					},
-				},
-			},
+			// {
+			// 	CollectionName:  "Crypto Duckies",
+			// 	CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
+			// 	Chain:           "ETH",
+			// 	Total:           3,
+			// 	Nft: []response.Nft{
+			// 		{
+			// 			Name: "duckie",
+			// 			Id:   "94",
+			// 		},
+			// 		{
+			// 			Name: "duckie",
+			// 			Id:   "308",
+			// 		},
+			// 		{
+			// 			Name: "duckie",
+			// 			Id:   "750",
+			// 		},
+			// 	},
+			// },
+			// {
+			// 	CollectionName:  "Crypto Kitties",
+			// 	CollectionImage: "https://media-paint.paintswap.finance/CYBER_NEKO_poster.jpg",
+			// 	Chain:           "ETH",
+			// 	Total:           2,
+			// 	Nft: []response.Nft{
+			// 		{
+			// 			Name: "kittie",
+			// 			Id:   "834",
+			// 		},
+			// 		{
+			// 			Name: "kittie",
+			// 			Id:   "750",
+			// 		},
+			// 	},
+			// },
 		},
 		Treasurer:         treasurers,
 		RecentTransaction: recentTxResponse,
