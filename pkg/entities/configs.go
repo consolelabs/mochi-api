@@ -1456,6 +1456,10 @@ func (e *Entity) ListTokenRoleConfigGuildIds() ([]string, error) {
 func (e *Entity) GetGuildConfigTipRange(guildID string) (*response.GuildConfigTipRangeResponse, error) {
 	data, err := e.repo.GuildConfigTipRange.GetByGuildID(guildID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"guildID": guildID}).Info("[entities.GetGuildConfigTipRange] - repo.GuildConfigTipRange.GetByGuildID() not found")
+			return nil, nil
+		}
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetGuildConfigTipRange] - repo.GuildConfigTipRange.GetByGuildID() failed")
 		return nil, err
 	}
