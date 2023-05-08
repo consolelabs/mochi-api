@@ -5,6 +5,7 @@ type CreateVaultRequest struct {
 	GuildId      string `json:"guild_id"`
 	Name         string `json:"name"`
 	Threshold    string `json:"threshold"`
+	DesigMode    bool   `json:"desig_mode" form:"size,default=false"`
 }
 
 type CreateVaultConfigChannelRequest struct {

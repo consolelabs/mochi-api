@@ -1,6 +1,8 @@
 package vault
 
 import (
+	"database/sql"
+
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -32,4 +34,10 @@ func (pg *pg) GetById(id int64) (vault *model.Vault, err error) {
 
 func (pg *pg) GetByNameAndGuildId(name string, guildId string) (vault *model.Vault, err error) {
 	return vault, pg.db.Where("name = ? and guild_id = ?", name, guildId).First(&vault).Error
+}
+
+func (pg *pg) GetLatestWalletNumber() (walletNumber sql.NullInt64, err error) {
+	row := pg.db.Table("vaults").Select("max(wallet_number)").Row()
+	err = row.Scan(&walletNumber)
+	return walletNumber, err
 }

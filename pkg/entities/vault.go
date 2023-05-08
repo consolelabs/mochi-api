@@ -19,10 +19,32 @@ import (
 )
 
 func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, error) {
+	// auto generate vault address when desig mode = false
+	walletAddress := ""
+	walletNumber := -1
+	if !req.DesigMode {
+		latestWalletNumber, err := e.repo.Vault.GetLatestWalletNumber()
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.repo.Vault.GetLatestWalletNumber failed")
+			return nil, err
+		}
+
+		account, err := e.vaultwallet.GetAccountByWalletNumber(int(latestWalletNumber.Int64))
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.vaultwallet.GetAccountByWalletNumber failed")
+			return nil, err
+		}
+
+		walletAddress = account.Address.Hex()
+		walletNumber = int(latestWalletNumber.Int64) + 1
+	}
+
 	vault, err := e.repo.Vault.Create(&model.Vault{
-		GuildId:   req.GuildId,
-		Name:      req.Name,
-		Threshold: req.Threshold,
+		GuildId:       req.GuildId,
+		Name:          req.Name,
+		Threshold:     req.Threshold,
+		WalletAddress: walletAddress,
+		WalletNumber:  int64(walletNumber),
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.repo.Vault.Create failed")
@@ -490,7 +512,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 	}
 
 	return &response.VaultDetailResponse{
-		WalletAddress:     "",
+		WalletAddress:     vault.WalletAddress,
 		EstimatedTotal:    "",
 		Balance:           []response.Balance{},
 		MyNft:             []response.MyNft{},

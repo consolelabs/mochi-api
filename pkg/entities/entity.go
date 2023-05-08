@@ -22,6 +22,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util"
+	"github.com/defipod/mochi/pkg/vaultwallet"
 )
 
 var (
@@ -33,6 +34,7 @@ type Entity struct {
 	store       repo.Store
 	log         logger.Logger
 	dcwallet    discordwallet.IDiscordWallet
+	vaultwallet vaultwallet.IVaultWallet
 	discord     *discordgo.Session
 	cache       cache.Cache
 	svc         *service.Service
@@ -55,6 +57,12 @@ func Init(cfg config.Config, log logger.Logger) error {
 	dcwallet, err := discordwallet.New(cfg, log, s)
 	if err != nil {
 		log.Fatal(err, "failed to init discord wallet")
+	}
+
+	// *** vaultwallet ***
+	vaultwallet, err := vaultwallet.New(cfg, log, s)
+	if err != nil {
+		log.Fatal(err, "failed to init vault wallet")
 	}
 
 	// *** discord **
@@ -103,6 +111,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		store:       s,
 		log:         log,
 		dcwallet:    dcwallet,
+		vaultwallet: vaultwallet,
 		discord:     discord,
 		cache:       cache,
 		svc:         service,
