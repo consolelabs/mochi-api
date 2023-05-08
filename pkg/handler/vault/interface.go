@@ -15,4 +15,5 @@ type IHandler interface {
 	CreateTreasurerSubmission(c *gin.Context)
 	CreateTreasurerResult(c *gin.Context)
 	GetVaultDetail(c *gin.Context)
+	TransferVaultToken(c *gin.Context)
 }
