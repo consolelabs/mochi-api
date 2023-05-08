@@ -12,6 +12,10 @@ type TreasurerRequest struct {
 	Type                string                `json:"type"`
 	IsApproved          bool                  `json:"is_approved"`
 	TreasurerSubmission []TreasurerSubmission `json:"treasurer_submission" gorm:"foreignKey:RequestId;references:Id"`
+	Amount              string                `json:"amount"`
+	Chain               string                `json:"chain"`
+	Token               string                `json:"token"`
+	Address             string                `json:"address"`
 	CreatedAt           time.Time             `json:"created_at"`
 	UpdatedAt           time.Time             `json:"updated_at"`
 	DeletedAt           *time.Time            `json:"deleted_at"`
