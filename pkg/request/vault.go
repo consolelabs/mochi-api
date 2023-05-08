@@ -5,6 +5,7 @@ type CreateVaultRequest struct {
 	GuildId      string `json:"guild_id"`
 	Name         string `json:"name"`
 	Threshold    string `json:"threshold"`
+	DesigMode    bool   `json:"desig_mode" form:"size,default=false"`
 }
 
 type CreateVaultConfigChannelRequest struct {
@@ -28,19 +29,36 @@ type AddTreasurerToVaultRequest struct {
 type CreateTreasurerResultRequest struct {
 	GuildId       string `json:"guild_id" binding:"required"`
 	VaultId       int64  `json:"vault_id" binding:"required"`
-	UserDiscordID string `json:"user_discord_id" binding:"required"`
+	UserDiscordID string `json:"user_discord_id"`
 	ChannelId     string `json:"channel_id" binding:"required"`
 	Type          string `json:"type" binding:"required"`
 	Status        string `json:"status" binding:"required"`
+	Amount        string `json:"amount"`
+	Chain         string `json:"chain"`
+	Token         string `json:"token"`
+	Address       string `json:"address"`
 }
 
 type CreateTreasurerRequest struct {
 	GuildId       string `json:"guild_id" binding:"required"`
 	Requester     string `json:"requester" binding:"required"`
 	VaultName     string `json:"vault_name" binding:"required"`
-	UserDiscordId string `json:"user_discord_id" binding:"required"`
+	UserDiscordId string `json:"user_discord_id"`
 	Message       string `json:"message" binding:"required"`
 	Type          string `json:"type" binding:"required"`
+	Amount        string `json:"amount"`
+	Chain         string `json:"chain"`
+	Token         string `json:"token"`
+	Address       string `json:"address"`
+}
+
+type TransferVaultTokenRequest struct {
+	GuildId string `json:"guild_id" binding:"required"`
+	VaultId int64  `json:"vault_id" binding:"required"`
+	Address string `json:"address" binding:"required"`
+	Amount  string `json:"amount" binding:"required"`
+	Token   string `json:"token" binding:"required"`
+	Chain   string `json:"chain" binding:"required"`
 }
 
 type CreateTreasurerSubmission struct {

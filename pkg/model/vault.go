@@ -8,6 +8,7 @@ type Vault struct {
 	Name          string    `json:"name"`
 	Threshold     string    `json:"threshold"`
 	WalletAddress string    `json:"wallet_address"`
+	WalletNumber  int64     `json:"wallet_number"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }

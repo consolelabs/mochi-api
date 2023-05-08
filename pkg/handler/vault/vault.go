@@ -140,7 +140,7 @@ func (h *Handler) CreateTreasurerRequest(c *gin.Context) {
 		return
 	}
 
-	treasurerReq, err := h.entities.CreateAddTreasurerRequest(&req)
+	treasurerReq, err := h.entities.CreateTreasurerRequest(&req)
 	if err != nil {
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - user not found")
@@ -271,4 +271,23 @@ func (h *Handler) GetVaultDetail(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse[any](vaultDetail, nil, nil, nil))
+}
+
+func (h *Handler) TransferVaultToken(c *gin.Context) {
+	var req request.TransferVaultTokenRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferVaultToken] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.TransferVaultToken(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferVaultToken] - failed to transfer vault token")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](gin.H{"message": "ok"}, nil, nil, nil))
 }

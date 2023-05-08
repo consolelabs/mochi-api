@@ -522,6 +522,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			treasurerGroup.DELETE("", h.Vault.RemoveTreasurerFromVault)
 			treasurerGroup.POST("/submission", h.Vault.CreateTreasurerSubmission)
 			treasurerGroup.POST("/result", h.Vault.CreateTreasurerResult)
+			treasurerGroup.POST("/transfer", h.Vault.TransferVaultToken)
 		}
 		vaultGroup.GET("/detail", h.Vault.GetVaultDetail)
 	}
