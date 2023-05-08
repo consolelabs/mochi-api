@@ -32,7 +32,7 @@ type VauleWallet struct {
 func New(cfg config.Config, l logger.Logger, s repo.Store) (*VauleWallet, error) {
 	r := pg.NewRepo(s.DB())
 
-	wallet, err := hdwallet.NewFromMnemonic(cfg.InDiscordWalletMnemonic)
+	wallet, err := hdwallet.NewFromMnemonic(cfg.VaultMnemonic)
 	if err != nil {
 		return nil, err
 	}
