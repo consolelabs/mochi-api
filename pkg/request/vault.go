@@ -44,7 +44,7 @@ type CreateTreasurerRequest struct {
 	Requester     string `json:"requester" binding:"required"`
 	VaultName     string `json:"vault_name" binding:"required"`
 	UserDiscordId string `json:"user_discord_id"`
-	Message       string `json:"message" binding:"required"`
+	Message       string `json:"message"`
 	Type          string `json:"type" binding:"required"`
 	Amount        string `json:"amount"`
 	Chain         string `json:"chain"`
