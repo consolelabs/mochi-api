@@ -3,6 +3,7 @@ package mochiprofile
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -71,4 +72,94 @@ func (m *MochiProfile) GetByDiscordID(discordID string) (*GetProfileByDiscordRes
 	defer response.Body.Close()
 
 	return res, nil
+}
+
+func (m *MochiProfile) GetApiKeyByProfileID(profileID string) (*ProfileApiKeyResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/api-key/%s", m.config.MochiProfileServerHost, profileID)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return nil, err
+	}
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &ProfileApiKeyResponseData{}
+	err = json.Unmarshal(body, res)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return &res.Data, nil
+}
+
+func (m *MochiProfile) CreateProfileApiKey(profileID string) (*ProfileApiKeyResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/api-key/%s", m.config.MochiProfileServerHost, profileID)
+	request, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := io.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return nil, err
+	}
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &ProfileApiKeyResponseData{}
+	err = json.Unmarshal(body, res)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return &res.Data, nil
 }

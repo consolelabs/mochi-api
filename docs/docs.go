@@ -25,6 +25,68 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api-key/{discord_id}": {
+            "get": {
+                "description": "Get api key by discordId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ApiKey"
+                ],
+                "summary": "Get api key by discordId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "discord_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProfileApiKeyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create apiKey by discordId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ApiKey"
+                ],
+                "summary": "Create apiKey by discordId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Discord ID",
+                        "name": "discord_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProfileApiKeyResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Login",
@@ -14137,6 +14199,23 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.ProfileApiKeyResponse": {
+            "type": "object",
+            "properties": {
+                "api_key": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
