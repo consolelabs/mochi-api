@@ -80,7 +80,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	} else {
 		amountEach = req.Amount / float64(len(req.Recipients))
 	}
-	amountEachStr := strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
+	amountEachStr := strconv.FormatFloat(amountEach, 'f', -1, 64)
 
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
