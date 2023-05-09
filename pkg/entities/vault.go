@@ -215,7 +215,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 			return err
 		}
 
-		res, err := e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
+		_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
 			ProfileId:  profile.ID,
 			Amount:     amountBigIntStr,
 			To:         e.cfg.CentralizedWalletAddress,
@@ -227,7 +227,6 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
 			return err
 		}
-		fmt.Println(res)
 	}
 
 	// TODO(trkhoi): implement case has destination address
