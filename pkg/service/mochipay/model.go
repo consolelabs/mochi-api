@@ -47,17 +47,28 @@ type GetBalanceResponse struct {
 }
 
 type Token struct {
-	Id          string      `json:"id"`
-	Name        string      `json:"name"`
-	Symbol      string      `json:"symbol"`
-	Decimal     int64       `json:"decimal"`
-	ChainId     string      `json:"chain_id"`
-	Native      bool        `json:"native"`
-	Address     string      `json:"address"`
-	Icon        string      `json:"icon"`
-	Price       float64     `json:"price"`
-	Chain       interface{} `json:"chain"`
-	CoinGeckoId string      `json:"coin_gecko_id"`
+	Id          string  `json:"id"`
+	Name        string  `json:"name"`
+	Symbol      string  `json:"symbol"`
+	Decimal     int64   `json:"decimal"`
+	ChainId     string  `json:"chain_id"`
+	Native      bool    `json:"native"`
+	Address     string  `json:"address"`
+	Icon        string  `json:"icon"`
+	Price       float64 `json:"price"`
+	Chain       Chain   `json:"chain"`
+	CoinGeckoId string  `json:"coin_gecko_id"`
+}
+
+type Chain struct {
+	Id       string `json:"id"`
+	ChainId  string `json:"chain_id"`
+	Name     string `json:"name"`
+	Symbol   string `json:"symbol"`
+	Rpc      string `json:"rpc"`
+	Explorer string `json:"explorer"`
+	Icon     string `json:"icon"`
+	IsEvm    bool   `json:"is_evm"`
 }
 
 type ListTokensResponse struct {
@@ -66,4 +77,12 @@ type ListTokensResponse struct {
 
 type GetTokenResponse struct {
 	Data *Token `json:"data"`
+}
+
+type VaultResponse struct {
+	Data VaultTransferToken `json:"data"`
+}
+
+type VaultTransferToken struct {
+	TxHash string `json:"tx_hash"`
 }
