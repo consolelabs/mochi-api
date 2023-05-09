@@ -53,12 +53,13 @@ type CreateTreasurerRequest struct {
 }
 
 type TransferVaultTokenRequest struct {
-	GuildId string `json:"guild_id" binding:"required"`
-	VaultId int64  `json:"vault_id" binding:"required"`
-	Address string `json:"address" binding:"required"`
-	Amount  string `json:"amount" binding:"required"`
-	Token   string `json:"token" binding:"required"`
-	Chain   string `json:"chain" binding:"required"`
+	GuildId   string `json:"guild_id" binding:"required"`
+	VaultId   int64  `json:"vault_id" binding:"required"`
+	RequestId int64  `json:"request_id" binding:"required"`
+	Address   string `json:"address"`
+	Amount    string `json:"amount" binding:"required"`
+	Token     string `json:"token" binding:"required"`
+	Chain     string `json:"chain" binding:"required"`
 }
 
 type CreateTreasurerSubmission struct {
@@ -67,4 +68,13 @@ type CreateTreasurerSubmission struct {
 	RequestId int64  `json:"request_id" binding:"required"`
 	Sumitter  string `json:"submitter" binding:"required"`
 	Choice    string `json:"choice" binding:"required"`
+}
+
+type MochiPayVaultRequest struct {
+	ProfileId  string `json:"profile_id"`
+	PrivateKey string `json:"private_key"`
+	To         string `json:"to"`
+	Amount     string `json:"amount"`
+	Token      string `json:"token"`
+	Chain      string `json:"chain"`
 }
