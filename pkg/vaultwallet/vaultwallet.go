@@ -1,16 +1,23 @@
 package vaultwallet
 
 import (
+	"context"
 	"fmt"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
+	erc20contract "github.com/defipod/mochi/pkg/contracts/erc20"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 )
 
 type IVaultWallet interface {
@@ -18,6 +25,7 @@ type IVaultWallet interface {
 	GetHDWallet() *hdwallet.Wallet
 	Chain(chainID int) *chain.Chain
 	GetPrivateKeyByAccount(acc accounts.Account) (string, error)
+	Balance(token *mochipay.Token, account string) (balance *big.Int, err error)
 }
 
 type VauleWallet struct {
@@ -79,4 +87,36 @@ func (d *VauleWallet) Chain(chainID int) *chain.Chain {
 
 func (d *VauleWallet) GetPrivateKeyByAccount(acc accounts.Account) (string, error) {
 	return d.hdwallet.PrivateKeyHex(acc)
+}
+
+func (d *VauleWallet) Balance(token *mochipay.Token, account string) (balance *big.Int, err error) {
+	if token.Native {
+		balance, err = d.nativeBalance(token, account)
+	} else {
+		balance, err = d.erc20Balance(token, account)
+	}
+	return
+}
+
+func (d *VauleWallet) nativeBalance(token *mochipay.Token, account string) (*big.Int, error) {
+	client, err := ethclient.Dial(token.Chain.Rpc)
+	if err != nil {
+		return nil, nil
+	}
+	return client.BalanceAt(context.Background(), common.HexToAddress(account), nil)
+}
+
+func (d *VauleWallet) erc20Balance(token *mochipay.Token, account string) (*big.Int, error) {
+	client, err := ethclient.Dial(token.Chain.Rpc)
+	if err != nil {
+		return nil, nil
+	}
+
+	instance, err := erc20contract.NewErc20(common.HexToAddress(token.Address), client)
+	if err != nil {
+		return nil, err
+	}
+
+	accountAddress := common.HexToAddress(account)
+	return instance.BalanceOf(&bind.CallOpts{}, accountAddress)
 }

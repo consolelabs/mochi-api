@@ -400,7 +400,7 @@ func (e *Entity) createNftTokenModel(nftSale request.NotifySaleMarketplaceReques
 			rankDisplay = "N/A"
 		} else {
 			rankDisplay = strconv.Itoa(int(indexerToken.Rarity.Rank))
-			rankDisplay = "<:cup:985137841027821589> " + rankDisplay
+			rankDisplay = "<a:_:1095990335794069614> " + rankDisplay
 		}
 	}
 

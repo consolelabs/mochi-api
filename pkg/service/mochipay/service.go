@@ -11,4 +11,5 @@ type Service interface {
 	CreateToken(req CreateTokenRequest) error
 	ListTokens(symbol string) ([]Token, error)
 	GetToken(symbol, chainId string) (*Token, error)
+	TransferVaultMochiPay(req request.MochiPayVaultRequest) (*VaultResponse, error)
 }
