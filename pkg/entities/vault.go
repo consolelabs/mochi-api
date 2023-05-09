@@ -275,7 +275,7 @@ func prepareParamNotifyTreasurerResult(notifyType string) (action, thumbnail str
 		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
 	} else if notifyType == consts.TreasurerTransferType {
 		action = consts.TreasurerTransferType
-		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
+		thumbnail = "https://cdn.discordapp.com/attachments/1003381172178530494/1105400697836556368/vault_open.gif"
 	}
 	return action, thumbnail
 }
@@ -606,6 +606,9 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		currentRequestResponse = append(currentRequestResponse, response.CurrentRequest{
 			Target:                  req.UserDiscordId,
 			Action:                  util.Capitalize(req.Type),
+			Token:                   req.Token,
+			Amount:                  req.Amount,
+			Address:                 req.Address,
 			TotalSubmission:         int64(len(req.TreasurerSubmission)),
 			TotalApprovedSubmission: int64(totalApprovedSubmisison),
 		})
@@ -623,6 +626,9 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 			Action:    util.Capitalize(strings.Replace(tx.Action, "_", " ", -1)),
 			Target:    tx.Target,
 			Date:      tx.CreatedAt,
+			Amount:    tx.Amount,
+			Token:     tx.Token,
+			ToAddress: tx.ToAddress,
 			Threshold: tx.Threshold,
 		})
 	}

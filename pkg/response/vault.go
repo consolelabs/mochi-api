@@ -44,6 +44,7 @@ type VaultTransaction struct {
 	Amount    string    `json:"amount"`
 	Token     string    `json:"token"`
 	Threshold string    `json:"threshold"`
+	ToAddress string    `json:"to_address"`
 }
 
 type CurrentRequest struct {
@@ -54,6 +55,7 @@ type CurrentRequest struct {
 	ExpiredDate             time.Time `json:"expired_date"`
 	Amount                  string    `json:"amount"`
 	Token                   string    `json:"token"`
+	Address                 string    `json:"address"`
 }
 
 type Balance struct {
