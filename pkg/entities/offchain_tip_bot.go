@@ -73,12 +73,6 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
-	// if transfer all -> amount = sender balance
-	fBal := util.BigIntToFloat(bal, int(senderBalance.Data[0].Token.Decimal))
-	if req.All {
-		req.Amount = fBal
-	}
-
 	// calculate transferred amount for each recipient
 	var amountEach float64
 	if req.Each && !req.All {
@@ -86,13 +80,11 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	} else {
 		amountEach = req.Amount / float64(len(req.Recipients))
 	}
-	if fBal < amountEach {
-		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
-	}
+	amountEachStr := strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
 
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
-		transferReq.Amount[i] = strconv.FormatFloat(amountEach, 'f', int(token.Decimal), 64)
+		transferReq.Amount[i] = amountEachStr
 	}
 
 	//validate tip range
@@ -126,7 +118,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}
 
 	// notify tip to channel
-	e.sendLogNotify(req, int(token.Decimal))
+	e.sendLogNotify(req, int(token.Decimal), amountEachStr)
 
 	// tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{req.Token}, "usd")
 	// if err != nil {
@@ -145,7 +137,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}, nil
 }
 
-func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int) {
+func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int, amountEachStr string) {
 	if req.TransferType != consts.OffchainTipBotTransferTypeTip && req.TransferType != consts.OffchainTipBotTransferTypeAirdrop {
 		return
 	}
@@ -176,7 +168,7 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int)
 				name = "Someone dropped money"
 				descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
 			}
-			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, req.AmountString, strings.ToUpper(req.Token), req.ChannelID)
+			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachStr, strings.ToUpper(req.Token), req.ChannelID)
 			if req.Message != "" {
 				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
 			}
