@@ -199,15 +199,13 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 		userName = fmt.Sprintf("%s#%s", user.Username, user.Discriminator)
 	}
 
-	description := fmt.Sprintf("<@%s> wants to add the following token into his/her server.\n\n", req.UserDiscordID) +
-		"Guild name\n" +
-		fmt.Sprintf("```%s```", guildName) +
-		"Submitter\n" +
-		fmt.Sprintf("```%s```", userName) +
-		"Token address\n" +
-		fmt.Sprintf("```%s```", req.TokenAddress) +
-		"Chain name\n" +
-		fmt.Sprintf("```%s```", strings.ToUpper(req.TokenChain))
+	description := fmt.Sprintf("<@%s> wants to add the following token into his/her server.\n\n", req.UserDiscordID)
+	fields := []*discordgo.MessageEmbedField{
+		{Name: "Guild", Value: fmt.Sprintf("`%s`", guildName)},
+		{Name: "Submitter", Value: fmt.Sprintf("`%s`", userName)},
+		{Name: "Token", Value: fmt.Sprintf("`%s`", req.TokenAddress)},
+		{Name: "Chain", Value: fmt.Sprintf("`%s`", strings.ToUpper(req.TokenChain))},
+	}
 	msgSend := discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{
 			{
@@ -215,6 +213,7 @@ func (e *Entity) notifyDiscordTokenRequest(requestID int, req request.CreateUser
 				Description: description,
 				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 				Type:        discordgo.EmbedTypeArticle,
+				Fields:      fields,
 			},
 		},
 		Components: []discordgo.MessageComponent{
