@@ -33,9 +33,9 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
-// @Param       coin_id   path  string true  "Coin ID"
-// @Param       day   path  int true  "Day"
-// @Param       currency   path  string false  "Currency" default(usd)
+// @Param       coin_id   query  string true  "Coin ID"
+// @Param       day   query  int true  "Day"
+// @Param       currency   query  string false  "Currency" default(usd)
 // @Success     200 {object} response.GetHistoricalMarketChartResponse
 // @Router      /defi/market-chart [get]
 func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
@@ -56,8 +56,8 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 }
 
 // GetSupportedToken     godoc
-// @Summary     Get supported tokens
-// @Description Get supported tokens
+// @Summary     Get supported token by address and chain id
+// @Description Get supported token by address and chain id
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
@@ -393,7 +393,7 @@ func (h *Handler) GetUserListPriceAlert(c *gin.Context) {
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
-// @Param       req query request.RemoveFromWatchlistRequest true "request"
+// @Param       id query string true "id"
 // @Success     200 {object} object
 // @Router      /defi/price-alert [delete]
 func (h *Handler) RemoveTokenPriceAlert(c *gin.Context) {
@@ -573,6 +573,7 @@ func (h *Handler) GetGasTracker(c *gin.Context) {
 // @Tags        Defi
 // @Accept      json
 // @Produce     json
+// @Param       chain   path  string true  "chain"
 // @Success     200 {object} response.ChainGasTrackerResponseData
 // @Router      /defi/gas-tracker/{chain} [get]
 func (h *Handler) GetChainGasTracker(c *gin.Context) {
