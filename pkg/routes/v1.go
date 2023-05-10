@@ -532,4 +532,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		swapGroup.GET("/route", h.Swap.GetSwapRoutes)
 		swapGroup.POST("", h.Swap.ExecuteSwapRoutes)
 	}
+
+	apiKeyGroup := v1.Group("/api-key")
+	{
+		apiKeyGroup.GET("/:discord_id", h.ApiKey.GetApiKeyByDiscordId)
+		apiKeyGroup.POST("/:discord_id", h.ApiKey.CreateApiKeyByDiscordId)
+	}
 }
