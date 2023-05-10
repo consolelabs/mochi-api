@@ -298,7 +298,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 				{
 					Title:       fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfullly %s", action),
 					Description: description,
-					Color:       0xC8EFF8,
+					Color:       0x34AAFF,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
 						URL: thumbnail,
 					},
@@ -319,7 +319,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 				{
 					Title:       fmt.Sprintf("<:revoke:967285238055174195> Treasurer was not %s", action),
 					Description: description,
-					Color:       0xC8EFF8,
+					Color:       0x34AAFF,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
 						URL: thumbnail,
 					},
@@ -498,7 +498,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 							Inline: true,
 						},
 					},
-					Color: 0xC8EFF8,
+					Color: 0x34AAFF,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
 						URL: "https://cdn.discordapp.com/attachments/1090195482506174474/1090905984299442246/image.png",
 					},
