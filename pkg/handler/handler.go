@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/defipod/mochi/pkg/entities"
+	apikey "github.com/defipod/mochi/pkg/handler/api-key"
 	"github.com/defipod/mochi/pkg/handler/auth"
 	"github.com/defipod/mochi/pkg/handler/cache"
 	"github.com/defipod/mochi/pkg/handler/community"
@@ -54,6 +55,7 @@ type Handler struct {
 	Telegram          telegram.IHandler
 	Vault             vault.IHandler
 	Swap              swap.IHandler
+	ApiKey            apikey.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -82,5 +84,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Telegram:          telegram.New(entities, logger),
 		Vault:             vault.New(entities, logger),
 		Swap:              swap.New(entities, logger),
+		ApiKey:            apikey.New(entities, logger),
 	}
 }

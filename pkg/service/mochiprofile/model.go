@@ -31,3 +31,14 @@ type ErrorResponse struct {
 	StatusCode int    `json:"status_code"`
 	ErrorCode  string `json:"error_code"`
 }
+
+type ProfileApiKeyResponseData struct {
+	Data ProfileApiKeyResponse `json:"data"`
+}
+
+type ProfileApiKeyResponse struct {
+	ProfileId string    `json:"profile_id"`
+	ApiKey    string    `json:"api_key"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
