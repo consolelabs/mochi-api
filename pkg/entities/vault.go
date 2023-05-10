@@ -21,7 +21,7 @@ import (
 func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, error) {
 	// auto generate vault address when desig mode = false
 	walletAddress := ""
-	walletNumber := 0
+	walletNumber := -1
 	if !req.DesigMode {
 		latestWalletNumber, err := e.repo.Vault.GetLatestWalletNumber()
 		if err != nil {
