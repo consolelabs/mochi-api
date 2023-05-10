@@ -2017,39 +2017,6 @@ definitions:
       user_id:
         type: string
     type: object
-  request.SubmitOnchainTransferRequest:
-    properties:
-      all:
-        type: boolean
-      amount:
-        type: number
-      channel_id:
-        type: string
-      duration:
-        type: integer
-      each:
-        type: boolean
-      full_command:
-        type: string
-      guild_id:
-        type: string
-      image:
-        type: string
-      message:
-        type: string
-      platform:
-        type: string
-      recipients:
-        items:
-          type: string
-        type: array
-      sender:
-        type: string
-      token:
-        type: string
-      transfer_type:
-        type: string
-    type: object
   request.SwapRequest:
     properties:
       chainName:
@@ -3288,13 +3255,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4401,26 +4368,6 @@ definitions:
       price:
         items:
           type: number
-        type: array
-    type: object
-  response.SubmitOnchainTransfer:
-    properties:
-      amount:
-        type: number
-      amount_in_usd:
-        type: number
-      recipient_id:
-        type: string
-      sender_id:
-        type: string
-      symbol:
-        type: string
-    type: object
-  response.SubmitOnchainTransferResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.SubmitOnchainTransfer'
         type: array
     type: object
   response.SwapRoute:
@@ -7448,28 +7395,6 @@ paths:
       summary: Metric
       tags:
       - Data
-  /defi/all-market-data:
-    get:
-      consumes:
-      - application/json
-      description: Get all coins market data of top coins
-      parameters:
-      - description: 'accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc,
-          price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc,
-          price_change_percentage_24h_desc'
-        in: query
-        name: order
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetCoinsMarketDataResponse'
-      summary: Get all coins market data of top coins
-      tags:
-      - Defi
   /defi/chains:
     get:
       consumes:
@@ -7603,6 +7528,12 @@ paths:
       consumes:
       - application/json
       description: Get gas tracker of one chain
+      parameters:
+      - description: chain
+        in: path
+        name: chain
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -7620,18 +7551,18 @@ paths:
       description: Get historical market chart
       parameters:
       - description: Coin ID
-        in: path
+        in: query
         name: coin_id
         required: true
         type: string
       - description: Day
-        in: path
+        in: query
         name: day
         required: true
         type: integer
       - default: usd
         description: Currency
-        in: path
+        in: query
         name: currency
         type: string
       produces:
@@ -7680,12 +7611,9 @@ paths:
       - application/json
       description: Remove from user's price alerts
       parameters:
-      - in: query
-        name: symbol
-        required: true
-        type: string
-      - in: query
-        name: user_id
+      - description: id
+        in: query
+        name: id
         required: true
         type: string
       produces:
@@ -7748,7 +7676,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get supported tokens
+      description: Get supported token by address and chain id
       parameters:
       - description: token address
         in: query
@@ -7767,7 +7695,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.GetSupportedTokenResponse'
-      summary: Get supported tokens
+      summary: Get supported token by address and chain id
       tags:
       - Defi
   /defi/token-support:
@@ -8942,28 +8870,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ClaimOnchainTransferResponse'
-      summary: Onchain Tip Bot - Submit transfer transaction
-      tags:
-      - Tip
-  /tip/onchain/submit:
-    post:
-      consumes:
-      - application/json
-      description: Onchain Tip Bot - Submit transfer transaction
-      parameters:
-      - description: req
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.SubmitOnchainTransferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.SubmitOnchainTransferResponse'
       summary: Onchain Tip Bot - Submit transfer transaction
       tags:
       - Tip
