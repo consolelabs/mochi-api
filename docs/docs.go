@@ -4303,37 +4303,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/all-market-data": {
-            "get": {
-                "description": "Get all coins market data of top coins",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Get all coins market data of top coins",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "accepted values: price_change_percentage_7d_asc, price_change_percentage_7d_desc, price_change_percentage_1h_asc, price_change_percentage_1h_desc, price_change_percentage_24h_asc, price_change_percentage_24h_desc",
-                        "name": "order",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetCoinsMarketDataResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/defi/chains": {
             "get": {
                 "description": "List All Chain",
@@ -4541,6 +4510,15 @@ const docTemplate = `{
                     "Defi"
                 ],
                 "summary": "Get gas tracker of one chain",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "chain",
+                        "name": "chain",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4569,14 +4547,14 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Coin ID",
                         "name": "coin_id",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "Day",
                         "name": "day",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
@@ -4584,7 +4562,7 @@ const docTemplate = `{
                         "default": "usd",
                         "description": "Currency",
                         "name": "currency",
-                        "in": "path"
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4727,13 +4705,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "symbol",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
+                        "description": "id",
+                        "name": "id",
                         "in": "query",
                         "required": true
                     }
@@ -4750,7 +4723,7 @@ const docTemplate = `{
         },
         "/defi/token": {
             "get": {
-                "description": "Get supported tokens",
+                "description": "Get supported token by address and chain id",
                 "consumes": [
                     "application/json"
                 ],
@@ -4760,7 +4733,7 @@ const docTemplate = `{
                 "tags": [
                     "Defi"
                 ],
-                "summary": "Get supported tokens",
+                "summary": "Get supported token by address and chain id",
                 "parameters": [
                     {
                         "type": "string",
@@ -6495,40 +6468,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ClaimOnchainTransferResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/onchain/submit": {
-            "post": {
-                "description": "Onchain Tip Bot - Submit transfer transaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Onchain Tip Bot - Submit transfer transaction",
-                "parameters": [
-                    {
-                        "description": "req",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.SubmitOnchainTransferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.SubmitOnchainTransferResponse"
                         }
                     }
                 }
@@ -10784,56 +10723,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.SubmitOnchainTransferRequest": {
-            "type": "object",
-            "properties": {
-                "all": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "duration": {
-                    "type": "integer"
-                },
-                "each": {
-                    "type": "boolean"
-                },
-                "full_command": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "platform": {
-                    "type": "string"
-                },
-                "recipients": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "transfer_type": {
-                    "type": "string"
-                }
-            }
-        },
         "request.SwapRequest": {
             "type": "object",
             "required": [
@@ -14456,37 +14345,6 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "number"
-                    }
-                }
-            }
-        },
-        "response.SubmitOnchainTransfer": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "amount_in_usd": {
-                    "type": "number"
-                },
-                "recipient_id": {
-                    "type": "string"
-                },
-                "sender_id": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.SubmitOnchainTransferResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.SubmitOnchainTransfer"
                     }
                 }
             }

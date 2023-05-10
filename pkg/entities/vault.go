@@ -29,7 +29,7 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 			return nil, err
 		}
 
-		account, err := e.vaultwallet.GetAccountByWalletNumber(int(latestWalletNumber.Int64))
+		account, err := e.vaultwallet.GetAccountByWalletNumber(int(latestWalletNumber.Int64) + 1)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.vaultwallet.GetAccountByWalletNumber failed")
 			return nil, err
