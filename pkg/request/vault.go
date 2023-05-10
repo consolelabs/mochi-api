@@ -77,4 +77,7 @@ type MochiPayVaultRequest struct {
 	Amount     string `json:"amount"`
 	Token      string `json:"token"`
 	Chain      string `json:"chain"`
+	Name       string `json:"name"`
+	Requester  string `json:"requester"`
+	Message    string `json:"message"`
 }
