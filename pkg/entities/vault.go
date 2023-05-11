@@ -15,6 +15,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -175,29 +176,12 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	balance, err := e.vaultwallet.Balance(token, vault.WalletAddress)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.Balance failed")
-		return err
-	}
-
-	// check and validate balances
 	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
-	amountBigInt, err := util.StringToBigInt(amountBigIntStr)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - util.StringToBigInt failed")
-		return err
-	}
 
-	cmp, err := util.CmpBigInt(balance, amountBigInt)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - util.CmpBigInt failed")
-		return err
-	}
-
-	if cmp == -1 {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - balance not enough")
-		return err
+	validateBalance := e.validateBalance(token, vault.WalletAddress, req.Amount)
+	if !validateBalance {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - validateBalance failed")
+		return fmt.Errorf("balance not enough")
 	}
 
 	// address = "" aka destination addres = "", use mochi wallet instead
@@ -289,14 +273,16 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 	}
 	if req.Status == consts.TreasurerStatusSuccess {
 		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
+		title := fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfully %s", action)
 		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s has been sent to <@%s>", req.Amount, req.Token, req.UserDiscordID)
+			description = fmt.Sprintf("%s %s has been sent to <@%s>\nWe will notify you when all done.", req.Amount, req.Token, req.UserDiscordID)
+			title = "<:approve_vault:1090242787435356271> Transfer was successfullly submitted"
 		}
 
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfullly %s", action),
+					Title:       title,
 					Description: description,
 					Color:       0x34AAFF,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
@@ -354,6 +340,20 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		return nil, err
 	}
 
+	if req.Type == "transfer" {
+		token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerRequest] - e.svc.MochiPay.GetToken failed")
+			return nil, err
+		}
+
+		validateBal := e.validateBalance(token, vault.WalletAddress, req.Amount)
+		if !validateBal {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - validateBalance failed")
+			return nil, fmt.Errorf("balance not enough")
+		}
+	}
+
 	// create treasurer request
 	treasurerReq, err := e.repo.TreasurerRequest.Create(&model.TreasurerRequest{
 		GuildId:       req.GuildId,
@@ -398,6 +398,36 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		Request:   *treasurerReq,
 		Treasurer: treasurers,
 	}, nil
+}
+
+func (e *Entity) validateBalance(token *mochipay.Token, address, amount string) bool {
+	// validate balance token base
+	balance, err := e.vaultwallet.Balance(token, address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.NativeBalance failed")
+		return false
+	}
+
+	// check and validate balances
+	amountBigIntStr := util.FloatToString(amount, token.Decimal)
+	amountBigInt, err := util.StringToBigInt(amountBigIntStr)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.TransferVaultToken] - util.StringToBigInt failed")
+		return false
+	}
+
+	cmp, err := util.CmpBigInt(balance, amountBigInt)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.TransferVaultToken] - util.CmpBigInt failed")
+		return false
+	}
+
+	if cmp == -1 {
+		e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.TransferVaultToken] - balance not enough")
+		return false
+	}
+
+	return true
 }
 
 func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmission) (resp *response.CreateTreasurerSubmissionResponse, err error) {

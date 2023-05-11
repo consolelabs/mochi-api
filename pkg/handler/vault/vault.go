@@ -148,6 +148,12 @@ func (h *Handler) CreateTreasurerRequest(c *gin.Context) {
 			return
 		}
 
+		if strings.Contains(err.Error(), "balance not enough") {
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - balance not enough")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient balance"})
+			return
+		}
+
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to create add treasurer req")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
