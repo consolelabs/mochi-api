@@ -2,6 +2,7 @@ package entities
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -25,7 +26,7 @@ func (e *Entity) AddMessageReaction(req request.MessageReactionRequest) error {
 	}
 
 	for _, role := range roles {
-		if role.Reaction == req.Reaction {
+		if strings.EqualFold(role.Reaction, req.Reaction) {
 			if err := e.repo.MessageReaction.Create(model.MessageReaction{
 				MessageID: req.MessageID,
 				GuildID:   req.GuildID,
