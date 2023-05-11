@@ -112,20 +112,35 @@ func (mr *MockServiceMockRecorder) GetCoinsMarketData(ids, sparkline, page, page
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinsMarketData", reflect.TypeOf((*MockService)(nil).GetCoinsMarketData), ids, sparkline, page, pageSize)
 }
 
-// GetHistoricalMarketData mocks base method.
-func (m *MockService) GetHistoricalMarketData(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
+// GetHistoricalGlobalMarketChart mocks base method.
+func (m *MockService) GetHistoricalGlobalMarketChart(days int) (*response.GetHistoricalGlobalMarketResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetHistoricalMarketData", req)
-	ret0, _ := ret[0].(*response.CoinPriceHistoryResponse)
+	ret := m.ctrl.Call(m, "GetHistoricalGlobalMarketChart", days)
+	ret0, _ := ret[0].(*response.GetHistoricalGlobalMarketResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHistoricalGlobalMarketChart indicates an expected call of GetHistoricalGlobalMarketChart.
+func (mr *MockServiceMockRecorder) GetHistoricalGlobalMarketChart(days interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalGlobalMarketChart", reflect.TypeOf((*MockService)(nil).GetHistoricalGlobalMarketChart), days)
+}
+
+// GetHistoricalMarketData mocks base method.
+func (m *MockService) GetHistoricalMarketData(coinID, currency string, days int) (*response.HistoricalMarketChartResponse, error, int) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHistoricalMarketData", coinID, currency, days)
+	ret0, _ := ret[0].(*response.HistoricalMarketChartResponse)
 	ret1, _ := ret[1].(error)
 	ret2, _ := ret[2].(int)
 	return ret0, ret1, ret2
 }
 
 // GetHistoricalMarketData indicates an expected call of GetHistoricalMarketData.
-func (mr *MockServiceMockRecorder) GetHistoricalMarketData(req interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetHistoricalMarketData(coinID, currency, days interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalMarketData", reflect.TypeOf((*MockService)(nil).GetHistoricalMarketData), req)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalMarketData", reflect.TypeOf((*MockService)(nil).GetHistoricalMarketData), coinID, currency, days)
 }
 
 // GetHistoryCoinInfo mocks base method.

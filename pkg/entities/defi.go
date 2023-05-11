@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -25,10 +26,28 @@ import (
 )
 
 func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
-	data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req)
+	if strings.EqualFold(req.CoinID, "btcd") || strings.EqualFold(req.CoinID, "btc.d") {
+		data, err := e.GetBTCDominanceChartData(req.Days)
+		if err != nil {
+			return nil, err, 500
+		}
+		return data, nil, 200
+	}
+	resp, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req.CoinID, req.Currency, req.Days)
 	if err != nil {
 		return nil, err, statusCode
 	}
+	data := &response.CoinPriceHistoryResponse{}
+	for _, p := range resp.Prices {
+		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
+		data.Times = append(data.Times, timestamp)
+		data.Prices = append(data.Prices, p[1])
+	}
+	from := time.UnixMilli(int64(resp.Prices[0][0])).Format("January 02, 2006")
+	to := time.UnixMilli(int64(resp.Prices[len(resp.Prices)-1][0])).Format("January 02, 2006")
+	data.From = from
+	data.To = to
+
 	// handle quest logs
 	log := &model.QuestUserLog{
 		UserID: req.DiscordID,
@@ -103,9 +122,19 @@ func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pa
 }
 
 func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, int) {
+	var coinName string
+	// special case: btc.d, returns bitcoin's data except for coin ID and name
+	if strings.EqualFold(coinID, "btc.d") {
+		coinID = "bitcoin"
+		coinName = "Bitcoin Dominance Chart"
+	}
 	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
 	if err != nil {
 		return nil, err, statusCode
+	}
+	if coinName != "" {
+		data.Name = coinName
+		data.ID = "btc.d"
 	}
 
 	return data, nil, http.StatusOK
@@ -151,18 +180,6 @@ func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
 	}
 
 	return e.repo.GuildConfigToken.UpsertMany(configs)
-}
-
-func (e *Entity) GetHighestTicker(symbol string, interval int) ([]string, error) {
-	var coinData []string
-	coinRequest := request.GetMarketChartRequest{CoinID: symbol, Currency: "usd", Days: interval}
-	data, err, _ := e.svc.CoinGecko.GetHistoricalMarketData(&coinRequest)
-	if err != nil {
-		return coinData, err
-	}
-	highestPrice := util.GetMaxFloat64(data.Prices)
-	coinData = append(coinData, symbol, fmt.Sprintf("%v", interval), fmt.Sprintf("%v", highestPrice))
-	return coinData, nil
 }
 
 func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.GuildConfigActivity, error) {
@@ -835,4 +852,67 @@ func (e *Entity) GetTopLoserGainer(req request.TopGainerLoserRequest) (*response
 	}
 
 	return data, nil
+}
+
+func (e *Entity) GetBTCDominanceChartData(days int) (*response.CoinPriceHistoryResponse, error) {
+	// get historical global market cap
+	global, err := e.svc.CoinGecko.GetHistoricalGlobalMarketChart(days)
+	if err != nil {
+		e.log.Error(err, "[entity.GetBTCDominanceChartData] e.svc.GetGlobalData() failed")
+		return nil, err
+	}
+
+	historicalGlobal := make(map[float64]float64)
+	for _, item := range global.MarketCapChart.MarketCap {
+		historicalGlobal[item[0]] = item[1]
+	}
+	format := "January 02, 2006"
+	from := time.UnixMilli(int64(global.MarketCapChart.MarketCap[len(global.MarketCapChart.MarketCap)-1][0])).Format(format)
+	to := time.UnixMilli(int64(global.MarketCapChart.MarketCap[0][0])).Format(format)
+
+	// get historical bitcoin's market cap
+	btc, err, _ := e.svc.CoinGecko.GetHistoricalMarketData("bitcoin", "usd", days)
+	if err != nil {
+		e.log.Error(err, "[entity.GetBTCDominanceChartData] svc.CoinGecko.GetHistoricalMarketData() failed")
+		return nil, err
+	}
+
+	historicalBtc := make(map[float64]float64)
+	for _, item := range btc.MarketCaps {
+		historicalBtc[item[0]] = item[1]
+	}
+
+	// calculate btc market cap percentage
+	var timestamps []float64
+	var times []string
+	var prices []float64
+	for unixMs := range historicalGlobal {
+		_, ok := historicalBtc[unixMs]
+		if !ok {
+			continue
+		}
+		timestamps = append(timestamps, unixMs)
+	}
+
+	sort.Slice(timestamps, func(i, j int) bool {
+		return timestamps[i] < timestamps[j]
+	})
+
+	for _, unixMs := range timestamps {
+		globalMC := historicalGlobal[unixMs]
+		btcMC := historicalBtc[unixMs]
+		timeStr := time.UnixMilli(int64(unixMs)).Format("01-02-2006")
+		times = append(times, timeStr)
+		prices = append(prices, btcMC*100/globalMC)
+	}
+
+	return &response.CoinPriceHistoryResponse{
+		From: from,
+		To:   to,
+		TokenTickers: response.TokenTickers{
+			// Timestamps: timestamps,
+			Times:  times,
+			Prices: prices,
+		},
+	}, nil
 }

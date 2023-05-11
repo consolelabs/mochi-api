@@ -34,7 +34,8 @@ type UserBalancesResponse struct {
 }
 
 type HistoricalMarketChartResponse struct {
-	Prices [][]float64 `json:"prices"`
+	Prices     [][]float64 `json:"prices"`
+	MarketCaps [][]float64 `json:"market_caps"`
 }
 
 type SearchedCoinsListResponse struct {
@@ -318,4 +319,15 @@ type GetTopGainerLoserCoin struct {
 	Usdh30dChange float64 `json:"usd_30d_change"`
 	Usd60dChange  float64 `json:"usd_60d_change"`
 	Usd1yChange   float64 `json:"usd_1y_change"`
+}
+
+type TokenMarketStat map[string]float64
+
+type GetHistoricalGlobalMarketResponse struct {
+	MarketCapChart MarketCapChartData `json:"market_cap_chart"`
+}
+
+type MarketCapChartData struct {
+	MarketCap [][]float64 `json:"market_cap"`
+	Volume    [][]float64 `json:"volume"`
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/request"
@@ -14,55 +13,45 @@ import (
 )
 
 type CoinGecko struct {
-	getMarketChartURL  string
-	searchCoinURL      string
-	getCoinURL         string
-	getPriceURL        string
-	getCoinOhlc        string
-	getCoinsMarketData string
-	getSupportedCoins  string
-	getAssetPlatforms  string
-	getCoinByContract  string
-	getTrendingSearch  string
-	getTopGainerLoser  string
+	getMarketChartURL                 string
+	searchCoinURL                     string
+	getCoinURL                        string
+	getPriceURL                       string
+	getCoinOhlc                       string
+	getCoinsMarketData                string
+	getSupportedCoins                 string
+	getAssetPlatforms                 string
+	getCoinByContract                 string
+	getTrendingSearch                 string
+	getTopGainerLoser                 string
+	getHistoricalGlobalMarketChartURL string
 }
 
 func NewService(cfg *config.Config) Service {
 	apiKey := cfg.CoinGeckoAPIKey
 	return &CoinGecko{
-		getMarketChartURL:  "https://pro-api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d&x_cg_pro_api_key=" + apiKey,
-		searchCoinURL:      "https://pro-api.coingecko.com/api/v3/search?query=%s&x_cg_pro_api_key=" + apiKey,
-		getCoinURL:         "https://pro-api.coingecko.com/api/v3/coins/%s?x_cg_pro_api_key=" + apiKey,
-		getPriceURL:        "https://pro-api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&x_cg_pro_api_key=" + apiKey,
-		getCoinOhlc:        "https://pro-api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd&x_cg_pro_api_key=" + apiKey,
-		getCoinsMarketData: "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=%s&page=%s&sparkline=%t&price_change_percentage=1h,24h,7d&x_cg_pro_api_key=" + apiKey,
-		getSupportedCoins:  "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
-		getAssetPlatforms:  "https://pro-api.coingecko.com/api/v3/asset_platforms?x_cg_pro_api_key=" + apiKey,
-		getCoinByContract:  "https://pro-api.coingecko.com/api/v3/coins/%s/contract/%s?x_cg_pro_api_key=" + apiKey,
-		getTrendingSearch:  "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
-		getTopGainerLoser:  "https://pro-api.coingecko.com/api/v3/coins/top_gainers_losers?vs_currency=usd&duration=%s&top_coins=300&x_cg_pro_api_key=" + apiKey,
+		getMarketChartURL:                 "https://pro-api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d&x_cg_pro_api_key=" + apiKey,
+		searchCoinURL:                     "https://pro-api.coingecko.com/api/v3/search?query=%s&x_cg_pro_api_key=" + apiKey,
+		getCoinURL:                        "https://pro-api.coingecko.com/api/v3/coins/%s?x_cg_pro_api_key=" + apiKey,
+		getPriceURL:                       "https://pro-api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=%s&x_cg_pro_api_key=" + apiKey,
+		getCoinOhlc:                       "https://pro-api.coingecko.com/api/v3/coins/%s/ohlc?days=%s&vs_currency=usd&x_cg_pro_api_key=" + apiKey,
+		getCoinsMarketData:                "https://pro-api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=%s&page=%s&sparkline=%t&price_change_percentage=1h,24h,7d&x_cg_pro_api_key=" + apiKey,
+		getSupportedCoins:                 "https://pro-api.coingecko.com/api/v3/coins/list?x_cg_pro_api_key=" + apiKey,
+		getAssetPlatforms:                 "https://pro-api.coingecko.com/api/v3/asset_platforms?x_cg_pro_api_key=" + apiKey,
+		getCoinByContract:                 "https://pro-api.coingecko.com/api/v3/coins/%s/contract/%s?x_cg_pro_api_key=" + apiKey,
+		getTrendingSearch:                 "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
+		getTopGainerLoser:                 "https://pro-api.coingecko.com/api/v3/coins/top_gainers_losers?vs_currency=usd&duration=%s&top_coins=300&x_cg_pro_api_key=" + apiKey,
+		getHistoricalGlobalMarketChartURL: "https://pro-api.coingecko.com/api/v3/global/market_cap_chart?days=%d&x_cg_pro_api_key=" + apiKey,
 	}
 }
 
-func (c *CoinGecko) GetHistoricalMarketData(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
+func (c *CoinGecko) GetHistoricalMarketData(coinID, currency string, days int) (*response.HistoricalMarketChartResponse, error, int) {
 	resp := &response.HistoricalMarketChartResponse{}
-	statusCode, err := util.FetchData(fmt.Sprintf(c.getMarketChartURL, req.CoinID, req.Currency, req.Days), resp)
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getMarketChartURL, coinID, currency, days), resp)
 	if err != nil || statusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", req.CoinID, err), statusCode
+		return nil, fmt.Errorf("failed to fetch historical market data - coin %s: %v", coinID, err), statusCode
 	}
-
-	data := &response.CoinPriceHistoryResponse{}
-	for _, p := range resp.Prices {
-		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
-		data.Times = append(data.Times, timestamp)
-		data.Prices = append(data.Prices, p[1])
-	}
-	from := time.UnixMilli(int64(resp.Prices[0][0])).Format("January 02, 2006")
-	to := time.UnixMilli(int64(resp.Prices[len(resp.Prices)-1][0])).Format("January 02, 2006")
-	data.From = from
-	data.To = to
-
-	return data, nil, http.StatusOK
+	return resp, nil, http.StatusOK
 }
 
 func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, int) {
@@ -172,4 +161,14 @@ func (c *CoinGecko) GetTopLoserGainer(req request.TopGainerLoserRequest) (*respo
 		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}
 	return &res, nil
+}
+
+func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHistoricalGlobalMarketResponse, error) {
+	res := &response.GetHistoricalGlobalMarketResponse{}
+	url := fmt.Sprintf(c.getHistoricalGlobalMarketChartURL, days)
+	status, err := util.FetchData(url, &res)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
+	}
+	return res, nil
 }
