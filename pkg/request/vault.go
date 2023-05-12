@@ -71,13 +71,14 @@ type CreateTreasurerSubmission struct {
 }
 
 type MochiPayVaultRequest struct {
-	ProfileId  string `json:"profile_id"`
-	PrivateKey string `json:"private_key"`
-	To         string `json:"to"`
-	Amount     string `json:"amount"`
-	Token      string `json:"token"`
-	Chain      string `json:"chain"`
-	Name       string `json:"name"`
-	Requester  string `json:"requester"`
-	Message    string `json:"message"`
+	ProfileId  string   `json:"profile_id"`
+	PrivateKey string   `json:"private_key"`
+	To         string   `json:"to"`
+	Amount     string   `json:"amount"`
+	Token      string   `json:"token"`
+	Chain      string   `json:"chain"`
+	Name       string   `json:"name"`
+	Requester  string   `json:"requester"`
+	Message    string   `json:"message"`
+	ListNotify []string `json:"list_notify"`
 }

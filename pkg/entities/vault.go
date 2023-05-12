@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -158,6 +159,17 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
+	treasurer, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Treasurer.GetByVaultId failed")
+		return err
+	}
+
+	listNotify := []string{}
+	for _, t := range treasurer {
+		listNotify = append(listNotify, t.UserDiscordId)
+	}
+
 	token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.GetToken failed")
@@ -168,6 +180,10 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.TreasurerRequest.GetById failed")
 		return err
+	}
+
+	if !slices.Contains(listNotify, treasurerRequest.Requester) {
+		listNotify = append(listNotify, treasurerRequest.Requester)
 	}
 
 	profile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.Requester)
@@ -225,6 +241,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Name:       vault.Name,
 		Requester:  treasurerRequest.Requester,
 		Message:    treasurerRequest.Message,
+		ListNotify: listNotify,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
@@ -277,7 +294,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
 		title := fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfully %s", action)
 		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s has been sent to %s\nWe will notify you when all done.", req.Amount, req.Token, destination)
+			description = fmt.Sprintf("%s %s %s has been sent to %s\nWe will notify you when all done.", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
 			title = "<:approve_vault:1090242787435356271> Transfer was successfullly submitted"
 		}
 
@@ -300,7 +317,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 	} else {
 		description := fmt.Sprintf("<@%s> has not been %s to **%s vault**", req.UserDiscordID, action, vaultName)
 		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s has not been sent to %s", req.Amount, req.Token, destination)
+			description = fmt.Sprintf("%s %s %s has not been sent to %s", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
 		}
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
