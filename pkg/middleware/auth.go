@@ -91,3 +91,20 @@ func WithAuthContext(cfg config.Config) gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func ProfileAuthGuard(cfg config.Config) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		profileAccessToken := ctx.GetHeader("Authorization")
+
+		if profileAccessToken == "" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"error": "please login to continue",
+			})
+			ctx.Abort()
+			return
+		}
+
+		ctx.Set("profile_access_token", profileAccessToken)
+		ctx.Next()
+	}
+}
