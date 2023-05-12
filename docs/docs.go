@@ -25,39 +25,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api-key/{discord_id}": {
-            "get": {
-                "description": "Get api key by discordId",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ApiKey"
-                ],
-                "summary": "Get api key by discordId",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ProfileApiKeyResponse"
-                        }
-                    }
-                }
-            },
+        "/api-key/me": {
             "post": {
-                "description": "Create apiKey by discordId",
+                "description": "Create apiKey",
                 "consumes": [
                     "application/json"
                 ],
@@ -67,13 +37,13 @@ const docTemplate = `{
                 "tags": [
                     "ApiKey"
                 ],
-                "summary": "Create apiKey by discordId",
+                "summary": "Create apiKey",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "path",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

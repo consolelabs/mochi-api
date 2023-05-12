@@ -3255,13 +3255,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
-      usd_1h_change:
-        type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1h_change:
         type: number
       usd_24h_change:
         type: number
@@ -4606,35 +4606,15 @@ info:
   title: Swagger API
   version: "1.0"
 paths:
-  /api-key/{discord_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get api key by discordId
-      parameters:
-      - description: Discord ID
-        in: path
-        name: discord_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ProfileApiKeyResponse'
-      summary: Get api key by discordId
-      tags:
-      - ApiKey
+  /api-key/me:
     post:
       consumes:
       - application/json
-      description: Create apiKey by discordId
+      description: Create apiKey
       parameters:
-      - description: Discord ID
-        in: path
-        name: discord_id
+      - description: Authorization
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -4644,7 +4624,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ProfileApiKeyResponse'
-      summary: Create apiKey by discordId
+      summary: Create apiKey
       tags:
       - ApiKey
   /auth/login:

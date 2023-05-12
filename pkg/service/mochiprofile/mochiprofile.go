@@ -119,13 +119,14 @@ func (m *MochiProfile) GetApiKeyByProfileID(profileID string) (*ProfileApiKeyRes
 	return &res.Data, nil
 }
 
-func (m *MochiProfile) CreateProfileApiKey(profileID string) (*ProfileApiKeyResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/api-key/%s", m.config.MochiProfileServerHost, profileID)
+func (m *MochiProfile) CreateProfileApiKey(profileAccessToken string) (*ProfileApiKeyResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/api-key/me", m.config.MochiProfileServerHost)
 	request, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return nil, err
 	}
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Authorization", profileAccessToken)
 
 	client := &http.Client{}
 	response, err := client.Do(request)

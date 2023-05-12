@@ -185,38 +185,22 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	// address = "" aka destination addres = "", use mochi wallet instead
-
-	if req.Address == "" {
-		account, err := e.vaultwallet.GetAccountByWalletNumber(int(vault.WalletNumber))
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetAccountByWalletNumber failed")
-			return err
-		}
-
-		privateKey, err := e.vaultwallet.GetPrivateKeyByAccount(account)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccount failed")
-			return err
-		}
-
-		_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
-			ProfileId:  profile.ID,
-			Amount:     amountBigIntStr,
-			To:         e.cfg.CentralizedWalletAddress,
-			PrivateKey: privateKey,
-			Token:      token.Symbol,
-			Chain:      token.Chain.ChainId,
-			Name:       vault.Name,
-			Requester:  treasurerRequest.Requester,
-			Message:    treasurerRequest.Message,
-		})
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
-			return err
-		}
+	account, err := e.vaultwallet.GetAccountByWalletNumber(int(vault.WalletNumber))
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetAccountByWalletNumber failed")
+		return err
 	}
 
-	// TODO(trkhoi): implement case has destination address
+	privateKey, err := e.vaultwallet.GetPrivateKeyByAccount(account)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccount failed")
+		return err
+	}
+
+	destination := e.cfg.CentralizedWalletAddress
+	if req.Address != "" {
+		destination = req.Address
+	}
 
 	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
 		GuildId:   req.GuildId,
@@ -228,6 +212,22 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
+		return err
+	}
+
+	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
+		ProfileId:  profile.ID,
+		Amount:     amountBigIntStr,
+		To:         destination,
+		PrivateKey: privateKey,
+		Token:      token.Symbol,
+		Chain:      token.Chain.ChainId,
+		Name:       vault.Name,
+		Requester:  treasurerRequest.Requester,
+		Message:    treasurerRequest.Message,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
 		return err
 	}
 
@@ -268,14 +268,16 @@ func prepareParamNotifyTreasurerResult(notifyType string) (action, thumbnail str
 }
 
 func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultRequest, action, vaultName, thumbnail string) (msg discordgo.MessageSend) {
+	destination := fmt.Sprintf("`%s`", util.ShortenAddress(req.Address))
 	if req.Address == "" {
-		req.Address = "Mochi Wallet"
+		destination = fmt.Sprintf("<@%s>", req.UserDiscordID)
 	}
+
 	if req.Status == consts.TreasurerStatusSuccess {
 		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
 		title := fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfully %s", action)
 		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s has been sent to <@%s>\nWe will notify you when all done.", req.Amount, req.Token, req.UserDiscordID)
+			description = fmt.Sprintf("%s %s has been sent to %s\nWe will notify you when all done.", req.Amount, req.Token, destination)
 			title = "<:approve_vault:1090242787435356271> Transfer was successfullly submitted"
 		}
 
@@ -298,7 +300,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 	} else {
 		description := fmt.Sprintf("<@%s> has not been %s to **%s vault**", req.UserDiscordID, action, vaultName)
 		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s has not been sent to `%s`", req.Amount, req.Token, req.Address)
+			description = fmt.Sprintf("%s %s has not been sent to %s", req.Amount, req.Token, destination)
 		}
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
@@ -675,4 +677,14 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		RecentTransaction: recentTxResponse,
 		CurrentRequest:    currentRequestResponse,
 	}, nil
+}
+
+func (e *Entity) GetTreasurerRequest(requestId string) (*model.TreasurerRequest, error) {
+	requestIdInt, err := strconv.Atoi(requestId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"requestId": requestId}).Errorf(err, "[entity.GetTreasurerRequest] - strconv.Atoi failed")
+		return nil, err
+	}
+
+	return e.repo.TreasurerRequest.GetById(int64(requestIdInt))
 }
