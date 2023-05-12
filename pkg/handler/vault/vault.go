@@ -297,3 +297,15 @@ func (h *Handler) TransferVaultToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](gin.H{"message": "ok"}, nil, nil, nil))
 }
+
+func (h *Handler) GetTreasurerRequest(c *gin.Context) {
+	requestId := c.Param("request_id")
+	treasurerRequest, err := h.entities.GetTreasurerRequest(requestId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"requestId": requestId}).Error(err, "[handler.GetTreasurerRequest] - failed to get treasurer request")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](treasurerRequest, nil, nil, nil))
+}
