@@ -124,6 +124,11 @@ func (h *Handler) CreateConfigThreshold(c *gin.Context) {
 
 	vaultConfigChannel, err := h.entities.CreateConfigThreshold(&req)
 	if err != nil {
+		if err.Error() == "vault not found" {
+			h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(err, "[handler.CreateConfigThreshold] - vault not found")
+			c.JSON(http.StatusNotFound, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
 		h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(err, "[handler.CreateConfigThreshold] - failed to create vault config channel")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
