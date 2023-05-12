@@ -535,7 +535,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	apiKeyGroup := v1.Group("/api-key")
 	{
-		apiKeyGroup.GET("/:discord_id", h.ApiKey.GetApiKeyByDiscordId)
-		apiKeyGroup.POST("/:discord_id", h.ApiKey.CreateApiKeyByDiscordId)
+		apiKeyGroup.POST("/me", middleware.ProfileAuthGuard(cfg), h.ApiKey.CreateApiKey)
 	}
 }
