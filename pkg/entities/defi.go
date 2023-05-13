@@ -150,6 +150,17 @@ func (e *Entity) GetCoinDataBRC20(coinName string) (*response.GetCoinResponse, e
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
+	// if start with brc20
+	if strings.HasPrefix(strings.ToLower(query), "brc20") {
+		token, err, _ := e.svc.CoinGecko.GetCoinBRC20(strings.ToLower(query))
+		if err != nil {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinBRC20() failed")
+			return nil, err
+		}
+
+		return []model.CoingeckoSupportedTokens{{ID: token.ID, Name: token.Name, Symbol: token.Symbol}}, nil
+	}
+
 	if query != "skull" {
 		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 		if err != nil && err != gorm.ErrRecordNotFound {
