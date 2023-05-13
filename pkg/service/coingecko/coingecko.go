@@ -241,7 +241,7 @@ func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, erro
 		},
 		Tickers: []response.TickerData{},
 		Description: response.CoinDescription{
-			EngDescription: "BRC20 Token",
+			EngDescription: "BRC20 Token, data from brc-20.io",
 		},
 	}
 
