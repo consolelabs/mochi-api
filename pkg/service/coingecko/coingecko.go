@@ -1,15 +1,19 @@
 package coingecko
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
+	"github.com/go-redis/redis/v8"
 )
 
 type CoinGecko struct {
@@ -25,10 +29,25 @@ type CoinGecko struct {
 	getTrendingSearch                 string
 	getTopGainerLoser                 string
 	getHistoricalGlobalMarketChartURL string
+
+	brc20Cache     cache.Cache
+	brc20KeyPrefix string
 }
 
 func NewService(cfg *config.Config) Service {
 	apiKey := cfg.CoinGeckoAPIKey
+
+	// brc20
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		log.Fatal(err, "failed to init redis")
+	}
+
+	cache, err := cache.NewRedisCache(redisOpt)
+	if err != nil {
+		log.Fatal(err, "failed to init redis cache")
+	}
+
 	return &CoinGecko{
 		getMarketChartURL:                 "https://pro-api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d&x_cg_pro_api_key=" + apiKey,
 		searchCoinURL:                     "https://pro-api.coingecko.com/api/v3/search?query=%s&x_cg_pro_api_key=" + apiKey,
@@ -42,6 +61,9 @@ func NewService(cfg *config.Config) Service {
 		getTrendingSearch:                 "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
 		getTopGainerLoser:                 "https://pro-api.coingecko.com/api/v3/coins/top_gainers_losers?vs_currency=usd&duration=%s&top_coins=300&x_cg_pro_api_key=" + apiKey,
 		getHistoricalGlobalMarketChartURL: "https://pro-api.coingecko.com/api/v3/global/market_cap_chart?days=%d&x_cg_pro_api_key=" + apiKey,
+
+		brc20Cache:     cache,
+		brc20KeyPrefix: "brc20Token:",
 	}
 }
 
@@ -171,4 +193,57 @@ func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHisto
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
+}
+
+func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, error, int) {
+	coinIdLower := strings.ToLower(coinId)
+	coinName := strings.TrimPrefix(coinIdLower, "brc20")
+	// get from cache
+	coinData, err := c.brc20Cache.GetString(c.brc20KeyPrefix + strings.ToLower(coinName))
+	if err != nil {
+		return nil, err, 0
+	}
+
+	if coinData == "" {
+		return nil, errors.New("coin not found"), 0
+	}
+
+	coinDataMap := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(coinData), &coinDataMap); err != nil {
+		return nil, err, 0
+	}
+
+	// id := coinDataMap["id"].(int)
+	name := coinDataMap["name"].(string)
+	priceUsd := coinDataMap["priceUsd"].(float64)
+	marketCapUsd := coinDataMap["marketCapUsd"].(float64)
+	percent24h := coinDataMap["percent24h"].(float64)
+
+	resp := &response.GetCoinResponse{
+		ID:              name,
+		Name:            name,
+		Symbol:          name,
+		MarketCapRank:   0,
+		AssetPlatformID: "brc20",
+		Image:           response.CoinImage{},
+		MarketData: response.MarketData{
+			CurrentPrice: map[string]float64{
+				"usd": priceUsd,
+			},
+			MarketCap: map[string]float64{
+				"usd": marketCapUsd,
+			},
+			PriceChangePercentage1hInCurrency: map[string]float64{},
+			PriceChangePercentage24hInCurrency: map[string]float64{
+				"usd": percent24h,
+			},
+			PriceChangePercentage7dInCurrency: map[string]float64{},
+		},
+		Tickers: []response.TickerData{},
+		Description: response.CoinDescription{
+			EngDescription: "BRC20 Token",
+		},
+	}
+
+	return resp, nil, 0
 }

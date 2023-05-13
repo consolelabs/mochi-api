@@ -140,6 +140,15 @@ func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, i
 	return data, nil, http.StatusOK
 }
 
+func (e *Entity) GetCoinDataBRC20(coinName string) (*response.GetCoinResponse, error, int) {
+	data, err, statusCode := e.svc.CoinGecko.GetCoinBRC20(strings.ToLower(coinName))
+	if err != nil {
+		return nil, err, statusCode
+	}
+
+	return data, nil, http.StatusOK
+}
+
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
 	if query != "skull" {
 		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
