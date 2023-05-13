@@ -529,7 +529,7 @@ func TestEntity_GetCoinData(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockServiceCoingecko.EXPECT().GetCoin(tt.coinId).Return(tt.want, tt.coingeckoErr, tt.code)
 
-			got, err, code := e.GetCoinData(tt.coinId)
+			got, err, code := e.GetCoinData(tt.coinId, false)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetCoinData() error = %v, wantErr %v", err, tt.wantErr)
 				return
