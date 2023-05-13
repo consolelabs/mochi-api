@@ -17,4 +17,6 @@ type Service interface {
 	GetTrendingSearch() (*response.GetTrendingSearch, error)
 	GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error)
 	GetHistoricalGlobalMarketChart(days int) (*response.GetHistoricalGlobalMarketResponse, error)
+
+	GetCoinBRC20(coinName string) (res *response.GetCoinResponse, err error, statusCode int)
 }

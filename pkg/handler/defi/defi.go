@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -129,6 +130,19 @@ func (h *Handler) GetCoin(c *gin.Context) {
 	if coinID == "" {
 		h.log.Info("[handler.GetCoin] - coin id missing")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
+		return
+	}
+
+	// if coinId has prefix brc20
+	if strings.HasPrefix(strings.ToLower(coinID), "brc20") {
+		data, err, statusCode := h.entities.GetCoinDataBRC20(coinID)
+		if err != nil {
+			h.log.Error(err, "[handler.GetCoin] - failed to get brc20 coin data")
+			c.JSON(statusCode, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 		return
 	}
 
