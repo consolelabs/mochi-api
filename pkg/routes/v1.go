@@ -515,6 +515,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		vaultGroup.POST("/config/channel", h.Vault.CreateConfigChannel)
 		vaultGroup.GET("/config/channel", h.Vault.GetVaultConfigChannel)
 		vaultGroup.PUT("/config/threshold", h.Vault.CreateConfigThreshold)
+		vaultGroup.GET("/:vault_id/transaction", h.Vault.GetVaultTransactions) // this is also used for fortress-api
 		treasurerGroup := vaultGroup.Group("/treasurer")
 		{
 			treasurerGroup.POST("/request", h.Vault.CreateTreasurerRequest)
