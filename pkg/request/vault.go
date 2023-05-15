@@ -60,6 +60,7 @@ type TransferVaultTokenRequest struct {
 	Amount    string `json:"amount" binding:"required"`
 	Token     string `json:"token" binding:"required"`
 	Chain     string `json:"chain" binding:"required"`
+	Target    string `json:"target"`
 }
 
 type CreateTreasurerSubmission struct {

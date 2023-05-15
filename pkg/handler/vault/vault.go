@@ -2,12 +2,14 @@ package vault
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	vaulttxquery "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -313,4 +315,28 @@ func (h *Handler) GetTreasurerRequest(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](treasurerRequest, nil, nil, nil))
+}
+
+func (h *Handler) GetVaultTransactions(c *gin.Context) {
+	vaultId := c.Param("vault_id")
+	vaultIdInt, err := strconv.Atoi(vaultId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"vaultId": vaultId}).Error(err, "[handler.GetVaultTransactions] - failed to convert vault id to int")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	query := vaulttxquery.VaultTransactionQuery{
+		StartTime: c.Query("start_time"),
+		EndTime:   c.Query("end_time"),
+		VaultId:   int64(vaultIdInt),
+	}
+
+	vaultTransactions, err := h.entities.GetVaultTransactions(query)
+	if err != nil {
+		h.log.Fields(logger.Fields{"vaultId": vaultId}).Error(err, "[handler.GetVaultTransactions] - failed to get vault transactions")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](vaultTransactions, nil, nil, nil))
 }

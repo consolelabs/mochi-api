@@ -21,3 +21,15 @@ func (pg *pg) Create(vaultTx *model.VaultTransaction) (*model.VaultTransaction, 
 func (pg *pg) GetRecentTx(vaultId int64, guildId string) (vaultTxs []model.VaultTransaction, err error) {
 	return vaultTxs, pg.db.Where("vault_id = ? AND guild_id = ?", vaultId, guildId).Order("created_at desc").Limit(10).Find(&vaultTxs).Error
 }
+
+func (pg *pg) GetTransactionByVaultId(query VaultTransactionQuery) (vaultTxs []model.VaultTransaction, err error) {
+	db := pg.db.Where("vault_id = ?", query.VaultId)
+	if query.StartTime != "" {
+		db = db.Where("created_at >= ?", query.StartTime)
+	}
+	if query.EndTime != "" {
+		db = db.Where("created_at <= ?", query.EndTime)
+	}
+
+	return vaultTxs, db.Order("created_at desc").Find(&vaultTxs).Error
+}
