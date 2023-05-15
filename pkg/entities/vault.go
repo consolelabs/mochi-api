@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	vaulttxquery "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochipay"
@@ -218,19 +219,10 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		destination = req.Address
 	}
 
-	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
-		GuildId:   req.GuildId,
-		VaultId:   req.VaultId,
-		Action:    consts.TreasurerTransferType,
-		ToAddress: req.Address,
-		Amount:    req.Amount,
-		Token:     req.Token,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
-		return err
+	recipientPay := treasurerRequest.UserDiscordId
+	if recipientPay != "" {
+		recipientPay = treasurerRequest.Requester
 	}
-
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
 		ProfileId:  profile.ID,
 		Amount:     amountBigIntStr,
@@ -239,12 +231,27 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Token:      token.Symbol,
 		Chain:      token.Chain.ChainId,
 		Name:       vault.Name,
-		Requester:  treasurerRequest.Requester,
+		Requester:  recipientPay,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
+		return err
+	}
+
+	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
+		GuildId:   req.GuildId,
+		VaultId:   req.VaultId,
+		Action:    consts.TreasurerTransferType,
+		ToAddress: req.Address,
+		Amount:    req.Amount,
+		Token:     req.Token,
+		Sender:    recipientPay,
+		Target:    req.Target,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
 		return err
 	}
 
@@ -704,4 +711,25 @@ func (e *Entity) GetTreasurerRequest(requestId string) (*model.TreasurerRequest,
 	}
 
 	return e.repo.TreasurerRequest.GetById(int64(requestIdInt))
+}
+
+func (e *Entity) GetVaultTransactions(query vaulttxquery.VaultTransactionQuery) ([]model.VaultTransaction, error) {
+	vault, err := e.repo.Vault.GetById(query.VaultId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": query}).Errorf(err, "[entity.GetVaultTransactions] - e.repo.Vault.GetById failed")
+		return nil, err
+	}
+
+	vaultTxs, err := e.repo.VaultTransaction.GetTransactionByVaultId(query)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": query}).Errorf(err, "[entity.GetVaultTransactions] - e.repo.VaultTransaction.GetTransactionByVaultId failed")
+		return nil, err
+	}
+
+	for i, vaultTx := range vaultTxs {
+		vaultTx.VaultName = vault.Name
+		vaultTxs[i] = vaultTx
+	}
+
+	return vaultTxs, nil
 }
