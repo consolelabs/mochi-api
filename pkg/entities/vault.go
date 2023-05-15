@@ -367,6 +367,12 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		return nil, err
 	}
 
+	treasurers, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.GetByVaultId failed")
+		return nil, err
+	}
+
 	if req.Type == "transfer" {
 		token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
 		if err != nil {
@@ -378,6 +384,13 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		if !validateBal {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - validateBalance failed")
 			return nil, fmt.Errorf("balance not enough")
+		}
+	}
+
+	if req.Type == "remove" {
+		if !e.validateTreasurer(treasurers, req.UserDiscordId) {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerRequest] - user not in list treasurers")
+			return nil, fmt.Errorf("user not in list treasurers")
 		}
 	}
 
@@ -400,11 +413,6 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	}
 
 	// add submission with status pending for all treasurer in vaul
-	treasurers, err := e.repo.Treasurer.GetByVaultId(vault.Id)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.GetByVaultId failed")
-		return nil, err
-	}
 	treasurerSubmission := make([]model.TreasurerSubmission, 0)
 	for _, treasurer := range treasurers {
 		treasurerSubmission = append(treasurerSubmission, model.TreasurerSubmission{
@@ -425,6 +433,15 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		Request:   *treasurerReq,
 		Treasurer: treasurers,
 	}, nil
+}
+
+func (e *Entity) validateTreasurer(treasurers []model.Treasurer, userDiscordId string) bool {
+	for _, treasurer := range treasurers {
+		if treasurer.UserDiscordId == userDiscordId {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *Entity) validateBalance(token *mochipay.Token, address, amount string) bool {
