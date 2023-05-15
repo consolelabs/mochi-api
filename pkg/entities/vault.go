@@ -247,7 +247,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		ToAddress: req.Address,
 		Amount:    req.Amount,
 		Token:     req.Token,
-		Sender:    treasurerRequest.Requester,
+		Sender:    recipientPay,
 		Target:    req.Target,
 	})
 	if err != nil {
