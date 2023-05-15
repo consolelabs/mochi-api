@@ -231,7 +231,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Token:      token.Symbol,
 		Chain:      token.Chain.ChainId,
 		Name:       vault.Name,
-		Requester:  treasurerRequest.Requester,
+		Requester:  recipientPay,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
 	})
