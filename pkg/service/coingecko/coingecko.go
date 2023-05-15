@@ -196,10 +196,9 @@ func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHisto
 }
 
 func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, error, int) {
-	coinIdLower := strings.ToLower(coinId)
-	coinName := strings.TrimPrefix(coinIdLower, "brc20")
+	coinName := strings.ToLower(coinId)
 	// get from cache
-	coinData, err := c.brc20Cache.GetString(c.brc20KeyPrefix + strings.ToLower(coinName))
+	coinData, err := c.brc20Cache.GetString(c.brc20KeyPrefix + coinName)
 	if err != nil {
 		return nil, err, 0
 	}
