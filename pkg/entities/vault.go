@@ -220,9 +220,10 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	recipientPay := treasurerRequest.UserDiscordId
-	if recipientPay != "" {
+	if recipientPay == "" {
 		recipientPay = treasurerRequest.Requester
 	}
+
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
 		ProfileId:  profile.ID,
 		Amount:     amountBigIntStr,
