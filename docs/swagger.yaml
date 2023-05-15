@@ -7441,7 +7441,8 @@ paths:
             $ref: '#/definitions/response.GetListAllChainsResponse'
       summary: List All Chain
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/coins:
     get:
       consumes:
@@ -7462,7 +7463,8 @@ paths:
             $ref: '#/definitions/response.SearchCoinResponse'
       summary: Search coin
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/coins/{id}:
     get:
       consumes:
@@ -7483,7 +7485,8 @@ paths:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/coins/binance/{symbol}:
     get:
       consumes:
@@ -7504,7 +7507,8 @@ paths:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin data from Binance Exchange
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/coins/compare:
     get:
       consumes:
@@ -7539,7 +7543,8 @@ paths:
             $ref: '#/definitions/response.CompareTokenResponse'
       summary: Compare token
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/gas-tracker:
     get:
       consumes:
@@ -7554,7 +7559,8 @@ paths:
             $ref: '#/definitions/response.GasTrackerResponseData'
       summary: Get gas tracker of all chain
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/gas-tracker/{chain}:
     get:
       consumes:
@@ -7575,7 +7581,8 @@ paths:
             $ref: '#/definitions/response.ChainGasTrackerResponseData'
       summary: Get gas tracker of one chain
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/market-chart:
     get:
       consumes:
@@ -7606,7 +7613,8 @@ paths:
             $ref: '#/definitions/response.GetHistoricalMarketChartResponse'
       summary: Get historical market chart
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/market-data:
     get:
       consumes:
@@ -7636,7 +7644,8 @@ paths:
             $ref: '#/definitions/response.GetCoinsMarketDataResponse'
       summary: Get coins market data of top coins
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/price-alert:
     delete:
       consumes:
@@ -7729,7 +7738,8 @@ paths:
             $ref: '#/definitions/response.GetSupportedTokenResponse'
       summary: Get supported token by address and chain id
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/token-support:
     get:
       consumes:
@@ -7822,7 +7832,8 @@ paths:
             $ref: '#/definitions/response.GetSupportedTokensResponse'
       summary: Get supported tokens
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/top-gainer-loser:
     get:
       consumes:
@@ -7842,7 +7853,8 @@ paths:
             $ref: '#/definitions/response.GetTopGainerLoser'
       summary: Get top 300 gainer and loser
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/trending:
     get:
       consumes:
@@ -7857,7 +7869,8 @@ paths:
             $ref: '#/definitions/response.GetTrendingSearch'
       summary: Get trending search of coins
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /defi/watchlist:
     delete:
       consumes:
@@ -7881,7 +7894,8 @@ paths:
             type: object
       summary: Remove from user's watchlist
       tags:
-      - Defi - public
+      - Defi
+      - Public
     get:
       consumes:
       - application/json
@@ -7909,7 +7923,8 @@ paths:
             $ref: '#/definitions/response.GetWatchlistResponse'
       summary: Get user's watchlist
       tags:
-      - Defi - public
+      - Defi
+      - Public
     post:
       consumes:
       - application/json
@@ -7930,7 +7945,8 @@ paths:
             $ref: '#/definitions/response.AddToWatchlistResponse'
       summary: Add to user's watchlist
       tags:
-      - Defi - public
+      - Defi
+      - Public
   /fiat/historical-exchange-rates:
     get:
       consumes:
