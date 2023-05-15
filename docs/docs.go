@@ -4345,7 +4345,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "List All Chain",
                 "responses": {
@@ -4368,7 +4368,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Search coin",
                 "parameters": [
@@ -4400,7 +4400,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coin data from Binance Exchange",
                 "parameters": [
@@ -4432,7 +4432,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Compare token",
                 "parameters": [
@@ -4484,7 +4484,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coin",
                 "parameters": [
@@ -4516,7 +4516,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get gas tracker of all chain",
                 "responses": {
@@ -4539,7 +4539,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get gas tracker of one chain",
                 "parameters": [
@@ -4571,7 +4571,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get historical market chart",
                 "parameters": [
@@ -4617,7 +4617,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coins market data of top coins",
                 "parameters": [
@@ -4763,7 +4763,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get supported token by address and chain id",
                 "parameters": [
@@ -4921,7 +4921,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get supported tokens",
                 "responses": {
@@ -4944,7 +4944,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get top 300 gainer and loser",
                 "parameters": [
@@ -4975,7 +4975,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get trending search of coins",
                 "responses": {
@@ -4998,7 +4998,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get user's watchlist",
                 "parameters": [
@@ -5042,7 +5042,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Add to user's watchlist",
                 "parameters": [
@@ -5074,7 +5074,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Remove from user's watchlist",
                 "parameters": [

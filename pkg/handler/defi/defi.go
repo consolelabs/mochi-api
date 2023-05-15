@@ -31,7 +31,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // GetHistoricalMarketChart     godoc
 // @Summary     Get historical market chart
 // @Description Get historical market chart
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       coin_id   query  string true  "Coin ID"
@@ -59,7 +59,7 @@ func (h *Handler) GetHistoricalMarketChart(c *gin.Context) {
 // GetSupportedToken     godoc
 // @Summary     Get supported token by address and chain id
 // @Description Get supported token by address and chain id
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       address   query  string true  "token address"
@@ -92,7 +92,7 @@ func (h *Handler) GetSupportedToken(c *gin.Context) {
 // GetSupportedTokens     godoc
 // @Summary     Get supported tokens
 // @Description Get supported tokens
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.GetSupportedTokensResponse
@@ -119,7 +119,7 @@ func (h *Handler) GetSupportedTokens(c *gin.Context) {
 // GetCoin     godoc
 // @Summary     Get coin
 // @Description Get coin
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       id   path  string true  "Coin ID"
@@ -159,7 +159,7 @@ func (h *Handler) GetCoin(c *gin.Context) {
 // SearchCoins     godoc
 // @Summary     Search coin
 // @Description Search coin
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       query   query  string true  "coin query"
@@ -186,7 +186,7 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 // CompareToken     godoc
 // @Summary     Compare token
 // @Description Compare token
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       base   query  string true  "base token"
@@ -231,7 +231,7 @@ func (h *Handler) CompareToken(c *gin.Context) {
 // GetUserWatchlist     godoc
 // @Summary     Get user's watchlist
 // @Description Get user's watchlist
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       req query request.GetUserWatchlistRequest true "request"
@@ -256,7 +256,7 @@ func (h *Handler) GetUserWatchlist(c *gin.Context) {
 // AddToWatchlist     godoc
 // @Summary     Add to user's watchlist
 // @Description Add to user's watchlist
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       req body request.AddToWatchlistRequest true "request"
@@ -281,7 +281,7 @@ func (h *Handler) AddToWatchlist(c *gin.Context) {
 // RemoveFromWatchlist     godoc
 // @Summary     Remove from user's watchlist
 // @Description Remove from user's watchlist
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       req query request.RemoveFromWatchlistRequest true "request"
@@ -335,7 +335,7 @@ func (h *Handler) GetFiatHistoricalExchangeRates(c *gin.Context) {
 // AddContract   godoc
 // @Summary     List All Chain
 // @Description List All Chain
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.GetListAllChainsResponse
@@ -433,7 +433,7 @@ func (h *Handler) RemoveTokenPriceAlert(c *gin.Context) {
 // GetCoin     godoc
 // @Summary     Get coin data from Binance Exchange
 // @Description Get coin data from Binance Exchange
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       symbol   path  string true  "Coin ID"
@@ -565,7 +565,7 @@ func (h *Handler) RejectUserTokenSupportRequest(c *gin.Context) {
 // GetGasTracker     godoc
 // @Summary     Get gas tracker of all chain
 // @Description Get gas tracker of all chain
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.GasTrackerResponseData
@@ -584,7 +584,7 @@ func (h *Handler) GetGasTracker(c *gin.Context) {
 // GetChainGasTracker     godoc
 // @Summary     Get gas tracker of one chain
 // @Description Get gas tracker of one chain
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       chain   path  string true  "chain"
@@ -611,7 +611,7 @@ func (h *Handler) GetChainGasTracker(c *gin.Context) {
 // GetCoinsMarketData     godoc
 // @Summary     Get coins market data of top coins
 // @Description Get coins market data of top coins
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       page   query  string false  "page"
@@ -639,7 +639,7 @@ func (h *Handler) GetCoinsMarketData(c *gin.Context) {
 // GetTrendingSearch     godoc
 // @Summary     Get trending search of coins
 // @Description Get trending search of coins
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} response.GetTrendingSearch
@@ -657,7 +657,7 @@ func (h *Handler) GetTrendingSearch(c *gin.Context) {
 // TopGainerLoser     godoc
 // @Summary     Get top 300 gainer and loser
 // @Description Get top 300 gainer and loser
-// @Tags        Defi
+// @Tags        Defi - public
 // @Accept      json
 // @Produce     json
 // @Param       duration   query  string false  "default: 24h, accepted value: 1h, 24h, 7d, 14d, 30d, 60d, 1y"

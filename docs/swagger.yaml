@@ -3255,13 +3255,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_1h_change:
+        type: number
       usd_1y_change:
         type: number
       usd_7d_change:
         type: number
       usd_14d_change:
-        type: number
-      usd_1h_change:
         type: number
       usd_24h_change:
         type: number
@@ -7441,7 +7441,7 @@ paths:
             $ref: '#/definitions/response.GetListAllChainsResponse'
       summary: List All Chain
       tags:
-      - Defi
+      - Defi - public
   /defi/coins:
     get:
       consumes:
@@ -7462,7 +7462,7 @@ paths:
             $ref: '#/definitions/response.SearchCoinResponse'
       summary: Search coin
       tags:
-      - Defi
+      - Defi - public
   /defi/coins/{id}:
     get:
       consumes:
@@ -7483,7 +7483,7 @@ paths:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin
       tags:
-      - Defi
+      - Defi - public
   /defi/coins/binance/{symbol}:
     get:
       consumes:
@@ -7504,7 +7504,7 @@ paths:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin data from Binance Exchange
       tags:
-      - Defi
+      - Defi - public
   /defi/coins/compare:
     get:
       consumes:
@@ -7539,7 +7539,7 @@ paths:
             $ref: '#/definitions/response.CompareTokenResponse'
       summary: Compare token
       tags:
-      - Defi
+      - Defi - public
   /defi/gas-tracker:
     get:
       consumes:
@@ -7554,7 +7554,7 @@ paths:
             $ref: '#/definitions/response.GasTrackerResponseData'
       summary: Get gas tracker of all chain
       tags:
-      - Defi
+      - Defi - public
   /defi/gas-tracker/{chain}:
     get:
       consumes:
@@ -7575,7 +7575,7 @@ paths:
             $ref: '#/definitions/response.ChainGasTrackerResponseData'
       summary: Get gas tracker of one chain
       tags:
-      - Defi
+      - Defi - public
   /defi/market-chart:
     get:
       consumes:
@@ -7606,7 +7606,7 @@ paths:
             $ref: '#/definitions/response.GetHistoricalMarketChartResponse'
       summary: Get historical market chart
       tags:
-      - Defi
+      - Defi - public
   /defi/market-data:
     get:
       consumes:
@@ -7636,7 +7636,7 @@ paths:
             $ref: '#/definitions/response.GetCoinsMarketDataResponse'
       summary: Get coins market data of top coins
       tags:
-      - Defi
+      - Defi - public
   /defi/price-alert:
     delete:
       consumes:
@@ -7729,7 +7729,7 @@ paths:
             $ref: '#/definitions/response.GetSupportedTokenResponse'
       summary: Get supported token by address and chain id
       tags:
-      - Defi
+      - Defi - public
   /defi/token-support:
     get:
       consumes:
@@ -7822,7 +7822,7 @@ paths:
             $ref: '#/definitions/response.GetSupportedTokensResponse'
       summary: Get supported tokens
       tags:
-      - Defi
+      - Defi - public
   /defi/top-gainer-loser:
     get:
       consumes:
@@ -7842,7 +7842,7 @@ paths:
             $ref: '#/definitions/response.GetTopGainerLoser'
       summary: Get top 300 gainer and loser
       tags:
-      - Defi
+      - Defi - public
   /defi/trending:
     get:
       consumes:
@@ -7857,7 +7857,7 @@ paths:
             $ref: '#/definitions/response.GetTrendingSearch'
       summary: Get trending search of coins
       tags:
-      - Defi
+      - Defi - public
   /defi/watchlist:
     delete:
       consumes:
@@ -7881,7 +7881,7 @@ paths:
             type: object
       summary: Remove from user's watchlist
       tags:
-      - Defi
+      - Defi - public
     get:
       consumes:
       - application/json
@@ -7909,7 +7909,7 @@ paths:
             $ref: '#/definitions/response.GetWatchlistResponse'
       summary: Get user's watchlist
       tags:
-      - Defi
+      - Defi - public
     post:
       consumes:
       - application/json
@@ -7930,7 +7930,7 @@ paths:
             $ref: '#/definitions/response.AddToWatchlistResponse'
       summary: Add to user's watchlist
       tags:
-      - Defi
+      - Defi - public
   /fiat/historical-exchange-rates:
     get:
       consumes:

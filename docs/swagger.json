@@ -4337,7 +4337,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "List All Chain",
                 "responses": {
@@ -4360,7 +4360,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Search coin",
                 "parameters": [
@@ -4392,7 +4392,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coin data from Binance Exchange",
                 "parameters": [
@@ -4424,7 +4424,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Compare token",
                 "parameters": [
@@ -4476,7 +4476,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coin",
                 "parameters": [
@@ -4508,7 +4508,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get gas tracker of all chain",
                 "responses": {
@@ -4531,7 +4531,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get gas tracker of one chain",
                 "parameters": [
@@ -4563,7 +4563,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get historical market chart",
                 "parameters": [
@@ -4609,7 +4609,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get coins market data of top coins",
                 "parameters": [
@@ -4755,7 +4755,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get supported token by address and chain id",
                 "parameters": [
@@ -4913,7 +4913,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get supported tokens",
                 "responses": {
@@ -4936,7 +4936,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get top 300 gainer and loser",
                 "parameters": [
@@ -4967,7 +4967,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get trending search of coins",
                 "responses": {
@@ -4990,7 +4990,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Get user's watchlist",
                 "parameters": [
@@ -5034,7 +5034,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Add to user's watchlist",
                 "parameters": [
@@ -5066,7 +5066,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Defi - public"
                 ],
                 "summary": "Remove from user's watchlist",
                 "parameters": [
