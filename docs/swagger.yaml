@@ -3255,13 +3255,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_1h_change:
+        type: number
       usd_1y_change:
         type: number
       usd_7d_change:
         type: number
       usd_14d_change:
-        type: number
-      usd_1h_change:
         type: number
       usd_24h_change:
         type: number
@@ -7442,6 +7442,7 @@ paths:
       summary: List All Chain
       tags:
       - Defi
+      - Public
   /defi/coins:
     get:
       consumes:
@@ -7463,6 +7464,7 @@ paths:
       summary: Search coin
       tags:
       - Defi
+      - Public
   /defi/coins/{id}:
     get:
       consumes:
@@ -7484,6 +7486,7 @@ paths:
       summary: Get coin
       tags:
       - Defi
+      - Public
   /defi/coins/binance/{symbol}:
     get:
       consumes:
@@ -7505,6 +7508,7 @@ paths:
       summary: Get coin data from Binance Exchange
       tags:
       - Defi
+      - Public
   /defi/coins/compare:
     get:
       consumes:
@@ -7540,6 +7544,7 @@ paths:
       summary: Compare token
       tags:
       - Defi
+      - Public
   /defi/gas-tracker:
     get:
       consumes:
@@ -7555,6 +7560,7 @@ paths:
       summary: Get gas tracker of all chain
       tags:
       - Defi
+      - Public
   /defi/gas-tracker/{chain}:
     get:
       consumes:
@@ -7576,6 +7582,7 @@ paths:
       summary: Get gas tracker of one chain
       tags:
       - Defi
+      - Public
   /defi/market-chart:
     get:
       consumes:
@@ -7607,6 +7614,7 @@ paths:
       summary: Get historical market chart
       tags:
       - Defi
+      - Public
   /defi/market-data:
     get:
       consumes:
@@ -7637,6 +7645,7 @@ paths:
       summary: Get coins market data of top coins
       tags:
       - Defi
+      - Public
   /defi/price-alert:
     delete:
       consumes:
@@ -7730,6 +7739,7 @@ paths:
       summary: Get supported token by address and chain id
       tags:
       - Defi
+      - Public
   /defi/token-support:
     get:
       consumes:
@@ -7823,6 +7833,7 @@ paths:
       summary: Get supported tokens
       tags:
       - Defi
+      - Public
   /defi/top-gainer-loser:
     get:
       consumes:
@@ -7843,6 +7854,7 @@ paths:
       summary: Get top 300 gainer and loser
       tags:
       - Defi
+      - Public
   /defi/trending:
     get:
       consumes:
@@ -7858,6 +7870,7 @@ paths:
       summary: Get trending search of coins
       tags:
       - Defi
+      - Public
   /defi/watchlist:
     delete:
       consumes:
@@ -7882,6 +7895,7 @@ paths:
       summary: Remove from user's watchlist
       tags:
       - Defi
+      - Public
     get:
       consumes:
       - application/json
@@ -7910,6 +7924,7 @@ paths:
       summary: Get user's watchlist
       tags:
       - Defi
+      - Public
     post:
       consumes:
       - application/json
@@ -7931,6 +7946,7 @@ paths:
       summary: Add to user's watchlist
       tags:
       - Defi
+      - Public
   /fiat/historical-exchange-rates:
     get:
       consumes:

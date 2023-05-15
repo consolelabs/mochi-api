@@ -88,6 +88,7 @@ type MarketData struct {
 	PriceChangePercentage1hInCurrency  map[string]float64 `json:"price_change_percentage_1h_in_currency"`
 	PriceChangePercentage24hInCurrency map[string]float64 `json:"price_change_percentage_24h_in_currency"`
 	PriceChangePercentage7dInCurrency  map[string]float64 `json:"price_change_percentage_7d_in_currency"`
+	TotalMarketCap                     map[string]float64 `json:"total_market_cap"`
 }
 
 type CoinImage struct {
@@ -321,8 +322,6 @@ type GetTopGainerLoserCoin struct {
 	Usd1yChange   float64 `json:"usd_1y_change"`
 }
 
-type TokenMarketStat map[string]float64
-
 type GetHistoricalGlobalMarketResponse struct {
 	MarketCapChart MarketCapChartData `json:"market_cap_chart"`
 }
@@ -330,4 +329,11 @@ type GetHistoricalGlobalMarketResponse struct {
 type MarketCapChartData struct {
 	MarketCap [][]float64 `json:"market_cap"`
 	Volume    [][]float64 `json:"volume"`
+}
+
+type GetGlobalDataResponse struct {
+	Data GetGlobalData `json:"data"`
+}
+type GetGlobalData struct {
+	TotalMarketCap map[string]float64 `json:"total_market_cap"`
 }

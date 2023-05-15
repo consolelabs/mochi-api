@@ -26,8 +26,8 @@ import (
 )
 
 func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*response.CoinPriceHistoryResponse, error, int) {
-	if strings.EqualFold(req.CoinID, "btcd") || strings.EqualFold(req.CoinID, "btc.d") {
-		data, err := e.GetBTCDominanceChartData(req.Days)
+	if req.IsDominanceChart {
+		data, err := e.GetDominanceChartData(req.CoinID, req.Days)
 		if err != nil {
 			return nil, err, 500
 		}
@@ -121,20 +121,19 @@ func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pa
 	return
 }
 
-func (e *Entity) GetCoinData(coinID string) (*response.GetCoinResponse, error, int) {
-	var coinName string
-	// special case: btc.d, returns bitcoin's data except for coin ID and name
-	if strings.EqualFold(coinID, "btc.d") {
-		coinID = "bitcoin"
-		coinName = "Bitcoin Dominance Chart"
-	}
+func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.GetCoinResponse, error, int) {
 	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
 	if err != nil {
 		return nil, err, statusCode
 	}
-	if coinName != "" {
-		data.Name = coinName
-		data.ID = "btc.d"
+	if isDominanceChart {
+		data.Name += " Dominance Chart"
+		globalData, err := e.svc.CoinGecko.GetGlobalData()
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Error(err, "[entity.SearchCoins] svc.CoinGecko.GetGlobalData() failed")
+			return nil, err, 500
+		}
+		data.MarketData.TotalMarketCap = globalData.Data.TotalMarketCap
 	}
 
 	return data, nil, http.StatusOK
@@ -874,11 +873,11 @@ func (e *Entity) GetTopLoserGainer(req request.TopGainerLoserRequest) (*response
 	return data, nil
 }
 
-func (e *Entity) GetBTCDominanceChartData(days int) (*response.CoinPriceHistoryResponse, error) {
+func (e *Entity) GetDominanceChartData(coinId string, days int) (*response.CoinPriceHistoryResponse, error) {
 	// get historical global market cap
 	global, err := e.svc.CoinGecko.GetHistoricalGlobalMarketChart(days)
 	if err != nil {
-		e.log.Error(err, "[entity.GetBTCDominanceChartData] e.svc.GetGlobalData() failed")
+		e.log.Error(err, "[entity.GetDominanceChartData] e.svc.GetGlobalData() failed")
 		return nil, err
 	}
 
@@ -891,9 +890,9 @@ func (e *Entity) GetBTCDominanceChartData(days int) (*response.CoinPriceHistoryR
 	to := time.UnixMilli(int64(global.MarketCapChart.MarketCap[0][0])).Format(format)
 
 	// get historical bitcoin's market cap
-	btc, err, _ := e.svc.CoinGecko.GetHistoricalMarketData("bitcoin", "usd", days)
+	btc, err, _ := e.svc.CoinGecko.GetHistoricalMarketData(coinId, "usd", days)
 	if err != nil {
-		e.log.Error(err, "[entity.GetBTCDominanceChartData] svc.CoinGecko.GetHistoricalMarketData() failed")
+		e.log.Error(err, "[entity.GetDominanceChartData] svc.CoinGecko.GetHistoricalMarketData() failed")
 		return nil, err
 	}
 
