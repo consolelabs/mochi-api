@@ -745,6 +745,7 @@ func (e *Entity) GetVaultTransactions(query vaulttxquery.VaultTransactionQuery) 
 	}
 
 	for i, vaultTx := range vaultTxs {
+		vaultTx.CreatedAt = vaultTx.CreatedAt.Truncate(time.Second)
 		vaultTx.VaultName = vault.Name
 		vaultTxs[i] = vaultTx
 	}
