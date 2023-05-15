@@ -23,7 +23,7 @@ func (pg *pg) GetRecentTx(vaultId int64, guildId string) (vaultTxs []model.Vault
 }
 
 func (pg *pg) GetTransactionByVaultId(query VaultTransactionQuery) (vaultTxs []model.VaultTransaction, err error) {
-	db := pg.db.Where("vault_id = ?", query.VaultId)
+	db := pg.db.Where("vault_id = ?", query.VaultId).Where("action = ?", "transfer")
 	if query.StartTime != "" {
 		db = db.Where("created_at >= ?", query.StartTime)
 	}

@@ -128,7 +128,7 @@ func (h *Handler) CreateConfigThreshold(c *gin.Context) {
 	if err != nil {
 		if err.Error() == "vault not found" {
 			h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(err, "[handler.CreateConfigThreshold] - vault not found")
-			c.JSON(http.StatusNotFound, gin.H{"error": "Vault is not exist yet"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "This vault is not existed yet"})
 			return
 		}
 		h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(err, "[handler.CreateConfigThreshold] - failed to create vault config channel")
@@ -151,13 +151,19 @@ func (h *Handler) CreateTreasurerRequest(c *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - user not found")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not existed yet"})
 			return
 		}
 
 		if strings.Contains(err.Error(), "balance not enough") {
 			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - balance not enough")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient balance"})
+			return
+		}
+
+		if strings.Contains(err.Error(), "user not in list treasurers") {
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateAddTreasurerRequest] - user not in list treasurers")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "User is not member of this vault"})
 			return
 		}
 
@@ -193,7 +199,7 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - user not found")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not existed yet"})
 			return
 		}
 
@@ -276,7 +282,7 @@ func (h *Handler) GetVaultDetail(c *gin.Context) {
 	if err != nil {
 		if strings.Contains(err.Error(), "vault not exist") {
 			h.log.Fields(logger.Fields{"vaultName": vaultName, "guildId": guildId}).Error(err, "[handler.AddTreasurerToVault] - user not found")
-			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not exist yet"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This vault is not existed yet"})
 			return
 		}
 		h.log.Fields(logger.Fields{"vaultName": vaultName, "guildId": guildId}).Error(err, "[handler.GetVaultDetail] - failed to get vault detail")
