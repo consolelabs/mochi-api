@@ -7,10 +7,11 @@ import (
 )
 
 type GetMarketChartRequest struct {
-	CoinID    string `json:"coin_id" form:"coin_id" binding:"required"`
-	Currency  string `json:"currency" form:"currency,default=usd"`
-	Days      int    `json:"days" form:"days,default=7"`
-	DiscordID string `json:"discord_id" form:"discord_id"`
+	CoinID           string `json:"coin_id" form:"coin_id" binding:"required"`
+	Currency         string `json:"currency" form:"currency,default=usd"`
+	Days             int    `json:"days" form:"days,default=7"`
+	DiscordID        string `json:"discord_id" form:"discord_id"`
+	IsDominanceChart bool   `form:"is_dominance_chart,default=false"`
 }
 
 type TransferRequest struct {

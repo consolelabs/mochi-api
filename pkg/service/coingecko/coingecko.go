@@ -8,12 +8,13 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/go-redis/redis/v8"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/go-redis/redis/v8"
 )
 
 type CoinGecko struct {
@@ -30,8 +31,9 @@ type CoinGecko struct {
 	getTopGainerLoser                 string
 	getHistoricalGlobalMarketChartURL string
 
-	brc20Cache     cache.Cache
-	brc20KeyPrefix string
+	brc20Cache             cache.Cache
+	brc20KeyPrefix         string
+	getGlobalCryptoDataURL string
 }
 
 func NewService(cfg *config.Config) Service {
@@ -61,6 +63,7 @@ func NewService(cfg *config.Config) Service {
 		getTrendingSearch:                 "https://pro-api.coingecko.com/api/v3/search/trending?x_cg_pro_api_key=" + apiKey,
 		getTopGainerLoser:                 "https://pro-api.coingecko.com/api/v3/coins/top_gainers_losers?vs_currency=usd&duration=%s&top_coins=300&x_cg_pro_api_key=" + apiKey,
 		getHistoricalGlobalMarketChartURL: "https://pro-api.coingecko.com/api/v3/global/market_cap_chart?days=%d&x_cg_pro_api_key=" + apiKey,
+		getGlobalCryptoDataURL:            "https://pro-api.coingecko.com/api/v3/global?x_cg_pro_api_key=" + apiKey,
 
 		brc20Cache:     cache,
 		brc20KeyPrefix: "brc20Token:",
@@ -246,4 +249,14 @@ func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, erro
 	}
 
 	return resp, nil, 0
+}
+
+func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {
+	res := &response.GetGlobalDataResponse{}
+	url := c.getGlobalCryptoDataURL
+	status, err := util.FetchData(url, &res)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
+	}
+	return res, nil
 }
