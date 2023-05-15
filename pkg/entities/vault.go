@@ -300,10 +300,10 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 
 	if req.Status == consts.TreasurerStatusSuccess {
 		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
-		title := fmt.Sprintf("<:approve_vault:1090242787435356271> Treasurer was successfully %s", action)
+		title := fmt.Sprintf("<:check:1077631110047080478> Treasurer was successfully %s", action)
 		if action == consts.TreasurerTransferType {
 			description = fmt.Sprintf("%s %s %s has been sent to %s\nWe will notify you when all done.", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
-			title = "<:approve_vault:1090242787435356271> Transfer was successfullly submitted"
+			title = "<:check:1077631110047080478> Transfer was successfullly submitted"
 		}
 
 		msg = discordgo.MessageSend{
