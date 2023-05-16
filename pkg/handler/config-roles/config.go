@@ -732,3 +732,90 @@ func (h *Handler) RemoveGuildMixRole(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+// CreateGuildAdminRoles     godoc
+// @Summary     Create guild admin role config
+// @Description Create guild admin role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       Request   body  request.CreateGuildAdminRoleRequest true  "Create guild admin role config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-roles/admin-roles [post]
+func (h *Handler) CreateGuildAdminRoles(c *gin.Context) {
+	req := request.CreateGuildAdminRoleRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildAdminRoles] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.CreateGuildAdminRoles(req)
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("roles existed"), nil))
+			return
+		}
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildAdminRoles] - e.CreateGuildAdminRoles failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// ListGuildAdminRoles     godoc
+// @Summary     Get list admin role config of guild
+// @Description Get list admin role config of guild
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.ListGuildAdminRoles
+// @Router      /config-roles/admin-roles [get]
+func (h *Handler) ListGuildAdminRoles(c *gin.Context) {
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Info("[handler.ListGuildAdminRoles] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	data, err := h.entities.ListGuildAdminRoles(guildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.ListGuildAdminRoles] - e.ListGuildAdminRoles failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}
+
+// RemoveGuildAdminRole     godoc
+// @Summary     Remove guild admin role config
+// @Description Remove guild admin role config
+// @Tags        ConfigRole
+// @Accept      json
+// @Produce     json
+// @Param       id  path  int true  "Config ID"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-roles/admin-roles/{id} [delete]
+func (h *Handler) RemoveGuildAdminRole(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{
+			"id": idStr,
+		}).Error(err, "[handler.RemoveGuildAdminRole] - strconv.Atoi failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
+		return
+	}
+
+	if err := h.entities.RemoveGuildAdminRole(id); err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildAdminRole] - e.RemoveGuildAdminRole failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}

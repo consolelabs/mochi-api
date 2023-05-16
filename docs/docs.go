@@ -2818,6 +2818,102 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-roles/admin-roles": {
+            "get": {
+                "description": "Get list admin role config of guild",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get list admin role config of guild",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListGuildAdminRoles"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create guild admin role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Create guild admin role config",
+                "parameters": [
+                    {
+                        "description": "Create guild admin role config request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateGuildAdminRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/config-roles/admin-roles/{id}": {
+            "delete": {
+                "description": "Remove guild admin role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Remove guild admin role config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Config ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/config-roles/default-roles": {
             "get": {
                 "description": "Get default roles by guild id",
@@ -8281,6 +8377,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.GuildConfigAdminRole": {
+            "type": "object",
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "role_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.GuildConfigDaoProposal": {
             "type": "object",
             "properties": {
@@ -10140,6 +10250,24 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.CreateGuildAdminRoleRequest": {
+            "type": "object",
+            "required": [
+                "guild_id",
+                "role_ids"
+            ],
+            "properties": {
+                "guild_id": {
+                    "type": "string"
+                },
+                "role_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -13604,6 +13732,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ListGuildAdminRoles": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigAdminRole"
+                    }
+                }
+            }
+        },
         "response.ListGuildGroupNFTRolesResponse": {
             "type": "object",
             "properties": {
@@ -13779,6 +13918,12 @@ const docTemplate = `{
                     }
                 },
                 "price_change_percentage_7d_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "total_market_cap": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "number"

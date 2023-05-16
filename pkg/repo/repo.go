@@ -25,6 +25,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
+	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
 	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
@@ -211,6 +212,7 @@ type Repo struct {
 	SaleBotMarketplace                   salebotmarketplace.Store
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigMixRole                   guildconfigmixrole.Store
+	GuildConfigAdminRole                 guildconfigadminrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
