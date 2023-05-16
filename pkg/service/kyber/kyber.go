@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/k0kubun/pp"
 	"github.com/portto/solana-go-sdk/types"
 
 	"github.com/defipod/mochi/pkg/config"
@@ -60,15 +61,21 @@ func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount st
 	return res, nil
 }
 
-func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error) {
+func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount, to string) (*response.KyberSwapRoutes, error) {
+	// create key pair for programState
+	wallet := types.NewAccount()
+	programState := wallet.PublicKey.ToBase58()
+
 	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/route?tokenIn=%s&tokenOut=%s&amountIn=%s", k.kyberBaseUrl, chain, fromAddress, toAddress, amount), nil)
+	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/route?tokenIn=%s&tokenOut=%s&amountIn=%s&to=%s&programState=%s&clientData=%s", k.kyberBaseUrl, chain, fromAddress, toAddress, amount, to, programState, consts.ClientID), nil)
 	if err != nil {
 		return nil, err
 	}
 
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
+	pp.Println("check request")
+	pp.Println(request)
 
 	resp, err := client.Do(request)
 

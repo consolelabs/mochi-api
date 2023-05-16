@@ -33,7 +33,9 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 	var swapRoutes *response.KyberSwapRoutes
 	if req.ChainId == 101 || req.ChainName == "solana" {
-		swapRoutes, err = e.svc.Kyber.GetSwapRoutesSolana("solana", fromToken.Address, toTokenOverview.Address, stringAmount)
+		solanaCentralizedAddress := e.solana.GetCentralizedWalletAddress()
+
+		swapRoutes, err = e.svc.Kyber.GetSwapRoutesSolana("solana", fromToken.Address, toTokenOverview.Address, stringAmount, solanaCentralizedAddress)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.GetSwapRoutes] - cannot get swap routes")
 			return nil, err
@@ -153,6 +155,11 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
+	centralizedWalletAddress := e.cfg.CentralizedWalletAddress
+	if req.ChainName == "solana" {
+		centralizedWalletAddress = e.solana.GetCentralizedWalletAddress()
+	}
+
 	// send payload to mochi-pay
 	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
 		ProfileId:     profile.ID,
@@ -164,7 +171,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		AmountIn:      buildRouteResp.Data.AmountIn,
 		AmountOut:     buildRouteResp.Data.AmountOut,
 		ChainName:     req.ChainName,
-		Address:       e.cfg.CentralizedWalletAddress,
+		Address:       centralizedWalletAddress,
 		RouterAddress: buildRouteResp.Data.RouterAddress,
 		EncodedData:   buildRouteResp.Data.Data,
 		Gas:           buildRouteResp.Data.Gas,
