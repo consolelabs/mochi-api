@@ -472,7 +472,7 @@ func (e *Entity) CreateBluemoveNFTCollection(req request.CreateNFTCollectionRequ
 	}
 
 	nftCollection, err = e.repo.NFTCollection.Create(model.NFTCollection{
-		Address:    req.Address,
+		Address:    collection.Address,
 		Symbol:     collection.Symbol,
 		Name:       collection.Name,
 		ChainID:    convertedChainId,
