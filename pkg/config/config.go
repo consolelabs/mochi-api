@@ -113,11 +113,12 @@ type Config struct {
 }
 
 type MarketplaceBaseUrl struct {
-	Opensea       string
-	Quixotic      string
-	Painswap      string
-	BluemoveAptos string
-	BluemoveSui   string
+	Opensea            string
+	Quixotic           string
+	Painswap           string
+	BluemoveAptos      string
+	BluemoveSui        string
+	BluemoveSuiMainnet string
 }
 
 type Solscan struct {
@@ -248,11 +249,12 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		},
 
 		MarketplaceBaseUrl: MarketplaceBaseUrl{
-			Opensea:       v.GetString("OPENSEA_BASE_URL"),
-			Quixotic:      v.GetString("QUIXOTIC_BASE_URL"),
-			Painswap:      v.GetString("PAINTSWAP_BASE_URL"),
-			BluemoveAptos: v.GetString("BLUEMOVE_APTOS_BASE_URL"),
-			BluemoveSui:   v.GetString("BLUEMOVE_SUI_BASE_URL"),
+			Opensea:            v.GetString("OPENSEA_BASE_URL"),
+			Quixotic:           v.GetString("QUIXOTIC_BASE_URL"),
+			Painswap:           v.GetString("PAINTSWAP_BASE_URL"),
+			BluemoveAptos:      v.GetString("BLUEMOVE_APTOS_BASE_URL"),
+			BluemoveSui:        v.GetString("BLUEMOVE_SUI_BASE_URL"),
+			BluemoveSuiMainnet: v.GetString("BLUEMOVE_SUI_MAINNET_URL"),
 		},
 		MarketplaceApiKey: MarketplaceApiKey{
 			Opensea:  v.GetString("OPENSEA_API_KEY"),
@@ -359,6 +361,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BLUEMOVE_SUI_BASE_URL", "https://3rd.console.so/bluemove/api")
 	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
+	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://3rd.console.so/sui/api")
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
 
 	for idx := range loaders {
