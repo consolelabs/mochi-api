@@ -361,7 +361,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BLUEMOVE_SUI_BASE_URL", "https://3rd.console.so/bluemove/api")
 	v.SetDefault("COVALENT_BASE_URL", "https://api.covalenthq.com/v1")
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
-	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://sui-api-mainnet.bluemove.net/api")
+	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://3rd.console.so/sui/api")
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
 
 	for idx := range loaders {
