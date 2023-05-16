@@ -2,6 +2,7 @@ package bluemove
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type bluemoveService struct {
@@ -73,26 +75,26 @@ func (b *bluemoveService) SelectBluemoveCollection(collectionAddress, chainId st
 
 	// select collection
 	for _, collection := range mapCollections {
-		if collection.Attributes.Creator == collectionAddress {
+		if collection.Attributes.Creator == collectionAddress || util.GetSuiAddressCollection(collection.Attributes.Type) == collectionAddress {
 			return &model.NFTCollection{
 				ChainID: chainId,
 				Name:    collection.Attributes.Name,
-				Symbol:  collection.Attributes.Slug,
+				Symbol:  util.GetSymbolSuiCollection(collection.Attributes.Slug),
 				Address: collectionAddress,
 				Image:   collection.Attributes.Uri,
 				Author:  strconv.Itoa(int(collection.Id)),
 			}, nil
 		}
 	}
-	return nil, nil
+	return nil, errors.New("not found collection")
 }
 
 func (b *bluemoveService) ChooseBluemoveChain(chainId string) string {
 	switch chainId {
 	case "9999":
 		return b.config.MarketplaceBaseUrl.BluemoveAptos
-	case "9997":
-		return b.config.MarketplaceBaseUrl.BluemoveSui
+	case "9996":
+		return b.config.MarketplaceBaseUrl.BluemoveSuiMainnet
 	default:
 		return b.config.MarketplaceBaseUrl.BluemoveAptos
 	}

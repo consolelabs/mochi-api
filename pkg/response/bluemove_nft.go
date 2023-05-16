@@ -38,6 +38,7 @@ type BluemoveCollectionProperty struct {
 	Items       string                    `json:"items"`
 	Owners      string                    `json:"owners"`
 	Uri         string                    `json:"uri"`
+	Type        string                    `json:"type"`
 	Metadata    map[string]ValueTraitType `json:"metadata"`
 }
 
