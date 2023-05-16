@@ -194,3 +194,7 @@ type GuildConfigTipRangeResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ListGuildAdminRoles struct {
+	Data []model.GuildConfigAdminRole `json:"data"`
+}

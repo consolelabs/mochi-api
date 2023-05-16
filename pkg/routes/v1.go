@@ -296,6 +296,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			mixRoleGroup.GET("", h.ConfigRoles.ListGuildMixRoles)
 			mixRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildMixRole)
 		}
+		adminRoleGroup := configRoleGroup.Group("/admin-roles")
+		{
+			adminRoleGroup.POST("", h.ConfigRoles.CreateGuildAdminRoles)
+			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
+			adminRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildAdminRole)
+		}
 	}
 
 	configCommunityGroup := v1.Group("/config-community")
