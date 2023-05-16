@@ -8,7 +8,7 @@ type QuestReward struct {
 	RewardTypeID uuid.UUID        `json:"reward_type_id" swaggertype:"string"`
 	RewardAmount int              `json:"reward_amount"`
 	PassID       *uuid.UUID       `json:"pass_id" swaggertype:"string"`
-	Quest        *Quest           `json:"quest"`
+	Quest        *Quest           `json:"quest" swaggerignore:"true"`
 	RewardType   *QuestRewardType `json:"reward_type"`
 }
 
