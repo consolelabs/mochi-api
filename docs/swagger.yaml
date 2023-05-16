@@ -1015,8 +1015,6 @@ definitions:
         type: string
       pass_id:
         type: string
-      quest:
-        $ref: '#/definitions/model.Quest'
       quest_id:
         type: string
       reward_amount:
@@ -3276,13 +3274,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number

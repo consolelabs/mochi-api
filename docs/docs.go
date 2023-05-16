@@ -9343,9 +9343,6 @@ const docTemplate = `{
                 "pass_id": {
                     "type": "string"
                 },
-                "quest": {
-                    "$ref": "#/definitions/model.Quest"
-                },
                 "quest_id": {
                     "type": "string"
                 },
