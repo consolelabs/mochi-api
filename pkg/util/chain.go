@@ -31,7 +31,7 @@ func ConvertChainToChainId(chain string) string {
 	case "onus":
 		return "1975"
 	case "sui":
-		return "9997"
+		return "9996"
 	default:
 		return chain
 	}
@@ -59,7 +59,7 @@ func ConvertChainIDToChain(chain string) string {
 		return "polygon"
 	case "9999":
 		return "apt"
-	case "9997":
+	case "9996":
 		return "sui"
 	default:
 		return chain
@@ -103,7 +103,7 @@ func ConvertInputToChainId(input string) string {
 		"250":        "ftm",
 		"1975":       "onus",
 		"9999":       "apt",
-		"9997":       "sui",
+		"9996":       "sui",
 		"999":        "sol",
 		"0xa86a":     "avax",
 		"42161":      "arb",
