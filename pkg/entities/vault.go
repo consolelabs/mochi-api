@@ -187,7 +187,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		listNotify = append(listNotify, treasurerRequest.Requester)
 	}
 
-	profile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.Requester)
+	profile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.UserDiscordId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
 		return err
