@@ -270,6 +270,7 @@ type GetCoinByContractResponseData struct {
 	Symbol          string                            `json:"symbol"`
 	DetailPlatforms map[string]CoinPlatformDetailData `json:"detail_platforms"`
 	Image           CoinImage                         `json:"image"`
+	Decimal         int                               `json:"-"`
 }
 
 type CoinPlatformDetailData struct {

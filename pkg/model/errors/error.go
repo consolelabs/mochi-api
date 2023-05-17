@@ -22,7 +22,9 @@ func GetStatusCode(err error) int {
 		ErrRecordNotFound,
 		ErrTokenNotFound:
 		code = http.StatusNotFound
-	case ErrConflict:
+	case
+		ErrConflict,
+		ErrTokenRequestExisted:
 		code = http.StatusConflict
 	case
 		ErrInvalidChain,
@@ -35,8 +37,7 @@ func GetStatusCode(err error) int {
 		ErrInvalidVoteChoice,
 		ErrInvalidAuthorityType,
 		ErrXPRoleExisted,
-		ErrMixRoleExisted,
-		ErrTokenRequestExisted:
+		ErrMixRoleExisted:
 		code = http.StatusBadRequest
 	default:
 		code = http.StatusInternalServerError
