@@ -24,5 +24,5 @@ var (
 	ErrTokenNotFound             = NewStringError("Token not found", 404)
 	ErrXPRoleExisted             = NewStringError("XP role config already existed", 400)
 	ErrMixRoleExisted            = NewStringError("Mix role config already existed", 400)
-	ErrTokenRequestExisted       = NewStringError("Token request already existed", 400)
+	ErrTokenRequestExisted       = NewStringError("Token request already existed", 409)
 )
