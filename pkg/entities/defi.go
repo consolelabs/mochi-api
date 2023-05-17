@@ -139,27 +139,7 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) GetCoinDataBRC20(coinName string) (*response.GetCoinResponse, error, int) {
-	data, err, statusCode := e.svc.CoinGecko.GetCoinBRC20(strings.ToLower(coinName))
-	if err != nil {
-		return nil, err, statusCode
-	}
-
-	return data, nil, http.StatusOK
-}
-
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	// if start with brc20
-	if strings.HasPrefix(strings.ToLower(query), "brc20") {
-		token, err, _ := e.svc.CoinGecko.GetCoinBRC20(strings.ToLower(query))
-		if err != nil {
-			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinBRC20() failed")
-			return nil, err
-		}
-
-		return []model.CoingeckoSupportedTokens{{ID: token.ID, Name: token.Name, Symbol: token.Symbol}}, nil
-	}
-
 	if query != "skull" {
 		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 		if err != nil && err != gorm.ErrRecordNotFound {
@@ -175,6 +155,33 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 	if err != nil {
 		e.log.Fields(logger.Fields{"searchQ": searchQ}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
 		return nil, err
+	}
+
+	// search on coingecko
+	coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.SearchCoins] svc.CoinGecko.SearchCoin() failed")
+		return nil, err
+	}
+
+	// merge tokens
+	for _, token := range coingeckoTokens.Data {
+		// check if id already exists
+		exists := false
+		for _, t := range tokens {
+			if t.ID == token.ID {
+				exists = true
+				break
+			}
+		}
+
+		if !exists {
+			tokens = append(tokens, model.CoingeckoSupportedTokens{
+				ID:     token.ID,
+				Name:   token.Name,
+				Symbol: token.Symbol,
+			})
+		}
 	}
 
 	return tokens, nil

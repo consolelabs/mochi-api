@@ -137,19 +137,6 @@ func (h *Handler) GetCoin(c *gin.Context) {
 		return
 	}
 
-	// if coinId has prefix brc20
-	if strings.HasPrefix(strings.ToLower(coinID), "brc20") {
-		data, err, statusCode := h.entities.GetCoinDataBRC20(coinID)
-		if err != nil {
-			h.log.Error(err, "[handler.GetCoin] - failed to get brc20 coin data")
-			c.JSON(statusCode, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-		return
-	}
-
 	isDominanceChart := strings.EqualFold(c.Query("is_dominance_chart"), "true")
 
 	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart)

@@ -1,7 +1,6 @@
 package coingecko
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -198,58 +198,6 @@ func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHisto
 	return res, nil
 }
 
-func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, error, int) {
-	coinName := strings.ToLower(coinId)
-	// get from cache
-	coinData, err := c.brc20Cache.GetString(c.brc20KeyPrefix + coinName)
-	if err != nil {
-		return nil, err, 0
-	}
-
-	if coinData == "" {
-		return nil, errors.New("coin not found"), 0
-	}
-
-	coinDataMap := make(map[string]interface{})
-	if err := json.Unmarshal([]byte(coinData), &coinDataMap); err != nil {
-		return nil, err, 0
-	}
-
-	// id := coinDataMap["id"].(int)
-	name := coinDataMap["name"].(string)
-	priceUsd := coinDataMap["priceUsd"].(float64)
-	marketCapUsd := coinDataMap["marketCapUsd"].(float64)
-	percent24h := coinDataMap["percent24h"].(float64)
-
-	resp := &response.GetCoinResponse{
-		ID:              name,
-		Name:            name,
-		Symbol:          name,
-		MarketCapRank:   0,
-		AssetPlatformID: "brc20",
-		Image:           response.CoinImage{},
-		MarketData: response.MarketData{
-			CurrentPrice: map[string]float64{
-				"usd": priceUsd,
-			},
-			MarketCap: map[string]float64{
-				"usd": marketCapUsd,
-			},
-			PriceChangePercentage1hInCurrency: map[string]float64{},
-			PriceChangePercentage24hInCurrency: map[string]float64{
-				"usd": percent24h,
-			},
-			PriceChangePercentage7dInCurrency: map[string]float64{},
-		},
-		Tickers: []response.TickerData{},
-		Description: response.CoinDescription{
-			EngDescription: "BRC20 Token, data from brc-20.io",
-		},
-	}
-
-	return resp, nil, 0
-}
-
 func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {
 	res := &response.GetGlobalDataResponse{}
 	url := c.getGlobalCryptoDataURL
@@ -258,4 +206,37 @@ func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
+}
+
+func (c *CoinGecko) SearchCoin(query string) (*response.SearchCoinResponse, error, int) {
+	resp := &CoinGeckoSearchResponse{}
+
+	req, err := http.NewRequest(http.MethodGet, c.searchCoinURL, nil)
+	if err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	statusCode, err := util.FetchData(req.URL.String(), resp)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to search coin %s: %v", query, err), statusCode
+	}
+
+	coins := make([]model.CoingeckoSupportedTokens, 0)
+	for _, coin := range resp.Coins {
+		if coin.ID != nil && coin.Name != nil && coin.Symbol != nil {
+			coins = append(coins, model.CoingeckoSupportedTokens{
+				ID:     *coin.ID,
+				Name:   *coin.Name,
+				Symbol: *coin.Symbol,
+			})
+		}
+	}
+
+	return &response.SearchCoinResponse{
+		Data: coins,
+	}, nil, http.StatusOK
 }
