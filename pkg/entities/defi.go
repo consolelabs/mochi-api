@@ -140,16 +140,17 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	if query != "skull" {
-		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-			return nil, err
-		}
-		if err == nil {
-			return []model.CoingeckoSupportedTokens{*token}, nil
-		}
-	}
+	// if query != "skull" {
+	// 	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+	// 	if err != nil && err != gorm.ErrRecordNotFound {
+	// 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+	// 		return nil, err
+	// 	}
+	// 	if err == nil {
+	// 		return []model.CoingeckoSupportedTokens{*token}, nil
+	// 	}
+	// }
+
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {
@@ -157,32 +158,32 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		return nil, err
 	}
 
-	// search on coingecko
-	coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
-	if err != nil {
-		e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.SearchCoins] svc.CoinGecko.SearchCoin() failed")
-		return nil, err
-	}
+	// // search on coingecko
+	// coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.SearchCoins] svc.CoinGecko.SearchCoin() failed")
+	// 	return nil, err
+	// }
 
-	// merge tokens
-	for _, token := range coingeckoTokens.Data {
-		// check if id already exists
-		exists := false
-		for _, t := range tokens {
-			if t.ID == token.ID {
-				exists = true
-				break
-			}
-		}
+	// // merge tokens
+	// for _, token := range coingeckoTokens.Data {
+	// 	// check if id already exists
+	// 	exists := false
+	// 	for _, t := range tokens {
+	// 		if t.ID == token.ID {
+	// 			exists = true
+	// 			break
+	// 		}
+	// 	}
 
-		if !exists {
-			tokens = append(tokens, model.CoingeckoSupportedTokens{
-				ID:     token.ID,
-				Name:   token.Name,
-				Symbol: token.Symbol,
-			})
-		}
-	}
+	// 	if !exists {
+	// 		tokens = append(tokens, model.CoingeckoSupportedTokens{
+	// 			ID:     token.ID,
+	// 			Name:   token.Name,
+	// 			Symbol: token.Symbol,
+	// 		})
+	// 	}
+	// }
 
 	return tokens, nil
 }
