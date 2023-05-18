@@ -330,7 +330,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       fmt.Sprintf("<:revoke:967285238055174195> Treasurer was not %s", action),
+					Title:       fmt.Sprintf("<:revoke:1077631119073230970> Treasurer was not %s", action),
 					Description: description,
 					Color:       0x34AAFF,
 					Thumbnail: &discordgo.MessageEmbedThumbnail{
@@ -475,6 +475,12 @@ func (e *Entity) validateBalance(token *mochipay.Token, address, amount string) 
 }
 
 func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmission) (resp *response.CreateTreasurerSubmissionResponse, err error) {
+	vault, err := e.repo.Vault.GetById(req.VaultId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Vault.GetById failed")
+		return nil, err
+	}
+
 	modelSubmission := model.TreasurerSubmission{
 		VaultId:   req.VaultId,
 		RequestId: req.RequestId,
@@ -537,6 +543,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 			Percentage:                fmt.Sprintf("%.2f", percentage),
 			Threshold:                 fmt.Sprintf("%.2f", threshold),
 		},
+		TotalSubmissions: submissions,
 	}
 
 	if percentage >= threshold {
@@ -553,12 +560,20 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		msg := discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       "<:bell:1087564962941124679> Mochi notifications",
-					Description: fmt.Sprintf("<@%s> %s for request #%d", req.Sumitter, req.Choice, req.RequestId),
+					Title: "<:bell:1087564962941124679> Mochi notifications",
+					Description: fmt.Sprintf("<@%s> %s the request ##%d in %s vault. This request will be approved if `%d/%d` treasurers approve (%s)",
+						req.Sumitter,
+						req.Choice,
+						req.RequestId,
+						vault.Name,
+						len(submissions)-int(allowedRejectVote),
+						len(submissions),
+						vault.Threshold+"%",
+					),
 					Fields: []*discordgo.MessageEmbedField{
 						{
 							Name:   "Approved",
-							Value:  fmt.Sprintf("<:approve_vault:1090242787435356271> `%d/%d`", totalApprovedSubmission, len(submissions)),
+							Value:  fmt.Sprintf("<:check:1077631110047080478> `%d/%d`", totalApprovedSubmission, len(submissions)),
 							Inline: true,
 						},
 						{

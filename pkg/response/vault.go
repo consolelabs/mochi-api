@@ -12,8 +12,9 @@ type CreateTreasurerRequestResponse struct {
 }
 
 type CreateTreasurerSubmissionResponse struct {
-	Submission model.TreasurerSubmission `json:"submission"`
-	VoteResult VoteResult                `json:"vote_result"`
+	Submission       model.TreasurerSubmission   `json:"submission"`
+	VoteResult       VoteResult                  `json:"vote_result"`
+	TotalSubmissions []model.TreasurerSubmission `json:"total_submissions"`
 }
 
 type VoteResult struct {
