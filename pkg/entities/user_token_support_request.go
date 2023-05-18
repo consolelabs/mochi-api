@@ -37,65 +37,53 @@ func (e *Entity) GetUserRequestTokens(req request.GetUserSupportTokenRequest) (t
 }
 
 func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSupportRequest) (*model.UserTokenSupportRequest, error) {
+	l := e.log.Fields(logger.Fields{"req": req})
 	chainIdStr := util.ConvertInputToChainId(req.TokenChain)
-	chainId, err := strconv.Atoi(chainIdStr)
+	chainID, err := strconv.Atoi(chainIdStr)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(errors.ErrInvalidChain, "invalid chain")
+		l.Error(errors.ErrInvalidChain, "invalid chain")
 		return nil, errors.ErrInvalidChain
 	}
-	reqs, _, err := e.repo.UserTokenSupportRequest.List(tokenSupportReq.ListQuery{TokenChainID: &chainId, TokenAddress: req.TokenAddress})
+	// check duplicated request
+	reqs, _, err := e.repo.UserTokenSupportRequest.List(tokenSupportReq.ListQuery{TokenChainID: &chainID, TokenAddress: req.TokenAddress})
 	if err != nil {
-		e.log.Fields(logger.Fields{
-			"ChainID":      chainId,
-			"TokenAddress": req.TokenAddress,
-		}).Error(err, "[entity.CreateUserTokenSupportRequest] repo.UserTokenSupportRequest.List() failed")
+		l.Error(err, "[entity.CreateUserTokenSupportRequest] repo.UserTokenSupportRequest.List() failed")
 		return nil, err
 	}
 	if len(reqs) > 0 {
-		e.log.Fields(logger.Fields{
-			"ChainID":      chainId,
-			"TokenAddress": req.TokenAddress,
-		}).Error(errors.ErrTokenRequestExisted, "[entity.CreateUserTokenSupportRequest] token request already existed")
+		l.Error(errors.ErrTokenRequestExisted, "[entity.CreateUserTokenSupportRequest] token request already existed")
 		return nil, errors.ErrTokenRequestExisted
 	}
 
-	var platformID string
-	// special handling for solana
-	if chainId == 999 {
-		platformID = "solana"
-	} else {
-		platform, err := e.svc.CoinGecko.GetAssetPlatform(chainId)
-		if err != nil {
-			e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetAssetPlatform() failed")
-			return nil, err
-		}
-		platformID = platform.ID
-	}
-
-	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, req.TokenAddress)
+	// get token info
+	token, err := e.findTokenByContractAddress(chainID, req.TokenAddress)
 	if err != nil {
-		e.log.Fields(logger.Fields{"ChainID": chainId}).Error(err, "[entity.CreateUserTokenSupportRequest] svc.CoinGecko.GetCoinByContract() failed")
-		return nil, err
+		l.Error(err, "[entity.CreateUserTokenSupportRequest] findTokenByContractAddress() failed")
+		return nil, errors.ErrTokenNotFound
 	}
 
-	platformDetail, ok := coin.DetailPlatforms[platformID]
-	var decimal int
-	if ok {
-		decimal = platformDetail.DecimalPlace
+	// check duplicated from mochi-pay
+	found, err := e.svc.MochiPay.GetToken(token.Symbol, fmt.Sprint(chainID))
+	if err == nil && found != nil {
+		if strings.EqualFold(found.Address, req.TokenAddress) {
+			l.Error(err, "[entity.CreateUserTokenSupportRequest] repo.UserTokenSupportRequest.List() failed")
+			return nil, errors.ErrTokenRequestExisted
+		}
 	}
+
 	tokenReq := &model.UserTokenSupportRequest{
 		UserDiscordID: req.UserDiscordID,
 		GuildID:       req.GuildID,
 		ChannelID:     req.ChannelID,
 		MessageID:     req.MessageID,
 		TokenAddress:  req.TokenAddress,
-		TokenChainID:  chainId,
+		TokenChainID:  chainID,
 		Status:        model.TokenSupportPending,
-		CoinGeckoID:   coin.ID,
-		TokenName:     coin.Name,
-		Symbol:        strings.ToUpper(coin.Symbol),
-		Decimal:       decimal,
-		Icon:          coin.Image.Large,
+		CoinGeckoID:   token.ID,
+		TokenName:     token.Name,
+		Symbol:        strings.ToUpper(token.Symbol),
+		Decimal:       token.Decimal,
+		Icon:          token.Image.Large,
 	}
 	err = e.repo.UserTokenSupportRequest.CreateWithHook(tokenReq, func(id int) error {
 		return e.notifyDiscordTokenRequest(id, req)
@@ -105,6 +93,55 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 		return nil, err
 	}
 	return tokenReq, nil
+}
+
+func (e *Entity) findTokenByContractAddress(chainID int, address string) (*response.GetCoinByContractResponseData, error) {
+	var platformID string
+	// special handling for solana
+	if chainID == 999 {
+		platformID = "solana"
+	} else {
+		platform, err := e.svc.CoinGecko.GetAssetPlatform(chainID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"ChainID": chainID}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetAssetPlatform() failed")
+			return nil, err
+		}
+		platformID = platform.ID
+	}
+
+	// find with coingecko first
+	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, address)
+	// if found, return
+	if err == nil {
+		platformDetail, ok := coin.DetailPlatforms[platformID]
+		if ok {
+			coin.Decimal = platformDetail.DecimalPlace
+		}
+		return coin, nil
+	}
+	// if fail to fetch data -> continue looking up
+	if err != nil {
+		e.log.Fields(logger.Fields{"ChainID": chainID}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
+		// return nil, err
+	}
+
+	// now try to find with covalent
+	res, err, status := e.svc.Covalent.GetHistoricalTokenPrices(chainID, "usd", address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"ChainID": chainID, "status": status}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
+		return nil, err
+	}
+	if len(res.Data) == 0 {
+		e.log.Fields(logger.Fields{"ChainID": chainID, "contract": address}).Error(err, "[entity.findTokenByContractAddress] Token contract not found")
+		err = fmt.Errorf("Token contract %s not found", address)
+		return nil, err
+	}
+	return &response.GetCoinByContractResponseData{
+		ID:      "",
+		Name:    res.Data[0].Name,
+		Symbol:  res.Data[0].Symbol,
+		Decimal: res.Data[0].Decimals,
+	}, nil
 }
 
 func (e *Entity) ApproveTokenSupportRequest(id int) (*model.UserTokenSupportRequest, error) {

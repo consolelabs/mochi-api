@@ -17,6 +17,7 @@ var networks = map[int]string{
 	56:  "bsc-mainnet",
 	137: "matic-mainnet",
 	250: "fantom-mainnet",
+	999: "solana-mainnet",
 }
 
 type Covalent struct {
@@ -42,7 +43,11 @@ func (c *Covalent) getFullUrl(endpoint string, idx int) string {
 }
 
 func (c *Covalent) GetHistoricalTokenPrices(chainID int, currency string, address string) (*response.HistoricalTokenPricesResponse, error, int) {
-	endpoint := fmt.Sprintf("/pricing/historical_by_addresses_v2/%d/%s/%s/", chainID, currency, address)
+	chainName, ok := networks[chainID]
+	if !ok {
+		chainName = fmt.Sprint(chainID)
+	}
+	endpoint := fmt.Sprintf("/pricing/historical_by_addresses_v2/%s/%s/%s/", chainName, currency, address)
 	res := &response.HistoricalTokenPricesResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil || code != http.StatusOK {
