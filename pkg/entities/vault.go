@@ -561,7 +561,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Title: "<:bell:1087564962941124679> Mochi notifications",
-					Description: fmt.Sprintf("<@%s> %s the request ##%d in %s vault. This request will be approved if `%d/%d` treasurers approve (%s)",
+					Description: fmt.Sprintf("<@%s> %s the request #%d in %s vault. This request will be approved if `%d/%d` treasurers approve (%s)",
 						req.Sumitter,
 						req.Choice,
 						req.RequestId,
