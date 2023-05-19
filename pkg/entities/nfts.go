@@ -488,6 +488,68 @@ func (e *Entity) CreateBluemoveNFTCollection(req request.CreateNFTCollectionRequ
 	return
 }
 
+func (e *Entity) CreateBluemoveNFTCollectionBatch(chainId string) error {
+	collectionList, err := e.svc.Bluemove.GetAllCollections(chainId)
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Bluemove.GetAllCollections] failed to get list address: %v", err)
+		return err
+	}
+	for _, collection := range collectionList {
+		checkExistNFT, err := e.CheckExistNftCollection(collection.Address)
+		if err != nil {
+			e.log.Errorf(err, "[e.CheckExistNftCollection] failed to check if nft exist: %v", err)
+			continue
+		}
+
+		if checkExistNFT {
+			isSync, err := e.CheckIsSync(collection.Address)
+			if err != nil {
+				e.log.Errorf(err, "[e.CheckIsSync] failed to check if nft is synced: %v", err)
+				return err
+			}
+
+			if !isSync {
+				e.log.Infof("[e.CheckIsSync] Already added. Nft is in sync progress")
+				continue
+			} else {
+				e.log.Infof("[e.CheckIsSync] Already added. Nft is done with sync")
+				continue
+			}
+		}
+
+		convertedChainId := util.ConvertChainToChainId(chainId)
+		chainID, _ := strconv.Atoi(convertedChainId)
+
+		err = e.indexer.CreateERC721Contract(indexer.CreateERC721ContractRequest{
+			Address:      collection.Author,
+			ChainID:      chainID,
+			Name:         collection.Name,
+			Symbol:       collection.Symbol,
+			PriorityFlag: false,
+		})
+		if err != nil {
+			e.log.Errorf(err, "[CreateERC721Contract] failed to create erc721 contract: %v", err)
+			continue
+		}
+
+		_, err = e.repo.NFTCollection.Create(model.NFTCollection{
+			Address:    collection.Address,
+			Symbol:     collection.Symbol,
+			Name:       collection.Name,
+			ChainID:    convertedChainId,
+			ERCFormat:  "ERC721",
+			IsVerified: true,
+			Author:     collection.Author,
+			Image:      collection.Image,
+		})
+		if err != nil {
+			e.log.Errorf(err, "[repo.NFTCollection.Create] cannot add collection: %v", err)
+			continue
+		}
+	}
+	return nil
+}
+
 func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) (nftCollection *model.NFTCollection, err error) {
 	address := e.HandleMarketplaceLink(req.Address, req.ChainID)
 	if address == "collection does not have an address" {
