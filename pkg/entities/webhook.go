@@ -726,3 +726,24 @@ func (e *Entity) sendProposalToDiscord(wg *sync.WaitGroup, channelId string, pro
 	defer wg.Done()
 	e.svc.Discord.NotifyNewProposal(channelId, *proposal)
 }
+
+func (e *Entity) HandleGuildCreate(guildID string) error {
+	l := e.log.Fields(logger.Fields{"guildID": guildID})
+
+	if err := e.InitGuildDefaultTokenConfigs(guildID); err != nil {
+		l.Error(err, "[entity.handleGuildCreate] InitGuildDefaultTokenConfigs() failed")
+	}
+
+	if err := e.InitGuildDefaultActivityConfigs(guildID); err != nil {
+		l.Error(err, "[entity.handleGuildCreate] InitGuildDefaultActivityConfigs() failed")
+	}
+
+	_, err := e.FetchAndSaveGuildMembers(guildID)
+	if err != nil {
+		l.Error(err, "[entity.handleGuildCreate] FetchAndSaveGuildMembers() failed")
+	} else {
+		l.Error(err, "[entity.handleGuildCreate] FetchAndSaveGuildMembers() done")
+	}
+
+	return err
+}

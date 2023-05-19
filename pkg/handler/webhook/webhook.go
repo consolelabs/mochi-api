@@ -139,6 +139,11 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 		return
 	}
 
+	err = h.entities.CreateGuildIfNotExists(message.GuildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] entity.CreateGuildIfNotExists() failed")
+	}
+
 	uActivity, err := h.entities.HandleDiscordMessage(message)
 	if err != nil {
 		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
@@ -185,18 +190,9 @@ func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
 		return
 	}
 
-	if err = h.entities.InitGuildDefaultTokenConfigs(req.GuildID); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultTokenConfigs() failed")
-	}
-	if err = h.entities.InitGuildDefaultActivityConfigs(req.GuildID); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.InitGuildDefaultActivityConfigs() failed")
-	}
-
-	users, err := h.entities.FetchAndSaveGuildMembers(req.GuildID)
+	err = h.entities.HandleGuildCreate(req.GuildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.handleGuildCreate] entity.FetchAndSaveGuildMembers() failed")
-	} else {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "users": users}).Error(err, "[handler.handleGuildCreate] entity.FetchAndSaveGuildMembers() done")
+		h.log.Error(err, "[handler.handleGuildCreate] entity.HandleGuildCreate() failed")
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))

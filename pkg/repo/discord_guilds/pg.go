@@ -29,12 +29,17 @@ func (pg *pg) Gets() ([]model.DiscordGuild, error) {
 }
 
 func (pg *pg) CreateOrReactivate(guild model.DiscordGuild) error {
+	joinedAt := guild.JoinedAt
+	if !guild.JoinedAt.IsZero() {
+		joinedAt = time.Now().UTC()
+	}
+
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
 		Columns: []clause.Column{
 			{Name: "id"},
 		},
-		DoUpdates: clause.Assignments(map[string]interface{}{"active": true, "joined_at": time.Now(), "left_at": nil}),
+		DoUpdates: clause.Assignments(map[string]interface{}{"active": true, "joined_at": joinedAt, "left_at": nil}),
 	}).Create(&guild).Error
 	if err != nil {
 		tx.Rollback()

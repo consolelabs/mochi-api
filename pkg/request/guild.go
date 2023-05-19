@@ -3,8 +3,9 @@ package request
 import "time"
 
 type CreateGuildRequest struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID       string    `json:"id"`
+	Name     string    `json:"name"`
+	JoinedAt time.Time `json:"-"`
 }
 
 type UpdateGuildRequest struct {

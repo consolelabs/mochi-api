@@ -2,6 +2,7 @@ package entities
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"net/http"
@@ -208,6 +209,8 @@ func (e *Entity) UpsertBatchUpvoteStreak(streak []model.DiscordUserUpvoteStreak)
 }
 
 func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {
+	l := e.log.Fields(logger.Fields{"req": req})
+
 	userXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -229,14 +232,13 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		EarnedXP:     earnedXP,
 		CreatedAt:    req.Timestamp,
 	}); err != nil {
-		e.log.
-			Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID, "action": req.Action}).
-			Error(err, "[Entity][HandleUserActivities] failed to create guild_user_activity_logs")
+		l.Error(err, "[entity.HandleUserActivities] repo.GuildUserActivityLog.CreateOne() failed")
 		return nil, err
 	}
 
 	latestUserXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		l.Error(err, "[entity.HandleUserActivities] repo.GuildUserXP.GetOne() failed")
 		return nil, err
 	}
 

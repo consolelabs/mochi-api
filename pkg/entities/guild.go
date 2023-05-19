@@ -241,3 +241,91 @@ func (e *Entity) GetGuildRoles(guildID string) (*response.DiscordGuildRoles, err
 
 	return &resp, nil
 }
+
+func (e *Entity) FetchAndSyncGuilds() ([]*response.GetGuildResponse, error) {
+	res, err := e.GetGuilds()
+	if err != nil {
+		e.log.Error(err, "[entity.FetchAndSyncGuilds] GetGuilds() failed")
+		return nil, err
+	}
+
+	dbGuilds := make(map[string]*response.GetGuildResponse)
+	for _, g := range res.Data {
+		dbGuilds[g.ID] = g
+	}
+
+	fetchedGuilds := make(map[string]*discordgo.Guild)
+	e.discord.StateEnabled = true
+	for _, g := range e.discord.State.Guilds {
+		fetchedGuilds[g.ID] = g
+	}
+
+	result := make([]*response.GetGuildResponse, 0)
+
+	for id, g := range dbGuilds {
+		_, ok := fetchedGuilds[id]
+		if !ok {
+			err = e.DeactivateGuild(request.HandleGuildDeleteRequest{
+				GuildID:   id,
+				GuildName: g.Name,
+				IconURL:   g.Icon,
+			})
+			if err != nil {
+				e.log.Fields(logger.Fields{"guildID": id}).Error(err, "[entity.FetchAndSyncGuilds] DeactivateGuild() failed")
+			}
+			continue
+		}
+
+		result = append(result, g)
+	}
+
+	for id, g := range fetchedGuilds {
+		dbGuild, ok := dbGuilds[id]
+		if !ok || !dbGuild.Active {
+			err = e.CreateGuild(request.CreateGuildRequest{
+				ID:       id,
+				Name:     g.Name,
+				JoinedAt: g.JoinedAt,
+			})
+			if err != nil {
+				e.log.Fields(logger.Fields{"guildID": id}).Error(err, "[entity.FetchAndSyncGuilds] DeactivateGuild() failed")
+				continue
+			}
+		}
+		result = append(result, dbGuild)
+	}
+
+	return result, nil
+}
+
+func (e *Entity) CreateGuildIfNotExists(guildID string) error {
+	l := e.log.Fields(logger.Fields{"guildID": guildID})
+
+	_, err := e.repo.DiscordGuilds.GetByID(guildID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		l.Error(err, "[entity.CreateGuildIfNotExists] repo.DiscordGuilds.GetByID() failed")
+		return err
+	}
+
+	if err == nil {
+		return nil
+	}
+
+	g, err := e.svc.Discord.GetGuild(guildID)
+	if err != nil {
+		l.Error(err, "[entity.CreateGuildIfNotExists] svc.Discord.GetGuild() failed")
+		return err
+	}
+
+	err = e.CreateGuild(request.CreateGuildRequest{
+		ID:       guildID,
+		Name:     g.Name,
+		JoinedAt: g.JoinedAt,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entity.CreateGuildIfNotExists] DeactivateGuild() failed")
+		return err
+	}
+
+	return nil
+}
