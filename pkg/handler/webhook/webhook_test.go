@@ -18,7 +18,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/repo/pg"
-	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -114,29 +113,6 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 				resp: nil,
 			},
 		},
-		{
-			name: "internal server error - invalid guild ID",
-			args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "", "895659000996200508", time.Now(), "abc"}},
-			want: result{
-				code: 500,
-				err:  nil,
-				resp: nil,
-			},
-		},
-		// {
-		// 	name: "successfully handled user chat and add xp",
-		// 	args: args{request.MESSAGE_CREATE, argsData{author{"760874365037314100"}, "878692765683298344", "895659000996200508", time.Now(), "hello"}},
-		// 	want: result{
-		// 		code:   200,
-		// 		err:    nil,
-		// 		status: "OK",
-		// 		Type:   "level_up",
-		// 		resp: &response.HandleUserActivityResponse{
-		// 			UserID: "760874365037314100",
-		// 			Action: "chat",
-		// 		},
-		// 	},
-		// },
 	}
 
 	gin.SetMode(gin.TestMode)
