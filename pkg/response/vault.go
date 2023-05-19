@@ -7,8 +7,9 @@ import (
 )
 
 type CreateTreasurerRequestResponse struct {
-	Request   model.TreasurerRequest `json:"request"`
-	Treasurer []model.Treasurer      `json:"treasurer"`
+	Request              model.TreasurerRequest `json:"request"`
+	Treasurer            []model.Treasurer      `json:"treasurer"`
+	IsDecidedAndExecuted bool                   `json:"is_decided_and_executed"`
 }
 
 type CreateTreasurerSubmissionResponse struct {
