@@ -32,6 +32,7 @@ type Config struct {
 	DiscordLogWebhook       string
 	InDiscordWalletMnemonic string
 	VaultMnemonic           string
+	SolanaVaultMnemonic     string
 
 	MochiBotSecret string
 
@@ -217,6 +218,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 		VaultMnemonic:           v.GetString("VAULT_MNEMONIC"),
+		SolanaVaultMnemonic:     v.GetString("SOLANA_VAULT_MNEMONIC"),
 		RedisURL:                v.GetString("REDIS_URL"),
 
 		MochiGuildID:                v.GetString("MOCHI_GUILD_ID"),
