@@ -30,13 +30,14 @@ type VoteResult struct {
 }
 
 type VaultDetailResponse struct {
-	WalletAddress     string             `json:"wallet_address"`
-	CurrentRequest    []CurrentRequest   `json:"current_request"`
-	Balance           []Balance          `json:"balance"`
-	MyNft             []MyNft            `json:"my_nft"`
-	EstimatedTotal    string             `json:"estimated_total"`
-	Treasurer         []model.Treasurer  `json:"treasurer"`
-	RecentTransaction []VaultTransaction `json:"recent_transaction"`
+	WalletAddress       string             `json:"wallet_address"`
+	SolanaWalletAddress string             `json:"solana_wallet_address"`
+	CurrentRequest      []CurrentRequest   `json:"current_request"`
+	Balance             []Balance          `json:"balance"`
+	MyNft               []MyNft            `json:"my_nft"`
+	EstimatedTotal      string             `json:"estimated_total"`
+	Treasurer           []model.Treasurer  `json:"treasurer"`
+	RecentTransaction   []VaultTransaction `json:"recent_transaction"`
 }
 
 type VaultTransaction struct {

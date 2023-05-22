@@ -3,6 +3,7 @@ package entities
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 	"time"
@@ -23,31 +24,42 @@ import (
 
 func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, error) {
 	// auto generate vault address when desig mode = false
-	walletAddress := ""
+	walletAddress, solanaWalletAddress := "", ""
 	walletNumber := -1
 	if !req.DesigMode {
+		// get latest wallet number in db
 		latestWalletNumber, err := e.repo.Vault.GetLatestWalletNumber()
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.repo.Vault.GetLatestWalletNumber failed")
 			return nil, err
 		}
 
+		// generate evm wallet
 		account, err := e.vaultwallet.GetAccountByWalletNumber(int(latestWalletNumber.Int64) + 1)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.vaultwallet.GetAccountByWalletNumber failed")
 			return nil, err
 		}
-
 		walletAddress = account.Address.Hex()
+
+		// generate solana wallet
+		solanaWallet, err := e.vaultwallet.GetAccountSolanaByWalletNumber(int(latestWalletNumber.Int64) + 1)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.vaultwallet.GetAccountSolanaByWalletNumber failed")
+			return nil, err
+		}
+		solanaWalletAddress = solanaWallet.PublicKey.ToBase58()
+
 		walletNumber = int(latestWalletNumber.Int64) + 1
 	}
 
 	vault, err := e.repo.Vault.Create(&model.Vault{
-		GuildId:       req.GuildId,
-		Name:          req.Name,
-		Threshold:     req.Threshold,
-		WalletAddress: walletAddress,
-		WalletNumber:  int64(walletNumber),
+		GuildId:             req.GuildId,
+		Name:                req.Name,
+		Threshold:           req.Threshold,
+		WalletAddress:       walletAddress,
+		WalletNumber:        int64(walletNumber),
+		SolanaWalletAddress: solanaWalletAddress,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - e.repo.Vault.Create failed")
@@ -195,33 +207,51 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 
 	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
 
-	validateBalance := e.validateBalance(token, vault.WalletAddress, req.Amount)
+	validateBalance := e.validateBalance(token, vault.WalletAddress, vault.SolanaWalletAddress, req.Amount)
 	if !validateBalance {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - validateBalance failed")
 		return fmt.Errorf("balance not enough")
 	}
 
-	// address = "" aka destination addres = "", use mochi wallet instead
-	account, err := e.vaultwallet.GetAccountByWalletNumber(int(vault.WalletNumber))
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetAccountByWalletNumber failed")
-		return err
-	}
-
-	privateKey, err := e.vaultwallet.GetPrivateKeyByAccount(account)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccount failed")
-		return err
-	}
-
-	destination := e.cfg.CentralizedWalletAddress
-	if req.Address != "" {
-		destination = req.Address
-	}
-
 	recipientPay := treasurerRequest.UserDiscordId
 	if recipientPay == "" {
 		recipientPay = treasurerRequest.Requester
+	}
+
+	// address = "" aka destination addres = "", use mochi wallet instead
+	privateKey, destination := "", ""
+	if token.Chain.ChainId == "999" {
+		account, err := e.vaultwallet.GetAccountSolanaByWalletNumber(int(vault.WalletNumber))
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetAccountSolanaByWalletNumber failed")
+			return err
+		}
+
+		privateKey, err = e.vaultwallet.GetPrivateKeyByAccountSolana(*account)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccountSolana failed")
+			return err
+		}
+
+		destination, _ = e.vaultwallet.SolanaCentralizedWalletAddress()
+	} else {
+		account, err := e.vaultwallet.GetAccountByWalletNumber(int(vault.WalletNumber))
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetAccountByWalletNumber failed")
+			return err
+		}
+
+		privateKey, err = e.vaultwallet.GetPrivateKeyByAccount(account)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccount failed")
+			return err
+		}
+
+		destination = e.cfg.CentralizedWalletAddress
+	}
+
+	if req.Address != "" {
+		destination = req.Address
 	}
 
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
@@ -374,7 +404,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 			return nil, err
 		}
 
-		validateBal := e.validateBalance(token, vault.WalletAddress, req.Amount)
+		validateBal := e.validateBalance(token, vault.WalletAddress, vault.SolanaWalletAddress, req.Amount)
 		if !validateBal {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - validateBalance failed")
 			return nil, fmt.Errorf("balance not enough")
@@ -517,12 +547,22 @@ func (e *Entity) validateTreasurer(treasurers []model.Treasurer, userDiscordId s
 	return false
 }
 
-func (e *Entity) validateBalance(token *mochipay.Token, address, amount string) bool {
+func (e *Entity) validateBalance(token *mochipay.Token, address, solanaAddress, amount string) bool {
+	var balance *big.Int
+	var err error
 	// validate balance token base
-	balance, err := e.vaultwallet.Balance(token, address)
-	if err != nil {
-		e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.NativeBalance failed")
-		return false
+	if token.Chain.ChainId == "999" {
+		balance, err = e.vaultwallet.BalanceSolana(token, solanaAddress)
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.BalanceSolana failed")
+			return false
+		}
+	} else {
+		balance, err = e.vaultwallet.Balance(token, address)
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.Balance failed")
+			return false
+		}
 	}
 
 	// check and validate balances
@@ -795,13 +835,14 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 	}
 
 	return &response.VaultDetailResponse{
-		WalletAddress:     vault.WalletAddress,
-		EstimatedTotal:    "",
-		Balance:           []response.Balance{},
-		MyNft:             []response.MyNft{},
-		Treasurer:         treasurers,
-		RecentTransaction: recentTxResponse,
-		CurrentRequest:    currentRequestResponse,
+		WalletAddress:       vault.WalletAddress,
+		SolanaWalletAddress: vault.SolanaWalletAddress,
+		EstimatedTotal:      "",
+		Balance:             []response.Balance{},
+		MyNft:               []response.MyNft{},
+		Treasurer:           treasurers,
+		RecentTransaction:   recentTxResponse,
+		CurrentRequest:      currentRequestResponse,
 	}, nil
 }
 
