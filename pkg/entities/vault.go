@@ -560,7 +560,7 @@ func (e *Entity) validateBalance(token *mochipay.Token, address, solanaAddress, 
 	} else {
 		balance, err = e.vaultwallet.Balance(token, address)
 		if err != nil {
-			e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.NativeBalance failed")
+			e.log.Fields(logger.Fields{"address": address, "amount": amount}).Errorf(err, "[entity.validateBalance] - e.vaultwallet.Balance failed")
 			return false
 		}
 	}
