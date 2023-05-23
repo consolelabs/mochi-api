@@ -83,3 +83,11 @@ type MochiPayVaultRequest struct {
 	Message    string   `json:"message"`
 	ListNotify []string `json:"list_notify"`
 }
+
+type GetVaultsRequest struct {
+	GuildID       string `form:"guild_id"`
+	ProfileID     string `form:"profile_id"`
+	EvmAddress    string `form:"evm_address"`
+	SolanaAddress string `form:"solana_address"`
+	Threshold     string `form:"threshold"`
+}

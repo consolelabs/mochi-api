@@ -13,4 +13,5 @@ type Store interface {
 	GetById(id int64) (vault *model.Vault, err error)
 	GetByNameAndGuildId(name string, guildId string) (vault *model.Vault, err error)
 	GetLatestWalletNumber() (walletNumber sql.NullInt64, err error)
+	List(ListQuery) (vaults []model.Vault, err error)
 }

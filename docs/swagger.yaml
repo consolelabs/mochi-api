@@ -1226,6 +1226,25 @@ definitions:
           $ref: '#/definitions/model.TradeItem'
         type: array
     type: object
+  model.Treasurer:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_discord_id:
+        type: string
+      vault:
+        $ref: '#/definitions/model.Vault'
+      vault_id:
+        type: integer
+    type: object
   model.TwitterPostStreak:
     properties:
       created_at:
@@ -1384,6 +1403,31 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  model.Vault:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      solana_wallet_address:
+        type: string
+      threshold:
+        type: string
+      treasurers:
+        items:
+          $ref: '#/definitions/model.Treasurer'
+        type: array
+      updated_at:
+        type: string
+      wallet_address:
+        type: string
+      wallet_number:
+        type: integer
     type: object
   request.AddNftWatchlistRequest:
     properties:
@@ -3274,13 +3318,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3472,6 +3516,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.UserWallet'
+    type: object
+  response.GetVaultsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Vault'
+        type: array
     type: object
   response.GetVote:
     properties:
@@ -9484,6 +9535,38 @@ paths:
       summary: Send User XP
       tags:
       - User
+  /vault:
+    get:
+      consumes:
+      - application/json
+      description: Get vaults
+      parameters:
+      - in: query
+        name: evmAddress
+        type: string
+      - in: query
+        name: guildID
+        type: string
+      - in: query
+        name: profileID
+        type: string
+      - in: query
+        name: solanaAddress
+        type: string
+      - in: query
+        name: threshold
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVaultsResponse'
+      summary: Get vaults
+      tags:
+      - Vault
+      - Public
   /verify:
     post:
       consumes:
