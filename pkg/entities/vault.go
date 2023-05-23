@@ -15,10 +15,12 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/repo/vault"
 	vaulttxquery "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochipay"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -81,8 +83,37 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 	return vault, nil
 }
 
-func (e *Entity) GetVault(guildId string) ([]model.Vault, error) {
-	return e.repo.Vault.GetByGuildId(guildId)
+func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) {
+	listQuery := vault.ListQuery{
+		GuildID:      req.GuildID,
+		EvmWallet:    req.EvmAddress,
+		SolanaWallet: req.SolanaAddress,
+		Threshold:    req.Threshold,
+	}
+
+	// find discord ID by given profile ID
+	if req.ProfileID != "" {
+		profile, err := e.svc.MochiProfile.GetByID(req.ProfileID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
+			return nil, err
+		}
+
+		for _, acc := range profile.AssociatedAccounts {
+			if acc.Platform == mochiprofile.PlatformDiscord {
+				listQuery.UserDiscordID = acc.PlatformIdentifier
+			}
+		}
+	}
+
+	// query db
+	vaults, err := e.repo.Vault.List(listQuery)
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": listQuery}).Errorf(err, "[entity.GetVaults] repo.Vault.List() failed")
+		return nil, err
+	}
+
+	return vaults, nil
 }
 
 func (e *Entity) GetVaultInfo() (*model.VaultInfo, error) {

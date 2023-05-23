@@ -61,7 +61,7 @@ func (h *Handler) GetNFTDetail(c *gin.Context) {
 	res, err := h.entities.GetNFTDetail(symbol, tokenID, query.GuildID, *query.QueryByAddress)
 	if err != nil {
 		h.log.Fields(logger.Fields{"symbol": symbol, "id": tokenID}).Error(err, "[handler.GetNFTDetail] - failed to get NFt detail")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 

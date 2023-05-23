@@ -111,11 +111,6 @@ func (e *Entity) GetNFTDetail(symbol, tokenID, guildID string, queryByAddress bo
 	collection := collections[0]
 	data, err := e.getTokenDetailFromIndexer(collection.Address, tokenID)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-				Data: nil,
-			}, nil
-		}
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}
@@ -237,7 +232,7 @@ func (e *Entity) getTokenDetailFromIndexer(address string, tokenID string) (*res
 	if err != nil {
 		if err.Error() == "record not found" {
 			e.log.Errorf(err, "[indexer.GetNFTDetail] indexer: record nft not found")
-			err = fmt.Errorf("Token not found")
+			err = baseerrs.ErrTokenNotFound
 		} else {
 			e.log.Errorf(err, "[indexer.GetNFTDetail] failed to get nft from indexer")
 			err = fmt.Errorf("[e.GetNFTDetail] failed to get nft from indexer: %v", err)
@@ -291,11 +286,6 @@ func (e *Entity) GetNFTDetailByAddress(address string, tokenID string) (*respons
 
 	data, err := e.getTokenDetailFromIndexer(address, tokenID)
 	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return &response.IndexerGetNFTTokenDetailResponseWithSuggestions{
-				Data: nil,
-			}, nil
-		}
 		e.log.Errorf(err, "[e.getTokenDetailFromIndexer] failed to get nft indexer detail")
 		return nil, err
 	}

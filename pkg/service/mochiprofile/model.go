@@ -10,7 +10,7 @@ const (
 	PlatformEVM     Platform = "evm-chain"
 )
 
-type GetProfileByDiscordResponse struct {
+type GetProfileResponse struct {
 	ID                 string              `json:"id"`
 	AssociatedAccounts []AssociatedAccount `json:"associated_accounts"`
 	CreatedAt          time.Time           `json:"created_at"`

@@ -7400,6 +7400,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/vault": {
+            "get": {
+                "description": "Get vaults",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vault",
+                    "Public"
+                ],
+                "summary": "Get vaults",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "evmAddress",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "guildID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "profileID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "solanaAddress",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "threshold",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetVaultsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/verify": {
             "post": {
                 "description": "Verify wallet address",
@@ -9664,6 +9715,35 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Treasurer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
+                },
+                "vault": {
+                    "$ref": "#/definitions/model.Vault"
+                },
+                "vault_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.TwitterPostStreak": {
             "type": "object",
             "properties": {
@@ -9904,6 +9984,44 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Vault": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "solana_wallet_address": {
+                    "type": "string"
+                },
+                "threshold": {
+                    "type": "string"
+                },
+                "treasurers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Treasurer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "wallet_address": {
+                    "type": "string"
+                },
+                "wallet_number": {
+                    "type": "integer"
                 }
             }
         },
@@ -13112,6 +13230,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserWallet"
+                }
+            }
+        },
+        "response.GetVaultsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Vault"
+                    }
                 }
             }
         },
