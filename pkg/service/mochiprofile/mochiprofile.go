@@ -9,6 +9,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 var supportedPlatforms = []string{
@@ -29,7 +30,7 @@ func NewService(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-func (m *MochiProfile) GetByDiscordID(discordID string) (*GetProfileByDiscordResponse, error) {
+func (m *MochiProfile) GetByDiscordID(discordID string) (*GetProfileResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/profiles/get-by-discord/%s", m.config.MochiProfileServerHost, discordID)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -64,7 +65,7 @@ func (m *MochiProfile) GetByDiscordID(discordID string) (*GetProfileByDiscordRes
 		return nil, err
 	}
 
-	res := &GetProfileByDiscordResponse{}
+	res := &GetProfileResponse{}
 	err = json.Unmarshal(body, res)
 	if err != nil {
 		return nil, err
@@ -163,4 +164,20 @@ func (m *MochiProfile) CreateProfileApiKey(profileAccessToken string) (*ProfileA
 	defer response.Body.Close()
 
 	return &res.Data, nil
+}
+
+func (m *MochiProfile) GetByID(profileID string) (*GetProfileResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/profiles/%s", m.config.MochiProfileServerHost, profileID)
+
+	res := GetProfileResponse{}
+	req := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: &res,
+		Headers:   map[string]string{"Content-Type": "application/json"},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
+	}
+	return &res, nil
 }

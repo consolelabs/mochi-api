@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 type IHandler interface {
 	CreateVault(c *gin.Context)
-	GetVault(c *gin.Context)
+	GetVaults(c *gin.Context)
 	GetVaultInfo(c *gin.Context)
 	CreateConfigChannel(c *gin.Context)
 	GetVaultConfigChannel(c *gin.Context)

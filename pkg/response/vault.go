@@ -80,3 +80,7 @@ type Nft struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 }
+
+type GetVaultsResponse struct {
+	Data []model.Vault `json:"data"`
+}

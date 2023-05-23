@@ -49,17 +49,28 @@ func (h *Handler) CreateVault(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](vault, nil, nil, nil))
 }
-func (h *Handler) GetVault(c *gin.Context) {
-	guildId := c.Query("guild_id")
-	if guildId == "" {
-		h.log.Info("[handler.GetVault] - guildId is empty")
+
+// GetVaults     godoc
+// @Summary     Get vaults
+// @Description Get vaults
+// @Tags        Vault
+// @Tags        Public
+// @Accept      json
+// @Produce     json
+// @Param       req   query  request.GetVaultsRequest true  "get vaults request"
+// @Success     200 {object} response.GetVaultsResponse
+// @Router      /vault [get]
+func (h *Handler) GetVaults(c *gin.Context) {
+	var req request.GetVaultsRequest
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetVaults] BindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, nil, nil))
 		return
 	}
 
-	vault, err := h.entities.GetVault(guildId)
+	vault, err := h.entities.GetVaults(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildId}).Error(err, "[handler.GetVault] - failed to get vault")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetVaults] entity.GetVaults() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
