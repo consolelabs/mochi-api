@@ -90,4 +90,5 @@ type GetVaultsRequest struct {
 	EvmAddress    string `form:"evm_address"`
 	SolanaAddress string `form:"solana_address"`
 	Threshold     string `form:"threshold"`
+	NoAmount      string `form:"no_amount" default:"false"`
 }
