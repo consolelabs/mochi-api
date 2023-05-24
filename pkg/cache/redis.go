@@ -136,7 +136,12 @@ func (c *redisCache) GetBool(key string) (bool, error) {
 }
 
 func (c *redisCache) HashSet(key string, hash map[string]string, expiration time.Duration) error {
-	return c.rdb.HSet(context.Background(), key, hash).Err()
+	err := c.rdb.HSet(context.Background(), key, hash).Err()
+	if err != nil {
+		return err
+	}
+	c.rdb.ExpireAt(context.Background(), key, time.Now().Add(expiration))
+	return err
 }
 
 func (c *redisCache) HashGet(key string) (map[string]string, error) {

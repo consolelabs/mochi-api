@@ -283,31 +283,69 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 }
 
 func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
+	// redis cache
+	value, err := e.cache.HashGet(req.Address + "-eth")
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
+		return nil, err
+	}
+
 	chainIDs := []int{1, 56, 137, 250}
 	var assets []response.WalletAssetData
-	for _, chainID := range chainIDs {
-		res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
-		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
-			return nil, err
-		}
-		if res.Data.Items == nil || len(res.Data.Items) == 0 {
-			continue
-		}
-		for _, item := range res.Data.Items {
-			if item.Type != "cryptocurrency" {
+	if len(value) == 0 {
+		for _, chainID := range chainIDs {
+			res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
+			if err != nil {
+				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
+				return nil, err
+			}
+			if res.Data.Items == nil || len(res.Data.Items) == 0 {
 				continue
 			}
-			bal, quote := e.calculateTokenBalance(item, chainID)
+			for _, item := range res.Data.Items {
+				if item.Type != "cryptocurrency" {
+					continue
+				}
+				bal, quote := e.calculateTokenBalance(item, chainID)
+				assets = append(assets, response.WalletAssetData{
+					ChainID:        chainID,
+					ContractName:   item.ContractName,
+					ContractSymbol: item.ContractTickerSymbol,
+					AssetBalance:   bal,
+					UsdBalance:     quote,
+				})
+			}
+		}
+
+		encodeData := make(map[string]string)
+		for _, asset := range assets {
+			encodeData[fmt.Sprintf("%s-%s-%d", asset.ContractName, asset.ContractSymbol, asset.ChainID)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
+		}
+
+		err := e.cache.HashSet(req.Address+"-eth", encodeData, 1*time.Hour)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
+			return nil, err
+		}
+
+	} else {
+		for k, v := range value {
+			key := strings.Split(k, "-")
+			value := strings.Split(v, "-")
+			chainId, _ := strconv.Atoi(key[2])
+			assetBalance, _ := strconv.ParseFloat(value[0], 64)
+			usdBalance, _ := strconv.ParseFloat(value[1], 64)
+
 			assets = append(assets, response.WalletAssetData{
-				ChainID:        chainID,
-				ContractName:   item.ContractName,
-				ContractSymbol: item.ContractTickerSymbol,
-				AssetBalance:   bal,
-				UsdBalance:     quote,
+				ContractName:   key[0],
+				ContractSymbol: key[1],
+				ChainID:        chainId,
+				AssetBalance:   assetBalance,
+				UsdBalance:     usdBalance,
 			})
 		}
 	}
+
 	return assets, nil
 }
 
