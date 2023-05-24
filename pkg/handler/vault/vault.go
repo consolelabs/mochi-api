@@ -35,6 +35,12 @@ func (h *Handler) CreateVault(c *gin.Context) {
 		return
 	}
 
+	if !validateVaultName(req.Name) {
+		h.log.Fields(logger.Fields{"guildID": req.GuildId, "name": req.Name, "threshold": req.Threshold}).Error(nil, "[validation.validateVaultName] - vault name exceed 24 characters")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Vault name exceed 24 characters"})
+		return
+	}
+
 	vault, err := h.entities.CreateVault(&req)
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate key value") {
