@@ -111,6 +111,24 @@ func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*Ge
 	return res, nil
 }
 
+func (c *Covalent) GetSolanaTokenBalances(chainName string, address string, retry int) (*GetTokenBalancesResponse, error) {
+	endpoint := fmt.Sprintf("/%s/address/%s/balances_v2/?no-spam=true&no-nft-fetch=true&nft=false", chainName, address)
+	res := &GetTokenBalancesResponse{}
+	code, err := c.fetchCovalentData(endpoint, res)
+	if err != nil {
+		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.chainName] util.FetchData() failed")
+		return nil, err
+	}
+	if res.Error {
+		if retry == 0 {
+			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+		} else {
+			return c.GetSolanaTokenBalances(chainName, address, retry-1)
+		}
+	}
+	return res, nil
+}
+
 func (c *Covalent) fetchCovalentData(endpoint string, parseForm interface{}) (int, error) {
 	var success bool
 	for i, key := range c.config.CovalentAPIKeys {
