@@ -121,12 +121,13 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 		}
 		vaults[i].TotalAmountEVM = fmt.Sprintf("%.4f", sumBal(walletAssetsEVM))
 
-		walletAssetsSolana, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
-		if err != nil {
-			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
-			return nil, err
-		}
-		vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+		// TODO(trkhoi): api solscan kinda broke, need to find another way
+		// walletAssetsSolana, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
+		// if err != nil {
+		// 	e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
+		// 	return nil, err
+		// }
+		// vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
 	}
 
 	return vaults, nil
