@@ -317,6 +317,10 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			}
 		}
 
+		if len(assets) == 0 {
+			return []response.WalletAssetData{}, nil
+		}
+
 		encodeData := make(map[string]string)
 		for _, asset := range assets {
 			encodeData[fmt.Sprintf("%s-%s-%d", asset.ContractName, asset.ContractSymbol, asset.ChainID)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
