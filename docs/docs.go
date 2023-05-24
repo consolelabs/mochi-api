@@ -10008,6 +10008,12 @@ const docTemplate = `{
                 "threshold": {
                     "type": "string"
                 },
+                "total_amount_evm": {
+                    "type": "string"
+                },
+                "total_amount_solana": {
+                    "type": "string"
+                },
                 "treasurers": {
                     "type": "array",
                     "items": {
