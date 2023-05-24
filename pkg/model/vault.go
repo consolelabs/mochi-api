@@ -13,6 +13,6 @@ type Vault struct {
 	CreatedAt           time.Time   `json:"created_at"`
 	UpdatedAt           time.Time   `json:"updated_at"`
 	Treasurers          []Treasurer `json:"treasurers" gorm:"foreignkey:VaultId"`
-	TotalAmountEVM      string      `json:"total_amount_evm"`
-	TotalAmountSolana   string      `json:"total_amount_solana"`
+	TotalAmountEVM      string      `json:"total_amount_evm" gorm:"-"`
+	TotalAmountSolana   string      `json:"total_amount_solana" gorm:"-"`
 }
