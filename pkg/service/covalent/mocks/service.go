@@ -51,6 +51,21 @@ func (mr *MockServiceMockRecorder) GetHistoricalTokenPrices(chainID, currency, a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHistoricalTokenPrices", reflect.TypeOf((*MockService)(nil).GetHistoricalTokenPrices), chainID, currency, address)
 }
 
+// GetSolanaTokenBalances mocks base method.
+func (m *MockService) GetSolanaTokenBalances(chainName, address string, retry int) (*covalent.GetTokenBalancesResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSolanaTokenBalances", chainName, address, retry)
+	ret0, _ := ret[0].(*covalent.GetTokenBalancesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSolanaTokenBalances indicates an expected call of GetSolanaTokenBalances.
+func (mr *MockServiceMockRecorder) GetSolanaTokenBalances(chainName, address, retry interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSolanaTokenBalances", reflect.TypeOf((*MockService)(nil).GetSolanaTokenBalances), chainName, address, retry)
+}
+
 // GetTokenBalances mocks base method.
 func (m *MockService) GetTokenBalances(chainID int, address string, retry int) (*covalent.GetTokenBalancesResponse, error) {
 	m.ctrl.T.Helper()
