@@ -113,7 +113,7 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 		return nil, err
 	}
 
-	if req.NoAmount != "true" {
+	if req.NoFetchAmount != "true" {
 		for i, vault := range vaults {
 			walletAssetsEVM, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "eth", Address: vault.WalletAddress})
 			if err != nil {
