@@ -47,7 +47,7 @@ func (c *Covalent) GetHistoricalTokenPrices(chainID int, currency string, addres
 	if !ok {
 		chainName = fmt.Sprint(chainID)
 	}
-	endpoint := fmt.Sprintf("/pricing/historical_by_addresses_v2/%s/%s/%s/", chainName, currency, address)
+	endpoint := fmt.Sprintf("/pricing/historical_by_addresses_v2/%s/%s/%s/?no-spam=true&no-nft-fetch=true&nft=false", chainName, currency, address)
 	res := &response.HistoricalTokenPricesResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil || code != http.StatusOK {
@@ -58,7 +58,7 @@ func (c *Covalent) GetHistoricalTokenPrices(chainID int, currency string, addres
 }
 
 func (c *Covalent) GetTransactionsByAddress(chainID int, address string, size int, retry int) (*GetTransactionsResponse, error) {
-	endpoint := fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=%d", chainID, address, size)
+	endpoint := fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=%d&no-spam=true&no-nft-fetch=true&nft=false", chainID, address, size)
 	res := &GetTransactionsResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
@@ -76,7 +76,7 @@ func (c *Covalent) GetTransactionsByAddress(chainID int, address string, size in
 }
 
 func (c *Covalent) GetTransactionsByAddressV3(chainID int, address string, size int, retry int) (*GetTransactionsResponse, error) {
-	endpoint := fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=%d", chainID, address, size)
+	endpoint := fmt.Sprintf("/%d/address/%s/transactions_v2/?page-size=%d&no-spam=true&no-nft-fetch=true&nft=false", chainID, address, size)
 	res := &GetTransactionsResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
@@ -94,7 +94,7 @@ func (c *Covalent) GetTransactionsByAddressV3(chainID int, address string, size 
 }
 
 func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*GetTokenBalancesResponse, error) {
-	endpoint := fmt.Sprintf("/%d/address/%s/balances_v2/", chainID, address)
+	endpoint := fmt.Sprintf("/%d/address/%s/balances_v2/?no-spam=true&no-nft-fetch=true&nft=false", chainID, address)
 	res := &GetTokenBalancesResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
