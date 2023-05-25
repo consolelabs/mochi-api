@@ -838,6 +838,14 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		return nil, err
 	}
 
+	// get balance
+	bal := make([]response.Balance, 0)
+	bal, err = balanceVaultDetail(vault, bal)
+	if err != nil {
+		e.log.Fields(logger.Fields{"vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - balanceVaultDetail failed")
+		return nil, err
+	}
+
 	// get treasurers
 	treasurers, err := e.repo.Treasurer.GetByGuildIdAndVaultId(guildId, vault.Id)
 	if err != nil {
@@ -894,12 +902,36 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		WalletAddress:       vault.WalletAddress,
 		SolanaWalletAddress: vault.SolanaWalletAddress,
 		EstimatedTotal:      "",
-		Balance:             []response.Balance{},
+		Balance:             bal,
 		MyNft:               []response.MyNft{},
 		Treasurer:           treasurers,
 		RecentTransaction:   recentTxResponse,
 		CurrentRequest:      currentRequestResponse,
 	}, nil
+}
+
+func balanceVaultDetail(vault *model.Vault, bal []response.Balance) ([]response.Balance, error) {
+	listAssetEvm, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.WalletAddress, Type: "eth"})
+	if err != nil {
+		e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.balanceVaultDetail] - e.ListWalletAssets failed")
+		return nil, err
+	}
+
+	listAssetSol, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.SolanaWalletAddress, Type: "sol"})
+	if err != nil {
+		e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.balanceVaultDetail] - e.ListWalletAssets failed")
+		return nil, err
+	}
+
+	list := append(listAssetEvm, listAssetSol...)
+	for _, itm := range list {
+		bal = append(bal, response.Balance{
+			Token:  itm.Token,
+			Amount: itm.Amount,
+		})
+	}
+
+	return bal, nil
 }
 
 func (e *Entity) GetTreasurerRequest(requestId string) (*model.TreasurerRequest, error) {
