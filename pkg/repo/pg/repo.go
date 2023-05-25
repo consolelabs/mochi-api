@@ -116,6 +116,7 @@ import (
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
 	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
+	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
 
 // NewRepo new pg repo implementation
@@ -233,5 +234,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserTag:                              usertag.NewPG(db),
 		GuildConfigTipRange:                  guildconfigtiprange.NewPG(db),
 		GuildConfigAdminRole:                 guildconfigadminrole.NewPG(db),
+		WalletSnapshot:                       walletsnapshot.NewPG(db),
 	}
 }

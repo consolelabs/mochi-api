@@ -139,6 +139,7 @@ type TokenBalanceItem struct {
 	Balance              string      `json:"balance"`
 	Quote                float64     `json:"quote"`
 	NftData              interface{} `json:"nft_data"`
+	QuoteRate            float64     `json:"quote_rate"`
 }
 
 type GetTokenBalancesData struct {

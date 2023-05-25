@@ -15,11 +15,26 @@ type GetOneWalletResponse struct {
 }
 
 type WalletAssetData struct {
-	ChainID        int     `json:"chain_id"`
-	ContractName   string  `json:"contract_name"`
-	ContractSymbol string  `json:"contract_symbol"`
-	AssetBalance   float64 `json:"asset_balance"`
-	UsdBalance     float64 `json:"usd_balance"`
+	ChainID        int        `json:"chain_id"`
+	ContractName   string     `json:"contract_name"`
+	ContractSymbol string     `json:"contract_symbol"`
+	AssetBalance   float64    `json:"asset_balance"`
+	UsdBalance     float64    `json:"usd_balance"`
+	Token          AssetToken `json:"token"`
+	Amount         string     `json:"amount"`
+}
+
+type AssetToken struct {
+	Name    string          `json:"name"`
+	Symbol  string          `json:"symbol"`
+	Decimal int64           `json:"decimal"`
+	Price   float64         `json:"price"`
+	Native  bool            `json:"native"`
+	Chain   AssetTokenChain `json:"chain"`
+}
+
+type AssetTokenChain struct {
+	Name string `json:"name"`
 }
 
 type ContractMetadata struct {
