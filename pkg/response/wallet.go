@@ -14,6 +14,10 @@ type GetOneWalletResponse struct {
 	Data *model.UserWalletWatchlistItem `json:"data"`
 }
 
+type ListAsset struct {
+	Pnl     string            `json:"pnl"`
+	Balance []WalletAssetData `json:"balance"`
+}
 type WalletAssetData struct {
 	ChainID        int        `json:"chain_id"`
 	ContractName   string     `json:"contract_name"`
