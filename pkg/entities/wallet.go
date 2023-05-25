@@ -388,6 +388,49 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	return assets, nil
 }
 
+func (e *Entity) calculateWalletSnapshot(address string, assets []response.WalletAssetData) (float64, error) {
+	totalAmount := sumBal(assets)
+	// store snapshot whenever used wallet service
+	_, err := e.repo.WalletSnapshot.Create(&model.WalletSnapshot{
+		WalletAddress:   address,
+		IsEvm:           true,
+		TotalUsdBalance: fmt.Sprint(totalAmount),
+		SnapshotTime:    time.Now(),
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.Create() failed")
+		return 0, err
+	}
+
+	// get snapshot in 8 hour
+	snapshots, err := e.repo.WalletSnapshot.GetSnapshotInTime(address, time.Now().Add(-8*time.Hour))
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.GetSnapshotInTime() failed")
+		return 0, err
+	}
+
+	// this means in last 8 hour no data, get latest data we have in db
+	latestSnapshotBal := 0.0
+	if len(snapshots) == 1 {
+		latestSnapshot, err := e.repo.WalletSnapshot.GetLatestInPast(address, time.Now().Add(-8*time.Hour))
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.GetLatestInPast() failed")
+			return 0, err
+		}
+
+		// this is the first time user add data to snapshot
+		if len(latestSnapshot) == 0 {
+			return 0, nil
+		}
+
+		latestSnapshotBal, _ = strconv.ParseFloat(latestSnapshot[0].TotalUsdBalance, 64)
+	} else {
+		latestSnapshotBal, _ = strconv.ParseFloat(snapshots[1].TotalUsdBalance, 64)
+	}
+
+	return totalAmount - latestSnapshotBal, nil
+}
+
 func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
 	// redis cache
 	value, err := e.cache.HashGet(req.Address + "-sol")

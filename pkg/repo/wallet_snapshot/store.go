@@ -9,4 +9,5 @@ import (
 type Store interface {
 	Create(walletSnapshot *model.WalletSnapshot) (*model.WalletSnapshot, error)
 	GetSnapshotInTime(address string, time time.Time) (snapshots []model.WalletSnapshot, err error)
+	GetLatestInPast(address string, time time.Time) (snapshots []model.WalletSnapshot, err error)
 }

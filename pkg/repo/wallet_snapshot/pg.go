@@ -21,5 +21,9 @@ func (pg *pg) Create(walletSnapshot *model.WalletSnapshot) (*model.WalletSnapsho
 }
 
 func (pg *pg) GetSnapshotInTime(address string, time time.Time) (snapshots []model.WalletSnapshot, err error) {
-	return snapshots, pg.db.Where("wallet_address = ? and snapshot_time >= ?", address, time).Find(&snapshots).Error
+	return snapshots, pg.db.Where("wallet_address = ? and snapshot_time >= ?", address, time).Order("desc snapshot_time").Find(&snapshots).Error
+}
+
+func (pg *pg) GetLatestInPast(address string, time time.Time) (snapshots []model.WalletSnapshot, err error) {
+	return snapshots, pg.db.Where("wallet_address = ? and snapshot_time < ?", address, time).Order("desc snapshot_time").Find(&snapshots).Error
 }
