@@ -62,10 +62,8 @@ type CurrentRequest struct {
 }
 
 type Balance struct {
-	TokenName   string `json:"token_name"`
-	Token       string `json:"token"`
-	Amount      string `json:"amount"`
-	AmountInUsd string `json:"amount_in_usd"`
+	Token  AssetToken `json:"token"`
+	Amount string     `json:"amount"`
 }
 
 type MyNft struct {
