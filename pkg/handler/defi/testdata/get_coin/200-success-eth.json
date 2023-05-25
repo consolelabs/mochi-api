@@ -5,6 +5,7 @@
     "symbol": "eth",
     "market_cap_rank": 2,
     "asset_platform_id": "",
+    "categories": null,
     "image": {
       "thumb": "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1595348880",
       "small": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",

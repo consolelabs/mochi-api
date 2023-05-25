@@ -72,6 +72,7 @@ type GetCoinResponse struct {
 	MarketData      MarketData      `json:"market_data"`
 	Tickers         []TickerData    `json:"tickers"`
 	Description     CoinDescription `json:"description"`
+	Categories      []string        `json:"categories"`
 }
 
 type TickerData struct {
