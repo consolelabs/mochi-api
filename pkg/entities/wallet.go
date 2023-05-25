@@ -340,7 +340,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		}
 
 		for _, asset := range assets {
-			encodeData[fmt.Sprintf("%s-%s-%d", asset.ContractName, asset.ContractSymbol, asset.ChainID)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
+			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
 		err := e.cache.HashSet(address+"-eth", encodeData, 6*time.Hour)
@@ -358,6 +358,9 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			key := strings.Split(k, "-")
 			value := strings.Split(v, "-")
 			chainId, _ := strconv.Atoi(key[2])
+			decimal, _ := strconv.Atoi(key[3])
+			price, _ := strconv.ParseFloat(key[4], 64)
+			native, _ := strconv.ParseBool(key[5])
 			assetBalance, _ := strconv.ParseFloat(value[0], 64)
 			usdBalance, _ := strconv.ParseFloat(value[1], 64)
 
@@ -367,6 +370,17 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				ChainID:        chainId,
 				AssetBalance:   assetBalance,
 				UsdBalance:     usdBalance,
+				Token: response.AssetToken{
+					Name:    key[0],
+					Symbol:  key[1],
+					Decimal: int64(decimal),
+					Price:   price,
+					Native:  native,
+					Chain: response.AssetTokenChain{
+						Name: key[6],
+					},
+				},
+				Amount: fmt.Sprint(usdBalance),
 			})
 		}
 	}
@@ -405,6 +419,17 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					ContractSymbol: item.ContractTickerSymbol,
 					AssetBalance:   bal,
 					UsdBalance:     quote,
+					Token: response.AssetToken{
+						Name:    item.ContractName,
+						Symbol:  item.ContractTickerSymbol,
+						Decimal: int64(item.ContractDecimals),
+						Price:   item.QuoteRate,
+						Native:  item.NativeToken,
+						Chain: response.AssetTokenChain{
+							Name: res.Data.ChainName,
+						},
+					},
+					Amount: fmt.Sprint(quote),
 				})
 			}
 		}
@@ -415,7 +440,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		}
 
 		for _, asset := range assets {
-			encodeData[fmt.Sprintf("%s-%s-%d", asset.ContractName, asset.ContractSymbol, asset.ChainID)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
+			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
 		err := e.cache.HashSet(req.Address+"-sol", encodeData, 6*time.Hour)
@@ -433,6 +458,9 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			key := strings.Split(k, "-")
 			value := strings.Split(v, "-")
 			chainId, _ := strconv.Atoi(key[2])
+			decimal, _ := strconv.Atoi(key[3])
+			price, _ := strconv.ParseFloat(key[4], 64)
+			native, _ := strconv.ParseBool(key[5])
 			assetBalance, _ := strconv.ParseFloat(value[0], 64)
 			usdBalance, _ := strconv.ParseFloat(value[1], 64)
 
@@ -442,6 +470,17 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				ChainID:        chainId,
 				AssetBalance:   assetBalance,
 				UsdBalance:     usdBalance,
+				Token: response.AssetToken{
+					Name:    key[0],
+					Symbol:  key[1],
+					Decimal: int64(decimal),
+					Price:   price,
+					Native:  native,
+					Chain: response.AssetTokenChain{
+						Name: key[6],
+					},
+				},
+				Amount: fmt.Sprint(usdBalance),
 			})
 		}
 	}
