@@ -17,13 +17,13 @@ func NewPG(db *gorm.DB) Store {
 }
 
 func (pg *pg) Create(walletSnapshot *model.WalletSnapshot) (*model.WalletSnapshot, error) {
-	return walletSnapshot, pg.db.Create(walletSnapshot).Error
+	return walletSnapshot, pg.db.Table("wallet_snapshot").Create(walletSnapshot).Error
 }
 
 func (pg *pg) GetSnapshotInTime(address string, time time.Time) (snapshots []model.WalletSnapshot, err error) {
-	return snapshots, pg.db.Where("wallet_address = ? and snapshot_time >= ?", address, time).Order("desc snapshot_time").Find(&snapshots).Error
+	return snapshots, pg.db.Table("wallet_snapshot").Where("wallet_address = ? and snapshot_time >= ?", address, time).Order("snapshot_time desc").Find(&snapshots).Error
 }
 
 func (pg *pg) GetLatestInPast(address string, time time.Time) (snapshots []model.WalletSnapshot, err error) {
-	return snapshots, pg.db.Where("wallet_address = ? and snapshot_time < ?", address, time).Order("desc snapshot_time").Find(&snapshots).Error
+	return snapshots, pg.db.Table("wallet_snapshot").Where("wallet_address = ? and snapshot_time < ?", address, time).Order("snapshot_time desc").Limit(20).Find(&snapshots).Error
 }
