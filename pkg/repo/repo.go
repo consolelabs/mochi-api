@@ -113,6 +113,7 @@ import (
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
 	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
+	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
 
 type Repo struct {
@@ -228,4 +229,5 @@ type Repo struct {
 	VaultTransaction                     vaulttransaction.Store
 	UserTag                              usertag.Store
 	GuildConfigTipRange                  guildconfigtiprange.Store
+	WalletSnapshot                       walletsnapshot.Store
 }
