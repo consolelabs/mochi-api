@@ -38,6 +38,7 @@ type VaultDetailResponse struct {
 	EstimatedTotal      string             `json:"estimated_total"`
 	Treasurer           []model.Treasurer  `json:"treasurer"`
 	RecentTransaction   []VaultTransaction `json:"recent_transaction"`
+	Threshold           string             `json:"threshold"`
 }
 
 type VaultTransaction struct {

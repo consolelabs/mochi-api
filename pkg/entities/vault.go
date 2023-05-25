@@ -907,6 +907,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		Treasurer:           treasurers,
 		RecentTransaction:   recentTxResponse,
 		CurrentRequest:      currentRequestResponse,
+		Threshold:           vault.Threshold,
 	}, nil
 }
 
@@ -924,7 +925,11 @@ func balanceVaultDetail(vault *model.Vault, bal []response.Balance) ([]response.
 	}
 
 	list := append(listAssetEvm, listAssetSol...)
-	for _, itm := range list {
+	for idx, itm := range list {
+		if itm.Token.Symbol == "ICY" && itm.Token.Chain.Name == "matic" {
+			itm.Token.Price = 1.5
+			list[idx] = itm
+		}
 		bal = append(bal, response.Balance{
 			Token:  itm.Token,
 			Amount: itm.Amount,
