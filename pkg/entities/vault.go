@@ -907,6 +907,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		Treasurer:           treasurers,
 		RecentTransaction:   recentTxResponse,
 		CurrentRequest:      currentRequestResponse,
+		Threshold:           vault.Threshold,
 	}, nil
 }
 
