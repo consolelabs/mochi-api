@@ -184,13 +184,13 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	items, err := h.entities.ListWalletAssets(req)
+	items, pnl, err := h.entities.ListWalletAssets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletAssets() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.ListAsset{Balance: items, Pnl: pnl}, nil, nil, nil))
 }
 
 func (h *Handler) ListTransactions(c *gin.Context) {
