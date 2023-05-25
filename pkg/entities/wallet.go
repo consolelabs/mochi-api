@@ -333,7 +333,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 							Name: res.Data.ChainName,
 						},
 					},
-					Amount: fmt.Sprint(bal),
+					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
 				})
 			}
 		}
@@ -388,7 +388,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 						Name: key[6],
 					},
 				},
-				Amount: fmt.Sprint(assetBalance),
+				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),
 			})
 		}
 	}
@@ -487,7 +487,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 							Name: res.Data.ChainName,
 						},
 					},
-					Amount: fmt.Sprint(bal),
+					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
 				})
 			}
 		}
@@ -538,7 +538,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 						Name: key[6],
 					},
 				},
-				Amount: fmt.Sprint(assetBalance),
+				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),
 			})
 		}
 	}
