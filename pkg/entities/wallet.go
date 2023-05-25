@@ -313,6 +313,10 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					continue
 				}
 				bal, quote := e.calculateTokenBalance(item, chainID)
+				// filter out dusty tokens
+				if quote < 0.001 {
+					continue
+				}
 				assets = append(assets, response.WalletAssetData{
 					ChainID:        chainID,
 					ContractName:   item.ContractName,
@@ -363,6 +367,10 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			native, _ := strconv.ParseBool(key[5])
 			assetBalance, _ := strconv.ParseFloat(value[0], 64)
 			usdBalance, _ := strconv.ParseFloat(value[1], 64)
+			// filter out dusty tokens
+			if usdBalance < 0.001 {
+				continue
+			}
 
 			assets = append(assets, response.WalletAssetData{
 				ContractName:   key[0],
@@ -554,7 +562,7 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 
 func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
 	chainIDs := []int{1, 56, 137, 250}
-	var txns []response.WalletTransactionData
+	txns := make([]response.WalletTransactionData, 0)
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
 		if err != nil {
@@ -585,7 +593,7 @@ func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([
 }
 
 func (e *Entity) listSolWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
-	var res []response.WalletTransactionData
+	res := make([]response.WalletTransactionData, 0)
 	txns, err := e.svc.Solscan.GetTransactions(req.Address)
 	if err != nil {
 		e.log.Fields(logger.Fields{"address": req.Address}).Error(err, "[entity.listSolWalletTxns] svc.Solscan.GetTransactions() failed")
