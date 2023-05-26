@@ -115,14 +115,14 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 
 	if req.NoFetchAmount != "true" {
 		for i, vault := range vaults {
-			walletAssetsEVM, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "eth", Address: vault.WalletAddress})
+			walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "eth", Address: vault.WalletAddress})
 			if err != nil {
 				e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
 				return nil, err
 			}
 			vaults[i].TotalAmountEVM = fmt.Sprintf("%.4f", sumBal(walletAssetsEVM))
 
-			walletAssetsSolana, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
+			walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
 			if err != nil {
 				e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
 				return nil, err
@@ -912,13 +912,13 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 }
 
 func balanceVaultDetail(vault *model.Vault, bal []response.Balance) ([]response.Balance, error) {
-	listAssetEvm, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.WalletAddress, Type: "eth"})
+	listAssetEvm, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.WalletAddress, Type: "eth"})
 	if err != nil {
 		e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.balanceVaultDetail] - e.ListWalletAssets failed")
 		return nil, err
 	}
 
-	listAssetSol, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.SolanaWalletAddress, Type: "sol"})
+	listAssetSol, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Address: vault.SolanaWalletAddress, Type: "sol"})
 	if err != nil {
 		e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.balanceVaultDetail] - e.ListWalletAssets failed")
 		return nil, err

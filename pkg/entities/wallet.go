@@ -275,25 +275,25 @@ func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
 	})
 }
 
-func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, error) {
+func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
 	if req.Type == "sol" {
 		return e.listSolWalletAssets(req)
 	}
 	return e.listEthWalletAssets(req)
 }
 
-func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, error) {
+func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
 	address, err := util.ConvertToChecksumAddr(req.Address)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] util.ConvertToChecksumAddr() failed")
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	// redis cache
 	value, err := e.cache.HashGet(address + "-eth")
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	chainIDs := []int{1, 56, 137, 250}
@@ -303,7 +303,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			res, err := e.svc.Covalent.GetTokenBalances(chainID, address, 3)
 			if err != nil {
 				e.log.Fields(logger.Fields{"chainID": chainID, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
-				return nil, "", err
+				return nil, "", "", err
 			}
 			if res.Data.Items == nil || len(res.Data.Items) == 0 {
 				continue
@@ -350,7 +350,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		err := e.cache.HashSet(address+"-eth", encodeData, 6*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
-			return nil, "", err
+			return nil, "", "", err
 		}
 
 	} else {
@@ -394,16 +394,16 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	// calculate pnl
-	pnl, err := e.calculateWalletSnapshot(address, true, assets)
+	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(address, true, assets)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] calculateWalletSnapshot() failed")
-		return assets, "", nil
+		return assets, "", "", nil
 	}
 
-	return assets, pnl, nil
+	return assets, pnl, latestSnapshotBal, nil
 }
 
-func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []response.WalletAssetData) (string, error) {
+func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []response.WalletAssetData) (string, string, error) {
 	totalAmount := sumBal(assets)
 	// store snapshot whenever used wallet service
 	_, err := e.repo.WalletSnapshot.Create(&model.WalletSnapshot{
@@ -414,14 +414,14 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.Create() failed")
-		return "", err
+		return "", "", err
 	}
 
 	// get snapshot in 8 hour
 	snapshots, err := e.repo.WalletSnapshot.GetSnapshotInTime(address, time.Now().Add(-8*time.Hour))
 	if err != nil {
 		e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.GetSnapshotInTime() failed")
-		return "", err
+		return "", "", err
 	}
 
 	// this means in last 8 hour no data, get latest data we have in db
@@ -430,12 +430,12 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 		latestSnapshot, err := e.repo.WalletSnapshot.GetLatestInPast(address, time.Now().Add(-8*time.Hour))
 		if err != nil {
 			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.calculateWalletSnapshot] repo.WalletSnapshot.GetLatestInPast() failed")
-			return "", err
+			return "", "", err
 		}
 
 		// this is the first time user add data to snapshot
 		if len(latestSnapshot) == 0 {
-			return fmt.Sprintf("%.4f", totalAmount-latestSnapshotBal), nil
+			return fmt.Sprintf("%.4f", totalAmount-latestSnapshotBal), fmt.Sprintf("%.4f", latestSnapshotBal), nil
 		}
 
 		latestSnapshotBal, _ = strconv.ParseFloat(latestSnapshot[0].TotalUsdBalance, 64)
@@ -443,15 +443,15 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 		latestSnapshotBal, _ = strconv.ParseFloat(snapshots[0].TotalUsdBalance, 64)
 	}
 
-	return fmt.Sprintf("%.4f", totalAmount-latestSnapshotBal), nil
+	return fmt.Sprintf("%.4f", totalAmount-latestSnapshotBal), fmt.Sprintf("%.4f", latestSnapshotBal), nil
 }
 
-func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, error) {
+func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
 	// redis cache
 	value, err := e.cache.HashGet(req.Address + "-sol")
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	chainIDs := []int{999}
@@ -461,7 +461,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			res, err := e.svc.Covalent.GetSolanaTokenBalances("solana-mainnet", req.Address, 3)
 			if err != nil {
 				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
-				return nil, "", err
+				return nil, "", "", err
 			}
 			if res.Data.Items == nil || len(res.Data.Items) == 0 {
 				continue
@@ -504,7 +504,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		err := e.cache.HashSet(req.Address+"-sol", encodeData, 6*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
-			return nil, "", err
+			return nil, "", "", err
 		}
 
 	} else {
@@ -544,13 +544,13 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	// calculate pnl
-	pnl, err := e.calculateWalletSnapshot(req.Address, false, assets)
+	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(req.Address, false, assets)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] calculateWalletSnapshot() failed")
-		return assets, "", nil
+		return assets, "", "", nil
 	}
 
-	return assets, pnl, nil
+	return assets, pnl, latestSnapshotBal, nil
 }
 
 func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
