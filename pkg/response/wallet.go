@@ -15,8 +15,9 @@ type GetOneWalletResponse struct {
 }
 
 type ListAsset struct {
-	Pnl     string            `json:"pnl"`
-	Balance []WalletAssetData `json:"balance"`
+	Pnl               string            `json:"pnl"`
+	LatestSnapshotBal string            `json:"latest_snapshot_bal"`
+	Balance           []WalletAssetData `json:"balance"`
 }
 type WalletAssetData struct {
 	ChainID        int        `json:"chain_id"`
