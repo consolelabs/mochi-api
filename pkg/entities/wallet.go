@@ -440,7 +440,7 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 
 		latestSnapshotBal, _ = strconv.ParseFloat(latestSnapshot[0].TotalUsdBalance, 64)
 	} else {
-		latestSnapshotBal, _ = strconv.ParseFloat(snapshots[1].TotalUsdBalance, 64)
+		latestSnapshotBal, _ = strconv.ParseFloat(snapshots[0].TotalUsdBalance, 64)
 	}
 
 	return fmt.Sprintf("%.4f", totalAmount-latestSnapshotBal), nil
