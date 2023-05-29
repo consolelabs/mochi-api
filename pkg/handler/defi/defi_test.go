@@ -109,8 +109,8 @@ func TestHandler_GetCoin(t *testing.T) {
 						TargetCoinID: "tether",
 					},
 				},
-				Description: response.CoinDescription{
-					EngDescription: "eth",
+				Description: map[string]string{
+					"en": "eth",
 				},
 			},
 			wantError:        nil,

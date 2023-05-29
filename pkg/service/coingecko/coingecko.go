@@ -243,8 +243,8 @@ func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, erro
 			PriceChangePercentage7dInCurrency: map[string]float64{},
 		},
 		Tickers: []response.TickerData{},
-		Description: response.CoinDescription{
-			EngDescription: "BRC20 Token",
+		Description: map[string]string{
+			"en": "BRC20 Token",
 		},
 	}
 
