@@ -158,12 +158,40 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 			return []model.CoingeckoSupportedTokens{*token}, nil
 		}
 	}
+
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"searchQ": searchQ}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
 		return nil, err
 	}
+
+	// // search on coingecko
+	// coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.SearchCoins] svc.CoinGecko.SearchCoin() failed")
+	// 	return nil, err
+	// }
+
+	// // merge tokens
+	// for _, token := range coingeckoTokens.Data {
+	// 	// check if id already exists
+	// 	exists := false
+	// 	for _, t := range tokens {
+	// 		if t.ID == token.ID {
+	// 			exists = true
+	// 			break
+	// 		}
+	// 	}
+
+	// 	if !exists {
+	// 		tokens = append(tokens, model.CoingeckoSupportedTokens{
+	// 			ID:     token.ID,
+	// 			Name:   token.Name,
+	// 			Symbol: token.Symbol,
+	// 		})
+	// 	}
+	// }
 
 	return tokens, nil
 }

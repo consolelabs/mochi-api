@@ -12,6 +12,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -259,4 +260,37 @@ func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
+}
+
+func (c *CoinGecko) SearchCoin(query string) (*response.SearchCoinResponse, error, int) {
+	resp := &CoinGeckoSearchResponse{}
+
+	req, err := http.NewRequest(http.MethodGet, c.searchCoinURL, nil)
+	if err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+
+	q := req.URL.Query()
+	q.Add("query", query)
+	req.URL.RawQuery = q.Encode()
+
+	statusCode, err := util.FetchData(req.URL.String(), resp)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to search coin %s: %v", query, err), statusCode
+	}
+
+	coins := make([]model.CoingeckoSupportedTokens, 0)
+	for _, coin := range resp.Coins {
+		if coin.ID != nil && coin.Name != nil && coin.Symbol != nil {
+			coins = append(coins, model.CoingeckoSupportedTokens{
+				ID:     *coin.ID,
+				Name:   *coin.Name,
+				Symbol: *coin.Symbol,
+			})
+		}
+	}
+
+	return &response.SearchCoinResponse{
+		Data: coins,
+	}, nil, http.StatusOK
 }
