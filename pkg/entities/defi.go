@@ -130,11 +130,19 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 		data.Name += " Dominance Chart"
 		globalData, err := e.svc.CoinGecko.GetGlobalData()
 		if err != nil && err != gorm.ErrRecordNotFound {
-			e.log.Error(err, "[entity.SearchCoins] svc.CoinGecko.GetGlobalData() failed")
+			e.log.Error(err, "[entity.GetCoinData] svc.CoinGecko.GetGlobalData() failed")
 			return nil, err, 500
 		}
 		data.MarketData.TotalMarketCap = globalData.Data.TotalMarketCap
 	}
+
+	watchlistUsers, err := e.repo.UserWatchlistItem.Count(userwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
+	if err != nil {
+		e.log.Error(err, "[entity.GetCoinData] repo.UserWatchlistItem.Count() failed")
+		return nil, err, 500
+	}
+
+	data.WatchlistUsers = watchlistUsers
 
 	return data, nil, http.StatusOK
 }

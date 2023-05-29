@@ -63,16 +63,30 @@ type TokenTickers struct {
 }
 
 type GetCoinResponse struct {
-	ID              string          `json:"id"`
-	Name            string          `json:"name"`
-	Symbol          string          `json:"symbol"`
-	MarketCapRank   int             `json:"market_cap_rank"`
-	AssetPlatformID string          `json:"asset_platform_id"`
-	Image           CoinImage       `json:"image"`
-	MarketData      MarketData      `json:"market_data"`
-	Tickers         []TickerData    `json:"tickers"`
-	Description     CoinDescription `json:"description"`
-	Categories      []string        `json:"categories"`
+	ID                           string            `json:"id"`
+	Name                         string            `json:"name"`
+	Symbol                       string            `json:"symbol"`
+	AssetPlatformID              string            `json:"asset_platform_id"`
+	Platforms                    interface{}       `json:"platforms"`
+	DetailPlatforms              interface{}       `json:"detail_platforms"`
+	BlockTimeInMinutes           int64             `json:"block_time_in_minutes"`
+	HashingAlgorithm             interface{}       `json:"hashing_algorithm"`
+	Categories                   []string          `json:"categories"`
+	Localization                 map[string]string `json:"localization"`
+	Description                  map[string]string `json:"description"`
+	Links                        interface{}       `json:"links"`
+	Image                        CoinImage         `json:"image"`
+	GenesisDate                  interface{}       `json:"genesis_date"`
+	SentimentVotesUpPercentage   float64           `json:"sentiment_votes_up_percentage"`
+	SentimentVotesDownPercentage float64           `json:"sentiment_votes_down_percentage"`
+	WatchlistUsers               int64             `json:"watchlist_users"`
+	MarketCapRank                int64             `json:"market_cap_rank"`
+	CoingeckoRank                int64             `json:"coingecko_rank"`
+	CoingeckoScore               float64           `json:"coingecko_score"`
+	MarketData                   MarketData        `json:"market_data"`
+	CommunityData                interface{}       `json:"community_data"`
+	DeveloperData                interface{}       `json:"developer_data"`
+	Tickers                      []TickerData      `json:"tickers"`
 }
 
 type TickerData struct {
@@ -84,22 +98,50 @@ type TickerData struct {
 }
 
 type MarketData struct {
-	CurrentPrice                       map[string]float64 `json:"current_price"`
-	MarketCap                          map[string]float64 `json:"market_cap"`
-	PriceChangePercentage1hInCurrency  map[string]float64 `json:"price_change_percentage_1h_in_currency"`
-	PriceChangePercentage24hInCurrency map[string]float64 `json:"price_change_percentage_24h_in_currency"`
-	PriceChangePercentage7dInCurrency  map[string]float64 `json:"price_change_percentage_7d_in_currency"`
-	TotalMarketCap                     map[string]float64 `json:"total_market_cap"`
+	CurrentPrice                           map[string]float64 `json:"current_price"`
+	TotalValueLocked                       interface{}        `json:"total_value_locked"`
+	McapToTvlRatio                         interface{}        `json:"mcap_to_tvl_ratio"`
+	FdvToTvlRatio                          interface{}        `json:"fdv_to_tvl_ratio"`
+	Roi                                    interface{}        `json:"roi"`
+	Ath                                    map[string]float64 `json:"ath"`
+	AthChangePercentage                    map[string]float64 `json:"ath_change_percentage"`
+	AthDate                                interface{}        `json:"ath_date"`
+	Atl                                    map[string]float64 `json:"atl"`
+	MarketCap                              map[string]float64 `json:"market_cap"`
+	MarketCapRank                          int64              `json:"market_cap_rank"`
+	TotalMarketCap                         map[string]float64 `json:"total_market_cap"`
+	TotalVolume                            map[string]float64 `json:"total_volume"`
+	FullyDilutedValuation                  map[string]float64 `json:"fully_diluted_valuation"`
+	High24h                                map[string]float64 `json:"high_24h"`
+	Low24h                                 map[string]float64 `json:"low_24h"`
+	PriceChange24h                         float64            `json:"price_change_24h"`
+	PriceChangePercentage24h               float64            `json:"price_change_percentage_24h"`
+	PriceChangePercentage7d                float64            `json:"price_change_percentage_7d"`
+	PriceChangePercentage14d               float64            `json:"price_change_percentage_14d"`
+	PriceChangePercentage30d               float64            `json:"price_change_percentage_30d"`
+	PriceChangePercentage60d               float64            `json:"price_change_percentage_60d"`
+	PriceChangePercentage200d              float64            `json:"price_change_percentage_200d"`
+	PriceChangePercentage1y                float64            `json:"price_change_percentage_1y"`
+	PriceChange24hInCurrency               map[string]float64 `json:"price_change_24h_in_currency"`
+	PriceChangePercentage1hInCurrency      map[string]float64 `json:"price_change_percentage_1h_in_currency"`
+	PriceChangePercentage24hInCurrency     map[string]float64 `json:"price_change_percentage_24h_in_currency"`
+	PriceChangePercentage7dInCurrency      map[string]float64 `json:"price_change_percentage_7d_in_currency"`
+	PriceChangePercentage14dInCurrency     map[string]float64 `json:"price_change_percentage_14d_in_currency"`
+	PriceChangePercentage30dInCurrency     map[string]float64 `json:"price_change_percentage_30d_in_currency"`
+	PriceChangePercentage60dInCurrency     map[string]float64 `json:"price_change_percentage_60d_in_currency"`
+	PriceChangePercentage200dInCurrency    map[string]float64 `json:"price_change_percentage_200d_in_currency"`
+	PriceChangePercentage1yInCurrency      map[string]float64 `json:"price_change_percentage_1y_in_currency"`
+	MarketCapChange24hInCurrency           map[string]float64 `json:"market_cap_change_24h_in_currency"`
+	MarketCapChangePercentage24hInCurrency map[string]float64 `json:"market_cap_change_percentage_24h_in_currency"`
+	TotalSupply                            float64            `json:"total_supply"`
+	MaxSupply                              float64            `json:"max_supply"`
+	CirculatingSupply                      float64            `json:"circulating_supply"`
 }
 
 type CoinImage struct {
 	Thumb string `json:"thumb"`
 	Small string `json:"small"`
 	Large string `json:"large"`
-}
-
-type CoinDescription struct {
-	EngDescription string `json:"en"`
 }
 
 type CoinPriceResponse map[string]map[string]float64
