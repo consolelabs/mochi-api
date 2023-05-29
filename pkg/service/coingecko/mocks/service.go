@@ -66,22 +66,6 @@ func (mr *MockServiceMockRecorder) GetCoin(coinID interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoin", reflect.TypeOf((*MockService)(nil).GetCoin), coinID)
 }
 
-// GetCoinBRC20 mocks base method.
-func (m *MockService) GetCoinBRC20(coinName string) (*response.GetCoinResponse, error, int) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCoinBRC20", coinName)
-	ret0, _ := ret[0].(*response.GetCoinResponse)
-	ret1, _ := ret[1].(error)
-	ret2, _ := ret[2].(int)
-	return ret0, ret1, ret2
-}
-
-// GetCoinBRC20 indicates an expected call of GetCoinBRC20.
-func (mr *MockServiceMockRecorder) GetCoinBRC20(coinName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinBRC20", reflect.TypeOf((*MockService)(nil).GetCoinBRC20), coinName)
-}
-
 // GetCoinByContract mocks base method.
 func (m *MockService) GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error) {
 	m.ctrl.T.Helper()
@@ -234,4 +218,20 @@ func (m *MockService) GetTrendingSearch() (*response.GetTrendingSearch, error) {
 func (mr *MockServiceMockRecorder) GetTrendingSearch() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTrendingSearch", reflect.TypeOf((*MockService)(nil).GetTrendingSearch))
+}
+
+// SearchCoin mocks base method.
+func (m *MockService) SearchCoin(query string) (*response.SearchCoinResponse, error, int) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchCoin", query)
+	ret0, _ := ret[0].(*response.SearchCoinResponse)
+	ret1, _ := ret[1].(error)
+	ret2, _ := ret[2].(int)
+	return ret0, ret1, ret2
+}
+
+// SearchCoin indicates an expected call of SearchCoin.
+func (mr *MockServiceMockRecorder) SearchCoin(query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCoin", reflect.TypeOf((*MockService)(nil).SearchCoin), query)
 }
