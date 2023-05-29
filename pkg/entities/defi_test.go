@@ -514,7 +514,7 @@ func TestEntity_GetCoinData(t *testing.T) {
 						TargetCoinID: "tether",
 					},
 				},
-				Description: response.CoinDescription{},
+				Description: map[string]string{},
 			},
 		},
 		{

@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -196,6 +197,59 @@ func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHisto
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
+}
+
+func (c *CoinGecko) GetCoinBRC20(coinId string) (*response.GetCoinResponse, error, int) {
+	coinIdLower := strings.ToLower(coinId)
+	coinName := strings.TrimPrefix(coinIdLower, "brc20")
+	// get from cache
+	coinData, err := c.brc20Cache.GetString(c.brc20KeyPrefix + strings.ToLower(coinName))
+	if err != nil {
+		return nil, err, 0
+	}
+
+	if coinData == "" {
+		return nil, errors.New("coin not found"), 0
+	}
+
+	coinDataMap := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(coinData), &coinDataMap); err != nil {
+		return nil, err, 0
+	}
+
+	// id := coinDataMap["id"].(int)
+	name := coinDataMap["name"].(string)
+	priceUsd := coinDataMap["priceUsd"].(float64)
+	marketCapUsd := coinDataMap["marketCapUsd"].(float64)
+	percent24h := coinDataMap["percent24h"].(float64)
+
+	resp := &response.GetCoinResponse{
+		ID:              name,
+		Name:            name,
+		Symbol:          name,
+		MarketCapRank:   0,
+		AssetPlatformID: "brc20",
+		Image:           response.CoinImage{},
+		MarketData: response.MarketData{
+			CurrentPrice: map[string]float64{
+				"usd": priceUsd,
+			},
+			MarketCap: map[string]float64{
+				"usd": marketCapUsd,
+			},
+			PriceChangePercentage1hInCurrency: map[string]float64{},
+			PriceChangePercentage24hInCurrency: map[string]float64{
+				"usd": percent24h,
+			},
+			PriceChangePercentage7dInCurrency: map[string]float64{},
+		},
+		Tickers: []response.TickerData{},
+		Description: map[string]string{
+			"en": "BRC20 Token",
+		},
+	}
+
+	return resp, nil, 0
 }
 
 func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {

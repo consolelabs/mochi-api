@@ -130,26 +130,34 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 		data.Name += " Dominance Chart"
 		globalData, err := e.svc.CoinGecko.GetGlobalData()
 		if err != nil && err != gorm.ErrRecordNotFound {
-			e.log.Error(err, "[entity.SearchCoins] svc.CoinGecko.GetGlobalData() failed")
+			e.log.Error(err, "[entity.GetCoinData] svc.CoinGecko.GetGlobalData() failed")
 			return nil, err, 500
 		}
 		data.MarketData.TotalMarketCap = globalData.Data.TotalMarketCap
 	}
 
+	watchlistUsers, err := e.repo.UserWatchlistItem.Count(userwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
+	if err != nil {
+		e.log.Error(err, "[entity.GetCoinData] repo.UserWatchlistItem.Count() failed")
+		return nil, err, 500
+	}
+
+	data.WatchlistUsers = watchlistUsers
+
 	return data, nil, http.StatusOK
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	// if query != "skull" {
-	// 	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-	// 	if err != nil && err != gorm.ErrRecordNotFound {
-	// 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-	// 		return nil, err
-	// 	}
-	// 	if err == nil {
-	// 		return []model.CoingeckoSupportedTokens{*token}, nil
-	// 	}
-	// }
+	if query != "skull" {
+		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+			return nil, err
+		}
+		if err == nil {
+			return []model.CoingeckoSupportedTokens{*token}, nil
+		}
+	}
 
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
