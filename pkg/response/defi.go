@@ -63,16 +63,18 @@ type TokenTickers struct {
 }
 
 type GetCoinResponse struct {
-	ID              string          `json:"id"`
-	Name            string          `json:"name"`
-	Symbol          string          `json:"symbol"`
-	MarketCapRank   int             `json:"market_cap_rank"`
-	AssetPlatformID string          `json:"asset_platform_id"`
-	Image           CoinImage       `json:"image"`
-	MarketData      MarketData      `json:"market_data"`
-	Tickers         []TickerData    `json:"tickers"`
-	Description     CoinDescription `json:"description"`
-	Categories      []string        `json:"categories"`
+	ID              string                            `json:"id"`
+	Name            string                            `json:"name"`
+	Symbol          string                            `json:"symbol"`
+	MarketCapRank   int                               `json:"market_cap_rank"`
+	AssetPlatformID string                            `json:"asset_platform_id"`
+	Image           CoinImage                         `json:"image"`
+	MarketData      MarketData                        `json:"market_data"`
+	Tickers         []TickerData                      `json:"tickers"`
+	Description     CoinDescription                   `json:"description"`
+	Categories      []string                          `json:"categories"`
+	ContractAddress string                            `json:"contract_address"`
+	DetailPlatforms map[string]CoinPlatformDetailData `json:"detail_platforms"`
 }
 
 type TickerData struct {
