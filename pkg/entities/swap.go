@@ -166,7 +166,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	// get profile
-	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId)
+	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
 		return nil, err
