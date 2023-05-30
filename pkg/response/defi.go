@@ -63,30 +63,31 @@ type TokenTickers struct {
 }
 
 type GetCoinResponse struct {
-	ID                           string            `json:"id"`
-	Name                         string            `json:"name"`
-	Symbol                       string            `json:"symbol"`
-	AssetPlatformID              string            `json:"asset_platform_id"`
-	Platforms                    interface{}       `json:"platforms"`
-	DetailPlatforms              interface{}       `json:"detail_platforms"`
-	BlockTimeInMinutes           int64             `json:"block_time_in_minutes"`
-	HashingAlgorithm             interface{}       `json:"hashing_algorithm"`
-	Categories                   []string          `json:"categories"`
-	Localization                 map[string]string `json:"localization"`
-	Description                  map[string]string `json:"description"`
-	Links                        interface{}       `json:"links"`
-	Image                        CoinImage         `json:"image"`
-	GenesisDate                  interface{}       `json:"genesis_date"`
-	SentimentVotesUpPercentage   float64           `json:"sentiment_votes_up_percentage"`
-	SentimentVotesDownPercentage float64           `json:"sentiment_votes_down_percentage"`
-	WatchlistUsers               int64             `json:"watchlist_users"`
-	MarketCapRank                int64             `json:"market_cap_rank"`
-	CoingeckoRank                int64             `json:"coingecko_rank"`
-	CoingeckoScore               float64           `json:"coingecko_score"`
-	MarketData                   MarketData        `json:"market_data"`
-	CommunityData                interface{}       `json:"community_data"`
-	DeveloperData                interface{}       `json:"developer_data"`
-	Tickers                      []TickerData      `json:"tickers"`
+	ID                           string                            `json:"id"`
+	Name                         string                            `json:"name"`
+	Symbol                       string                            `json:"symbol"`
+	AssetPlatformID              string                            `json:"asset_platform_id"`
+	Platforms                    interface{}                       `json:"platforms"`
+	BlockTimeInMinutes           int64                             `json:"block_time_in_minutes"`
+	HashingAlgorithm             interface{}                       `json:"hashing_algorithm"`
+	Categories                   []string                          `json:"categories"`
+	Localization                 map[string]string                 `json:"localization"`
+	Description                  map[string]string                 `json:"description"`
+	Links                        interface{}                       `json:"links"`
+	Image                        CoinImage                         `json:"image"`
+	GenesisDate                  interface{}                       `json:"genesis_date"`
+	SentimentVotesUpPercentage   float64                           `json:"sentiment_votes_up_percentage"`
+	SentimentVotesDownPercentage float64                           `json:"sentiment_votes_down_percentage"`
+	WatchlistUsers               int64                             `json:"watchlist_users"`
+	MarketCapRank                int64                             `json:"market_cap_rank"`
+	CoingeckoRank                int64                             `json:"coingecko_rank"`
+	CoingeckoScore               float64                           `json:"coingecko_score"`
+	MarketData                   MarketData                        `json:"market_data"`
+	CommunityData                interface{}                       `json:"community_data"`
+	DeveloperData                interface{}                       `json:"developer_data"`
+	Tickers                      []TickerData                      `json:"tickers"`
+	ContractAddress              string                            `json:"contract_address"`
+	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
 }
 
 type TickerData struct {

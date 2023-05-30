@@ -395,7 +395,7 @@ func (e *Entity) AssignVerifiedRole(userDiscordID, guildID string) error {
 	}
 
 	// Get user mochi profile
-	profile, err := e.svc.MochiProfile.GetByDiscordID(userDiscordID)
+	profile, err := e.svc.MochiProfile.GetByDiscordID(userDiscordID, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"guild_id":        guildID,
