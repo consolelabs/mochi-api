@@ -4,27 +4,85 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
+func (e *Entity) AddKyberTokenIfNotExist(tokenId string, req *request.GetSwapRouteRequest) (*model.KyberswapSupportedToken, error) {
+	// get info from coingecko
+	coinGeckoToken, err, _ := e.svc.CoinGecko.GetCoin(tokenId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.AddKyberTokenIfNotExist] - cannot get coin coingecko")
+		return nil, err
+	}
+
+	// create kyber supported token in db
+	token, err := e.repo.KyberswapSupportedToken.Create(&model.KyberswapSupportedToken{
+		Address:   coinGeckoToken.ContractAddress,
+		ChainName: req.ChainName,
+		ChainId:   util.ConvertChainNameToChainId(req.ChainName),
+		Decimals:  int64(coinGeckoToken.DetailPlatforms[coinGeckoToken.AssetPlatformID].DecimalPlace),
+		Symbol:    coinGeckoToken.Symbol,
+		Name:      coinGeckoToken.Name,
+		LogoUri:   coinGeckoToken.Image.Small,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.repo.KyberswapSupportedToken.Create] - cannot create token in db")
+		return nil, err
+	}
+
+	// create token in mochi pay
+	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
+		Id:          uuid.New().String(),
+		Name:        coinGeckoToken.Name,
+		Symbol:      coinGeckoToken.Symbol,
+		Decimal:     int64(coinGeckoToken.DetailPlatforms[coinGeckoToken.AssetPlatformID].DecimalPlace),
+		ChainId:     strconv.Itoa(int(util.ConvertChainNameToChainId(req.ChainName))),
+		Address:     coinGeckoToken.ContractAddress,
+		Icon:        coinGeckoToken.Image.Small,
+		CoinGeckoId: coinGeckoToken.ID,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.MochiPay.CreateToken] - cannot create token in mochi pay")
+		return token, err
+	}
+
+	return token, err
+}
 func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.SwapRouteResponse, error) {
 	// get from token
 	fromToken, err := e.repo.KyberswapSupportedToken.GetByTokenChain(req.From, int64(req.ChainId), req.ChainName)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get from token")
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			fromToken, err = e.AddKyberTokenIfNotExist(req.FromTokenId, req)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get from token")
+			return nil, err
+		}
 	}
 	// get to token
 	toTokenOverview, err := e.repo.KyberswapSupportedToken.GetByTokenChain(req.To, int64(req.ChainId), req.ChainName)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get to token")
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			toTokenOverview, err = e.AddKyberTokenIfNotExist(req.ToTokenId, req)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get from token")
+			return nil, err
+		}
 	}
 
 	// convert string float to string big int

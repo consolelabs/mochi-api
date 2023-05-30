@@ -45,11 +45,13 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 	}
 
 	req := request.GetSwapRouteRequest{
-		From:      c.Query("from"),
-		To:        c.Query("to"),
-		Amount:    c.Query("amount"),
-		ChainId:   int64(chainId),
-		ChainName: c.Query("chain_name"),
+		From:        c.Query("from"),
+		To:          c.Query("to"),
+		Amount:      c.Query("amount"),
+		ChainId:     int64(chainId),
+		ChainName:   c.Query("chain_name"),
+		FromTokenId: c.Query("from_token_id"),
+		ToTokenId:   c.Query("to_token_id"),
 	}
 
 	data, err := h.entities.GetSwapRoutes(&req)
