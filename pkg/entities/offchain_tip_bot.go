@@ -24,7 +24,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := request.MochiPayTransferRequest{}
-	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender)
+	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender, true)
 	if err != nil {
 		return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
 	}
@@ -34,7 +34,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	}
 
 	for _, v := range req.Recipients {
-		profile, err := e.svc.MochiProfile.GetByDiscordID(v)
+		profile, err := e.svc.MochiProfile.GetByDiscordID(v, true)
 		if err != nil {
 			return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
 		}

@@ -316,7 +316,7 @@ func (e *Entity) calculateNFTBalance(chainId int64, tokenAddress, walletAddress 
 }
 
 func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID string) (*big.Int, error) {
-	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID)
+	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
 		return nil, err
