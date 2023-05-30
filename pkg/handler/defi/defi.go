@@ -236,13 +236,13 @@ func (h *Handler) CompareToken(c *gin.Context) {
 func (h *Handler) GetUserWatchlist(c *gin.Context) {
 	var req request.GetUserWatchlistRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
-		h.log.Error(err, "[handler.AddToWatchlist] ShouldBindQuery() failed")
+		h.log.Error(err, "[handler.GetUserWatchlist] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	res, err := h.entities.GetUserWatchlist(req)
 	if err != nil {
-		h.log.Error(err, "[handler.AddToWatchlist] entity.GetUserWatchlist() failed")
+		h.log.Error(err, "[handler.GetUserWatchlist] entity.GetUserWatchlist() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

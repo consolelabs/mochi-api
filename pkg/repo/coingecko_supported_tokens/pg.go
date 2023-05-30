@@ -3,6 +3,7 @@ package coingeckosupportedtokens
 import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/plugin/dbresolver"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -17,7 +18,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) GetOne(id string) (*model.CoingeckoSupportedTokens, error) {
 	token := &model.CoingeckoSupportedTokens{}
-	return token, pg.db.Where("id = ?", id).First(token).Error
+	return token, pg.db.Where("id = ?", id).Clauses(dbresolver.Write).First(token).Error
 }
 
 func (pg *pg) List(q ListQuery) ([]model.CoingeckoSupportedTokens, error) {

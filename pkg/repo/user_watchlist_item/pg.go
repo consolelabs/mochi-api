@@ -42,3 +42,17 @@ func (pg *pg) Delete(userID, symbol string) (int64, error) {
 	tx := pg.db.Where("user_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserWatchlistItem{})
 	return tx.RowsAffected, tx.Error
 }
+
+func (pg *pg) Count(q CountQuery) (count int64, err error) {
+	db := pg.db.Model(&model.UserWatchlistItem{})
+	if q.CoingeckoId != "" {
+		db = db.Where("coin_gecko_id like ? OR coin_gecko_id like ? OR coin_gecko_id like ?", q.CoingeckoId, q.CoingeckoId+"/%", "%/"+q.CoingeckoId)
+	}
+	if q.Symbol != "" {
+		db = db.Where("symbol like ? OR symbol like ? OR symbol like ?", q.Symbol, q.Symbol+"/%", "%/"+q.Symbol)
+	}
+	if q.Distinct != "" {
+		db = db.Distinct(q.Distinct)
+	}
+	return count, db.Count(&count).Error
+}
