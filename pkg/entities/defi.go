@@ -147,7 +147,7 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
+func (e *Entity) SearchCoins(query string) (*response.SearchCoinWithPriceResponse, error) {
 	if query != "skull" {
 		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 		if err != nil && err != gorm.ErrRecordNotFound {
@@ -155,7 +155,21 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 			return nil, err
 		}
 		if err == nil {
-			return []model.CoingeckoSupportedTokens{*token}, nil
+			prices, err := e.svc.CoinGecko.GetCoinPrice([]string{token.ID}, "usd")
+			if err != nil {
+				e.log.Fields(logger.Fields{"token": token, "error": err}).Warn("[entity.SearchCoins] entity.fetchTokenPrice() failed")
+			}
+			return &response.SearchCoinWithPriceResponse{
+				Data: []response.SearchCoinWithPriceData{
+					{
+						ID:     token.ID,
+						Symbol: token.Symbol,
+						Name:   token.Name,
+						Price:  prices[token.ID],
+					},
+				},
+			}, nil
+
 		}
 	}
 
@@ -166,34 +180,34 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		return nil, err
 	}
 
-	// // search on coingecko
-	// coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"query": query, "code": code}).Error(err, "[entity.SearchCoins] svc.CoinGecko.SearchCoin() failed")
-	// 	return nil, err
-	// }
+	var data []response.SearchCoinWithPriceData
+	coinIds := make([]string, len(tokens))
+	for i, token := range tokens {
+		coinIds[i] = token.ID
+	}
+	prices, err := e.svc.CoinGecko.GetCoinPrice(coinIds, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"coinIds": coinIds}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinPrice() failed")
+		return nil, err
+	}
 
-	// // merge tokens
-	// for _, token := range coingeckoTokens.Data {
-	// 	// check if id already exists
-	// 	exists := false
-	// 	for _, t := range tokens {
-	// 		if t.ID == token.ID {
-	// 			exists = true
-	// 			break
-	// 		}
-	// 	}
+	for _, token := range tokens {
+		price, ok := prices[token.ID]
+		if !ok {
+			e.log.Fields(logger.Fields{"token": token}).Warn("[entity.SearchCoins] prices[token.ID] not found")
+			continue
+		}
+		data = append(data, response.SearchCoinWithPriceData{
+			ID:     token.ID,
+			Name:   token.Name,
+			Symbol: token.Symbol,
+			Price:  price,
+		})
+	}
 
-	// 	if !exists {
-	// 		tokens = append(tokens, model.CoingeckoSupportedTokens{
-	// 			ID:     token.ID,
-	// 			Name:   token.Name,
-	// 			Symbol: token.Symbol,
-	// 		})
-	// 	}
-	// }
-
-	return tokens, nil
+	return &response.SearchCoinWithPriceResponse{
+		Data: data,
+	}, nil
 }
 
 func (e *Entity) InitGuildDefaultTokenConfigs(guildID string) error {
@@ -233,7 +247,7 @@ func (e *Entity) GetGuildActivityConfig(guildID, transferType string) (*model.Gu
 	return gActivityConfig, nil
 }
 
-func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTokens, *response.GetCoinResponse, error) {
+func (e *Entity) queryCoins(guildID, query string) ([]response.SearchCoinWithPriceData, *response.GetCoinResponse, error) {
 	config, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildID, query)
 	// if default ticker was set then return ...
 	if err == nil {
@@ -242,7 +256,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 			e.log.Fields(logger.Fields{"default_ticker": config.DefaultTicker, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
 			return nil, nil, err
 		}
-		return []model.CoingeckoSupportedTokens{{ID: coin.ID, Name: coin.Name, Symbol: coin.Symbol}}, coin, nil
+		return []response.SearchCoinWithPriceData{{ID: coin.ID, Name: coin.Name, Symbol: coin.Symbol}}, coin, nil
 	}
 
 	// ... else SearchCoins()
@@ -252,20 +266,20 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
 		return nil, nil, err
 	}
-	switch len(searchResult) {
+	switch len(searchResult.Data) {
 	case 0:
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no data found")
 		return nil, nil, fmt.Errorf("coin %s not found", query)
 	case 1:
-		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
+		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult.Data[0].ID)
 		if err != nil {
-			e.log.Fields(logger.Fields{"coind_id": searchResult[0].ID, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
+			e.log.Fields(logger.Fields{"coind_id": searchResult.Data[0].ID, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
 			return nil, nil, err
 		}
-		return searchResult, coin, nil
+		return searchResult.Data, coin, nil
 	default:
 		// if multiple search results then respond as suggestions
-		return searchResult, nil, nil
+		return searchResult.Data, nil, nil
 	}
 }
 
@@ -494,16 +508,16 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
 			return nil, err
 		}
-		if len(tokens) > 1 {
+		if len(tokens.Data) > 1 {
 			return &response.AddToWatchlistResponse{
-				Data: &response.AddToWatchlistResponseData{BaseSuggestions: tokens},
+				Data: &response.AddToWatchlistResponseData{BaseSuggestions: tokens.Data},
 			}, nil
 		}
-		if len(tokens) == 0 {
+		if len(tokens.Data) == 0 {
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() - no data found")
 			return nil, baseerrs.ErrRecordNotFound
 		}
-		req.CoinGeckoID = tokens[0].ID
+		req.CoinGeckoID = tokens.Data[0].ID
 
 	}
 

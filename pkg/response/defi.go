@@ -185,14 +185,14 @@ type GetCoinResponseWrapper struct {
 }
 
 type CompareTokenReponseData struct {
-	BaseCoin              *GetCoinResponse                 `json:"base_coin"`
-	TargetCoin            *GetCoinResponse                 `json:"target_coin"`
-	Ratios                []float64                        `json:"ratios"`
-	Times                 []string                         `json:"times"`
-	BaseCoinSuggestions   []model.CoingeckoSupportedTokens `json:"base_coin_suggestions"`
-	TargetCoinSuggestions []model.CoingeckoSupportedTokens `json:"target_coin_suggestions"`
-	From                  string                           `json:"from"`
-	To                    string                           `json:"to"`
+	BaseCoin              *GetCoinResponse          `json:"base_coin"`
+	TargetCoin            *GetCoinResponse          `json:"target_coin"`
+	Ratios                []float64                 `json:"ratios"`
+	Times                 []string                  `json:"times"`
+	BaseCoinSuggestions   []SearchCoinWithPriceData `json:"base_coin_suggestions"`
+	TargetCoinSuggestions []SearchCoinWithPriceData `json:"target_coin_suggestions"`
+	From                  string                    `json:"from"`
+	To                    string                    `json:"to"`
 }
 
 type CompareTokenResponse struct {
@@ -200,8 +200,8 @@ type CompareTokenResponse struct {
 }
 
 type AddToWatchlistResponseData struct {
-	BaseSuggestions   []model.CoingeckoSupportedTokens `json:"base_suggestions"`
-	TargetSuggestions []model.CoingeckoSupportedTokens `json:"target_suggestions"`
+	BaseSuggestions   []SearchCoinWithPriceData `json:"base_suggestions"`
+	TargetSuggestions []SearchCoinWithPriceData `json:"target_suggestions"`
 }
 
 type AddToWatchlistResponse struct {
@@ -240,6 +240,17 @@ type CoingeckoSupportedTokenResponse struct {
 
 type SearchCoinResponse struct {
 	Data []model.CoingeckoSupportedTokens `json:"data"`
+}
+
+type SearchCoinWithPriceResponse struct {
+	Data []SearchCoinWithPriceData `json:"data"`
+}
+
+type SearchCoinWithPriceData struct {
+	ID     string  `json:"id"`
+	Name   string  `json:"name"`
+	Symbol string  `json:"symbol"`
+	Price  float64 `json:"price"`
 }
 
 type GetFiatHistoricalExchangeRatesResponse struct {

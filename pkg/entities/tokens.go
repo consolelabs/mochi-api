@@ -32,11 +32,11 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 		e.log.Error(err, "[Entity][CreateCustomToken] svc.CoinGecko.SearchCoins failed")
 		return fmt.Errorf("error seaching coin: %v", err)
 	}
-	if len(coins) == 0 {
+	if len(coins.Data) == 0 {
 		return fmt.Errorf("cannot find token by symbol")
 	}
 
-	coin, err, _ := e.svc.CoinGecko.GetCoin(coins[0].ID)
+	coin, err, _ := e.svc.CoinGecko.GetCoin(coins.Data[0].ID)
 	if err != nil {
 		e.log.Error(err, "[Entity][CreateCustomToken] svc.CoinGecko.GetCoin failed")
 		return fmt.Errorf("error getting coin: %v", err)
@@ -63,9 +63,9 @@ func (e *Entity) CreateCustomToken(req request.UpsertCustomTokenConfigRequest) e
 		token = &model.Token{
 			ChainID:             chain.ID,
 			Address:             req.Address,
-			CoinGeckoID:         coins[0].ID,
-			Name:                coins[0].Name,
-			Symbol:              strings.ToUpper(coins[0].Symbol),
+			CoinGeckoID:         coins.Data[0].ID,
+			Name:                coins.Data[0].Name,
+			Symbol:              strings.ToUpper(coins.Data[0].Symbol),
 			Decimals:            historicalTokenPrices.Data[0].Decimals,
 			DiscordBotSupported: true,
 			Chain:               chain,

@@ -157,7 +157,7 @@ func (h *Handler) GetCoin(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       query   query  string true  "coin query"
-// @Success     200 {object} response.SearchCoinResponse
+// @Success     200 {object} response.SearchCoinWithPriceResponse
 // @Router      /defi/coins [get]
 func (h *Handler) SearchCoins(c *gin.Context) {
 	query := c.Query("query")
@@ -167,14 +167,14 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 		return
 	}
 
-	tokens, err := h.entities.SearchCoins(query)
+	resp, err := h.entities.SearchCoins(query)
 	if err != nil {
 		h.log.Error(err, "[handler.SearchCoins] entities.SearchCoins() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
+	c.JSON(http.StatusOK, resp)
 }
 
 // CompareToken     godoc

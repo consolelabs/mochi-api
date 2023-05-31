@@ -4482,7 +4482,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.SearchCoinResponse"
+                            "$ref": "#/definitions/response.SearchCoinWithPriceResponse"
                         }
                     }
                 }
@@ -7427,6 +7427,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "false",
+                        "name": "noFetchAmount",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "name": "profileID",
                         "in": "query"
                     },
@@ -7988,20 +7994,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "short_name": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.CoingeckoSupportedTokens": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "symbol": {
                     "type": "string"
                 }
             }
@@ -11511,13 +11503,13 @@ const docTemplate = `{
                 "base_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/response.SearchCoinWithPriceData"
                     }
                 },
                 "target_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/response.SearchCoinWithPriceData"
                     }
                 }
             }
@@ -11632,14 +11624,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CoinDescription": {
-            "type": "object",
-            "properties": {
-                "en": {
-                    "type": "string"
-                }
-            }
-        },
         "response.CoinImage": {
             "type": "object",
             "properties": {
@@ -11709,6 +11693,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CoinPlatformDetailData": {
+            "type": "object",
+            "properties": {
+                "contract_address": {
+                    "type": "string"
+                },
+                "decimal_place": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.CoinPriceHistoryResponse": {
             "type": "object",
             "properties": {
@@ -11767,7 +11762,7 @@ const docTemplate = `{
                 "base_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/response.SearchCoinWithPriceData"
                     }
                 },
                 "from": {
@@ -11785,7 +11780,7 @@ const docTemplate = `{
                 "target_coin_suggestions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/response.SearchCoinWithPriceData"
                     }
                 },
                 "times": {
@@ -12247,14 +12242,52 @@ const docTemplate = `{
                 "asset_platform_id": {
                     "type": "string"
                 },
-                "description": {
-                    "$ref": "#/definitions/response.CoinDescription"
+                "block_time_in_minutes": {
+                    "type": "integer"
                 },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "coingecko_rank": {
+                    "type": "integer"
+                },
+                "coingecko_score": {
+                    "type": "number"
+                },
+                "community_data": {},
+                "contract_address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "detail_platforms": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/response.CoinPlatformDetailData"
+                    }
+                },
+                "developer_data": {},
+                "genesis_date": {},
+                "hashing_algorithm": {},
                 "id": {
                     "type": "string"
                 },
                 "image": {
                     "$ref": "#/definitions/response.CoinImage"
+                },
+                "links": {},
+                "localization": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "market_cap_rank": {
                     "type": "integer"
@@ -12265,6 +12298,13 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "platforms": {},
+                "sentiment_votes_down_percentage": {
+                    "type": "number"
+                },
+                "sentiment_votes_up_percentage": {
+                    "type": "number"
+                },
                 "symbol": {
                     "type": "string"
                 },
@@ -12273,6 +12313,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.TickerData"
                     }
+                },
+                "watchlist_users": {
+                    "type": "integer"
                 }
             }
         },
@@ -14025,7 +14068,48 @@ const docTemplate = `{
         "response.MarketData": {
             "type": "object",
             "properties": {
+                "ath": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "ath_change_percentage": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "ath_date": {},
+                "atl": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "circulating_supply": {
+                    "type": "number"
+                },
                 "current_price": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "fdv_to_tvl_ratio": {},
+                "fully_diluted_valuation": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "high_24h": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "low_24h": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "number"
@@ -14037,11 +14121,69 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
+                "market_cap_change_24h_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "market_cap_change_percentage_24h_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "market_cap_rank": {
+                    "type": "integer"
+                },
+                "max_supply": {
+                    "type": "number"
+                },
+                "mcap_to_tvl_ratio": {},
+                "price_change_24h": {
+                    "type": "number"
+                },
+                "price_change_24h_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "price_change_percentage_14d": {
+                    "type": "number"
+                },
+                "price_change_percentage_14d_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
                 "price_change_percentage_1h_in_currency": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "number"
                     }
+                },
+                "price_change_percentage_1y": {
+                    "type": "number"
+                },
+                "price_change_percentage_1y_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "price_change_percentage_200d": {
+                    "type": "number"
+                },
+                "price_change_percentage_200d_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "price_change_percentage_24h": {
+                    "type": "number"
                 },
                 "price_change_percentage_24h_in_currency": {
                     "type": "object",
@@ -14049,13 +14191,45 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
+                "price_change_percentage_30d": {
+                    "type": "number"
+                },
+                "price_change_percentage_30d_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "price_change_percentage_60d": {
+                    "type": "number"
+                },
+                "price_change_percentage_60d_in_currency": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "price_change_percentage_7d": {
+                    "type": "number"
+                },
                 "price_change_percentage_7d_in_currency": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "number"
                     }
                 },
+                "roi": {},
                 "total_market_cap": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "total_supply": {
+                    "type": "number"
+                },
+                "total_value_locked": {},
+                "total_volume": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "number"
@@ -14669,13 +14843,30 @@ const docTemplate = `{
                 }
             }
         },
-        "response.SearchCoinResponse": {
+        "response.SearchCoinWithPriceData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SearchCoinWithPriceResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                        "$ref": "#/definitions/response.SearchCoinWithPriceData"
                     }
                 }
             }

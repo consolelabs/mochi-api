@@ -50,7 +50,6 @@ func NewService(cfg *config.Config) Service {
 	if err != nil {
 		log.Fatal(err, "failed to init redis cache")
 	}
-
 	return &CoinGecko{
 		getMarketChartURL:                 "https://pro-api.coingecko.com/api/v3/coins/%s/market_chart?vs_currency=%s&days=%d&x_cg_pro_api_key=" + apiKey,
 		searchCoinURL:                     "https://pro-api.coingecko.com/api/v3/search?query=%s&x_cg_pro_api_key=" + apiKey,
