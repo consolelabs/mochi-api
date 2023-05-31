@@ -110,6 +110,7 @@ type Config struct {
 
 	Kafka         Kafka
 	Solscan       Solscan
+	Sui           Sui
 	ChainExplorer ChainExplorer
 }
 
@@ -124,6 +125,10 @@ type MarketplaceBaseUrl struct {
 
 type Solscan struct {
 	Token string
+}
+
+type Sui struct {
+	Rpc string
 }
 
 type MarketplaceApiKey struct {
@@ -301,6 +306,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			BscScanApiKey:     v.GetString("BSCSCAN_API_KEY"),
 			PolygonScanApiKey: v.GetString("POLYGONSCAN_API_KEY"),
 		},
+		Sui: Sui{
+			Rpc: v.GetString("SUI_JSON_RPC"),
+		},
 	}
 }
 
@@ -365,6 +373,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
 	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://3rd.console.so/sui/api")
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
+	v.SetDefault("SUI_JSON_RPC", "https://fullnode.mainnet.sui.io")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

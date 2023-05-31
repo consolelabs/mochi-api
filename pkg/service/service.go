@@ -24,6 +24,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/processor"
 	"github.com/defipod/mochi/pkg/service/snapshot"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
+	"github.com/defipod/mochi/pkg/service/sui"
 	"github.com/defipod/mochi/pkg/service/twitter"
 )
 
@@ -50,6 +51,7 @@ type Service struct {
 	MochiPay      mochipay.Service
 	ChainExplorer chainexplorer.Service
 	Kyber         kyber.Service
+	Sui           sui.Service
 }
 
 func NewService(
@@ -83,5 +85,6 @@ func NewService(
 		MochiPay:      mochipay.NewService(&cfg, log),
 		ChainExplorer: chainexplorer.NewService(cfg, log),
 		Kyber:         kyber.New(&cfg, log),
+		Sui:           sui.New(&cfg, log),
 	}, nil
 }
