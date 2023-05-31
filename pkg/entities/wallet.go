@@ -129,7 +129,7 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 }
 
 func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
-	chainIDs := []int{1, 56, 137, 250}
+	chainIDs := []int{1, 56, 137, 250, 2020}
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTokenBalances(chainID, wallet.Address, 3)
 		if err != nil {
@@ -166,6 +166,7 @@ func (e *Entity) calculateTokenBalance(item covalent.TokenBalanceItem, chainID i
 }
 
 func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalletWatchlistItem, error) {
+	req.Standardize()
 	wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: req.AliasOrAddress})
 	if err != nil {
 		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetOneWallet] repo.UserWalletWatchlistItem.GetOne() failed")
@@ -276,6 +277,7 @@ func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
 }
 
 func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
+	req.Standardize()
 	if req.Type == "sol" {
 		return e.listSolWalletAssets(req)
 	}
@@ -299,7 +301,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		return nil, "", "", err
 	}
 
-	chainIDs := []int{1, 56, 137, 250}
+	chainIDs := []int{1, 56, 137, 250, 2020}
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
 		for _, chainID := range chainIDs {
@@ -634,6 +636,7 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 }
 
 func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+	req.Standardize()
 	if req.Type == "sol" {
 		return e.listSolWalletTxns(req)
 	}
@@ -641,7 +644,7 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 }
 
 func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
-	chainIDs := []int{1, 56, 137, 250}
+	chainIDs := []int{1, 56, 137, 250, 2020}
 	txns := make([]response.WalletTransactionData, 0)
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
