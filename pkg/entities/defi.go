@@ -166,6 +166,15 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		return nil, err
 	}
 
+	for i, t := range tokens {
+		prices, err := e.svc.CoinGecko.GetCoinPrice([]string{t.ID}, "usd")
+		if err != nil {
+			e.log.Fields(logger.Fields{"id": t.ID}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinPrice() failed")
+			continue
+		}
+		tokens[i].CurrentPrice = prices[t.ID]
+	}
+
 	// // search on coingecko
 	// coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
 	// if err != nil {
