@@ -637,9 +637,15 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 
 func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
 	req.Standardize()
+
 	if req.Type == "sol" {
 		return e.listSolWalletTxns(req)
 	}
+
+	if req.Type == "sui" {
+		return e.listSuiWalletTxns(req)
+	}
+
 	return e.listEthWalletTxns(req)
 }
 
@@ -702,6 +708,15 @@ func (e *Entity) listSolWalletTxns(req request.ListWalletTransactionsRequest) ([
 		e.handleSolTokenTransfers(req.Address, tx, &data)
 		res = append(res, data)
 	}
+	return res, nil
+}
+
+func (e *Entity) listSuiWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+	res, err := e.svc.Sui.GetAddressTxn(req.Address)
+	if err != nil {
+		return []response.WalletTransactionData{}, err
+	}
+
 	return res, nil
 }
 
