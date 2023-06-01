@@ -119,11 +119,24 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
 			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets)
 			walletsGroup.POST("/generate-verification", h.Wallet.GenerateWalletVerification)
-			walletsGroup.POST("/track", h.Wallet.Track)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
 			walletsGroup.GET("/:address/:type/assets", h.Wallet.ListAssets)
 			walletsGroup.GET("/:address/:type/txns", h.Wallet.ListTransactions)
+		}
+
+		// TODO: migrate wl apis to this group, add handler to handle Watchlist instead of using Wallet handler
+		// For example: Token watchlist should be /users/:id/watchlists/tokens
+		// Wallet watchlist should be /users/:id/watchlists/wallets
+		// Action should be /users/:id/watchlists/wallets/action (POST)
+		// It means:
+		// 		What is the main entity? => User that have proper table in the DB, and can be extended by /:id
+		//    What is the virtual entity? => Watchlist that is not a table in the DB, but can be extended by /watchlists to point to user's watchlist
+		// 		Wallets is also the virtual entity here, it is different from the wallet in the DB, but it is the wallet that user want to watch
+		// 		What is the action? => track/untrack
+		watchListGroup := userGroup.Group("/:id/watchlists")
+		{
+			watchListGroup.POST("/wallets/track", h.Wallet.Track)
 		}
 	}
 

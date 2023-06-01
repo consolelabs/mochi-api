@@ -130,4 +130,3 @@ setup-githook:
 
 gen-swagger:
 	swag init  --parseDependency --parseInternal -g ./cmd/server/main.go
-	

@@ -350,22 +350,23 @@ func (e *Entity) VerifyWalletAssignRole(verification *model.DiscordWalletVerific
 }
 
 func (e *Entity) handleWalletAddition(walletAddress string, verification model.DiscordWalletVerification) error {
-	req := request.TrackWalletRequest{
+	mod := model.UserWalletWatchlistItem{
 		UserID:    verification.UserDiscordID,
 		Address:   walletAddress,
-		Type:      "eth",
+		Type:      model.TrackingTypeFollow,
+		ChainType: model.ChainTypeEthereum,
 		IsOwner:   true,
-		MessageID: verification.MessageID,
-		ChannelID: verification.ChannelID,
 	}
-	err := e.TrackWallet(req)
+
+	err := e.TrackWallet(mod, verification.ChannelID, verification.MessageID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.handleWalletAddition] entity.TrackWallet() failed")
+		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.handleWalletAddition] entity.TrackWallet() failed")
 		return err
 	}
+
 	err = e.repo.DiscordWalletVerification.DeleteByCode(verification.Code)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.handleWalletAddition] repo.DiscordWalletVerification.DeleteByCode() failed")
+		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.handleWalletAddition] repo.DiscordWalletVerification.DeleteByCode() failed")
 		return err
 	}
 	return nil
