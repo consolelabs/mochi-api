@@ -250,6 +250,8 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 		coingeckoSupportedTokenFound model.CoingeckoSupportedTokens
 		coingeckoSupportedTokenError error
 		coingeckoSupportedTokens     []model.CoingeckoSupportedTokens
+		coinIds                      []string
+		coinPrices                   map[string]float64
 		wantErr                      bool
 	}{
 		// TODO: Add test cases.
@@ -272,18 +274,22 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 					Name:   "Dogecoin",
 				},
 			},
+			coinIds:    []string{"binance-peg-dogecoin", "dogecoin"},
+			coinPrices: map[string]float64{"binance-peg-dogecoin": 0.1, "dogecoin": 0.2},
 			want: response.AddToWatchlistResponse{
 				Data: &response.AddToWatchlistResponseData{
 					BaseSuggestions: []model.CoingeckoSupportedTokens{
 						{
-							ID:     "binance-peg-dogecoin",
-							Symbol: "doge",
-							Name:   "Binance-Peg Dogecoin",
+							ID:           "binance-peg-dogecoin",
+							Symbol:       "doge",
+							Name:         "Binance-Peg Dogecoin",
+							CurrentPrice: 0.1,
 						},
 						{
-							ID:     "dogecoin",
-							Symbol: "doge",
-							Name:   "Dogecoin",
+							ID:           "dogecoin",
+							Symbol:       "doge",
+							Name:         "Dogecoin",
+							CurrentPrice: 0.2,
 						},
 					},
 				},
@@ -318,6 +324,12 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 				Symbol:      tt.req.Symbol,
 				CoinGeckoID: tt.coingeckoSupportedTokenFound.ID,
 			}).Return(nil).AnyTimes()
+
+			if tt.coinIds != nil && len(tt.coinIds) != 0 {
+				for _, coinId := range tt.coinIds {
+					mockServiceCoingecko.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+				}
+			}
 
 			got, err := e.AddToWatchlist(tt.req)
 			if (err != nil) != tt.wantErr {
@@ -362,6 +374,8 @@ func TestEntity_SearchCoins(t *testing.T) {
 		coinGeckoTokenError    error
 		coinGeckoSuggestTokens []model.CoingeckoSupportedTokens
 		want                   []model.CoingeckoSupportedTokens
+		coinIds                []string
+		coinPrices             map[string]float64
 		wantErr                bool
 	}{
 		{
@@ -396,16 +410,20 @@ func TestEntity_SearchCoins(t *testing.T) {
 					Name:   "Ethereum (Wormhole)",
 				},
 			},
+			coinIds:    []string{"ethereum", "ethereum-wormhole"},
+			coinPrices: map[string]float64{"ethereum": 1700, "ethereum-wormhole": 120},
 			want: []model.CoingeckoSupportedTokens{
 				{
-					ID:     "ethereum",
-					Symbol: "eth",
-					Name:   "Ethereum",
+					ID:           "ethereum",
+					Symbol:       "eth",
+					Name:         "Ethereum",
+					CurrentPrice: 1700,
 				},
 				{
-					ID:     "ethereum-wormhole",
-					Symbol: "eth",
-					Name:   "Ethereum (Wormhole)",
+					ID:           "ethereum-wormhole",
+					Symbol:       "eth",
+					Name:         "Ethereum (Wormhole)",
+					CurrentPrice: 120,
 				}},
 			wantErr: false,
 		},
@@ -422,6 +440,12 @@ func TestEntity_SearchCoins(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockCoingeckoSupportToken.EXPECT().GetOne(tt.query).Return(tt.coinGeckoTokenFound, tt.coinGeckoTokenError).AnyTimes()
 			mockCoingeckoSupportToken.EXPECT().List(coingeckosupportedtokens.ListQuery{Symbol: tt.query}).Return(tt.coinGeckoSuggestTokens, nil).AnyTimes()
+
+			if tt.coinIds != nil && len(tt.coinIds) != 0 {
+				for _, coinId := range tt.coinIds {
+					mockServiceCoingecko.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+				}
+			}
 
 			got, err := e.SearchCoins(tt.query)
 			if (err != nil) != tt.wantErr {

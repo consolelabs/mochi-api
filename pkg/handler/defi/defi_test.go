@@ -259,6 +259,8 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 		name                     string
 		req                      request.AddToWatchlistRequest
 		coingeckoSupportedTokens []model.CoingeckoSupportedTokens
+		coinIds                  []string
+		coinPrices               map[string]float64
 		wantError                error
 		wantCode                 int
 		wantResponsePath         string
@@ -282,6 +284,8 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 					Name:   "Dogecoin",
 				},
 			},
+			coinIds:          []string{"binance-peg-dogecoin", "dogecoin"},
+			coinPrices:       map[string]float64{"binance-peg-dogecoin": 0.1, "dogecoin": 0.2},
 			wantCode:         200,
 			wantResponsePath: "testdata/user_watchlist/post-200-ok-suggest.json",
 		},
@@ -298,6 +302,8 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 					Name:   "PancakeSwap",
 				},
 			},
+			coinIds:          []string{"pancakeswap-token"},
+			coinPrices:       map[string]float64{"pancakeswap-token": 1.7},
 			wantCode:         200,
 			wantResponsePath: "testdata/200-data-null.json",
 		},
@@ -318,6 +324,12 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 			ctx, _ := gin.CreateTestContext(w)
 			ctx.Request = httptest.NewRequest("POST", "/api/v1/defi/watchlist", nil)
 			util.SetRequestBody(ctx, tt.req)
+
+			if tt.coinIds != nil && len(tt.coinIds) != 0 {
+				for _, coinId := range tt.coinIds {
+					coingeckoMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+				}
+			}
 
 			h.AddToWatchlist(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -409,18 +421,24 @@ func TestHandler_SearchCoins(t *testing.T) {
 		query            string
 		wantCode         int
 		wantResponsePath string
+		coinIds          []string
+		coinPrices       map[string]float64
 	}{
 		{
 			name:             "success - get one coin",
 			query:            "cake",
 			wantCode:         200,
 			wantResponsePath: "testdata/search_coin/200-ok-single.json",
+			coinIds:          []string{"pancakeswap-token"},
+			coinPrices:       map[string]float64{"pancakeswap-token": 1.7},
 		},
 		{
 			name:             "success - get multiple coins",
 			query:            "doge",
 			wantCode:         200,
 			wantResponsePath: "testdata/search_coin/200-ok-multiple.json",
+			coinIds:          []string{"binance-peg-dogecoin", "dogecoin"},
+			coinPrices:       map[string]float64{"binance-peg-dogecoin": 0.1, "dogecoin": 0.2},
 		},
 		{
 			name:             "success - not  found",
@@ -434,6 +452,12 @@ func TestHandler_SearchCoins(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
 			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/coins?query=%s", tt.query), nil)
+
+			if tt.coinIds != nil && len(tt.coinIds) != 0 {
+				for _, coinId := range tt.coinIds {
+					coingeckoMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+				}
+			}
 
 			h.SearchCoins(ctx)
 			require.Equal(t, tt.wantCode, w.Code)

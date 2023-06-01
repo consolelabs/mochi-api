@@ -58,3 +58,13 @@ func Cmp(x, y string) (int, error) {
 func CmpBigInt(x, y *big.Int) (int, error) {
 	return x.Cmp(y), nil
 }
+
+func CalculateTokenBalance(bigNumber string, decimal int) (bal float64) {
+	balance, ok := new(big.Float).SetString(bigNumber)
+	if !ok {
+		return
+	}
+	parsedBal, _ := balance.Float64()
+	bal = parsedBal / math.Pow10(decimal)
+	return
+}

@@ -3,7 +3,8 @@
     {
       "id": "pancakeswap-token",
       "symbol": "cake",
-      "name": "PancakeSwap"
+      "name": "PancakeSwap",
+      "current_price": 1.7
     }
   ]
 }
