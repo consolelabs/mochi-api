@@ -4,12 +4,14 @@
       {
         "id": "binance-peg-dogecoin",
         "symbol": "doge",
-        "name": "Binance-Peg Dogecoin"
+        "name": "Binance-Peg Dogecoin",
+        "current_price": 0.1
       },
       {
         "id": "dogecoin",
         "symbol": "doge",
-        "name": "Dogecoin"
+        "name": "Dogecoin",
+        "current_price": 0.2
       }
     ],
     "target_suggestions": null

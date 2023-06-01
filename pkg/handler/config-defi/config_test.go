@@ -94,6 +94,8 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 		coingeckoResponse     *response.GetCoinResponse
 		coingeckoSupportToken *response.CoingeckoSupportedTokenResponse
 		historicalTokenPrices *response.HistoricalTokenPricesResponse
+		coinIds               []string
+		coinPrices            map[string]float64
 		wantResponsePath      string
 	}{
 		{
@@ -119,6 +121,8 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 					},
 				},
 			},
+			coinIds:          []string{"pancakeswap-token"},
+			coinPrices:       map[string]float64{"pancakeswap-token": 1.7},
 			wantResponsePath: "testdata/200-message-ok.json",
 		},
 		{
@@ -164,6 +168,8 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 				AssetPlatformID: "fantom",
 			},
 			historicalTokenPrices: &response.HistoricalTokenPricesResponse{},
+			coinIds:               []string{"ethereum"},
+			coinPrices:            map[string]float64{"pancakeswap-token": 1700},
 			wantResponsePath:      "testdata/custom-token/500-coin-not-supported.json",
 		},
 	}
@@ -176,6 +182,12 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 
 			coingeckoMock.EXPECT().GetCoin(tt.coingeckoSupportToken.ID).Return(tt.coingeckoResponse, nil, 0).AnyTimes()
 			covalentMock.EXPECT().GetHistoricalTokenPrices(250, "FTM", tt.req.Address).Return(tt.historicalTokenPrices, nil, 200).AnyTimes()
+
+			if tt.coinIds != nil && len(tt.coinIds) != 0 {
+				for _, coinId := range tt.coinIds {
+					coingeckoMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+				}
+			}
 
 			h.HandlerGuildCustomTokenConfig(ctx)
 			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)

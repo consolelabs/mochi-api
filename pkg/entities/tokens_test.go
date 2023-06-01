@@ -93,10 +93,12 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 	svc.Covalent = covalentMock
 
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name       string
+		fields     fields
+		args       args
+		coinIds    []string
+		coinPrices map[string]float64
+		wantErr    bool
 	}{
 		// TODO: Add test cases.
 		{
@@ -115,7 +117,9 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 					Active:  false,
 				},
 			},
-			wantErr: false,
+			coinIds:    []string{"pancakeswap-token"},
+			coinPrices: map[string]float64{"pancakeswap-token": 1.7},
+			wantErr:    false,
 		},
 	}
 
@@ -175,6 +179,12 @@ func TestEntity_UpsertCustomToken(t *testing.T) {
 	gctMock.EXPECT().CreateOne(gct).Return(nil).AnyTimes()
 
 	for _, tt := range tests {
+		if tt.coinIds != nil && len(tt.coinIds) != 0 {
+			for _, coinId := range tt.coinIds {
+				cgMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
+			}
+		}
+
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{
 				repo:     tt.fields.repo,
