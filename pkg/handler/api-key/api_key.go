@@ -1,6 +1,7 @@
 package apikey
 
 import (
+	"github.com/defipod/mochi/pkg/request"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,5 +41,31 @@ func (h *Handler) CreateApiKey(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
+}
+
+// IntegrateBinanceKey     godoc
+// @Summary     Integrate binance key
+// @Description Integrate binance key
+// @Tags        ApiKey
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} response.ProfileApiKeyResponse
+// @Router      /api-key/binance [post]
+func (h *Handler) IntegrateBinanceKey(c *gin.Context) {
+	var req request.IntegrationBinanceData
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.IntegrateBinanceKey] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.IntegrateBinanceData(req)
+	if err != nil {
+		h.log.Error(err, "[handler.IntegrateBinanceKey] failed to get integrate binance data")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
