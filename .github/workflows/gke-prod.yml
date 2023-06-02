@@ -2,8 +2,8 @@ name: Build and Deploy to GKE Prod
 
 on:
   push:
-    branches:
-      - cicd
+    # branches:
+    #   - cicd
     tags:
       - "v*"
 

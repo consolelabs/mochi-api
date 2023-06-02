@@ -15,7 +15,7 @@ env:
   ECR_API_REPOSITORY: mochi/api
   IMAGE_TAG: ${{ github.sha }}
   K8S_ENVIRONMENT: dev
-  
+
 permissions:
   id-token: write # This is required for authenticating with AWS using OIDC
   contents: read # This is required for actions/checkout
@@ -71,6 +71,6 @@ jobs:
           cd ./infrastructure/mochi-api/$K8S_ENVIRONMENT
           git config user.name jphuc96
           git config user.email jphuc96@gmail.com
-          /tmp/kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA}
+          /tmp/kustomize edit set image $ECR_REGISTRY/$ECR_API_REPOSITORY=$ECR_REGISTRY/$ECR_API_REPOSITORY:${GITHUB_SHA}
           git commit -am "[skip ci] mochi-api ${K8S_ENVIRONMENT} image update"
           git push origin main
