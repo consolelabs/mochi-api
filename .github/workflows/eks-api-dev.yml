@@ -14,7 +14,8 @@ on:
 env:
   ECR_API_REPOSITORY: mochi/api
   IMAGE_TAG: ${{ github.sha }}
-
+  K8S_ENVIRONMENT: dev
+  
 permissions:
   id-token: write # This is required for authenticating with AWS using OIDC
   contents: read # This is required for actions/checkout
