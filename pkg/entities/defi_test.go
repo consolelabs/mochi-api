@@ -309,7 +309,7 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 				Name:   "PancakeSwap",
 			},
 			want: response.AddToWatchlistResponse{
-				Data: nil,
+				Data: &response.AddToWatchlistResponseData{},
 			},
 			wantErr: false,
 		},
@@ -329,6 +329,11 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 				for _, coinId := range tt.coinIds {
 					mockServiceCoingecko.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
 				}
+			}
+
+			// if found one only -> get coin price
+			if tt.coingeckoSupportedTokenFound.ID != "" && !tt.wantErr {
+				mockServiceCoingecko.EXPECT().GetCoin(tt.coingeckoSupportedTokenFound.ID).Return(nil, nil, 0).AnyTimes()
 			}
 
 			got, err := e.AddToWatchlist(tt.req)

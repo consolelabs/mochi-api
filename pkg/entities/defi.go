@@ -536,7 +536,37 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.Create() failed")
 		return nil, err
 	}
-	return &response.AddToWatchlistResponse{Data: nil}, nil
+
+	// no need extra info with fiat currencies
+	if req.IsFiat {
+		return nil, err
+	}
+
+	// compose response with coin info
+	res := response.AddToWatchlistResponse{
+		Data: &response.AddToWatchlistResponseData{},
+	}
+
+	ids := strings.Split(req.CoinGeckoID, "/")
+	baseId := ids[0]
+	baseCoin, err, status := e.svc.CoinGecko.GetCoin(baseId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"baseId": baseId, "status": status}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.GetCoin() failed")
+		return nil, err
+	}
+	res.Data.BaseCoin = baseCoin
+
+	if len(ids) == 2 {
+		targetId := ids[1]
+		targetCoin, err, status := e.svc.CoinGecko.GetCoin(targetId)
+		if err != nil {
+			e.log.Fields(logger.Fields{"targetId": targetId, "status": status}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.GetCoin() failed")
+			return nil, err
+		}
+		res.Data.TargetCoin = targetCoin
+	}
+
+	return &res, nil
 }
 
 func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) error {

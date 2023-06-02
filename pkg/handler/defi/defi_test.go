@@ -305,7 +305,7 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 			coinIds:          []string{"pancakeswap-token"},
 			coinPrices:       map[string]float64{"pancakeswap-token": 1.7},
 			wantCode:         200,
-			wantResponsePath: "testdata/200-data-null.json",
+			wantResponsePath: "testdata/user_watchlist/200-add-single.json",
 		},
 		{
 			name: "failed - token not found",
@@ -329,6 +329,10 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 				for _, coinId := range tt.coinIds {
 					coingeckoMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
 				}
+			}
+
+			if tt.wantCode == 200 && len(tt.coingeckoSupportedTokens) == 1 {
+				coingeckoMock.EXPECT().GetCoin(tt.coingeckoSupportedTokens[0].ID).Return(nil, nil, 0).AnyTimes()
 			}
 
 			h.AddToWatchlist(ctx)
