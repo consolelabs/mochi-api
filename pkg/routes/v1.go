@@ -544,5 +544,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	apiKeyGroup := v1.Group("/api-key")
 	{
 		apiKeyGroup.POST("/me", middleware.ProfileAuthGuard(cfg), h.ApiKey.CreateApiKey)
+		apiKeyGroup.POST("/binance", h.ApiKey.IntegrateBinanceKey)
 	}
 }
