@@ -14,10 +14,12 @@ type SwapRouteResponse struct {
 }
 
 type SwapRoute struct {
-	TokenIn       RouteToken   `json:"tokenIn"`
-	TokenOut      RouteToken   `json:"tokenOut"`
-	RouterAddress string       `json:"routerAddress"`
-	RouteSummary  RouteSummary `json:"routeSummary"`
+	TokenIn       RouteToken  `json:"tokenIn"`
+	TokenOut      RouteToken  `json:"tokenOut"`
+	RouterAddress string      `json:"routerAddress"`
+	RouteSummary  interface{} `json:"routeSummary"`
+	Aggregator    string      `json:"aggregator"`
+	SwapData      interface{} `json:"swapData"`
 }
 
 type RouteSummary struct {

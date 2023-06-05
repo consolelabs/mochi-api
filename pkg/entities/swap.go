@@ -1,10 +1,12 @@
 package entities
 
 import (
+	"encoding/json"
 	"strconv"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	mochipayrequest "github.com/defipod/mochi/pkg/service/mochipay"
@@ -73,16 +75,38 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	chainId := util.ConvertChainNameToChainId(req.ChainName)
 
 	// hash swap address to compare with db
-	fromTokenAddress, err := util.ConvertToChecksumAddr(req.RouteSummary.TokenIn)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
-		return nil, err
+	var fromTokenAddress, toTokenAddress string
+	if req.ChainName != "solana" {
+		routeSummary := &model.RouteSummary{}
+		routeByte, _ := json.Marshal(req.RouteSummary)
+		err = json.Unmarshal(routeByte, routeSummary)
+		if err != nil {
+			return nil, err
+		}
+
+		fromTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenIn)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
+			return nil, err
+		}
+
+		toTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenOut)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
+			return nil, err
+		}
 	}
 
-	toTokenAddress, err := util.ConvertToChecksumAddr(req.RouteSummary.TokenOut)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
-		return nil, err
+	if req.ChainName == "solana" {
+		quoteResp := &response.JupyterQuoteResponse{}
+		quoteByte, _ := json.Marshal(req.RouteSummary)
+		err = json.Unmarshal(quoteByte, quoteResp)
+		if err != nil {
+			return nil, err
+		}
+
+		fromTokenAddress = quoteResp.InputMint
+		toTokenAddress = quoteResp.OutputMint
 	}
 
 	// get token from mochi pay
@@ -132,10 +156,14 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	// 	return nil, fmt.Errorf("insufficient balance")
 	// }
 
+	userPublicKey := e.cfg.CentralizedWalletAddress
+	if chainId == 999 {
+		userPublicKey = e.solana.GetCentralizedWalletAddress()
+	}
 	// build route
 	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.BuildSwapRouteRequest{
-		Recipient:         e.cfg.CentralizedWalletAddress,
-		Sender:            e.cfg.CentralizedWalletAddress,
+		Recipient:         userPublicKey,
+		Sender:            userPublicKey,
 		Source:            consts.ClientID,
 		SkipSimulateTx:    false,
 		SlippageTolerance: 500,
@@ -161,6 +189,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		RouterAddress: buildRouteResp.Data.RouterAddress,
 		EncodedData:   buildRouteResp.Data.Data,
 		Gas:           buildRouteResp.Data.Gas,
+		Aggregator:    req.Aggregator,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")

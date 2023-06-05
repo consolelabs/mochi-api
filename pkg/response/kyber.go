@@ -7,9 +7,11 @@ import (
 )
 
 type ProviderSwapRoutes struct {
-	Code    int64            `json:"code"`
-	Message string           `json:"message"`
-	Data    RouteSummaryData `json:"data"`
+	Code       int64            `json:"code"`
+	Message    string           `json:"message"`
+	Data       RouteSummaryData `json:"data"`
+	Aggregator string           `json:"aggregator"`
+	SwapData   interface{}      `json:"swapData"`
 }
 
 type RouteSummaryData struct {
