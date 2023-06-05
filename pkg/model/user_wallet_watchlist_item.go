@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+type UserWalletWatchlist struct {
+	Following []UserWalletWatchlistItem `json:"following"`
+	Tracking  []UserWalletWatchlistItem `json:"tracking"`
+	Copying   []UserWalletWatchlistItem `json:"copying"`
+}
+
 type UserWalletWatchlistItem struct {
 	UserID      string       `json:"user_id"`
 	Address     string       `json:"address"`

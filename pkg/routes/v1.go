@@ -117,7 +117,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		walletsGroup := userGroup.Group("/:id/wallets")
 		{
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
-			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets)
+			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets) // TODO: remove this endpoint
 			walletsGroup.POST("/generate-verification", h.Wallet.GenerateWalletVerification)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
@@ -137,6 +137,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		watchListGroup := userGroup.Group("/:id/watchlists")
 		{
 			watchListGroup.POST("/wallets/track", h.Wallet.Track)
+			watchListGroup.GET("wallets", h.Wallet.ListTrackingWallets)
 		}
 	}
 

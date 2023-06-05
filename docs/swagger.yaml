@@ -99,6 +99,8 @@ definitions:
     type: object
   model.CoingeckoSupportedTokens:
     properties:
+      current_price:
+        type: number
       id:
         type: string
       name:
@@ -1384,6 +1386,21 @@ definitions:
         description: preload user
       user_discord_id:
         type: string
+    type: object
+  model.UserWalletWatchlist:
+    properties:
+      copying:
+        items:
+          $ref: '#/definitions/model.UserWalletWatchlistItem'
+        type: array
+      following:
+        items:
+          $ref: '#/definitions/model.UserWalletWatchlistItem'
+        type: array
+      tracking:
+        items:
+          $ref: '#/definitions/model.UserWalletWatchlistItem'
+        type: array
     type: object
   model.UserWalletWatchlistItem:
     properties:
@@ -3360,13 +3377,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3380,9 +3397,7 @@ definitions:
   response.GetTrackingWalletsResponse:
     properties:
       data:
-        items:
-          $ref: '#/definitions/model.UserWalletWatchlistItem'
-        type: array
+        $ref: '#/definitions/model.UserWalletWatchlist'
     type: object
   response.GetTradeOfferResponse:
     properties:
@@ -4124,6 +4139,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -4137,12 +4158,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4818,6 +4833,21 @@ info:
   title: Swagger API
   version: "1.0"
 paths:
+  /api-key/binance:
+    post:
+      consumes:
+      - application/json
+      description: Integrate binance key
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProfileApiKeyResponse'
+      summary: Integrate binance key
+      tags:
+      - ApiKey
   /api-key/me:
     post:
       consumes:
@@ -9373,28 +9403,6 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
-  /users/:id/wallets/tracking:
-    get:
-      consumes:
-      - application/json
-      description: Get user's tracking wallets
-      parameters:
-      - description: req
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.GetTrackingWalletsRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTrackingWalletsResponse'
-      summary: Get user's tracking wallets
-      tags:
-      - Wallet
   /users/{id}/transactions:
     get:
       consumes:
@@ -9416,6 +9424,27 @@ paths:
       summary: Get user transaction
       tags:
       - User
+  /users/{id}/watchlists/wallets:
+    get:
+      consumes:
+      - application/json
+      description: Get user's tracking wallets
+      parameters:
+      - description: user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTrackingWalletsResponse'
+      summary: Get user's tracking wallets
+      tags:
+      - WatchList
   /users/{id}/watchlists/wallets/track:
     post:
       consumes:

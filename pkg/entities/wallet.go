@@ -25,19 +25,22 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]model.UserWalletWatchlistItem, error) {
+func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*model.UserWalletWatchlist, error) {
 	if req.IsOwner {
 		// if error -> logging & ignore
 		if err := e.upsertVerifiedWallet(req); err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] entity.upsertVerifiedWallet() failed")
 		}
 	}
+
 	listQ := userwalletwatchlistitem.ListQuery{UserID: req.UserID, IsOwner: &req.IsOwner}
+
 	wallets, err := e.repo.UserWalletWatchlistItem.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.List() failed")
 		return nil, err
 	}
+
 	for i, wallet := range wallets {
 		// 1. solana wallet
 		if wallet.ChainType == model.ChainTypeSolana {
@@ -54,10 +57,24 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) ([]mo
 				continue
 			}
 		}
+
 		wallet.FetchedData = true
 		wallets[i] = wallet
 	}
-	return wallets, nil
+
+	var result model.UserWalletWatchlist
+	for _, wallet := range wallets {
+		switch wallet.Type {
+		case model.TrackingTypeFollow:
+			result.Following = append(result.Following, wallet)
+		case model.TrackingTypeTrack:
+			result.Tracking = append(result.Tracking, wallet)
+		case model.TrackingTypeCopy:
+			result.Copying = append(result.Copying, wallet)
+		}
+	}
+
+	return &result, nil
 }
 
 func (e *Entity) upsertVerifiedWallet(req request.GetTrackingWalletsRequest) error {
