@@ -13,4 +13,6 @@ type SwapRequest struct {
 	UserDiscordId string             `json:"userDiscordId" binding:"required"`
 	ChainName     string             `json:"chainName" binding:"required"`
 	RouteSummary  model.RouteSummary `json:"routeSummary"`
+	Aggregator    string             `json:"aggregator"`
+	SwapData      interface{}        `json:"swapData"`
 }

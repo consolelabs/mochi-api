@@ -134,10 +134,14 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, fmt.Errorf("insufficient balance")
 	}
 
+	userPublicKey := e.cfg.CentralizedWalletAddress
+	if chainId == 999 {
+		userPublicKey = e.solana.GetCentralizedWalletAddress()
+	}
 	// build route
 	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.BuildSwapRouteRequest{
-		Recipient:         e.cfg.CentralizedWalletAddress,
-		Sender:            e.cfg.CentralizedWalletAddress,
+		Recipient:         userPublicKey,
+		Sender:            userPublicKey,
 		Source:            consts.ClientID,
 		SkipSimulateTx:    false,
 		SlippageTolerance: 500,
@@ -163,6 +167,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		RouterAddress: buildRouteResp.Data.RouterAddress,
 		EncodedData:   buildRouteResp.Data.Data,
 		Gas:           buildRouteResp.Data.Gas,
+		Aggregator:    req.Aggregator,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")

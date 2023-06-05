@@ -79,6 +79,8 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 					return nil, err
 				}
 
+				route.Aggregator = "kyber"
+
 				k.logger.Fields(logger.Fields{"route": route}).Info("[kyber.GetRoutes] - get route")
 
 				// code kyber 0 means success, else failed

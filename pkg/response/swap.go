@@ -18,6 +18,8 @@ type SwapRoute struct {
 	TokenOut      RouteToken   `json:"tokenOut"`
 	RouterAddress string       `json:"routerAddress"`
 	RouteSummary  RouteSummary `json:"routeSummary"`
+	Aggregator    string       `json:"aggregator"`
+	SwapData      interface{}  `json:"swapData"`
 }
 
 type RouteSummary struct {

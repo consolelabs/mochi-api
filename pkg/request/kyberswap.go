@@ -11,6 +11,7 @@ type BuildSwapRouteRequest struct {
 	SlippageTolerance int64              `json:"slippageTolerance"`
 	SkipSimulateTx    bool               `json:"skipSimulateTx"`
 	RouteSummary      model.RouteSummary `json:"routeSummary"`
+	SwapData          interface{}        `json:"swapData"`
 }
 
 type MochiPaySwapRequest struct {
@@ -27,4 +28,5 @@ type MochiPaySwapRequest struct {
 	EncodedData   string `json:"encoded_data"`
 	RouterAddress string `json:"router_address"`
 	Gas           string `json:"gas"`
+	Aggregator    string `json:"aggregator"`
 }

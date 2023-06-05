@@ -183,6 +183,8 @@ func ConvertChainNameToChainId(chainName string) int64 {
 		return 106
 	case "aurora":
 		return 1313161554
+	case "solana":
+		return 999
 	default:
 		return 1
 	}

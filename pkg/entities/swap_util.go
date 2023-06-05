@@ -167,6 +167,8 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 				ExtraFee:                     swapRoutes.Data.RouteSummary.ExtraFee,
 				Route:                        newRoute,
 			},
+			Aggregator: swapRoutes.Aggregator,
+			SwapData:   swapRoutes.SwapData,
 		},
 	}
 }
