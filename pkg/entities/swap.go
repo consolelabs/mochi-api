@@ -105,7 +105,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 	}
 
 	// case kyber return route not found
-	if swapRoutes.Message == "route not found" {
+	if swapRoutes.Message == "route not found" || swapRoutes.Code != 0 {
 		return &response.SwapRouteResponse{
 			Code:    swapRoutes.Code,
 			Message: swapRoutes.Message,
