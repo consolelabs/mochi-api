@@ -136,15 +136,71 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 		data.MarketData.TotalMarketCap = globalData.Data.TotalMarketCap
 	}
 
+	// get number of user's watchlist usage
 	watchlistUsers, err := e.repo.UserWatchlistItem.Count(userwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
 	if err != nil {
 		e.log.Error(err, "[entity.GetCoinData] repo.UserWatchlistItem.Count() failed")
 		return nil, err, 500
 	}
-
 	data.WatchlistUsers = watchlistUsers
 
+	// get chain data
+	platform, err := e.getCoingeckoTokenPlatform(data.AssetPlatformID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] getCoingeckoTokenPlatform() failed")
+	}
+	data.AssetPlatform = platform
+
 	return data, nil, http.StatusOK
+}
+
+func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *response.AssetPlatformResponseData, err error) {
+	if platformID == "" {
+		return nil, nil
+	}
+
+	// fetch support platforms from coingecko
+	platforms, err := e.svc.CoinGecko.GetAssetPlatforms()
+	if err != nil {
+		e.log.Error(err, "[entity.getCoingeckoTokenPlatform] svc.CoinGecko.GetAssetPlatforms() failed")
+		return nil, err
+	}
+
+	// find one by given ID
+	for _, p := range platforms {
+		if p.ID == platformID {
+			platform = p
+			break
+		}
+	}
+
+	// if found nothing -> return nil
+	if platform == nil {
+		return
+	}
+
+	// if shortname from coingecko not empty and is an ACTUAL shortname -> return
+	// we consider ACTUAL shortname when shortname letters are all capitalized (e.g. AVAX, OP, etc.)
+	if platform.ShortName != "" && platform.ShortName == strings.ToUpper(platform.ShortName) {
+		return
+	}
+
+	// if no chain_identifier -> cannot handle anymore -> return
+	if platform.ChainIdentifier == nil {
+		return
+	}
+
+	// if fail to query chain from DB -> just log error and still return data
+	chain, err := e.repo.Chain.GetByID(int(*platform.ChainIdentifier))
+	if err != nil {
+		e.log.Error(err, "[entity.getCoingeckoTokenPlatform] svc.CoinGecko.GetAssetPlatform() failed")
+		return platform, nil
+	}
+
+	// if found chain -> use shortname
+	platform.ShortName = chain.ShortName
+
+	return
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {

@@ -5,6 +5,7 @@
     "symbol": "eth",
     "market_cap_rank": 2,
     "asset_platform_id": "",
+    "asset_platform": null,
     "contract_address": "",
     "block_time_in_minutes": 0,
     "developer_data": null,

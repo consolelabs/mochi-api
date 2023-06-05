@@ -67,6 +67,7 @@ type GetCoinResponse struct {
 	Name                         string                            `json:"name"`
 	Symbol                       string                            `json:"symbol"`
 	AssetPlatformID              string                            `json:"asset_platform_id"`
+	AssetPlatform                *AssetPlatformResponseData        `json:"asset_platform"`
 	Platforms                    interface{}                       `json:"platforms"`
 	BlockTimeInMinutes           int64                             `json:"block_time_in_minutes"`
 	HashingAlgorithm             interface{}                       `json:"hashing_algorithm"`
@@ -308,6 +309,8 @@ type GetCoinsMarketDataResponse struct {
 type AssetPlatformResponseData struct {
 	ChainIdentifier *int64 `json:"chain_identifier"`
 	ID              string `json:"id"`
+	Name            string `json:"name"`
+	ShortName       string `json:"shortname"`
 }
 
 type GetCoinByContractResponseData struct {
