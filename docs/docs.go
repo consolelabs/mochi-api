@@ -8450,12 +8450,15 @@ const docTemplate = `{
                 "current_price": {
                     "type": "number"
                 },
+<<<<<<< HEAD
                 "detail_platforms": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
+=======
+>>>>>>> fad0f1eb... chore: update swagger support swap on jupiter
                 "id": {
                     "type": "string"
                 },
@@ -11568,12 +11571,16 @@ const docTemplate = `{
                 "userDiscordId"
             ],
             "properties": {
+                "aggregator": {
+                    "type": "string"
+                },
                 "chainName": {
                     "type": "string"
                 },
                 "routeSummary": {
                     "$ref": "#/definitions/model.RouteSummary"
                 },
+                "swapData": {},
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -15575,12 +15582,16 @@ const docTemplate = `{
         "response.SwapRoute": {
             "type": "object",
             "properties": {
+                "aggregator": {
+                    "type": "string"
+                },
                 "routeSummary": {
                     "$ref": "#/definitions/response.RouteSummary"
                 },
                 "routerAddress": {
                     "type": "string"
                 },
+                "swapData": {},
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },
