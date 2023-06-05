@@ -7,7 +7,7 @@ import (
 )
 
 type GetTrackingWalletsResponse struct {
-	Data []model.UserWalletWatchlistItem `json:"data"`
+	Data model.UserWalletWatchlist `json:"data"`
 }
 
 type GetOneWalletResponse struct {

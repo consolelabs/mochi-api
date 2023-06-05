@@ -35,19 +35,19 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// GetAssetPlatform mocks base method.
-func (m *MockService) GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error) {
+// GetAssetPlatforms mocks base method.
+func (m *MockService) GetAssetPlatforms() ([]*response.AssetPlatformResponseData, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAssetPlatform", chainId)
-	ret0, _ := ret[0].(*response.AssetPlatformResponseData)
+	ret := m.ctrl.Call(m, "GetAssetPlatforms")
+	ret0, _ := ret[0].([]*response.AssetPlatformResponseData)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetAssetPlatform indicates an expected call of GetAssetPlatform.
-func (mr *MockServiceMockRecorder) GetAssetPlatform(chainId interface{}) *gomock.Call {
+// GetAssetPlatforms indicates an expected call of GetAssetPlatforms.
+func (mr *MockServiceMockRecorder) GetAssetPlatforms() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAssetPlatform", reflect.TypeOf((*MockService)(nil).GetAssetPlatform), chainId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAssetPlatforms", reflect.TypeOf((*MockService)(nil).GetAssetPlatforms))
 }
 
 // GetCoin mocks base method.

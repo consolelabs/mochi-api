@@ -101,12 +101,17 @@ func (e *Entity) findTokenByContractAddress(chainID int, address string) (*respo
 	if chainID == 999 {
 		platformID = "solana"
 	} else {
-		platform, err := e.svc.CoinGecko.GetAssetPlatform(chainID)
+		platforms, err := e.svc.CoinGecko.GetAssetPlatforms()
 		if err != nil {
-			e.log.Fields(logger.Fields{"ChainID": chainID}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetAssetPlatform() failed")
+			e.log.Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetAssetPlatforms() failed")
 			return nil, err
 		}
-		platformID = platform.ID
+
+		for _, p := range platforms {
+			if p.ChainIdentifier != nil && *p.ChainIdentifier == int64(chainID) {
+				platformID = p.ID
+			}
+		}
 	}
 
 	// find with coingecko first

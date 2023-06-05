@@ -25,6 +25,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api-key/binance": {
+            "post": {
+                "description": "Integrate binance key",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ApiKey"
+                ],
+                "summary": "Integrate binance key",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProfileApiKeyResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api-key/me": {
             "post": {
                 "description": "Create apiKey",
@@ -6956,40 +6979,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/:id/wallets/tracking": {
-            "get": {
-                "description": "Get user's tracking wallets",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Wallet"
-                ],
-                "summary": "Get user's tracking wallets",
-                "parameters": [
-                    {
-                        "description": "req",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GetTrackingWalletsRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTrackingWalletsResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/users/envelop": {
             "post": {
                 "description": "Track user receive envelop",
@@ -7363,6 +7352,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.UserTransactionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/wallets": {
+            "get": {
+                "description": "Get user's tracking wallets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Get user's tracking wallets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTrackingWalletsResponse"
                         }
                     }
                 }
@@ -8042,6 +8063,9 @@ const docTemplate = `{
         "model.CoingeckoSupportedTokens": {
             "type": "object",
             "properties": {
+                "current_price": {
+                    "type": "number"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -10002,6 +10026,29 @@ const docTemplate = `{
                 },
                 "user_discord_id": {
                     "type": "string"
+                }
+            }
+        },
+        "model.UserWalletWatchlist": {
+            "type": "object",
+            "properties": {
+                "copying": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserWalletWatchlistItem"
+                    }
+                },
+                "following": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserWalletWatchlistItem"
+                    }
+                },
+                "tracking": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserWalletWatchlistItem"
+                    }
                 }
             }
         },
@@ -13061,10 +13108,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.UserWalletWatchlistItem"
-                    }
+                    "$ref": "#/definitions/model.UserWalletWatchlist"
                 }
             }
         },

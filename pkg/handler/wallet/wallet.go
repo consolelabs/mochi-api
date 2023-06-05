@@ -63,19 +63,26 @@ func (h *Handler) ListOwnedWallets(c *gin.Context) {
 // ListTrackingWallets godoc
 // @Summary     Get user's tracking wallets
 // @Description Get user's tracking wallets
-// @Tags        Wallet
+// @Tags        WatchList
 // @Accept      json
 // @Produce     json
-// @Param       req   body  request.GetTrackingWalletsRequest true  "req"
+// @Param       id   			path  string true  "user ID"
 // @Success     200 {object} response.GetTrackingWalletsResponse
-// @Router      /users/:id/wallets/tracking [get]
+// @Router      /users/{id}/watchlists/wallets [get]
 func (h *Handler) ListTrackingWallets(c *gin.Context) {
-	var req request.GetTrackingWalletsRequest
-	if err := c.ShouldBindUri(&req); err != nil {
-		h.log.Error(err, "[handler.Wallet.ListTracking] ShouldBindUri() failed")
+	userID := c.Param("id")
+	if userID == "" {
+		err := errors.New("user ID is required")
+		h.log.Error(err, "[handler.Wallet.ListTracking] not enough path params")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
 	}
+
+	req := request.GetTrackingWalletsRequest{
+		WalletBaseRequest: request.WalletBaseRequest{
+			UserID: userID,
+		},
+	}
+
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")

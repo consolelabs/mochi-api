@@ -12,7 +12,7 @@ type Service interface {
 	GetHistoryCoinInfo(sourceSymbol string, interval string) (res [][]float64, err error, statusCode int)
 	GetCoinsMarketData(ids []string, sparkline bool, page, pageSize string) ([]response.CoinMarketItemData, error, int)
 	GetSupportedCoins() (res []response.CoingeckoSupportedTokenResponse, err error, statusCode int)
-	GetAssetPlatform(chainId int) (*response.AssetPlatformResponseData, error)
+	GetAssetPlatforms() ([]*response.AssetPlatformResponseData, error)
 	GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error)
 	GetTrendingSearch() (*response.GetTrendingSearch, error)
 	GetTopLoserGainer(req request.TopGainerLoserRequest) (*response.GetTopGainerLoser, error)
