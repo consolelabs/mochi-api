@@ -25,6 +25,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api-key/binance": {
+            "post": {
+                "description": "Integrate binance key",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ApiKey"
+                ],
+                "summary": "Integrate binance key",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProfileApiKeyResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api-key/me": {
             "post": {
                 "description": "Create apiKey",
@@ -8042,6 +8065,9 @@ const docTemplate = `{
         "model.CoingeckoSupportedTokens": {
             "type": "object",
             "properties": {
+                "current_price": {
+                    "type": "number"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -11077,12 +11103,16 @@ const docTemplate = `{
                 "userDiscordId"
             ],
             "properties": {
+                "aggregator": {
+                    "type": "string"
+                },
                 "chainName": {
                     "type": "string"
                 },
                 "routeSummary": {
                     "$ref": "#/definitions/model.RouteSummary"
                 },
+                "swapData": {},
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -11558,11 +11588,17 @@ const docTemplate = `{
         "response.AddToWatchlistResponseData": {
             "type": "object",
             "properties": {
+                "base_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
                 "base_suggestions": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
+                },
+                "target_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
                 },
                 "target_suggestions": {
                     "type": "array",
@@ -14926,12 +14962,16 @@ const docTemplate = `{
         "response.SwapRoute": {
             "type": "object",
             "properties": {
+                "aggregator": {
+                    "type": "string"
+                },
                 "routeSummary": {
                     "$ref": "#/definitions/response.RouteSummary"
                 },
                 "routerAddress": {
                     "type": "string"
                 },
+                "swapData": {},
                 "tokenIn": {
                     "$ref": "#/definitions/model.KyberswapSupportedToken"
                 },

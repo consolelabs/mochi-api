@@ -99,6 +99,8 @@ definitions:
     type: object
   model.CoingeckoSupportedTokens:
     properties:
+      current_price:
+        type: number
       id:
         type: string
       name:
@@ -2088,10 +2090,13 @@ definitions:
     type: object
   request.SwapRequest:
     properties:
+      aggregator:
+        type: string
       chainName:
         type: string
       routeSummary:
         $ref: '#/definitions/model.RouteSummary'
+      swapData: {}
       userDiscordId:
         type: string
     required:
@@ -2405,10 +2410,14 @@ definitions:
     type: object
   response.AddToWatchlistResponseData:
     properties:
+      base_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
       base_suggestions:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
         type: array
+      target_coin:
+        $ref: '#/definitions/response.GetCoinResponse'
       target_suggestions:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
@@ -3360,13 +3369,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4595,10 +4604,13 @@ definitions:
     type: object
   response.SwapRoute:
     properties:
+      aggregator:
+        type: string
       routeSummary:
         $ref: '#/definitions/response.RouteSummary'
       routerAddress:
         type: string
+      swapData: {}
       tokenIn:
         $ref: '#/definitions/model.KyberswapSupportedToken'
       tokenOut:
@@ -4818,6 +4830,21 @@ info:
   title: Swagger API
   version: "1.0"
 paths:
+  /api-key/binance:
+    post:
+      consumes:
+      - application/json
+      description: Integrate binance key
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProfileApiKeyResponse'
+      summary: Integrate binance key
+      tags:
+      - ApiKey
   /api-key/me:
     post:
       consumes:
