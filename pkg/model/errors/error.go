@@ -39,6 +39,10 @@ func GetStatusCode(err error) int {
 		ErrXPRoleExisted,
 		ErrMixRoleExisted:
 		code = http.StatusBadRequest
+	case
+		ErrConflict,
+		ErrChainTypeConflict:
+		code = http.StatusConflict
 	default:
 		code = http.StatusInternalServerError
 	}

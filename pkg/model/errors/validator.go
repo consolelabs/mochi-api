@@ -25,4 +25,7 @@ var (
 	ErrXPRoleExisted             = NewStringError("XP role config already existed", 400)
 	ErrMixRoleExisted            = NewStringError("Mix role config already existed", 400)
 	ErrTokenRequestExisted       = NewStringError("Token request already existed", 409)
+	ErrInvalidChainType          = NewStringError("Invalid chain type", 400)
+	ErrInvalidTrackingType       = NewStringError("Invalid tracking type", 400)
+	ErrChainTypeConflict         = NewStringError("Chain type conflict", 409)
 )
