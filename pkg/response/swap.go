@@ -17,6 +17,8 @@ type SwapRoute struct {
 	TokenOut      model.KyberswapSupportedToken `json:"tokenOut"`
 	RouterAddress string                        `json:"routerAddress"`
 	RouteSummary  RouteSummary                  `json:"routeSummary"`
+	Aggregator    string                        `json:"aggregator"`
+	SwapData      interface{}                   `json:"swapData"`
 }
 
 type RouteSummary struct {

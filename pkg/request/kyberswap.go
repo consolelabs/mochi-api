@@ -27,4 +27,5 @@ type KyberSwapRequest struct {
 	EncodedData   string `json:"encoded_data"`
 	RouterAddress string `json:"router_address"`
 	Gas           string `json:"gas"`
+	Aggregator    string `json:"aggregator"`
 }

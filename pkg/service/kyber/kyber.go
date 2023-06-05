@@ -38,7 +38,6 @@ func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount st
 
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
-
 	resp, err := client.Do(request)
 
 	if err != nil {

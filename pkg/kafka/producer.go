@@ -1,63 +1,62 @@
 package kafka
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 func (k *Kafka) RunProducer() error {
-	config := kafka.ConfigMap{
-		"bootstrap.servers":  k.brokers,
-		"enable.idempotence": true,
-		"acks":               "all",
-	}
+	// config := kafka.ConfigMap{
+	// 	"bootstrap.servers":  k.brokers,
+	// 	"enable.idempotence": true,
+	// 	"acks":               "all",
+	// }
 
-	p, err := kafka.NewProducer(&config)
-	if err != nil {
-		return fmt.Errorf("failed to create producer: %s", err)
-	}
+	// p, err := kafka.NewProducer(&config)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to create producer: %s", err)
+	// }
 
-	go func() {
-		run := true
-		for run {
-			select {
-			case <-k.producer.termChan:
-				run = false
+	// go func() {
+	// 	run := true
+	// 	for run {
+	// 		select {
+	// 		case <-k.producer.termChan:
+	// 			run = false
 
-			case e := <-p.Events():
-				switch ev := e.(type) {
-				case *kafka.Message:
-					// Message delivery report
-					m := ev
-					if m.TopicPartition.Error != nil {
-						continue
-					}
+	// 		case e := <-p.Events():
+	// 			switch ev := e.(type) {
+	// 			case *kafka.Message:
+	// 				// Message delivery report
+	// 				m := ev
+	// 				if m.TopicPartition.Error != nil {
+	// 					continue
+	// 				}
 
-				case kafka.Error:
-					e := ev
-					if e.IsFatal() {
-						run = false
-					}
+	// 			case kafka.Error:
+	// 				e := ev
+	// 				if e.IsFatal() {
+	// 					run = false
+	// 				}
 
-				default:
-					// Other events, such as rebalances, etc.
-				}
-			}
-		}
-	}()
+	// 			default:
+	// 				// Other events, such as rebalances, etc.
+	// 			}
+	// 		}
+	// 	}
+	// }()
 
-	k.producer.producer = p
-	k.producer.ready = true
+	// k.producer.producer = p
+	// k.producer.ready = true
 
-	<-k.producer.termChan
-	p.Close()
+	// <-k.producer.termChan
+	// p.Close()
 
-	fatalErr := p.GetFatalError()
-	if fatalErr != nil {
-		return fmt.Errorf("fatal error: %s", fatalErr)
-	}
+	// fatalErr := p.GetFatalError()
+	// if fatalErr != nil {
+	// 	return fmt.Errorf("fatal error: %s", fatalErr)
+	// }
 
 	return nil
 }

@@ -13,6 +13,8 @@ type RouteSummaryData struct {
 	RouterAddress string                        `json:"routerAddress"`
 	TokenIn       model.KyberswapSupportedToken `json:"tokenIn"`
 	TokenOut      model.KyberswapSupportedToken `json:"tokenOut"`
+	Aggregator    string                        `json:"aggregator"`
+	SwapData      interface{}                   `json:"swapData"`
 }
 
 type BuildRoute struct {
