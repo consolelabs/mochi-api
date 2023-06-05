@@ -574,6 +574,16 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			return nil, "", "", err
 		}
 
+		for index, asset := range assets {
+			price, err := e.GetTokenPrice(asset.Token.Symbol, asset.Token.Name)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set get price token from sui wallet")
+				continue
+			}
+			assets[index].Token.Price = *price
+			assets[index].UsdBalance = assets[index].Token.Price * assets[index].AssetBalance
+		}
+
 		encodeData := make(map[string]string)
 		if len(assets) == 0 {
 			encodeData["empty"] = "empty"
