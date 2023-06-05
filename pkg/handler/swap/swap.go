@@ -61,6 +61,13 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 		return
 	}
 
+	// Kyber status code = 0 when successfully, else is failed
+	if data.Code != 0 {
+		h.log.Fields(logger.Fields{"chainId": req.ChainId, "chainName": req.ChainName, "from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - Problem get data from kyber, status code is not successfully")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
 
