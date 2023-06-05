@@ -990,3 +990,19 @@ func (e *Entity) GetDominanceChartData(coinId string, days int) (*response.CoinP
 		},
 	}, nil
 }
+
+func (e *Entity) GetTokenPrice(symbol string, tokenName string) (*float64, error) {
+	var price float64
+	tokens, err := e.SearchCoins(strings.ToLower(symbol))
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": strings.ToLower(symbol)}).Error(err, "[listSuiWalletAssets] svc.CoinGecko.SearchCoins() failed")
+		return nil, err
+	}
+	for _, t := range tokens {
+		if strings.ToLower(t.Name) == strings.ToLower(tokenName) {
+			price = t.CurrentPrice
+			return &price, nil
+		}
+	}
+	return &price, nil
+}
