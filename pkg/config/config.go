@@ -153,8 +153,9 @@ type ChainExplorer struct {
 	BscScanApiKey     string
 }
 type Kafka struct {
-	Brokers string
-	Topic   string
+	Brokers          string
+	Topic            string
+	BinanceDataTopic string
 }
 
 // GetCORS in config
@@ -294,8 +295,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
 		Kafka: Kafka{
-			Brokers: v.GetString("KAFKA_BROKERS"),
-			Topic:   v.GetString("KAFKA_TOPIC"),
+			Brokers:          v.GetString("KAFKA_BROKERS"),
+			Topic:            v.GetString("KAFKA_TOPIC"),
+			BinanceDataTopic: v.GetString("KAFKA_BINANCE_DATA_TOPIC"),
 		},
 		Solscan: Solscan{
 			Token: v.GetString("SOLSCAN_TOKEN"),

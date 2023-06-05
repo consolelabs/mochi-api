@@ -118,31 +118,52 @@ func (h *Handler) GetOne(c *gin.Context) {
 // Track     	godoc
 // @Summary     Track new wallet
 // @Description Track new wallet
-// @Tags        Wallet
+// @Tags        WatchList
 // @Accept      json
 // @Produce     json
 // @Param       id   			path  string true  "user ID"
 // @Param       request  	body 	request.TrackWalletRequest true "req"
 // @Success     200 {object} 		response.ResponseMessage
-// @Router      /users/:id/wallets [post]
+// @Router      /users/{id}/watchlists/wallets/track [post]
 func (h *Handler) Track(c *gin.Context) {
-	var req request.TrackWalletRequest
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Error(err, "[handler.Wallet.Track] BindJSON() failed")
+	req, err := extractTrackRequestFromCtx(c)
+	if err != nil {
+		h.log.Error(err, "[handler.Wallet.Track] extractTrackRequestFromCtx() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	err := h.entities.TrackWallet(req)
+
+	mod, err := req.RequestToUserWalletWatchlistItemModel()
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.Track] entity.TrackWallet() failed")
-		code := http.StatusInternalServerError
-		if err == baseerr.ErrConflict {
-			code = http.StatusConflict
-		}
-		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
+		h.log.Error(err, "[handler.Wallet.Track] RequestToUserWalletWatchlistItemModel() failed")
+		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	err = h.entities.TrackWallet(mod, req.ChannelID, req.MessageID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.Track] entity.TrackWallet() failed")
+		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+func extractTrackRequestFromCtx(c *gin.Context) (request.TrackWalletRequest, error) {
+	var req request.TrackWalletRequest
+	if err := c.BindJSON(&req); err != nil {
+		return req, err
+	}
+
+	userID := c.Param("id")
+	if userID == "" {
+		return req, errors.New("user ID is required")
+	}
+
+	req.UserID = userID
+
+	return req, nil
 }
 
 // Untrack     	godoc

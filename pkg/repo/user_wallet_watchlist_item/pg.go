@@ -35,12 +35,12 @@ func (pg *pg) GetOne(q GetOneQuery) (*model.UserWalletWatchlistItem, error) {
 	return &item, pg.db.Where("user_id = ?", q.UserID).Where("lower(address) = ? OR lower(alias) = ?", q.Query, q.Query).First(&item).Error
 }
 
-func (pg *pg) Create(item *model.UserWalletWatchlistItem) error {
+func (pg *pg) Upsert(item *model.UserWalletWatchlistItem) error {
 	// return pg.db.Create(item).Error
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "user_id"}, {Name: "address"}},
-		DoUpdates: clause.AssignmentColumns([]string{"alias"}),
+		DoUpdates: clause.AssignmentColumns([]string{"alias", "type"}),
 	}).Create(item).Error
 	if err != nil {
 		tx.Rollback()

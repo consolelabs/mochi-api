@@ -202,6 +202,8 @@ type CompareTokenResponse struct {
 type AddToWatchlistResponseData struct {
 	BaseSuggestions   []model.CoingeckoSupportedTokens `json:"base_suggestions"`
 	TargetSuggestions []model.CoingeckoSupportedTokens `json:"target_suggestions"`
+	BaseCoin          *GetCoinResponse                 `json:"base_coin"`
+	TargetCoin        *GetCoinResponse                 `json:"target_coin"`
 }
 
 type AddToWatchlistResponse struct {

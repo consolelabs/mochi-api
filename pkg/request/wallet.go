@@ -2,6 +2,9 @@ package request
 
 import (
 	"strings"
+
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 )
 
 type WalletBaseRequest struct {
@@ -20,13 +23,35 @@ type GetOneWalletRequest struct {
 }
 
 type TrackWalletRequest struct {
-	UserID    string `json:"user_id" binding:"required"`
+	UserID    string `json:"-"`
 	Address   string `json:"address" binding:"required"`
 	Alias     string `json:"alias"`
+	ChainType string `json:"chain_type" binding:"required"`
 	Type      string `json:"type" binding:"required"`
 	IsOwner   bool   `json:"is_owner"`
 	ChannelID string `json:"channel_id"`
 	MessageID string `json:"message_id"`
+}
+
+func (req TrackWalletRequest) RequestToUserWalletWatchlistItemModel() (model.UserWalletWatchlistItem, error) {
+	chainType := model.ChainType(req.ChainType)
+	if !chainType.IsValid() {
+		return model.UserWalletWatchlistItem{}, errors.ErrInvalidChainType
+	}
+
+	trackingType := model.TrackingType(req.Type)
+	if !trackingType.IsValid() {
+		return model.UserWalletWatchlistItem{}, errors.ErrInvalidTrackingType
+	}
+
+	return model.UserWalletWatchlistItem{
+		UserID:    req.UserID,
+		Address:   req.Address,
+		Alias:     req.Alias,
+		ChainType: chainType,
+		Type:      trackingType,
+		IsOwner:   req.IsOwner,
+	}, nil
 }
 
 type UntrackWalletRequest struct {
