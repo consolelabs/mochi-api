@@ -836,7 +836,6 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 			From:           tx.FromAddress,
 			To:             tx.ToAddress,
 		})
-		return nil
 	}
 
 	if tx.LogEvents == nil || len(tx.LogEvents) == 0 {
