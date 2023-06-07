@@ -79,7 +79,7 @@ type MochiPayVaultRequest struct {
 	Token      string   `json:"token"`
 	Chain      string   `json:"chain"`
 	Name       string   `json:"name"`
-	Requester  string   `json:"requester"`
+	Reciever   string   `json:"receiver"`
 	Message    string   `json:"message"`
 	ListNotify []string `json:"list_notify"`
 }
