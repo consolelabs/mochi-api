@@ -256,14 +256,20 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	profile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.UserDiscordId, true)
+	receiverProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.UserDiscordId, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
 		return err
 	}
 
-	if !slices.Contains(listNotify, profile.ID) {
-		listNotify = append(listNotify, profile.ID)
+	requesterProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.Requester, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
+		return err
+	}
+
+	if !slices.Contains(listNotify, receiverProfile.ID) {
+		listNotify = append(listNotify, receiverProfile.ID)
 	}
 
 	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
@@ -274,9 +280,9 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return fmt.Errorf("balance not enough")
 	}
 
-	recipientPay := profile.ID
+	recipientPay := receiverProfile.ID
 	if recipientPay == "" {
-		recipientPay = treasurerRequest.Requester
+		recipientPay = requesterProfile.ID
 	}
 
 	// address = "" aka destination addres = "", use mochi wallet instead
@@ -316,14 +322,14 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
-		ProfileId:  profile.ID,
+		ProfileId:  receiverProfile.ID,
 		Amount:     amountBigIntStr,
 		To:         destination,
 		PrivateKey: privateKey,
 		Token:      token.Symbol,
 		Chain:      token.Chain.ChainId,
 		Name:       vault.Name,
-		Requester:  recipientPay,
+		Reciever:   recipientPay,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
 	})
@@ -339,8 +345,8 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		ToAddress: req.Address,
 		Amount:    req.Amount,
 		Token:     req.Token,
-		Sender:    recipientPay,
-		Target:    req.Target,
+		Sender:    requesterProfile.ID,
+		Target:    receiverProfile.ID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
