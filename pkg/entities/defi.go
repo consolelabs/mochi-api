@@ -493,6 +493,21 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 				oldPrice := item.SparkLineIn7d.Price[0]
 				item.CurrentPrice = latestPrice
 				item.PriceChangePercentage7dInCurrency = (latestPrice - oldPrice) / oldPrice * 100
+
+				// calculate 24h price change percentage
+				yesterdayStr := time.Now().UTC().Format("01-02")
+				var yesterdayPrice float64
+				for i := len(comparisonData.Times) - 1; i >= 0; i-- {
+					if comparisonData.Times[i] != yesterdayStr {
+						continue
+					}
+					yesterdayPrice = comparisonData.Ratios[i]
+				}
+
+				if yesterdayPrice != 0 {
+					item.PriceChangePercentage24hInCurrency = (latestPrice - yesterdayPrice) / yesterdayPrice * 100
+					item.PriceChangePercentage24h = (latestPrice - yesterdayPrice) / yesterdayPrice * 100
+				}
 			}
 		}
 		data = append(data, item)
