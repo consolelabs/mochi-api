@@ -236,7 +236,12 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 
 	listNotify := []string{}
 	for _, t := range treasurer {
-		listNotify = append(listNotify, t.UserDiscordId)
+		profileMember, err := e.svc.MochiProfile.GetByDiscordID(t.UserDiscordId, true)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
+			return err
+		}
+		listNotify = append(listNotify, profileMember.ID)
 	}
 
 	token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
@@ -251,14 +256,14 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	if !slices.Contains(listNotify, treasurerRequest.Requester) {
-		listNotify = append(listNotify, treasurerRequest.Requester)
-	}
-
 	profile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.UserDiscordId, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
 		return err
+	}
+
+	if !slices.Contains(listNotify, profile.ID) {
+		listNotify = append(listNotify, profile.ID)
 	}
 
 	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
@@ -269,7 +274,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return fmt.Errorf("balance not enough")
 	}
 
-	recipientPay := treasurerRequest.UserDiscordId
+	recipientPay := profile.ID
 	if recipientPay == "" {
 		recipientPay = treasurerRequest.Requester
 	}

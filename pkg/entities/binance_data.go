@@ -10,7 +10,7 @@ import (
 )
 
 func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*model.KafkaIntegrateMessage, error) {
-	res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, false)
+	res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, true)
 	if err != nil {
 		return nil, err
 	}
