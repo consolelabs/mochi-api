@@ -328,6 +328,14 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
 		for _, chainID := range chainIDs {
+			// get chain
+			chain, err := e.repo.Chain.GetByID(chainID)
+			if err != nil {
+				e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listEthWalletAssets] repo.Chain.GetByID() failed")
+				return nil, "", "", err
+			}
+
+			// get all tokens balances by address & chain
 			res, err := e.svc.Covalent.GetTokenBalances(chainID, address, 3)
 			if err != nil {
 				e.log.Fields(logger.Fields{"chainID": chainID, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
@@ -345,6 +353,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				if quote < 0.001 {
 					continue
 				}
+
 				assets = append(assets, response.WalletAssetData{
 					ChainID:        chainID,
 					ContractName:   item.ContractName,
@@ -358,7 +367,8 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 						Price:   item.QuoteRate,
 						Native:  item.NativeToken,
 						Chain: response.AssetTokenChain{
-							Name: res.Data.ChainName,
+							Name:      res.Data.ChainName,
+							ShortName: chain.ShortName,
 						},
 					},
 					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
@@ -486,6 +496,13 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
 		for _, chainID := range chainIDs {
+			// get chain
+			chain, err := e.repo.Chain.GetByID(chainID)
+			if err != nil {
+				e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listSolWalletAssets] repo.Chain.GetByID() failed")
+				return nil, "", "", err
+			}
+
 			res, err := e.svc.Covalent.GetSolanaTokenBalances("solana-mainnet", req.Address, 3)
 			if err != nil {
 				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
@@ -512,7 +529,8 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 						Price:   item.QuoteRate,
 						Native:  item.NativeToken,
 						Chain: response.AssetTokenChain{
-							Name: res.Data.ChainName,
+							Name:      res.Data.ChainName,
+							ShortName: chain.ShortName,
 						},
 					},
 					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
@@ -650,7 +668,8 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					Price:   price,
 					Native:  native,
 					Chain: response.AssetTokenChain{
-						Name: key[6],
+						Name:      key[6],
+						ShortName: "sui",
 					},
 				},
 				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),

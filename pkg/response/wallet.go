@@ -39,7 +39,8 @@ type AssetToken struct {
 }
 
 type AssetTokenChain struct {
-	Name string `json:"name"`
+	Name      string `json:"name"`
+	ShortName string `json:"short_name"`
 }
 
 type ContractMetadata struct {
