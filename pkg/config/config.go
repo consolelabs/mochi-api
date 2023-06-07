@@ -116,6 +116,9 @@ type Config struct {
 	PkpassMochiPassTypeIdentifier string
 	PkpassMochiOrganizationName   string
 	PkpassMochiPassTeamIdentifier string
+	PKpassMochiKeyStorePass       string
+
+	CertDir string
 }
 
 type MarketplaceBaseUrl struct {
@@ -319,6 +322,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		PkpassMochiPassTypeIdentifier: v.GetString("PKPASS_MOCHI_PASS_TYPE_IDENTIFIER"),
 		PkpassMochiOrganizationName:   v.GetString("PKPASS_MOCHI_ORGANIZATION_NAME"),
 		PkpassMochiPassTeamIdentifier: v.GetString("PKPASS_MOCHI_PASS_TEAM_IDENTIFIER"),
+		PKpassMochiKeyStorePass:       v.GetString("PKPASS_MOCHI_KEY_STORE_PASS"),
+
+		CertDir: v.GetString("CERT_DIR"),
 	}
 }
 

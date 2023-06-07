@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"fmt"
+
 	"github.com/alvinbaena/passkit"
 
 	"github.com/defipod/mochi/pkg/request"
@@ -50,16 +52,16 @@ func (e *Entity) PassHandle(req request.GeneratePkPassRequest) ([]byte, error) {
 	template.AddAllFiles("images/pkpass")
 
 	// Create signInfo from cert files
-	signInfo, err := passkit.LoadSigningInformationFromFiles("cert/Certificates.p12", "consolelabs", "cert/AppleWWDRCAG3.cer")
+	signInfo, err := passkit.LoadSigningInformationFromFiles(e.cfg.CertDir+"/Certificates.p12", e.cfg.PKpassMochiKeyStorePass, e.cfg.CertDir+"/AppleWWDRCAG3.cer")
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("fail to LoadSigningInformationFromFiles pkpass: %v", err)
 	}
 
 	// Create singer, signed file with signInfo and zipped this to []byte data
 	signer := passkit.NewMemoryBasedSigner()
 	z, err := signer.CreateSignedAndZippedPassArchive(&pass, template, signInfo)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("fail to CreateSignedAndZippedPassArchive pkpass: %v", err)
 	}
 
 	return z, nil
