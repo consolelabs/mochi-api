@@ -142,7 +142,8 @@ func (s *SuiService) GetAddressAssets(address string) ([]response.WalletAssetDat
 			Price:   0,
 			Native:  native,
 			Chain: response.AssetTokenChain{
-				Name: "sui",
+				Name:      "sui",
+				ShortName: "sui",
 			},
 		}
 

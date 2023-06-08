@@ -5236,6 +5236,107 @@ const docTemplate = `{
                 }
             }
         },
+        "/earn": {
+            "get": {
+                "description": "Get earn list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Earn"
+                ],
+                "summary": "Get earn list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.EarnInfoListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create earn info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Earn"
+                ],
+                "summary": "Create earn info",
+                "parameters": [
+                    {
+                        "description": "Create earn info request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateEarnInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.EarnInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/emojis": {
+            "get": {
+                "description": "list emojis",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Emojis"
+                ],
+                "summary": "list emojis",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "codes",
+                        "name": "codes",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ListEmojisResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/fiat/historical-exchange-rates": {
             "get": {
                 "description": "Remove from user's watchlist",
@@ -7325,6 +7426,128 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/earn": {
+            "get": {
+                "description": "Get user earn list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Earn"
+                ],
+                "summary": "Get user earn list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserEarnListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create user earn",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Earn"
+                ],
+                "summary": "Create user earn",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create user earn info",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateUserEarnRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserEarnResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/earn/{earn_id}": {
+            "delete": {
+                "description": "Delete user earn",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Earn"
+                ],
+                "summary": "Delete user earn",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "earn Id",
+                        "name": "earn_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/transactions": {
             "get": {
                 "description": "Get user transaction",
@@ -8441,6 +8664,52 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EarnInfo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deadline_at": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "prev_earn_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Emojis": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "telegram_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
                     "type": "string"
                 }
             }
@@ -9884,6 +10153,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.UserEarn": {
+            "type": "object",
+            "properties": {
+                "earn": {
+                    "$ref": "#/definitions/model.EarnInfo"
+                },
+                "earn_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserEnvelopStreak": {
             "type": "object",
             "properties": {
@@ -10456,6 +10748,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateEarnInfoRequest": {
+            "type": "object",
+            "properties": {
+                "deadline_at": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "prev_earn_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateEnvelop": {
             "type": "object",
             "required": [
@@ -10701,6 +11010,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "marketplace": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateUserEarnRequest": {
+            "type": "object",
+            "properties": {
+                "earn_id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -11605,11 +11928,17 @@ const docTemplate = `{
         "response.AddToWatchlistResponseData": {
             "type": "object",
             "properties": {
+                "base_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
+                },
                 "base_suggestions": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
                     }
+                },
+                "target_coin": {
+                    "$ref": "#/definitions/response.GetCoinResponse"
                 },
                 "target_suggestions": {
                     "type": "array",
@@ -11624,6 +11953,23 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.TokenPriceAlertResponseData"
+                }
+            }
+        },
+        "response.AssetPlatformResponseData": {
+            "type": "object",
+            "properties": {
+                "chain_identifier": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "shortname": {
+                    "type": "string"
                 }
             }
         },
@@ -12232,6 +12578,34 @@ const docTemplate = `{
                 }
             }
         },
+        "response.EarnInfoListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EarnInfo"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.EarnInfoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.EarnInfo"
+                }
+            }
+        },
         "response.GasTrackerResponse": {
             "type": "object",
             "properties": {
@@ -12344,6 +12718,9 @@ const docTemplate = `{
         "response.GetCoinResponse": {
             "type": "object",
             "properties": {
+                "asset_platform": {
+                    "$ref": "#/definitions/response.AssetPlatformResponseData"
+                },
                 "asset_platform_id": {
                     "type": "string"
                 },
@@ -14009,6 +14386,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ListEmojisResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Emojis"
+                    }
+                }
+            }
+        },
         "response.ListGuildAdminRoles": {
             "type": "object",
             "properties": {
@@ -15218,6 +15606,34 @@ const docTemplate = `{
                 },
                 "ios_noti_token": {
                     "type": "string"
+                }
+            }
+        },
+        "response.UserEarnListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.UserEarn"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.UserEarnResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserEarn"
                 }
             }
         },
