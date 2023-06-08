@@ -15,6 +15,7 @@ import (
 	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
 	"github.com/defipod/mochi/pkg/handler/data"
 	"github.com/defipod/mochi/pkg/handler/defi"
+	"github.com/defipod/mochi/pkg/handler/emojis"
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
 	"github.com/defipod/mochi/pkg/handler/nft"
@@ -58,6 +59,7 @@ type Handler struct {
 	Swap              swap.IHandler
 	ApiKey            apikey.IHandler
 	PkPass            pkpass.IHandler
+	Emojis            emojis.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -88,5 +90,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Swap:              swap.New(entities, logger),
 		ApiKey:            apikey.New(entities, logger),
 		PkPass:            pkpass.New(entities, logger),
+		Emojis:            emojis.New(entities, logger),
 	}
 }

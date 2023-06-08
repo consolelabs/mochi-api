@@ -565,4 +565,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		pkpassGroup.GET("", h.PkPass.GeneratePkPass)
 	}
+
+	emojisGroup := v1.Group("/emojis")
+	{
+		emojisGroup.GET("", h.Emojis.ListEmojis)
+	}
 }
