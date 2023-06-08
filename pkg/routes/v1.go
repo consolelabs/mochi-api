@@ -139,6 +139,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			watchListGroup.POST("/wallets/track", h.Wallet.Track)
 			watchListGroup.GET("wallets", h.Wallet.ListTrackingWallets)
 		}
+
+		userEarnGroup := userGroup.Group("/:id/earn")
+		{
+			userEarnGroup.POST("", h.Earn.CreateUserEarn)
+			userEarnGroup.GET("", h.Earn.GetUserEarnListByUserId)
+			userEarnGroup.DELETE("/:earn_id", h.Earn.DeleteUserEarn)
+		}
 	}
 
 	communityGroup := v1.Group("/community")
@@ -561,7 +568,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		apiKeyGroup.POST("/binance", h.ApiKey.IntegrateBinanceKey)
 	}
 
-	pkpassGroup := v1.Group("pk-pass")
+	pkpassGroup := v1.Group("/pk-pass")
 	{
 		pkpassGroup.GET("", h.PkPass.GeneratePkPass)
 	}
@@ -569,5 +576,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	emojisGroup := v1.Group("/emojis")
 	{
 		emojisGroup.GET("", h.Emojis.ListEmojis)
+	}
+
+	earnGroup := v1.Group("/earn")
+	{
+		earnGroup.GET("", h.Earn.GetEarnInfoList)
+		earnGroup.POST("", h.Earn.CreateEarnInfo)
 	}
 }
