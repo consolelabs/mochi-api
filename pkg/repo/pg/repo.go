@@ -3,6 +3,8 @@ package pg
 import (
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/repo/emojis"
+
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
@@ -25,7 +27,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	"github.com/defipod/mochi/pkg/repo/emojis"
+	earninfo "github.com/defipod/mochi/pkg/repo/earn_info"
 	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
@@ -100,6 +102,7 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
+	userearn "github.com/defipod/mochi/pkg/repo/user_earn"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -237,5 +240,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigTipRange:                  guildconfigtiprange.NewPG(db),
 		GuildConfigAdminRole:                 guildconfigadminrole.NewPG(db),
 		WalletSnapshot:                       walletsnapshot.NewPG(db),
+		EarnInfo:                             earninfo.NewPG(db),
+		UserEarn:                             userearn.NewPG(db),
 	}
 }
