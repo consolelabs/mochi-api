@@ -37,7 +37,8 @@ func GetStatusCode(err error) int {
 		ErrInvalidVoteChoice,
 		ErrInvalidAuthorityType,
 		ErrXPRoleExisted,
-		ErrMixRoleExisted:
+		ErrMixRoleExisted,
+		ErrApiKeyBinancePermissionReadingDisabled:
 		code = http.StatusBadRequest
 	case
 		ErrConflict,

@@ -5,14 +5,27 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 )
 
 func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*model.KafkaIntegrateMessage, error) {
 	res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, true)
 	if err != nil {
+		e.log.Fields(logger.Fields{"discordUserId": req.DiscordUserId}).Error(err, "[entities.IntegrateBinanceData] - fail to get profile by discord id")
 		return nil, err
+	}
+
+	permission, err := e.svc.Binance.GetApiKeyPermission(req.ApiKey, req.ApiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"apiKey": req.ApiKey, "apiSecret": req.ApiSecret}).Error(err, "[entities.IntegrateBinanceData] - fail to get api key permission")
+		return nil, err
+	}
+
+	if !permission.EnableReading {
+		return nil, errors.ErrApiKeyBinancePermissionReadingDisabled
 	}
 
 	kafkaMsg := model.KafkaIntegrateMessage{
@@ -35,6 +48,7 @@ func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*mode
 
 	err = e.kafka.Produce(e.cfg.Kafka.BinanceDataTopic, key, value)
 	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.IntegrateBinanceData] - fail to produce msg to send api key")
 		return nil, err
 	}
 
