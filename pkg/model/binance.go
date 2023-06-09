@@ -12,5 +12,5 @@ type KafkaIntegrateMessage struct {
 }
 
 type KafkaIntegrateData struct {
-	IntegrationMessage *IntegrationMessage `json:"integrationMessage,omitempty"`
+	IntegrationMessage *IntegrationMessage `json:"integration_message,omitempty"`
 }
