@@ -10,6 +10,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -213,6 +214,10 @@ func (m *MochiProfile) AssociateDex(profileId, platform, apiKey, apiSecret strin
 	}
 
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return errors.ErrProfile
+	}
 
 	return nil
 }
