@@ -1,9 +1,9 @@
 package request
 
 type IntegrationBinanceData struct {
-	ApiKey        string `json:"apiKey"`
-	ApiSecret     string `json:"apiSecret"`
-	DiscordUserId string `json:"discordUserId"`
+	ApiKey        string `json:"api_key"`
+	ApiSecret     string `json:"api_secret"`
+	DiscordUserId string `json:"discord_user_id"`
 }
 
 type BinanceRequest struct {
