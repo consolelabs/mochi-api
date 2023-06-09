@@ -1060,7 +1060,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}, err
 }
 
-func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]response.WalletBinanceAssetResponse, error) {
+func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]response.WalletAssetData, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
@@ -1080,11 +1080,22 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		return nil, baseerr.ErrProfileNotLinkBinance
 	}
 
-	binanceAsset, err := e.svc.Binance.GetUserAsset(apiKey, apiSecret)
+	// get user asset
+	userAsset, err := e.svc.Binance.GetUserAsset(apiKey, apiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance user asset")
 		return nil, err
 	}
+
+	// get funding asset
+	fundingAsset, err := e.svc.Binance.GetFundingAsset(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance funding asset")
+		return nil, err
+	}
+
+	// merge 2 list asset
+	finalAsset := mergeAsset(userAsset, fundingAsset)
 
 	// btc price
 	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
@@ -1093,8 +1104,8 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		return nil, err
 	}
 
-	resp := make([]response.WalletBinanceAssetResponse, 0)
-	for _, asset := range binanceAsset {
+	resp := make([]response.WalletAssetData, 0)
+	for _, asset := range finalAsset {
 		assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
@@ -1102,12 +1113,51 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		}
 
 		// asset.UsdValuation = assetValue * btcPrice["bitcoin"]
-		resp = append(resp, response.WalletBinanceAssetResponse{
-			Asset:          asset.Asset,
-			TotalAmountUsd: fmt.Sprint(assetValue * btcPrice["bitcoin"]),
-			AssetBalance:   asset.BtcValuation,
+		resp = append(resp, response.WalletAssetData{
+			AssetBalance: assetValue,
+			Token: response.AssetToken{
+				Symbol: asset.Asset,
+				Price:  btcPrice["bitcoin"],
+			},
 		})
 	}
 
 	return resp, nil
+}
+
+func containsAsset(fundingAsset []response.BinanceUserAssetResponse, userAssetSymbol string) bool {
+	for _, fAsset := range fundingAsset {
+		if fAsset.Asset == userAssetSymbol {
+			return true
+		}
+	}
+	return false
+}
+
+func mergeAsset(userAsset, fundingAsset []response.BinanceUserAssetResponse) []response.BinanceUserAssetResponse {
+	for _, uAsset := range userAsset {
+		if containsAsset(fundingAsset, uAsset.Asset) {
+			for i := range fundingAsset {
+				if fundingAsset[i].Asset == uAsset.Asset {
+					fAssetBtcValuation, err := strconv.ParseFloat(fundingAsset[i].BtcValuation, 64)
+					if err != nil {
+						continue
+					}
+
+					uAssetBtcValudation, err := strconv.ParseFloat(uAsset.BtcValuation, 64)
+					if err != nil {
+						continue
+					}
+
+					fundingAsset[i].BtcValuation = fmt.Sprint(fAssetBtcValuation + uAssetBtcValudation)
+					break
+				}
+			}
+		} else {
+			fundingAsset = append(fundingAsset, uAsset)
+		}
+
+	}
+
+	return fundingAsset
 }
