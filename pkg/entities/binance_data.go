@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -28,6 +29,13 @@ func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*mode
 
 	if !permission.EnableReading {
 		return nil, errors.ErrApiKeyBinancePermissionReadingDisabled
+	}
+
+	// update api key to profile
+	err = e.svc.MochiProfile.AssociateDex(res.ID, consts.PlatformBinance, req.ApiKey, req.ApiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": res.ID, "apiKey": req.ApiKey, "apiSecret": req.ApiSecret}).Error(err, "[entities.IntegrateBinanceData] - fail to update api key to profile")
+		return nil, err
 	}
 
 	// send key to kafka

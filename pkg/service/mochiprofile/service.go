@@ -5,4 +5,5 @@ type Service interface {
 	GetApiKeyByProfileID(profileID string) (*ProfileApiKeyResponse, error)
 	CreateProfileApiKey(profileAccessToken string) (*ProfileApiKeyResponse, error)
 	GetByID(profileID string) (*GetProfileResponse, error)
+	AssociateDex(profileId, platform, apiKey, apiSecret string) error
 }
