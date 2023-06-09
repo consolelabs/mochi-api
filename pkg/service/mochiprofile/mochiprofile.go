@@ -1,6 +1,7 @@
 package mochiprofile
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -180,4 +181,38 @@ func (m *MochiProfile) GetByID(profileID string) (*GetProfileResponse, error) {
 		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
 	}
 	return &res, nil
+}
+
+type AssociateDexRequest struct {
+	ApiKey    string `json:"api_key"`
+	ApiSecret string `json:"api_secret"`
+}
+
+func (m *MochiProfile) AssociateDex(profileId, platform, apiKey, apiSecret string) error {
+	body, err := json.Marshal(AssociateDexRequest{
+		ApiKey:    apiKey,
+		ApiSecret: apiSecret,
+	})
+	if err != nil {
+		return err
+	}
+
+	jsonBody := bytes.NewBuffer(body)
+
+	url := fmt.Sprintf("%s/api/v1/profiles/%s/accounts/connect-dex/%s", m.config.MochiProfileServerHost, profileId, platform)
+	request, err := http.NewRequest("POST", url, jsonBody)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+	return nil
 }
