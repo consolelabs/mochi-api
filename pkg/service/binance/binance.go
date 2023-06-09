@@ -104,3 +104,12 @@ func (b *Binance) GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUser
 
 	return asset, nil
 }
+
+func (b *Binance) GetFundingAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error) {
+	asset, err := bapdater.GetFundingAsset(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return asset, nil
+}
