@@ -39,7 +39,8 @@ func GetStatusCode(err error) int {
 		ErrXPRoleExisted,
 		ErrMixRoleExisted,
 		ErrApiKeyBinancePermissionReadingDisabled,
-		ErrProfileNotLinkBinance:
+		ErrProfileNotLinkBinance,
+		ErrProfile:
 		code = http.StatusBadRequest
 	case
 		ErrConflict,

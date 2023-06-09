@@ -30,4 +30,5 @@ var (
 	ErrChainTypeConflict                      = NewStringError("Chain type conflict", 409)
 	ErrApiKeyBinancePermissionReadingDisabled = NewStringError("Binance API key permission reading is disabled", 400)
 	ErrProfileNotLinkBinance                  = NewStringError("Profile not link binance", 400)
+	ErrProfile                                = NewStringError("Unknown error from Profile service", 400)
 )
