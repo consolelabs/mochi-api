@@ -12,12 +12,14 @@ import (
 )
 
 func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*model.KafkaIntegrateMessage, error) {
+	// get profile by discord id
 	res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, true)
 	if err != nil {
 		e.log.Fields(logger.Fields{"discordUserId": req.DiscordUserId}).Error(err, "[entities.IntegrateBinanceData] - fail to get profile by discord id")
 		return nil, err
 	}
 
+	// check permission of binance api key
 	permission, err := e.svc.Binance.GetApiKeyPermission(req.ApiKey, req.ApiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"apiKey": req.ApiKey, "apiSecret": req.ApiSecret}).Error(err, "[entities.IntegrateBinanceData] - fail to get api key permission")
@@ -28,6 +30,7 @@ func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*mode
 		return nil, errors.ErrApiKeyBinancePermissionReadingDisabled
 	}
 
+	// send key to kafka
 	kafkaMsg := model.KafkaIntegrateMessage{
 		Type: "binance_integrated_key",
 		Data: model.KafkaIntegrateData{
