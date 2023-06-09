@@ -95,3 +95,12 @@ func (b *Binance) GetApiKeyPermission(apiKey, apiSecret string) (*response.Binan
 
 	return permission, nil
 }
+
+func (b *Binance) GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error) {
+	asset, err := bapdater.GetUserAsset(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return asset, nil
+}

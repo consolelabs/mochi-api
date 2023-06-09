@@ -2,6 +2,7 @@ package bapdater
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -39,4 +40,36 @@ func GetApiKeyPermission(apiKey, apiSecret string) (permission *response.Binance
 	}
 
 	return permission, nil
+}
+
+func GetUserAsset(apiKey, apiSecret string) (assets []response.BinanceUserAssetResponse, err error) {
+	q := map[string]string{
+		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("POST", url+"/sapi/v3/asset/getUserAsset?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &assets)
+	if err != nil {
+		return nil, err
+	}
+
+	return assets, nil
 }
