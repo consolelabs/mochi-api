@@ -1014,13 +1014,23 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 
 	totalAssetValue := 0.0
 	if len(value) == 0 {
-		binanceAsset, err := e.svc.Binance.GetUserAsset(req.ApiKey, req.ApiSecret)
+		userAsset, err := e.svc.Binance.GetUserAsset(req.ApiKey, req.ApiSecret)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get user asset binance")
 			return nil, err
 		}
 
-		for _, asset := range binanceAsset {
+		// get funding asset
+		fundingAsset, err := e.svc.Binance.GetFundingAsset(req.ApiKey, req.ApiSecret)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance funding asset")
+			return nil, err
+		}
+
+		// merge 2 list asset
+		finalAsset := mergeAsset(userAsset, fundingAsset)
+
+		for _, asset := range finalAsset {
 			assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
