@@ -1006,7 +1006,7 @@ func (e *Entity) GenerateWalletVerification(req request.GenerateWalletVerificati
 
 func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.WalletBinanceResponse, error) {
 	// redis cache
-	value, err := e.cache.HashGet("binance-assets-" + req.Id)
+	value, err := e.cache.HashGet(fmt.Sprintf("binance-assets-%s-%s", req.Id, req.ApiKey))
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get cache user data binance")
 		return nil, err
@@ -1034,7 +1034,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 			"total_asset": fmt.Sprint(totalAssetValue),
 		}
 
-		err = e.cache.HashSet("binance-assets-"+req.Id, encodeData, 30*time.Second)
+		err = e.cache.HashSet(fmt.Sprintf("binance-assets-%s-%s", req.Id, req.ApiKey), encodeData, 30*time.Second)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, err
@@ -1106,7 +1106,7 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 
 	resp := make([]response.WalletAssetData, 0)
 	for _, asset := range finalAsset {
-		assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
+		assetValue, err := strconv.ParseFloat(asset.Free, 64)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
 			return nil, err
@@ -1151,7 +1151,18 @@ func mergeAsset(userAsset, fundingAsset []response.BinanceUserAssetResponse) []r
 						continue
 					}
 
+					fAssetFree, err := strconv.ParseFloat(fundingAsset[i].Free, 64)
+					if err != nil {
+						continue
+					}
+
+					uAssetFree, err := strconv.ParseFloat(uAsset.Free, 64)
+					if err != nil {
+						continue
+					}
+
 					fundingAsset[i].BtcValuation = fmt.Sprint(fAssetBtcValuation + uAssetBtcValudation)
+					fundingAsset[i].Free = fmt.Sprint(fAssetFree + uAssetFree)
 					break
 				}
 			}
