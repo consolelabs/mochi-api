@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/defipod/mochi/pkg/response"
+	bapdater "github.com/defipod/mochi/pkg/service/binance/adapter"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -84,4 +85,13 @@ func (b *Binance) GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResp
 		})
 	}
 	return res, nil, http.StatusOK
+}
+
+func (b *Binance) GetApiKeyPermission(apiKey, apiSecret string) (*response.BinanceApiKeyPermissionResponse, error) {
+	permission, err := bapdater.GetApiKeyPermission(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return permission, nil
 }

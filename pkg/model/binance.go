@@ -1,9 +1,9 @@
 package model
 
 type IntegrationMessage struct {
-	ApiKey    string `json:"apiKey,omitempty"`
-	ApiSecret string `json:"apiSecret,omitempty"`
-	ProfileId string `json:"profileId,omitempty"`
+	ApiKey    string `json:"api_key,omitempty"`
+	ApiSecret string `json:"api_secret,omitempty"`
+	ProfileId string `json:"profile_id,omitempty"`
 }
 
 type KafkaIntegrateMessage struct {
