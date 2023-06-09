@@ -1034,7 +1034,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 			"total_asset": fmt.Sprint(totalAssetValue),
 		}
 
-		err = e.cache.HashSet("binance-assets-"+req.Id, encodeData, 6*time.Hour)
+		err = e.cache.HashSet("binance-assets-"+req.Id, encodeData, 30*time.Second)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, err
@@ -1115,9 +1115,11 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		// asset.UsdValuation = assetValue * btcPrice["bitcoin"]
 		resp = append(resp, response.WalletAssetData{
 			AssetBalance: assetValue,
+			Amount:       util.FloatToString(fmt.Sprint(assetValue), 18),
 			Token: response.AssetToken{
-				Symbol: asset.Asset,
-				Price:  btcPrice["bitcoin"],
+				Symbol:  asset.Asset,
+				Decimal: 18,
+				Price:   btcPrice["bitcoin"],
 			},
 		})
 	}
