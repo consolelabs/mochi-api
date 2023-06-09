@@ -78,3 +78,9 @@ type WalletBinanceResponse struct {
 	TotalBtc float64 `json:"total_btc"`
 	Price    float64 `json:"price"`
 }
+
+type WalletBinanceAssetResponse struct {
+	AssetBalance   string `json:"asset_balance"`
+	TotalAmountUsd string `json:"total_amount_usd"`
+	Asset          string `json:"asset"`
+}
