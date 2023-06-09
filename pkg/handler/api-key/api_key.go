@@ -1,13 +1,14 @@
 package apikey
 
 import (
-	"github.com/defipod/mochi/pkg/request"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -63,7 +64,7 @@ func (h *Handler) IntegrateBinanceKey(c *gin.Context) {
 	data, err := h.entities.IntegrateBinanceData(req)
 	if err != nil {
 		h.log.Error(err, "[handler.IntegrateBinanceKey] failed to get integrate binance data")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
