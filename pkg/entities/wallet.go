@@ -1002,3 +1002,59 @@ func (e *Entity) GenerateWalletVerification(req request.GenerateWalletVerificati
 	}
 	return code, err
 }
+
+func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.WalletBinanceResponse, error) {
+	// redis cache
+	value, err := e.cache.HashGet("binance-assets-" + req.ProfileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get cache user data binance")
+		return nil, err
+	}
+
+	totalAssetValue := 0.0
+	if len(value) == 0 {
+		binanceAsset, err := e.svc.Binance.GetUserAsset(req.ApiKey, req.ApiSecret)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get user asset binance")
+			return nil, err
+		}
+
+		for _, asset := range binanceAsset {
+			assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+				return nil, err
+			}
+
+			totalAssetValue += assetValue
+		}
+
+		encodeData := map[string]string{
+			"total_asset": fmt.Sprint(totalAssetValue),
+		}
+
+		err = e.cache.HashSet("binance-assets-"+req.ProfileId, encodeData, 6*time.Hour)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
+			return nil, err
+		}
+	} else {
+		totalAssetValue, err = strconv.ParseFloat(value["total_asset"], 64)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+			return nil, err
+		}
+	}
+
+	// btc price
+	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		return nil, err
+	}
+
+	return &response.WalletBinanceResponse{
+		TotalBtc: totalAssetValue,
+		Price:    btcPrice["bitcoin"],
+	}, err
+}

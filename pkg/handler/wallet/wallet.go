@@ -261,3 +261,21 @@ func (h *Handler) GenerateWalletVerification(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.GenerateVerificationResponse{Code: code}, nil, nil, nil))
 }
+
+func (h *Handler) SumarizeBinanceAsset(c *gin.Context) {
+	req := request.BinanceRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.SumarizeBinanceAsset] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.SumarizeBinanceAsset(req)
+	if err != nil {
+		h.log.Error(err, "[handler.SumarizeBinanceAsset] entity.SumarizeBinanceAsset() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

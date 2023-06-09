@@ -10,4 +10,5 @@ type Service interface {
 	GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResponse, error, int)
 	GetAvgPriceBySymbol(symbol string) (*response.GetAvgPriceBySymbolResponse, error, int)
 	GetApiKeyPermission(apiKey, apiSecret string) (*response.BinanceApiKeyPermissionResponse, error)
+	GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error)
 }

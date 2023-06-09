@@ -73,3 +73,8 @@ type WalletTransactionData struct {
 type GenerateWalletVerificationResponseData struct {
 	Code string `json:"code"`
 }
+
+type WalletBinanceResponse struct {
+	TotalBtc float64 `json:"total_btc"`
+	Price    float64 `json:"price"`
+}
