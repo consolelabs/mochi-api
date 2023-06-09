@@ -38,7 +38,8 @@ func GetStatusCode(err error) int {
 		ErrInvalidAuthorityType,
 		ErrXPRoleExisted,
 		ErrMixRoleExisted,
-		ErrApiKeyBinancePermissionReadingDisabled:
+		ErrApiKeyBinancePermissionReadingDisabled,
+		ErrProfileNotLinkBinance:
 		code = http.StatusBadRequest
 	case
 		ErrConflict,

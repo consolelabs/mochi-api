@@ -29,4 +29,5 @@ var (
 	ErrInvalidTrackingType                    = NewStringError("Invalid tracking type", 400)
 	ErrChainTypeConflict                      = NewStringError("Chain type conflict", 409)
 	ErrApiKeyBinancePermissionReadingDisabled = NewStringError("Binance API key permission reading is disabled", 400)
+	ErrProfileNotLinkBinance                  = NewStringError("Profile not link binance", 400)
 )

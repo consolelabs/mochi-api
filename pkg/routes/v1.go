@@ -125,9 +125,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			walletsGroup.GET("/:address/:type/txns", h.Wallet.ListTransactions)
 		}
 
-		dexGroup := userGroup.Group("/dex")
+		dexGroup := userGroup.Group("/:id/dexs") // this is profile id
 		{
-			dexGroup.GET("/binance", h.Wallet.SumarizeBinanceAsset)
+			dexGroup.GET("/binance", h.Dex.SumarizeBinanceAsset)
+			dexGroup.GET("/:platform/assets", h.Dex.GetBinanceAssets)
 		}
 
 		// TODO: migrate wl apis to this group, add handler to handle Watchlist instead of using Wallet handler

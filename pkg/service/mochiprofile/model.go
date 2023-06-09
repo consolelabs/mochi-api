@@ -18,14 +18,19 @@ type GetProfileResponse struct {
 }
 
 type AssociatedAccount struct {
-	ID                 string    `json:"id"`
-	ProfileID          string    `json:"profile_id"`
-	Platform           Platform  `json:"platform"`
-	PlatformIdentifier string    `json:"platform_identifier"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	ID                 string           `json:"id"`
+	ProfileID          string           `json:"profile_id"`
+	Platform           Platform         `json:"platform"`
+	PlatformIdentifier string           `json:"platform_identifier"`
+	PlatformMetadata   PlatformMetadata `json:"platform_metadata"`
+	CreatedAt          time.Time        `json:"created_at"`
+	UpdatedAt          time.Time        `json:"updated_at"`
 }
 
+type PlatformMetadata struct {
+	Username  string `json:"username"`
+	ApiSecret string `json:"api_secret"`
+}
 type ErrorResponse struct {
 	Msg        string `json:"msg"`
 	StatusCode int    `json:"status_code"`

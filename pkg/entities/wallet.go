@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerr "github.com/defipod/mochi/pkg/model/errors"
@@ -1005,7 +1006,7 @@ func (e *Entity) GenerateWalletVerification(req request.GenerateWalletVerificati
 
 func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.WalletBinanceResponse, error) {
 	// redis cache
-	value, err := e.cache.HashGet("binance-assets-" + req.ProfileId)
+	value, err := e.cache.HashGet("binance-assets-" + req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get cache user data binance")
 		return nil, err
@@ -1033,7 +1034,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 			"total_asset": fmt.Sprint(totalAssetValue),
 		}
 
-		err = e.cache.HashSet("binance-assets-"+req.ProfileId, encodeData, 6*time.Hour)
+		err = e.cache.HashSet("binance-assets-"+req.Id, encodeData, 6*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, err
@@ -1057,4 +1058,56 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 		TotalBtc: totalAssetValue,
 		Price:    btcPrice["bitcoin"],
 	}, err
+}
+
+func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]response.WalletBinanceAssetResponse, error) {
+	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
+		return nil, err
+	}
+
+	apiKey, apiSecret := "", ""
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == consts.PlatformBinance {
+			apiKey = acc.PlatformIdentifier
+			apiSecret = acc.PlatformMetadata.ApiSecret
+		}
+	}
+
+	if apiKey == "" || apiSecret == "" {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get api key or api secret")
+		return nil, baseerr.ErrProfileNotLinkBinance
+	}
+
+	binanceAsset, err := e.svc.Binance.GetUserAsset(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance user asset")
+		return nil, err
+	}
+
+	// btc price
+	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		return nil, err
+	}
+
+	resp := make([]response.WalletBinanceAssetResponse, 0)
+	for _, asset := range binanceAsset {
+		assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+			return nil, err
+		}
+
+		// asset.UsdValuation = assetValue * btcPrice["bitcoin"]
+		resp = append(resp, response.WalletBinanceAssetResponse{
+			Asset:          asset.Asset,
+			TotalAmountUsd: fmt.Sprint(assetValue * btcPrice["bitcoin"]),
+			AssetBalance:   asset.BtcValuation,
+		})
+	}
+
+	return resp, nil
 }
