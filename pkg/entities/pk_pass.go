@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/alvinbaena/passkit"
@@ -52,7 +53,17 @@ func (e *Entity) PassHandle(req request.GeneratePkPassRequest) ([]byte, error) {
 	template.AddAllFiles("images/pkpass")
 
 	// Create signInfo from cert files
-	signInfo, err := passkit.LoadSigningInformationFromFiles(e.cfg.CertDir+"/Certificates.p12", e.cfg.PKpassMochiKeyStorePass, e.cfg.CertDir+"/AppleWWDRCAG3.cer")
+	keyStoreFile, err := base64.StdEncoding.DecodeString(e.cfg.PkPassMochiKeyStoreFileBase64)
+	if err != nil {
+		return nil, fmt.Errorf("fail to DecodeString key store file: %v", err)
+	}
+
+	appleWWDRCAFile, err := base64.StdEncoding.DecodeString(e.cfg.PKpassAppleWWDRCAFileBase64)
+	if err != nil {
+		return nil, fmt.Errorf("fail to DecodeString apple WWDRCA file: %v", err)
+	}
+
+	signInfo, err := passkit.LoadSigningInformationFromBytes(keyStoreFile, e.cfg.PKpassMochiKeyStorePass, appleWWDRCAFile)
 	if err != nil {
 		return nil, fmt.Errorf("fail to LoadSigningInformationFromFiles pkpass: %v", err)
 	}
