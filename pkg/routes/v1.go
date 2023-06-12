@@ -589,4 +589,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		earnGroup.GET("", h.Earn.GetEarnInfoList)
 		earnGroup.POST("", h.Earn.CreateEarnInfo)
 	}
+
+	contentGroup := v1.Group("/content")
+	{
+		contentGroup.GET("/:type", h.Content.GetTypeContent)
+	}
 }

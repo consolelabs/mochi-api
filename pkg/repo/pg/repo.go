@@ -3,8 +3,6 @@ package pg
 import (
 	"gorm.io/gorm"
 
-	"github.com/defipod/mochi/pkg/repo/emojis"
-
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	"github.com/defipod/mochi/pkg/repo/chain"
@@ -12,6 +10,7 @@ import (
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
+	"github.com/defipod/mochi/pkg/repo/content"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
 	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
@@ -28,6 +27,7 @@ import (
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	earninfo "github.com/defipod/mochi/pkg/repo/earn_info"
+	"github.com/defipod/mochi/pkg/repo/emojis"
 	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
@@ -242,5 +242,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		WalletSnapshot:                       walletsnapshot.NewPG(db),
 		EarnInfo:                             earninfo.NewPG(db),
 		UserEarn:                             userearn.NewPG(db),
+		Content:                              content.NewPG(db),
 	}
 }

@@ -12,6 +12,7 @@ import (
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
 	configtwittersales "github.com/defipod/mochi/pkg/handler/config-twitter-sales"
+	"github.com/defipod/mochi/pkg/handler/content"
 	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
 	"github.com/defipod/mochi/pkg/handler/data"
 	"github.com/defipod/mochi/pkg/handler/defi"
@@ -64,6 +65,7 @@ type Handler struct {
 	Emojis            emojis.IHandler
 	Earn              earn.IHandler
 	Dex               dex.IHandler
+	Content           content.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -97,5 +99,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Emojis:            emojis.New(entities, logger),
 		Earn:              earn.New(entities, logger),
 		Dex:               dex.New(entities, logger),
+		Content:           content.New(entities, logger),
 	}
 }
