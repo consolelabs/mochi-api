@@ -90,7 +90,6 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 				valid, ok := rolesToAdd[key]
 				// if error occurs while fetching balance -> skip
 				if ok && !valid {
-					l.Info("[updateTokenRole] error while fetching balance")
 					continue
 				}
 
@@ -126,7 +125,11 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 		return err
 	}
 
-	for roleToAdd := range rolesToAdd {
+	for roleToAdd, valid := range rolesToAdd {
+		// if error occurs while fetching balance -> skip
+		if !valid {
+			continue
+		}
 		userID := roleToAdd[0]
 		roleID := roleToAdd[1]
 		gMemberRoleLog := job.log.Fields(logger.Fields{
@@ -195,6 +198,7 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 				UserID  string
 				TokenID int
 			}{UserID: mem.User.ID, TokenID: cfg.TokenID}]
+			// cannot fetch user balance
 			if userBal == nil {
 				rolesToAdd[[2]string{mem.User.ID, cfg.RoleID}] = false
 				continue
