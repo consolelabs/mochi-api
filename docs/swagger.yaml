@@ -4250,6 +4250,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
@@ -4266,8 +4268,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -9604,6 +9604,10 @@ paths:
         in: path
         name: id
         required: true
+        type: string
+      - description: status
+        in: query
+        name: status
         type: string
       - description: page
         in: query

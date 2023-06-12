@@ -7449,6 +7449,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "page",
                         "name": "page",
                         "in": "query"

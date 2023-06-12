@@ -24,6 +24,10 @@ func (e *Entity) CreateEarnInfo(req *request.CreateEarnInfoRequest) (*model.Earn
 		earnInfo.PrevEarnId = req.PrevEarnId
 	}
 
+	if req.DeadlineAt != nil {
+		earnInfo.DeadlineAt = req.DeadlineAt
+	}
+
 	earn, err := e.repo.EarnInfo.Create(&earnInfo)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateEarnInfo] - e.repo.EarnInfo.Create failed")
@@ -34,7 +38,10 @@ func (e *Entity) CreateEarnInfo(req *request.CreateEarnInfoRequest) (*model.Earn
 }
 
 func (e *Entity) GetEarnInfoList(req request.PaginationRequest) (*response.EarnInfoListResponse, error) {
-	earnInfos, total, err := e.repo.EarnInfo.List(earninfo.ListQuery{Offset: int(req.Page * req.Size), Limit: int(req.Size)})
+	earnInfos, total, err := e.repo.EarnInfo.List(earninfo.ListQuery{
+		Offset: int(req.Page * req.Size),
+		Limit:  int(req.Size),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +72,7 @@ func (e *Entity) CreateUserEarn(req *request.CreateUserEarnRequest) (*model.User
 func (e *Entity) GetUserEarnInfoListByUserId(req request.GetUserEarnListByUserIdRequest) (*response.UserEarnListResponse, error) {
 	userEarns, total, err := e.repo.UserEarn.GetByUserId(userearn.ListQuery{
 		UserId: req.UserId,
+		Status: req.Status,
 		Limit:  int(req.Size),
 		Offset: int(req.Size * req.Page),
 	})

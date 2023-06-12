@@ -1,7 +1,6 @@
 package earn
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -98,13 +97,12 @@ func (h *Handler) CreateUserEarn(c *gin.Context) {
 		return
 	}
 
-	userId := c.Param("id")
-	if userId == "" {
-		h.log.Info("[handler.CreateUserEarn] - user id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
+	req.UserId = c.Param("id")
+	if err := req.Validate(); err != nil {
+		h.log.Error(err, "[handler.CreateUserEarn] validate request failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	req.UserId = userId
 
 	data, err := h.entities.CreateUserEarn(&req)
 	if err != nil {
@@ -122,6 +120,7 @@ func (h *Handler) CreateUserEarn(c *gin.Context) {
 // @Description Get user earn list
 // @Tags        Earn
 // @Param       id   path  string true  "user Id"
+// @Param       status   query  string false  "status"
 // @Param       page   query  string false  "page"
 // @Param       size   query  string false  "size"
 // @Accept      json
