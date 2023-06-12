@@ -204,7 +204,7 @@ func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *respons
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	if query != "skull" {
+	if query != "skull" && query != "sui" {
 		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
@@ -214,7 +214,6 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 			return []model.CoingeckoSupportedTokens{*token}, nil
 		}
 	}
-
 	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
 	if err != nil {
