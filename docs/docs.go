@@ -5236,9 +5236,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/earn": {
+        "/earns/airdrop-campaigns": {
             "get": {
-                "description": "Get earn list",
+                "description": "Get Airdrop Campaign List",
                 "consumes": [
                     "application/json"
                 ],
@@ -5246,9 +5246,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Earn"
+                    "Airdrop-campaigns"
                 ],
-                "summary": "Get earn list",
+                "summary": "Get Airdrop Campaign List",
                 "parameters": [
                     {
                         "type": "string",
@@ -5267,13 +5267,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.EarnInfoListResponse"
+                            "$ref": "#/definitions/response.AirdropCampaignsResponse"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create earn info",
+                "description": "Create airdrop campaign",
                 "consumes": [
                     "application/json"
                 ],
@@ -5281,17 +5281,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Earn"
+                    "Airdrop-campaigns"
                 ],
-                "summary": "Create earn info",
+                "summary": "Create airdrop campaign",
                 "parameters": [
                     {
-                        "description": "Create earn info request",
+                        "description": "Create airdrop campaign request",
                         "name": "Request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateEarnInfoRequest"
+                            "$ref": "#/definitions/request.CreateAirdropCampaignRequest"
                         }
                     }
                 ],
@@ -5299,7 +5299,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.EarnInfoResponse"
+                            "$ref": "#/definitions/response.AirdropCampaignResponse"
                         }
                     }
                 }
@@ -7426,7 +7426,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/earn": {
+        "/users/{id}/earns/airdrop-campaigns": {
             "get": {
                 "description": "Get user earn list",
                 "consumes": [
@@ -7436,13 +7436,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Earn"
+                    "Airdrop-campaigns"
                 ],
                 "summary": "Get user earn list",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user Id",
+                        "description": "profile id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -7451,6 +7451,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "status",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "is_favorite",
+                        "name": "is_favorite",
                         "in": "query"
                     },
                     {
@@ -7470,13 +7476,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UserEarnListResponse"
+                            "$ref": "#/definitions/response.ProfileAirdropCampaignsResponse"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create user earn",
+                "description": "Create profile airdrop campaign",
                 "consumes": [
                     "application/json"
                 ],
@@ -7484,24 +7490,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Earn"
+                    "Airdrop-campaigns"
                 ],
-                "summary": "Create user earn",
+                "summary": "Create profile airdrop campaign",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user Id",
+                        "description": "profile id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Create user earn info",
+                        "description": "Create profile airdrop campaign request",
                         "name": "Request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateUserEarnRequest"
+                            "$ref": "#/definitions/request.CreateProfileAirdropCampaignRequest"
                         }
                     }
                 ],
@@ -7509,15 +7515,15 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.UserEarnResponse"
+                            "$ref": "#/definitions/response.ProfileAirdropCampaignResponse"
                         }
                     }
                 }
             }
         },
-        "/users/{id}/earn/{earn_id}": {
+        "/users/{id}/earns/airdrop-campaigns/{airdrop_campaign_id}": {
             "delete": {
-                "description": "Delete user earn",
+                "description": "Delete profile airdrop campaign",
                 "consumes": [
                     "application/json"
                 ],
@@ -7525,21 +7531,21 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Earn"
+                    "Airdrop-campaigns"
                 ],
-                "summary": "Delete user earn",
+                "summary": "Delete profile airdrop campaign",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user Id",
+                        "description": "profile id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "earn Id",
-                        "name": "earn_id",
+                        "description": "airdrop campaign id",
+                        "name": "airdrop_campaign_id",
                         "in": "path",
                         "required": true
                     }
@@ -8269,6 +8275,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AirdropCampaign": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deadline_at": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "prev_airdrop_campaign_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -8668,32 +8700,6 @@ const docTemplate = `{
                 },
                 "total_count": {
                     "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.EarnInfo": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "deadline_at": {
-                    "type": "string"
-                },
-                "detail": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "prev_earn_id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -9705,6 +9711,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProfileAirdropCampaign": {
+            "type": "object",
+            "properties": {
+                "airdrop_campaign": {
+                    "$ref": "#/definitions/model.AirdropCampaign"
+                },
+                "airdrop_campaign_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
@@ -10155,29 +10184,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UserEarn": {
-            "type": "object",
-            "properties": {
-                "earn": {
-                    "$ref": "#/definitions/model.EarnInfo"
-                },
-                "earn_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_favorite": {
-                    "type": "boolean"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -10682,6 +10688,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateAirdropCampaignRequest": {
+            "type": "object",
+            "properties": {
+                "deadline_at": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "prev_airdrop_campaign_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateCommonwealthDiscussionSubscription": {
             "type": "object",
             "required": [
@@ -10750,23 +10773,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CreateEarnInfoRequest": {
-            "type": "object",
-            "properties": {
-                "deadline_at": {
-                    "type": "string"
-                },
-                "detail": {
-                    "type": "string"
-                },
-                "prev_earn_id": {
-                    "type": "integer"
-                },
-                "title": {
                     "type": "string"
                 }
             }
@@ -10913,6 +10919,20 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateProfileAirdropCampaignRequest": {
+            "type": "object",
+            "properties": {
+                "airdrop_campaign_id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateProposalChannelConfig": {
             "type": "object",
             "required": [
@@ -11016,20 +11036,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "marketplace": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CreateUserEarnRequest": {
-            "type": "object",
-            "properties": {
-                "earn_id": {
-                    "type": "integer"
-                },
-                "is_favorite": {
-                    "type": "boolean"
-                },
-                "status": {
                     "type": "string"
                 }
             }
@@ -11962,6 +11968,34 @@ const docTemplate = `{
                 }
             }
         },
+        "response.AirdropCampaignResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.AirdropCampaign"
+                }
+            }
+        },
+        "response.AirdropCampaignsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AirdropCampaign"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.AssetPlatformResponseData": {
             "type": "object",
             "properties": {
@@ -12581,34 +12615,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.DiscordUserTokenAlert"
                     }
-                }
-            }
-        },
-        "response.EarnInfoListResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.EarnInfo"
-                    }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.EarnInfoResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.EarnInfo"
                 }
             }
         },
@@ -15135,6 +15141,34 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ProfileAirdropCampaignResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.ProfileAirdropCampaign"
+                }
+            }
+        },
+        "response.ProfileAirdropCampaignsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProfileAirdropCampaign"
+                    }
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.ProfileApiKeyResponse": {
             "type": "object",
             "properties": {
@@ -15612,34 +15646,6 @@ const docTemplate = `{
                 },
                 "ios_noti_token": {
                     "type": "string"
-                }
-            }
-        },
-        "response.UserEarnListResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.UserEarn"
-                    }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.UserEarnResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.UserEarn"
                 }
             }
         },

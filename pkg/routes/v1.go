@@ -146,11 +146,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			watchListGroup.GET("wallets", h.Wallet.ListTrackingWallets)
 		}
 
-		userEarnGroup := userGroup.Group("/:id/earn")
+		userEarnGroup := userGroup.Group("/:id/earns") //:id is profile_id
 		{
-			userEarnGroup.POST("", h.Earn.CreateUserEarn)
-			userEarnGroup.GET("", h.Earn.GetUserEarnListByUserId)
-			userEarnGroup.DELETE("/:earn_id", h.Earn.DeleteUserEarn)
+			userEarnGroup.POST("/airdrop-campaigns", h.AirdropCampaign.CreateProfileAirdropCampaign)
+			userEarnGroup.GET("/airdrop-campaigns", h.AirdropCampaign.GetProfileAirdropCampaigns)
+			userEarnGroup.DELETE("/airdrop-campaigns/:airdrop_campaign_id", h.AirdropCampaign.DeleteProfileAirdropCampaign)
 		}
 	}
 
@@ -584,9 +584,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		emojisGroup.GET("", h.Emojis.ListEmojis)
 	}
 
-	earnGroup := v1.Group("/earn")
+	earnGroup := v1.Group("/earns")
 	{
-		earnGroup.GET("", h.Earn.GetEarnInfoList)
-		earnGroup.POST("", h.Earn.CreateEarnInfo)
+		airdropCampaignGroup := earnGroup.Group("/airdrop-campaigns")
+		{
+			airdropCampaignGroup.GET("", h.AirdropCampaign.GetAirdropCampaigns)
+			airdropCampaignGroup.POST("", h.AirdropCampaign.CreateAirdropCampaign)
+		}
+	}
+
+	contentGroup := v1.Group("/content")
+	{
+		contentGroup.GET("/:type", h.Content.GetTypeContent)
 	}
 }

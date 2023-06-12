@@ -1,14 +1,14 @@
 package repo
 
 import (
-	"github.com/defipod/mochi/pkg/repo/emojis"
-
 	"github.com/defipod/mochi/pkg/repo/activity"
+	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
+	"github.com/defipod/mochi/pkg/repo/content"
 	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
 	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
@@ -24,7 +24,7 @@ import (
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
-	earninfo "github.com/defipod/mochi/pkg/repo/earn_info"
+	"github.com/defipod/mochi/pkg/repo/emojis"
 	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
@@ -80,6 +80,7 @@ import (
 	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
 	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
 	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
+	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -99,7 +100,6 @@ import (
 	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
 	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
-	userearn "github.com/defipod/mochi/pkg/repo/user_earn"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -235,6 +235,7 @@ type Repo struct {
 	UserTag                              usertag.Store
 	GuildConfigTipRange                  guildconfigtiprange.Store
 	WalletSnapshot                       walletsnapshot.Store
-	EarnInfo                             earninfo.Store
-	UserEarn                             userearn.Store
+	Content                              content.Store
+	AirdropCampaign                      ac.Store
+	ProfileAirdropCampaign               pac.Store
 }
