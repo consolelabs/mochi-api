@@ -4,12 +4,13 @@ import (
 	"math/big"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/ethereum/go-ethereum/common/math"
+
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
-	"github.com/ethereum/go-ethereum/common/math"
 )
 
 type updateUserTokenRoles struct {
@@ -84,10 +85,21 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 	for _, member := range members {
 		for _, roleID := range member.Roles {
 			if isTokenRoles[roleID] {
-				if rolesToAdd[[2]string{member.User.ID, roleID}] {
-					delete(rolesToAdd, [2]string{member.User.ID, roleID})
+				key := [2]string{member.User.ID, roleID}
+				valid, ok := rolesToAdd[key]
+				// if error occurs while fetching balance -> skip
+				if ok && !valid {
+					l.Info("[updateTokenRole] error while fetching balance")
 					continue
 				}
+
+				// if user already has the role -> no need to add and skip removing
+				if ok && valid {
+					delete(rolesToAdd, key)
+					continue
+				}
+
+				// if not a role to add -> remove
 				gMemberRoleLog := job.log.Fields(logger.Fields{
 					"guildId": guildID,
 					"userId":  member.User.ID,
@@ -161,6 +173,10 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 			bal, err := job.entity.CalculateTokenBalance(int64(token.ChainID), token.Address, mem.User.ID)
 			if err != nil {
 				job.log.Error(err, "[Job.UpdateUserTokenRoles] entity.CalculateTokenBalance() failed")
+				userBals[struct {
+					UserID  string
+					TokenID int
+				}{UserID: mem.User.ID, TokenID: token.ID}] = nil
 				continue
 			}
 			userBals[struct {
@@ -170,32 +186,40 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 		}
 	}
 
-	userRolesByToken := make(map[struct {
-		UserID  string
-		TokenID int
-	}]string)
+	// userRolesByToken := make(map[struct {
+	// 	UserID  string
+	// 	TokenID int
+	// }]string)
+
+	// rolesToAdd: key = [userID, roleID] | value = valid balance (no error)
+	rolesToAdd := make(map[[2]string]bool)
 	for _, mem := range members {
 		for _, cfg := range cfgs {
 			userBal := userBals[struct {
 				UserID  string
 				TokenID int
 			}{UserID: mem.User.ID, TokenID: cfg.TokenID}]
+			if userBal == nil {
+				rolesToAdd[[2]string{mem.User.ID, cfg.RoleID}] = false
+				continue
+			}
 			decimalsBigFloat := new(big.Float).SetInt(math.BigPow(10, int64(cfg.Token.Decimals)))
 			requiredAmountBigFloat := new(big.Float).Mul(big.NewFloat(cfg.RequiredAmount), decimalsBigFloat)
 			requiredAmount := new(big.Int)
 			requiredAmountBigFloat.Int(requiredAmount)
 			if userBal.Cmp(requiredAmount) != -1 {
-				userRolesByToken[struct {
-					UserID  string
-					TokenID int
-				}{UserID: mem.User.ID, TokenID: cfg.TokenID}] = cfg.RoleID
+				// userRolesByToken[struct {
+				// 	UserID  string
+				// 	TokenID int
+				// }{UserID: mem.User.ID, TokenID: cfg.TokenID}] = cfg.RoleID
+				rolesToAdd[[2]string{mem.User.ID, cfg.RoleID}] = true
 			}
 		}
 	}
 
-	rolesToAdd := make(map[[2]string]bool)
-	for k, v := range userRolesByToken {
-		rolesToAdd[[2]string{k.UserID, v}] = true
-	}
+	// rolesToAdd := make(map[[2]string]bool)
+	// for k, v := range userRolesByToken {
+	// 	rolesToAdd[[2]string{k.UserID, v}] = true
+	// }
 	return rolesToAdd, nil
 }
