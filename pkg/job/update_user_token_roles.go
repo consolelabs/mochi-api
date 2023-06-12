@@ -82,6 +82,7 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 		l.Error(err, "[updateTokenRole] job.listMemberTokenRolesToAdd failed")
 		return err
 	}
+
 	for _, member := range members {
 		for _, roleID := range member.Roles {
 			if isTokenRoles[roleID] {
@@ -186,11 +187,6 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 		}
 	}
 
-	// userRolesByToken := make(map[struct {
-	// 	UserID  string
-	// 	TokenID int
-	// }]string)
-
 	// rolesToAdd: key = [userID, roleID] | value = valid balance (no error)
 	rolesToAdd := make(map[[2]string]bool)
 	for _, mem := range members {
@@ -208,18 +204,10 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 			requiredAmount := new(big.Int)
 			requiredAmountBigFloat.Int(requiredAmount)
 			if userBal.Cmp(requiredAmount) != -1 {
-				// userRolesByToken[struct {
-				// 	UserID  string
-				// 	TokenID int
-				// }{UserID: mem.User.ID, TokenID: cfg.TokenID}] = cfg.RoleID
 				rolesToAdd[[2]string{mem.User.ID, cfg.RoleID}] = true
 			}
 		}
 	}
 
-	// rolesToAdd := make(map[[2]string]bool)
-	// for k, v := range userRolesByToken {
-	// 	rolesToAdd[[2]string{k.UserID, v}] = true
-	// }
 	return rolesToAdd, nil
 }
