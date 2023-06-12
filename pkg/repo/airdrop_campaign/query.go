@@ -1,7 +1,6 @@
-package userearn
+package airdropcampaign
 
 type ListQuery struct {
-	UserId string
 	Status string
 	Offset int
 	Limit  int

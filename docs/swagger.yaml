@@ -84,6 +84,23 @@ definitions:
       xp:
         type: integer
     type: object
+  model.AirdropCampaign:
+    properties:
+      created_at:
+        type: string
+      deadline_at:
+        type: string
+      detail:
+        type: string
+      id:
+        type: integer
+      prev_airdrop_campaign_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -346,23 +363,6 @@ definitions:
         type: integer
       total_count:
         type: integer
-      updated_at:
-        type: string
-    type: object
-  model.EarnInfo:
-    properties:
-      created_at:
-        type: string
-      deadline_at:
-        type: string
-      detail:
-        type: string
-      id:
-        type: integer
-      prev_earn_id:
-        type: integer
-      title:
-        type: string
       updated_at:
         type: string
     type: object
@@ -1024,6 +1024,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProfileAirdropCampaign:
+    properties:
+      airdrop_campaign:
+        $ref: '#/definitions/model.AirdropCampaign'
+      airdrop_campaign_id:
+        type: integer
+      id:
+        type: integer
+      is_favorite:
+        type: boolean
+      profile_id:
+        type: string
+      status:
+        type: string
+    type: object
   model.Quest:
     properties:
       action:
@@ -1320,21 +1335,6 @@ definitions:
       nr_of_join:
         type: integer
       username:
-        type: string
-    type: object
-  model.UserEarn:
-    properties:
-      earn:
-        $ref: '#/definitions/model.EarnInfo'
-      earn_id:
-        type: integer
-      id:
-        type: integer
-      is_favorite:
-        type: boolean
-      status:
-        type: string
-      user_id:
         type: string
     type: object
   model.UserEnvelopStreak:
@@ -1665,6 +1665,17 @@ definitions:
       webhook_url:
         type: string
     type: object
+  request.CreateAirdropCampaignRequest:
+    properties:
+      deadline_at:
+        type: string
+      detail:
+        type: string
+      prev_airdrop_campaign_id:
+        type: integer
+      title:
+        type: string
+    type: object
   request.CreateCommonwealthDiscussionSubscription:
     properties:
       discord_thread_id:
@@ -1712,17 +1723,6 @@ definitions:
     required:
     - guild_id
     - role_id
-    type: object
-  request.CreateEarnInfoRequest:
-    properties:
-      deadline_at:
-        type: string
-      detail:
-        type: string
-      prev_earn_id:
-        type: integer
-      title:
-        type: string
     type: object
   request.CreateEnvelop:
     properties:
@@ -1819,6 +1819,15 @@ definitions:
       priority_flag:
         type: boolean
     type: object
+  request.CreateProfileAirdropCampaignRequest:
+    properties:
+      airdrop_campaign_id:
+        type: integer
+      is_favorite:
+        type: boolean
+      status:
+        type: string
+    type: object
   request.CreateProposalChannelConfig:
     properties:
       address:
@@ -1888,15 +1897,6 @@ definitions:
       chain_id:
         type: integer
       marketplace:
-        type: string
-    type: object
-  request.CreateUserEarnRequest:
-    properties:
-      earn_id:
-        type: integer
-      is_favorite:
-        type: boolean
-      status:
         type: string
     type: object
   request.CreateUserRequest:
@@ -2505,6 +2505,24 @@ definitions:
       data:
         $ref: '#/definitions/response.TokenPriceAlertResponseData'
     type: object
+  response.AirdropCampaignResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.AirdropCampaign'
+    type: object
+  response.AirdropCampaignsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.AirdropCampaign'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
+    type: object
   response.AssetPlatformResponseData:
     properties:
       chain_identifier:
@@ -2907,24 +2925,6 @@ definitions:
         items:
           $ref: '#/definitions/model.DiscordUserTokenAlert'
         type: array
-    type: object
-  response.EarnInfoListResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.EarnInfo'
-        type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
-    type: object
-  response.EarnInfoResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.EarnInfo'
     type: object
   response.GasTrackerResponse:
     properties:
@@ -3477,13 +3477,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4246,16 +4246,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -4265,6 +4255,16 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4564,6 +4564,24 @@ definitions:
         type: integer
       size:
         description: page size
+        type: integer
+      total:
+        type: integer
+    type: object
+  response.ProfileAirdropCampaignResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.ProfileAirdropCampaign'
+    type: object
+  response.ProfileAirdropCampaignsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.ProfileAirdropCampaign'
+        type: array
+      page:
+        type: integer
+      size:
         type: integer
       total:
         type: integer
@@ -4878,24 +4896,6 @@ definitions:
         type: string
       ios_noti_token:
         type: string
-    type: object
-  response.UserEarnListResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.UserEarn'
-        type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
-    type: object
-  response.UserEarnResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.UserEarn'
     type: object
   response.UserFeedbackResponse:
     properties:
@@ -8377,11 +8377,11 @@ paths:
       tags:
       - Defi
       - Public
-  /earn:
+  /earns/airdrop-campaigns:
     get:
       consumes:
       - application/json
-      description: Get earn list
+      description: Get Airdrop Campaign List
       parameters:
       - description: page
         in: query
@@ -8397,31 +8397,31 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.EarnInfoListResponse'
-      summary: Get earn list
+            $ref: '#/definitions/response.AirdropCampaignsResponse'
+      summary: Get Airdrop Campaign List
       tags:
-      - Earn
+      - Airdrop-campaigns
     post:
       consumes:
       - application/json
-      description: Create earn info
+      description: Create airdrop campaign
       parameters:
-      - description: Create earn info request
+      - description: Create airdrop campaign request
         in: body
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateEarnInfoRequest'
+          $ref: '#/definitions/request.CreateAirdropCampaignRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.EarnInfoResponse'
-      summary: Create earn info
+            $ref: '#/definitions/response.AirdropCampaignResponse'
+      summary: Create airdrop campaign
       tags:
-      - Earn
+      - Airdrop-campaigns
   /emojis:
     get:
       consumes:
@@ -9594,13 +9594,13 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
-  /users/{id}/earn:
+  /users/{id}/earns/airdrop-campaigns:
     get:
       consumes:
       - application/json
       description: Get user earn list
       parameters:
-      - description: user Id
+      - description: profile id
         in: path
         name: id
         required: true
@@ -9609,6 +9609,10 @@ paths:
         in: query
         name: status
         type: string
+      - description: is_favorite
+        in: query
+        name: is_favorite
+        type: boolean
       - description: page
         in: query
         name: page
@@ -9623,50 +9627,50 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserEarnListResponse'
+            $ref: '#/definitions/response.ProfileAirdropCampaignsResponse'
       summary: Get user earn list
       tags:
-      - Earn
+      - Airdrop-campaigns
     post:
       consumes:
       - application/json
-      description: Create user earn
+      description: Create profile airdrop campaign
       parameters:
-      - description: user Id
+      - description: profile id
         in: path
         name: id
         required: true
         type: string
-      - description: Create user earn info
+      - description: Create profile airdrop campaign request
         in: body
         name: Request
         required: true
         schema:
-          $ref: '#/definitions/request.CreateUserEarnRequest'
+          $ref: '#/definitions/request.CreateProfileAirdropCampaignRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.UserEarnResponse'
-      summary: Create user earn
+            $ref: '#/definitions/response.ProfileAirdropCampaignResponse'
+      summary: Create profile airdrop campaign
       tags:
-      - Earn
-  /users/{id}/earn/{earn_id}:
+      - Airdrop-campaigns
+  /users/{id}/earns/airdrop-campaigns/{airdrop_campaign_id}:
     delete:
       consumes:
       - application/json
-      description: Delete user earn
+      description: Delete profile airdrop campaign
       parameters:
-      - description: user Id
+      - description: profile id
         in: path
         name: id
         required: true
         type: string
-      - description: earn Id
+      - description: airdrop campaign id
         in: path
-        name: earn_id
+        name: airdrop_campaign_id
         required: true
         type: string
       produces:
@@ -9676,9 +9680,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete user earn
+      summary: Delete profile airdrop campaign
       tags:
-      - Earn
+      - Airdrop-campaigns
   /users/{id}/transactions:
     get:
       consumes:

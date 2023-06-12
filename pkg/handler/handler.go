@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/defipod/mochi/pkg/entities"
+	airdropcampaign "github.com/defipod/mochi/pkg/handler/airdrop-campaign"
 	apikey "github.com/defipod/mochi/pkg/handler/api-key"
 	"github.com/defipod/mochi/pkg/handler/auth"
 	"github.com/defipod/mochi/pkg/handler/cache"
@@ -17,7 +18,6 @@ import (
 	"github.com/defipod/mochi/pkg/handler/data"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/dex"
-	"github.com/defipod/mochi/pkg/handler/earn"
 	"github.com/defipod/mochi/pkg/handler/emojis"
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
@@ -63,9 +63,9 @@ type Handler struct {
 	ApiKey            apikey.IHandler
 	PkPass            pkpass.IHandler
 	Emojis            emojis.IHandler
-	Earn              earn.IHandler
 	Dex               dex.IHandler
 	Content           content.IHandler
+	AirdropCampaign   airdropcampaign.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -97,8 +97,8 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ApiKey:            apikey.New(entities, logger),
 		PkPass:            pkpass.New(entities, logger),
 		Emojis:            emojis.New(entities, logger),
-		Earn:              earn.New(entities, logger),
 		Dex:               dex.New(entities, logger),
 		Content:           content.New(entities, logger),
+		AirdropCampaign:   airdropcampaign.New(entities, logger),
 	}
 }
