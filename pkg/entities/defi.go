@@ -204,22 +204,32 @@ func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *respons
 }
 
 func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
-	if query != "skull" {
-		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-			return nil, err
-		}
-		if err == nil {
-			return []model.CoingeckoSupportedTokens{*token}, nil
-		}
+	// TODO: do we need this?
+	if query == "skull" {
+		query = "skullswap-exchange"
 	}
 
-	searchQ := coingeckosupportedtokens.ListQuery{Symbol: query}
-	tokens, err := e.repo.CoingeckoSupportedTokens.List(searchQ)
-	if err != nil {
-		e.log.Fields(logger.Fields{"searchQ": searchQ}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+	// find by id
+	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
 		return nil, err
+	}
+
+	//
+	var tokens []model.CoingeckoSupportedTokens
+	switch true {
+	// found token with id = query
+	case err == nil:
+		tokens = append(tokens, *token)
+
+	// no id = given query -> find list by symbol
+	default:
+		tokens, err = e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
+		if err != nil {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+			return nil, err
+		}
 	}
 
 	for i, t := range tokens {
