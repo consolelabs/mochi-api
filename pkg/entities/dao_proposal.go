@@ -1,12 +1,14 @@
 package entities
 
 import (
+	"context"
 	"fmt"
 	"math/big"
 	"strconv"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/common/math"
+	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/chain"
@@ -342,13 +344,23 @@ func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID st
 
 	// Fetch balance concurrently
 	for _, addr := range walletAddrs {
-		go func(chainId int64, tokenAddress, currentWallet string) {
+		g, _ := errgroup.WithContext(context.Background())
+
+		g.Go(func() error {
+			chainId, tokenAddress, currentWallet := chainId, tokenAddress, addr
 			defer wg.Done()
 			bal, err := e.fetchTokenBalanceByChain(chainId, tokenAddress, currentWallet)
-			if err == nil {
-				bals <- bal
+			if err != nil {
+				return err
 			}
-		}(chainId, tokenAddress, addr)
+			bals <- bal
+			return nil
+		})
+
+		if err := g.Wait(); err != nil {
+			e.log.Fields(logger.Fields{"chainId": chainId, "tokenAddress": "tokenAddress", "addr": addr}).Error(err, "fetchTokenBalanceByChain() failed")
+			return nil, err
+		}
 	}
 
 	totalBalances := big.NewInt(0)
