@@ -302,6 +302,8 @@ func TestEntity_AddToWatchlist(t *testing.T) {
 				UserID: "319132138849173555",
 				Symbol: "cake",
 			},
+			coinIds:                      []string{"pancakeswap-token"},
+			coinPrices:                   map[string]float64{"pancakeswap-token": 0.1},
 			coingeckoSupportedTokenError: nil,
 			coingeckoSupportedTokenFound: model.CoingeckoSupportedTokens{
 				ID:     "pancakeswap-token",
@@ -397,7 +399,9 @@ func TestEntity_SearchCoins(t *testing.T) {
 				Symbol: "cake",
 				Name:   "PancakeSwap",
 			}},
-			wantErr: false,
+			coinIds:    []string{"pancakeswap-token"},
+			coinPrices: map[string]float64{"pancakeswap-token": 0},
+			wantErr:    false,
 		},
 		{
 			name:                "success - get multiple tokens",
