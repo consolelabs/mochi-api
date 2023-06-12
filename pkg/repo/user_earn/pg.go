@@ -35,10 +35,13 @@ func (pg *pg) Delete(userEarn *model.UserEarn) (*model.UserEarn, error) {
 }
 
 func (pg *pg) GetByUserId(q ListQuery) (userEarns []model.UserEarn, total int64, err error) {
-	db := pg.db.Model(&model.UserEarn{}).Where("user_id = ?", q.UserId).Preload("Earn").Order("earn_id ASC")
+	db := pg.db.Model(&model.UserEarn{}).Where("user_id = ?", q.UserId)
+	if q.Status != "" {
+		db = db.Where("status = ?", q.Status)
+	}
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)
 	}
-	return userEarns, total, db.Find(&userEarns).Error
+	return userEarns, total, db.Preload("Earn").Order("earn_id ASC").Find(&userEarns).Error
 }

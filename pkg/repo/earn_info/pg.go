@@ -23,7 +23,8 @@ func (pg *pg) GetById(id int64) (earnInfo *model.EarnInfo, err error) {
 }
 
 func (pg *pg) List(q ListQuery) (earnInfos []model.EarnInfo, total int64, err error) {
-	db := pg.db.Model(&model.EarnInfo{}).Where("deadline_at > now()").Order("created_at ASC")
+	db := pg.db.Model(&model.EarnInfo{}).Where("deadline_at IS NULL OR deadline_at > now()").Order("created_at ASC")
+
 	db = db.Count(&total).Offset(q.Offset)
 	if q.Limit != 0 {
 		db = db.Limit(q.Limit)
