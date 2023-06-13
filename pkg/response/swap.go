@@ -7,9 +7,10 @@ type SwapRouteResponseData struct {
 }
 
 type SwapRouteResponse struct {
-	Code    int64     `json:"code"`
-	Message string    `json:"message"`
-	Data    SwapRoute `json:"data"`
+	Code      int64     `json:"code"`
+	Message   string    `json:"message"`
+	ChainName string    `json:"chainName"`
+	Data      SwapRoute `json:"data"`
 }
 
 type SwapRoute struct {

@@ -232,6 +232,11 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		}
 	}
 
+	if len(tokens) == 0 {
+		return []model.CoingeckoSupportedTokens{}, nil
+	}
+	largestToken := tokens[0]
+	var largestIdx int64
 	for i, t := range tokens {
 		prices, err := e.svc.CoinGecko.GetCoinPrice([]string{t.ID}, "usd")
 		if err != nil {
@@ -239,7 +244,14 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 			continue
 		}
 		tokens[i].CurrentPrice = prices[t.ID]
+
+		if tokens[i].CurrentPrice > largestToken.CurrentPrice {
+			largestToken = tokens[i]
+			largestIdx = int64(i)
+		}
 	}
+
+	tokens[largestIdx].MostPopular = true
 
 	// // search on coingecko
 	// coingeckoTokens, err, code := e.svc.CoinGecko.SearchCoin(query)
