@@ -70,3 +70,30 @@ func (h *Handler) IntegrateBinanceKey(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
+
+// UnlinkBinance     godoc
+// @Summary     Unlink binance
+// @Description Unlink binance
+// @Tags        ApiKey
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.UnlinkBinance true "Unlink Binance request"
+// @Success     200 {object} response.UnlinkBinance
+// @Router      /api-key/unlink-binance [post]
+func (h *Handler) UnlinkBinance(c *gin.Context) {
+	var req request.UnlinkBinance
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.UnlinkBinance] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+  err := h.entities.UnlinkBinance(req)
+	if err != nil {
+		h.log.Error(err, "[handler.UnlinkBinance] failed to unlink binance")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](gin.H{"message": "ok"}, nil, nil, nil))
+}

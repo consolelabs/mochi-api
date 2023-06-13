@@ -6,6 +6,10 @@ type IntegrationBinanceData struct {
 	DiscordUserId string `json:"discord_user_id"`
 }
 
+type UnlinkBinance struct {
+	DiscordUserId string `json:"discord_user_id"`
+}
+
 type BinanceRequest struct {
 	Id        string `json:"id"`
 	ApiKey    string `json:"api_key" form:"api_key" binding:"required"`

@@ -80,6 +80,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api-key/unlink-binance": {
+            "post": {
+                "description": "Unlink binance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ApiKey"
+                ],
+                "summary": "Unlink binance",
+                "parameters": [
+                    {
+                        "description": "Unlink Binance request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UnlinkBinance"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UnlinkBinance"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Login",
@@ -11574,6 +11608,14 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UnlinkBinance": {
+            "type": "object",
+            "properties": {
+                "discord_user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpdateDaoVoteRequest": {
             "type": "object",
             "required": [
@@ -15587,6 +15629,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.UnlinkBinance": {
+            "type": "object",
+            "properties": {
+                "message": {
                     "type": "string"
                 }
             }
