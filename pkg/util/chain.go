@@ -152,6 +152,17 @@ func ConvertChainNameToChainId(chainName string) int64 {
 	case "aurora":
 		return 1313161554
 	default:
-		return 1
+		return 0
+	}
+}
+
+func ConvertChainCoingecko(chain string) string {
+	switch chain {
+	case "binance-smart-chain":
+		return "bsc"
+	case "polygon-pos":
+		return "polygon"
+	default:
+		return ""
 	}
 }

@@ -5,4 +5,5 @@ type CoingeckoSupportedTokens struct {
 	Symbol       string  `json:"symbol"`
 	Name         string  `json:"name"`
 	CurrentPrice float64 `json:"current_price" gorm:"-"`
+	MostPopular  bool    `json:"most_popular" gorm:"-"`
 }
