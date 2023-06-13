@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/service/apns"
 	"github.com/defipod/mochi/pkg/service/binance"
+	"github.com/defipod/mochi/pkg/service/birdeye"
 	"github.com/defipod/mochi/pkg/service/bluemove"
 	"github.com/defipod/mochi/pkg/service/chainexplorer"
 	"github.com/defipod/mochi/pkg/service/cloud"
@@ -52,6 +53,7 @@ type Service struct {
 	ChainExplorer chainexplorer.Service
 	Kyber         kyber.Service
 	Sui           sui.Service
+	Birdeye       birdeye.Service
 }
 
 func NewService(
@@ -86,5 +88,6 @@ func NewService(
 		ChainExplorer: chainexplorer.NewService(cfg, log),
 		Kyber:         kyber.New(&cfg, log),
 		Sui:           sui.New(&cfg, log),
+		Birdeye:       birdeye.NewService(&cfg, log),
 	}, nil
 }

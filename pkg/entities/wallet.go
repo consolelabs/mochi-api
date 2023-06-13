@@ -516,18 +516,31 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				if item.Type != "cryptocurrency" {
 					continue
 				}
-				bal, quote := e.calculateTokenBalance(item, chainID)
+
+				tokenAddress := item.ContractAddress
+				if item.NativeToken {
+					tokenAddress = consts.SolAddress
+				}
+
+				bal, _ := e.calculateTokenBalance(item, chainID)
+
+				tokenPrice, err := e.svc.Birdeye.GetTokenPrice(tokenAddress)
+				if err != nil {
+					e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Birdeye.GetTokenPrice() failed")
+					continue
+				}
+
 				assets = append(assets, response.WalletAssetData{
 					ChainID:        chainID,
 					ContractName:   item.ContractName,
 					ContractSymbol: item.ContractTickerSymbol,
 					AssetBalance:   bal,
-					UsdBalance:     quote,
+					UsdBalance:     tokenPrice.Data.Value * bal,
 					Token: response.AssetToken{
 						Name:    item.ContractName,
 						Symbol:  item.ContractTickerSymbol,
 						Decimal: int64(item.ContractDecimals),
-						Price:   item.QuoteRate,
+						Price:   tokenPrice.Data.Value,
 						Native:  item.NativeToken,
 						Chain: response.AssetTokenChain{
 							Name:      res.Data.ChainName,
