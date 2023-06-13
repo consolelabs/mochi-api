@@ -31,4 +31,6 @@ var (
 	ErrApiKeyBinancePermissionReadingDisabled = NewStringError("Binance API key permission reading is disabled", 400)
 	ErrProfileNotLinkBinance                  = NewStringError("Profile not link binance", 400)
 	ErrProfile                                = NewStringError("Unknown error from Profile service", 400)
+	ErrCoingeckoNotSupported                  = NewStringError("Token not supported", 400)
+	ErrKyberRouteNotFound                     = NewStringError("Kyber route not found", 400)
 )
