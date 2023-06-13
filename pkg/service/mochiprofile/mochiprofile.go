@@ -221,3 +221,26 @@ func (m *MochiProfile) AssociateDex(profileId, platform, apiKey, apiSecret strin
 
 	return nil
 }
+
+func (m *MochiProfile) UnlinkDex(profileId, platform string) error {
+	url := fmt.Sprintf("%s/api/v1/profiles/%s/accounts/disconnect-dex/%s", m.config.MochiProfileServerHost, profileId, platform)
+	request, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return errors.ErrProfile
+	}
+
+	return nil
+}
