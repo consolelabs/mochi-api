@@ -10,23 +10,37 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
+// This exist because the list token which kyber return in api do not contain all token.
+// For example: spell on ethereum -> they do not return this data -> want to know why ?
+// -> go to this https://kyberswap.com/swap/ethereum and you see spell is need to IMPORTED
 func (e *Entity) AddKyberTokenIfNotExist(tokenId string, req *request.GetSwapRouteRequest) (*model.KyberswapSupportedToken, error) {
-	// get info from coingecko
+	// get info from coingecko and if not then get from mochiPay db
 	coinGeckoToken, err, _ := e.svc.CoinGecko.GetCoin(tokenId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.AddKyberTokenIfNotExist] - cannot get coin coingecko")
-		return nil, err
+		// return nil, errors.ErrCoingeckoNotSupported
+		mochiPayToken, err := e.svc.MochiPay.GetToken(tokenId, "")
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.AddKyberTokenIfNotExist] - cannot get token mochi pay")
+			return nil, err
+		}
+		coinGeckoToken = &response.GetCoinResponse{
+			ContractAddress: mochiPayToken.Address,
+			Symbol:          mochiPayToken.Symbol,
+			Name:            mochiPayToken.Name,
+		}
 	}
 
 	// create kyber supported token in db
 	token, err := e.repo.KyberswapSupportedToken.Create(&model.KyberswapSupportedToken{
-		Address:   coinGeckoToken.ContractAddress,
+		Address:   coinGeckoToken.DetailPlatforms[req.ChainName].ContractAddress,
 		ChainName: req.ChainName,
 		ChainId:   util.ConvertChainNameToChainId(req.ChainName),
 		Decimals:  int64(coinGeckoToken.DetailPlatforms[coinGeckoToken.AssetPlatformID].DecimalPlace),
@@ -46,7 +60,7 @@ func (e *Entity) AddKyberTokenIfNotExist(tokenId string, req *request.GetSwapRou
 		Symbol:      coinGeckoToken.Symbol,
 		Decimal:     int64(coinGeckoToken.DetailPlatforms[coinGeckoToken.AssetPlatformID].DecimalPlace),
 		ChainId:     strconv.Itoa(int(util.ConvertChainNameToChainId(req.ChainName))),
-		Address:     coinGeckoToken.ContractAddress,
+		Address:     coinGeckoToken.DetailPlatforms[req.ChainName].ContractAddress,
 		Icon:        coinGeckoToken.Image.Small,
 		CoinGeckoId: coinGeckoToken.ID,
 	})
@@ -106,11 +120,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 	// case kyber return route not found
 	if swapRoutes.Message == "route not found" || swapRoutes.Code != 0 {
-		return &response.SwapRouteResponse{
-			Code:    swapRoutes.Code,
-			Message: swapRoutes.Message,
-			Data:    response.SwapRoute{},
-		}, nil
+		return nil, errors.ErrKyberRouteNotFound
 	}
 
 	swapRoutes.Data.TokenIn = *fromToken

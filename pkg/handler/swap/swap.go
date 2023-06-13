@@ -9,6 +9,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -57,14 +58,7 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 	data, err := h.entities.GetSwapRoutes(&req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"chainId": req.ChainId, "chainName": req.ChainName, "from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - cannot get data from kyber")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	// Kyber status code = 0 when successfully, else is failed
-	if data.Code != 0 {
-		h.log.Fields(logger.Fields{"chainId": req.ChainId, "chainName": req.ChainName, "from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - Problem get data from kyber, status code is not successfully")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
