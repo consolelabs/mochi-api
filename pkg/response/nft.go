@@ -257,6 +257,10 @@ type GetGuildDefaultTickerResponse struct {
 	Data *model.GuildConfigDefaultTicker `json:"data"`
 }
 
+type GetListGuildDefaultTickerResponse struct {
+	Data []model.GuildConfigDefaultTicker `json:"data"`
+}
+
 type CreateNFTCollectionResponse struct {
 	Data *model.NFTCollection `json:"data"`
 }

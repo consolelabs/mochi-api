@@ -427,6 +427,15 @@ func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest)
 	return defaultTicker, nil
 }
 
+func (e *Entity) GetListGuildDefaultTicker(guildID string) ([]model.GuildConfigDefaultTicker, error) {
+  configs, err := e.repo.GuildConfigDefaultTicker.GetList(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[entity.GetListGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetList() failed")
+		return nil, err
+	}
+	return configs, nil
+}
+
 func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
 	q := userwatchlistitem.UserWatchlistQuery{
 		UserID:      req.UserID,

@@ -2501,6 +2501,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/config-defi/default-ticker/{guild_id}": {
+            "get": {
+                "description": "Get list default ticker of a guild.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigDefi"
+                ],
+                "summary": "Get list default ticker of a guild.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Guild ticker query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetListGuildDefaultTickerResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/config-defi/monikers": {
             "post": {
                 "description": "Upsert moniker config",
@@ -8364,6 +8403,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "most_popular": {
+                    "type": "boolean"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -13230,6 +13272,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetListGuildDefaultTickerResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.GuildConfigDefaultTicker"
+                    }
+                }
+            }
+        },
         "response.GetMyInfoResponse": {
             "type": "object",
             "properties": {
@@ -15457,6 +15510,9 @@ const docTemplate = `{
         "response.SwapRouteResponse": {
             "type": "object",
             "properties": {
+                "chainName": {
+                    "type": "string"
+                },
                 "code": {
                     "type": "integer"
                 },

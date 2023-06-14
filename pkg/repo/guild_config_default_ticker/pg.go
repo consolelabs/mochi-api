@@ -32,3 +32,8 @@ func (pg *pg) UpsertOne(config *model.GuildConfigDefaultTicker) error {
 	}
 	return tx.Commit().Error
 }
+
+	func (pg *pg) GetList(guildID string) ([]model.GuildConfigDefaultTicker, error) {
+    var configs []model.GuildConfigDefaultTicker
+    return configs, pg.db.Table("guild_config_default_ticker").Where("guild_id = ?", guildID).Find(&configs).Error
+  }
