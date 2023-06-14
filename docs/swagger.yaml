@@ -120,6 +120,8 @@ definitions:
         type: number
       id:
         type: string
+      most_popular:
+        type: boolean
       name:
         type: string
       symbol:
@@ -3302,6 +3304,13 @@ definitions:
           $ref: '#/definitions/model.Chain'
         type: array
     type: object
+  response.GetListGuildDefaultTickerResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.GuildConfigDefaultTicker'
+        type: array
+    type: object
   response.GetMyInfoResponse:
     properties:
       data:
@@ -4251,16 +4260,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -4270,6 +4269,16 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4751,6 +4760,8 @@ definitions:
     type: object
   response.SwapRouteResponse:
     properties:
+      chainName:
+        type: string
       code:
         type: integer
       data:
@@ -6580,6 +6591,27 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Set guild default ticker
+      tags:
+      - ConfigDefi
+  /config-defi/default-ticker/{guild_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get list default ticker of a guild.
+      parameters:
+      - description: Guild ID
+        in: path
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetListGuildDefaultTickerResponse'
+      summary: Get list default ticker of a guild.
       tags:
       - ConfigDefi
   /config-defi/monikers:

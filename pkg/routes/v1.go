@@ -380,6 +380,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defaultTickerGroup := configDefiGroup.Group("/default-ticker")
 		{
 			defaultTickerGroup.GET("", h.ConfigDefi.GetGuildDefaultTicker)
+      defaultTickerGroup.GET("/:guild_id", h.ConfigDefi.GetListGuildDefaultTicker)
 			defaultTickerGroup.POST("", h.ConfigDefi.SetGuildDefaultTicker)
 		}
 		monikerGroup := configDefiGroup.Group("/monikers")

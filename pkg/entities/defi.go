@@ -427,6 +427,15 @@ func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest)
 	return defaultTicker, nil
 }
 
+func (e *Entity) GetListGuildDefaultTicker(guildID string) ([]model.GuildConfigDefaultTicker, error) {
+  configs, err := e.repo.GuildConfigDefaultTicker.GetList(guildID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[entity.GetListGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetList() failed")
+		return nil, err
+	}
+	return configs, nil
+}
+
 func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
 	q := userwatchlistitem.UserWatchlistQuery{
 		UserID:      req.UserID,
@@ -697,6 +706,12 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 		updatedRows += rowsAffected
 	}
 	return updatedRows, nil
+}
+
+type CoingeckoDetailPlatform struct {
+	ChainId int64  `json:"chain_id"`
+	Address string `json:"address"`
+	Decimal int64  `json:"decimal"`
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {

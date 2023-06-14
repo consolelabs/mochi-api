@@ -5,14 +5,16 @@
       "symbol": "doge",
       "name": "Binance-Peg Dogecoin",
       "current_price": 0.1,
-      "most_popular": false
+      "most_popular": false,
+      "detail_platforms": null
     },
     {
       "id": "dogecoin",
       "symbol": "doge",
       "name": "Dogecoin",
       "current_price": 0.2,
-      "most_popular": true
+      "most_popular": true,
+      "detail_platforms": null
     }
   ]
 }

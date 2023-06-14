@@ -35,7 +35,7 @@ func (pg *pg) List(q ListQuery) ([]model.CoingeckoSupportedTokens, error) {
 
 func (pg *pg) Upsert(item *model.CoingeckoSupportedTokens) (int64, error) {
 	tx := pg.db.Begin()
-	tx = tx.Clauses(clause.OnConflict{DoNothing: true}).Create(item)
+	tx = tx.Clauses(clause.OnConflict{UpdateAll: true}).Create(item)
 	if err := tx.Error; err != nil {
 		tx.Rollback()
 		return 0, err

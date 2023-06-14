@@ -10,7 +10,6 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -29,7 +28,7 @@ func New(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error) {
+func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount string) (*response.ProviderSwapRoutes, error) {
 	var client = &http.Client{}
 	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/api/v1/routes?tokenIn=%s&tokenOut=%s&amountIn=%s", k.kyberBaseUrl, chain, fromAddress, toAddress, amount), nil)
 	if err != nil {
@@ -50,56 +49,12 @@ func (k *kyberService) GetSwapRoutesEVM(chain, fromAddress, toAddress, amount st
 	if err != nil {
 		return nil, err
 	}
-	res := &response.KyberSwapRoutes{}
+	res := &response.ProviderSwapRoutes{}
 	err = json.Unmarshal(resBody, res)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
-}
-
-func (k *kyberService) GetSwapRoutesSolana(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error) {
-	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/route?tokenIn=%s&tokenOut=%s&amountIn=%s", k.kyberBaseUrl, chain, fromAddress, toAddress, amount), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
-
-	resp, err := client.Do(request)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-	resBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &response.KyberSwapRoutesSol{}
-	err = json.Unmarshal(resBody, res)
-	if err != nil {
-		return nil, err
-	}
-	return &response.KyberSwapRoutes{
-		Code:    0,
-		Message: "successfully",
-		Data: response.RouteSummaryData{
-			RouteSummary: model.RouteSummary{
-				TokenIn:      fromAddress,
-				AmountIn:     res.InputAmount,
-				AmountInUsd:  fmt.Sprintf("%f", res.AmountInUsd),
-				TokenOut:     toAddress,
-				AmountOut:    res.OutputAmount,
-				AmountOutUsd: fmt.Sprintf("%f", res.AmountOutUsd),
-				Route:        res.Swaps,
-			},
-		},
-	}, nil
 }
 
 func (k *kyberService) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
