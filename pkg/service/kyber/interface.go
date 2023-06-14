@@ -6,7 +6,6 @@ import (
 )
 
 type Service interface {
-	GetSwapRoutesEVM(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error)
-	GetSwapRoutesSolana(chain, fromAddress, toAddress, amount string) (*response.KyberSwapRoutes, error)
+	GetSwapRoutesEVM(chain, fromAddress, toAddress, amount string) (*response.ProviderSwapRoutes, error)
 	BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error)
 }

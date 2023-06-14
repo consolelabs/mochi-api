@@ -1,18 +1,36 @@
 package response
 
-import "github.com/defipod/mochi/pkg/model"
+import (
+	"time"
 
-type KyberSwapRoutes struct {
+	"github.com/defipod/mochi/pkg/model"
+)
+
+type ProviderSwapRoutes struct {
 	Code    int64            `json:"code"`
 	Message string           `json:"message"`
 	Data    RouteSummaryData `json:"data"`
 }
 
 type RouteSummaryData struct {
-	RouteSummary  model.RouteSummary            `json:"routeSummary"`
-	RouterAddress string                        `json:"routerAddress"`
-	TokenIn       model.KyberswapSupportedToken `json:"tokenIn"`
-	TokenOut      model.KyberswapSupportedToken `json:"tokenOut"`
+	RouteSummary  model.RouteSummary `json:"routeSummary"`
+	RouterAddress string             `json:"routerAddress"`
+	TokenIn       RouteToken         `json:"tokenIn"`
+	TokenOut      RouteToken         `json:"tokenOut"`
+}
+
+type RouteToken struct {
+	Id          int64     `json:"id"`
+	Address     string    `json:"address"`
+	ChainId     int64     `json:"chain_id"`
+	ChainName   string    `json:"chain_name"`
+	Decimals    int64     `json:"decimals"`
+	Symbol      string    `json:"symbol"`
+	Name        string    `json:"name"`
+	LogoUri     string    `json:"logo_uri"`
+	CoingeckoId string    `json:"coingecko_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type BuildRoute struct {

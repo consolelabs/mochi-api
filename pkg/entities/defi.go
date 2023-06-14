@@ -708,6 +708,12 @@ func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
 	return updatedRows, nil
 }
 
+type CoingeckoDetailPlatform struct {
+	ChainId int64  `json:"chain_id"`
+	Address string `json:"address"`
+	Decimal int64  `json:"decimal"`
+}
+
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
 	since := time.Now().AddDate(0, 0, -req.Days).UnixMilli()
 	interval := "h"

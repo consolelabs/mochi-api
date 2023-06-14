@@ -40,11 +40,9 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Router      /swap/route [get]
 func (h *Handler) GetSwapRoutes(c *gin.Context) {
 	req := request.GetSwapRouteRequest{
-		From:        c.Query("from"),
-		To:          c.Query("to"),
-		Amount:      c.Query("amount"),
-		FromTokenId: c.Query("from_token_id"),
-		ToTokenId:   c.Query("to_token_id"),
+		From:   c.Query("from"),
+		To:     c.Query("to"),
+		Amount: c.Query("amount"),
 	}
 
 	data, err := h.entities.GetSwapRoutes(&req)

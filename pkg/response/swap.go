@@ -14,10 +14,10 @@ type SwapRouteResponse struct {
 }
 
 type SwapRoute struct {
-	TokenIn       model.KyberswapSupportedToken `json:"tokenIn"`
-	TokenOut      model.KyberswapSupportedToken `json:"tokenOut"`
-	RouterAddress string                        `json:"routerAddress"`
-	RouteSummary  RouteSummary                  `json:"routeSummary"`
+	TokenIn       RouteToken   `json:"tokenIn"`
+	TokenOut      RouteToken   `json:"tokenOut"`
+	RouterAddress string       `json:"routerAddress"`
+	RouteSummary  RouteSummary `json:"routeSummary"`
 }
 
 type RouteSummary struct {
