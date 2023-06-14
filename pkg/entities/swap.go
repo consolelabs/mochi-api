@@ -1,146 +1,46 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
 
-	"github.com/google/uuid"
-
-	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/model/errors"
+	query "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) ImportNonExistToken(req *request.GetSwapRouteRequest) (fromToken *model.KyberswapSupportedToken, toToken *model.KyberswapSupportedToken, err error) {
-	fromCoinGeckoToken, err, _ := e.svc.CoinGecko.GetCoin(req.FromTokenId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.ImportNonExistToken] - cannot get coin coingecko")
-		return nil, nil, errors.ErrCoingeckoNotSupported
-	}
-
-	toCoingeckoToken, err, _ := e.svc.CoinGecko.GetCoin(req.ToTokenId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.ImportNonExistToken] - cannot get coin coingecko")
-		return nil, nil, errors.ErrCoingeckoNotSupported
-	}
-
-	// logic handle token
-	endLooking := false
-	for keyFromToken := range fromCoinGeckoToken.DetailPlatforms {
-		for keyToToken := range toCoingeckoToken.DetailPlatforms {
-			if keyFromToken == keyToToken {
-				fromTokenAddress, err := util.ConvertToChecksumAddr(fromCoinGeckoToken.DetailPlatforms[keyFromToken].ContractAddress)
-				if err != nil {
-					e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.ConvertToChecksumAddr] - cannot convert to checksum address")
-					return nil, nil, err
-				}
-
-				toTokenAddress, err := util.ConvertToChecksumAddr(toCoingeckoToken.DetailPlatforms[keyToToken].ContractAddress)
-				if err != nil {
-					e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.ConvertToChecksumAddr] - cannot convert to checksum address")
-					return nil, nil, err
-				}
-
-				fromTokenChain := keyFromToken
-				toTokenChain := keyToToken
-				chainId := util.ConvertChainNameToChainId(keyFromToken)
-				if chainId == 0 {
-					fromTokenChain = util.ConvertChainCoingecko(keyFromToken)
-					toTokenChain = util.ConvertChainCoingecko(keyToToken)
-					chainId = util.ConvertChainNameToChainId(fromTokenChain)
-				}
-
-				fromToken = &model.KyberswapSupportedToken{
-					Address:   fromTokenAddress,
-					ChainName: fromTokenChain,
-					ChainId:   chainId,
-					Decimals:  int64(fromCoinGeckoToken.DetailPlatforms[keyFromToken].DecimalPlace),
-					Symbol:    strings.ToUpper(fromCoinGeckoToken.Symbol),
-					Name:      fromCoinGeckoToken.Name,
-					LogoUri:   fromCoinGeckoToken.Image.Small,
-				}
-
-				toToken = &model.KyberswapSupportedToken{
-					Address:   toTokenAddress,
-					ChainName: toTokenChain,
-					ChainId:   chainId,
-					Decimals:  int64(toCoingeckoToken.DetailPlatforms[keyToToken].DecimalPlace),
-					Symbol:    strings.ToUpper(toCoingeckoToken.Symbol),
-					Name:      toCoingeckoToken.Name,
-					LogoUri:   toCoingeckoToken.Image.Small,
-				}
-
-				endLooking = true
-				break
-			}
-		}
-		if endLooking {
-			break
-		}
-	}
-
-	if fromToken == nil || toToken == nil {
-		return nil, nil, errors.ErrKyberRouteNotFound
-	}
-
-	// upsert from and to token to mochi db
-	err = e.repo.KyberswapSupportedToken.Upsert(fromToken)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.repo.KyberswapSupportedToken.Upsert] - cannot upsert from token")
-		return fromToken, toToken, nil
-	}
-
-	err = e.repo.KyberswapSupportedToken.Upsert(toToken)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.repo.KyberswapSupportedToken.Upsert] - cannot upsert to token")
-		return fromToken, toToken, nil
-	}
-
-	// upsert from and to token to mochi pay db
-	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
-		Id:          uuid.New().String(),
-		Name:        fromToken.Name,
-		Symbol:      fromToken.Symbol,
-		Decimal:     fromToken.Decimals,
-		ChainId:     strconv.Itoa(int(util.ConvertChainNameToChainId(fromToken.ChainName))),
-		Address:     fromToken.Address,
-		Icon:        fromToken.LogoUri,
-		CoinGeckoId: req.FromTokenId,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.MochiPay.CreateToken] - cannot create token in mochi pay")
-		return fromToken, toToken, nil
-	}
-
-	err = e.svc.MochiPay.CreateToken(mochipay.CreateTokenRequest{
-		Id:          uuid.New().String(),
-		Name:        toToken.Name,
-		Symbol:      toToken.Symbol,
-		Decimal:     toToken.Decimals,
-		ChainId:     strconv.Itoa(int(util.ConvertChainNameToChainId(toToken.ChainName))),
-		Address:     toToken.Address,
-		Icon:        toToken.LogoUri,
-		CoinGeckoId: req.ToTokenId,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.MochiPay.CreateToken] - cannot create token in mochi pay")
-		return fromToken, toToken, nil
-	}
-
-	return fromToken, toToken, nil
-}
-
-func (e *Entity) getAllChainToken(symbol string, coingeckoId string) (*[]model.Token, error) {
+func (e *Entity) getAllChainToken(symbol string, coingeckoId string) (tokens []model.Token, err error) {
 	// step 1: look for internal db
 	// assuming coingecko where we have most data
+	coingeckoTokens, err := e.repo.CoingeckoSupportedTokens.List(query.ListQuery{Symbol: symbol, ID: coingeckoId})
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": symbol, "coingeckoId": coingeckoId}).Error(err, "[repo.CoingeckoSupportedTokens.List] - cannot get data from coingecko")
+		return nil, err
+	}
 
-	return nil, nil
+	if len(coingeckoTokens) == 0 {
+		return nil, nil
+	}
+
+	var platforms []model.CoingeckoDetailPlatform
+	err = json.Unmarshal(coingeckoTokens[0].DetailPlatforms, &platforms)
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": symbol, "coingeckoId": coingeckoId}).Error(err, "[json.Unmarshal] - cannot unmarshal detail platform")
+		return nil, err
+	}
+
+	for _, platform := range platforms {
+		tokens = append(tokens, model.Token{
+			Symbol:  coingeckoTokens[0].Symbol,
+			ChainID: int(platform.ChainId),
+			Address: platform.Address,
+		})
+	}
+
+	return tokens, nil
 }
 
 func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.SwapRouteResponse, error) {
@@ -159,25 +59,25 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 		return nil, err
 	}
 
+	amount := util.FloatToString(req.Amount, 18)
 	// step 2: now we have 2 set of tokens, we need to find the route
-	routes, err := e.getAllRoute(fromTokens, toTokens)
+	routes, err := e.svc.Swap.GetAllRoutes(fromTokens, toTokens, amount)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getAllRoute] - cannot get all route")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[swap.GetAllRoutes] - cannot get all route")
 		return nil, err
 	}
 
-	// step 3: we identiy which route is best for user
-	r, err := e.getBestRoute(routes)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getBestRoute] - cannot get best route")
-		return nil, err
-	}
+	fmt.Println(routes)
+
+	// // step 3: we identiy which route is best for user
+	// r, err := e.getBestRoute(routes)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getBestRoute] - cannot get best route")
+	// 	return nil, err
+	// }
 
 	// return to user
 	return nil, nil
-
-
-
 
 	// get from token
 	// fromTokens, err := e.repo.KyberswapSupportedToken.GetByToken(req.From)
@@ -307,77 +207,77 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	// get profile
-	profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
-		return nil, err
-	}
+	// profile, err := e.svc.MochiProfile.GetByDiscordID(req.UserDiscordId, true)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-profile.GetByDiscordID] - cannot get profile")
+	// 	return nil, err
+	// }
 
-	// get token
-	fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
-		return nil, err
-	}
+	// // get token
+	// fromToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenIn, 0, req.ChainName)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get from token")
+	// 	return nil, err
+	// }
 
-	toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
-		return nil, err
-	}
+	// toToken, err := e.repo.KyberswapSupportedToken.GetByAddressChain(req.RouteSummary.TokenOut, 0, req.ChainName)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
+	// 	return nil, err
+	// }
 
-	chainId := util.ConvertChainNameToChainId(req.ChainName)
+	// chainId := util.ConvertChainNameToChainId(req.ChainName)
 
 	// get balance
-	balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
-		return nil, err
-	}
-	if len(balance.Data) == 0 {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
-		return nil, fmt.Errorf("insufficient balance")
-	}
+	// balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
+	// 	return nil, err
+	// }
+	// if len(balance.Data) == 0 {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
+	// 	return nil, fmt.Errorf("insufficient balance")
+	// }
 
-	amountSwap, _ := util.StringToBigInt(req.RouteSummary.AmountIn)
-	bal, _ := util.StringToBigInt(balance.Data[0].Amount)
-	if amountSwap.Cmp(bal) == 1 {
-		return nil, fmt.Errorf("insufficient balance")
-	}
+	// amountSwap, _ := util.StringToBigInt(req.RouteSummary.AmountIn)
+	// bal, _ := util.StringToBigInt(balance.Data[0].Amount)
+	// if amountSwap.Cmp(bal) == 1 {
+	// 	return nil, fmt.Errorf("insufficient balance")
+	// }
 
-	// build route kyber
-	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
-		Recipient:         e.cfg.CentralizedWalletAddress,
-		Sender:            e.cfg.CentralizedWalletAddress,
-		Source:            consts.ClientID,
-		SkipSimulateTx:    false,
-		SlippageTolerance: 50,
-		RouteSummary:      req.RouteSummary,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
-		return nil, err
-	}
+	// // build route kyber
+	// buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
+	// 	Recipient:         e.cfg.CentralizedWalletAddress,
+	// 	Sender:            e.cfg.CentralizedWalletAddress,
+	// 	Source:            consts.ClientID,
+	// 	SkipSimulateTx:    false,
+	// 	SlippageTolerance: 50,
+	// 	RouteSummary:      req.RouteSummary,
+	// })
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
+	// 	return nil, err
+	// }
 
-	// send payload to mochi-pay
-	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
-		ProfileId:     profile.ID,
-		OriginId:      req.UserDiscordId,
-		Platform:      consts.PlatformDiscord,
-		FromToken:     fromToken.Symbol,
-		ToToken:       toToken.Symbol,
-		ChainId:       chainId,
-		AmountIn:      buildRouteResp.Data.AmountIn,
-		AmountOut:     buildRouteResp.Data.AmountOut,
-		ChainName:     req.ChainName,
-		Address:       e.cfg.CentralizedWalletAddress,
-		RouterAddress: buildRouteResp.Data.RouterAddress,
-		EncodedData:   buildRouteResp.Data.Data,
-		Gas:           buildRouteResp.Data.Gas,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")
-		return nil, err
-	}
+	// // send payload to mochi-pay
+	// err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
+	// 	ProfileId:     profile.ID,
+	// 	OriginId:      req.UserDiscordId,
+	// 	Platform:      consts.PlatformDiscord,
+	// 	FromToken:     fromToken.Symbol,
+	// 	ToToken:       toToken.Symbol,
+	// 	ChainId:       chainId,
+	// 	AmountIn:      buildRouteResp.Data.AmountIn,
+	// 	AmountOut:     buildRouteResp.Data.AmountOut,
+	// 	ChainName:     req.ChainName,
+	// 	Address:       e.cfg.CentralizedWalletAddress,
+	// 	RouterAddress: buildRouteResp.Data.RouterAddress,
+	// 	EncodedData:   buildRouteResp.Data.Data,
+	// 	Gas:           buildRouteResp.Data.Gas,
+	// })
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.SwapMochiPay] - cannot swap mochi pay")
+	// 	return nil, err
+	// }
 	return nil, nil
 }

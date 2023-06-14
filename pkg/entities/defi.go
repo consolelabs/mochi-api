@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -675,28 +676,82 @@ func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) err
 }
 
 func (e *Entity) RefreshCoingeckoSupportedTokensList() (int64, error) {
-	tokens, err, code := e.svc.CoinGecko.GetSupportedCoins()
+	coins, err := e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{})
 	if err != nil {
-		e.log.Fields(logger.Fields{"code": code}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() failed")
+		e.log.Error(err, "[entity.RefreshCoingeckoSupportedTokensList] repo.CoingeckoSupportedTokens.List() failed")
 		return 0, err
 	}
-	e.log.Infof("[entity.RefreshCoingeckoSupportedTokensList] svc.CoinGecko.GetSupportedCoins() - found %d items", len(tokens))
 
-	updatedRows := int64(0)
-	for _, token := range tokens {
-		model := model.CoingeckoSupportedTokens{
-			ID:     token.ID,
-			Name:   token.Name,
-			Symbol: token.Symbol,
-		}
-		rowsAffected, err := e.repo.CoingeckoSupportedTokens.Upsert(&model)
+	// upsert existing tokens
+	ch := make(chan *model.CoingeckoSupportedTokens, 10)
+	go e.UpsertAllChainTokenData(coins, ch)
+	for coin := range ch {
+		e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Info("Enrich coingecko data for coin")
+		_, err := e.repo.CoingeckoSupportedTokens.Upsert(coin)
 		if err != nil {
-			e.log.Fields(logger.Fields{"token": token}).Error(err, "[entity.RefreshCoingeckoSupportedTokensList] repo.CoingeckoSupportedTokens.Upsert() failed")
 			continue
 		}
-		updatedRows += rowsAffected
 	}
-	return updatedRows, nil
+
+	return 0, nil
+}
+
+type CoingeckoDetailPlatform struct {
+	ChainId int64  `json:"chain_id"`
+	Address string `json:"address"`
+}
+
+func (e *Entity) UpsertAllChainTokenData(coins []model.CoingeckoSupportedTokens, ch chan *model.CoingeckoSupportedTokens) {
+	for _, coin := range coins {
+		if coin.DetailPlatforms != nil {
+			continue
+		}
+
+		platforms := make([]CoingeckoDetailPlatform, 0)
+
+		coinDetail, err, _ := e.svc.CoinGecko.GetCoin(coin.ID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.svc.CoinGecko.GetCoin failed")
+			bytedetailPlatforms, err := json.Marshal(platforms)
+			if err != nil {
+				return
+			}
+			ch <- &model.CoingeckoSupportedTokens{
+				ID:              coin.ID,
+				Name:            coin.Name,
+				Symbol:          coin.Symbol,
+				DetailPlatforms: bytedetailPlatforms,
+			}
+			continue
+		}
+
+		for platform := range coinDetail.DetailPlatforms {
+			chainId := util.ConvertCoingeckoChain(platform)
+			// case chain not supported yet
+			if int(chainId) == 0 {
+				continue
+			}
+
+			// case chain supported
+			platforms = append(platforms, CoingeckoDetailPlatform{
+				ChainId: chainId,
+				Address: coinDetail.DetailPlatforms[platform].ContractAddress,
+			})
+		}
+
+		bytedetailPlatforms, err := json.Marshal(platforms)
+		if err != nil {
+			return
+		}
+
+		ch <- &model.CoingeckoSupportedTokens{
+			ID:              coinDetail.ID,
+			Name:            coinDetail.Name,
+			Symbol:          coinDetail.Symbol,
+			DetailPlatforms: bytedetailPlatforms,
+		}
+	}
+	close(ch)
 }
 
 func (e *Entity) GetFiatHistoricalExchangeRates(req request.GetFiatHistoricalExchangeRatesRequest) (*response.GetFiatHistoricalExchangeRatesResponse, error) {
