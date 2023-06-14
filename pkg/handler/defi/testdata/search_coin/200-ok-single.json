@@ -5,7 +5,8 @@
       "symbol": "cake",
       "name": "PancakeSwap",
       "current_price": 1.7,
-      "most_popular": true
+      "most_popular": true,
+      "detail_platforms": null
     }
   ]
 }
