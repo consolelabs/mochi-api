@@ -125,23 +125,55 @@ func ConvertInputToChainId(input string) string {
 	return ConvertChainToChainId(chainId)
 }
 
-func ConvertChainNameToChainId(chainName string) int64 {
+// TODO(trkhoi): enrich table chains in database
+func ConvertChainIdToChainName(chainId int64) string {
+	switch chainId {
+	case 1:
+		return "ethereum"
+	case 250:
+		return "fantom"
+	case 56:
+		return "bsc"
+	case 137:
+		return "polygon"
+	case 43114:
+		return "avalanche"
+	case 42161:
+		return "arbitrum"
+	case 10:
+		return "optimism"
+	case 199:
+		return "bttc"
+	case 42262:
+		return "oasis"
+	case 25:
+		return "cronos"
+	case 106:
+		return "velas"
+	case 1313161554:
+		return "aurora"
+	default:
+		return "ethereum"
+	}
+}
+
+func ConvertCoingeckoChain(chainName string) int64 {
 	switch chainName {
 	case "ethereum":
 		return 1
 	case "fantom":
 		return 250
-	case "bsc":
+	case "binance-smart-chain":
 		return 56
-	case "polygon":
+	case "polygon-pos":
 		return 137
 	case "avalanche":
 		return 43114
-	case "arbitrum":
+	case "arbitrum-one":
 		return 42161
-	case "optimism":
+	case "optimistic-ethereum":
 		return 10
-	case "bttc":
+	case "bittorrent":
 		return 199
 	case "oasis":
 		return 42262

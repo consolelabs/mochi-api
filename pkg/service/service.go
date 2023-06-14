@@ -26,6 +26,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/snapshot"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/sui"
+	"github.com/defipod/mochi/pkg/service/swap"
 	"github.com/defipod/mochi/pkg/service/twitter"
 )
 
@@ -54,6 +55,7 @@ type Service struct {
 	Kyber         kyber.Service
 	Sui           sui.Service
 	Birdeye       birdeye.Service
+	Swap          swap.Service
 }
 
 func NewService(
@@ -89,5 +91,6 @@ func NewService(
 		Kyber:         kyber.New(&cfg, log),
 		Sui:           sui.New(&cfg, log),
 		Birdeye:       birdeye.NewService(&cfg, log),
+		Swap:          swap.New(&cfg, log),
 	}, nil
 }
