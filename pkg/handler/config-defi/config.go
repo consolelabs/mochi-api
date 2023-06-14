@@ -176,7 +176,6 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
-// @Param       query   query  string true  "Guild ticker query"
 // @Success     200 {object} response.GetListGuildDefaultTickerResponse
 // @Router      /config-defi/default-ticker/{guild_id} [get]
 func (h *Handler) GetListGuildDefaultTicker(c *gin.Context) {

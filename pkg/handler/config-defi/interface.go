@@ -12,7 +12,7 @@ type IHandler interface {
 	GetGuildDefaultTicker(c *gin.Context)
 
 	GetGuildTokens(c *gin.Context)
-  GetListGuildDefaultTicker(c *gin.Context)
+	GetListGuildDefaultTicker(c *gin.Context)
 	UpsertGuildTokenConfig(c *gin.Context)
 
 	GetDefaultToken(c *gin.Context)

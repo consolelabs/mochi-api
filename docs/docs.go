@@ -2521,13 +2521,6 @@ const docTemplate = `{
                         "name": "guild_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Guild ticker query",
-                        "name": "query",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
