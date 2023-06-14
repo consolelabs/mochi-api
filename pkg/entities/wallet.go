@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -1040,8 +1041,16 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 			return nil, err
 		}
 
+		// get staking position asset
+		pos, err := e.GetStakingProduct(req.Id, req.ApiKey, req.ApiSecret)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance staking position asset")
+			return nil, err
+		}
+
 		// merge 2 list asset
-		finalAsset := mergeAsset(userAsset, fundingAsset)
+		userFundingAsset := mergeAsset(userAsset, fundingAsset)
+		finalAsset := mergeAsset(userFundingAsset, pos)
 
 		for _, asset := range finalAsset {
 			assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
@@ -1083,6 +1092,59 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}, err
 }
 
+func (e *Entity) GetStakingProduct(profileId, apiKey, apiSecret string) (res []response.BinanceUserAssetResponse, err error) {
+	// redis cache
+	value, err := e.cache.HashGet(fmt.Sprintf("binance-staking-position-%s-%s", profileId, apiKey))
+	if err != nil {
+		e.log.Error(err, "[entities.GetStakingProduct] Failed to get cache user data binance")
+		return nil, err
+	}
+
+	if len(value) == 0 {
+		pos, err := e.svc.Binance.GetStakingProductPosition(apiKey, apiSecret)
+		if err != nil {
+			e.log.Error(err, "[entities.GetStakingProduct] Failed to get staking product position")
+			return nil, err
+		}
+
+		for _, p := range pos {
+			amount, err := strconv.ParseFloat(p.Amount, 64)
+			if err != nil {
+				return nil, err
+			}
+
+			rewardAmt, err := strconv.ParseFloat(p.RewardAmt, 64)
+			if err != nil {
+				return nil, err
+			}
+
+			res = append(res, response.BinanceUserAssetResponse{
+				Asset:        p.Asset,
+				Free:         fmt.Sprint(amount + rewardAmt),
+				BtcValuation: "0",
+			})
+		}
+
+		tmp, _ := json.Marshal(res)
+		encodeData := map[string]string{
+			"data": string(tmp),
+		}
+
+		err = e.cache.HashSet(fmt.Sprintf("binance-staking-position-%s-%s", profileId, apiKey), encodeData, 30*time.Minute)
+		if err != nil {
+			e.log.Error(err, "Failed to set cache data wallet")
+			return nil, err
+		}
+	} else {
+		err = json.Unmarshal([]byte(value["data"]), &res)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return res, err
+}
+
 func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]response.WalletAssetData, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
@@ -1117,8 +1179,16 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		return nil, err
 	}
 
+	// get staking position asset
+	pos, err := e.GetStakingProduct(req.Id, apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance staking position asset")
+		return nil, err
+	}
+
 	// merge 2 list asset
-	finalAsset := mergeAsset(userAsset, fundingAsset)
+	userFundingAsset := mergeAsset(userAsset, fundingAsset)
+	finalAsset := mergeAsset(userFundingAsset, pos)
 
 	// btc price
 	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
@@ -1168,28 +1238,32 @@ func containsAsset(fundingAsset []response.BinanceUserAssetResponse, userAssetSy
 func mergeAsset(userAsset, fundingAsset []response.BinanceUserAssetResponse) []response.BinanceUserAssetResponse {
 	for _, uAsset := range userAsset {
 		if containsAsset(fundingAsset, uAsset.Asset) {
-			for i := range fundingAsset {
+			for i, itm := range fundingAsset {
+				fAssetBtcValuation, err := strconv.ParseFloat(fundingAsset[i].BtcValuation, 64)
+				if err != nil {
+					continue
+				}
+
+				uAssetBtcValudation, err := strconv.ParseFloat(uAsset.BtcValuation, 64)
+				if err != nil {
+					continue
+				}
+
+				fAssetFree, err := strconv.ParseFloat(fundingAsset[i].Free, 64)
+				if err != nil {
+					continue
+				}
+
+				uAssetFree, err := strconv.ParseFloat(uAsset.Free, 64)
+				if err != nil {
+					continue
+				}
+				if itm.BtcValuation == "0" && itm.Free != "0" {
+					fAssetBtcValuation = fAssetFree * uAssetBtcValudation / uAssetFree
+					fundingAsset[i].BtcValuation = fmt.Sprint(fAssetBtcValuation)
+				}
+
 				if fundingAsset[i].Asset == uAsset.Asset {
-					fAssetBtcValuation, err := strconv.ParseFloat(fundingAsset[i].BtcValuation, 64)
-					if err != nil {
-						continue
-					}
-
-					uAssetBtcValudation, err := strconv.ParseFloat(uAsset.BtcValuation, 64)
-					if err != nil {
-						continue
-					}
-
-					fAssetFree, err := strconv.ParseFloat(fundingAsset[i].Free, 64)
-					if err != nil {
-						continue
-					}
-
-					uAssetFree, err := strconv.ParseFloat(uAsset.Free, 64)
-					if err != nil {
-						continue
-					}
-
 					fundingAsset[i].BtcValuation = fmt.Sprint(fAssetBtcValuation + uAssetBtcValudation)
 					fundingAsset[i].Free = fmt.Sprint(fAssetFree + uAssetFree)
 					break

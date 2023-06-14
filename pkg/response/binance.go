@@ -77,3 +77,26 @@ type BinanceUserAssetResponse struct {
 	Ipoable      string `json:"ipoable"`
 	BtcValuation string `json:"btcValuation"`
 }
+
+type BinanceStakingProductPosition struct {
+	PositionId          int64  `json:"positionId"`
+	ProjectId           string `json:"projectId"`
+	Asset               string `json:"asset"`
+	Amount              string `json:"amount"`
+	PurchaseTime        int64  `json:"purchaseTime"`
+	Duration            int64  `json:"duration"`
+	AccrualDays         int64  `json:"accrualDays"`
+	RewardAsset         string `json:"rewardAsset"`
+	RewardAmt           string `json:"rewardAmt"`
+	NexInterestPay      string `json:"nexInterestPay"`
+	NextInterestPayDate int64  `json:"nextInterestPayDate"`
+	PayInterestPeriod   int64  `json:"payInterestPeriod"`
+	InterestEndDate     int64  `json:"interestEndDate"`
+	DeliveryDate        int64  `json:"deliveryDate"`
+	RedeemPeriod        int64  `json:"redeemPeriod"`
+	CanRedeemEarly      bool   `json:"canRedeemEarly"`
+	Type                string `json:"type"`
+	Status              string `json:"status"`
+	CanReStake          bool   `json:"canReStake"`
+	Apy                 string `json:"apy"`
+}
