@@ -169,6 +169,26 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
+// GetListGuildDefaultTicker     godoc
+// @Summary     Get list default ticker of a guild.
+// @Description Get list default ticker of a guild.
+// @Tags        ConfigDefi
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   path  string true  "Guild ID"
+// @Success     200 {object} response.GetListGuildDefaultTickerResponse
+// @Router      /config-defi/default-ticker/{guild_id} [get]
+func (h *Handler) GetListGuildDefaultTicker(c *gin.Context) {
+  guildID := c.Param("guild_id")
+	res, err := h.entities.GetListGuildDefaultTicker(guildID)
+	if err != nil {
+    h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetListGuildDefaultTicker] entity.GetListGuildDefaultTicker() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
 // GetGuildtokens     godoc
 // @Summary     Get guild tokens
 // @Description Get guild tokens
