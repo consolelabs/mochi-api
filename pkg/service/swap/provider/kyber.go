@@ -75,6 +75,24 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 
 				// code kyber 0 means success, else failed
 				if route.Code == 0 {
+					route.Data.TokenIn = model.KyberswapSupportedToken{
+						Address:   fromToken.Address,
+						ChainId:   int64(fromToken.ChainID),
+						ChainName: util.ConvertChainIdToChainName(int64(fromToken.ChainID)),
+						Decimals:  int64(fromToken.Decimals),
+						Symbol:    fromToken.Symbol,
+						Name:      fromToken.Name,
+					}
+
+					route.Data.TokenOut = model.KyberswapSupportedToken{
+						Address:   toToken.Address,
+						ChainId:   int64(toToken.ChainID),
+						ChainName: util.ConvertChainIdToChainName(int64(toToken.ChainID)),
+						Decimals:  int64(toToken.Decimals),
+						Symbol:    toToken.Symbol,
+						Name:      toToken.Name,
+					}
+
 					routes = append(routes, *route)
 				}
 

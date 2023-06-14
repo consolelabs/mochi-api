@@ -2,7 +2,6 @@ package entities
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -12,48 +11,105 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) getAllChainToken(symbol string, coingeckoId string) (tokens []model.Token, err error) {
+func (e *Entity) getAllChainToken(symbol string) (tokens []model.Token, err error) {
 	// step 1: look for internal db
 	// assuming coingecko where we have most data
-	coingeckoTokens, err := e.repo.CoingeckoSupportedTokens.List(query.ListQuery{Symbol: symbol, ID: coingeckoId})
+	coingeckoTokens, err := e.repo.CoingeckoSupportedTokens.List(query.ListQuery{Symbol: symbol})
 	if err != nil {
-		e.log.Fields(logger.Fields{"symbol": symbol, "coingeckoId": coingeckoId}).Error(err, "[repo.CoingeckoSupportedTokens.List] - cannot get data from coingecko")
+		e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[repo.CoingeckoSupportedTokens.List] - cannot get data from coingecko")
 		return nil, err
 	}
 
-	if len(coingeckoTokens) == 0 {
+	newCoingeckoTokens, err := e.UpsertDetailPlatforms(coingeckoTokens)
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[entity.UpsertDetailPlatforms] - cannot upsert detail platform")
+		return nil, err
+	}
+
+	if len(newCoingeckoTokens) == 0 {
 		return nil, nil
 	}
 
-	var platforms []model.CoingeckoDetailPlatform
-	err = json.Unmarshal(coingeckoTokens[0].DetailPlatforms, &platforms)
-	if err != nil {
-		e.log.Fields(logger.Fields{"symbol": symbol, "coingeckoId": coingeckoId}).Error(err, "[json.Unmarshal] - cannot unmarshal detail platform")
-		return nil, err
-	}
+	for _, token := range newCoingeckoTokens {
+		var platforms []CoingeckoDetailPlatform
+		err = json.Unmarshal(token.DetailPlatforms, &platforms)
+		if err != nil {
+			e.log.Fields(logger.Fields{"symbol": symbol}).Error(err, "[json.Unmarshal] - cannot unmarshal detail platform")
+			return nil, err
+		}
 
-	for _, platform := range platforms {
-		tokens = append(tokens, model.Token{
-			Symbol:  coingeckoTokens[0].Symbol,
-			ChainID: int(platform.ChainId),
-			Address: platform.Address,
-		})
+		for _, platform := range platforms {
+			tokens = append(tokens, model.Token{
+				Name:     token.Name,
+				Symbol:   token.Symbol,
+				ChainID:  int(platform.ChainId),
+				Address:  platform.Address,
+				Decimals: int(platform.Decimal),
+			})
+		}
 	}
 
 	return tokens, nil
+}
+
+func (e *Entity) UpsertDetailPlatforms(coins []model.CoingeckoSupportedTokens) (newCoins []model.CoingeckoSupportedTokens, err error) {
+	for _, coin := range coins {
+		if coin.DetailPlatforms != nil {
+			newCoins = append(newCoins, coin)
+			continue
+		}
+
+		platforms := make([]CoingeckoDetailPlatform, 0)
+
+		coinDetail, err, _ := e.svc.CoinGecko.GetCoin(coin.ID)
+		if err != nil {
+			e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.svc.CoinGecko.GetCoin failed")
+			continue
+		}
+
+		for platform := range coinDetail.DetailPlatforms {
+			chainId := util.ConvertCoingeckoChain(platform)
+			// case chain not supported yet
+			if int(chainId) == 0 {
+				continue
+			}
+
+			// case chain supported
+			platforms = append(platforms, CoingeckoDetailPlatform{
+				ChainId: chainId,
+				Address: coinDetail.DetailPlatforms[platform].ContractAddress,
+				Decimal: int64(coinDetail.DetailPlatforms[platform].DecimalPlace),
+			})
+		}
+
+		bytedetailPlatforms, err := json.Marshal(platforms)
+		if err != nil {
+			return coins, err
+		}
+
+		coin.DetailPlatforms = bytedetailPlatforms
+		_, err = e.repo.CoingeckoSupportedTokens.Upsert(&coin)
+		if err != nil {
+			e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.repo.CoingeckoSupportedTokens.Upsert failed")
+			return coins, err
+		}
+		newCoins = append(newCoins, coin)
+	}
+
+	return newCoins, nil
 }
 
 func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.SwapRouteResponse, error) {
 	// step 1: we need to identify which token user want to swap
 	// e.g: user input "usdc" -> we need to parse it into any {token_address, chain_id} possibles
 
-	fromTokens, err := e.getAllChainToken(req.From, req.FromTokenId)
+	fromTokens, err := e.getAllChainToken(req.From)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getAllChainToken] - cannot get all chain token")
 		return nil, err
 	}
 
-	toTokens, err := e.getAllChainToken(req.To, req.ToTokenId)
+	toTokens, err := e.getAllChainToken(req.To)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getAllChainToken] - cannot get all chain token")
 		return nil, err
@@ -67,8 +123,6 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 		return nil, err
 	}
 
-	fmt.Println(routes)
-
 	// // step 3: we identiy which route is best for user
 	// r, err := e.getBestRoute(routes)
 	// if err != nil {
@@ -77,132 +131,63 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 	// }
 
 	// return to user
-	return nil, nil
+	if len(routes) == 0 {
+		return &response.SwapRouteResponse{}, nil
+	}
+	toRoutes := e.formatRouteSwap(req, &routes[0])
 
-	// get from token
-	// fromTokens, err := e.repo.KyberswapSupportedToken.GetByToken(req.From)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get data for from token")
-	// 	return nil, err
-	// }
-	// // get to token
-	// toTokenOverviews, err := e.repo.KyberswapSupportedToken.GetByToken(req.To)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByTokenChain] - cannot get data for to token")
-	// 	return nil, err
-	// }
+	return toRoutes, nil
 
-	// var fromToken, toToken *model.KyberswapSupportedToken
-	// // fromToken and toToken is 2 list of token. Ex: fromToken = [{"eth", "spell"}, {"ftm", "spell"}], toToken = [{"ftm", "usdt"}, {"polygon", "usdt"}]
-	// // case 1: found overlap chain -> ex: spell -> usdt has same chain ftm -> return first match
-	// endLooking := false
-	// for _, from := range fromTokens {
-	// 	for _, to := range toTokenOverviews {
-	// 		if from.ChainName == to.ChainName {
-	// 			fromToken = &from
-	// 			toToken = &to
-	// 			endLooking = true
-	// 			break
-	// 		}
-	// 	}
-	// 	if endLooking {
-	// 		break
-	// 	}
-	// }
+}
 
-	// // case 2: not found overlap -> which means maybe token has not exist in database yet -> query with coingecko
-	// if fromToken == nil || toToken == nil {
-	// 	// coingecko
-	// 	fromToken, toToken, err = e.ImportNonExistToken(req)
-	// 	if err != nil {
-	// 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.ImportNonExistToken] - cannot import token")
-	// 		return nil, err
-	// 	}
-	// }
+func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *response.KyberSwapRoutes) *response.SwapRouteResponse {
+	newRoute := make([][]response.RouteElement, 0)
+	for _, route := range swapRoutes.Data.RouteSummary.Route {
+		newRouteElement := make([]response.RouteElement, 0)
+		for _, routeEle := range route {
+			newRouteElement = append(newRouteElement, response.RouteElement{
+				Pool:              routeEle.Pool,
+				TokenIn:           routeEle.TokenIn,
+				TokenOut:          routeEle.TokenOut,
+				LimitReturnAmount: routeEle.LimitReturnAmount,
+				SwapAmount:        routeEle.SwapAmount,
+				AmountOut:         routeEle.AmountOut,
+				Exchange:          routeEle.Exchange,
+				PoolLength:        routeEle.PoolLength,
+				PoolType:          routeEle.PoolType,
+				PoolExtra:         routeEle.PoolExtra,
+				Extra:             routeEle.Extra,
+				TokenOutSymbol:    req.To,
+			})
+		}
+		newRoute = append(newRoute, newRouteElement)
 
-	// // convert string float to string big int
-	// amount, _ := strconv.ParseFloat(req.Amount, 64)
-	// stringAmount := util.FloatToBigInt(amount, int64(fromToken.Decimals)).String()
-
-	// var swapRoutes *response.KyberSwapRoutes
-	// if fromToken.ChainId == 101 || fromToken.ChainName == "solana" {
-	// 	swapRoutes, err = e.svc.Kyber.GetSwapRoutesSolana("solana", fromToken.Address, toToken.Address, stringAmount)
-	// 	if err != nil {
-	// 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.GetSwapRoutes] - cannot get swap routes")
-	// 		return nil, err
-	// 	}
-	// } else {
-	// 	swapRoutes, err = e.svc.Kyber.GetSwapRoutesEVM(fromToken.ChainName, fromToken.Address, toToken.Address, stringAmount)
-	// 	if err != nil {
-	// 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.GetSwapRoutes] - cannot get swap routes")
-	// 		return nil, err
-	// 	}
-	// }
-
-	// // case kyber return route not found
-	// if swapRoutes.Message == "route not found" || swapRoutes.Code != 0 {
-	// 	return nil, errors.ErrKyberRouteNotFound
-	// }
-
-	// swapRoutes.Data.TokenIn = *fromToken
-	// swapRoutes.Data.TokenOut = *toToken
-
-	// // mapping route
-	// newRoute := make([][]response.RouteElement, 0)
-	// for _, route := range swapRoutes.Data.RouteSummary.Route {
-	// 	newRouteElement := make([]response.RouteElement, 0)
-	// 	for _, routeEle := range route {
-	// 		toTokenDetail, err := e.repo.KyberswapSupportedToken.GetByAddressChain(routeEle.TokenOut, int64(fromToken.ChainId), fromToken.ChainName)
-	// 		if err != nil && err != gorm.ErrRecordNotFound {
-	// 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[repo.GetByAddressChain] - cannot get to token")
-	// 			return nil, err
-	// 		}
-	// 		if err == gorm.ErrRecordNotFound {
-	// 			toTokenDetail = toToken
-	// 		}
-	// 		newRouteElement = append(newRouteElement, response.RouteElement{
-	// 			Pool:              routeEle.Pool,
-	// 			TokenIn:           routeEle.TokenIn,
-	// 			TokenOut:          routeEle.TokenOut,
-	// 			LimitReturnAmount: routeEle.LimitReturnAmount,
-	// 			SwapAmount:        routeEle.SwapAmount,
-	// 			AmountOut:         routeEle.AmountOut,
-	// 			Exchange:          routeEle.Exchange,
-	// 			PoolLength:        routeEle.PoolLength,
-	// 			PoolType:          routeEle.PoolType,
-	// 			PoolExtra:         routeEle.PoolExtra,
-	// 			Extra:             routeEle.Extra,
-	// 			TokenOutSymbol:    toTokenDetail.Symbol,
-	// 		})
-	// 	}
-	// 	newRoute = append(newRoute, newRouteElement)
-
-	// }
-	// return &response.SwapRouteResponse{
-	// 	Code:      swapRoutes.Code,
-	// 	Message:   swapRoutes.Message,
-	// 	ChainName: fromToken.ChainName,
-	// 	Data: response.SwapRoute{
-	// 		TokenIn:       swapRoutes.Data.TokenIn,
-	// 		TokenOut:      swapRoutes.Data.TokenOut,
-	// 		RouterAddress: swapRoutes.Data.RouterAddress,
-	// 		RouteSummary: response.RouteSummary{
-	// 			TokenIn:                      swapRoutes.Data.RouteSummary.TokenIn,
-	// 			AmountIn:                     swapRoutes.Data.RouteSummary.AmountIn,
-	// 			AmountInUsd:                  swapRoutes.Data.RouteSummary.AmountInUsd,
-	// 			TokenInMarketPriceAvailable:  swapRoutes.Data.RouteSummary.TokenInMarketPriceAvailable,
-	// 			TokenOut:                     swapRoutes.Data.RouteSummary.TokenOut,
-	// 			AmountOut:                    swapRoutes.Data.RouteSummary.AmountOut,
-	// 			AmountOutUsd:                 swapRoutes.Data.RouteSummary.AmountOutUsd,
-	// 			TokenOutMarketPriceAvailable: swapRoutes.Data.RouteSummary.TokenOutMarketPriceAvailable,
-	// 			Gas:                          swapRoutes.Data.RouteSummary.Gas,
-	// 			GasPrice:                     swapRoutes.Data.RouteSummary.GasPrice,
-	// 			GasUsd:                       swapRoutes.Data.RouteSummary.GasUsd,
-	// 			ExtraFee:                     swapRoutes.Data.RouteSummary.ExtraFee,
-	// 			Route:                        newRoute,
-	// 		},
-	// 	},
-	// }, nil
+	}
+	return &response.SwapRouteResponse{
+		Code:    swapRoutes.Code,
+		Message: swapRoutes.Message,
+		// ChainName: fromToken.ChainName,
+		Data: response.SwapRoute{
+			TokenIn:       swapRoutes.Data.TokenIn,
+			TokenOut:      swapRoutes.Data.TokenOut,
+			RouterAddress: swapRoutes.Data.RouterAddress,
+			RouteSummary: response.RouteSummary{
+				TokenIn:                      swapRoutes.Data.RouteSummary.TokenIn,
+				AmountIn:                     swapRoutes.Data.RouteSummary.AmountIn,
+				AmountInUsd:                  swapRoutes.Data.RouteSummary.AmountInUsd,
+				TokenInMarketPriceAvailable:  swapRoutes.Data.RouteSummary.TokenInMarketPriceAvailable,
+				TokenOut:                     swapRoutes.Data.RouteSummary.TokenOut,
+				AmountOut:                    swapRoutes.Data.RouteSummary.AmountOut,
+				AmountOutUsd:                 swapRoutes.Data.RouteSummary.AmountOutUsd,
+				TokenOutMarketPriceAvailable: swapRoutes.Data.RouteSummary.TokenOutMarketPriceAvailable,
+				Gas:                          swapRoutes.Data.RouteSummary.Gas,
+				GasPrice:                     swapRoutes.Data.RouteSummary.GasPrice,
+				GasUsd:                       swapRoutes.Data.RouteSummary.GasUsd,
+				ExtraFee:                     swapRoutes.Data.RouteSummary.ExtraFee,
+				Route:                        newRoute,
+			},
+		},
+	}
 }
 
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {

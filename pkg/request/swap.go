@@ -3,11 +3,9 @@ package request
 import "github.com/defipod/mochi/pkg/model"
 
 type GetSwapRouteRequest struct {
-	From        string `json:"from" binding:"required"`
-	To          string `json:"to" binding:"required"`
-	Amount      string `json:"amount" binding:"required"`
-	FromTokenId string `json:"from_token_id"`
-	ToTokenId   string `json:"to_token_id"`
+	From   string `json:"from" binding:"required"`
+	To     string `json:"to" binding:"required"`
+	Amount string `json:"amount" binding:"required"`
 }
 
 type SwapRequest struct {
