@@ -102,6 +102,12 @@ func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*Ge
 		return nil, err
 	}
 	if res.Error {
+		if res.ErrorCode == http.StatusNotAcceptable {
+			//TODO: predictably timeout -> should ignore now to avoid missing data from other chains. Will be fixed in the future
+			c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.fetchCovalentData] Endpoint will predictably time out")
+			return res, nil
+		}
+
 		if retry == 0 {
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
@@ -152,7 +158,7 @@ func (c *Covalent) fetchCovalentData(endpoint string, parseForm interface{}) (in
 		break
 	}
 	if !success {
-		return http.StatusPaymentRequired, errors.New("All API keys may exceed their limit")
+		return http.StatusPaymentRequired, errors.New("all API keys may exceed their limit")
 	}
 	return http.StatusOK, nil
 }

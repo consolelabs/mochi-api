@@ -155,7 +155,7 @@ func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistIte
 			e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Covalent.GetTokenBalances() failed")
 			return err
 		}
-		if res.Data.Items == nil || len(res.Data.Items) == 0 {
+		if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
 			continue
 		}
 		for _, item := range res.Data.Items {
@@ -215,7 +215,7 @@ func (e *Entity) TrackWallet(mod model.UserWalletWatchlistItem, channelID, messa
 		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
 		return err
 	}
-	if existItem.ChainType != "" && existItem.ChainType != mod.ChainType {
+	if existItem.ChainType != "" && !strings.EqualFold(existItem.ChainType.String(), mod.ChainType.String()) {
 		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] wallet chain type does not match")
 		return baseerr.ErrChainTypeConflict
 	}
@@ -333,6 +333,9 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			// get chain
 			chain, err := e.repo.Chain.GetByID(chainID)
 			if err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					continue
+				}
 				e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listEthWalletAssets] repo.Chain.GetByID() failed")
 				return nil, "", "", err
 			}
@@ -343,9 +346,11 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				e.log.Fields(logger.Fields{"chainID": chainID, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
 				return nil, "", "", err
 			}
-			if res.Data.Items == nil || len(res.Data.Items) == 0 {
+
+			if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
 				continue
 			}
+
 			for _, item := range res.Data.Items {
 				if item.Type != "cryptocurrency" {
 					continue

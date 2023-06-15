@@ -354,7 +354,7 @@ func (e *Entity) handleWalletAddition(walletAddress string, verification model.D
 		UserID:    verification.UserDiscordID,
 		Address:   walletAddress,
 		Type:      model.TrackingTypeFollow,
-		ChainType: model.ChainTypeEthereum,
+		ChainType: model.ChainTypeEvm,
 		IsOwner:   true,
 	}
 
