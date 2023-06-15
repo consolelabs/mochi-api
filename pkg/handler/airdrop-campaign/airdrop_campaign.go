@@ -69,6 +69,12 @@ func (h *Handler) CreateAirdropCampaign(c *gin.Context) {
 		return
 	}
 
+	if err := req.Validate(); err != nil {
+		h.log.Error(err, "[handler.CreateAirdropCampaign] validate request failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	data, err := h.entities.CreateAirdropCampaign(&req)
 	if err != nil {
 		h.log.Error(err, "[handler.CreateAirdropCampaign] failed to create airdrop campaign")

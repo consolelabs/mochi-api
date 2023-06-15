@@ -8359,6 +8359,15 @@ const docTemplate = `{
                 "prev_airdrop_campaign_id": {
                     "type": "integer"
                 },
+                "reward_amount": {
+                    "type": "integer"
+                },
+                "reward_token_symbol": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 },
@@ -8392,6 +8401,12 @@ const docTemplate = `{
             "properties": {
                 "current_price": {
                     "type": "number"
+                },
+                "detail_platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "id": {
                     "type": "string"
@@ -9379,41 +9394,6 @@ const docTemplate = `{
                 "valid": {
                     "description": "Valid is true if String is not NULL",
                     "type": "boolean"
-                }
-            }
-        },
-        "model.KyberswapSupportedToken": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "chain_name": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "decimals": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "logo_uri": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -10768,6 +10748,15 @@ const docTemplate = `{
                 },
                 "prev_airdrop_campaign_id": {
                     "type": "integer"
+                },
+                "reward_amount": {
+                    "type": "integer"
+                },
+                "reward_token_symbol": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -15461,6 +15450,44 @@ const docTemplate = `{
                 }
             }
         },
+        "response.RouteToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "chain_name": {
+                    "type": "string"
+                },
+                "coingecko_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "decimals": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "logo_uri": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "response.SearchCoinResponse": {
             "type": "object",
             "properties": {
@@ -15493,10 +15520,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tokenIn": {
-                    "$ref": "#/definitions/model.KyberswapSupportedToken"
+                    "$ref": "#/definitions/response.RouteToken"
                 },
                 "tokenOut": {
-                    "$ref": "#/definitions/model.KyberswapSupportedToken"
+                    "$ref": "#/definitions/response.RouteToken"
                 }
             }
         },
