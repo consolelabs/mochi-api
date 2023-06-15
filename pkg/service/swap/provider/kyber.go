@@ -39,6 +39,7 @@ func (k *KyberProvider) GetRoute(fromToken, toToken, chain, amount string) (*res
 
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("clientData", fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID))
+	request.Header.Add("x-client-id", consts.ClientID)
 
 	resp, err := client.Do(request)
 
@@ -73,8 +74,10 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 					return nil, err
 				}
 
+				k.logger.Fields(logger.Fields{"route": route}).Info("[kyber.GetRoutes] - get route")
+
 				// code kyber 0 means success, else failed
-				if route.Code == 0 {
+				if route.Code == 0 && route.Message == "successfully" {
 					route.Data.TokenIn = response.RouteToken{
 						Address:     fromToken.Address,
 						ChainId:     int64(fromToken.ChainID),
@@ -111,6 +114,7 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 						Data:    response.RouteSummaryData{},
 					})
 				}
+				k.logger.Fields(logger.Fields{"routes": routes}).Info("[kyber.GetRoutes] - get routes")
 
 			}
 		}
