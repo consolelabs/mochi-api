@@ -303,3 +303,71 @@ func (m *MochiPay) GetToken(symbol, chainId string) (*Token, error) {
 
 	return res.Data, nil
 }
+
+func (m *MochiPay) CreateBatchToken(req CreateBatchTokenRequest) error {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	jsonBody := bytes.NewBuffer(payload)
+
+	client := &http.Client{}
+	url := fmt.Sprintf("%s/api/v1/tokens", m.config.MochiPayServerHost)
+	request, err := http.NewRequest("POST", url, jsonBody)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return err
+	}
+
+	return nil
+}
+
+func (m *MochiPay) GetTokenByProperties(req TokenProperties) (*Token, error) {
+	url := fmt.Sprintf("%s/api/v1/%s/tokens?address=%s", m.config.MochiPayServerHost, req.ChainId, req.Address)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &GetTokenResponse{}
+	err = json.Unmarshal(responseBody, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Data, nil
+}

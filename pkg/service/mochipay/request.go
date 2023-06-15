@@ -15,3 +15,13 @@ type GetTokenRequest struct {
 	Symbol  string `json:"symbol"`
 	ChainId string `json:"chain_id"`
 }
+
+type CreateBatchTokenRequest struct {
+	Tokens []CreateTokenRequest `json:"tokens"`
+}
+
+type TokenProperties struct {
+	// can add more if want
+	ChainId string `json:"chain_id"`
+	Address string `json:"address"`
+}
