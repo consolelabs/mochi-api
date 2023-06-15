@@ -96,6 +96,12 @@ definitions:
         type: integer
       prev_airdrop_campaign_id:
         type: integer
+      reward_amount:
+        type: integer
+      reward_token_symbol:
+        type: string
+      status:
+        type: string
       title:
         type: string
       updated_at:
@@ -118,6 +124,10 @@ definitions:
     properties:
       current_price:
         type: number
+      detail_platforms:
+        items:
+          type: integer
+        type: array
       id:
         type: string
       most_popular:
@@ -763,29 +773,6 @@ definitions:
       valid:
         description: Valid is true if String is not NULL
         type: boolean
-    type: object
-  model.KyberswapSupportedToken:
-    properties:
-      address:
-        type: string
-      chain_id:
-        type: integer
-      chain_name:
-        type: string
-      created_at:
-        type: string
-      decimals:
-        type: integer
-      id:
-        type: integer
-      logo_uri:
-        type: string
-      name:
-        type: string
-      symbol:
-        type: string
-      updated_at:
-        type: string
     type: object
   model.MixRoleNFTRequirement:
     properties:
@@ -1675,6 +1662,12 @@ definitions:
         type: string
       prev_airdrop_campaign_id:
         type: integer
+      reward_amount:
+        type: integer
+      reward_token_symbol:
+        type: string
+      status:
+        type: string
       title:
         type: string
     type: object
@@ -3491,13 +3484,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4733,6 +4726,31 @@ definitions:
       tokenOutMarketPriceAvailable:
         type: boolean
     type: object
+  response.RouteToken:
+    properties:
+      address:
+        type: string
+      chain_id:
+        type: integer
+      chain_name:
+        type: string
+      coingecko_id:
+        type: string
+      created_at:
+        type: string
+      decimals:
+        type: integer
+      id:
+        type: integer
+      logo_uri:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
   response.SearchCoinResponse:
     properties:
       data:
@@ -4754,9 +4772,9 @@ definitions:
       routerAddress:
         type: string
       tokenIn:
-        $ref: '#/definitions/model.KyberswapSupportedToken'
+        $ref: '#/definitions/response.RouteToken'
       tokenOut:
-        $ref: '#/definitions/model.KyberswapSupportedToken'
+        $ref: '#/definitions/response.RouteToken'
     type: object
   response.SwapRouteResponse:
     properties:
