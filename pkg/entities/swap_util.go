@@ -172,6 +172,11 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 }
 
 func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
+	// code != 1 means fail -> no need enrich mochi pay token
+	if route.Code != 1 {
+		return nil
+	}
+
 	fromTokenAddress, err := util.ConvertToChecksumAddr(route.Data.TokenIn.Address)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": route}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
