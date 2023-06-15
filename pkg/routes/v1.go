@@ -380,7 +380,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defaultTickerGroup := configDefiGroup.Group("/default-ticker")
 		{
 			defaultTickerGroup.GET("", h.ConfigDefi.GetGuildDefaultTicker)
-      defaultTickerGroup.GET("/:guild_id", h.ConfigDefi.GetListGuildDefaultTicker)
+			defaultTickerGroup.GET("/:guild_id", h.ConfigDefi.GetListGuildDefaultTicker)
 			defaultTickerGroup.POST("", h.ConfigDefi.SetGuildDefaultTicker)
 		}
 		monikerGroup := configDefiGroup.Group("/monikers")
@@ -581,9 +581,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		pkpassGroup.GET("", h.PkPass.GeneratePkPass)
 	}
 
-	emojisGroup := v1.Group("/emojis")
+	productMetaData := v1.Group("/product-metadata")
 	{
-		emojisGroup.GET("", h.Emojis.ListEmojis)
+		productMetaData.GET("/emoji", h.Emojis.ListEmojis)
 	}
 
 	earnGroup := v1.Group("/earns")
