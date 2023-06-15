@@ -7,19 +7,29 @@ import (
 )
 
 const (
-	StatusNew     = "new"
-	StatusSkipped = "skipped"
-	StatusDone    = "done"
-	StatusSuccess = "success"
-	StatusFailure = "failure"
+	StatusLive      = "live"
+	StatusEnded     = "ended"
+	StatusClaimable = "claimable"
+	StatusCancelled = "cancelled"
+
+	StatusIgnored     = "ignored"
+	StatusJoined      = "joined"
+	StatusClaimed     = "claimed"
+	StatusNotEligible = "not_eligible"
 )
 
-var validStatuses = map[string]bool{
-	StatusNew:     true,
-	StatusSkipped: true,
-	StatusDone:    true,
-	StatusSuccess: true,
-	StatusFailure: true,
+var validAirdropCampaignStatuses = map[string]bool{
+	StatusLive:      true,
+	StatusEnded:     true,
+	StatusClaimable: true,
+	StatusCancelled: true,
+}
+
+var validProfileAirdropCampaignStatuses = map[string]bool{
+	StatusIgnored:     true,
+	StatusJoined:      true,
+	StatusClaimed:     true,
+	StatusNotEligible: true,
 }
 
 type CreateAirdropCampaignRequest struct {
@@ -27,6 +37,18 @@ type CreateAirdropCampaignRequest struct {
 	Detail                string     `json:"detail,omitempty"`
 	PrevAirdropCampaignId *int       `json:"prev_airdrop_campaign_id,omitempty"`
 	DeadlineAt            *time.Time `json:"deadline_at,omitempty"`
+	Status                string     `json:"status,omitempty"`
+	RewardAmount          int        `json:"reward_amount,omitempty"`
+	RewardTokenSymbol     string     `json:"reward_token_symbol,omitempty"`
+}
+
+func (r *CreateAirdropCampaignRequest) Validate() error {
+	if r.Status != "" {
+		if _, ok := validAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
+			return errors.New("invalid status")
+		}
+	}
+	return nil
 }
 
 type CreateProfileAirdropCampaignRequest struct {
@@ -40,10 +62,12 @@ func (r *CreateProfileAirdropCampaignRequest) Validate() error {
 	if r.ProfileId == "" {
 		return errors.New("invalid profile_id")
 	}
-	if _, ok := validStatuses[strings.ToLower(r.Status)]; !ok {
-		r.Status = StatusNew
-	}
 
+	if r.Status != "" {
+		if _, ok := validProfileAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
+			return errors.New("invalid status")
+		}
+	}
 	return nil
 }
 
@@ -65,7 +89,7 @@ func (r *GetProfileAirdropCampaignsRequest) Validate() error {
 	}
 
 	if r.Status != "" {
-		if _, ok := validStatuses[strings.ToLower(r.Status)]; !ok {
+		if _, ok := validProfileAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
 			return errors.New("invalid status")
 		}
 	}
