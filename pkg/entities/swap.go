@@ -67,6 +67,18 @@ func (e *Entity) UpsertDetailPlatforms(coins []model.CoingeckoSupportedTokens) (
 		coinDetail, err, _ := e.svc.CoinGecko.GetCoin(coin.ID)
 		if err != nil {
 			e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.svc.CoinGecko.GetCoin failed")
+
+			bytedetailPlatforms, err := json.Marshal(platforms)
+			if err != nil {
+				return coins, err
+			}
+
+			coin.DetailPlatforms = bytedetailPlatforms
+			_, err = e.repo.CoingeckoSupportedTokens.Upsert(&coin)
+			if err != nil {
+				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.repo.CoingeckoSupportedTokens.Upsert failed")
+				return coins, err
+			}
 			continue
 		}
 
