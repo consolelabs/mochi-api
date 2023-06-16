@@ -14,4 +14,6 @@ type Service interface {
 	TransferVaultMochiPay(req request.MochiPayVaultRequest) (*VaultResponse, error)
 	CreateBatchToken(req CreateBatchTokenRequest) error
 	GetTokenByProperties(req TokenProperties) (*Token, error)
+	GetListBalances(profileId string) (*GetBalanceDataResponse, error)
+	GetListChains() (*GetChainDataResponse, error)
 }

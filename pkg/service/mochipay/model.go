@@ -45,6 +45,9 @@ type GetBalanceResponse struct {
 	UpdatedAt string `json:"updated_at"`
 	Token     Token  `json:"token"`
 }
+type GetChainDataResponse struct {
+	Data []Chain `json:"data"`
+}
 
 type Token struct {
 	Id          string  `json:"id"`

@@ -218,3 +218,51 @@ func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
 
 	return nil
 }
+
+// rule1: from token must be in the list of user balances, for now consider chain too
+// rule2: to token must be in the list of our supported chains
+func (e *Entity) FilterPossibleToken(profileId string, fromTokens, toTokens []model.Token) (possibleFromTokens, possibleToTokens []model.Token, err error) {
+	// get balance from mochi pay
+	balances, err := e.svc.MochiPay.GetListBalances(profileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[mochi-pay.GetListBalances] - cannot get list balances")
+		return nil, nil, err
+	}
+
+	// filter from token with user balances
+	for _, fromToken := range fromTokens {
+		for _, balance := range balances.Data {
+			if strings.EqualFold(fromToken.Address, balance.Token.Address) && strconv.Itoa(fromToken.ChainID) == balance.Token.ChainId && strings.EqualFold(fromToken.Symbol, balance.Token.Symbol) {
+				possibleFromTokens = append(possibleFromTokens, fromToken)
+			}
+		}
+	}
+
+	// get chain from mochi pay
+	chains, err := e.svc.MochiPay.GetListChains()
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[mochi-pay.GetListChains] - cannot get list chains")
+		return nil, nil, err
+	}
+
+	// filter chain to token
+	for _, toToken := range toTokens {
+		for _, chain := range chains.Data {
+			if strings.EqualFold(strconv.Itoa(toToken.ChainID), chain.ChainId) {
+				possibleToTokens = append(possibleToTokens, toToken)
+			}
+		}
+	}
+
+	// if from token not in user balance, return original fromToken
+	if len(possibleFromTokens) == 0 {
+		possibleFromTokens = fromTokens
+	}
+
+	// if to token not in our supported chains, return original toToken
+	if len(possibleToTokens) == 0 {
+		possibleToTokens = toTokens
+	}
+
+	return possibleFromTokens, possibleToTokens, nil
+}
