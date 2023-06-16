@@ -33,16 +33,16 @@ type NftTokenData struct {
 }
 
 type NftTokenInfo struct {
-	NftAddress             string             `json:"nft_address"`
-	NftName                string             `json:"nft_name"`
-	NftSymbol              string             `json:"nft_symbol"`
-	NftImage               string             `json:"nft_image"`
-	NftMintedTime          string             `json:"nft_minted_time"`
-	NftMintedTransactionId string             `json:"nft_minted_transaction_id"`
-	NftCollectionId        string             `json:"nft_collection_id"`
-	NftCollectionName      string             `json:"nft_collection_name"`
-	NftAttributes          NftTokenAttributes `json:"nft_attributes"`
-	NftCreators            []NftCreator       `json:"nft_creators"`
+	NftAddress             string      `json:"nft_address"`
+	NftName                string      `json:"nft_name"`
+	NftSymbol              string      `json:"nft_symbol"`
+	NftImage               string      `json:"nft_image"`
+	NftMintedTime          string      `json:"nft_minted_time"`
+	NftMintedTransactionId string      `json:"nft_minted_transaction_id"`
+	NftCollectionId        string      `json:"nft_collection_id"`
+	NftCollectionName      string      `json:"nft_collection_name"`
+	NftAttributes          interface{} `json:"nft_attributes"`
+	NftCreators            interface{} `json:"nft_creators"`
 }
 
 type NftCreator struct {

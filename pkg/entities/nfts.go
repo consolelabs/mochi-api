@@ -360,7 +360,11 @@ func (e *Entity) CreateSolanaNFTCollection(req request.CreateNFTCollectionReques
 		return nil, err
 	}
 
-	solToken, _ := e.svc.Solscan.GetNftTokenFromCollection(req.Address, "1")
+	solToken, err := e.svc.Solscan.GetNftTokenFromCollection(req.Address, "1")
+	if err != nil {
+		e.log.Errorf(err, "[e.svc.Solscan.GetSolanaCollection] failed to get solana collection: %v", err)
+		return nil, err
+	}
 	collectionSymbol := ""
 	if len(solToken.Data.ListNfts) > 0 {
 		collectionSymbol = solToken.Data.ListNfts[0].NftSymbol
