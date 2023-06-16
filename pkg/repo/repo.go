@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/defipod/mochi/pkg/repo/activity"
 	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
+	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
@@ -238,4 +239,5 @@ type Repo struct {
 	Content                              content.Store
 	AirdropCampaign                      ac.Store
 	ProfileAirdropCampaign               pac.Store
+	AutoTrigger                          autoTrigger.Store
 }
