@@ -2,6 +2,7 @@ package airdropcampaign
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -15,7 +16,19 @@ func NewPG(db *gorm.DB) Store {
 }
 
 func (pg *pg) Create(ac *model.AirdropCampaign) (*model.AirdropCampaign, error) {
-	return ac, pg.db.Create(ac).Error
+	tx := pg.db.Begin()
+
+	// update on conflict
+	err := tx.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		UpdateAll: true,
+	}).Create(&ac).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	return ac, tx.Commit().Error
 }
 
 func (pg *pg) GetById(id int64) (ac *model.AirdropCampaign, err error) {

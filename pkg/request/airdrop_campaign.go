@@ -33,6 +33,7 @@ var validProfileAirdropCampaignStatuses = map[string]bool{
 }
 
 type CreateAirdropCampaignRequest struct {
+	Id                    *int64     `json:"id,omitempty"`
 	Title                 string     `json:"title,omitempty"`
 	Detail                string     `json:"detail,omitempty"`
 	PrevAirdropCampaignId *int       `json:"prev_airdrop_campaign_id,omitempty"`
@@ -43,6 +44,10 @@ type CreateAirdropCampaignRequest struct {
 }
 
 func (r *CreateAirdropCampaignRequest) Validate() error {
+	if r.Id != nil && *r.Id <= 0 {
+		return errors.New("invalid id")
+	}
+
 	if r.Status != "" {
 		if _, ok := validAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
 			return errors.New("invalid status")

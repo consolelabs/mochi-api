@@ -10746,6 +10746,9 @@ const docTemplate = `{
                 "detail": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "prev_airdrop_campaign_id": {
                     "type": "integer"
                 },

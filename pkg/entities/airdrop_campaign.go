@@ -13,11 +13,14 @@ import (
 
 func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest) (*model.AirdropCampaign, error) {
 	ac := model.AirdropCampaign{
-		Title:      req.Title,
-		Detail:     req.Detail,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
-		DeadlineAt: req.DeadlineAt,
+		Title:             req.Title,
+		Detail:            req.Detail,
+		RewardAmount:      req.RewardAmount,
+		RewardTokenSymbol: req.RewardTokenSymbol,
+		Status:            req.Status,
+		CreatedAt:         time.Now(),
+		UpdatedAt:         time.Now(),
+		DeadlineAt:        req.DeadlineAt,
 	}
 
 	if req.PrevAirdropCampaignId != nil {
@@ -26,6 +29,10 @@ func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest
 
 	if req.DeadlineAt != nil {
 		ac.DeadlineAt = req.DeadlineAt
+	}
+
+	if req.Id != nil {
+		ac.Id = req.Id
 	}
 
 	earn, err := e.repo.AirdropCampaign.Create(&ac)
