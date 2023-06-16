@@ -25,3 +25,7 @@ type ProfileAirdropCampaignsResponse struct {
 	Size  int                            `json:"size"`
 	Total int64                          `json:"total"`
 }
+
+type AirdropCampaignStatResponse struct {
+	Data []model.AirdropStatusCount `json:"data"`
+}

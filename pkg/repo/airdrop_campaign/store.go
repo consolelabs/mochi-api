@@ -5,7 +5,8 @@ import (
 )
 
 type Store interface {
-	Create(*model.AirdropCampaign) (*model.AirdropCampaign, error)
+	Upsert(*model.AirdropCampaign) (*model.AirdropCampaign, error)
 	GetById(int64) (*model.AirdropCampaign, error)
 	List(ListQuery) ([]model.AirdropCampaign, int64, error)
+	CountStat() (stats []model.AirdropStatusCount, err error)
 }

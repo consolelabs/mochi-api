@@ -592,6 +592,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			airdropCampaignGroup.GET("", h.AirdropCampaign.GetAirdropCampaigns)
 			airdropCampaignGroup.POST("", h.AirdropCampaign.CreateAirdropCampaign)
+			airdropCampaignGroup.GET("/stats", h.AirdropCampaign.GetAirdropCampaignStats)
 		}
 	}
 

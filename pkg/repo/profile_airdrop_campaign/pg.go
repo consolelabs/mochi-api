@@ -56,3 +56,19 @@ func (pg *pg) List(q ListQuery) (pacs []model.ProfileAirdropCampaign, total int6
 func (pg *pg) Delete(pac *model.ProfileAirdropCampaign) (*model.ProfileAirdropCampaign, error) {
 	return pac, pg.db.Where("profile_id = ? and airdrop_campaign_id = ?", pac.ProfileId, pac.AirdropCampaignId).Delete(pac).Error
 }
+
+func (pg *pg) CountStat(q StatQuery) (stats []model.AirdropStatusCount, err error) {
+	db := pg.db.Table("profile_airdrop_campaigns").Select("status, count(*) as count")
+
+	if q.Status != "" {
+		db = db.Where("status = ?", q.Status)
+	}
+
+	if q.ProfileId != "" {
+		db = db.Where("profile_id = ?", q.ProfileId)
+	}
+
+	err = db.Group("status").Scan(&stats).Error
+
+	return stats, err
+}

@@ -7,3 +7,8 @@ type ListQuery struct {
 	Offset     int
 	Limit      int
 }
+
+type StatQuery struct {
+	ProfileId string
+	Status    string
+}
