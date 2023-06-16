@@ -4,7 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 )
 
-type KyberBuildSwapRouteRequest struct {
+type BuildSwapRouteRequest struct {
 	Recipient         string             `json:"recipient"`
 	Sender            string             `json:"sender"`
 	Source            string             `json:"source"`
@@ -13,7 +13,7 @@ type KyberBuildSwapRouteRequest struct {
 	RouteSummary      model.RouteSummary `json:"routeSummary"`
 }
 
-type KyberSwapRequest struct {
+type MochiPaySwapRequest struct {
 	ProfileId     string `json:"profile_id"`
 	OriginId      string `json:"origin_id"`
 	Platform      string `json:"platform"`

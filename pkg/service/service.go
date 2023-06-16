@@ -18,7 +18,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
-	"github.com/defipod/mochi/pkg/service/kyber"
 	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
@@ -52,7 +51,6 @@ type Service struct {
 	MochiProfile  mochiprofile.Service
 	MochiPay      mochipay.Service
 	ChainExplorer chainexplorer.Service
-	Kyber         kyber.Service
 	Sui           sui.Service
 	Birdeye       birdeye.Service
 	Swap          swap.Service
@@ -88,7 +86,6 @@ func NewService(
 		MochiProfile:  mochiprofile.NewService(&cfg, log),
 		MochiPay:      mochipay.NewService(&cfg, log),
 		ChainExplorer: chainexplorer.NewService(cfg, log),
-		Kyber:         kyber.New(&cfg, log),
 		Sui:           sui.New(&cfg, log),
 		Birdeye:       birdeye.NewService(&cfg, log),
 		Swap:          swap.New(&cfg, log),

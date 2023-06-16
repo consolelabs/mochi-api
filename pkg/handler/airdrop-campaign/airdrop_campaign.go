@@ -29,12 +29,13 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Tags        Airdrop-campaigns
 // @Accept      json
 // @Produce     json
+// @Param       status   query  string false  "status"
 // @Param       page   query  string false  "page"
 // @Param       size   query  string false  "size"
 // @Success     200 {object} response.AirdropCampaignsResponse
 // @Router      /earns/airdrop-campaigns [get]
 func (h *Handler) GetAirdropCampaigns(c *gin.Context) {
-	req := request.PaginationRequest{}
+	req := request.GetAirdropCampaignsRequest{}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetAirdropCampaigns] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -83,6 +84,39 @@ func (h *Handler) CreateAirdropCampaign(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
+	return
+}
+
+// GetAirdropCampaignStats     godoc
+// @Summary     Get Airdrop Campaign List
+// @Description Get Airdrop Campaign List
+// @Tags        Airdrop-campaigns
+// @Accept      json
+// @Produce     json
+// @Param       profile_id   query  string false  "profile_id"
+// @Success     200 {object} response.AirdropCampaignStatResponse
+// @Router      /earns/airdrop-campaigns/stats [get]
+func (h *Handler) GetAirdropCampaignStats(c *gin.Context) {
+	var req request.GetAirdropCampaignStatus
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaignStats] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaignStats] validate request failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	data, err := h.entities.GetAirdropCampaignStats(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaignStats] failed to get Airdrop-campaigns list")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, data)
 	return
 }
 

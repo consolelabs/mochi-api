@@ -107,6 +107,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.AirdropStatusCount:
+    properties:
+      count:
+        type: integer
+      status:
+        type: string
+    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -1660,6 +1667,8 @@ definitions:
         type: string
       detail:
         type: string
+      id:
+        type: integer
       prev_airdrop_campaign_id:
         type: integer
       reward_amount:
@@ -2509,6 +2518,13 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.AirdropCampaign'
+    type: object
+  response.AirdropCampaignStatResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.AirdropStatusCount'
+        type: array
     type: object
   response.AirdropCampaignsResponse:
     properties:
@@ -4253,8 +4269,14 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
@@ -4265,16 +4287,10 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1y:
         type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -8465,6 +8481,10 @@ paths:
       - application/json
       description: Get Airdrop Campaign List
       parameters:
+      - description: status
+        in: query
+        name: status
+        type: string
       - description: page
         in: query
         name: page
@@ -8502,6 +8522,26 @@ paths:
           schema:
             $ref: '#/definitions/response.AirdropCampaignResponse'
       summary: Create airdrop campaign
+      tags:
+      - Airdrop-campaigns
+  /earns/airdrop-campaigns/stats:
+    get:
+      consumes:
+      - application/json
+      description: Get Airdrop Campaign List
+      parameters:
+      - description: profile_id
+        in: query
+        name: profile_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.AirdropCampaignStatResponse'
+      summary: Get Airdrop Campaign List
       tags:
       - Airdrop-campaigns
   /emojis:
