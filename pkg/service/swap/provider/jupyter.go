@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -24,5 +25,9 @@ func (j *JupyterProvider) GetRoute(fromToken, toToken, chain, amount string) (*r
 }
 
 func (j *JupyterProvider) GetRoutes(fromTokens, toTokens []model.Token, amount string) ([]response.ProviderSwapRoutes, error) {
+	return nil, nil
+}
+
+func (j *JupyterProvider) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
 	return nil, nil
 }

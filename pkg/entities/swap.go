@@ -126,7 +126,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	}
 
 	// build route kyber
-	buildRouteResp, err := e.svc.Kyber.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
+	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
 		Recipient:         e.cfg.CentralizedWalletAddress,
 		Sender:            e.cfg.CentralizedWalletAddress,
 		Source:            consts.ClientID,

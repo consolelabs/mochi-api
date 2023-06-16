@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/swap/provider"
 )
@@ -46,4 +47,8 @@ func (s *SwapService) GetBestRoute(routes []response.ProviderSwapRoutes) (*respo
 	}
 
 	return &routes[0], nil
+}
+
+func (s *SwapService) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+	return s.kyber.BuildSwapRoutes(chainName, req)
 }
