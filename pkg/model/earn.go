@@ -14,3 +14,8 @@ type AirdropCampaign struct {
 	UpdatedAt             time.Time  `json:"updated_at"`
 	DeadlineAt            *time.Time `json:"deadline_at,omitempty"`
 }
+
+type AirdropStatusCount struct {
+	Status string `json:"status"`
+	Count  int64  `json:"count"`
+}

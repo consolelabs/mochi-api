@@ -35,7 +35,7 @@ func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest
 		ac.Id = req.Id
 	}
 
-	earn, err := e.repo.AirdropCampaign.Create(&ac)
+	earn, err := e.repo.AirdropCampaign.Upsert(&ac)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateAirdropCampaign] - e.repo.AirdropCampaign.Create failed")
 		return nil, err
@@ -44,10 +44,11 @@ func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest
 	return earn, nil
 }
 
-func (e *Entity) GetAirdropCampaigns(req request.PaginationRequest) (*response.AirdropCampaignsResponse, error) {
+func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) (*response.AirdropCampaignsResponse, error) {
 	acs, total, err := e.repo.AirdropCampaign.List(ac.ListQuery{
 		Offset: int(req.Page * req.Size),
 		Limit:  int(req.Size),
+		Status: req.Status,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaigns] - e.repo.AirdropCampaign.List failed")
@@ -60,6 +61,28 @@ func (e *Entity) GetAirdropCampaigns(req request.PaginationRequest) (*response.A
 		Size:  int(req.Size),
 		Total: total,
 	}, nil
+}
+
+func (e *Entity) GetAirdropCampaignStats(req request.GetAirdropCampaignStatus) (*response.AirdropCampaignStatResponse, error) {
+	resp := &response.AirdropCampaignStatResponse{}
+	stats, err := e.repo.AirdropCampaign.CountStat()
+	if err != nil {
+		return nil, err
+	}
+
+	resp.Data = stats
+
+	if req.ProfileId != "" {
+		profileStats, err := e.repo.ProfileAirdropCampaign.CountStat(pac.StatQuery{
+			ProfileId: req.ProfileId,
+			Status:    req.Status,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp.Data = append(resp.Data, profileStats...)
+	}
+	return resp, nil
 }
 
 func (e *Entity) CreateProfileAirdropCampaign(req *request.CreateProfileAirdropCampaignRequest) (*model.ProfileAirdropCampaign, error) {

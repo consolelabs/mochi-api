@@ -32,6 +32,11 @@ var validProfileAirdropCampaignStatuses = map[string]bool{
 	StatusNotEligible: true,
 }
 
+type GetAirdropCampaignsRequest struct {
+	Status string `form:"status" json:"status"`
+	PaginationRequest
+}
+
 type CreateAirdropCampaignRequest struct {
 	Id                    *int64     `json:"id,omitempty"`
 	Title                 string     `json:"title,omitempty"`
@@ -48,11 +53,10 @@ func (r *CreateAirdropCampaignRequest) Validate() error {
 		return errors.New("invalid id")
 	}
 
-	if r.Status != "" {
-		if _, ok := validAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
-			return errors.New("invalid status")
-		}
+	if _, ok := validAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
+		return errors.New("invalid status")
 	}
+
 	return nil
 }
 
@@ -68,11 +72,10 @@ func (r *CreateProfileAirdropCampaignRequest) Validate() error {
 		return errors.New("invalid profile_id")
 	}
 
-	if r.Status != "" {
-		if _, ok := validProfileAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
-			return errors.New("invalid status")
-		}
+	if _, ok := validProfileAirdropCampaignStatuses[strings.ToLower(r.Status)]; !ok {
+		return errors.New("invalid status")
 	}
+
 	return nil
 }
 
@@ -114,5 +117,22 @@ func (r *DeleteProfileAirdropCampaignRequest) Validate() error {
 	if r.AirdropCampaignId <= 0 {
 		return errors.New("invalid airdrop campaign id")
 	}
+	return nil
+}
+
+type GetAirdropCampaignStatus struct {
+	ProfileId string `form:"profile_id"`
+	Status    string `form:"status"`
+}
+
+func (r *GetAirdropCampaignStatus) Validate() error {
+	if r.ProfileId == "" {
+		return errors.New("invalid user_id")
+	}
+
+	if r.Status == "" {
+		r.Status = StatusIgnored
+	}
+
 	return nil
 }

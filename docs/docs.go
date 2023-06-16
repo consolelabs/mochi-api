@@ -5318,6 +5318,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "page",
                         "name": "page",
                         "in": "query"
@@ -5366,6 +5372,37 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.AirdropCampaignResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/earns/airdrop-campaigns/stats": {
+            "get": {
+                "description": "Get Airdrop Campaign List",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airdrop-campaigns"
+                ],
+                "summary": "Get Airdrop Campaign List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile_id",
+                        "name": "profile_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.AirdropCampaignStatResponse"
                         }
                     }
                 }
@@ -8372,6 +8409,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AirdropStatusCount": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -12042,6 +12090,17 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.AirdropCampaign"
+                }
+            }
+        },
+        "response.AirdropCampaignStatResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AirdropStatusCount"
+                    }
                 }
             }
         },
