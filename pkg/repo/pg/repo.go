@@ -6,6 +6,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/repo/activity"
 	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
+	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
@@ -243,5 +244,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Content:                              content.NewPG(db),
 		AirdropCampaign:                      ac.NewPG(db),
 		ProfileAirdropCampaign:               pac.NewPG(db),
+		AutoTrigger:                          autoTrigger.NewPG(db),
 	}
 }
