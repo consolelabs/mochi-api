@@ -134,7 +134,7 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 	return routes, nil
 }
 
-func (k *KyberProvider) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+func (k *KyberProvider) BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err

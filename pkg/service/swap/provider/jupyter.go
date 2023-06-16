@@ -28,6 +28,6 @@ func (j *JupyterProvider) GetRoutes(fromTokens, toTokens []model.Token, amount s
 	return nil, nil
 }
 
-func (j *JupyterProvider) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+func (j *JupyterProvider) BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error) {
 	return nil, nil
 }

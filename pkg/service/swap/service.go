@@ -9,5 +9,5 @@ import (
 type Service interface {
 	GetAllRoutes(fromTokens, toTokens []model.Token, amount string) ([]response.ProviderSwapRoutes, error)
 	GetBestRoute(routes []response.ProviderSwapRoutes) (*response.ProviderSwapRoutes, error)
-	BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error)
+	BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error)
 }

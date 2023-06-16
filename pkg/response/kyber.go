@@ -56,13 +56,3 @@ type OutputChange struct {
 	Percent int64  `json:"percent"`
 	Level   int64  `json:"level"`
 }
-
-type KyberSwapRoutesSol struct {
-	InputAmount     string                 `json:"inputAmount"`
-	OutputAmount    string                 `json:"outputAmount"`
-	MinOutputAmount string                 `json:"minOutputAmount"`
-	AmountInUsd     float64                `json:"amountInUsd"`
-	AmountOutUsd    float64                `json:"amountOutUsd"`
-	ReceivedUsd     float64                `json:"receivedUsd"`
-	Swaps           [][]model.RouteElement `json:"swaps"`
-}

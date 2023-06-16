@@ -47,7 +47,7 @@ func (h *Handler) GetSwapRoutes(c *gin.Context) {
 
 	data, err := h.entities.GetSwapRoutes(&req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - cannot get data from kyber")
+		h.log.Fields(logger.Fields{"from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.GetSwapRoutes] - cannot get data swap routes")
 		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

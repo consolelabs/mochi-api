@@ -18,13 +18,13 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 	fromTokens, err := e.getAllChainToken(req.From)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getAllChainToken] - cannot get all chain token")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.getAllChainToken] - cannot get all chain token")
 		return nil, err
 	}
 
 	toTokens, err := e.getAllChainToken(req.To)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getAllChainToken] - cannot get all chain token")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.getAllChainToken] - cannot get all chain token")
 		return nil, err
 	}
 
@@ -39,7 +39,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 	// // step 3: we identiy which route is best for user
 	r, err := e.svc.Swap.GetBestRoute(routes)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.getBestRoute] - cannot get best route")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.getBestRoute] - cannot get best route")
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	}
 	chainId := util.ConvertChainNameToChainId(req.ChainName)
 
-	// hash kyber swap address to compare with db
+	// hash swap address to compare with db
 	fromTokenAddress, err := util.ConvertToChecksumAddr(req.RouteSummary.TokenIn)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
@@ -125,8 +125,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, fmt.Errorf("insufficient balance")
 	}
 
-	// build route kyber
-	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.KyberBuildSwapRouteRequest{
+	// build route
+	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.BuildSwapRouteRequest{
 		Recipient:         e.cfg.CentralizedWalletAddress,
 		Sender:            e.cfg.CentralizedWalletAddress,
 		Source:            consts.ClientID,
@@ -135,12 +135,12 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		RouteSummary:      req.RouteSummary,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[kyber.BuildSwapRoutes] - cannot build swap routes")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.BuildSwapRoutes] - cannot build swap routes")
 		return nil, err
 	}
 
 	// send payload to mochi-pay
-	err = e.svc.MochiPay.SwapMochiPay(request.KyberSwapRequest{
+	err = e.svc.MochiPay.SwapMochiPay(request.MochiPaySwapRequest{
 		ProfileId:     profile.ID,
 		OriginId:      req.UserDiscordId,
 		Platform:      consts.PlatformDiscord,

@@ -49,6 +49,6 @@ func (s *SwapService) GetBestRoute(routes []response.ProviderSwapRoutes) (*respo
 	return &routes[0], nil
 }
 
-func (s *SwapService) BuildSwapRoutes(chainName string, req *request.KyberBuildSwapRouteRequest) (*response.BuildRoute, error) {
+func (s *SwapService) BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error) {
 	return s.kyber.BuildSwapRoutes(chainName, req)
 }
