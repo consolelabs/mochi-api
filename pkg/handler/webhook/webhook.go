@@ -57,6 +57,8 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 	case request.GUILD_DELETE:
 		h.handleGuildDelete(c, req.Data)
 	}
+
+	h.handleAutoTrigger(req.Event, c, req.Data)
 }
 
 func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
@@ -490,6 +492,26 @@ func (h *Handler) WebhookSnapshotProposal(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}
+func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessage) {
+
+	var req request.AutoTriggerRequest
+	byteData, err := data.MarshalJSON()
+	if err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to json marshal data")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := discordgo.Unmarshal(byteData, &req); err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to unmarshal data")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	h.entities.HandleTrigger(req)
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
