@@ -30,7 +30,7 @@ func NewService(cfg *config.Config, l logger.Logger) Service {
 	}
 }
 
-func (m *MochiPay) SwapMochiPay(req request.KyberSwapRequest) error {
+func (m *MochiPay) SwapMochiPay(req request.MochiPaySwapRequest) error {
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return err

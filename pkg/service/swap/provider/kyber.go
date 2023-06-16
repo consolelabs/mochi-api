@@ -1,15 +1,19 @@
 package provider
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -64,6 +68,7 @@ func (k *KyberProvider) GetRoute(fromToken, toToken, chain, amount string) (*res
 }
 
 func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount string) (routes []response.ProviderSwapRoutes, err error) {
+	listFailedStatusKyber := []int64{4001, 4002, 4005, 4007, 4009, 4010, 4011}
 	// get list matching chain of fromTokens and toTokens
 	for _, fromToken := range fromTokens {
 		for _, toToken := range toTokens {
@@ -107,9 +112,15 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 						Message: route.Message,
 						Data:    response.RouteSummaryData{},
 					})
-				} else {
+				} else if slices.Contains(listFailedStatusKyber, route.Code) {
 					routes = append(routes, response.ProviderSwapRoutes{
 						Code:    2,
+						Message: route.Message,
+						Data:    response.RouteSummaryData{},
+					})
+				} else {
+					routes = append(routes, response.ProviderSwapRoutes{
+						Code:    3,
 						Message: route.Message,
 						Data:    response.RouteSummaryData{},
 					})
@@ -121,4 +132,44 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 	}
 
 	return routes, nil
+}
+
+func (k *KyberProvider) BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error) {
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+	jsonBody := bytes.NewBuffer(body)
+
+	var client = &http.Client{}
+	url := fmt.Sprintf("%s/%s/api/v1/route/build", kyberBaseURL, chainName)
+	k.logger.Info("check kyberswap data:")
+	k.logger.Infof("url: ", url)
+	k.logger.Fields(logger.Fields{"req": req}).Infof("check req payload")
+	request, err := http.NewRequest("POST", url, jsonBody)
+	if err != nil {
+		return nil, err
+	}
+
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("source", consts.ClientID)
+	request.Header.Add("x-client-id", consts.ClientID)
+
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &response.BuildRoute{}
+	err = json.Unmarshal(resBody, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
