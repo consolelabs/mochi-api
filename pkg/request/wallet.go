@@ -34,12 +34,12 @@ type TrackWalletRequest struct {
 }
 
 func (req TrackWalletRequest) RequestToUserWalletWatchlistItemModel() (model.UserWalletWatchlistItem, error) {
-	chainType := model.ChainType(req.ChainType)
+	chainType := model.ChainType(strings.ToLower(req.ChainType))
 	if !chainType.IsValid() {
 		return model.UserWalletWatchlistItem{}, errors.ErrInvalidChainType
 	}
 
-	trackingType := model.TrackingType(req.Type)
+	trackingType := model.TrackingType(strings.ToLower(req.Type))
 	if !trackingType.IsValid() {
 		return model.UserWalletWatchlistItem{}, errors.ErrInvalidTrackingType
 	}

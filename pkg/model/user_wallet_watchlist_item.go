@@ -53,8 +53,8 @@ func (t TrackingType) IsValid() bool {
 type ChainType string
 
 const (
-	// ChainTypeEthereum represents the ethereum chain
-	ChainTypeEthereum ChainType = "eth"
+	// ChainTypeEvm represents the evm chain
+	ChainTypeEvm ChainType = "evm"
 	// ChainTypeRonin represents the ronin chain
 	ChainTypeRonin ChainType = "ron"
 	// ChainTypeSolana represents the solana chain
@@ -73,7 +73,7 @@ func (t ChainType) String() string {
 // IsValid returns true if the chain type is valid
 func (t ChainType) IsValid() bool {
 	switch t {
-	case ChainTypeEthereum, ChainTypeRonin, ChainTypeSolana, ChainTypeSui, ChainTypeAptos:
+	case ChainTypeEvm, ChainTypeRonin, ChainTypeSolana, ChainTypeSui, ChainTypeAptos:
 		return true
 	default:
 		return false
