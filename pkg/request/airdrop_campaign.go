@@ -32,6 +32,17 @@ var validProfileAirdropCampaignStatuses = map[string]bool{
 	StatusNotEligible: true,
 }
 
+type GetAirdropCampaignRequest struct {
+	Id int64 `uri:"id"`
+}
+
+func (r *GetAirdropCampaignRequest) Validate() error {
+	if r.Id <= 0 {
+		return errors.New("invalid id")
+	}
+	return nil
+}
+
 type GetAirdropCampaignsRequest struct {
 	Status string `form:"status" json:"status"`
 	PaginationRequest

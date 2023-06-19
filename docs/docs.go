@@ -5408,6 +5408,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/earns/airdrop-campaigns/{id}": {
+            "get": {
+                "description": "Get Airdrop Campaign By Id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Airdrop-campaigns"
+                ],
+                "summary": "Get Airdrop Campaign By Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "airdrop campaign id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.AirdropCampaignResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/emojis": {
             "get": {
                 "description": "list emojis",
@@ -12112,15 +12144,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.AirdropCampaign"
                     }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },
@@ -15296,15 +15319,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ProfileAirdropCampaign"
                     }
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
                 }
             }
         },

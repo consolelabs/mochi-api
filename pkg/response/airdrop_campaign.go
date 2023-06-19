@@ -9,10 +9,7 @@ type AirdropCampaignResponse struct {
 }
 
 type AirdropCampaignsResponse struct {
-	Data  []model.AirdropCampaign `json:"data"`
-	Page  int                     `json:"page"`
-	Size  int                     `json:"size"`
-	Total int64                   `json:"total"`
+	Data []model.AirdropCampaign `json:"data"`
 }
 
 type ProfileAirdropCampaignResponse struct {
@@ -20,10 +17,7 @@ type ProfileAirdropCampaignResponse struct {
 }
 
 type ProfileAirdropCampaignsResponse struct {
-	Data  []model.ProfileAirdropCampaign `json:"data"`
-	Page  int                            `json:"page"`
-	Size  int                            `json:"size"`
-	Total int64                          `json:"total"`
+	Data []model.ProfileAirdropCampaign `json:"data"`
 }
 
 type AirdropCampaignStatResponse struct {
