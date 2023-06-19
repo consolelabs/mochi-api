@@ -8442,15 +8442,12 @@
                 "current_price": {
                     "type": "number"
                 },
-<<<<<<< HEAD
                 "detail_platforms": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
-=======
->>>>>>> fad0f1eb... chore: update swagger support swap on jupiter
                 "id": {
                     "type": "string"
                 },

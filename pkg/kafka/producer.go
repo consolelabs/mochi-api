@@ -58,7 +58,6 @@ func (k *Kafka) RunProducer() error {
 	if fatalErr != nil {
 		return fmt.Errorf("fatal error: %s", fatalErr)
 	}
-
 	return nil
 }
 
