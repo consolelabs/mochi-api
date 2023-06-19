@@ -33,7 +33,8 @@ var validProfileAirdropCampaignStatuses = map[string]bool{
 }
 
 type GetAirdropCampaignRequest struct {
-	Id int64 `uri:"id"`
+	Id        int64  `uri:"id" binding:"required"`
+	ProfileId string `form:"profile_id"`
 }
 
 func (r *GetAirdropCampaignRequest) Validate() error {
@@ -44,7 +45,8 @@ func (r *GetAirdropCampaignRequest) Validate() error {
 }
 
 type GetAirdropCampaignsRequest struct {
-	Status string `form:"status" json:"status"`
+	ProfileId string `form:"profile_id" json:"profile_id"`
+	Status    string `form:"status" json:"status"`
 	PaginationRequest
 }
 

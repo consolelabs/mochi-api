@@ -55,6 +55,31 @@ func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) ([]
 		return nil, nil, err
 	}
 
+	// support profile_campaign_status
+	if req.ProfileId != "" {
+		acIds := make([]int64, len(acs))
+		for i, ac := range acs {
+			acIds[i] = *ac.Id
+		}
+
+		profileAcs, _, err := e.repo.ProfileAirdropCampaign.List(pac.ListQuery{CampaignIds: acIds})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaigns] - e.repo.ProfileAirdropCampaign.List failed")
+			return nil, nil, err
+		}
+
+		mapIdProfileAirdropCampaign := make(map[int]model.ProfileAirdropCampaign, len(profileAcs))
+		for _, profileAc := range profileAcs {
+			mapIdProfileAirdropCampaign[profileAc.AirdropCampaignId] = profileAc
+		}
+
+		for i, ac := range acs {
+			if v, exist := mapIdProfileAirdropCampaign[int(*ac.Id)]; exist {
+				acs[i].ProfileCampaignStatus = v.Status
+			}
+		}
+	}
+
 	paging := &response.PaginationResponse{
 		Pagination: model.Pagination{
 			Page: req.Page,
@@ -71,6 +96,20 @@ func (e *Entity) GetAirdropCampaign(req request.GetAirdropCampaignRequest) (*mod
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaign] - e.repo.AirdropCampaign.GetById failed")
 		return nil, err
+	}
+
+	// support profile_campaign_status
+	if req.ProfileId != "" {
+		pac, _, err := e.repo.ProfileAirdropCampaign.List(pac.ListQuery{ProfileId: req.ProfileId, CampaignIds: []int64{*resp.Id}})
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaign] - e.repo.ProfileAirdropCampaign.List failed")
+			return nil, err
+		}
+
+		if len(pac) > 0 {
+			resp.ProfileCampaignStatus = pac[0].Status
+		}
+
 	}
 
 	return resp, nil
