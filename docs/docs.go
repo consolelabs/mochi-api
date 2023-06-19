@@ -5324,6 +5324,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "profile id",
+                        "name": "profile_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "page",
                         "name": "page",
                         "in": "query"
@@ -5428,6 +5434,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile id",
+                        "name": "profile_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8427,6 +8439,9 @@ const docTemplate = `{
                 },
                 "prev_airdrop_campaign_id": {
                     "type": "integer"
+                },
+                "profile_campaign_status": {
+                    "type": "string"
                 },
                 "reward_amount": {
                     "type": "integer"

@@ -30,6 +30,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Accept      json
 // @Produce     json
 // @Param       status   query  string false  "status"
+// @Param       profile_id   query  string false  "profile id"
 // @Param       page   query  string false  "page"
 // @Param       size   query  string false  "size"
 // @Success     200 {object} response.AirdropCampaignsResponse
@@ -60,12 +61,19 @@ func (h *Handler) GetAirdropCampaigns(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id   path  string true  "airdrop campaign id"
+// @Param       profile_id   query  string false  "profile id"
 // @Success     200 {object} response.AirdropCampaignResponse
 // @Router      /earns/airdrop-campaigns/{id} [get]
 func (h *Handler) GetAirdropCampaign(c *gin.Context) {
 	req := request.GetAirdropCampaignRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
 		h.log.Error(err, "[handler.GetAirdropCampaign] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaign] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

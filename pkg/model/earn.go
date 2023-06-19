@@ -13,6 +13,8 @@ type AirdropCampaign struct {
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
 	DeadlineAt            *time.Time `json:"deadline_at,omitempty"`
+
+	ProfileCampaignStatus string `json:"profile_campaign_status,omitempty" gorm:"-"'`
 }
 
 type AirdropStatusCount struct {
