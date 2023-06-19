@@ -1,6 +1,6 @@
 package model
 
-type Emojis struct {
+type ProductMetadataEmojis struct {
 	ID         int     `json:"id"`
 	Code       string  `json:"code"`
 	DiscordId  *string `json:"discord_id"`

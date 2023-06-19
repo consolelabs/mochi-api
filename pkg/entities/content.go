@@ -7,7 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetContentByType(contentType string) (*response.Content, error) {
+func (e *Entity) GetContentByType(contentType string) (*response.ProductMetadataCopy, error) {
 	content, err := e.repo.Content.GetContentByType(contentType)
 	if err != nil {
 		e.log.Fields(logger.Fields{"type": contentType}).Errorf(err, "[entity.GetContentByType] - e.repo.Content.GetContentByType failed")
@@ -20,7 +20,7 @@ func (e *Entity) GetContentByType(contentType string) (*response.Content, error)
 		description = make(map[string]interface{})
 	}
 
-	return &response.Content{
+	return &response.ProductMetadataCopy{
 		Id:          content.Id,
 		Type:        content.Type,
 		Description: description,

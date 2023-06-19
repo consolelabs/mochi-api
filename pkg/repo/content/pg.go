@@ -14,6 +14,6 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetContentByType(contentType string) (content *model.Content, err error) {
+func (pg *pg) GetContentByType(contentType string) (content *model.ProductMetadataCopy, err error) {
 	return content, pg.db.Where("type = ?", contentType).First(&content).Error
 }

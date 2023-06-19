@@ -7,7 +7,7 @@ import (
 	"github.com/defipod/mochi/pkg/model/errors"
 )
 
-func (e *Entity) GetListEmojis(codes []string) ([]*model.Emojis, error) {
+func (e *Entity) GetListEmojis(codes []string) ([]*model.ProductMetadataEmojis, error) {
 	emojis, err := e.repo.Emojis.ListEmojis(codes)
 	if err != nil {
 		e.log.Error(err, "[entity.GetListEmojis] repo.emojis.GetListEmojis failed")
