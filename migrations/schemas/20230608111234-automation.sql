@@ -136,6 +136,17 @@ CREATE TABLE IF NOT EXISTS auto_action_histories
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS auto_action_histories
+(
+    id uuid DEFAULT uuid_generate_v4(),
+    user_id TEXT NOT NULL,
+    trigger_id TEXT NOT NULL,
+    action_id TEXT NOT NULL,
+    message_id TEXT NOT NULL,
+    total INTEGER default 1,
+    created_at timestamp with time zone default now()
+);
+
 -- +migrate Down
 DROP TABLE IF EXISTS auto_triggers;
 DROP TABLE IF EXISTS auto_conditions;

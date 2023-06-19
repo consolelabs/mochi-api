@@ -413,6 +413,5 @@ func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTrig
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.actionVaultTransfer] - failed to transfer vault token")
 	}
-
 	return err
 }
