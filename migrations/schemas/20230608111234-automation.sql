@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS auto_actions
     content TEXT NULL,
     embed_id TEXT NULL,
     then_action_id TEXT NULL,
+    limit_per_user INTEGER default 1,
     created_at timestamp with time zone default now()
 );
 
@@ -128,6 +129,17 @@ CREATE TABLE IF NOT EXISTS auto_embed_footers
 );
 
 
+CREATE TABLE IF NOT EXISTS auto_action_histories
+(
+    id uuid DEFAULT uuid_generate_v4(),
+    user_id TEXT NOT NULL,
+    trigger_id TEXT NOT NULL,
+    action_id TEXT NOT NULL,
+    message_id TEXT NOT NULL,
+    total INTEGER default 1,
+    created_at timestamp with time zone default now()
+);
+
 -- +migrate Down
 DROP TABLE IF EXISTS auto_triggers;
 DROP TABLE IF EXISTS auto_conditions;
@@ -140,3 +152,4 @@ DROP TABLE IF EXISTS auto_embeds;
 DROP TABLE IF EXISTS auto_embed_images;
 DROP TABLE IF EXISTS auto_embed_videos;
 DROP TABLE IF EXISTS auto_embed_footers;
+DROP TABLE IF EXISTS auto_action_histories;

@@ -511,7 +511,12 @@ func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessa
 		return
 	}
 
-	h.entities.HandleTrigger(req)
+	err = h.entities.HandleTrigger(req)
+	if err != nil {
+		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to handle trigger")
+		// c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+	// c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
