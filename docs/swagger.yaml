@@ -2532,12 +2532,6 @@ definitions:
         items:
           $ref: '#/definitions/model.AirdropCampaign'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
     type: object
   response.AssetPlatformResponseData:
     properties:
@@ -4273,10 +4267,14 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
@@ -4287,10 +4285,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_7d:
-        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -4602,12 +4596,6 @@ definitions:
         items:
           $ref: '#/definitions/model.ProfileAirdropCampaign'
         type: array
-      page:
-        type: integer
-      size:
-        type: integer
-      total:
-        type: integer
     type: object
   response.ProfileApiKeyResponse:
     properties:
@@ -8522,6 +8510,27 @@ paths:
           schema:
             $ref: '#/definitions/response.AirdropCampaignResponse'
       summary: Create airdrop campaign
+      tags:
+      - Airdrop-campaigns
+  /earns/airdrop-campaigns/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Airdrop Campaign By Id
+      parameters:
+      - description: airdrop campaign id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.AirdropCampaignResponse'
+      summary: Get Airdrop Campaign By Id
       tags:
       - Airdrop-campaigns
   /earns/airdrop-campaigns/stats:
