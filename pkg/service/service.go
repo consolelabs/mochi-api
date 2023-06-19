@@ -23,6 +23,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
+	"github.com/defipod/mochi/pkg/service/skymavis"
 	"github.com/defipod/mochi/pkg/service/snapshot"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/sui"
@@ -56,6 +57,7 @@ type Service struct {
 	Sui           sui.Service
 	Birdeye       birdeye.Service
 	Swap          swap.Service
+	Skymavis      skymavis.Service
 }
 
 func NewService(
@@ -92,5 +94,6 @@ func NewService(
 		Sui:           sui.New(&cfg, log),
 		Birdeye:       birdeye.NewService(&cfg, log),
 		Swap:          swap.New(&cfg, log),
+		Skymavis:      skymavis.New(&cfg),
 	}, nil
 }

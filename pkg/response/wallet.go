@@ -15,9 +15,10 @@ type GetOneWalletResponse struct {
 }
 
 type ListAsset struct {
-	Pnl               string            `json:"pnl"`
-	LatestSnapshotBal string            `json:"latest_snapshot_bal"`
-	Balance           []WalletAssetData `json:"balance"`
+	Pnl               string              `json:"pnl"`
+	LatestSnapshotBal string              `json:"latest_snapshot_bal"`
+	Balance           []WalletAssetData   `json:"balance"`
+	Farming           []LiquidityPosition `json:"farming"`
 }
 type WalletAssetData struct {
 	ChainID        int        `json:"chain_id"`
@@ -83,4 +84,41 @@ type WalletBinanceAssetResponse struct {
 	AssetBalance   string `json:"asset_balance"`
 	TotalAmountUsd string `json:"total_amount_usd"`
 	Asset          string `json:"asset"`
+}
+
+// skymavis
+type WalletFarmingResponse struct {
+	Data *WalletFarmingData `json:"data"`
+}
+
+type WalletFarmingData struct {
+	LiquidityPositions []LiquidityPosition `json:"liquidityPositions"`
+}
+
+type LiquidityPosition struct {
+	ID                    string   `json:"id"`
+	LiquidityTokenBalance string   `json:"liquidityTokenBalance"`
+	Pair                  PairData `json:"pair"`
+}
+
+type PairData struct {
+	ID          string        `json:"id"`
+	TotalSupply string        `json:"totalSupply"`
+	ReserveUSD  string        `json:"reserveUSD"`
+	Token0Price string        `json:"token0Price"`
+	Token1Price string        `json:"token1Price"`
+	Token0      PairTokenData `json:"token0"`
+	Token1      PairTokenData `json:"token1"`
+}
+
+type PairTokenData struct {
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	Symbol       string         `json:"symbol"`
+	TokenDayData []TokenDayData `json:"tokenDayData"`
+	Balance      float64        `json:"balance"`
+}
+
+type TokenDayData struct {
+	PriceUSD string `json:"priceUSD"`
 }
