@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Content struct {
+type ProductMetadataCopy struct {
 	Id          int64     `json:"id"`
 	Type        string    `json:"type"`
 	Description []byte    `json:"description"`

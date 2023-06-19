@@ -584,6 +584,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	productMetaData := v1.Group("/product-metadata")
 	{
 		productMetaData.GET("/emoji", h.Emojis.ListEmojis)
+		productMetaData.GET("/copy/:type", h.Content.GetTypeContent)
 	}
 
 	earnGroup := v1.Group("/earns")
@@ -595,10 +596,5 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			airdropCampaignGroup.POST("", h.AirdropCampaign.CreateAirdropCampaign)
 			airdropCampaignGroup.GET("/stats", h.AirdropCampaign.GetAirdropCampaignStats)
 		}
-	}
-
-	contentGroup := v1.Group("/content")
-	{
-		contentGroup.GET("/:type", h.Content.GetTypeContent)
 	}
 }
