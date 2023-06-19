@@ -44,7 +44,7 @@ func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest
 	return earn, nil
 }
 
-func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) (*response.AirdropCampaignsResponse, error) {
+func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) ([]model.AirdropCampaign, *response.PaginationResponse, error) {
 	acs, total, err := e.repo.AirdropCampaign.List(ac.ListQuery{
 		Offset: int(req.Page * req.Size),
 		Limit:  int(req.Size),
@@ -52,15 +52,28 @@ func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) (*r
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaigns] - e.repo.AirdropCampaign.List failed")
+		return nil, nil, err
+	}
+
+	paging := &response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: req.Page,
+			Size: req.Size,
+		},
+		Total: total,
+	}
+
+	return acs, paging, nil
+}
+
+func (e *Entity) GetAirdropCampaign(req request.GetAirdropCampaignRequest) (*model.AirdropCampaign, error) {
+	resp, err := e.repo.AirdropCampaign.GetById(req.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaign] - e.repo.AirdropCampaign.GetById failed")
 		return nil, err
 	}
 
-	return &response.AirdropCampaignsResponse{
-		Data:  acs,
-		Page:  int(req.Page),
-		Size:  int(req.Size),
-		Total: total,
-	}, nil
+	return resp, nil
 }
 
 func (e *Entity) GetAirdropCampaignStats(req request.GetAirdropCampaignStatus) (*response.AirdropCampaignStatResponse, error) {
@@ -100,7 +113,7 @@ func (e *Entity) CreateProfileAirdropCampaign(req *request.CreateProfileAirdropC
 	return profileAirdropCampaign, nil
 }
 
-func (e *Entity) GetProfileAirdropCampaigns(req request.GetProfileAirdropCampaignsRequest) (*response.ProfileAirdropCampaignsResponse, error) {
+func (e *Entity) GetProfileAirdropCampaigns(req request.GetProfileAirdropCampaignsRequest) ([]model.ProfileAirdropCampaign, *response.PaginationResponse, error) {
 	q := pac.ListQuery{
 		ProfileId: req.ProfileId,
 		Status:    req.Status,
@@ -115,15 +128,18 @@ func (e *Entity) GetProfileAirdropCampaigns(req request.GetProfileAirdropCampaig
 	acs, total, err := e.repo.ProfileAirdropCampaign.List(q)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetProfileAirdropCampaigns] - e.repo.ProfileAirdropCampaign.List failed")
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &response.ProfileAirdropCampaignsResponse{
-		Data:  acs,
-		Page:  int(req.Page),
-		Size:  int(req.Size),
+	paging := &response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: req.Page,
+			Size: req.Size,
+		},
 		Total: total,
-	}, nil
+	}
+
+	return acs, paging, nil
 
 }
 

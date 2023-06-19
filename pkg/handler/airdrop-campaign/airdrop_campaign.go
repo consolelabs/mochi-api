@@ -42,14 +42,48 @@ func (h *Handler) GetAirdropCampaigns(c *gin.Context) {
 		return
 	}
 
-	data, err := h.entities.GetAirdropCampaigns(req)
+	data, paging, err := h.entities.GetAirdropCampaigns(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetAirdropCampaigns] failed to get Airdrop-campaigns list")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, paging, nil, nil))
+	return
+}
+
+// GetAirdropCampaign     godoc
+// @Summary     Get Airdrop Campaign By Id
+// @Description Get Airdrop Campaign By Id
+// @Tags        Airdrop-campaigns
+// @Accept      json
+// @Produce     json
+// @Param       id   path  string true  "airdrop campaign id"
+// @Success     200 {object} response.AirdropCampaignResponse
+// @Router      /earns/airdrop-campaigns/{id} [get]
+func (h *Handler) GetAirdropCampaign(c *gin.Context) {
+	req := request.GetAirdropCampaignRequest{}
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaign] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaign] validate request failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetAirdropCampaign(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaign] failed to get Airdrop-campaigns by id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 	return
 }
 
@@ -186,14 +220,14 @@ func (h *Handler) GetProfileAirdropCampaigns(c *gin.Context) {
 		return
 	}
 
-	data, err := h.entities.GetProfileAirdropCampaigns(req)
+	data, paging, err := h.entities.GetProfileAirdropCampaigns(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetProfileAirdropCampaigns] failed to get profile airdrop campaigns")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, paging, nil, nil))
 	return
 }
 
