@@ -45,6 +45,10 @@ func (pg *pg) List(q ListQuery) (pacs []model.ProfileAirdropCampaign, total int6
 		db = db.Where("is_favorite = ?", &q.IsFavorite)
 	}
 
+	if len(q.CampaignIds) > 0 {
+		db.Where("airdrop_campaign_id IN (?)", q.CampaignIds)
+	}
+
 	db = db.Count(&total).Offset(q.Offset)
 
 	if q.Limit != 0 {
