@@ -1282,3 +1282,59 @@ func mergeAsset(userAsset, fundingAsset []response.BinanceUserAssetResponse) []r
 
 	return fundingAsset
 }
+
+func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
+	req.Standardize()
+	// TODO: only support EVM for now
+	if req.Type != "eth" && req.Type != "evm" {
+		return nil, nil
+	}
+
+	l := e.log.Fields(logger.Fields{"req": req})
+	res, err := e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
+	if err != nil {
+		l.Error(err, "[entity.listEthWalletFarming] svc.Skymavis.GetAddressFarming() failed")
+		return nil, err
+	}
+
+	for i, p := range res.Data.LiquidityPositions {
+		totalLiquidity, err := strconv.ParseFloat(p.Pair.ReserveUSD, 64)
+		if err != nil {
+			l.Error(err, "[entity.listEthWalletFarming] parse reserveUSD failed")
+			return nil, err
+		}
+
+		totalSupply, err := strconv.ParseFloat(p.Pair.TotalSupply, 64)
+		if err != nil {
+			l.Error(err, "[entity.listEthWalletFarming] parse supply failed")
+			return nil, err
+		}
+
+		lpTokenBalance, err := strconv.ParseFloat(p.LiquidityTokenBalance, 64)
+		if err != nil {
+			l.Error(err, "[entity.listEthWalletFarming] parse lp token balance failed")
+			return nil, err
+		}
+
+		token0Price, err := strconv.ParseFloat(p.Pair.Token0.TokenDayData[0].PriceUSD, 64)
+		if err != nil {
+			l.Error(err, "[entity.listEthWalletFarming] parse token0 price failed")
+			return nil, err
+		}
+
+		token1Price, err := strconv.ParseFloat(p.Pair.Token1.TokenDayData[0].PriceUSD, 64)
+		if err != nil {
+			l.Error(err, "[entity.listEthWalletFarming] parse token1 price failed")
+			return nil, err
+		}
+
+		lpTokenWorth := totalLiquidity / totalSupply
+		lpLiquidityWorth := lpTokenWorth * lpTokenBalance
+		token0Balance := lpLiquidityWorth / 2 / token0Price
+		token1Balance := lpLiquidityWorth / 2 / token1Price
+		res.Data.LiquidityPositions[i].Pair.Token0.Balance = token0Balance
+		res.Data.LiquidityPositions[i].Pair.Token1.Balance = token1Balance
+	}
+
+	return res.Data.LiquidityPositions, nil
+}

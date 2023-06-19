@@ -121,6 +121,9 @@ type Config struct {
 	PKpassAppleWWDRCAFileBase64   string
 
 	CertDir string
+
+	SkyMavisApiBaseUrl string
+	SkyMavisApiKey     string
 }
 
 type MarketplaceBaseUrl struct {
@@ -328,6 +331,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		PkPassMochiKeyStoreFileBase64: v.GetString("PKPASS_MOCHI_KEY_STORE_FILE_BASE64"),
 		PKpassAppleWWDRCAFileBase64:   v.GetString("PKPASS_APPLE_WWDRCA_FILE_BASE64"),
 
+		SkyMavisApiBaseUrl: v.GetString("SKY_MAVIS_API_BASE_URL"),
+		SkyMavisApiKey:     v.GetString("SKY_MAVIS_API_KEY"),
+
 		CertDir: v.GetString("CERT_DIR"),
 	}
 }
@@ -357,6 +363,8 @@ func LoadTestConfig() Config {
 		DiscordToken: "sample",
 
 		RedisURL: "redis://localhost:6379/0",
+
+		SkyMavisApiKey: "key123",
 	}
 	return cfg
 }
@@ -394,6 +402,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://3rd.console.so/sui/api")
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
 	v.SetDefault("SUI_JSON_RPC", "https://fullnode.mainnet.sui.io")
+	v.SetDefault("SKY_MAVIS_API_BASE_URL", "https://api-gateway.skymavis.com")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)
