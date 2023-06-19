@@ -3,6 +3,7 @@ package repo
 import (
 	"github.com/defipod/mochi/pkg/repo/activity"
 	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
+	autoActionHistory "github.com/defipod/mochi/pkg/repo/auto_action_history"
 	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
@@ -240,4 +241,5 @@ type Repo struct {
 	AirdropCampaign                      ac.Store
 	ProfileAirdropCampaign               pac.Store
 	AutoTrigger                          autoTrigger.Store
+	AutoActionHistory                    autoActionHistory.Store
 }

@@ -30,6 +30,7 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	// get all trigger join with condition and condition value
 	autoTriggers, err := e.repo.AutoTrigger.GetAutoTriggers(message.GuildId)
 	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.HandleTrigger] - failed to query auto trigger")
 		return err
 	}
 	// Loop all trigger
@@ -123,7 +124,6 @@ func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionVa
 		}
 	// user react 10 Y in channel X to post K of User Z
 	case "totalReact":
-		//TODO query total react of a user in a channel
 		err, valid = e.OperatorNumber(conditionValue[index].Operator, fmt.Sprintf("%v", message.ReactionCount), conditionValue[index].Matches)
 	// react A in channel X
 	case "reactType":
@@ -281,10 +281,19 @@ func (e *Entity) OperatorRoles(operator string, userRoles []string, requiredRole
 }
 
 func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) {
+	// check action already done
 	for _, act := range action {
+		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id.UUID.String(), message.AuthorId, message.MessageId)
+		if err != nil {
+			return
+		}
+		if actionCount >= int64(act.LimitPerUser) {
+			continue
+		}
+
 		switch act.Type.Type {
 		case "sendMessage":
-			e.actionSendMessage(act.Content, &act.Embed, message.UserID)
+			err = e.actionSendMessage(act.Content, &act.Embed, message.UserID)
 		case "sendDM":
 			fmt.Println("sendDM " + act.Content)
 		case "addRole":
@@ -296,14 +305,31 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 		case "ban":
 			fmt.Println("ban " + act.Content)
 		case "vaultTransfer":
-			e.actionVaultTransfer(act.ActionData, message)
+			err = e.actionVaultTransfer(act.ActionData, message)
 		default:
 			e.log.Debug("Invalid action")
+		}
+		if err != nil {
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+			return
+		}
+
+		// save action history, TODO: should save action result for debug
+		err = e.repo.AutoActionHistory.Create(&model.AutoActionHistory{
+			TriggerId: act.TriggerId,
+			ActionId:  act.Id.UUID.String(),
+			UserId:    message.AuthorId,
+			MessageId: message.MessageId,
+			Total:     int(actionCount) + 1,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+			return
 		}
 	}
 }
 
-func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, discordId string) {
+func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, discordId string) error {
 	var message = KafkaNotification{
 		Type: "trigger",
 		TriggerMetadata: TriggerMetadata{
@@ -355,11 +381,12 @@ func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, disco
 	if err != nil {
 		e.log.Error(err, "Produce error")
 	}
+	return err
 }
 
-func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTriggerRequest) {
+func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTriggerRequest) error {
 	if actionData == "" {
-		return
+		return nil
 	}
 	var req request.TransferVaultTokenRequest
 	content := "Vault transfer successfully"
@@ -390,4 +417,5 @@ func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTrig
 	if err != nil {
 		e.log.Error(err, "Produce error")
 	}
+	return err
 }
