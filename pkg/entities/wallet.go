@@ -325,7 +325,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		return nil, "", "", err
 	}
 
-	chainIDs := []int{1, 56, 137, 250, 2020}
+	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
 		for _, chainID := range chainIDs {
@@ -391,7 +391,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err := e.cache.HashSet(address+"-eth", encodeData, 6*time.Hour)
+		err := e.cache.HashSet(address+"-eth", encodeData, 48*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, "", "", err
