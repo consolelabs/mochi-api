@@ -122,3 +122,12 @@ func (b *Binance) GetStakingProductPosition(apiKey, apiSecret string) ([]respons
 
 	return pos, nil
 }
+
+func (b *Binance) GetLendingAccount(apiKey, apiSecret string) (*response.BinanceLendingAccount, error) {
+	lendingAcc, err := bapdater.GetLendingAccount(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return lendingAcc, nil
+}
