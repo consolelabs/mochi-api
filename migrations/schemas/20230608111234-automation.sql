@@ -3,10 +3,14 @@
 CREATE TABLE IF NOT EXISTS auto_triggers
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     guild_id TEXT NOT NULL,
     user_id TEXT NOT NULL,
     name TEXT NOT NULL,
@@ -18,10 +22,14 @@ CREATE TABLE IF NOT EXISTS auto_triggers
 CREATE TABLE IF NOT EXISTS auto_conditions
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
     channel_id TEXT NULL,
@@ -35,10 +43,14 @@ CREATE TABLE IF NOT EXISTS auto_conditions
 CREATE TABLE IF NOT EXISTS auto_condition_values
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     condition_id TEXT NOT NULL,
     child_id TEXT NULL,
     type TEXT NOT NULL,
@@ -51,10 +63,14 @@ CREATE TABLE IF NOT EXISTS auto_condition_values
 CREATE TABLE IF NOT EXISTS auto_condition_types
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -64,10 +80,14 @@ CREATE TABLE IF NOT EXISTS auto_condition_types
 CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     type_id TEXT NOT NULL,
     value TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
@@ -76,10 +96,14 @@ CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 CREATE TABLE IF NOT EXISTS auto_actions
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     user_ids TEXT NULL,
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
@@ -97,10 +121,14 @@ CREATE TABLE IF NOT EXISTS auto_actions
 CREATE TABLE IF NOT EXISTS auto_action_types
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -110,10 +138,14 @@ CREATE TABLE IF NOT EXISTS auto_action_types
 CREATE TABLE IF NOT EXISTS auto_embeds
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     action_id TEXT NOT NULL,
     author_id TEXT NULL,
     title TEXT NOT NULL,
@@ -129,10 +161,14 @@ CREATE TABLE IF NOT EXISTS auto_embeds
 CREATE TABLE IF NOT EXISTS auto_embed_images
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     proxy_url TEXT NOT NULL,
@@ -144,10 +180,14 @@ CREATE TABLE IF NOT EXISTS auto_embed_images
 CREATE TABLE IF NOT EXISTS auto_embed_videos
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     height INTEGER NOT NULL,
@@ -158,15 +198,20 @@ CREATE TABLE IF NOT EXISTS auto_embed_videos
 CREATE TABLE IF NOT EXISTS auto_embed_footers
 (
 <<<<<<< HEAD
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
 =======
     id uuid DEFAULT uuid_generate_v4() primary key,
 >>>>>>> 95675554... chore: seed data for demo auto trigger
+=======
+    id SERIAL PRIMARY KEY,
+>>>>>>> 929f0a93... fix: migrate script error
     embed_id TEXT NOT NULL,
     text TEXT NOT NULL,
     icon_url TEXT NOT NULL,
     url TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
+<<<<<<< HEAD
 );
 
 <<<<<<< HEAD
@@ -179,19 +224,21 @@ CREATE TABLE IF NOT EXISTS auto_action_histories
     message_id TEXT NOT NULL,
     total INTEGER default 1,
     created_at TIMESTAMP NOT NULL DEFAULT now()
+=======
+>>>>>>> 929f0a93... fix: migrate script error
 );
 
 =======
 >>>>>>> 95675554... chore: seed data for demo auto trigger
 CREATE TABLE IF NOT EXISTS auto_action_histories
 (
-    id uuid DEFAULT uuid_generate_v4() primary key,
+    id SERIAL PRIMARY KEY,
     user_id TEXT NOT NULL,
     trigger_id TEXT NOT NULL,
     action_id TEXT NOT NULL,
     message_id TEXT NOT NULL,
     total INTEGER default 1,
-    created_at timestamp with time zone default now()
+    created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 -- +migrate Down
