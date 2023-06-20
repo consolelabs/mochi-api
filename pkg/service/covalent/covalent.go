@@ -13,11 +13,12 @@ import (
 )
 
 var networks = map[int]string{
-	1:   "eth-mainnet",
-	56:  "bsc-mainnet",
-	137: "matic-mainnet",
-	250: "fantom-mainnet",
-	999: "solana-mainnet",
+	1:     "eth-mainnet",
+	56:    "bsc-mainnet",
+	137:   "matic-mainnet",
+	250:   "fantom-mainnet",
+	999:   "solana-mainnet",
+	42161: "arbitrum-mainnet",
 }
 
 type Covalent struct {
