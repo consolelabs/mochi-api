@@ -100,3 +100,20 @@ type BinanceStakingProductPosition struct {
 	CanReStake          bool   `json:"canReStake"`
 	Apy                 string `json:"apy"`
 }
+
+type BinanceLendingAccount struct {
+	TotalAmountInBTC       string                     `json:"totalAmountInBTC"`
+	TotalAmountInUSDT      string                     `json:"totalAmountInUSDT"`
+	TotalFixedAmountInBTC  string                     `json:"totalFixedAmountInBTC"`
+	TotalFixedAmountInUSDT string                     `json:"totalFixedAmountInUSDT"`
+	TotalFlexibleInBTC     string                     `json:"totalFlexibleInBTC"`
+	TotalFlexibleInUSDT    string                     `json:"totalFlexibleInUSDT"`
+	PositionAmountVos      []BinancePositionAmountVos `json:"positionAmountVos"`
+}
+
+type BinancePositionAmountVos struct {
+	Asset        string `json:"asset"`
+	Amount       string `json:"amount"`
+	AmountInBTC  string `json:"amountInBTC"`
+	AmountInUSDT string `json:"amountInUSDT"`
+}

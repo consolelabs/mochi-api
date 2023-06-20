@@ -138,3 +138,35 @@ func GetStakingProductPosition(apiKey, apiSecret string) (pos []response.Binance
 
 	return pos, nil
 }
+
+func GetLendingAccount(apiKey, apiSecret string) (lendingAcc *response.BinanceLendingAccount, err error) {
+	q := map[string]string{
+		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", url+"/sapi/v1/lending/union/account?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &lendingAcc)
+	if err != nil {
+		return nil, err
+	}
+
+	return lendingAcc, nil
+}
