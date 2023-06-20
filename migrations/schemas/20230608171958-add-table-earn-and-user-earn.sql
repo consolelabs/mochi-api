@@ -21,8 +21,8 @@ CREATE TABLE user_earns (
     UNIQUE (user_id, earn_id)
 );
 -- +migrate Down
+DROP type if exists earn_status cascade;
 DROP table if exists earn_infos cascade;
-
 DROP table if exists user_earns;
 
-DROP type earn_status cascade;
+

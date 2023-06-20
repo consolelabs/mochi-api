@@ -2,6 +2,7 @@ package entities
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -9,10 +10,11 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"gorm.io/gorm"
 )
 
 type KafkaNotification struct {
@@ -43,8 +45,10 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	messageType := "invalid"
 	if message.Content != "" {
 		messageType = "createMessage"
-	} else if message.ReactionCount > 0 {
+	} else if message.Reaction != "" {
 		messageType = "reactionAdd"
+	} else {
+		return nil
 	}
 
 	for _, autoTrigger := range autoTriggers {
@@ -125,7 +129,7 @@ func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionVa
 	// user react 10 Y in channel X to post K of User Z
 	case "totalReact":
 		err, valid = e.OperatorNumber(conditionValue[index].Operator, fmt.Sprintf("%v", message.ReactionCount), conditionValue[index].Matches)
-	// react A in channel X
+		// react A in channel X
 	case "reactType":
 		err, valid = e.OperatorString(conditionValue[index].Operator, message.Reaction, conditionValue[index].Matches)
 	case "userRole":
@@ -280,12 +284,12 @@ func (e *Entity) OperatorRoles(operator string, userRoles []string, requiredRole
 	return result
 }
 
-func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) {
-	// check action already done
+func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) error {
 	for _, act := range action {
-		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id.UUID.String(), message.AuthorId, message.MessageId)
+		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id, message.AuthorId, message.MessageId)
 		if err != nil {
-			return
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error: action was existed")
+			return err
 		}
 		if actionCount >= int64(act.LimitPerUser) {
 			continue
@@ -310,23 +314,33 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 			e.log.Debug("Invalid action")
 		}
 		if err != nil {
-			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
-			return
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
+			return err
 		}
 
 		// save action history, TODO: should save action result for debug
 		err = e.repo.AutoActionHistory.Create(&model.AutoActionHistory{
-			TriggerId: act.TriggerId,
-			ActionId:  act.Id.UUID.String(),
-			UserId:    message.AuthorId,
-			MessageId: message.MessageId,
-			Total:     int(actionCount) + 1,
+			TriggerId:     act.TriggerId,
+			ActionId:      act.Id,
+			UserDiscordId: message.AuthorId,
+			MessageId:     message.MessageId,
+			Total:         int(actionCount) + 1,
 		})
 		if err != nil {
-			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
-			return
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
+			return err
+		}
+
+		// if then action is settled then do then action
+		if act.ThenAction != nil {
+			err = e.DoAction([]model.AutoAction{*act.ThenAction}, message)
+			if err != nil {
+				e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, discordId string) error {
@@ -344,8 +358,8 @@ func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, disco
 		discordEmbed.Description = embed.Description
 		discordEmbed.URL = embed.Url
 
-		colorInt, _ := strconv.ParseInt(embed.Color[1:], 16, 32)
-		discordEmbed.Color = int(colorInt)
+		// colorInt, _ := strconv.ParseInt(embed.Color[1:], 16, 32)
+		// discordEmbed.Color = int(colorInt)
 
 		if len(embed.Thumbnail) > 0 {
 			discordEmbed.Thumbnail = &discordgo.MessageEmbedThumbnail{
@@ -379,7 +393,7 @@ func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, disco
 	key := strconv.Itoa(rand.Intn(100000))
 	err := e.kafka.Produce("mochiNotification.local", key, bytes) // TODO move to env
 	if err != nil {
-		e.log.Error(err, "Produce error")
+		e.log.Error(err, "[actionSendMessage] Produce error")
 	}
 	return err
 }
@@ -388,34 +402,19 @@ func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTrig
 	if actionData == "" {
 		return nil
 	}
-	var req request.TransferVaultTokenRequest
-	content := "Vault transfer successfully"
-
+	var req model.AutoTransferVaultTokenRequest
 	json.Unmarshal([]byte(actionData), &req)
 	// transfer vault to author
-	err := e.TransferVaultToken(&req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferVaultToken] - failed to transfer vault token")
-	}
-	req.Address = message.AuthorId
+	req.Target = message.AuthorId
 
-	if err != nil {
-		content = "Vault transfer failed"
+	// validate guild
+	if req.GuildId != message.GuildId {
+		return errors.New("[e.actionVaultTransfer] guild id is required")
 	}
 
-	// send notification
-	bytes, _ := json.Marshal(KafkaNotification{
-		Type: "trigger",
-		TriggerMetadata: TriggerMetadata{
-			UserProfileID: message.AuthorId,
-			Content:       content,
-		},
-	})
-	key := strconv.Itoa(rand.Intn(100000))
-
-	err = e.kafka.Produce("trigger", key, bytes)
+	err := e.AutoTransferVaultToken(&req)
 	if err != nil {
-		e.log.Error(err, "Produce error")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.actionVaultTransfer] - failed to transfer vault token")
 	}
 	return err
 }

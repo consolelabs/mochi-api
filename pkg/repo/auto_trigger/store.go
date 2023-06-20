@@ -8,5 +8,4 @@ type Store interface {
 	CountByGuildUser(guildId, userId string) (int64, error)
 	FirstOrCreate(autoTrigger *model.AutoTrigger) error
 	Create(autoTrigger *model.AutoTrigger) error
-	UpsertMany(autoTriggers []model.AutoTrigger) error
 }
