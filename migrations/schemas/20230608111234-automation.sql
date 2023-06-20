@@ -2,7 +2,11 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS auto_triggers
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     guild_id TEXT NOT NULL,
     user_id TEXT NOT NULL,
     name TEXT NOT NULL,
@@ -13,7 +17,11 @@ CREATE TABLE IF NOT EXISTS auto_triggers
 
 CREATE TABLE IF NOT EXISTS auto_conditions
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
     channel_id TEXT NULL,
@@ -26,7 +34,11 @@ CREATE TABLE IF NOT EXISTS auto_conditions
 
 CREATE TABLE IF NOT EXISTS auto_condition_values
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     condition_id TEXT NOT NULL,
     child_id TEXT NULL,
     type TEXT NOT NULL,
@@ -38,7 +50,11 @@ CREATE TABLE IF NOT EXISTS auto_condition_values
 
 CREATE TABLE IF NOT EXISTS auto_condition_types
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -47,7 +63,11 @@ CREATE TABLE IF NOT EXISTS auto_condition_types
 
 CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     type_id TEXT NOT NULL,
     value TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now()
@@ -55,7 +75,11 @@ CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 
 CREATE TABLE IF NOT EXISTS auto_actions
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     user_ids TEXT NULL,
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
@@ -72,7 +96,11 @@ CREATE TABLE IF NOT EXISTS auto_actions
 
 CREATE TABLE IF NOT EXISTS auto_action_types
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -81,7 +109,11 @@ CREATE TABLE IF NOT EXISTS auto_action_types
 
 CREATE TABLE IF NOT EXISTS auto_embeds
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     action_id TEXT NOT NULL,
     author_id TEXT NULL,
     title TEXT NOT NULL,
@@ -96,7 +128,11 @@ CREATE TABLE IF NOT EXISTS auto_embeds
 
 CREATE TABLE IF NOT EXISTS auto_embed_images
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     proxy_url TEXT NOT NULL,
@@ -107,7 +143,11 @@ CREATE TABLE IF NOT EXISTS auto_embed_images
 
 CREATE TABLE IF NOT EXISTS auto_embed_videos
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     height INTEGER NOT NULL,
@@ -117,7 +157,11 @@ CREATE TABLE IF NOT EXISTS auto_embed_videos
 
 CREATE TABLE IF NOT EXISTS auto_embed_footers
 (
+<<<<<<< HEAD
     id uuid PRIMARY KEY,
+=======
+    id uuid DEFAULT uuid_generate_v4() primary key,
+>>>>>>> 95675554... chore: seed data for demo auto trigger
     embed_id TEXT NOT NULL,
     text TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -125,6 +169,7 @@ CREATE TABLE IF NOT EXISTS auto_embed_footers
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS auto_action_histories
 (
     id uuid PRIMARY KEY,
@@ -136,9 +181,11 @@ CREATE TABLE IF NOT EXISTS auto_action_histories
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+=======
+>>>>>>> 95675554... chore: seed data for demo auto trigger
 CREATE TABLE IF NOT EXISTS auto_action_histories
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     user_id TEXT NOT NULL,
     trigger_id TEXT NOT NULL,
     action_id TEXT NOT NULL,
