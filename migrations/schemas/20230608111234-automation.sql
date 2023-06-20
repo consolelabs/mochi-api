@@ -2,7 +2,7 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS auto_triggers
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     guild_id TEXT NOT NULL,
     user_id TEXT NOT NULL,
     name TEXT NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS auto_triggers
 
 CREATE TABLE IF NOT EXISTS auto_conditions
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
     channel_id TEXT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS auto_conditions
 
 CREATE TABLE IF NOT EXISTS auto_condition_values
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     condition_id TEXT NOT NULL,
     child_id TEXT NULL,
     type TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS auto_condition_values
 
 CREATE TABLE IF NOT EXISTS auto_condition_types
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS auto_condition_types
 
 CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     type_id TEXT NOT NULL,
     value TEXT NOT NULL,
     created_at timestamp with time zone default now()
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS auto_condition_type_presets
 
 CREATE TABLE IF NOT EXISTS auto_actions
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     user_ids TEXT NULL,
     trigger_id TEXT NOT NULL,
     type_id TEXT NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS auto_actions
 
 CREATE TABLE IF NOT EXISTS auto_action_types
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -81,16 +81,13 @@ CREATE TABLE IF NOT EXISTS auto_action_types
 
 CREATE TABLE IF NOT EXISTS auto_embeds
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     action_id TEXT NOT NULL,
     author_id TEXT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    color TEXT NOT NULL,
-    image_id TEXT NULL,
-    thumbnail_id TEXT NULL,
-    footer_id TEXT NULL,
-    video_id TEXT NULL,
+    color TEXT NULL,
+    thumbnail TEXT NULL,
     url TEXT NULL,
     type TEXT NULL,
     fields TEXT NULL,
@@ -99,7 +96,7 @@ CREATE TABLE IF NOT EXISTS auto_embeds
 
 CREATE TABLE IF NOT EXISTS auto_embed_images
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     proxy_url TEXT NOT NULL,
@@ -110,7 +107,7 @@ CREATE TABLE IF NOT EXISTS auto_embed_images
 
 CREATE TABLE IF NOT EXISTS auto_embed_videos
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     embed_id TEXT NOT NULL,
     url TEXT NOT NULL,
     height INTEGER NOT NULL,
@@ -120,7 +117,7 @@ CREATE TABLE IF NOT EXISTS auto_embed_videos
 
 CREATE TABLE IF NOT EXISTS auto_embed_footers
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     embed_id TEXT NOT NULL,
     text TEXT NOT NULL,
     icon_url TEXT NOT NULL,
@@ -128,10 +125,9 @@ CREATE TABLE IF NOT EXISTS auto_embed_footers
     created_at timestamp with time zone default now()
 );
 
-
 CREATE TABLE IF NOT EXISTS auto_action_histories
 (
-    id uuid DEFAULT uuid_generate_v4(),
+    id uuid DEFAULT uuid_generate_v4() primary key,
     user_id TEXT NOT NULL,
     trigger_id TEXT NOT NULL,
     action_id TEXT NOT NULL,
