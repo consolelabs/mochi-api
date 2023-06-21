@@ -101,14 +101,15 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 			icyIsExist = true
 		}
 	}
+
+	prices := make(map[string]float64)
 	if coinIDsArg != "" {
 		statusCode, err := util.FetchData(fmt.Sprintf(c.getPriceURL, coinIDsArg, currency), resp)
 		if err != nil || statusCode != http.StatusOK {
-			return nil, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
+			return prices, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
 		}
 	}
 
-	prices := make(map[string]float64)
 	for k, v := range *resp {
 		prices[k] = v[currency]
 	}

@@ -219,9 +219,18 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		return
 	}
 
+	// farming data
 	farmingData, err := h.entities.ListEthWalletFarming(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletFarming() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	// staking data
+	stakingData, err := h.entities.ListEthWalletStaking(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletStaking() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -231,7 +240,9 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		Pnl:               pnl,
 		LatestSnapshotBal: latestSnapshotBal,
 		Farming:           farmingData,
+		Staking:           stakingData,
 	}
+
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 

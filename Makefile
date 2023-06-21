@@ -92,6 +92,7 @@ gen-mock:
 	@mockgen -source=./pkg/service/discord/service.go -destination=./pkg/service/discord/mocks/service.go
 	@mockgen -source=./pkg/service/processor/service.go -destination=./pkg/service/processor/mocks/service.go
 	@mockgen -source=./pkg/service/skymavis/service.go -destination=./pkg/service/skymavis/mocks/service.go
+	@mockgen -source=./pkg/service/ronin/service.go -destination=./pkg/service/ronin/mocks/service.go
 	@mockgen -source=./pkg/repo/nft_collection/store.go -destination=./pkg/repo/nft_collection/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_level_role/store.go -destination=./pkg/repo/guild_config_level_role/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_wallet_verification_message/store.go -destination=./pkg/repo/guild_config_wallet_verification_message/mocks/store.go

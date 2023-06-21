@@ -1,0 +1,1588 @@
+[
+  {
+    "inputs": [],
+    "name": "",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "admin",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "ErrAdminOfAnyActivePoolForbidden",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrCallerMustBeValidatorContract",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "addr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "extraInfo",
+        "type": "string",
+        "indexed": false
+      }
+    ],
+    "name": "ErrCannotInitTransferRON",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrCannotTransferRON",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "poolAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "ErrInactivePool",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInsufficientBalance",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInsufficientDelegatingAmount",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInsufficientStakingAmount",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInvalidArrays",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInvalidCommissionRate",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrInvalidPoolShare",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrOnlyPoolAdminAllowed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrPoolAdminForbidden",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrRecipientRevert",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrStakingAmountLeft",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrThreeInteractionAddrsNotEqual",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrThreeOperationAddrsNotDistinct",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrUndelegateTooEarly",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrUndelegateZeroAmount",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrUnstakeTooEarly",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrUnstakeZeroAmount",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrZeroCodeContract",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "ErrZeroValue",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "error",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "minSecs",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "CooldownSecsToUndelegateUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "delegator",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "consensuAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "Delegated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "version",
+        "type": "uint8",
+        "indexed": false
+      }
+    ],
+    "name": "Initialized",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "maxRate",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "MaxCommissionRateUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "threshold",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "MinValidatorStakingAmountUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "validator",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "admin",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "name": "PoolApproved",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "period",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "poolAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "shares",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "PoolSharesUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "validator",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "PoolsDeprecated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "period",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "poolAddrs",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "PoolsUpdateConflicted",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "period",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "poolAddrs",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "rewards",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "name": "PoolsUpdateFailed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "period",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "poolAddrs",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "aRps",
+        "type": "uint256[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "shares",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "name": "PoolsUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "poolAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "RewardClaimed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "consensuAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "Staked",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "validator",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "recipient",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "contractBalance",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "StakingAmountDeductFailed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "validator",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "admin",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "contractBalance",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "StakingAmountTransferFailed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "delegator",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "consensuAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "Undelegated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "consensuAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "Unstaked",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "poolAddr",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "debited",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "UserRewardUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "ValidatorContractUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "secs",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "WaitingSecsToRevokeUpdated",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": null,
+    "name": "",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "fallback",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "DEFAULT_ADDITION_GAS",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "PERIOD_DURATION",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_candidateAdmin",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_treasuryAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_bridgeOperatorAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_commissionRate",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "applyValidatorCandidate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddrs",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_amounts",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "name": "bulkUndelegate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddrList",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "claimRewards",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "cooldownSecsToUndelegate",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "delegate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddrList",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_consensusAddrDst",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "delegateRewards",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "execDeductStakingAmount",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_actualDeductingAmount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_pools",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_newPeriod",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "execDeprecatePools",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddrs",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_rewards",
+        "type": "uint256[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_period",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "execRecordRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_pools",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "getManySelfStakings",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_selfStakings",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAddrs",
+        "type": "address[]",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_userList",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "getManyStakingAmounts",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_stakingAmounts",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolList",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "getManyStakingTotals",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_stakingAmounts",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAdminAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getPoolAddressOf",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getPoolDetail",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_admin",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_stakingAmount",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_stakingTotal",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getReward",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_poolAddrList",
+        "type": "address[]",
+        "indexed": false
+      }
+    ],
+    "name": "getRewards",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "_rewards",
+        "type": "uint256[]",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getStakingAmount",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getStakingTotal",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "__validatorContract",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "__minValidatorStakingAmount",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "__maxCommissionRate",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "__cooldownSecsToUndelegate",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "__waitingSecsToRevoke",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_poolAdminAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "isAdminOfActivePool",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "maxCommissionRate",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "minValidatorStakingAmount",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddrSrc",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_consensusAddrDst",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "redelegate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "requestEmergencyExit",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "requestRenounce",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_effectiveDaysOnwards",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_commissionRate",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "requestUpdateCommissionRate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_cooldownSecs",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "setCooldownSecsToUndelegate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_maxRate",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "setMaxCommissionRate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_threshold",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "setMinValidatorStakingAmount",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_addr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "setValidatorContract",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_secs",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "setWaitingSecsToRevoke",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "undelegate",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_consensusAddr",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "unstake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "validatorContract",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "waitingSecsToRevoke",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": null,
+    "name": "",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "payable",
+    "type": "receive",
+    "anonymous": false
+  }
+]
