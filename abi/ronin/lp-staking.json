@@ -1,0 +1,459 @@
+[
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_oldAdmin",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_newAdmin",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "name": "AdminChanged",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_oldAdmin",
+        "type": "address",
+        "indexed": true
+      }
+    ],
+    "name": "AdminRemoved",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": true
+      }
+    ],
+    "name": "EmergencyUnstaked",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": true
+      }
+    ],
+    "name": "RewardClaimed",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": true
+      }
+    ],
+    "name": "Staked",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": true
+      }
+    ],
+    "name": "Unstaked",
+    "outputs": null,
+    "payable": false,
+    "stateMutability": "",
+    "type": "event",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "admin",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_newAdmin",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "changeAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "claimPendingRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "emergencyUnstake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getPendingRewards",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getRewardToken",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_user",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "name": "getStakingAmount",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getStakingToken",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getStakingTotal",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "bytes4",
+        "indexed": false
+      }
+    ],
+    "name": "methodPaused",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_method",
+        "type": "bytes4",
+        "indexed": false
+      }
+    ],
+    "name": "pause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "pauseAll",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_method",
+        "type": "bytes4",
+        "indexed": false
+      }
+    ],
+    "name": "paused",
+    "outputs": [
+      {
+        "internal_type": "",
+        "name": "",
+        "type": "bool",
+        "indexed": false
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "removeAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "restakeRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_method",
+        "type": "bytes4",
+        "indexed": false
+      }
+    ],
+    "name": "unpause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "unpauseAll",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [
+      {
+        "internal_type": "",
+        "name": "_amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "name": "unstake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  },
+  {
+    "inputs": [],
+    "name": "unstakeAll",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "anonymous": false
+  }
+]

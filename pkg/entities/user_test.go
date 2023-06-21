@@ -201,7 +201,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 
 	discordSvc := mock_discord_service.NewMockService(ctrl)
 
-	svc, err := service.NewService(cfg, nil)
+	svc, err := service.NewService(cfg, logger.NewLogrusLogger())
 	if err != nil {
 		t.Error(err)
 	}

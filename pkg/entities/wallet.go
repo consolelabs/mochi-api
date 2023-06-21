@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -1151,10 +1152,26 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 		return nil, nil
 	}
 
+	var res *response.WalletFarmingResponse
+
+	// check if data cached
+	key := fmt.Sprintf("%s-eth-farming", strings.ToLower(req.Address))
+	cached, err := e.cache.GetString(key)
+	if err == nil && cached != "" {
+		return res.Data.LiquidityPositions, json.Unmarshal([]byte(cached), &res)
+	}
+
 	l := e.log.Fields(logger.Fields{"req": req})
-	res, err := e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
+	// no cache -> re-fetch
+	res, err = e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
 	if err != nil {
 		l.Error(err, "[entity.listEthWalletFarming] svc.Skymavis.GetAddressFarming() failed")
+		return nil, err
+	}
+
+	rewards, err := e.svc.Ronin.GetLpPendingRewards(req.Address)
+	if err != nil {
+		l.Error(err, "[entity.listEthWalletFarming] svc.Ronin.GetLpPendingRewards() failed")
 		return nil, err
 	}
 
@@ -1195,7 +1212,101 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 		token1Balance := lpLiquidityWorth / 2 / token1Price
 		res.Data.LiquidityPositions[i].Pair.Token0.Balance = token0Balance
 		res.Data.LiquidityPositions[i].Pair.Token1.Balance = token1Balance
+
+		poolReward := rewards[strings.ToLower(p.Pair.ID)]
+		// reward token is either one of token pair
+		rewardToken := p.Pair.Token0
+		if strings.EqualFold(poolReward.RewardToken, p.Pair.Token1.ID) {
+			rewardToken = p.Pair.Token1
+		}
+
+		res.Data.LiquidityPositions[i].Reward = response.WalletFarmingReward{
+			Amount: poolReward.Reward,
+			Token:  rewardToken,
+		}
 	}
 
+	// cache farming data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	e.cache.Set(key, string(bytes), 24*time.Hour)
+
 	return res.Data.LiquidityPositions, nil
+}
+
+func (e *Entity) ListEthWalletStaking(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
+	req.Standardize()
+	// TODO: only support EVM for now
+	if req.Type != "eth" && req.Type != "evm" {
+		return nil, nil
+	}
+
+	var res []response.WalletStakingData
+
+	// check if data cached
+	key := fmt.Sprintf("%s-eth-staking", strings.ToLower(req.Address))
+	cached, err := e.cache.GetString(key)
+	if err == nil && cached != "" {
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	l := e.log.Fields(logger.Fields{"req": req})
+	// no cache -> re-fetch
+	axsStakingAmount, err := e.svc.Ronin.GetAxsStakingAmount(req.Address)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetAxsStakingAmount failed")
+		return nil, err
+	}
+
+	axsRewards, err := e.svc.Ronin.GetAxsPendingRewards(req.Address)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetAxsPendingRewards failed")
+		return nil, err
+	}
+
+	ronStakingAmount, err := e.svc.Ronin.GetRonStakingAmount(req.Address)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetRonStakingAmount failed")
+		return nil, err
+	}
+
+	ronRewrds, err := e.svc.Ronin.GetRonPendingRewards(req.Address)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetRonPendingRewards failed")
+		return nil, err
+	}
+
+	axsData, err, _ := e.svc.CoinGecko.GetCoin("axie-infinity")
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.CoinGecko.GetCoin('axie-infinity') failed")
+	}
+
+	roninData, err, _ := e.svc.CoinGecko.GetCoin("ronin")
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] svc.CoinGecko.GetCoin(ronin) failed")
+	}
+
+	res = []response.WalletStakingData{
+		{
+			TokenName: axsData.Name,
+			Symbol:    strings.ToUpper(axsData.Symbol),
+			Amount:    axsStakingAmount,
+			Reward:    axsRewards,
+			Price:     axsData.MarketData.CurrentPrice["usd"],
+		},
+		{
+			TokenName: roninData.Name,
+			Symbol:    strings.ToUpper(roninData.Symbol),
+			Amount:    ronStakingAmount,
+			Reward:    ronRewrds,
+			Price:     roninData.MarketData.CurrentPrice["usd"],
+		},
+	}
+
+	// cache staking data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	e.cache.Set(key, string(bytes), 24*time.Hour)
+
+	return res, nil
 }

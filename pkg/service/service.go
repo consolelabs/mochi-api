@@ -22,6 +22,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
+	"github.com/defipod/mochi/pkg/service/ronin"
 	"github.com/defipod/mochi/pkg/service/skymavis"
 	"github.com/defipod/mochi/pkg/service/snapshot"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
@@ -29,8 +30,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/swap"
 	"github.com/defipod/mochi/pkg/service/twitter"
 )
-
-// import "github.com/defipod/api/pkg/service/binance"
 
 type Service struct {
 	CoinGecko     coingecko.Service
@@ -56,6 +55,7 @@ type Service struct {
 	Birdeye       birdeye.Service
 	Swap          swap.Service
 	Skymavis      skymavis.Service
+	Ronin         ronin.Service
 }
 
 func NewService(
@@ -66,6 +66,11 @@ func NewService(
 	discordSvc, err := discord.NewService(cfg, log)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init discord: %w", err)
+	}
+
+	roninSvc, err := ronin.New(&cfg)
+	if err != nil {
+		log.Error(err, "failed to init ronin svc")
 	}
 
 	return &Service{
@@ -92,5 +97,6 @@ func NewService(
 		Birdeye:       birdeye.NewService(&cfg, log),
 		Swap:          swap.New(&cfg, log),
 		Skymavis:      skymavis.New(&cfg),
+		Ronin:         roninSvc,
 	}, nil
 }

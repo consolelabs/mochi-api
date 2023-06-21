@@ -156,6 +156,7 @@ type RpcUrl struct {
 	Arbitrum string
 	Okc      string
 	Onus     string
+	Ronin    string
 }
 
 type ChainExplorer struct {
@@ -266,6 +267,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 			Polygon:  v.GetString("POLYGON_RPC"),
 			Okc:      v.GetString("OKC_RPC"),
 			Onus:     v.GetString("ONUS_RPC"),
+			Ronin:    v.GetString("RONIN_RPC"),
 		},
 
 		MarketplaceBaseUrl: MarketplaceBaseUrl{
@@ -365,6 +367,10 @@ func LoadTestConfig() Config {
 		RedisURL: "redis://localhost:6379/0",
 
 		SkyMavisApiKey: "key123",
+
+		RpcUrl: RpcUrl{
+			Ronin: "sample",
+		},
 	}
 	return cfg
 }
@@ -392,6 +398,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("POLYGON_RPC", "https://rpc.ankr.com/polygon")
 	v.SetDefault("OKC_RPC", "https://exchainrpc.okex.org")
 	v.SetDefault("ONUS_RPC", "https://rpc.onuschain.io")
+	v.SetDefault("RONIN_RPC", "https://api.roninchain.com/rpc")
 	v.SetDefault("OPENSEA_BASE_URL", "https://api.opensea.io")
 	v.SetDefault("PAINTSWAP_BASE_URL", "https://api.paintswap.finance")
 	v.SetDefault("QUIXOTIC_BASE_URL", "https://api.quixotic.io")
