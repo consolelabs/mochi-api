@@ -1,6 +1,6 @@
 
 -- +migrate Up
-CREATE EXTENSION fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
 
 -- +migrate Down
 DROP EXTENSION fuzzystrmatch;

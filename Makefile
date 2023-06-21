@@ -22,7 +22,6 @@ init:
 		sleep 1; \
 	done
 	make migrate-up
-	make seed-db
 
 init-test:
 	docker-compose up -d postgres postgres_test
