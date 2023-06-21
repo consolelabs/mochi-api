@@ -4,13 +4,17 @@ import (
 	"errors"
 	"reflect"
 	"testing"
+	"time"
 
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
-
+	"github.com/bwmarrin/discordgo"
+	"github.com/defipod/mochi/pkg/cache"
+	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/discordwallet"
+	"github.com/defipod/mochi/pkg/kafka"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/repo"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	mock_coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
@@ -19,8 +23,17 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/abi"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
+	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/marketplace"
 	"github.com/defipod/mochi/pkg/util/testhelper"
+	"github.com/defipod/mochi/pkg/vaultwallet"
+	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
+	"github.com/go-rod/stealth"
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
 )
 
 func TestEntity_GetUserWatchlist(t *testing.T) {
@@ -578,6 +591,93 @@ func TestEntity_GetCoinData(t *testing.T) {
 			if code != tt.code {
 				t.Errorf("Entity.GetCoinData() got1 = %v, want %v", code, tt.code)
 			}
+		})
+	}
+}
+
+func TestEntity_scrapeCoingeckoInfo(t *testing.T) {
+	type fields struct {
+		repo        *repo.Repo
+		store       repo.Store
+		log         logger.Logger
+		dcwallet    discordwallet.IDiscordWallet
+		vaultwallet vaultwallet.IVaultWallet
+		discord     *discordgo.Session
+		cache       cache.Cache
+		svc         *service.Service
+		cfg         config.Config
+		indexer     indexer.Service
+		abi         abi.Service
+		marketplace marketplace.Service
+		solana      chain.Solana
+		kafka       kafka.Kafka
+		browserPage *rod.Page
+	}
+	type args struct {
+		coinId string
+	}
+
+	// rod browser
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	launcher.NewBrowser().MustGet()
+	page := stealth.MustPage(browser)
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "ethereum",
+			fields: fields{
+				browserPage: page,
+				log:         logger.NewLogrusLogger(),
+			},
+			args: args{
+				coinId: "ethereum",
+			},
+			wantErr: false,
+		},
+		{
+			name: "magic",
+			fields: fields{
+				browserPage: page,
+				log:         logger.NewLogrusLogger(),
+			},
+			args: args{
+				coinId: "magic",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := &Entity{
+				repo:        tt.fields.repo,
+				store:       tt.fields.store,
+				log:         tt.fields.log,
+				dcwallet:    tt.fields.dcwallet,
+				vaultwallet: tt.fields.vaultwallet,
+				discord:     tt.fields.discord,
+				cache:       tt.fields.cache,
+				svc:         tt.fields.svc,
+				cfg:         tt.fields.cfg,
+				indexer:     tt.fields.indexer,
+				abi:         tt.fields.abi,
+				marketplace: tt.fields.marketplace,
+				solana:      tt.fields.solana,
+				kafka:       tt.fields.kafka,
+				browserPage: tt.fields.browserPage,
+			}
+			got, err := e.scrapeCoingeckoInfo(tt.args.coinId)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Entity.scrapeCoingeckoInfo() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			t.Logf("got: %v", got)
 		})
 	}
 }

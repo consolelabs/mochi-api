@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -152,6 +153,61 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	data.AssetPlatform = platform
 
 	return data, nil, http.StatusOK
+}
+
+func (e *Entity) scrapeCoingeckoInfo(coinId string) (string, error) {
+	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
+
+	e.browserPage.MustNavigate(url)
+
+	// data-target="coins-information.mobileOptionalInfo"
+	data := e.browserPage.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
+
+	if len(data) == 0 {
+		return "", nil
+	}
+
+	info := map[string]map[string]string{}
+
+	for _, d := range data {
+		if d == nil {
+			continue
+		}
+
+		// get span text
+		field := d.MustElement("span").MustText()
+		switch field {
+		case "Website", "Explorers", "Wallets", "Community", "Tags":
+			dat := make(map[string]string)
+			// get text
+			for _, dd := range d.MustElements("a") {
+				text, err := dd.Text()
+				if err != nil {
+					return "", err
+				}
+
+				// get href
+				href, err := dd.Property("href")
+				if err != nil {
+					return "", err
+				}
+
+				dat[text] = href.Str()
+			}
+
+			info[field] = dat
+		}
+
+	}
+
+	infoByte, err := json.Marshal(info)
+	if err != nil {
+		return "", err
+	}
+
+	res := string(infoByte)
+
+	return res, nil
 }
 
 func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *response.AssetPlatformResponseData, err error) {
@@ -428,7 +484,7 @@ func (e *Entity) GetGuildDefaultTicker(req request.GetGuildDefaultTickerRequest)
 }
 
 func (e *Entity) GetListGuildDefaultTicker(guildID string) ([]model.GuildConfigDefaultTicker, error) {
-  configs, err := e.repo.GuildConfigDefaultTicker.GetList(guildID)
+	configs, err := e.repo.GuildConfigDefaultTicker.GetList(guildID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[entity.GetListGuildDefaultTicker] repo.GuildConfigDefaultTicker.GetList() failed")
 		return nil, err
