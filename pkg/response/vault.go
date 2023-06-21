@@ -19,14 +19,15 @@ type CreateTreasurerSubmissionResponse struct {
 }
 
 type VoteResult struct {
-	TotalApprovedSubmission   int64  `json:"total_approved_submission"`
-	TotalSubmission           int64  `json:"total_submission"`
-	TotalRejectedSubmisison   int64  `json:"total_rejected_submisison"`
-	AllowedRejectedSubmisison int64  `json:"allowed_rejected_submisison"`
-	TotalVote                 int64  `json:"total_vote"`
-	Threshold                 string `json:"threshold"`
-	Percentage                string `json:"percentage"`
-	IsApproved                bool   `json:"is_approved"`
+	TotalApprovedSubmission   int64   `json:"total_approved_submission"`
+	TotalSubmission           int64   `json:"total_submission"`
+	TotalRejectedSubmisison   int64   `json:"total_rejected_submisison"`
+	AllowedRejectedSubmisison int64   `json:"allowed_rejected_submisison"`
+	TotalVote                 int64   `json:"total_vote"`
+	Threshold                 string  `json:"threshold"`
+	ThresholdNumber           float64 `json:"threshold_number"`
+	Percentage                string  `json:"percentage"`
+	IsApproved                bool    `json:"is_approved"`
 }
 
 type VaultDetailResponse struct {

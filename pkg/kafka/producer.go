@@ -2,6 +2,8 @@ package kafka
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -97,6 +99,25 @@ func (k *Kafka) Produce(topic, key string, value []byte) error {
 	}
 
 	k.producer.producer.Flush(15 * 1000)
+
+	return nil
+}
+
+func (q *Kafka) ProduceNotification(topic string, value []byte) error {
+	if !q.producer.ready {
+		return fmt.Errorf("producer is not ready")
+	}
+
+	q.producer.producer.ProduceChannel() <- &kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &topic,
+			Partition: kafka.PartitionAny,
+		},
+		Value: value,
+		Key:   []byte(strconv.Itoa(rand.Intn(100000))),
+	}
+
+	q.producer.producer.Flush(15 * 1000)
 
 	return nil
 }
