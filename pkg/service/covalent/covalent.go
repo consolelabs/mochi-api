@@ -146,11 +146,11 @@ func (c *Covalent) fetchCovalentData(endpoint string, parseForm interface{}) (in
 		url := c.getFullUrl(endpoint, i)
 		code, err := util.FetchData(url, parseForm)
 		if code == 402 {
-			c.logger.Fields(logger.Fields{"url": url, "code": code}).Infof("[covalent.fetchCovalentData] Exceed limit API key at index %d", i)
+			c.logger.Fields(logger.Fields{"code": code}).Infof("[covalent.fetchCovalentData] Exceed limit API key at index %d", i)
 			continue
 		}
 		if err != nil {
-			c.logger.Fields(logger.Fields{"url": url, "code": code}).Error(err, "[covalent.fetchCovalentData] util.FetchData() failed")
+			c.logger.Fields(logger.Fields{"code": code}).Error(err, "[covalent.fetchCovalentData] util.FetchData() failed")
 			return code, err
 		}
 		// shift usable key to first idx, save time for later requests

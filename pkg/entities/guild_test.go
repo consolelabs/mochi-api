@@ -51,7 +51,9 @@ func TestEntity_GetGuild(t *testing.T) {
 
 	discordSvc := mock_discord_service.NewMockService(ctrl)
 
-	svc, err := service.NewService(cfg, nil)
+	log := logger.NewLogrusLogger()
+
+	svc, err := service.NewService(cfg, log)
 	if err != nil {
 		t.Error(err)
 	}

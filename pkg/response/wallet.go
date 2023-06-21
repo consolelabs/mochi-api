@@ -19,7 +19,17 @@ type ListAsset struct {
 	LatestSnapshotBal string              `json:"latest_snapshot_bal"`
 	Balance           []WalletAssetData   `json:"balance"`
 	Farming           []LiquidityPosition `json:"farming"`
+	Staking           []WalletStakingData `json:"staking"`
 }
+
+type WalletStakingData struct {
+	TokenName string  `json:"token_name"`
+	Symbol    string  `json:"symbol"`
+	Amount    float64 `json:"amount"`
+	Reward    float64 `json:"reward"`
+	Price     float64 `json:"price"`
+}
+
 type WalletAssetData struct {
 	ChainID        int        `json:"chain_id"`
 	ContractName   string     `json:"contract_name"`
@@ -96,9 +106,15 @@ type WalletFarmingData struct {
 }
 
 type LiquidityPosition struct {
-	ID                    string   `json:"id"`
-	LiquidityTokenBalance string   `json:"liquidityTokenBalance"`
-	Pair                  PairData `json:"pair"`
+	ID                    string              `json:"id"`
+	LiquidityTokenBalance string              `json:"liquidityTokenBalance"`
+	Pair                  PairData            `json:"pair"`
+	Reward                WalletFarmingReward `json:"reward"`
+}
+
+type WalletFarmingReward struct {
+	Amount float64       `json:"amount"`
+	Token  PairTokenData `json:"token"`
 }
 
 type PairData struct {
