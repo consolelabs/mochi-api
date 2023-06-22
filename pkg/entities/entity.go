@@ -4,13 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/launcher"
-	"github.com/go-rod/stealth"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -96,9 +93,9 @@ func Init(cfg config.Config, log logger.Logger) error {
 	}
 
 	// rod browser
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	launcher.NewBrowser().MustGet()
-	page := stealth.MustPage(browser)
+	// browser := rod.New().Timeout(time.Minute).MustConnect()
+	// launcher.NewBrowser().MustGet()
+	// page := stealth.MustPage(browser)
 
 	service, err := service.NewService(cfg, log)
 	if err != nil {
@@ -131,7 +128,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
-		browserPage: page,
+		// browserPage: page,
 	}
 
 	if e.discord != nil && e.cache != nil {

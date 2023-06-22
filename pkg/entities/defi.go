@@ -153,11 +153,11 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	data.AssetPlatform = platform
 
 	// get coingecko info
-	coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
-	if err != nil {
-		e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
-	}
-	data.CoingeckoInfo = coingeckoInfo
+	// coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
+	// if err != nil {
+	// 	e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
+	// }
+	// data.CoingeckoInfo = coingeckoInfo
 
 	return data, nil, http.StatusOK
 }
