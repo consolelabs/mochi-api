@@ -24,8 +24,8 @@ COPY dbconfig.yml /
 
 RUN wget https://registry.npmmirror.com/-/binary/chromium-browser-snapshots/Linux_x64/1131003/chrome-linux.zip
 RUN unzip chrome-linux.zip
-RUN mkdir -p $HOME/.cache/rod/browser
-RUN mv chrome-linux $HOME/.cache/rod/browser
+RUN mkdir -p /root/.cache/rod/browser/chromium-1131003
+RUN mv chrome-linux/* /root/.cache/rod/browser/chromium-1131003
 RUN rm chrome-linux.zip
 
 ENTRYPOINT [ "server" ]
