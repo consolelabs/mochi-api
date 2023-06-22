@@ -89,6 +89,16 @@ type GetCoinResponse struct {
 	Tickers                      []TickerData                      `json:"tickers"`
 	ContractAddress              string                            `json:"contract_address"`
 	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
+	CoingeckoInfo                *CoinGeckoInfoResponse            `json:"coingecko_info"`
+}
+
+type CoinGeckoInfoResponse struct {
+	Contracts   map[string]string `json:"contracts"`
+	Websites    map[string]string `json:"websites"`
+	Explorers   map[string]string `json:"explorers"`
+	Wallets     map[string]string `json:"wallets"`
+	Communities map[string]string `json:"communities"`
+	Tags        map[string]string `json:"tags"`
 }
 
 type TickerData struct {
