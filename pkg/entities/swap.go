@@ -28,7 +28,6 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 		return nil, err
 	}
 
-	amount := util.FloatToString(req.Amount, 18)
 	// step 2.0: filter possible route first.
 	// rule1: from token must be in the list of user balances, for now consider chain too
 	// rule2: to token must be in the list of our supported chains
@@ -39,7 +38,7 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 	}
 
 	// step 2.1: now we have 2 set of tokens, we need to find the route
-	routes, err := e.svc.Swap.GetAllRoutes(fromTokens, toTokens, amount)
+	routes, err := e.svc.Swap.GetAllRoutes(fromTokens, toTokens, req.Amount)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[swap.GetAllRoutes] - cannot get all route")
 		return nil, err
