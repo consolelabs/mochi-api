@@ -74,6 +74,7 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 		for _, toToken := range toTokens {
 			if toToken.ChainID == fromToken.ChainID {
 				// get routes
+				amount := util.FloatToString(amount, int64(fromToken.Decimals))
 				route, err := k.GetRoute(fromToken.Address, toToken.Address, util.ConvertChainIdToChainName(int64(fromToken.ChainID)), amount)
 				if err != nil {
 					return nil, err
