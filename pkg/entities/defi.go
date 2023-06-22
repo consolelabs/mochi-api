@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/go-rod/rod"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -152,10 +152,17 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	}
 	data.AssetPlatform = platform
 
+	// get coingecko info
+	coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
+	if err != nil {
+		e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
+	}
+	data.CoingeckoInfo = coingeckoInfo
+
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) scrapeCoingeckoInfo(coinId string) (string, error) {
+func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResponse, error) {
 	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
 
 	e.browserPage.MustNavigate(url)
@@ -164,10 +171,31 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (string, error) {
 	data := e.browserPage.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
 
 	if len(data) == 0 {
-		return "", nil
+		return nil, nil
 	}
 
-	info := map[string]map[string]string{}
+	getHrefMap := func(d *rod.Element) (map[string]string, error) {
+		dat := make(map[string]string)
+		// get text
+		for _, dd := range d.MustElements("a") {
+			text, err := dd.Text()
+			if err != nil {
+				return nil, err
+			}
+
+			// get href
+			href, err := dd.Property("href")
+			if err != nil {
+				return nil, err
+			}
+
+			dat[text] = href.Str()
+		}
+
+		return dat, nil
+	}
+
+	info := &response.CoinGeckoInfoResponse{}
 
 	for _, d := range data {
 		if d == nil {
@@ -177,37 +205,49 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (string, error) {
 		// get span text
 		field := d.MustElement("span").MustText()
 		switch field {
-		case "Website", "Explorers", "Wallets", "Community", "Tags":
-			dat := make(map[string]string)
-			// get text
-			for _, dd := range d.MustElements("a") {
-				text, err := dd.Text()
-				if err != nil {
-					return "", err
-				}
-
-				// get href
-				href, err := dd.Property("href")
-				if err != nil {
-					return "", err
-				}
-
-				dat[text] = href.Str()
+		case "Website":
+			dat, err := getHrefMap(d)
+			if err != nil {
+				return nil, err
 			}
 
-			info[field] = dat
+			info.Websites = dat
+
+		case "Explorers":
+			dat, err := getHrefMap(d)
+			if err != nil {
+				return nil, err
+			}
+
+			info.Explorers = dat
+
+		case "Wallets":
+			dat, err := getHrefMap(d)
+			if err != nil {
+				return nil, err
+			}
+
+			info.Wallets = dat
+
+		case "Community":
+			dat, err := getHrefMap(d)
+			if err != nil {
+				return nil, err
+			}
+
+			info.Communities = dat
+
+		case "Tags":
+			dat, err := getHrefMap(d)
+			if err != nil {
+				return nil, err
+			}
+
+			info.Tags = dat
 		}
-
 	}
 
-	infoByte, err := json.Marshal(info)
-	if err != nil {
-		return "", err
-	}
-
-	res := string(infoByte)
-
-	return res, nil
+	return info, nil
 }
 
 func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *response.AssetPlatformResponseData, err error) {
