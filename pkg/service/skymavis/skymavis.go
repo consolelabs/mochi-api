@@ -65,7 +65,7 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 	req.Query = q
 	v, err := json.Marshal(req)
 	if err != nil {
-		s.logger.Fields(logger.Fields{"query": q, "address": address}).Error(err, "[skymavis.GetAddressFarming] json.Marshal() failed")
+		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[skymavis.GetAddressFarming] json.Marshal() failed")
 		return nil, err
 	}
 	body := bytes.NewBuffer(v)
@@ -79,12 +79,73 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 		ParseForm: res,
 	})
 	if err != nil {
-		s.logger.Fields(logger.Fields{"status": status, "query": q}).Error(err, "[skymavis.GetAddressFarming] util.SendRequest() failed")
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] util.SendRequest() failed")
 		return nil, err
 	}
 	if status != 200 {
-		err = fmt.Errorf("[skymavis.GetAddressFarming] status code is not 200, status: %d", status)
-		s.logger.Fields(logger.Fields{"status": status, "query": q}).Error(err, "[skymavis.GetAddressFarming] failed to query")
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] failed to query")
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (s *skymavis) GetOwnedAxies(address string) (*response.NftResponse, error) {
+	q := fmt.Sprintf(`
+	{
+		axies(size: 50, from: 0, owner: "%s") {
+			total
+			results {
+				id
+				image
+				level
+				minPrice
+				sireClass
+				name
+				stats {
+					speed
+					skill
+					morale
+					hp
+				}
+				parts {
+					type
+					name
+					id
+					class
+				}
+			}
+		}
+	}
+	`, address)
+	q = strings.ReplaceAll(q, "\n", " ")
+	q = strings.ReplaceAll(q, "\t", " ")
+
+	var req struct {
+		Query string `json:"query"`
+	}
+	req.Query = q
+	v, err := json.Marshal(req)
+	if err != nil {
+		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[skymavis.GetOwnedAxies] json.Marshal() failed")
+		return nil, err
+	}
+	body := bytes.NewBuffer(v)
+
+	res := &response.NftResponse{}
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:       fmt.Sprintf("%s/graphql/marketplace", s.cfg.SkyMavisApiBaseUrl),
+		Method:    "POST",
+		Headers:   map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
+		Body:      body,
+		ParseForm: res,
+	})
+	if err != nil {
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] util.SendRequest() failed")
+		return nil, err
+	}
+	if status != 200 {
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] failed to query")
 		return nil, err
 	}
 
