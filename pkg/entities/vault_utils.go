@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.TreasurerSubmission, treasurerReq *model.TreasurerRequest) (*message.VaultVoteTreasurer, map[string]string) {
@@ -114,7 +115,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				Action: message.VaultAction{
 					Type: "transfer",
 					VaultTransferActionMetadata: message.VaultTransferActionMetadata{
-						TokenAmount:        treasurerReq.Amount,
+						TokenAmount:        util.FloatToString(treasurerReq.Amount, token.Decimal),
 						TokenDecimal:       token.Decimal,
 						TokenAmountInUsd:   fmt.Sprint(token.Price * amountInNumber),
 						Token:              strings.ToUpper(treasurerReq.Token),
