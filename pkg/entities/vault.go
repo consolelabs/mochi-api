@@ -333,6 +333,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Reciever:   recipientPay,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
+		RequestId:  treasurerRequest.Id,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
