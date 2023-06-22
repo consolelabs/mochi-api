@@ -9,6 +9,7 @@ INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES ('223
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES ('2236b7a8-9f9c-456b-a5fa-2dc0755d24b7', 'user role', 'userRole', '', now());
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES ('2236b7a8-9f9c-456b-a5fa-2dc0755d24b8', 'action send message', 'sendMessage', '', now());
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES ('2236b7a8-9f9c-456b-a5fa-2dc0755d24b9', 'React type', 'reactType', '', now());
+INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES ('2236b7a8-9f9c-456b-a5fa-2dc0755d24a1', 'Action transfer vault', 'vaultTransfer', '', now());
 
 -- Seed data trigger
 INSERT INTO public.auto_triggers(id, guild_id, user_id, name, status, updated_at, created_at) VALUES ('7236b7a8-9f9c-456b-a5fa-2dc0755d24bb', '711823851117608990', '711823390000021556', 'Trigger when send Message', true, now(), now());
@@ -40,3 +41,14 @@ INSERT INTO public.auto_embed_footers(id, embed_id, text, icon_url, url, created
 
 INSERT INTO public.auto_embed_videos(id, embed_id, url, height, width, created_at)
 	VALUES (uuid_generate_v4(), 'd95d4370-2629-4d85-85ea-b8d623dbaff4', 'https://arxiv.org/pdf/2210.10760.pdf', 110, 50, now());
+
+
+-- Seed data to action transfer vault
+INSERT INTO public.auto_actions(id,  trigger_id, type_id, channel_ids, name, content, action_data, created_at) VALUES ('4236b7a8-9f9c-456b-a5fa-2dc0755d24b5','7236b7a8-9f9c-456b-a5fa-2dc0755d24ba', '2236b7a8-9f9c-456b-a5fa-2dc0755d24a1', '', 'Transfer vault 1', 'Transfer vault by address', '{
+    "guild_id": "711823851117608990",
+    "vault_id": 2,
+    "message": "Send money to treasurer",
+    "chain": "137",
+    "token": "matic",
+    "amount": "0.00001"
+}', now());
