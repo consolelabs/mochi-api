@@ -83,6 +83,7 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 		return nil, err
 	}
 	if status != 200 {
+		err = fmt.Errorf("[skymavis.GetAddressFarming] status code is not 200, status: %d", status)
 		s.logger.Fields(logger.Fields{"status": status, "query": q}).Error(err, "[skymavis.GetAddressFarming] failed to query")
 		return nil, err
 	}

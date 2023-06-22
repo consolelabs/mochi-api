@@ -148,7 +148,7 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 }
 
 func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
-	chainIDs := []int{1, 56, 137, 250, 2020}
+	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTokenBalances(chainID, wallet.Address, 3)
 		if err != nil {
