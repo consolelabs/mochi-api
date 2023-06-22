@@ -499,11 +499,17 @@ func TestEntity_GetCoinData(t *testing.T) {
 	r := pg.NewRepo(s.DB())
 	svc.CoinGecko = mockServiceCoingecko
 
+	// rod browser
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	launcher.NewBrowser().MustGet()
+	page := stealth.MustPage(browser)
+
 	e := &Entity{
-		repo: r,
-		log:  log,
-		svc:  svc,
-		cfg:  cfg,
+		repo:        r,
+		log:         log,
+		svc:         svc,
+		cfg:         cfg,
+		browserPage: page,
 	}
 	tests := []struct {
 		name         string

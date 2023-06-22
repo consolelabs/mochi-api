@@ -6,7 +6,8 @@
       "name": "PancakeSwap",
       "current_price": 1.7,
       "most_popular": true,
-      "detail_platforms": null
+      "detail_platforms": null,
+      "coingecko_info": null
     }
   ]
 }

@@ -31,7 +31,7 @@ func TestHandler_ListAllCustomToken(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -83,7 +83,7 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 	svc.CoinGecko = coingeckoMock
 	s := pg.NewPostgresStore(&cfg)
 
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 	h := &Handler{
 		entities: entityMock,
 		log:      log,
@@ -202,7 +202,7 @@ func TestHandler_GetMonikerByGuildID(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -242,7 +242,7 @@ func TestHandler_GetDefaultMoniker(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -282,7 +282,7 @@ func TestHandler_UpsertMonikerConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -335,7 +335,7 @@ func TestHandler_DeleteMonikerConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -385,7 +385,7 @@ func TestHandler_GetGuildDefaultCurrency(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -426,7 +426,7 @@ func TestHandler_UpsertGuildDefaultCurrency(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -476,7 +476,7 @@ func TestHandler_DeleteGuildDefaultCurrency(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,

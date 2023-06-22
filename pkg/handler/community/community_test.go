@@ -25,7 +25,7 @@ func TestHandler_GetRepostReactionConfigs(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -79,7 +79,7 @@ func TestHandler_RemoveRepostReactionConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -151,7 +151,7 @@ func TestHandler_ConfigRepostReaction(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -244,7 +244,7 @@ func TestHandler_EditMessageRepost(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -297,7 +297,7 @@ func TestHandler_CreateConfigRepostReactionConversation(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -393,7 +393,7 @@ func TestHandler_RemoveConfigRepostReactionConversation(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -474,7 +474,7 @@ func TestHandler_UpdateUserFeedback(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -533,7 +533,7 @@ func TestHandler_HandleUserFeedback(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -600,7 +600,7 @@ func TestHandler_GetAllUserFeedback(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -641,7 +641,7 @@ func TestHandler_GetUserQuestList(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -682,7 +682,7 @@ func TestHandler_CreateTwitterPost(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
