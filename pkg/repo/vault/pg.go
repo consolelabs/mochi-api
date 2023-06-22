@@ -29,7 +29,7 @@ func (pg *pg) UpdateThreshold(vault *model.Vault) (*model.Vault, error) {
 }
 
 func (pg *pg) GetById(id int64) (vault *model.Vault, err error) {
-	return vault, pg.db.First(&vault, id).Error
+	return vault, pg.db.Preload("DiscordGuild").First(&vault, id).Error
 }
 
 func (pg *pg) GetByNameAndGuildId(name string, guildId string) (vault *model.Vault, err error) {

@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -655,9 +656,28 @@ func (e *Entity) validateBalance(token *mochipay.Token, address, solanaAddress, 
 }
 
 func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmission) (resp *response.CreateTreasurerSubmissionResponse, err error) {
+	treasurerReq, err := e.repo.TreasurerRequest.GetById(req.RequestId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Vault.GetById failed")
+		return nil, err
+	}
+
 	vault, err := e.repo.Vault.GetById(req.VaultId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Vault.GetById failed")
+		return nil, err
+	}
+
+	submitterProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sumitter, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Profile.GetByDiscordId failed")
+		return nil, err
+	}
+
+	// person who is added / removed/ transfered money to
+	changerProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerReq.UserDiscordId, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Profile.GetByDiscordId failed")
 		return nil, err
 	}
 
@@ -718,6 +738,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 			TotalSubmission:           int64(len(submissions)),
 			Percentage:                fmt.Sprintf("%.2f", percentage),
 			Threshold:                 fmt.Sprintf("%.2f", threshold),
+			ThresholdNumber:           threshold,
 		},
 		TotalSubmissions: submissions,
 	}
@@ -726,88 +747,42 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		resp.VoteResult.IsApproved = true
 	}
 
-	// notify treasurer about process voting
-	treasurers, err := e.repo.Treasurer.GetByVaultId(req.VaultId)
+	// noti for this submission of treasurer
+	voteMessage := e.formatVoteVaultMessage(req, resp, submitterProfile, changerProfile, vault, submissions, treasurerReq)
+	byteNotification, _ := json.Marshal(voteMessage)
+
+	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Treasurer.GetByVaultId failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.kafka.Produce failed")
 		return nil, err
 	}
-	for _, treasurer := range treasurers {
-		msg := discordgo.MessageSend{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title: "<:bell:1087564962941124679> Mochi notifications",
-					Description: fmt.Sprintf("<@%s> %s the request #%d in %s vault. This request will be approved if `%d/%d` treasurers approve (%s)",
-						req.Sumitter,
-						req.Choice,
-						req.RequestId,
-						vault.Name,
-						len(submissions)-int(allowedRejectVote),
-						len(submissions),
-						vault.Threshold+"%",
-					),
-					Fields: []*discordgo.MessageEmbedField{
-						{
-							Name:   "Approved",
-							Value:  fmt.Sprintf("<:check:1077631110047080478> `%d/%d`", totalApprovedSubmission, len(submissions)),
-							Inline: true,
-						},
-						{
-							Name:   "Rejected",
-							Value:  fmt.Sprintf("<:revoke:1077631119073230970> `%d`", totalRejectedSubmisison),
-							Inline: true,
-						},
-						{
-							Name:   "Waiting",
-							Value:  fmt.Sprintf("<:clock:1080757110146605086> `%d`", len(submissions)-totalApprovedSubmission-totalRejectedSubmisison),
-							Inline: true,
-						},
-					},
-					Color: 0x34AAFF,
-					Thumbnail: &discordgo.MessageEmbedThumbnail{
-						URL: "https://cdn.discordapp.com/attachments/1090195482506174474/1090905984299442246/image.png",
-					},
-					Timestamp: time.Now().Format("2006-01-02T15:04:05Z"),
-					Footer: &discordgo.MessageEmbedFooter{
-						Text: "Type /feedback to report",
-					},
-				},
-			},
-		}
-		err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
-			continue
-		}
 
-		// DM result to user
-		if resp.VoteResult.IsApproved {
-			action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
-			msg := prepareMessageNotifyTreasurerResult(&request.CreateTreasurerResultRequest{Status: consts.TreasurerStatusSuccess, UserDiscordID: submissions[0].TreasurerRequest.UserDiscordId, Token: submissions[0].TreasurerRequest.Token, Amount: submissions[0].TreasurerRequest.Amount, Address: submissions[0].TreasurerRequest.Address}, action, submissions[0].Vault.Name, thumbnail)
-			err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
-			if err != nil {
-				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
-				continue
-			}
-		} else {
-			if int64(totalRejectedSubmisison) > allowedRejectVote {
-				action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
-				msg := prepareMessageNotifyTreasurerResult(&request.CreateTreasurerResultRequest{Status: consts.TreasurerStatusFail, UserDiscordID: submissions[0].TreasurerRequest.UserDiscordId, Token: submissions[0].TreasurerRequest.Token, Amount: submissions[0].TreasurerRequest.Amount, Address: submissions[0].TreasurerRequest.Address}, action, submissions[0].Vault.Name, thumbnail)
-				err = e.svc.Discord.SendDM(treasurer.UserDiscordId, msg)
-				if err != nil {
-					e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.svc.Discord.SendDM failed")
-					continue
-				}
-			}
-		}
-	}
-
-	// update request status
+	// noti result of this request to user
+	voteMessage.Type = "vault-proposal"
 	if resp.VoteResult.IsApproved {
 		err = e.repo.TreasurerRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerRequest.UpdateStatus failed")
 			return nil, err
+		}
+
+		voteMessage.VaultVoteMetadata.TreasurerVote = "pass"
+		byteResultNotificationSuccess, _ := json.Marshal(voteMessage)
+		err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteResultNotificationSuccess)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.kafka.Produce failed")
+			return nil, err
+		}
+
+	} else {
+		if int64(totalRejectedSubmisison) > allowedRejectVote {
+			voteMessage.VaultVoteMetadata.TreasurerVote = "failed"
+			byteResultNotificationFail, _ := json.Marshal(voteMessage)
+			err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteResultNotificationFail)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.kafka.Produce failed")
+				return nil, err
+			}
 		}
 	}
 
