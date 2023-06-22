@@ -358,6 +358,123 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	return nil
 }
 
+func (e *Entity) AutoTransferVaultToken(req *model.AutoTransferVaultTokenRequest) error {
+	vault, err := e.repo.Vault.GetById(req.VaultId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.Vault.GetById failed")
+		return err
+	}
+
+	treasurer, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.Treasurer.GetByVaultId failed")
+		return err
+	}
+
+	listNotify := []string{}
+	for _, t := range treasurer {
+		profileMember, err := e.svc.MochiProfile.GetByDiscordID(t.UserDiscordId, true)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
+			return err
+		}
+		listNotify = append(listNotify, profileMember.ID)
+	}
+
+	token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.svc.MochiPay.GetToken failed")
+		return err
+	}
+
+	receiverProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Target, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.svc.MochiProfile.GetByDiscordId failed")
+		return err
+	}
+
+	if !slices.Contains(listNotify, receiverProfile.ID) {
+		listNotify = append(listNotify, receiverProfile.ID)
+	}
+
+	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
+
+	validateBalance := e.validateBalance(token, vault.WalletAddress, vault.SolanaWalletAddress, req.Amount)
+	if !validateBalance {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - validateBalance failed")
+		return fmt.Errorf("balance not enough")
+	}
+
+	// address = "" aka destination addres = "", use mochi wallet instead
+	privateKey, destination := "", ""
+	if token.Chain.ChainId == "999" {
+		account, err := e.vaultwallet.GetAccountSolanaByWalletNumber(int(vault.WalletNumber))
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.vaultwallet.GetAccountSolanaByWalletNumber failed")
+			return err
+		}
+
+		privateKey, err = e.vaultwallet.GetPrivateKeyByAccountSolana(*account)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccountSolana failed")
+			return err
+		}
+
+		destination, _ = e.vaultwallet.SolanaCentralizedWalletAddress()
+	} else {
+		account, err := e.vaultwallet.GetAccountByWalletNumber(int(vault.WalletNumber))
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.vaultwallet.GetAccountByWalletNumber failed")
+			return err
+		}
+
+		privateKey, err = e.vaultwallet.GetPrivateKeyByAccount(account)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.vaultwallet.GetPrivateKeyByAccount failed")
+			return err
+		}
+
+		destination = e.cfg.CentralizedWalletAddress
+	}
+
+	if req.Address != "" {
+		destination = req.Address
+	}
+
+	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
+		ProfileId:  receiverProfile.ID,
+		Amount:     amountBigIntStr,
+		To:         destination,
+		PrivateKey: privateKey,
+		Token:      token.Symbol,
+		Chain:      token.Chain.ChainId,
+		Name:       vault.Name,
+		Message:    req.Message,
+		ListNotify: listNotify,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
+		return err
+	}
+
+	_, err = e.repo.VaultTransaction.Create(&model.VaultTransaction{
+		GuildId:   req.GuildId,
+		VaultId:   req.VaultId,
+		Action:    consts.TreasurerTransferType,
+		ToAddress: req.Address,
+		Amount:    req.Amount,
+		Token:     req.Token,
+		Sender:    receiverProfile.ID, //TODO thanhpn change to id of auto bot
+		Target:    req.Target,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.VaultTransaction.Create failed")
+		return err
+	}
+
+	return nil
+}
+
 func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest) error {
 	vault, err := e.repo.Vault.GetById(req.VaultId)
 	if err != nil {

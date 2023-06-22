@@ -2,6 +2,7 @@ package entities
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -280,12 +281,12 @@ func (e *Entity) OperatorRoles(operator string, userRoles []string, requiredRole
 	return result
 }
 
-func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) {
-	// check action already done
+func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) error {
 	for _, act := range action {
 		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id.UUID.String(), message.AuthorId, message.MessageId)
 		if err != nil {
-			return
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error: action was existed")
+			return err
 		}
 		if actionCount >= int64(act.LimitPerUser) {
 			continue
@@ -311,7 +312,7 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 		}
 		if err != nil {
 			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
-			return
+			return err
 		}
 
 		// save action history, TODO: should save action result for debug
@@ -324,9 +325,19 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 		})
 		if err != nil {
 			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
-			return
+			return err
+		}
+
+		// if then action is settled then do then action
+		if act.ThenAction != nil {
+			err = e.DoAction([]model.AutoAction{*act.ThenAction}, message)
+			if err != nil {
+				e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+				return err
+			}
 		}
 	}
+	return nil
 }
 
 func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, discordId string) error {
@@ -388,34 +399,20 @@ func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTrig
 	if actionData == "" {
 		return nil
 	}
-	var req request.TransferVaultTokenRequest
-	content := "Vault transfer successfully"
-
+	var req model.AutoTransferVaultTokenRequest
 	json.Unmarshal([]byte(actionData), &req)
 	// transfer vault to author
-	err := e.TransferVaultToken(&req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferVaultToken] - failed to transfer vault token")
-	}
-	req.Address = message.AuthorId
+	req.Target = message.AuthorId
 
-	if err != nil {
-		content = "Vault transfer failed"
+	// validate guild
+	if req.GuildId != message.GuildId {
+		return errors.New("guild id is required")
 	}
 
-	// send notification
-	bytes, _ := json.Marshal(KafkaNotification{
-		Type: "trigger",
-		TriggerMetadata: TriggerMetadata{
-			UserProfileID: message.AuthorId,
-			Content:       content,
-		},
-	})
-	key := strconv.Itoa(rand.Intn(100000))
-
-	err = e.kafka.Produce("trigger", key, bytes)
+	err := e.AutoTransferVaultToken(&req)
 	if err != nil {
-		e.log.Error(err, "Produce error")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[e.actionVaultTransfer] - failed to transfer vault token")
 	}
+
 	return err
 }
