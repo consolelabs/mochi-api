@@ -19,6 +19,11 @@ func isMemberNotFoundErr(msg string) bool {
 	return strings.Contains(msg, "404 not found") && strings.Contains(msg, "10007")
 }
 
+func IsRoleNotFoundErr(msg string) bool {
+	msg = strings.ToLower(msg)
+	return strings.Contains(msg, "404 not found") && strings.Contains(msg, "10011")
+}
+
 func IsAcceptableErr(err error) bool {
 	if err == nil {
 		return false

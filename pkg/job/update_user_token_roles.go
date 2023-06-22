@@ -9,31 +9,30 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type updateUserTokenRoles struct {
-	entity  *entities.Entity
-	service *service.Service
-	log     logger.Logger
-	opts    *UpdateUserTokenRolesOptions
+	entity *entities.Entity
+	log    logger.Logger
+	opts   *UpdateUserTokenRolesOptions
 }
 
 type UpdateUserTokenRolesOptions struct {
 	// GuildID is the guild ID to update token roles
 	GuildID string
+	//  RolesToRemove is a list of roles to remove from users when using cmd "/tokenrole remove"
+	RolesToRemove []string
 }
 
-func NewUpdateUserTokenRolesJob(e *entities.Entity, svc *service.Service, l logger.Logger, opts *UpdateUserTokenRolesOptions) Job {
+func NewUpdateUserTokenRolesJob(e *entities.Entity, opts *UpdateUserTokenRolesOptions) Job {
 	if opts == nil {
 		opts = &UpdateUserTokenRolesOptions{}
 	}
 	return &updateUserTokenRoles{
-		entity:  e,
-		service: svc,
-		log:     l,
-		opts:    opts,
+		entity: e,
+		log:    e.GetLogger(),
+		opts:   opts,
 	}
 }
 
@@ -54,10 +53,6 @@ func (job *updateUserTokenRoles) Run() error {
 
 	for _, guildId := range guildIDs {
 		_, err := job.entity.GetGuildById(guildId)
-		if util.IsAcceptableErr(err) {
-			job.log.Fields(logger.Fields{"guildId": guildId}).Infof("entity.GetGuildById - bot has no permission or access to this guild: %v", err)
-			continue
-		}
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
 			continue
@@ -72,7 +67,8 @@ func (job *updateUserTokenRoles) Run() error {
 
 func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 	l := job.log.Fields(logger.Fields{"guildId": guildID})
-	l.Info("[updateTokenRoles] starting")
+	l.Info("[updateTokenRoles] starting...")
+
 	trConfigs, err := job.entity.ListGuildTokenRoles(guildID)
 	if err != nil {
 		l.Error(err, "[updateTokenRoles] entity.ListGuildTokenRoles failed")
@@ -84,9 +80,15 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 		return nil
 	}
 
+	// we only manage discord roles that are in db
 	isTokenRoles := make(map[string]bool)
 	for _, trConfig := range trConfigs {
 		isTokenRoles[trConfig.RoleID] = true
+	}
+
+	// because we removed role from db before fetching them again, we need to keep track of roles to remove
+	for _, roleID := range job.opts.RolesToRemove {
+		isTokenRoles[roleID] = true
 	}
 
 	members, err := job.entity.ListGuildMembers(guildID)
@@ -103,37 +105,35 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 
 	for _, member := range members {
 		for _, roleID := range member.Roles {
-			if isTokenRoles[roleID] {
-				key := [2]string{member.User.ID, roleID}
-				valid, ok := rolesToAdd[key]
-				// if error occurs while fetching balance -> skip
-				if ok && !valid {
-					continue
-				}
-
-				// if user already has the role -> no need to add and skip removing
-				if ok && valid {
-					delete(rolesToAdd, key)
-					continue
-				}
-
-				// if not a role to add -> remove
-				gMemberRoleLog := job.log.Fields(logger.Fields{
-					"guildId": guildID,
-					"userId":  member.User.ID,
-					"roleId":  roleID,
-				})
-				err = job.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
-				if util.IsAcceptableErr(err) {
-					gMemberRoleLog.Infof("[updateTokenRoles] entity.RemoveGuildMemberRole failed: %v", err)
-					continue
-				}
-				if err != nil {
-					gMemberRoleLog.Error(err, "[updateTokenRoles] entity.RemoveGuildMemberRole failed")
-					continue
-				}
-				gMemberRoleLog.Info("[updateTokenRoles] entity.RemoveGuildMemberRole executed successfully")
+			if !isTokenRoles[roleID] {
+				continue
 			}
+
+			key := [2]string{member.User.ID, roleID}
+			valid, ok := rolesToAdd[key]
+			// if error occurs while fetching balance -> skip
+			if ok && !valid {
+				continue
+			}
+
+			// if user already has the role -> no need to add and skip removing
+			if ok && valid {
+				delete(rolesToAdd, key)
+				continue
+			}
+
+			// if not a role to add -> remove
+			gMemberRoleLog := job.log.Fields(logger.Fields{
+				"guildId": guildID,
+				"userId":  member.User.ID,
+				"roleId":  roleID,
+			})
+			err = job.entity.RemoveGuildMemberRole(guildID, member.User.ID, roleID)
+			if err != nil {
+				gMemberRoleLog.Error(err, "[updateTokenRoles] entity.RemoveGuildMemberRole failed")
+				continue
+			}
+			gMemberRoleLog.Info("[updateTokenRoles] entity.RemoveGuildMemberRole executed successfully")
 		}
 	}
 
@@ -156,18 +156,24 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 			"roleId":  roleID,
 		})
 		err = job.entity.AddGuildMemberRole(guildID, userID, roleID)
-		if util.IsAcceptableErr(err) {
-			gMemberRoleLog.Infof("[updateTokenRole] entity.AddGuildMemberRole failed: %v", err)
-			continue
-		}
 		if err != nil {
 			gMemberRoleLog.Error(err, "[updateTokenRole] entity.AddGuildMemberRole failed")
+			// if role is not found in discord, remove it from db
+			if util.IsRoleNotFoundErr(err.Error()) {
+				gMemberRoleLog.Infof("[updateTokenRole] entity.AddGuildMemberRole - remove role from db")
+				for _, trConfig := range trConfigs {
+					if trConfig.RoleID == roleID {
+						job.entity.RemoveGuildTokenRole(trConfig.ID)
+						break
+					}
+				}
+			}
 			continue
 		}
 
 		// send logs to moderation channel
 		gMemberRoleLog.Info("[updateTokenRole] entity.AddGuildMemberRole executed successfully")
-		err := job.service.Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
+		err := job.entity.GetSvc().Discord.SendUpdateRolesLog(guildID, guild.LogChannel, userID, roleID, "nft-role")
 		if err != nil {
 			job.log.Fields(logger.Fields{
 				"guildId":   guildID,

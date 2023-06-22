@@ -138,8 +138,8 @@ func Get() *Entity {
 func (e *Entity) GetSvc() *service.Service {
 	return e.svc
 }
-func (e *Entity) GetLogger() *logger.Logger {
-	return &e.log
+func (e *Entity) GetLogger() logger.Logger {
+	return e.log
 }
 
 func Shutdown() error {
