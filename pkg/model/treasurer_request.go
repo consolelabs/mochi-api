@@ -16,6 +16,7 @@ type TreasurerRequest struct {
 	Chain               string                `json:"chain"`
 	Token               string                `json:"token"`
 	Address             string                `json:"address"`
+	MessageUrl          string                `json:"message_url"`
 	CreatedAt           time.Time             `json:"created_at"`
 	UpdatedAt           time.Time             `json:"updated_at"`
 	DeletedAt           *time.Time            `json:"deleted_at"`
