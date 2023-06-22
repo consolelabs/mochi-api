@@ -12,22 +12,28 @@ import (
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 )
 
-func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.TreasurerSubmission, treasurerReq *model.TreasurerRequest) *message.VaultVoteTreasurer {
+func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.TreasurerSubmission, treasurerReq *model.TreasurerRequest) (*message.VaultVoteTreasurer, map[string]string) {
 	daoVaultTotalTreasurer := make(map[string]string)
+	daoVaultTotalTreasurerProposal := make(map[string]string)
 	for _, treasurerSubmission := range treasurerSubmissions {
-		if treasurerSubmission.Submitter == req.Sumitter {
-			continue
-		}
-
 		treasurerProfileId, err := e.svc.MochiProfile.GetByDiscordID(treasurerSubmission.Submitter, true)
 		if err != nil {
 			continue
 		}
+
 		if treasurerSubmission.Status == "pending" {
 			treasurerSubmission.Status = "waiting"
 		}
-		daoVaultTotalTreasurer[treasurerProfileId.ID] = treasurerSubmission.Status
+
+		// if for vote no need, proposal need
+		if treasurerSubmission.Submitter == req.Sumitter {
+			daoVaultTotalTreasurerProposal[treasurerProfileId.ID] = treasurerSubmission.Status
+		} else {
+			daoVaultTotalTreasurerProposal[treasurerProfileId.ID] = treasurerSubmission.Status
+			daoVaultTotalTreasurer[treasurerProfileId.ID] = treasurerSubmission.Status
+		}
 	}
+
 	switch req.Type {
 	case "add":
 		return &message.VaultVoteTreasurer{
@@ -44,7 +50,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				DaoGuild:                 vault.DiscordGuild.Name,
 				DaoVault:                 vault.Name,
 				// Message:                  "New treasurer request",
-				// MessageUrl: "https://mochi.defipod.com/vaults/" + vault.Name + "/treasurers/" + submitterProfile.ID,
+				MessageUrl:             treasurerReq.MessageUrl,
 				DaoVaultTotalTreasurer: daoVaultTotalTreasurer,
 				Action: message.VaultAction{
 					Type: "change-treasurer",
@@ -54,7 +60,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 					},
 				},
 			},
-		}
+		}, daoVaultTotalTreasurerProposal
 	case "remove":
 		return &message.VaultVoteTreasurer{
 			Type: "vault-vote",
@@ -70,7 +76,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				DaoGuild:                 vault.DiscordGuild.Name,
 				DaoVault:                 vault.Name,
 				// Message:                  "New treasurer request",
-				// MessageUrl: "https://mochi.defipod.com/vaults/" + vault.Name + "/treasurers/" + submitterProfile.ID,
+				MessageUrl:             treasurerReq.MessageUrl,
 				DaoVaultTotalTreasurer: daoVaultTotalTreasurer,
 				Action: message.VaultAction{
 					Type: "change-treasurer",
@@ -80,11 +86,11 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 					},
 				},
 			},
-		}
+		}, daoVaultTotalTreasurerProposal
 	case "transfer":
 		token, err := e.svc.MochiPay.GetToken(treasurerReq.Token, treasurerReq.Chain)
 		if err != nil {
-			return nil
+			return nil, daoVaultTotalTreasurerProposal
 		}
 
 		amountInNumber, _ := strconv.ParseFloat(treasurerReq.Amount, 64)
@@ -103,7 +109,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				DaoGuild:                 vault.DiscordGuild.Name,
 				DaoVault:                 vault.Name,
 				// Message:                  "New treasurer request",
-				// MessageUrl: "https://mochi.defipod.com/vaults/" + vault.Name + "/treasurers/" + submitterProfile.ID,
+				MessageUrl:             treasurerReq.MessageUrl,
 				DaoVaultTotalTreasurer: daoVaultTotalTreasurer,
 				Action: message.VaultAction{
 					Type: "transfer",
@@ -116,8 +122,8 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 					},
 				},
 			},
-		}
+		}, daoVaultTotalTreasurerProposal
 	default:
-		return &message.VaultVoteTreasurer{}
+		return &message.VaultVoteTreasurer{}, daoVaultTotalTreasurerProposal
 	}
 }

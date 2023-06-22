@@ -498,6 +498,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		Chain:         req.Chain,
 		Token:         req.Token,
 		Address:       req.Address,
+		MessageUrl:    req.MessageUrl,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.Create failed")
@@ -514,11 +515,12 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		}
 
 		treasurerSubmission = append(treasurerSubmission, model.TreasurerSubmission{
-			VaultId:   vault.Id,
-			GuildId:   req.GuildId,
-			RequestId: treasurerReq.Id,
-			Status:    status,
-			Submitter: treasurer.UserDiscordId,
+			VaultId:    vault.Id,
+			GuildId:    req.GuildId,
+			RequestId:  treasurerReq.Id,
+			Status:     status,
+			Submitter:  treasurer.UserDiscordId,
+			MessageUrl: req.MessageUrl,
 		})
 	}
 
@@ -748,7 +750,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	}
 
 	// noti for this submission of treasurer
-	voteMessage := e.formatVoteVaultMessage(req, resp, submitterProfile, changerProfile, vault, submissions, treasurerReq)
+	voteMessage, daoVaultTotalTreasurerProposal := e.formatVoteVaultMessage(req, resp, submitterProfile, changerProfile, vault, submissions, treasurerReq)
 	byteNotification, _ := json.Marshal(voteMessage)
 
 	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
@@ -758,7 +760,9 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	}
 
 	// noti result of this request to user
+	time.Sleep(3 * time.Second)
 	voteMessage.Type = "vault-proposal"
+	voteMessage.VaultVoteMetadata.DaoVaultTotalTreasurer = daoVaultTotalTreasurerProposal
 	if resp.VoteResult.IsApproved {
 		err = e.repo.TreasurerRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
 		if err != nil {

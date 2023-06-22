@@ -50,6 +50,7 @@ type CreateTreasurerRequest struct {
 	Chain         string `json:"chain"`
 	Token         string `json:"token"`
 	Address       string `json:"address"`
+	MessageUrl    string `json:"message_url"`
 }
 
 type TransferVaultTokenRequest struct {
