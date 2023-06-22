@@ -17,24 +17,42 @@ type updateUserTokenRoles struct {
 	entity  *entities.Entity
 	service *service.Service
 	log     logger.Logger
+	opts    *UpdateUserTokenRolesOptions
 }
 
-func NewUpdateUserTokenRolesJob(e *entities.Entity, svc *service.Service, l logger.Logger) Job {
+type UpdateUserTokenRolesOptions struct {
+	// GuildID is the guild ID to update token roles
+	GuildID string
+}
+
+func NewUpdateUserTokenRolesJob(e *entities.Entity, svc *service.Service, l logger.Logger, opts *UpdateUserTokenRolesOptions) Job {
+	if opts == nil {
+		opts = &UpdateUserTokenRolesOptions{}
+	}
 	return &updateUserTokenRoles{
 		entity:  e,
 		service: svc,
 		log:     l,
+		opts:    opts,
 	}
 }
 
 func (job *updateUserTokenRoles) Run() error {
-	guildIds, err := job.entity.ListTokenRoleConfigGuildIds()
-	if err != nil {
-		job.log.Error(err, "entity.ListTokenRoleConfigGuildIds failed")
-		return err
+	guildIDs := []string{}
+	var err error
+
+	switch {
+	case job.opts.GuildID != "":
+		guildIDs = append(guildIDs, job.opts.GuildID)
+	default:
+		guildIDs, err = job.entity.ListTokenRoleConfigGuildIds()
+		if err != nil {
+			job.log.Error(err, "entity.ListTokenRoleConfigGuildIds failed")
+			return err
+		}
 	}
 
-	for _, guildId := range guildIds {
+	for _, guildId := range guildIDs {
 		_, err := job.entity.GetGuildById(guildId)
 		if util.IsAcceptableErr(err) {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Infof("entity.GetGuildById - bot has no permission or access to this guild: %v", err)
@@ -155,7 +173,7 @@ func (job *updateUserTokenRoles) updateTokenRoles(guildID string) error {
 				"guildId":   guildID,
 				"channelId": guild.LogChannel,
 				"roleId":    roleID,
-			}).Info("[updateTokenRole] service.Discord.SendUpdateRolesLog failed")
+			}).Error(err, "[updateTokenRole] service.Discord.SendUpdateRolesLog failed")
 			continue
 		}
 	}

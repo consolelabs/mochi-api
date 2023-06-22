@@ -31,7 +31,7 @@ func (j *fetchDiscordUsers) Run() error {
 			j.log.Fields(logger.Fields{"guild": guild.ID}).Error(err, "entity.FetchAndSaveGuildMembers() failed")
 			continue
 		}
-		j.log.Fields(logger.Fields{"guild": guild.ID, "users": users}).Error(err, "entity.FetchAndSaveGuildMembers() done")
+		j.log.Fields(logger.Fields{"guild": guild.ID, "users": users}).Info("entity.FetchAndSaveGuildMembers() done")
 	}
 	return nil
 }

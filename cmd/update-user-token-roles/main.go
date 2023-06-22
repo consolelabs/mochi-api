@@ -24,7 +24,7 @@ func main() {
 	}
 
 	log.Info("start job updateUserRoles ...")
-	if err := job.NewUpdateUserTokenRolesJob(entities.Get(), svc, log).Run(); err != nil {
+	if err := job.NewUpdateUserTokenRolesJob(entities.Get(), svc, log, nil).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 		return
 	}
