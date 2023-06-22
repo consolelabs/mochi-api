@@ -83,6 +83,7 @@ type MochiPayVaultRequest struct {
 	Reciever   string   `json:"receiver"`
 	Message    string   `json:"message"`
 	ListNotify []string `json:"list_notify"`
+	RequestId  int64    `json:"request_id"`
 }
 
 type GetVaultsRequest struct {
