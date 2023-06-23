@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
+	"github.com/go-rod/rod"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -44,6 +45,7 @@ type Entity struct {
 	marketplace marketplace.Service
 	solana      chain.Solana
 	kafka       kafka.Kafka
+	browserPage *rod.Page
 }
 
 var e *Entity
@@ -90,6 +92,11 @@ func Init(cfg config.Config, log logger.Logger) error {
 		log.Fatal(err, "failed to init redis cache")
 	}
 
+	// rod browser
+	// browser := rod.New().Timeout(time.Minute).MustConnect()
+	// launcher.NewBrowser().MustGet()
+	// page := stealth.MustPage(browser)
+
 	service, err := service.NewService(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init service")
@@ -121,6 +128,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
+		// browserPage: page,
 	}
 
 	if e.discord != nil && e.cache != nil {
@@ -195,7 +203,7 @@ func (e *Entity) initInviteTrackerCache() error {
 	return nil
 }
 
-func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service, abi abi.Service, marketplace marketplace.Service) *Entity {
+func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service, abi abi.Service, marketplace marketplace.Service, page *rod.Page) *Entity {
 	return &Entity{
 		repo:        repo,
 		store:       store,
@@ -208,5 +216,6 @@ func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store
 		indexer:     indexer,
 		abi:         abi,
 		marketplace: marketplace,
+		browserPage: page,
 	}
 }

@@ -25,7 +25,7 @@ func TestHandler_LinkUserTelegramWithDiscord(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -111,7 +111,7 @@ func TestHandler_GetLinkedTelegram(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -152,7 +152,7 @@ func TestHandler_GetAllTwitterConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -193,7 +193,7 @@ func TestHandler_GetTwitterHashtagConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -234,7 +234,7 @@ func TestHandler_GetAllTwitterHashtagConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -275,7 +275,7 @@ func TestHandler_GetTwitterBlackList(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -316,7 +316,7 @@ func TestHandler_DeleteTwitterHashtagConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -357,7 +357,7 @@ func TestHandler_DeleteFromTwitterBlackList(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,

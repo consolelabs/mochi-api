@@ -25,7 +25,7 @@ func TestHandler_GetGmConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -76,7 +76,7 @@ func TestHandler_UpsertGmConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -126,7 +126,7 @@ func TestHandler_GetInviteTrackerConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -178,7 +178,7 @@ func TestHandler_ConfigureInvites(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -245,7 +245,7 @@ func TestHandler_GetWelcomeChannelConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -291,7 +291,7 @@ func TestHandler_GetVoteChannelConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -337,7 +337,7 @@ func TestHandler_GetJoinLeaveChannelConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -383,7 +383,7 @@ func TestHandler_ListConfigNotify(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,

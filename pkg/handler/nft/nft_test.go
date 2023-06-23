@@ -37,7 +37,7 @@ import (
 // 	repo := pg.NewRepo(db)
 // 	log := logger.NewLogrusLogger()
 // 	s := pg.NewPostgresStore(&cfg)
-// 	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, nil, nil, nil)
+// 	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, nil, nil, nil,nil)
 
 // 	type fields struct {
 // 		entities *entities.Entity
@@ -91,7 +91,7 @@ func TestHandler_GetNFTDetail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	indexerMock := mock_indexer.NewMockService(ctrl)
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, indexerMock, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, nil, indexerMock, nil, nil, nil)
 
 	tests := []struct {
 		name              string
@@ -254,7 +254,7 @@ func TestHandler_CreateNFTCollection(t *testing.T) {
 	abiMock := mock_abi.NewMockService(ctrl)
 	discordMock := mock_discord.NewMockService(ctrl)
 	svc.Discord = discordMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, indexerMock, abiMock, marketplaceMock)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, indexerMock, abiMock, marketplaceMock, nil)
 
 	marketplaceDataRabby := response.OpenseaAssetContractResponse{
 		Address: "0x7D1070fdbF0eF8752a9627a79b00221b53F231fA",

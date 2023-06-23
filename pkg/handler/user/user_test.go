@@ -27,7 +27,7 @@ func TestHandler_GetUserCurrentGMStreak(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -84,7 +84,7 @@ func TestHandler_GetInvitesLeaderboard(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -138,7 +138,7 @@ func TestHandler_InvitesAggregation(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -219,7 +219,7 @@ func TestHandler_GetUserProfile(t *testing.T) {
 	defer ctrl.Finish()
 	processorMock := mock_processor.NewMockService(ctrl)
 	svc.Processor = processorMock
-	entity := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 
 	tests := []struct {
 		name              string
@@ -272,7 +272,7 @@ func TestHandler_GetTopUsers(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,

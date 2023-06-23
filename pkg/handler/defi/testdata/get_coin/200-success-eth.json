@@ -3,54 +3,54 @@
     "id": "ethereum",
     "name": "Ethereum",
     "symbol": "eth",
-    "market_cap_rank": 2,
     "asset_platform_id": "",
     "asset_platform": null,
-    "contract_address": "",
-    "block_time_in_minutes": 0,
-    "developer_data": null,
-    "coingecko_score": 0,
-    "coingecko_rank": 0,
-    "genesis_date": null,
-    "community_data": null,
-    "hashing_algorithm": null,
     "platforms": null,
-    "detail_platforms": null,
-    "links": null,
-    "localization": null,
+    "block_time_in_minutes": 0,
+    "hashing_algorithm": null,
     "categories": null,
+    "localization": null,
+    "description": {
+      "en": "eth"
+    },
+    "links": null,
     "image": {
       "thumb": "https://assets.coingecko.com/coins/images/279/thumb/ethereum.png?1595348880",
       "small": "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
       "large": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
     },
+    "genesis_date": null,
+    "sentiment_votes_up_percentage": 0,
+    "sentiment_votes_down_percentage": 0,
+    "watchlist_users": 0,
+    "market_cap_rank": 2,
+    "coingecko_rank": 0,
+    "coingecko_score": 0,
     "market_data": {
-      "ath": null,
-      "ath_change_percentage": null,
-      "ath_date": null,
-      "atl": null,
-      "total_supply": 0,
-      "circulating_supply": 0,
-      "market_cap_rank": 0,
-      "mcap_to_tvl_ratio": null,
-      "roi": null,
-      "max_supply": 0,
-      "high_24h": null,
-      "low_24h": null,
-      "fdv_to_tvl_ratio": null,
-      "fully_diluted_valuation": null,
-      "total_value_locked": null,
-      "total_volume": null,
       "current_price": {
         "usd": 1447.1,
         "vef": 144.9,
         "vnd": 33905901
       },
+      "total_value_locked": null,
+      "mcap_to_tvl_ratio": null,
+      "fdv_to_tvl_ratio": null,
+      "roi": null,
+      "ath": null,
+      "ath_change_percentage": null,
+      "ath_date": null,
+      "atl": null,
       "market_cap": {
         "usd": 174483196724,
         "vef": 17471002488,
         "vnd": 4088172593861496
       },
+      "market_cap_rank": 0,
+      "total_market_cap": null,
+      "total_volume": null,
+      "fully_diluted_valuation": null,
+      "high_24h": null,
+      "low_24h": null,
       "price_change_24h": 0,
       "price_change_percentage_24h": 0,
       "price_change_percentage_7d": 0,
@@ -82,11 +82,12 @@
       "price_change_percentage_1y_in_currency": null,
       "market_cap_change_24h_in_currency": null,
       "market_cap_change_percentage_24h_in_currency": null,
-      "total_market_cap": null
+      "total_supply": 0,
+      "max_supply": 0,
+      "circulating_supply": 0
     },
-    "sentiment_votes_up_percentage": 0,
-    "sentiment_votes_down_percentage": 0,
-    "watchlist_users": 0,
+    "community_data": null,
+    "developer_data": null,
     "tickers": [
       {
         "base": "ETH",
@@ -110,8 +111,38 @@
         "target_coin_id": "tether"
       }
     ],
-    "description": {
-      "en": "eth"
+    "contract_address": "",
+    "detail_platforms": null,
+    "coingecko_info": {
+      "contracts": null,
+      "websites": {
+        "ethereum.org": "https://www.ethereum.org/"
+      },
+      "explorers": {
+        "3xpl": "https://3xpl.com/ethereum",
+        "Blockchair": "https://blockchair.com/ethereum",
+        "Etherscan": "https://etherscan.io/",
+        "Ethplorer": "https://ethplorer.io/",
+        "Oklink": "https://www.oklink.com/eth",
+        "Tokenview": "https://eth.tokenview.io/"
+      },
+      "wallets": {
+        "Coin98": "https://coin98.com/wallet",
+        "Ledger": "https://gcko.io/ledger",
+        "Metamask": "https://gcko.io/metamask",
+        "SafePal": "https://gcko.io/safepal",
+        "Xdefi": "https://www.xdefi.io/"
+      },
+      "communities": {
+        "Discord": "https://discord.com/invite/CetY6Y4",
+        "Reddit": "https://reddit.com/r/ethereum",
+        "Twitter": "https://twitter.com/ethereum"
+      },
+      "tags": {
+        "Ethereum Ecosystem": "https://www.coingecko.com/en/categories/ethereum-ecosystem",
+        "Layer 1 (L1)": "https://www.coingecko.com/en/categories/layer-1",
+        "Smart Contract Platform": "https://www.coingecko.com/en/categories/smart-contract-platform"
+      }
     }
   }
 }

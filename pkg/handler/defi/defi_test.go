@@ -6,8 +6,12 @@ import (
 	"io/ioutil"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
+	"github.com/go-rod/stealth"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
@@ -36,7 +40,13 @@ func TestHandler_GetCoin(t *testing.T) {
 	defer ctrl.Finish()
 	coingeckoMock := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = coingeckoMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+
+	// rod browser
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	launcher.NewBrowser().MustGet()
+	page := stealth.MustPage(browser)
+
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, page)
 	tests := []struct {
 		name              string
 		coinID            string
@@ -163,7 +173,7 @@ func TestHandler_GetUserWatchlist(t *testing.T) {
 	defer ctrl.Finish()
 	coingeckoMock := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = coingeckoMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entityMock,
@@ -250,7 +260,7 @@ func TestHandler_AddToWatchlist(t *testing.T) {
 	defer ctrl.Finish()
 	coingeckoMock := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = coingeckoMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 	h := &Handler{
 		entities: entityMock,
 		log:      log,
@@ -356,7 +366,7 @@ func TestHandler_RemoveFromWatchlist(t *testing.T) {
 	defer ctrl.Finish()
 	coingeckoMock := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = coingeckoMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 	h := &Handler{
 		entities: entityMock,
 		log:      log,
@@ -415,7 +425,7 @@ func TestHandler_SearchCoins(t *testing.T) {
 	defer ctrl.Finish()
 	coingeckoMock := mock_coingecko.NewMockService(ctrl)
 	svc.CoinGecko = coingeckoMock
-	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil)
+	entityMock := entities.New(cfg, log, repo, s, nil, nil, nil, svc, nil, nil, nil, nil)
 	h := &Handler{
 		entities: entityMock,
 		log:      log,

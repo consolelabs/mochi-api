@@ -54,7 +54,7 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 	abi := abi.NewAbi(&cfg)
 	marketplace := marketplace.NewMarketplace(&cfg)
 
-	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer, abi, marketplace)
+	e := entities.New(cfg, l, repo, s, &discordwallet.DiscordWallet{}, nil, cache, nil, indexer, abi, marketplace, nil)
 
 	h := Handler{
 		entities: e,
