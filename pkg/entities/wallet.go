@@ -1033,7 +1033,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 
 	totalAssetValue := 0.0
 	if len(value) == 0 {
-		asset, err := e.SummarizeAsset(req.Id, req.ApiKey, req.ApiSecret)
+		asset, err := e.SummarizeFundingAsset(req.Id, req.ApiKey, req.ApiSecret)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get binance asset")
 			return nil, err
@@ -1079,7 +1079,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}, err
 }
 
-func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]response.WalletAssetData, error) {
+func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
@@ -1099,50 +1099,36 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) ([]respon
 		return nil, baseerr.ErrProfileNotLinkBinance
 	}
 
-	asset, err := e.SummarizeAsset(req.Id, apiKey, apiSecret)
+	// get data asset from binance or cache
+	fundingAsset, err := e.SummarizeFundingAsset(req.Id, apiKey, apiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance asset")
 		return nil, err
 	}
 
-	// btc price
-	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
+	earnAsset, err := e.SummarizeEarnAsset(req.Id, apiKey, apiSecret)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance asset")
 		return nil, err
 	}
 
-	resp := make([]response.WalletAssetData, 0)
-	for _, asset := range asset {
-		// filter dust
-		if asset.Free == "0" {
-			continue
-		}
-
-		assetValue, err := strconv.ParseFloat(asset.Free, 64)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
-			return nil, err
-		}
-
-		btcValuation, err := strconv.ParseFloat(asset.BtcValuation, 64)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
-			return nil, err
-		}
-
-		resp = append(resp, response.WalletAssetData{
-			AssetBalance: assetValue,
-			Amount:       util.FloatToString(fmt.Sprint(assetValue), 18),
-			Token: response.AssetToken{
-				Symbol:  asset.Asset,
-				Decimal: 18,
-				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
-			},
-		})
+	// format asset
+	formatFundingAsset, err := e.FormatAsset(fundingAsset)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to format asset")
+		return nil, err
 	}
 
-	return resp, nil
+	formatEarnAsset, err := e.FormatAsset(earnAsset)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to format asset")
+		return nil, err
+	}
+
+	return &response.GetBinanceAsset{
+		Asset: formatFundingAsset,
+		Earn:  formatEarnAsset,
+	}, nil
 }
 
 func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {

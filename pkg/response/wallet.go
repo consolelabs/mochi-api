@@ -179,3 +179,8 @@ type AxieItemPart struct {
 	ID    string `json:"id"`
 	Class string `json:"class"`
 }
+
+type GetBinanceAsset struct {
+	Asset []WalletAssetData `json:"asset"`
+	Earn  []WalletAssetData `json:"earn"`
+}
