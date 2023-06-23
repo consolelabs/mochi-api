@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type BinanceAsset struct {
@@ -199,4 +200,84 @@ func (e *Entity) SummarizeAsset(profileId, apiKey, apiSecret string) (finalAsset
 	finalAsset = mergeAsset(userFundingPosAsset, lendingAcc)
 
 	return finalAsset, nil
+}
+
+func (e *Entity) SummarizeFundingAsset(profileId, apiKey, apiSecret string) (userFundingAsset []response.BinanceUserAssetResponse, err error) {
+	userAsset, err := e.svc.Binance.GetUserAsset(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId, "apiKey": apiKey, "apiSecret": apiSecret}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get user asset binance")
+		return nil, err
+	}
+
+	// get funding asset
+	fundingAsset, err := e.svc.Binance.GetFundingAsset(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId, "apiKey": apiKey, "apiSecret": apiSecret}).Error(err, "[entities.GetBinanceAssets] Failed to get binance funding asset")
+		return nil, err
+	}
+
+	userFundingAsset = mergeAsset(userAsset, fundingAsset)
+
+	return userFundingAsset, nil
+}
+
+func (e *Entity) SummarizeEarnAsset(profileId, apiKey, apiSecret string) (earnAsset []response.BinanceUserAssetResponse, err error) {
+	// get staking position asset
+	pos, err := e.GetStakingProduct(profileId, apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId, "apiKey": apiKey, "apiSecret": apiSecret}).Error(err, "[entities.GetBinanceAssets] Failed to get binance staking position asset")
+		return nil, err
+	}
+
+	// get lending acc asset
+	lendingAcc, err := e.GetLendingAccount(profileId, apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId, "apiKey": apiKey, "apiSecret": apiSecret}).Error(err, "[entities.GetBinanceAssets] Failed to get binance lending account asset")
+		return nil, err
+	}
+
+	earnAsset = mergeAsset(pos, lendingAcc)
+
+	return earnAsset, nil
+}
+
+func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]response.WalletAssetData, error) {
+	// btc price
+	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
+	if err != nil {
+		e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		return nil, err
+	}
+
+	resp := make([]response.WalletAssetData, 0)
+	for _, asset := range assets {
+		// filter dust
+		if asset.Free == "0" {
+			continue
+		}
+
+		assetValue, err := strconv.ParseFloat(asset.Free, 64)
+		if err != nil {
+			e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+			return nil, err
+		}
+
+		btcValuation, err := strconv.ParseFloat(asset.BtcValuation, 64)
+		if err != nil {
+			e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+			return nil, err
+		}
+
+		resp = append(resp, response.WalletAssetData{
+			AssetBalance: assetValue,
+			Amount:       util.FloatToString(fmt.Sprint(assetValue), 18),
+			Token: response.AssetToken{
+				Symbol:  asset.Asset,
+				Decimal: 18,
+				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
+			},
+		})
+	}
+
+	return resp, nil
 }
