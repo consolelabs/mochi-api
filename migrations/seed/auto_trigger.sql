@@ -12,8 +12,8 @@ INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (9, '
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (10, 'Action transfer vault', 'vaultTransfer', '', now());
 
 -- Seed data trigger
-INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (1, '711823851117608990', '711823390000021556', 'Trigger when send Message', true, now(), now());
-INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (2, '711823851117608990', '711823390000021556', 'React heart in general', true, now(), now());
+INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (1, '462663954813157376', '567326528216760320', 'Trigger when send Message', true, now(), now());
+INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (2, '462663954813157376', '567326528216760320', 'React heart in general', true, now(), now());
 
 -- Seed data
 INSERT INTO "public"."auto_actions" ("id", "user_ids", "trigger_id", "type_id", "channel_ids", "index", "action_data", "name", "content", "then_action_id", "limit_per_user", "created_at") VALUES
@@ -44,11 +44,11 @@ INSERT INTO public.auto_embed_videos(id, embed_id, url, height, width, created_a
 
 
 -- Seed data to action transfer vault
-INSERT INTO public.auto_actions(id,  trigger_id, type_id, channel_ids, name, content, action_data, created_at) VALUES (4, 2, 10, '', 'Transfer vault 1', 'Transfer vault by address', '{
+INSERT INTO public.auto_actions(id,  trigger_id, type_id, channel_ids, name, content, action_data, created_at, index) VALUES (4, 2, 10, '', 'Transfer vault 1', 'Transfer vault by address', '{
     "discord_guild_id": "711823851117608990",
     "vault_id": 2,
     "message": "Send money to treasurer",
     "chain": "137",
     "token": "matic",
     "amount": "0.00001"
-}', now());
+}', now(), 4);
