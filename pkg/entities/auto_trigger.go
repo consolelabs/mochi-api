@@ -10,10 +10,12 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/k0kubun/pp"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"gorm.io/gorm"
 )
 
 type KafkaNotification struct {
@@ -45,7 +47,8 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	if message.Content != "" {
 		messageType = "createMessage"
 	} else if message.ReactionCount > 0 {
-		messageType = "reactionAdd"
+		// TODO: ?????
+		messageType = "totalReact"
 	}
 
 	for _, autoTrigger := range autoTriggers {
@@ -58,6 +61,9 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 				break
 			}
 
+			pp.Println("condition", condition)
+			pp.Println("message", message)
+
 			err, ok := e.AutoCheckConditions(condition, message)
 			if err != nil || !ok {
 				break
@@ -65,6 +71,7 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 			triggerMatch = true
 		}
 
+		pp.Println("triggerMatch", triggerMatch)
 		if triggerMatch {
 			// trigger match, execute action
 			e.DoAction(autoTrigger.Actions, message)
@@ -81,6 +88,7 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 		channels := strings.Split(condition.ChannelId, ",")
 		for _, channel := range channels {
 			if channel != message.ChannelId {
+				pp.Println("1")
 				return nil, false
 			}
 		}
@@ -91,6 +99,7 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 		userIds := strings.Split(condition.UserIds, ",")
 		for _, userId := range userIds {
 			if userId != message.UserID {
+				pp.Println("2")
 				return nil, false
 			}
 		}
@@ -99,6 +108,7 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 	// Loop all condition value of this condition
 	err, ok := e.AutoCheckConditionValues(condition.ConditionValues, 0, message)
 	if err != nil || !ok {
+		pp.Println("3")
 		return err, false
 	}
 
@@ -106,6 +116,7 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 	for _, childCondition := range condition.ChildConditions {
 		err, ok := e.AutoCheckConditions(childCondition, message)
 		if err != nil || !ok {
+			pp.Println("4")
 			return err, false
 		}
 	}
@@ -115,6 +126,7 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 // parse the type and check call condition value of a condition
 func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionValue, index int, message request.AutoTriggerRequest) (error, bool) {
 	valid := false
+	pp.Println("conditionValue[index].Type.Type", conditionValue[index].Type.Type)
 	err := error(nil)
 	switch conditionValue[index].Type.Type {
 	case "createMessage":
@@ -126,11 +138,15 @@ func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionVa
 	// user react 10 Y in channel X to post K of User Z
 	case "totalReact":
 		err, valid = e.OperatorNumber(conditionValue[index].Operator, fmt.Sprintf("%v", message.ReactionCount), conditionValue[index].Matches)
-	// react A in channel X
+		// react A in channel X
 	case "reactType":
 		err, valid = e.OperatorString(conditionValue[index].Operator, message.Reaction, conditionValue[index].Matches)
 	case "userRole":
+		pp.Println("conditionValue[index].Operator", conditionValue[index].Operator)
+		pp.Println("message.UserRoles", message.UserRoles)
+		pp.Println("conditionValue[index].Matches", conditionValue[index].Matches)
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.UserRoles, conditionValue[index].Matches)
+		pp.Println("valid", valid)
 	case "authorRole":
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.AuthorRoles, conditionValue[index].Matches)
 	default:
@@ -283,9 +299,9 @@ func (e *Entity) OperatorRoles(operator string, userRoles []string, requiredRole
 
 func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) error {
 	for _, act := range action {
-		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id.UUID.String(), message.AuthorId, message.MessageId)
+		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id, message.AuthorId, message.MessageId)
 		if err != nil {
-			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error: action was existed")
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error: action was existed")
 			return err
 		}
 		if actionCount >= int64(act.LimitPerUser) {
@@ -311,20 +327,20 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 			e.log.Debug("Invalid action")
 		}
 		if err != nil {
-			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
 			return err
 		}
 
 		// save action history, TODO: should save action result for debug
 		err = e.repo.AutoActionHistory.Create(&model.AutoActionHistory{
 			TriggerId: act.TriggerId,
-			ActionId:  act.Id.UUID.String(),
+			ActionId:  act.Id,
 			UserId:    message.AuthorId,
 			MessageId: message.MessageId,
 			Total:     int(actionCount) + 1,
 		})
 		if err != nil {
-			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
 			return err
 		}
 
@@ -332,7 +348,7 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 		if act.ThenAction != nil {
 			err = e.DoAction([]model.AutoAction{*act.ThenAction}, message)
 			if err != nil {
-				e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id.UUID.String(), "UserId": message.AuthorId}).Error(err, "Do action error")
+				e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
 				return err
 			}
 		}

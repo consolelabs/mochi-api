@@ -18,9 +18,9 @@ func (pg *pg) Update(id string, field string, value interface{}) error {
 	return pg.db.Model(&model.AutoActionHistory{}).Where("id = ?", id).Update(field, value).Error
 }
 
-func (pq *pg) CountByTriggerActionUserMessage(triggerId, actionId, userId, messageId string) (int64, error) {
+func (pq *pg) CountByTriggerActionUserMessage(triggerId int64, actionId int64, userId string, messageId string) (int64, error) {
 	var count int64
-	err := pq.db.Model(&model.AutoActionHistory{}).Where("trigger_id = ? AND action_id = ? AND user_id = ? AND message_id = ?", triggerId, actionId, userId, messageId).Count(&count).Error
+	err := pq.db.Model(&model.AutoActionHistory{}).Where("trigger_id = ? AND action_id = ? AND user_discord_id = ? AND message_id = ?", triggerId, actionId, userId, messageId).Count(&count).Error
 	return count, err
 }
 
