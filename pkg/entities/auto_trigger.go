@@ -46,9 +46,12 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	messageType := "invalid"
 	if message.Content != "" {
 		messageType = "createMessage"
-	} else if message.ReactionCount > 0 {
+	} else if message.Reaction != "" {
 		// TODO: ?????
-		messageType = "totalReact"
+		messageType = "reactionAdd"
+	} else {
+		pp.Println("messageType", messageType)
+		return nil
 	}
 
 	for _, autoTrigger := range autoTriggers {
@@ -333,11 +336,11 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 
 		// save action history, TODO: should save action result for debug
 		err = e.repo.AutoActionHistory.Create(&model.AutoActionHistory{
-			TriggerId: act.TriggerId,
-			ActionId:  act.Id,
-			UserId:    message.AuthorId,
-			MessageId: message.MessageId,
-			Total:     int(actionCount) + 1,
+			TriggerId:     act.TriggerId,
+			ActionId:      act.Id,
+			UserDiscordId: message.AuthorId,
+			MessageId:     message.MessageId,
+			Total:         int(actionCount) + 1,
 		})
 		if err != nil {
 			e.log.Fields(logger.Fields{"TriggerId": act.TriggerId, "ActionId": act.Id, "UserId": message.AuthorId}).Error(err, "Do action error")
@@ -371,8 +374,8 @@ func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, disco
 		discordEmbed.Description = embed.Description
 		discordEmbed.URL = embed.Url
 
-		colorInt, _ := strconv.ParseInt(embed.Color[1:], 16, 32)
-		discordEmbed.Color = int(colorInt)
+		// colorInt, _ := strconv.ParseInt(embed.Color[1:], 16, 32)
+		// discordEmbed.Color = int(colorInt)
 
 		if len(embed.Thumbnail) > 0 {
 			discordEmbed.Thumbnail = &discordgo.MessageEmbedThumbnail{
