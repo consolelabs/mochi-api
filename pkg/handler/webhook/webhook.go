@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
+	"github.com/k0kubun/pp"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/entities"
@@ -127,51 +128,51 @@ func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member)
 }
 
 func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
-	message := &discordgo.Message{}
-	byteData, err := data.MarshalJSON()
-	if err != nil {
-		h.log.Error(err, "[handler.handleMessageCreate] - failed to json marshal data")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+	// message := &discordgo.Message{}
+	// byteData, err := data.MarshalJSON()
+	// if err != nil {
+	// 	h.log.Error(err, "[handler.handleMessageCreate] - failed to json marshal data")
+	// 	c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+	// 	return
+	// }
 
-	if err := discordgo.Unmarshal(byteData, &message); err != nil {
-		h.log.Error(err, "[handler.handleMessageCreate] - failed to unmarshal data")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+	// if err := discordgo.Unmarshal(byteData, &message); err != nil {
+	// 	h.log.Error(err, "[handler.handleMessageCreate] - failed to unmarshal data")
+	// 	c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+	// 	return
+	// }
 
-	err = h.entities.CreateGuildIfNotExists(message.GuildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] entity.CreateGuildIfNotExists() failed")
-	}
+	// err = h.entities.CreateGuildIfNotExists(message.GuildID)
+	// if err != nil {
+	// 	h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] entity.CreateGuildIfNotExists() failed")
+	// }
 
-	uActivity, err := h.entities.HandleDiscordMessage(message)
-	if err != nil {
-		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+	// uActivity, err := h.entities.HandleDiscordMessage(message)
+	// if err != nil {
+	// 	h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
+	// 	c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+	// 	return
+	// }
 
-	// TODO: use response data to send discord message to user
-	var resp *response.HandleUserActivityResponse
-	switch message.Type {
-	case consts.MessageTypeUserPremiumGuildSubscription:
-		resp, err = h.entities.BoostXPIncrease(message)
-	default:
-		if uActivity != nil {
-			// break if message was already handled
-			break
-		}
-		resp, err = h.entities.ChatXPIncrease(message)
-	}
-	if err != nil {
-		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle user activity")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
+	// // TODO: use response data to send discord message to user
+	// var resp *response.HandleUserActivityResponse
+	// switch message.Type {
+	// case consts.MessageTypeUserPremiumGuildSubscription:
+	// 	resp, err = h.entities.BoostXPIncrease(message)
+	// default:
+	// 	if uActivity != nil {
+	// 		// break if message was already handled
+	// 		break
+	// 	}
+	// 	resp, err = h.entities.ChatXPIncrease(message)
+	// }
+	// if err != nil {
+	// 	h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle user activity")
+	// 	c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+	// 	return
+	// }
 
-	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+	// c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
 
 func (h *Handler) handleGuildCreate(c *gin.Context, data json.RawMessage) {
@@ -495,8 +496,10 @@ func (h *Handler) WebhookSnapshotProposal(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
-func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessage) {
 
+func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessage) {
+	pp.Println(string(data))
+	h.log.Info("[handler.handleAutoTrigger] - handling auto trigger")
 	var req request.AutoTriggerRequest
 	byteData, err := data.MarshalJSON()
 	if err != nil {
