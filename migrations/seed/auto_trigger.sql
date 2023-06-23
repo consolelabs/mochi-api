@@ -23,18 +23,18 @@ INSERT INTO "public"."auto_actions" ("id", "user_ids", "trigger_id", "type_id", 
 
 
 -- Seed data condition
-INSERT INTO public.auto_conditions(id, trigger_id, type_id, channel_id, index, platform, updated_at, created_at) VALUES (1, 2, 3, '1072722777687199744', 1, 'discord', now(), now());
+INSERT INTO public.auto_conditions(id, trigger_id, type_id, channel_id, index, platform, updated_at, created_at) VALUES (1, 2, 2, '1072722777687199744', 1, 'discord', now(), now());
 
 -- Seed data condition values
 INSERT INTO "public"."auto_condition_values" ("id", "condition_id", "child_id", "type_id", "index", "operator", "matches", "created_at") VALUES
 (3, 1, NULL, 7, 1, 'in', '1115906135799648257,711823851117608990,820988147399393322,462663954813157376', '2023-06-23 06:00:13.571917'),
-(4, 1, NULL, 3, 2, '==', '<:pepeheart:867454854686048256>', '2023-06-23 06:00:33.452028');
+(4, 1, NULL, 9, 2, '==', '<:pepeheart:867454854686048256>', '2023-06-23 06:00:33.452028');
 
 INSERT INTO public.auto_embeds(id, author_id, action_id, title, description, color, url, type, fields, created_at)
 	VALUES (1, 'fbaca19d-4ecc-4627-92b6-81858536f921', 2, 'Embed 1', 'descript 1', '#000000', 'https://openai.com/research/measuring-goodharts-law', 'some types', 'any fields', now());
 
 INSERT INTO public.auto_embed_images(id, embed_id, url, proxy_url, height, width, created_at)
-	VALUES ('fb64b906-7e0c-4162-b79d-2f0690b543da', 1, 'https://cafefcdn.com/thumb_w/640/203337114487263232/2023/6/15/avatar1686801739290-16868017399091383965775.jpg', 'https://cafefcdn.com/thumb_w/640/203337114487263232/2023/6/15/avatar1686801739290-16868017399091383965775.jpg', 100, 100, now());
+	VALUES (1, 1, 'https://cafefcdn.com/thumb_w/640/203337114487263232/2023/6/15/avatar1686801739290-16868017399091383965775.jpg', 'https://cafefcdn.com/thumb_w/640/203337114487263232/2023/6/15/avatar1686801739290-16868017399091383965775.jpg', 100, 100, now());
 
 INSERT INTO public.auto_embed_footers(id, embed_id, text, icon_url, url, created_at)
 	VALUES (1, 1, 'Hello footer 1', 'icon', 'https://www.investopedia.com/terms/d/deltahedging.asp', now());
@@ -52,3 +52,7 @@ INSERT INTO public.auto_actions(id,  trigger_id, type_id, channel_ids, name, con
     "token": "matic",
     "amount": "0.00001"
 }', now(), 4);
+
+-- 
+INSERT INTO chains (id, name, rpc, api_base_url, api_key, tx_base_url, currency, short_name, coin_gecko_id) VALUES 
+(137, 'Polygon', 'https://rpc-mainnet.maticvigil.com/', 'https://polygonscan.com','https://polygonscan.com', '', 'MATIC', 'MATIC', 'polygon');

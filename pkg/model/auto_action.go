@@ -24,13 +24,13 @@ type AutoAction struct {
 }
 
 type AutoActionHistory struct {
-	Id        int64     `json:"id" swaggertype:"string"`
-	TriggerId int64     `json:"trigger_id" gorm:"not null"`
-	ActionId  int64     `json:"action_id" gorm:"not null"`
-	UserId    string    `json:"user_id" gorm:"not null"`
-	MessageId string    `json:"message_id" gorm:"not null"`
-	Total     int       `json:"total"`
-	CreatedAt time.Time `json:"created_at"`
+	Id            int64     `json:"id" swaggertype:"string"`
+	TriggerId     int64     `json:"trigger_id" gorm:"not null"`
+	ActionId      int64     `json:"action_id" gorm:"not null"`
+	UserDiscordId string    `json:"user_discord_id" gorm:"not null"`
+	MessageId     string    `json:"message_id" gorm:"not null"`
+	Total         int       `json:"total"`
+	CreatedAt     time.Time `json:"created_at"`
 
 	Action AutoAction `json:"auto_action" gorm:"foreignKey:ActionId;references:Id"`
 }

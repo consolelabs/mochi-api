@@ -25,7 +25,7 @@ func (pq *pg) CountByTriggerActionUserMessage(triggerId int64, actionId int64, u
 }
 
 func (pg *pg) FirstOrCreate(actionHistory *model.AutoActionHistory) error {
-	return pg.db.Where("trigger_id = ? AND action_id = ? AND user_id = ? AND message_id = ?", actionHistory.TriggerId, actionHistory.ActionId, actionHistory.UserId, actionHistory.MessageId).FirstOrCreate(actionHistory).Error
+	return pg.db.Where("trigger_id = ? AND action_id = ? AND user_id = ? AND message_id = ?", actionHistory.TriggerId, actionHistory.ActionId, actionHistory.UserDiscordId, actionHistory.MessageId).FirstOrCreate(actionHistory).Error
 }
 
 func (pg *pg) GetById(id string) (*model.AutoActionHistory, error) {
