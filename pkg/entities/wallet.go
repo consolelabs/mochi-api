@@ -392,7 +392,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err := e.cache.HashSet(address+"-eth", encodeData, 48*time.Hour)
+		err := e.cache.HashSet(address+"-eth", encodeData, 3*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, "", "", err
@@ -567,7 +567,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err := e.cache.HashSet(req.Address+"-sol", encodeData, 6*time.Hour)
+		err := e.cache.HashSet(req.Address+"-sol", encodeData, 3*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, "", "", err
@@ -654,7 +654,7 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err := e.cache.HashSet(req.Address+"-sol", encodeData, 6*time.Hour)
+		err := e.cache.HashSet(req.Address+"-sol", encodeData, 3*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, "", "", err
@@ -1161,7 +1161,7 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 	// cache farming data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 24*time.Hour)
+	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return res.Data.LiquidityPositions, nil
 }
@@ -1265,7 +1265,7 @@ func (e *Entity) ListEthWalletStaking(req request.ListWalletAssetsRequest) ([]re
 	// cache staking data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 24*time.Hour)
+	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return res, nil
 }
@@ -1343,33 +1343,52 @@ func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) (*respon
 
 	l := e.log.Fields(logger.Fields{"req": req})
 	// no cache -> re-fetch
-	// supported collections: AXIE
-	axies, err := e.listWalletAxies(req)
+	// supported chains: Ronin
+	nfts, err := e.listWalletAxieNfts(req)
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletNfts] listWalletAxies() failed")
+		l.Error(err, "[entity.ListEthWalletNfts] listWalletAxieNfts() failed")
 		return nil, err
 	}
 
-	data.Axies = axies
+	data = nfts
 
 	// cache nft data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(data)
-	e.cache.Set(key, string(bytes), 24*time.Hour)
+	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return data, nil
 }
 
-func (e *Entity) listWalletAxies(req request.ListWalletAssetsRequest) (*response.AxieNftResult, error) {
-	res, err := e.svc.Skymavis.GetOwnedAxies(strings.ToLower(req.Address))
+func (e *Entity) listWalletAxieNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
+	res, err := e.svc.Skymavis.GetOwnedNfts(strings.ToLower(req.Address))
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listWalletAxies] svc.Skymavis.GetOwnedAxies() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listWalletAxieNfts] svc.Skymavis.GetOwnedAxies() failed")
 		return nil, err
 	}
 
-	for i, item := range res.Data.Axies.Results {
-		res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", item.ID)
+	// Axie collection
+	for i, axie := range res.Data.Axies.Results {
+		res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.TokenID)
 	}
 
-	return res.Data.Axies, nil
+	// Accessory collection
+	for i, acc := range res.Data.Equipments.Results {
+		res.Data.Equipments.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias)
+		res.Data.Equipments.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias)
+	}
+
+	// Land collection
+	for i, land := range res.Data.Lands.Results {
+		res.Data.Lands.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row)
+		res.Data.Lands.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row)
+	}
+
+	// Land Item collection
+	for i, item := range res.Data.Items.Results {
+		res.Data.Items.Results[i].Image = item.FigureURL
+		res.Data.Items.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID)
+	}
+
+	return res.Data, nil
 }
