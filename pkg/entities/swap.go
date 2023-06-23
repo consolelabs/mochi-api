@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -105,33 +104,33 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
-	// get balance
-	balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
-		return nil, err
-	}
-	if len(balance.Data) == 0 {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
-		return nil, fmt.Errorf("insufficient balance")
-	}
+	// get balance -> temp cmt for better ux
+	// balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
+	// 	return nil, err
+	// }
+	// if len(balance.Data) == 0 {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
+	// 	return nil, fmt.Errorf("insufficient balance")
+	// }
 
 	// compare balance and amountIn from swap route
-	amountSwap, err := util.StringToBigInt(req.RouteSummary.AmountIn)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
-		return nil, err
-	}
+	// amountSwap, err := util.StringToBigInt(req.RouteSummary.AmountIn)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
+	// 	return nil, err
+	// }
 
-	bal, err := util.StringToBigInt(balance.Data[0].Amount)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
-		return nil, err
-	}
+	// bal, err := util.StringToBigInt(balance.Data[0].Amount)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
+	// 	return nil, err
+	// }
 
-	if amountSwap.Cmp(bal) == 1 {
-		return nil, fmt.Errorf("insufficient balance")
-	}
+	// if amountSwap.Cmp(bal) == 1 {
+	// 	return nil, fmt.Errorf("insufficient balance")
+	// }
 
 	// build route
 	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(req.ChainName, &request.BuildSwapRouteRequest{
