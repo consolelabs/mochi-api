@@ -6,7 +6,7 @@ import (
 
 type AutoConditionValue struct {
 	Id          int64     `json:"id" gorm:"default:uuid_generate_v4()" swaggertype:"string"`
-	TypeId      string    `json:"type_id"`
+	TypeId      int64     `json:"type_id"`
 	ConditionId string    `json:"condition_id"`
 	ChildId     string    `json:"child_id"`
 	Index       int       `json:"index"`

@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS auto_condition_values
     id serial PRIMARY KEY,
     condition_id INTEGER NOT NULL REFERENCES auto_conditions(id),
     child_id TEXT NULL,
-    type_id INTEGER NOT NULL,
+    type_id INTEGER NOT NULL REFERENCES auto_types(id),
     index INTEGER NOT NULL,
     operator TEXT NOT NULL,
     matches TEXT NOT NULL,
