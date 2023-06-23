@@ -25,7 +25,7 @@ func TestHandler_GetGuildPruneExclude(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -67,7 +67,7 @@ func TestHandler_UpsertGuildPruneExclude(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -126,7 +126,7 @@ func TestHandler_DeleteGuildPruneExclude(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,
@@ -176,7 +176,7 @@ func TestHandler_ToggleActivityConfig(t *testing.T) {
 	repo := pg.NewRepo(db)
 	cfg := config.LoadTestConfig()
 	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil)
+	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
 	h := &Handler{
 		entities: entity,

@@ -203,7 +203,7 @@ func (e *Entity) initInviteTrackerCache() error {
 	return nil
 }
 
-func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service, abi abi.Service, marketplace marketplace.Service) *Entity {
+func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service, abi abi.Service, marketplace marketplace.Service, page *rod.Page) *Entity {
 	return &Entity{
 		repo:        repo,
 		store:       store,
@@ -216,5 +216,6 @@ func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store
 		indexer:     indexer,
 		abi:         abi,
 		marketplace: marketplace,
+		browserPage: page,
 	}
 }
