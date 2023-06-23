@@ -20,6 +20,7 @@ type ListAsset struct {
 	Balance           []WalletAssetData   `json:"balance"`
 	Farming           []LiquidityPosition `json:"farming"`
 	Staking           []WalletStakingData `json:"staking"`
+	Nft               *NftListData        `json:"nft"`
 }
 
 type WalletStakingData struct {
@@ -137,4 +138,44 @@ type PairTokenData struct {
 
 type TokenDayData struct {
 	PriceUSD string `json:"priceUSD"`
+}
+
+// axie nft
+type NftResponse struct {
+	Data *NftListData `json:"data"`
+}
+
+type NftListData struct {
+	Axies *AxieNftResult `json:"axies"`
+}
+
+type AxieNftResult struct {
+	Total   int64              `json:"total"`
+	Results []AxieItemMetadata `json:"results"`
+}
+
+type AxieItemMetadata struct {
+	ID             string         `json:"id"`
+	Image          string         `json:"image"`
+	Level          int            `json:"level"`
+	MinPrice       string         `json:"minPrice"`
+	SireClass      string         `json:"sireClass"`
+	Name           string         `json:"name"`
+	Stats          AxieItemStats  `json:"stats"`
+	Parts          []AxieItemPart `json:"parts"`
+	MarketplaceURL string         `json:"marketplace_url"`
+}
+
+type AxieItemStats struct {
+	Speed  int `json:"speed"`
+	Skill  int `json:"skill"`
+	Morale int `json:"morale"`
+	Hp     int `json:"hp"`
+}
+
+type AxieItemPart struct {
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+	ID    string `json:"id"`
+	Class string `json:"class"`
 }

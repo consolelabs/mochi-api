@@ -235,12 +235,21 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		return
 	}
 
+	// nft data
+	nftData, err := h.entities.ListEthWalletNfts(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletNfts() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	data := response.ListAsset{
 		Balance:           items,
 		Pnl:               pnl,
 		LatestSnapshotBal: latestSnapshotBal,
 		Farming:           farmingData,
 		Staking:           stakingData,
+		Nft:               nftData,
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))

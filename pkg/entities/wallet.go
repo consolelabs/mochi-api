@@ -1152,7 +1152,7 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 		return nil, nil
 	}
 
-	var res *response.WalletFarmingResponse
+	res := &response.WalletFarmingResponse{Data: &response.WalletFarmingData{}}
 
 	// check if data cached
 	key := fmt.Sprintf("%s-eth-farming", strings.ToLower(req.Address))
@@ -1163,46 +1163,66 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 
 	l := e.log.Fields(logger.Fields{"req": req})
 	// no cache -> re-fetch
-	res, err = e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
+	// supported chains: RONIN
+	roninData, err := e.listRoninWalletFarmings(req)
 	if err != nil {
-		l.Error(err, "[entity.listEthWalletFarming] svc.Skymavis.GetAddressFarming() failed")
+		l.Error(err, "[entity.ListEthWalletFarming] listRoninWalletFarmings() failed")
+		return nil, err
+	}
+
+	res.Data.LiquidityPositions = append(res.Data.LiquidityPositions, roninData...)
+
+	// cache farming data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	e.cache.Set(key, string(bytes), 24*time.Hour)
+
+	return res.Data.LiquidityPositions, nil
+}
+
+func (e *Entity) listRoninWalletFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
+	l := e.log.Fields(logger.Fields{"req": req})
+
+	res, err := e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
+	if err != nil {
+		l.Error(err, "[entity.listRoninWalletFarmings] svc.Skymavis.GetAddressFarming() failed")
 		return nil, err
 	}
 
 	rewards, err := e.svc.Ronin.GetLpPendingRewards(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.listEthWalletFarming] svc.Ronin.GetLpPendingRewards() failed")
+		l.Error(err, "[entity.listRoninWalletFarmings] svc.Ronin.GetLpPendingRewards() failed")
 		return nil, err
 	}
 
 	for i, p := range res.Data.LiquidityPositions {
 		totalLiquidity, err := strconv.ParseFloat(p.Pair.ReserveUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listEthWalletFarming] parse reserveUSD failed")
+			l.Error(err, "[entity.listRoninWalletFarmings] parse reserveUSD failed")
 			return nil, err
 		}
 
 		totalSupply, err := strconv.ParseFloat(p.Pair.TotalSupply, 64)
 		if err != nil {
-			l.Error(err, "[entity.listEthWalletFarming] parse supply failed")
+			l.Error(err, "[entity.listRoninWalletFarmings] parse supply failed")
 			return nil, err
 		}
 
 		lpTokenBalance, err := strconv.ParseFloat(p.LiquidityTokenBalance, 64)
 		if err != nil {
-			l.Error(err, "[entity.listEthWalletFarming] parse lp token balance failed")
+			l.Error(err, "[entity.listRoninWalletFarmings] parse lp token balance failed")
 			return nil, err
 		}
 
 		token0Price, err := strconv.ParseFloat(p.Pair.Token0.TokenDayData[0].PriceUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listEthWalletFarming] parse token0 price failed")
+			l.Error(err, "[entity.listRoninWalletFarmings] parse token0 price failed")
 			return nil, err
 		}
 
 		token1Price, err := strconv.ParseFloat(p.Pair.Token1.TokenDayData[0].PriceUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listEthWalletFarming] parse token1 price failed")
+			l.Error(err, "[entity.listRoninWalletFarmings] parse token1 price failed")
 			return nil, err
 		}
 
@@ -1226,11 +1246,6 @@ func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]re
 		}
 	}
 
-	// cache farming data
-	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 24*time.Hour)
-
 	return res.Data.LiquidityPositions, nil
 }
 
@@ -1252,41 +1267,61 @@ func (e *Entity) ListEthWalletStaking(req request.ListWalletAssetsRequest) ([]re
 
 	l := e.log.Fields(logger.Fields{"req": req})
 	// no cache -> re-fetch
+	// supported chains: RONIN
+	roninData, err := e.listRoninWalletStakings(req)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletStaking] listRoninWalletStakings() failed")
+		return nil, err
+	}
+
+	res = append(res, roninData...)
+
+	// cache staking data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	e.cache.Set(key, string(bytes), 24*time.Hour)
+
+	return res, nil
+}
+
+func (e *Entity) listRoninWalletStakings(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
+	l := e.log.Fields(logger.Fields{"req": req})
+
 	axsStakingAmount, err := e.svc.Ronin.GetAxsStakingAmount(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetAxsStakingAmount failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.Ronin.GetAxsStakingAmount failed")
 		return nil, err
 	}
 
 	axsRewards, err := e.svc.Ronin.GetAxsPendingRewards(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetAxsPendingRewards failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.Ronin.GetAxsPendingRewards failed")
 		return nil, err
 	}
 
 	ronStakingAmount, err := e.svc.Ronin.GetRonStakingAmount(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetRonStakingAmount failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.Ronin.GetRonStakingAmount failed")
 		return nil, err
 	}
 
 	ronRewrds, err := e.svc.Ronin.GetRonPendingRewards(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.Ronin.GetRonPendingRewards failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.Ronin.GetRonPendingRewards failed")
 		return nil, err
 	}
 
 	axsData, err, _ := e.svc.CoinGecko.GetCoin("axie-infinity")
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.CoinGecko.GetCoin('axie-infinity') failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin('axie-infinity') failed")
 	}
 
 	roninData, err, _ := e.svc.CoinGecko.GetCoin("ronin")
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] svc.CoinGecko.GetCoin(ronin) failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin(ronin) failed")
 	}
 
-	res = []response.WalletStakingData{
+	return []response.WalletStakingData{
 		{
 			TokenName: axsData.Name,
 			Symbol:    strings.ToUpper(axsData.Symbol),
@@ -1301,12 +1336,54 @@ func (e *Entity) ListEthWalletStaking(req request.ListWalletAssetsRequest) ([]re
 			Reward:    ronRewrds,
 			Price:     roninData.MarketData.CurrentPrice["usd"],
 		},
+	}, nil
+}
+
+func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
+	req.Standardize()
+	// TODO: only support EVM for now
+	if req.Type != "eth" && req.Type != "evm" {
+		return nil, nil
 	}
 
-	// cache staking data
+	data := &response.NftListData{}
+
+	// check if data cached
+	key := fmt.Sprintf("%s-eth-nft", strings.ToLower(req.Address))
+	cached, err := e.cache.GetString(key)
+	if err == nil && cached != "" {
+		return data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	l := e.log.Fields(logger.Fields{"req": req})
+	// no cache -> re-fetch
+	// supported collections: AXIE
+	axies, err := e.listWalletAxies(req)
+	if err != nil {
+		l.Error(err, "[entity.ListEthWalletNfts] listWalletAxies() failed")
+		return nil, err
+	}
+
+	data.Axies = axies
+
+	// cache nft data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
+	bytes, _ := json.Marshal(data)
 	e.cache.Set(key, string(bytes), 24*time.Hour)
 
-	return res, nil
+	return data, nil
+}
+
+func (e *Entity) listWalletAxies(req request.ListWalletAssetsRequest) (*response.AxieNftResult, error) {
+	res, err := e.svc.Skymavis.GetOwnedAxies(strings.ToLower(req.Address))
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listWalletAxies] svc.Skymavis.GetOwnedAxies() failed")
+		return nil, err
+	}
+
+	for i, item := range res.Data.Axies.Results {
+		res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", item.ID)
+	}
+
+	return res.Data.Axies, nil
 }
