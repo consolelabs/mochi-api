@@ -59,10 +59,7 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 	q = strings.ReplaceAll(q, "\n", " ")
 	q = strings.ReplaceAll(q, "\t", " ")
 
-	var req struct {
-		Query string `json:"query"`
-	}
-	req.Query = q
+	req := GraphqlRequest{Query: q}
 	v, err := json.Marshal(req)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[skymavis.GetAddressFarming] json.Marshal() failed")
@@ -90,41 +87,67 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 	return res, nil
 }
 
-func (s *skymavis) GetOwnedAxies(address string) (*response.NftResponse, error) {
+func (s *skymavis) GetOwnedNfts(address string) (*response.NftResponse, error) {
 	q := fmt.Sprintf(`
 	{
-		axies(size: 50, from: 0, owner: "%s") {
+		axies(owner: "%s", size: 10, from: 0) {
 			total
 			results {
 				id
 				image
 				level
 				minPrice
-				sireClass
 				name
-				stats {
-					speed
-					skill
-					morale
-					hp
-				}
-				parts {
-					type
-					name
-					id
-					class
-				}
+				owner
 			}
 		}
+		equipments(
+			owner: "%s"
+			from: 0
+			size: 10
+		) {
+			total
+			results {
+				total
+				name
+				minPrice
+				collections
+				alias
+				rarity
+			}
+		}
+		items(owner: "%s" from: 0, size: 10) {
+			results {
+				tokenId
+				minPrice
+				figureURL
+				name
+				itemId
+				itemAlias
+				rarity
+			}
+			total
+		}
+		lands(
+			from: 0
+			size: 10
+			owner: {ownerships: Owned, address: "%s"}
+		) {
+			results {
+				tokenId
+				minPrice
+				landType
+				col
+				row
+			}
+			total
+		}
 	}
-	`, address)
+	`, address, address, address, address)
 	q = strings.ReplaceAll(q, "\n", " ")
 	q = strings.ReplaceAll(q, "\t", " ")
 
-	var req struct {
-		Query string `json:"query"`
-	}
-	req.Query = q
+	req := GraphqlRequest{Query: q}
 	v, err := json.Marshal(req)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[skymavis.GetOwnedAxies] json.Marshal() failed")
