@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
+	"github.com/go-rod/rod"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -210,6 +211,5 @@ func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store
 		indexer:     indexer,
 		abi:         abi,
 		marketplace: marketplace,
-		browserPage: page,
 	}
 }
