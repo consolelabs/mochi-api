@@ -1202,6 +1202,10 @@ func (e *Entity) CreateGuildTokenRole(req request.CreateGuildTokenRole) (*model.
 	return config, nil
 }
 
+func (e *Entity) GetTokenRole(id int) (*model.GuildConfigTokenRole, error) {
+	return e.repo.GuildConfigTokenRole.Get(id)
+}
+
 func (e *Entity) ListGuildTokenRoles(guildID string) ([]model.GuildConfigTokenRole, error) {
 	configs, err := e.repo.GuildConfigTokenRole.ListByGuildID(guildID)
 	if err != nil {

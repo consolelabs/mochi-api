@@ -1,4 +1,4 @@
-package guild_config_token_role
+package guildconfigtokenrole
 
 import "github.com/defipod/mochi/pkg/model"
 
