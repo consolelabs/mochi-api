@@ -102,7 +102,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 
 	// browser := rod.New().Timeout(time.Minute).MustConnect()
 	// launcher.NewBrowser().MustGet()
-	l := launcher.MustResolveURL("")
+	l := launcher.MustResolveURL(cfg.RodHost)
 	browser := rod.New().ControlURL(l).MustConnect()
 
 	errCh := make(chan error)
