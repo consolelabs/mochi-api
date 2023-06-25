@@ -12,6 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
+	"github.com/go-rod/stealth"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -153,11 +155,11 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	data.AssetPlatform = platform
 
 	// get coingecko info
-	// coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
-	// if err != nil {
-	// 	e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
-	// }
-	// data.CoingeckoInfo = coingeckoInfo
+	coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
+	if err != nil {
+		e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
+	}
+	data.CoingeckoInfo = coingeckoInfo
 
 	return data, nil, http.StatusOK
 }
@@ -165,10 +167,14 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResponse, error) {
 	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
 
-	e.browserPage.MustNavigate(url)
+	// rod browser
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	launcher.NewBrowser().MustGet()
+	page := stealth.MustPage(browser)
 
-	// data-target="coins-information.mobileOptionalInfo"
-	data := e.browserPage.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
+	page.MustNavigate(url)
+
+	data := page.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
 
 	if len(data) == 0 {
 		return nil, nil
@@ -246,6 +252,14 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 			info.Tags = dat
 		}
 	}
+
+	// get description
+	desc, err := page.MustElement("[data-target='read-more.description']").Text()
+	if err != nil {
+		return nil, err
+	}
+
+	info.Description = desc
 
 	return info, nil
 }
