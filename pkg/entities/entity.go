@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
@@ -101,8 +100,10 @@ func Init(cfg config.Config, log logger.Logger) error {
 
 	kafka := kafka.New(cfg.Kafka.Brokers)
 
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	launcher.NewBrowser().MustGet()
+	// browser := rod.New().Timeout(time.Minute).MustConnect()
+	// launcher.NewBrowser().MustGet()
+	l := launcher.MustResolveURL("")
+	browser := rod.New().ControlURL(l).MustConnect()
 
 	errCh := make(chan error)
 	go func(ch chan error) {
