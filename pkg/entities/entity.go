@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -45,7 +47,7 @@ type Entity struct {
 	marketplace marketplace.Service
 	solana      chain.Solana
 	kafka       kafka.Kafka
-	// browserPage *rod.Page
+	browser     *rod.Browser
 }
 
 var e *Entity
@@ -99,6 +101,9 @@ func Init(cfg config.Config, log logger.Logger) error {
 
 	kafka := kafka.New(cfg.Kafka.Brokers)
 
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	launcher.NewBrowser().MustGet()
+
 	errCh := make(chan error)
 	go func(ch chan error) {
 		err := kafka.RunProducer()
@@ -123,7 +128,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
-		// browserPage: page,
+		browser:     browser,
 	}
 
 	if e.discord != nil && e.cache != nil {

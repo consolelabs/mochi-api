@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
 	"gorm.io/gorm"
 
@@ -168,9 +167,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
 
 	// rod browser
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	launcher.NewBrowser().MustGet()
-	page := stealth.MustPage(browser)
+	page := stealth.MustPage(e.browser)
 
 	page.MustNavigate(url)
 
