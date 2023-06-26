@@ -7,7 +7,7 @@ import (
 type Service interface {
 	SwapMochiPay(req request.MochiPaySwapRequest) error
 	GetBalance(profileId, token, chainId string) (*GetBalanceDataResponse, error)
-	Transfer(req request.MochiPayTransferRequest) error
+	Transfer(req request.MochiPayTransferRequest) (*TipResponse, error)
 	CreateToken(req CreateTokenRequest) error
 	ListTokens(symbol string) ([]Token, error)
 	GetToken(symbol, chainId string) (*Token, error)

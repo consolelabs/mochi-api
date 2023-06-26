@@ -89,3 +89,19 @@ type VaultResponse struct {
 type VaultTransferToken struct {
 	TxHash string `json:"tx_hash"`
 }
+
+type TipResponse struct {
+	Data TipDataResponse `json:"data"`
+}
+
+type TipDataResponse struct {
+	Id             string      `json:"id"`
+	ProfileId      string      `json:"profile_id"`
+	OtherProfileId string      `json:"other_profile_id"`
+	Type           string      `json:"type"`
+	TokenId        string      `json:"token_id"`
+	Amoount        string      `json:"amount"`
+	CreatedAt      string      `json:"created_at"`
+	UpdatedAt      string      `json:"updated_at"`
+	Token          interface{} `json:"token"`
+}
