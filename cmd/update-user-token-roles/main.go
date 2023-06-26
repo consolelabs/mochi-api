@@ -5,7 +5,6 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/service"
 )
 
 func main() {
@@ -17,14 +16,8 @@ func main() {
 		return
 	}
 
-	svc, err := service.NewService(cfg, log)
-	if err != nil {
-		log.Fatal(err, "service.NewService failed")
-		return
-	}
-
 	log.Info("start job updateUserRoles ...")
-	if err := job.NewUpdateUserTokenRolesJob(entities.Get(), svc, log).Run(); err != nil {
+	if err := job.NewUpdateUserTokenRolesJob(entities.Get(), nil).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 		return
 	}

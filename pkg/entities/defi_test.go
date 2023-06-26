@@ -499,17 +499,11 @@ func TestEntity_GetCoinData(t *testing.T) {
 	r := pg.NewRepo(s.DB())
 	svc.CoinGecko = mockServiceCoingecko
 
-	// rod browser
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	launcher.NewBrowser().MustGet()
-	page := stealth.MustPage(browser)
-
 	e := &Entity{
-		repo:        r,
-		log:         log,
-		svc:         svc,
-		cfg:         cfg,
-		browserPage: page,
+		repo: r,
+		log:  log,
+		svc:  svc,
+		cfg:  cfg,
 	}
 	tests := []struct {
 		name         string
@@ -675,7 +669,6 @@ func TestEntity_scrapeCoingeckoInfo(t *testing.T) {
 				marketplace: tt.fields.marketplace,
 				solana:      tt.fields.solana,
 				kafka:       tt.fields.kafka,
-				browserPage: tt.fields.browserPage,
 			}
 			got, err := e.scrapeCoingeckoInfo(tt.args.coinId)
 			if (err != nil) != tt.wantErr {

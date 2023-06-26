@@ -97,7 +97,12 @@ type WalletBinanceAssetResponse struct {
 	Asset          string `json:"asset"`
 }
 
-// skymavis
+type GetBinanceAsset struct {
+	Asset []WalletAssetData `json:"asset"`
+	Earn  []WalletAssetData `json:"earn"`
+}
+
+// sky mavis
 type WalletFarmingResponse struct {
 	Data *WalletFarmingData `json:"data"`
 }
@@ -146,41 +151,72 @@ type NftResponse struct {
 }
 
 type NftListData struct {
-	Axies *AxieNftResult `json:"axies"`
+	Axies      *AxieNftResult      `json:"axies"`
+	Equipments *EquipmentNftResult `json:"equipments"`
+	Lands      *LandNftResult      `json:"lands"`
+	Items      *LandItemNftResult  `json:"items"`
 }
 
 type AxieNftResult struct {
+	Total   int64          `json:"total"`
+	Results []AxieMetadata `json:"results"`
+}
+
+type AxieMetadata struct {
+	TokenID        string `json:"tokenId"`
+	Owner          string `json:"owner"`
+	Image          string `json:"image"`
+	Level          int    `json:"level"`
+	MinPrice       string `json:"minPrice"`
+	Name           string `json:"name"`
+	TokenAddress   string `json:"tokenAddress"`
+	MarketplaceURL string `json:"marketplace_url"`
+}
+
+type EquipmentMetadata struct {
+	Total          int      `json:"total"`
+	Name           string   `json:"name"`
+	MinPrice       string   `json:"minPrice"`
+	Collections    []string `json:"collections"`
+	Alias          string   `json:"alias"`
+	Rarity         string   `json:"rarity"`
+	Image          string   `json:"image"`
+	MarketplaceURL string   `json:"marketplace_url"`
+}
+
+type EquipmentNftResult struct {
+	Total   int64               `json:"total"`
+	Results []EquipmentMetadata `json:"results"`
+}
+
+type LandItemMetadata struct {
+	TokenID        string `json:"tokenId"`
+	MinPrice       string `json:"minPrice"`
+	FigureURL      string `json:"figureURL"`
+	Name           string `json:"name"`
+	ItemID         int    `json:"itemId"`
+	Alias          string `json:"itemAlias"`
+	Rarity         string `json:"rarity"`
+	Image          string `json:"image"`
+	MarketplaceURL string `json:"marketplace_url"`
+}
+
+type LandItemNftResult struct {
 	Total   int64              `json:"total"`
-	Results []AxieItemMetadata `json:"results"`
+	Results []LandItemMetadata `json:"results"`
 }
 
-type AxieItemMetadata struct {
-	ID             string         `json:"id"`
-	Image          string         `json:"image"`
-	Level          int            `json:"level"`
-	MinPrice       string         `json:"minPrice"`
-	SireClass      string         `json:"sireClass"`
-	Name           string         `json:"name"`
-	Stats          AxieItemStats  `json:"stats"`
-	Parts          []AxieItemPart `json:"parts"`
-	MarketplaceURL string         `json:"marketplace_url"`
+type LandMetadata struct {
+	TokenID        string `json:"tokenId"`
+	MinPrice       string `json:"minPrice"`
+	LandType       string `json:"landType"`
+	Col            int    `json:"col"`
+	Row            int    `json:"row"`
+	Image          string `json:"image"`
+	MarketplaceURL string `json:"marketplace_url"`
 }
 
-type AxieItemStats struct {
-	Speed  int `json:"speed"`
-	Skill  int `json:"skill"`
-	Morale int `json:"morale"`
-	Hp     int `json:"hp"`
-}
-
-type AxieItemPart struct {
-	Type  string `json:"type"`
-	Name  string `json:"name"`
-	ID    string `json:"id"`
-	Class string `json:"class"`
-}
-
-type GetBinanceAsset struct {
-	Asset []WalletAssetData `json:"asset"`
-	Earn  []WalletAssetData `json:"earn"`
+type LandNftResult struct {
+	Total   int64          `json:"total"`
+	Results []LandMetadata `json:"results"`
 }

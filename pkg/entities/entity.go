@@ -45,7 +45,7 @@ type Entity struct {
 	marketplace marketplace.Service
 	solana      chain.Solana
 	kafka       kafka.Kafka
-	browserPage *rod.Page
+	browser     *rod.Browser
 }
 
 var e *Entity
@@ -92,11 +92,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		log.Fatal(err, "failed to init redis cache")
 	}
 
-	// rod browser
-	// browser := rod.New().Timeout(time.Minute).MustConnect()
-	// launcher.NewBrowser().MustGet()
-	// page := stealth.MustPage(browser)
-
 	service, err := service.NewService(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init service")
@@ -128,7 +123,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
-		// browserPage: page,
 	}
 
 	if e.discord != nil && e.cache != nil {
@@ -146,8 +140,8 @@ func Get() *Entity {
 func (e *Entity) GetSvc() *service.Service {
 	return e.svc
 }
-func (e *Entity) GetLogger() *logger.Logger {
-	return &e.log
+func (e *Entity) GetLogger() logger.Logger {
+	return e.log
 }
 
 func Shutdown() error {
@@ -216,6 +210,5 @@ func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store
 		indexer:     indexer,
 		abi:         abi,
 		marketplace: marketplace,
-		browserPage: page,
 	}
 }

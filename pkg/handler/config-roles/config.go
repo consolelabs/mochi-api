@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/defipod/mochi/pkg/entities"
+	"github.com/defipod/mochi/pkg/job"
 	"github.com/defipod/mochi/pkg/logger"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
@@ -452,6 +453,45 @@ func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
 		return
 	}
 
+	// list all roles in the guild to check if requested role exists
+	trs, err := h.entities.ListGuildTokenRoles(req.GuildID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - e.ListGuildTokenRoles failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	// update user roles in the background after the request is done
+	defer func() {
+		h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - start to updateUserRoles...")
+		if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+			GuildID: req.GuildID,
+		}).Run(); err != nil {
+			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
+		}
+	}()
+
+	// check if the role already exists, if so, update it
+	for _, tr := range trs {
+		if tr.RoleID != req.RoleID || (tr.Token != nil && tr.Token.Address != req.Address) {
+			continue
+		}
+		h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - role already exists, updating...")
+		config, err := h.entities.UpdateGuildTokenRole(tr.ID, request.UpdateGuildTokenRole{
+			RoleID:  &req.RoleID,
+			Address: &req.Address,
+			Chain:   &req.Chain,
+			Amount:  &req.Amount,
+		})
+		if err != nil {
+			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - e.UpdateGuildTokenRole failed")
+			c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+		c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+		return
+	}
+
 	config, err := h.entities.CreateGuildTokenRole(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - e.CreateGuildTokenRole failed")
@@ -557,6 +597,24 @@ func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
 		return
 	}
+
+	tr, err := h.entities.GetTokenRole(id)
+	if err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - e.GetTokenRole failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
+		return
+	}
+
+	// update user roles in the background after the request is done
+	defer func() {
+		h.log.Fields(logger.Fields{"id": id, "guild_id": tr.GuildID}).Info("[handler.RemoveGuildTokenRole] - start to updateUserRoles...")
+		if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+			GuildID:       tr.GuildID,
+			RolesToRemove: []string{tr.RoleID},
+		}).Run(); err != nil {
+			h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
+		}
+	}()
 
 	if err := h.entities.RemoveGuildTokenRole(id); err != nil {
 		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - e.RemoveGuildTokenRole failed")

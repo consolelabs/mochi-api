@@ -99,6 +99,7 @@ type CoinGeckoInfoResponse struct {
 	Wallets     map[string]string `json:"wallets"`
 	Communities map[string]string `json:"communities"`
 	Tags        map[string]string `json:"tags"`
+	Description string            `json:"description"`
 }
 
 type TickerData struct {
