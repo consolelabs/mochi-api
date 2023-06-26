@@ -112,7 +112,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		}
 	}
 
-	err = e.svc.MochiPay.Transfer(transferReq)
+	tx, err := e.svc.MochiPay.Transfer(transferReq)
 	if err != nil {
 		return nil, errors.New(consts.OffchainTipBotFailReasonMochiPayTransferFailed)
 	}
@@ -131,6 +131,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	// e.sendTipBotLogs(req, token.Symbol, "")
 
 	return &response.OffchainTipBotTransferToken{
+		Id:          tx.Data.Id,
 		AmountEach:  amountEach,
 		TotalAmount: req.Amount,
 		// Token:       token,

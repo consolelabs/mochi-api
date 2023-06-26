@@ -254,10 +254,10 @@ func (m *MochiPay) GetListBalances(profileId string) (*GetBalanceDataResponse, e
 	return res, nil
 }
 
-func (m *MochiPay) Transfer(req request.MochiPayTransferRequest) error {
+func (m *MochiPay) Transfer(req request.MochiPayTransferRequest) (*TipResponse, error) {
 	payload, err := json.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	jsonBody := bytes.NewBuffer(payload)
@@ -266,31 +266,45 @@ func (m *MochiPay) Transfer(req request.MochiPayTransferRequest) error {
 	url := fmt.Sprintf("%s/api/v1/transfer", m.config.MochiPayServerHost)
 	request, err := http.NewRequest("POST", url, jsonBody)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	request.Header.Add("Content-Type", "application/json")
 
 	response, err := client.Do(request)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if response.StatusCode != http.StatusOK {
 		errBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		errResponse := &ErrorResponse{}
 		err = json.Unmarshal(errBody, &errResponse)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = fmt.Errorf(errResponse.Msg)
-		return err
+		return nil, err
 	}
-	return nil
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &TipResponse{}
+	err = json.Unmarshal(body, res)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	return res, nil
 }
 
 func (m *MochiPay) CreateToken(req CreateTokenRequest) error {

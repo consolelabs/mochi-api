@@ -34,19 +34,13 @@ services:
       - 25433:5432
     expose:
       - 25433
-  browser:
-    image: ghcr.io/go-rod/rod:latest
-    container_name: mochi-browser
+
+  chrome:
+    image: browserless/chrome
+    container_name: chrome
     restart: always
     ports:
-      - 9222:9222
-    # chrome --headless --no-sandbox --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0
-    entrypoint:
-      - "chrome"
-      - "--headless"
-      - "--no-sandbox"
-      - "--remote-debugging-port=9222"
-      - "--remote-debugging-address=0.0.0.0"
+      - 3000:3000
 
 volumes:
   postgres_data:
