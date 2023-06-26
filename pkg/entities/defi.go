@@ -253,12 +253,13 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 	}
 
 	// get description
-	desc, err := page.MustElement("[data-target='read-more.description']").Text()
-	if err != nil {
-		return nil, err
-	}
+	desc := page.MustElement("[data-target='read-more.description']")
 
-	info.Description = desc
+	descSections := desc.MustElements(".coin-description")
+
+	if len(descSections) >= 2 {
+		info.Description = descSections[1].MustText()
+	}
 
 	return info, nil
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/launcher"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -123,6 +124,11 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
+	}
+
+	if cfg.ChromeHost != "" {
+		e.browser = rod.New().ControlURL(launcher.MustResolveURL(cfg.ChromeHost)).MustConnect()
+		log.Infof("connected to chrome: %s", cfg.ChromeHost)
 	}
 
 	if e.discord != nil && e.cache != nil {

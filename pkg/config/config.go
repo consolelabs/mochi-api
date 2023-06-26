@@ -125,7 +125,7 @@ type Config struct {
 	SkyMavisApiBaseUrl string
 	SkyMavisApiKey     string
 
-	RodHost string
+	ChromeHost string
 }
 
 type MarketplaceBaseUrl struct {
@@ -342,7 +342,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		CertDir: v.GetString("CERT_DIR"),
 
-		RodHost: v.GetString("ROD_HOST"),
+		ChromeHost: v.GetString("CHROME_HOST"),
 	}
 }
 
