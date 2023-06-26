@@ -8,7 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-rod/rod"
-	"github.com/go-rod/rod/lib/launcher"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
@@ -100,11 +99,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 
 	kafka := kafka.New(cfg.Kafka.Brokers)
 
-	// browser := rod.New().Timeout(time.Minute).MustConnect()
-	// launcher.NewBrowser().MustGet()
-	l := launcher.MustResolveURL(cfg.RodHost)
-	browser := rod.New().ControlURL(l).MustConnect()
-
 	errCh := make(chan error)
 	go func(ch chan error) {
 		err := kafka.RunProducer()
@@ -129,7 +123,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		marketplace: marketplace.NewMarketplace(&cfg),
 		solana:      *chain.NewSolanaClient(&cfg, log),
 		kafka:       *kafka,
-		browser:     browser,
 	}
 
 	if e.discord != nil && e.cache != nil {
