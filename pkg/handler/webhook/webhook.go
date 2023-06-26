@@ -6,7 +6,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
-	"github.com/k0kubun/pp"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/entities"
@@ -498,7 +497,6 @@ func (h *Handler) WebhookSnapshotProposal(c *gin.Context) {
 }
 
 func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessage) {
-	pp.Println(string(data))
 	h.log.Info("[handler.handleAutoTrigger] - handling auto trigger")
 	var req request.AutoTriggerRequest
 	byteData, err := data.MarshalJSON()
@@ -517,9 +515,8 @@ func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessa
 	err = h.entities.HandleTrigger(req)
 	if err != nil {
 		h.log.Error(err, "[handler.handleMessageReactionAdd] - failed to handle trigger")
-		// c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	// c.JSON(http.StatusOK, gin.H{"message": "ok"})
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
