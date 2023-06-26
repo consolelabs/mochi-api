@@ -134,6 +134,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		Id:          tx.Data.Id,
 		AmountEach:  amountEach,
 		TotalAmount: req.Amount,
+		TxId:        tx.Data.TxId,
 		// Token:       token,
 	}, nil
 }

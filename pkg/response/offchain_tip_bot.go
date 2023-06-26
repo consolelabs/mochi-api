@@ -25,6 +25,7 @@ type OffchainTipBotTransferToken struct {
 	Id          string  `json:"id"`
 	AmountEach  float64 `json:"amount_each"`
 	TotalAmount float64 `json:"total_amount"`
+	TxId        int64   `json:"tx_id"`
 	// Token       *mochipay.Token `json:"token"`
 }
 
