@@ -4610,6 +4610,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/coins/coingecko/{id}": {
+            "get": {
+                "description": "Get coingecko info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi",
+                    "Public"
+                ],
+                "summary": "Get coingecko info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CoinGeckoInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/coins/compare": {
             "get": {
                 "description": "Compare token",
@@ -8885,26 +8909,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Emojis": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "telegram_id": {
-                    "type": "string"
-                },
-                "twitter_id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Envelop": {
             "type": "object",
             "properties": {
@@ -9855,6 +9859,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProductMetadataEmojis": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "telegram_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ProfileAirdropCampaign": {
             "type": "object",
             "properties": {
@@ -10537,6 +10561,9 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "discord_guild": {
+                    "$ref": "#/definitions/model.DiscordGuild"
                 },
                 "guild_id": {
                     "type": "string"
@@ -12278,6 +12305,64 @@ const docTemplate = `{
                 },
                 "thumb": {
                     "type": "string"
+                }
+            }
+        },
+        "response.CoinGeckoInfoKeyValue": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.CoinGeckoInfoResponse": {
+            "type": "object",
+            "properties": {
+                "communities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "description_lines": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "explorers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "wallets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "websites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
                 }
             }
         },
@@ -14581,7 +14666,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Emojis"
+                        "$ref": "#/definitions/model.ProductMetadataEmojis"
                     }
                 }
             }
@@ -15283,8 +15368,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount_each": {
-                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
                     "type": "number"
+                },
+                "id": {
+                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
+                    "type": "string"
                 },
                 "total_amount": {
                     "type": "number"

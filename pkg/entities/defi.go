@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -154,16 +155,26 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	}
 	data.AssetPlatform = platform
 
-	// coingeckoInfo, err := e.scrapeCoingeckoInfo(coinID)
-	// if err != nil {
-	// 	e.log.Error(err, "[entity.GetCoinData] scrapeCoingeckoInfo() failed")
-	// }
-	// data.CoingeckoInfo = coingeckoInfo
-
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResponse, error) {
+func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResponse, error, int) {
+	// find in db
+	coingeckoInfo, err := e.repo.CoingeckoInfo.GetOne(coinId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err, http.StatusInternalServerError
+	}
+
+	if coingeckoInfo.Info != nil {
+		res := &response.CoinGeckoInfoResponse{}
+		if err := json.Unmarshal([]byte(coingeckoInfo.Info), res); err != nil {
+			return nil, err, http.StatusInternalServerError
+		}
+
+		e.log.Infof("[entity.scrapeCoingeckoInfo] found in db: %s", coinId)
+		return res, nil, http.StatusOK
+	}
+
 	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
 
 	// browser
@@ -174,11 +185,11 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 	data := page.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
 
 	if len(data) == 0 {
-		return nil, nil
+		return nil, nil, http.StatusNotFound
 	}
 
-	getHrefMap := func(d *rod.Element) (map[string]string, error) {
-		dat := make(map[string]string)
+	getHrefMap := func(d *rod.Element) ([]response.CoinGeckoInfoKeyValue, error) {
+		dat := []response.CoinGeckoInfoKeyValue{}
 		// get text
 		for _, dd := range d.MustElements("a") {
 			text, err := dd.Text()
@@ -192,7 +203,10 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 				return nil, err
 			}
 
-			dat[text] = href.Str()
+			dat = append(dat, response.CoinGeckoInfoKeyValue{
+				Key:   text,
+				Value: href.String(),
+			})
 		}
 
 		return dat, nil
@@ -211,7 +225,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		case "Website":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err
+				return nil, err, http.StatusInternalServerError
 			}
 
 			info.Websites = dat
@@ -219,7 +233,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		case "Explorers":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err
+				return nil, err, http.StatusInternalServerError
 			}
 
 			info.Explorers = dat
@@ -227,7 +241,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		case "Wallets":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err
+				return nil, err, http.StatusInternalServerError
 			}
 
 			info.Wallets = dat
@@ -235,7 +249,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		case "Community":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err
+				return nil, err, http.StatusInternalServerError
 			}
 
 			info.Communities = dat
@@ -243,7 +257,7 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		case "Tags":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err
+				return nil, err, http.StatusInternalServerError
 			}
 
 			info.Tags = dat
@@ -262,7 +276,22 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 		}
 	}
 
-	return info, nil
+	// upsert to db
+	coingeckoInfoByte, err := json.Marshal(info)
+	if err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+
+	coingeckoInfo.ID = coinId
+	coingeckoInfo.Info.Scan(coingeckoInfoByte)
+
+	if _, err := e.repo.CoingeckoInfo.Upsert(coingeckoInfo); err != nil {
+		return nil, err, http.StatusInternalServerError
+	}
+
+	e.log.Infof("[entity.scrapeCoingeckoInfo] scraped and save coingecko info %s", coinId)
+
+	return info, nil, http.StatusOK
 }
 
 func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *response.AssetPlatformResponseData, err error) {

@@ -670,7 +670,7 @@ func TestEntity_scrapeCoingeckoInfo(t *testing.T) {
 				solana:      tt.fields.solana,
 				kafka:       tt.fields.kafka,
 			}
-			got, err := e.scrapeCoingeckoInfo(tt.args.coinId)
+			got, err, _ := e.GetCoingeckoInfo(tt.args.coinId)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.scrapeCoingeckoInfo() error = %v, wantErr %v", err, tt.wantErr)
 				return
