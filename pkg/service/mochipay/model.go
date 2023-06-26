@@ -96,11 +96,12 @@ type TipResponse struct {
 
 type TipDataResponse struct {
 	Id             string      `json:"id"`
+	TxId           int64       `json:"tx_id"`
 	ProfileId      string      `json:"profile_id"`
 	OtherProfileId string      `json:"other_profile_id"`
 	Type           string      `json:"type"`
 	TokenId        string      `json:"token_id"`
-	Amoount        string      `json:"amount"`
+	Amount         string      `json:"amount"`
 	CreatedAt      string      `json:"created_at"`
 	UpdatedAt      string      `json:"updated_at"`
 	Token          interface{} `json:"token"`
