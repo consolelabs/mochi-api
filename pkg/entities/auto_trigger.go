@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/k0kubun/pp"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -47,10 +46,8 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	if message.Content != "" {
 		messageType = "createMessage"
 	} else if message.Reaction != "" {
-		// TODO: ?????
 		messageType = "reactionAdd"
 	} else {
-		pp.Println("messageType", messageType)
 		return nil
 	}
 
@@ -64,9 +61,6 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 				break
 			}
 
-			pp.Println("condition", condition)
-			pp.Println("message", message)
-
 			err, ok := e.AutoCheckConditions(condition, message)
 			if err != nil || !ok {
 				break
@@ -74,7 +68,6 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 			triggerMatch = true
 		}
 
-		pp.Println("triggerMatch", triggerMatch)
 		if triggerMatch {
 			// trigger match, execute action
 			e.DoAction(autoTrigger.Actions, message)
@@ -91,7 +84,6 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 		channels := strings.Split(condition.ChannelId, ",")
 		for _, channel := range channels {
 			if channel != message.ChannelId {
-				pp.Println("1")
 				return nil, false
 			}
 		}
@@ -102,7 +94,6 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 		userIds := strings.Split(condition.UserIds, ",")
 		for _, userId := range userIds {
 			if userId != message.UserID {
-				pp.Println("2")
 				return nil, false
 			}
 		}
@@ -111,7 +102,6 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 	// Loop all condition value of this condition
 	err, ok := e.AutoCheckConditionValues(condition.ConditionValues, 0, message)
 	if err != nil || !ok {
-		pp.Println("3")
 		return err, false
 	}
 
@@ -119,7 +109,6 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 	for _, childCondition := range condition.ChildConditions {
 		err, ok := e.AutoCheckConditions(childCondition, message)
 		if err != nil || !ok {
-			pp.Println("4")
 			return err, false
 		}
 	}
@@ -129,7 +118,6 @@ func (e *Entity) AutoCheckConditions(condition model.AutoCondition, message requ
 // parse the type and check call condition value of a condition
 func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionValue, index int, message request.AutoTriggerRequest) (error, bool) {
 	valid := false
-	pp.Println("conditionValue[index].Type.Type", conditionValue[index].Type.Type)
 	err := error(nil)
 	switch conditionValue[index].Type.Type {
 	case "createMessage":
@@ -145,11 +133,7 @@ func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionVa
 	case "reactType":
 		err, valid = e.OperatorString(conditionValue[index].Operator, message.Reaction, conditionValue[index].Matches)
 	case "userRole":
-		pp.Println("conditionValue[index].Operator", conditionValue[index].Operator)
-		pp.Println("message.UserRoles", message.UserRoles)
-		pp.Println("conditionValue[index].Matches", conditionValue[index].Matches)
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.UserRoles, conditionValue[index].Matches)
-		pp.Println("valid", valid)
 	case "authorRole":
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.AuthorRoles, conditionValue[index].Matches)
 	default:
@@ -409,7 +393,7 @@ func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, disco
 	key := strconv.Itoa(rand.Intn(100000))
 	err := e.kafka.Produce("mochiNotification.local", key, bytes) // TODO move to env
 	if err != nil {
-		e.log.Error(err, "Produce error")
+		e.log.Error(err, "[actionSendMessage] Produce error")
 	}
 	return err
 }
@@ -425,7 +409,7 @@ func (e *Entity) actionVaultTransfer(actionData string, message request.AutoTrig
 
 	// validate guild
 	if req.GuildId != message.GuildId {
-		return errors.New("guild id is required")
+		return errors.New("[e.actionVaultTransfer] guild id is required")
 	}
 
 	err := e.AutoTransferVaultToken(&req)
