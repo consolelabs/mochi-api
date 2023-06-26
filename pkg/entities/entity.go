@@ -45,7 +45,6 @@ type Entity struct {
 	marketplace marketplace.Service
 	solana      chain.Solana
 	kafka       kafka.Kafka
-	browser     *rod.Browser
 }
 
 var e *Entity

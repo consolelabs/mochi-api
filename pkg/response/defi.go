@@ -93,13 +93,13 @@ type GetCoinResponse struct {
 }
 
 type CoinGeckoInfoResponse struct {
-	Contracts   map[string]string `json:"contracts"`
-	Websites    map[string]string `json:"websites"`
-	Explorers   map[string]string `json:"explorers"`
-	Wallets     map[string]string `json:"wallets"`
-	Communities map[string]string `json:"communities"`
-	Tags        map[string]string `json:"tags"`
-	Description string            `json:"description"`
+	Contracts        map[string]string `json:"contracts"`
+	Websites         map[string]string `json:"websites"`
+	Explorers        map[string]string `json:"explorers"`
+	Wallets          map[string]string `json:"wallets"`
+	Communities      map[string]string `json:"communities"`
+	Tags             map[string]string `json:"tags"`
+	DescriptionLines []string          `json:"description_lines"`
 }
 
 type TickerData struct {
