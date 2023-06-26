@@ -256,7 +256,10 @@ func (e *Entity) scrapeCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResp
 	descSections := desc.MustElements(".coin-description")
 
 	if len(descSections) >= 2 {
-		info.Description = descSections[1].MustText()
+		p := descSections[1].MustElements("p")
+		for _, pp := range p {
+			info.DescriptionLines = append(info.DescriptionLines, pp.MustText())
+		}
 	}
 
 	return info, nil
