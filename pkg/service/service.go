@@ -3,6 +3,8 @@ package service
 import (
 	"fmt"
 
+	"github.com/go-redis/redis/v8"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
@@ -64,7 +66,6 @@ type Service struct {
 func NewService(
 	cfg config.Config,
 	log logger.Logger,
-	cache cache.Cache,
 ) (*Service, error) {
 
 	discordSvc, err := discord.NewService(cfg, log)
@@ -75,6 +76,16 @@ func NewService(
 	roninSvc, err := ronin.New(&cfg)
 	if err != nil {
 		log.Error(err, "failed to init ronin svc")
+	}
+
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		log.Fatal(err, "failed to init redis")
+	}
+
+	cache, err := cache.NewRedisCache(redisOpt)
+	if err != nil {
+		log.Fatal(err, "failed to init redis cache")
 	}
 
 	return &Service{

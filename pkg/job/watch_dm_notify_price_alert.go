@@ -36,7 +36,7 @@ func NewWatchDMNotifyPriceAlert(e *entities.Entity, l logger.Logger) Job {
 		l.Fatal(err, "[WatchDMNotifyPriceAlert] failed to init redis cache")
 	}
 
-	service, err := service.NewService(cfg, l, cache)
+	service, err := service.NewService(cfg, l)
 	if err != nil {
 		l.Fatal(err, "failed to init service")
 	}
