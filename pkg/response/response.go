@@ -35,9 +35,10 @@ type ApiError struct {
 type IDataResponse[T any] interface{}
 
 type Response[T any] struct {
-	Data         IDataResponse[T] `json:"data"`
-	Error        string           `json:"error,omitempty"`
-	ErrorDetails []ApiError       `json:"errors,omitempty"`
+	Data         IDataResponse[T]       `json:"data"`
+	Meta         map[string]interface{} `json:"meta,omitempty"`
+	Error        string                 `json:"error,omitempty"`
+	ErrorDetails []ApiError             `json:"errors,omitempty"`
 }
 
 type DataResponse[T any] struct {
@@ -54,7 +55,7 @@ type ResponseString struct {
 	Data string `json:"data"`
 }
 
-func CreateResponse[T any](data T, paging *PaginationResponse, err error, payload any) Response[T] {
+func CreateResponse[T any](data T, paging *PaginationResponse, err error, payload any, meta ...map[string]interface{}) Response[T] {
 	resp := Response[T]{
 		Data: data,
 	}
@@ -96,6 +97,10 @@ func CreateResponse[T any](data T, paging *PaginationResponse, err error, payloa
 			errs[i] = ApiError{Field: fe.Field(), Msg: msg, Enums: enums}
 		}
 		resp.ErrorDetails = errs
+	}
+
+	if len(meta) > 0 {
+		resp.Meta = meta[0]
 	}
 
 	return resp
