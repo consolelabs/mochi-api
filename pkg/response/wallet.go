@@ -32,15 +32,15 @@ type WalletStakingData struct {
 }
 
 type WalletAssetData struct {
-	ChainID        int         `json:"chain_id"`
-	ContractName   string      `json:"contract_name"`
-	ContractSymbol string      `json:"contract_symbol"`
-	AssetBalance   float64     `json:"asset_balance"`
-	UsdBalance     float64     `json:"usd_balance"`
-	Token          AssetToken  `json:"token"`
-	Amount         string      `json:"amount"`
-	DetailStaking  interface{} `json:"detail_staking"`
-	DetailLending  interface{} `json:"detail_lending"`
+	ChainID        int                            `json:"chain_id"`
+	ContractName   string                         `json:"contract_name"`
+	ContractSymbol string                         `json:"contract_symbol"`
+	AssetBalance   float64                        `json:"asset_balance"`
+	UsdBalance     float64                        `json:"usd_balance"`
+	Token          AssetToken                     `json:"token"`
+	Amount         string                         `json:"amount"`
+	DetailStaking  *BinanceStakingProductPosition `json:"detail_staking"`
+	DetailLending  *BinancePositionAmountVos      `json:"detail_lending"`
 }
 
 type AssetToken struct {
