@@ -23,6 +23,7 @@ import (
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/covalent"
+	"github.com/defipod/mochi/pkg/service/krystal"
 	"github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -149,23 +150,23 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 
 func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
 	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
-	for _, chainID := range chainIDs {
-		res, err := e.svc.Covalent.GetTokenBalances(chainID, wallet.Address, 3)
-		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "addr": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Covalent.GetTokenBalances() failed")
-			return err
-		}
-		if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
-			continue
-		}
-		for _, item := range res.Data.Items {
-			if item.Type != "cryptocurrency" {
-				continue
-			}
-			_, quote := e.calculateTokenBalance(item, chainID)
+	res, err := e.svc.Krystal.GetBalanceTokenByAddress(wallet.Address, chainIDs)
+	if err != nil {
+		e.log.Fields(logger.Fields{"chainIDs": chainIDs, "address": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Krystal.GetBalanceTokenByAddress() failed")
+		return err
+	}
+
+	if res == nil || res.Data == nil || len(res.Data) == 0 {
+		return nil
+	}
+
+	for _, item := range res.Data {
+		for _, bal := range item.Balances {
+			_, quote := e.calculateEthTokenBalance(bal, item.ChainId)
 			wallet.NetWorth += quote
 		}
 	}
+
 	return nil
 }
 
@@ -329,58 +330,50 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
-		for _, chainID := range chainIDs {
-			// get chain
-			chain, err := e.repo.Chain.GetByID(chainID)
+		// get all tokens balances by address & chainIds
+		res, err := e.svc.Krystal.GetBalanceTokenByAddress(address, chainIDs)
+		if err != nil {
+			e.log.Fields(logger.Fields{"chainIDs": chainIDs, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
+			return nil, "", "", err
+		}
+
+		for _, item := range res.Data {
+			chain, err := e.repo.Chain.GetByID(item.ChainId)
 			if err != nil {
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					continue
 				}
-				e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listEthWalletAssets] repo.Chain.GetByID() failed")
+				e.log.Fields(logger.Fields{"chainID": item.ChainId}).Error(err, "[entity.listEthWalletAssets] repo.Chain.GetByID() failed")
 				return nil, "", "", err
 			}
 
-			// get all tokens balances by address & chain
-			res, err := e.svc.Covalent.GetTokenBalances(chainID, address, 3)
-			if err != nil {
-				e.log.Fields(logger.Fields{"chainID": chainID, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Covalent.GetTokenBalances() failed")
-				return nil, "", "", err
-			}
-
-			if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
-				continue
-			}
-
-			for _, item := range res.Data.Items {
-				if item.Type != "cryptocurrency" {
-					continue
-				}
-				bal, quote := e.calculateTokenBalance(item, chainID)
+			for _, bal := range item.Balances {
+				assetBal, quote := e.calculateEthTokenBalance(bal, item.ChainId)
 				// filter out dusty tokens
 				if quote < 0.001 {
 					continue
 				}
-
 				assets = append(assets, response.WalletAssetData{
-					ChainID:        chainID,
-					ContractName:   item.ContractName,
-					ContractSymbol: item.ContractTickerSymbol,
-					AssetBalance:   bal,
+					ChainID:        item.ChainId,
+					ContractName:   bal.Token.Name,
+					ContractSymbol: bal.Token.Symbol,
+					AssetBalance:   assetBal,
 					UsdBalance:     quote,
 					Token: response.AssetToken{
-						Name:    item.ContractName,
-						Symbol:  item.ContractTickerSymbol,
-						Decimal: int64(item.ContractDecimals),
-						Price:   item.QuoteRate,
-						Native:  item.NativeToken,
+						Name:    bal.Token.Symbol,
+						Symbol:  bal.Token.Name,
+						Decimal: int64(bal.Token.Decimals),
+						Price:   bal.Quotes.Usd.Price,
+						Native:  bal.TokenType == "NATIVE",
 						Chain: response.AssetTokenChain{
-							Name:      res.Data.ChainName,
+							Name:      item.ChainName,
 							ShortName: chain.ShortName,
 						},
 					},
-					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
+					Amount: util.FloatToString(fmt.Sprint(assetBal), int64(bal.Token.Decimals)),
 				})
 			}
+
 		}
 
 		encodeData := make(map[string]string)
@@ -392,7 +385,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err := e.cache.HashSet(address+"-eth", encodeData, 3*time.Hour)
+		err = e.cache.HashSet(address+"-eth", encodeData, 3*time.Hour)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
 			return nil, "", "", err
@@ -1175,6 +1168,11 @@ func (e *Entity) listRoninWalletFarmings(req request.ListWalletAssetsRequest) ([
 		return nil, err
 	}
 
+	if res == nil || res.Data == nil {
+		l.Error(err, "[entity.listRoninWalletFarmings] svc.Skymavis.GetAddressFarming() response nil")
+		return nil, nil
+	}
+
 	rewards, err := e.svc.Ronin.GetLpPendingRewards(req.Address)
 	if err != nil {
 		l.Error(err, "[entity.listRoninWalletFarmings] svc.Ronin.GetLpPendingRewards() failed")
@@ -1391,4 +1389,19 @@ func (e *Entity) listWalletAxieNfts(req request.ListWalletAssetsRequest) (*respo
 	}
 
 	return res.Data, nil
+}
+
+func (e *Entity) calculateEthTokenBalance(item krystal.Balance, chainID int) (bal, quote float64) {
+	balance, ok := new(big.Float).SetString(item.Balance)
+	if !ok {
+		return
+	}
+	parsedBal, _ := balance.Float64()
+	bal = parsedBal / math.Pow10(item.Token.Decimals)
+	if strings.EqualFold(item.Token.Symbol, "icy") && chainID == 137 {
+		quote = 1.5 * bal
+	} else {
+		quote = item.Quotes.Usd.Value
+	}
+	return
 }

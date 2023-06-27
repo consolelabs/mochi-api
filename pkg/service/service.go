@@ -18,6 +18,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/krystal"
 	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/service/nghenhan"
@@ -56,6 +57,7 @@ type Service struct {
 	Swap          swap.Service
 	Skymavis      skymavis.Service
 	Ronin         ronin.Service
+	Krystal       krystal.Service
 }
 
 func NewService(
@@ -98,5 +100,6 @@ func NewService(
 		Swap:          swap.New(&cfg, log),
 		Skymavis:      skymavis.New(&cfg),
 		Ronin:         roninSvc,
+		Krystal:       krystal.NewService(&cfg, log),
 	}, nil
 }
