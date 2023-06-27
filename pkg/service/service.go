@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/service/abi"
@@ -63,6 +64,7 @@ type Service struct {
 func NewService(
 	cfg config.Config,
 	log logger.Logger,
+	cache cache.Cache,
 ) (*Service, error) {
 
 	discordSvc, err := discord.NewService(cfg, log)
@@ -100,6 +102,6 @@ func NewService(
 		Swap:          swap.New(&cfg, log),
 		Skymavis:      skymavis.New(&cfg),
 		Ronin:         roninSvc,
-		Krystal:       krystal.NewService(&cfg, log),
+		Krystal:       krystal.NewService(&cfg, log, cache),
 	}, nil
 }
