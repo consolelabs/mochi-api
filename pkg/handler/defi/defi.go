@@ -138,35 +138,9 @@ func (h *Handler) GetCoin(c *gin.Context) {
 	}
 
 	isDominanceChart := strings.EqualFold(c.Query("is_dominance_chart"), "true")
+	isWithCoingeckoInfo := strings.EqualFold(c.Query("is_with_coingecko_info"), "true")
 
-	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart)
-	if err != nil {
-		h.log.Error(err, "[handler.GetCoin] - failed to get coin data")
-		c.JSON(statusCode, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
-}
-
-// GetCoingeckoinfo		 godoc
-// @Summary     Get coingecko info
-// @Description Get coingecko info
-// @Tags        Defi
-// @Tags        Public
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.CoinGeckoInfoResponse
-// @Router      /defi/coins/coingecko/{id} [get]
-func (h *Handler) GetCoingeckoInfo(c *gin.Context) {
-	coinID := c.Param("id")
-	if coinID == "" {
-		h.log.Info("[handler.GetCoin] - coin id missing")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
-		return
-	}
-
-	data, err, statusCode := h.entities.GetCoingeckoInfo(coinID)
+	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart, isWithCoingeckoInfo)
 	if err != nil {
 		h.log.Error(err, "[handler.GetCoin] - failed to get coin data")
 		c.JSON(statusCode, gin.H{"error": err.Error()})

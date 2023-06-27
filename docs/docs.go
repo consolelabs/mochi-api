@@ -4610,30 +4610,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/coins/coingecko/{id}": {
-            "get": {
-                "description": "Get coingecko info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi",
-                    "Public"
-                ],
-                "summary": "Get coingecko info",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CoinGeckoInfoResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/defi/coins/compare": {
             "get": {
                 "description": "Compare token",
@@ -12995,6 +12971,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "coingecko_info": {
+                    "$ref": "#/definitions/response.CoinGeckoInfoResponse"
                 },
                 "coingecko_rank": {
                     "type": "integer"

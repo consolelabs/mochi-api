@@ -3060,6 +3060,8 @@ definitions:
         items:
           type: string
         type: array
+      coingecko_info:
+        $ref: '#/definitions/response.CoinGeckoInfoResponse'
       coingecko_rank:
         type: integer
       coingecko_score:
@@ -8066,22 +8068,6 @@ paths:
           schema:
             $ref: '#/definitions/response.GetCoinResponseWrapper'
       summary: Get coin data from Binance Exchange
-      tags:
-      - Defi
-      - Public
-  /defi/coins/coingecko/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get coingecko info
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CoinGeckoInfoResponse'
-      summary: Get coingecko info
       tags:
       - Defi
       - Public

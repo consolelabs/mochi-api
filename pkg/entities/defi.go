@@ -125,7 +125,7 @@ func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pa
 	return
 }
 
-func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.GetCoinResponse, error, int) {
+func (e *Entity) GetCoinData(coinID string, isDominanceChart, isWithCoingeckoInfo bool) (*response.GetCoinResponse, error, int) {
 	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
 	if err != nil {
 		return nil, err, statusCode
@@ -154,6 +154,15 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 		e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] getCoingeckoTokenPlatform() failed")
 	}
 	data.AssetPlatform = platform
+
+	if isWithCoingeckoInfo {
+		coingeckoInfo, err, statusCode := e.GetCoingeckoInfo(coinID)
+		if err != nil {
+			return nil, err, statusCode
+		}
+
+		data.CoingeckoInfo = coingeckoInfo
+	}
 
 	return data, nil, http.StatusOK
 }
