@@ -179,10 +179,10 @@ func (h *Handler) GetGuildDefaultTicker(c *gin.Context) {
 // @Success     200 {object} response.GetListGuildDefaultTickerResponse
 // @Router      /config-defi/default-ticker/{guild_id} [get]
 func (h *Handler) GetListGuildDefaultTicker(c *gin.Context) {
-  guildID := c.Param("guild_id")
+	guildID := c.Param("guild_id")
 	res, err := h.entities.GetListGuildDefaultTicker(guildID)
 	if err != nil {
-    h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetListGuildDefaultTicker] entity.GetListGuildDefaultTicker() failed")
+		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetListGuildDefaultTicker] entity.GetListGuildDefaultTicker() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -482,16 +482,16 @@ func (h *Handler) UpsertGuildDefaultCurrency(c *gin.Context) {
 // @Success     200 {object} response.ResponseMessage
 // @Router      /config-defi/default-currency [delete]
 func (h *Handler) DeleteGuildDefaultCurrency(c *gin.Context) {
-	var req request.GuildIDRequest
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteGuildDefaultCurrency] - failed to read JSON")
+	guildID := c.Query("guild_id")
+	if guildID == "" {
+		h.log.Fields(logger.Fields{"request": guildID}).Error(nil, "[handler.DeleteGuildDefaultCurrency] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to read JSON"), nil))
 		return
 	}
 
-	err := h.entities.DeleteGuildDefaultCurrency(req.GuildID)
+	err := h.entities.DeleteGuildDefaultCurrency(guildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.DeleteGuildDefaultCurrency] - failed to delete default currency")
+		h.log.Fields(logger.Fields{"request": guildID}).Error(err, "[handler.DeleteGuildDefaultCurrency] - failed to delete default currency")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

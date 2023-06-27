@@ -1122,6 +1122,9 @@ func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
 func (e *Entity) GetGuildDefaultCurrency(guildID string) (*response.GuildConfigDefaultCurrencyResponse, error) {
 	data, err := e.repo.GuildConfigDefaultCurrency.GetByGuildID(guildID)
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[entities.GetGuildDefaultCurrency] - failed to get default currency")
 		return nil, err
 	}
