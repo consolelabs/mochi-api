@@ -126,6 +126,9 @@ type Config struct {
 	SkyMavisApiKey     string
 
 	ChromeHost string
+
+	KrystalBaseUrl string
+	KrystalApiKey  string
 }
 
 type MarketplaceBaseUrl struct {
@@ -343,6 +346,9 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CertDir: v.GetString("CERT_DIR"),
 
 		ChromeHost: v.GetString("CHROME_HOST"),
+
+		KrystalBaseUrl: v.GetString("KRYSTAL_BASE_URL"),
+		KrystalApiKey:  v.GetString("KRYSTAL_API_KEY"),
 	}
 }
 
