@@ -58,6 +58,8 @@ func mergeAsset(userAsset, fundingAsset []response.BinanceUserAssetResponse) []r
 				if fundingAsset[i].Asset == uAsset.Asset {
 					fundingAsset[i].BtcValuation = fmt.Sprint(fAssetBtcValuation + uAssetBtcValudation)
 					fundingAsset[i].Free = fmt.Sprint(fAssetFree + uAssetFree)
+					fundingAsset[i].DetailStaking = uAsset.DetailStaking
+
 					break
 				}
 			}
@@ -96,10 +98,13 @@ func (e *Entity) GetStakingProduct(profileId, apiKey, apiSecret string) (res []r
 				return nil, err
 			}
 
+			rawData, _ := json.Marshal(p)
+
 			res = append(res, response.BinanceUserAssetResponse{
 				Asset:        p.Asset,
 				Free:         fmt.Sprint(amount + rewardAmt),
 				BtcValuation: "0",
+				DetailString: string(rawData),
 			})
 		}
 
@@ -118,6 +123,16 @@ func (e *Entity) GetStakingProduct(profileId, apiKey, apiSecret string) (res []r
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	for i, r := range res {
+		var detailStaking map[string]interface{}
+		err = json.Unmarshal([]byte(r.DetailString), &detailStaking)
+		if err != nil {
+			continue
+		}
+
+		res[i].DetailStaking = detailStaking
 	}
 
 	return res, err
@@ -139,10 +154,13 @@ func (e *Entity) GetLendingAccount(profileId, apiKey, apiSecret string) (res []r
 		}
 
 		for _, l := range lendingAcc.PositionAmountVos {
+			rawData, _ := json.Marshal(l)
+
 			res = append(res, response.BinanceUserAssetResponse{
 				Asset:        l.Asset,
 				Free:         l.Amount,
 				BtcValuation: l.AmountInBTC,
+				DetailString: string(rawData),
 			})
 		}
 
@@ -161,6 +179,16 @@ func (e *Entity) GetLendingAccount(profileId, apiKey, apiSecret string) (res []r
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	for i, r := range res {
+		var detailLending map[string]interface{}
+		err = json.Unmarshal([]byte(r.DetailString), &detailLending)
+		if err != nil {
+			continue
+		}
+
+		res[i].DetailLending = detailLending
 	}
 
 	return res, err
@@ -276,6 +304,8 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 				Decimal: 18,
 				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
 			},
+			DetailStaking: asset.DetailStaking,
+			DetailLending: asset.DetailLending,
 		})
 	}
 
