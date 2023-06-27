@@ -91,7 +91,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		log.Fatal(err, "failed to init redis cache")
 	}
 
-	service, err := service.NewService(cfg, log, cache)
+	service, err := service.NewService(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init service")
 	}
