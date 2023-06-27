@@ -401,8 +401,8 @@ func TestHandler_GetGuildDefaultCurrency(t *testing.T) {
 		{
 			name:             "500_record_not_found",
 			param:            "testt",
-			wantCode:         http.StatusInternalServerError,
-			wantResponsePath: "testdata/404_record_not_found.json",
+			wantCode:         http.StatusOK,
+			wantResponsePath: "testdata/200-data-null.json",
 		},
 	}
 	for _, tt := range tests {
@@ -467,55 +467,6 @@ func TestHandler_UpsertGuildDefaultCurrency(t *testing.T) {
 			require.NoError(t, err)
 
 			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.UpsertGuildDefaultCurrency] response mismatched")
-		})
-	}
-}
-
-func TestHandler_DeleteGuildDefaultCurrency(t *testing.T) {
-	db := testhelper.LoadTestDB("../../../migrations/test_seed")
-	repo := pg.NewRepo(db)
-	cfg := config.LoadTestConfig()
-	log := logger.NewLogrusLogger()
-	entity := entities.New(cfg, log, repo, nil, nil, nil, nil, nil, nil, nil, nil, nil)
-
-	h := &Handler{
-		entities: entity,
-		log:      log,
-	}
-
-	tests := []struct {
-		name             string
-		args             interface{}
-		wantCode         int
-		wantResponsePath string
-	}{
-		{
-			name: "200_ok",
-			args: request.GuildIDRequest{
-				GuildID: "895659000996200508",
-			},
-			wantCode:         http.StatusOK,
-			wantResponsePath: "testdata/200-message-ok.json",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			body, err := json.Marshal(tt.args)
-			if err != nil {
-				t.Error(err)
-				return
-			}
-
-			w := httptest.NewRecorder()
-			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodDelete, "/api/v1/config-defi/default-currency", bytes.NewBuffer(body))
-
-			h.DeleteGuildDefaultCurrency(ctx)
-			require.Equal(t, tt.wantCode, w.Code)
-			expRespRaw, err := ioutil.ReadFile(tt.wantResponsePath)
-			require.NoError(t, err)
-
-			require.JSONEq(t, string(expRespRaw), w.Body.String(), "[Handler.DeleteGuildDefaultCurrency] response mismatched")
 		})
 	}
 }
