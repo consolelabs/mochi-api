@@ -69,13 +69,16 @@ type BinanceApiKeyPermissionResponse struct {
 }
 
 type BinanceUserAssetResponse struct {
-	Asset        string `json:"asset"`
-	Free         string `json:"free"`
-	Locked       string `json:"locked"`
-	Freeze       string `json:"freeze"`
-	Withdrawing  string `json:"withdrawing"`
-	Ipoable      string `json:"ipoable"`
-	BtcValuation string `json:"btcValuation"`
+	Asset         string      `json:"asset"`
+	Free          string      `json:"free"`
+	Locked        string      `json:"locked"`
+	Freeze        string      `json:"freeze"`
+	Withdrawing   string      `json:"withdrawing"`
+	Ipoable       string      `json:"ipoable"`
+	BtcValuation  string      `json:"btcValuation"`
+	DetailStaking interface{} `json:"detail_staking"`
+	DetailLending interface{} `json:"detail_lending"`
+	DetailString  string      `json:"detail_string"`
 }
 
 type BinanceStakingProductPosition struct {
