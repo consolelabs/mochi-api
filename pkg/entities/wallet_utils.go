@@ -126,7 +126,7 @@ func (e *Entity) GetStakingProduct(profileId, apiKey, apiSecret string) (res []r
 	}
 
 	for i, r := range res {
-		var detailStaking map[string]interface{}
+		var detailStaking *response.BinanceStakingProductPosition
 		err = json.Unmarshal([]byte(r.DetailString), &detailStaking)
 		if err != nil {
 			continue
@@ -182,7 +182,7 @@ func (e *Entity) GetLendingAccount(profileId, apiKey, apiSecret string) (res []r
 	}
 
 	for i, r := range res {
-		var detailLending map[string]interface{}
+		var detailLending *response.BinancePositionAmountVos
 		err = json.Unmarshal([]byte(r.DetailString), &detailLending)
 		if err != nil {
 			continue
@@ -296,7 +296,7 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 			return nil, err
 		}
 
-		resp = append(resp, response.WalletAssetData{
+		itm := response.WalletAssetData{
 			AssetBalance: assetValue,
 			Amount:       util.FloatToString(fmt.Sprint(assetValue), 18),
 			Token: response.AssetToken{
@@ -304,9 +304,17 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 				Decimal: 18,
 				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
 			},
-			DetailStaking: asset.DetailStaking,
-			DetailLending: asset.DetailLending,
-		})
+		}
+
+		if asset.DetailLending != nil && asset.DetailLending.Amount != "0" {
+			itm.DetailLending = asset.DetailLending
+		}
+
+		if asset.DetailStaking != nil && asset.DetailStaking.Amount != "0" {
+			itm.DetailStaking = asset.DetailStaking
+		}
+
+		resp = append(resp, itm)
 	}
 
 	return resp, nil
