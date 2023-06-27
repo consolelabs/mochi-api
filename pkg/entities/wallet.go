@@ -149,10 +149,9 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 }
 
 func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
-	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
-	res, err := e.svc.Krystal.GetBalanceTokenByAddress(wallet.Address, chainIDs)
+	res, err := e.svc.Krystal.GetBalanceTokenByAddress(wallet.Address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"chainIDs": chainIDs, "address": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Krystal.GetBalanceTokenByAddress() failed")
+		e.log.Fields(logger.Fields{"address": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Krystal.GetBalanceTokenByAddress() failed")
 		return err
 	}
 
@@ -327,13 +326,12 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		return nil, "", "", err
 	}
 
-	chainIDs := []int{1, 56, 137, 250, 2020, 42161}
 	assets := make([]response.WalletAssetData, 0)
 	if len(value) == 0 {
 		// get all tokens balances by address & chainIds
-		res, err := e.svc.Krystal.GetBalanceTokenByAddress(address, chainIDs)
+		res, err := e.svc.Krystal.GetBalanceTokenByAddress(address)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainIDs": chainIDs, "address": address}).Error(err, "[entity.listEthWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
+			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.listEthWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
 			return nil, "", "", err
 		}
 
