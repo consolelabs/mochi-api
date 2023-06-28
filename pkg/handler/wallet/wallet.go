@@ -284,7 +284,7 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		LatestSnapshotBal: latestSnapshotBal,
 		Farming:           farmingData,
 		Staking:           stakingData,
-		Nft:               nftData,
+		Nfts:              nftData,
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
