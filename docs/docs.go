@@ -11919,10 +11919,10 @@ const docTemplate = `{
         "request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
-                "Symbol": {
+                "guild_id": {
                     "type": "string"
                 },
-                "guild_id": {
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -14723,6 +14723,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigTokenRole"
                     }
+                },
+                "meta": {
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -15355,6 +15359,9 @@ const docTemplate = `{
                 },
                 "total_amount": {
                     "type": "number"
+                },
+                "tx_id": {
+                    "type": "integer"
                 }
             }
         },

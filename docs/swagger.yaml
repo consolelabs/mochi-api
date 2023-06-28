@@ -2378,9 +2378,9 @@ definitions:
     type: object
   request.UpsertGuildDefaultCurrencyRequest:
     properties:
-      Symbol:
-        type: string
       guild_id:
+        type: string
+      symbol:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -3538,13 +3538,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
-      usd_1y_change:
-        type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -4196,6 +4196,9 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigTokenRole'
         type: array
+      meta:
+        additionalProperties: true
+        type: object
     type: object
   response.ListGuildXPRoles:
     properties:
@@ -4307,6 +4310,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -4320,12 +4329,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4612,6 +4615,8 @@ definitions:
         type: string
       total_amount:
         type: number
+      tx_id:
+        type: integer
     type: object
   response.OffchainTipBotTransferTokenResponse:
     properties:
