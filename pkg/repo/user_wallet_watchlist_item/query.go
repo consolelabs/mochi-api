@@ -6,8 +6,9 @@ type ListQuery struct {
 }
 
 type GetOneQuery struct {
-	UserID string
-	Query  string
+	UserID    string
+	Query     string
+	ForUpdate bool
 }
 
 type DeleteQuery struct {

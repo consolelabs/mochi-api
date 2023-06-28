@@ -122,6 +122,41 @@ func (h *Handler) GetOne(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
 }
 
+// UpdateTrackingInfo		godoc
+// @Summary     				Update tracked wallet's info
+// @Description 				Update tracked wallet's info
+// @Tags        				WatchList
+// @Accept      				json
+// @Produce     				json
+// @Param       				id   path  string true  "user Id"
+// @Param       				address   path  string true  "address or current alias of tracked wallet"
+// @Param       				request body request.UpdateTrackingInfoRequest true "req"
+// @Success     				200 {object} response.GetOneWalletResponse
+// @Router      				/users/{id}/watchlists/wallets/{address} [put]
+func (h *Handler) UpdateTrackingInfo(c *gin.Context) {
+	var req request.UpdateTrackingInfoRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.UpdateTrackingInfo] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.UpdateTrackingInfo] ShouldBindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	wallet, err := h.entities.UpdateTrackingInfo(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.UpdateTrackingInfo] entity.UpdateTrackingInfo() failed")
+		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(wallet, nil, nil, nil))
+}
+
 // Track     	godoc
 // @Summary     Track new wallet
 // @Description Track new wallet
@@ -220,25 +255,25 @@ func (h *Handler) ListAssets(c *gin.Context) {
 	}
 
 	// farming data
-	farmingData, err := h.entities.ListEthWalletFarming(req)
+	farmingData, err := h.entities.ListWalletFarmings(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletFarming() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletFarmings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	// staking data
-	stakingData, err := h.entities.ListEthWalletStaking(req)
+	stakingData, err := h.entities.ListWalletStakings(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletStaking() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletStakings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	// nft data
-	nftData, err := h.entities.ListEthWalletNfts(req)
+	nftData, err := h.entities.ListWalletNfts(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletNfts() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletNfts() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -249,7 +284,7 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		LatestSnapshotBal: latestSnapshotBal,
 		Farming:           farmingData,
 		Staking:           stakingData,
-		Nft:               nftData,
+		Nfts:              nftData,
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))

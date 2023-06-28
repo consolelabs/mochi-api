@@ -8,7 +8,7 @@ import (
 )
 
 type WalletBaseRequest struct {
-	UserID string `uri:"id" binding:"required"`
+	UserID string `uri:"id" binding:"required" json:"-"`
 }
 
 type GetTrackingWalletsRequest struct {
@@ -82,6 +82,7 @@ func (r *ListWalletAssetsRequest) Standardize() {
 	addr := strings.ToLower(r.Address)
 	if strings.HasPrefix(addr, "ronin:") {
 		r.Address = "0x" + r.Address[6:]
+		r.Type = "ron"
 	}
 }
 
@@ -89,6 +90,7 @@ func (r *ListWalletTransactionsRequest) Standardize() {
 	addr := strings.ToLower(r.Address)
 	if strings.HasPrefix(addr, "ronin:") {
 		r.Address = "0x" + r.Address[6:]
+		r.Type = "ron"
 	}
 }
 
@@ -103,5 +105,13 @@ func (r *TrackWalletRequest) Standardize() {
 	addr := strings.ToLower(r.Address)
 	if strings.HasPrefix(addr, "ronin:") && len(addr) == 46 {
 		r.Address = "0x" + r.Address[6:]
+		r.ChainType = "ron"
 	}
+}
+
+type UpdateTrackingInfoRequest struct {
+	WalletBaseRequest
+	Address string `uri:"address" binding:"required" json:"-"`
+	// Request body, only update the following fields
+	Alias string `json:"alias"`
 }

@@ -7812,6 +7812,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/watchlists/wallets/{address}": {
+            "put": {
+                "description": "Update tracked wallet's info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Update tracked wallet's info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address or current alias of tracked wallet",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "req",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateTrackingInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetOneWalletResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "description": "Get user",
@@ -11356,15 +11404,7 @@ const docTemplate = `{
             }
         },
         "request.GetTrackingWalletsRequest": {
-            "type": "object",
-            "required": [
-                "userID"
-            ],
-            "properties": {
-                "userID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "request.GuildConfigDefaultNftTickerRequest": {
             "type": "object",
@@ -11783,6 +11823,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdateTrackingInfoRequest": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "description": "Request body, only update the following fields",
                     "type": "string"
                 }
             }

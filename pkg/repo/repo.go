@@ -124,6 +124,7 @@ import (
 )
 
 type Repo struct {
+	Store                                Store
 	DiscordUserGMStreak                  discordusergmstreak.Store
 	DiscordUserUpvoteStreak              discorduserupvotestreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store

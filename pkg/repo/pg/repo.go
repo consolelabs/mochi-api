@@ -129,6 +129,7 @@ import (
 // NewRepo new pg repo implementation
 func NewRepo(db *gorm.DB) *repo.Repo {
 	return &repo.Repo{
+		Store:                                NewStore(db),
 		DiscordGuilds:                        discordguilds.NewPG(db),
 		DiscordWalletVerification:            discordwalletverification.NewPG(db),
 		InviteHistories:                      invitehistories.NewPG(db),
