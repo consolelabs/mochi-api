@@ -1,10 +1,15 @@
 package binance
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/defipod/mochi/pkg/cache"
+	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	bapdater "github.com/defipod/mochi/pkg/service/binance/adapter"
 	"github.com/defipod/mochi/pkg/util"
@@ -15,67 +20,145 @@ type Binance struct {
 	getSymbolKlinesURL string
 	getAvgPriceURL     string
 	getTickerPriceURL  string
+	config             *config.Config
+	logger             logger.Logger
+	cache              cache.Cache
 }
 
-func NewService() Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
 	return &Binance{
 		getExchangeInfoURL: "https://api.binance.com/api/v3/exchangeInfo",
 		getSymbolKlinesURL: "https://api.binance.com/api/v3/uiKlines?symbol=%s&interval=1h&limit=168", // 168h = 7d
 		getAvgPriceURL:     "https://api.binance.com/api/v3/avgPrice",
 		getTickerPriceURL:  "https://api.binance.com/api/v3/ticker/price",
+		config:             cfg,
+		logger:             l,
+		cache:              cache,
 	}
 }
 
 func (b *Binance) GetExchangeInfo(symbol string) (*response.GetExchangeInfoResponse, error, int) {
+	b.logger.Debug("start binance.GetExchangeInfo()")
+	defer b.logger.Debug("end binance.GetExchangeInfo()")
+
 	symbol = strings.Replace(symbol, "/", "", 1)
 	res := &response.GetExchangeInfoResponse{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-exchange-info-symbol-%s", strings.ToLower(symbol))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), res), http.StatusOK
+	}
+
 	url := b.getExchangeInfoURL
 	if symbol != "" {
 		url = fmt.Sprintf("%s?symbol=%s", url, symbol)
 	}
+
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, fmt.Errorf("binance.GetExchangeInfo() failed: %v", err), statusCode
 	}
+
+	// cache binance-exchange-info-symbol
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
 	return res, nil, http.StatusOK
 }
 
 func (b *Binance) GetTickerPrice(symbol string) (*response.GetTickerPriceResponse, error, int) {
+	b.logger.Debug("start binance.GetTickerPrice()")
+	defer b.logger.Debug("end binance.GetTickerPrice()")
+
 	symbol = strings.Replace(symbol, "/", "", 1)
 	res := &response.GetTickerPriceResponse{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-ticker-price-symbol-%s", strings.ToLower(symbol))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), res), http.StatusOK
+	}
+
 	url := b.getTickerPriceURL
 	if symbol != "" {
 		url = fmt.Sprintf("%s?symbol=%s", url, symbol)
 	}
+
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, fmt.Errorf("binance.GetTickerPrice() failed: %v", err), statusCode
 	}
+
+	// cache binance-ticker-price-symbol
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
 	return res, nil, http.StatusOK
 }
 
 func (b *Binance) GetAvgPriceBySymbol(symbol string) (*response.GetAvgPriceBySymbolResponse, error, int) {
+	b.logger.Debug("start binance.GetAvgPriceBySymbol()")
+	defer b.logger.Debug("end binance.GetAvgPriceBySymbol()")
 	symbol = strings.Replace(symbol, "/", "", 1)
 	res := &response.GetAvgPriceBySymbolResponse{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-avg-price-symbol-%s", strings.ToLower(symbol))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), res), http.StatusOK
+	}
+
 	url := b.getAvgPriceURL
 	if symbol != "" {
 		url = fmt.Sprintf("%s?symbol=%s", url, symbol)
 	}
+
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, fmt.Errorf("binance.GetAvgPriceBySymbol() failed: %v", err), statusCode
 	}
+
+	// cache binance-avg-price-symbol
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
 	return res, nil, http.StatusOK
 }
 
 func (b *Binance) GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResponse, error, int) {
+	b.logger.Debug("start binance.GetKlinesBySymbol()")
+	defer b.logger.Debug("end binance.GetKlinesBySymbol()")
+
 	symbol = strings.Replace(symbol, "/", "", 1)
 	data := make([][]interface{}, 0)
+	var res []response.GetKlinesDataResponse
+
+	// check if data cached
+	key := fmt.Sprintf("binance-klines-symbol-%s", strings.ToLower(symbol))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), res), http.StatusOK
+	}
+
 	statusCode, err := util.FetchData(fmt.Sprintf(b.getSymbolKlinesURL, symbol), &data)
 	if err != nil || statusCode != http.StatusOK {
 		return nil, fmt.Errorf("binance.GetKlinesBySymbol() failed: %v", err), statusCode
 	}
-	res := make([]response.GetKlinesDataResponse, 0, len(data))
+
 	for _, item := range data {
 		res = append(res, response.GetKlinesDataResponse{
 			OPrice: item[1].(string),
@@ -84,6 +167,13 @@ func (b *Binance) GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResp
 			CPrice: item[4].(string),
 		})
 	}
+
+	// cache binance-klines-symbol
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
 	return res, nil, http.StatusOK
 }
 
@@ -97,37 +187,112 @@ func (b *Binance) GetApiKeyPermission(apiKey, apiSecret string) (*response.Binan
 }
 
 func (b *Binance) GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error) {
-	asset, err := bapdater.GetUserAsset(apiKey, apiSecret)
+	b.logger.Debug("start binance.GetUserAsset()")
+	defer b.logger.Debug("end binance.GetUserAsset()")
+
+	var res []response.BinanceUserAssetResponse
+	// check if data cached
+	key := fmt.Sprintf("binance-user-asset-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetUserAsset(apiKey, apiSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	return asset, nil
+	// cache binance-user-asset-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
 }
 
 func (b *Binance) GetFundingAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error) {
-	asset, err := bapdater.GetFundingAsset(apiKey, apiSecret)
+	b.logger.Debug("start binance.GetFundingAsset()")
+	defer b.logger.Debug("end binance.GetFundingAsset()")
+
+	var res []response.BinanceUserAssetResponse
+
+	// check if data cached
+	key := fmt.Sprintf("binance-funding-asset-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetFundingAsset(apiKey, apiSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	return asset, nil
+	// cache binance-funding-asset-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
 }
 
 func (b *Binance) GetStakingProductPosition(apiKey, apiSecret string) ([]response.BinanceStakingProductPosition, error) {
-	pos, err := bapdater.GetStakingProductPosition(apiKey, apiSecret)
+	b.logger.Debug("start binance.GetStakingProductPosition()")
+	defer b.logger.Debug("end binance.GetStakingProductPosition()")
+
+	var res []response.BinanceStakingProductPosition
+
+	// check if data cached
+	key := fmt.Sprintf("binance-staking-production-position-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetStakingProductPosition(apiKey, apiSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	return pos, nil
+	// cache binance-staking-production-position-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
 }
 
 func (b *Binance) GetLendingAccount(apiKey, apiSecret string) (*response.BinanceLendingAccount, error) {
-	lendingAcc, err := bapdater.GetLendingAccount(apiKey, apiSecret)
+	b.logger.Debug("start binance.GetLendingAccount()")
+	defer b.logger.Debug("end binance.GetLendingAccount()")
+
+	res := &response.BinanceLendingAccount{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-lending-account-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetLendingAccount(apiKey, apiSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	return lendingAcc, nil
+	// cache binance-lending-account-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
 }
