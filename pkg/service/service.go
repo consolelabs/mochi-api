@@ -102,7 +102,7 @@ func NewService(
 		Nghenhan:      nghenhan.NewService(),
 		Processor:     processor.NewProcessor(&cfg),
 		Solscan:       solscan.NewService(&cfg, log),
-		Binance:       binance.NewService(),
+		Binance:       binance.NewService(&cfg, log, cache),
 		APILayer:      apilayer.NewService(&cfg),
 		Bluemove:      bluemove.New(&cfg, log),
 		MochiProfile:  mochiprofile.NewService(&cfg, log),
