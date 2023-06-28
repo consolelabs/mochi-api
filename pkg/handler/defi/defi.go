@@ -138,8 +138,9 @@ func (h *Handler) GetCoin(c *gin.Context) {
 	}
 
 	isDominanceChart := strings.EqualFold(c.Query("is_dominance_chart"), "true")
+	isWithCoingeckoInfo := strings.EqualFold(c.Query("is_with_coingecko_info"), "true")
 
-	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart)
+	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart, isWithCoingeckoInfo)
 	if err != nil {
 		h.log.Error(err, "[handler.GetCoin] - failed to get coin data")
 		c.JSON(statusCode, gin.H{"error": err.Error()})
