@@ -157,6 +157,7 @@ type CreateGuildTokenRole struct {
 
 type ListGuildTokenRoles struct {
 	Data []model.GuildConfigTokenRole `json:"data"`
+	Meta map[string]interface{}       `json:"meta"`
 }
 
 type UpdateGuildTokenRole struct {
