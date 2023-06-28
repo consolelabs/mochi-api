@@ -143,7 +143,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		watchListGroup := userGroup.Group("/:id/watchlists")
 		{
 			watchListGroup.POST("/wallets/track", h.Wallet.Track)
-			watchListGroup.GET("wallets", h.Wallet.ListTrackingWallets)
+			watchListGroup.GET("/wallets", h.Wallet.ListTrackingWallets)
+			watchListGroup.PUT("/wallets/:address", h.Wallet.UpdateTrackingInfo)
 		}
 
 		userEarnGroup := userGroup.Group("/:id/earns") //:id is profile_id

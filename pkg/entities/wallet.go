@@ -1403,3 +1403,51 @@ func (e *Entity) calculateEthTokenBalance(item krystal.Balance, chainID int) (ba
 	}
 	return
 }
+
+func (e *Entity) UpdateTrackingInfo(req request.UpdateTrackingInfoRequest) (*model.UserWalletWatchlistItem, error) {
+	tx, ff := e.repo.Store.NewTransaction()
+
+	var (
+		wallet *model.UserWalletWatchlistItem
+		err    error
+	)
+	if req.Alias != "" {
+		wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
+			UserID:    req.UserID,
+			Query:     req.Alias,
+			ForUpdate: false,
+		})
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.GetOne failed")
+			return nil, ff.Rollback(err)
+		}
+	}
+
+	if wallet != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] alias already exists")
+		return nil, ff.Rollback(baseerr.ErrAliasAlreadyExisted)
+	}
+
+	wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
+		UserID:    req.UserID,
+		Query:     req.Address,
+		ForUpdate: true,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.GetOne failed")
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ff.Rollback(baseerr.ErrRecordNotFound)
+		}
+		return nil, ff.Rollback(err)
+	}
+
+	wallet.Alias = req.Alias
+
+	if err := tx.UserWalletWatchlistItem.Update(wallet); err != nil {
+		e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.Update failed")
+		return nil, ff.Rollback(err)
+	}
+
+	return wallet, ff.Commit()
+}

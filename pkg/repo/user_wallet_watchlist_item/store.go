@@ -8,4 +8,5 @@ type Store interface {
 	Upsert(*model.UserWalletWatchlistItem) error
 	Remove(DeleteQuery) error
 	UpdateOwnerFlag(userID, address string, isOwner bool) error
+	Update(*model.UserWalletWatchlistItem) error
 }

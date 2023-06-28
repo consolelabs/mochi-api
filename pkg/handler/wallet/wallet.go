@@ -122,6 +122,41 @@ func (h *Handler) GetOne(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
 }
 
+// UpdateTrackingInfo		godoc
+// @Summary     				Update tracked wallet's info
+// @Description 				Update tracked wallet's info
+// @Tags        				WatchList
+// @Accept      				json
+// @Produce     				json
+// @Param       				id   path  string true  "user Id"
+// @Param       				address   path  string true  "address or current alias of tracked wallet"
+// @Param       				request body request.UpdateTrackingInfoRequest true "req"
+// @Success     				200 {object} response.GetOneWalletResponse
+// @Router      				/users/{id}/watchlists/wallets/{address} [put]
+func (h *Handler) UpdateTrackingInfo(c *gin.Context) {
+	var req request.UpdateTrackingInfoRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.UpdateTrackingInfo] ShouldBindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.Wallet.UpdateTrackingInfo] ShouldBindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	wallet, err := h.entities.UpdateTrackingInfo(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.UpdateTrackingInfo] entity.UpdateTrackingInfo() failed")
+		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(wallet, nil, nil, nil))
+}
+
 // Track     	godoc
 // @Summary     Track new wallet
 // @Description Track new wallet
