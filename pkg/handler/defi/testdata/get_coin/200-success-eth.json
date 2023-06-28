@@ -113,36 +113,6 @@
     ],
     "contract_address": "",
     "detail_platforms": null,
-    "coingecko_info": {
-      "contracts": null,
-      "websites": {
-        "ethereum.org": "https://www.ethereum.org/"
-      },
-      "explorers": {
-        "3xpl": "https://3xpl.com/ethereum",
-        "Blockchair": "https://blockchair.com/ethereum",
-        "Etherscan": "https://etherscan.io/",
-        "Ethplorer": "https://ethplorer.io/",
-        "Oklink": "https://www.oklink.com/eth",
-        "Tokenview": "https://eth.tokenview.io/"
-      },
-      "wallets": {
-        "Coin98": "https://coin98.com/wallet",
-        "Ledger": "https://gcko.io/ledger",
-        "Metamask": "https://gcko.io/metamask",
-        "SafePal": "https://gcko.io/safepal",
-        "Xdefi": "https://www.xdefi.io/"
-      },
-      "communities": {
-        "Discord": "https://discord.com/invite/CetY6Y4",
-        "Reddit": "https://reddit.com/r/ethereum",
-        "Twitter": "https://twitter.com/ethereum"
-      },
-      "tags": {
-        "Ethereum Ecosystem": "https://www.coingecko.com/en/categories/ethereum-ecosystem",
-        "Layer 1 (L1)": "https://www.coingecko.com/en/categories/layer-1",
-        "Smart Contract Platform": "https://www.coingecko.com/en/categories/smart-contract-platform"
-      }
-    }
+    "coingecko_info": null
   }
 }
