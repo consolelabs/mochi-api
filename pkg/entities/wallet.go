@@ -902,20 +902,15 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 			if ok {
 				// batch case: 1 action -> 1 token
 				if strings.Contains(signature, "Batch") {
-					type valueObj struct {
-						Value string
-					}
-					_ids := ev.Decoded.Params[3].Value.([]valueObj)
-					_amounts := ev.Decoded.Params[4].Value.([]valueObj)
-					for i, _id := range _ids {
-						if contract.Name == "" {
-							action.Unit = _id.Value
-							amt, err := strconv.ParseFloat(_amounts[i].Value, 10)
-							if err != nil {
-								continue
-							}
-							action.Amount = amt
+					_ids := ev.Decoded.Params[3].Value.([]interface{})
+					_amounts := ev.Decoded.Params[4].Value.([]interface{})
+					if contract.Name == "" {
+						action.Unit = _ids[0].(map[string]interface{})["value"].(string)
+						amt, err := strconv.ParseFloat(_amounts[0].(map[string]interface{})["value"].(string), 10)
+						if err != nil {
+							continue
 						}
+						action.Amount = amt
 					}
 				}
 				handler(addr, ev, action)
@@ -1321,17 +1316,17 @@ func (e *Entity) listRoninWalletStakings(req request.ListWalletAssetsRequest) ([
 	}, nil
 }
 
-func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
+func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) ([]response.WalletNftData, error) {
 	req.Standardize()
 	// TODO: only support EVM for now
 	if req.Type != "eth" && req.Type != "evm" {
 		return nil, nil
 	}
 
-	data := &response.NftListData{}
+	var data []response.WalletNftData
 
 	// check if data cached
-	key := fmt.Sprintf("%s-eth-nft", strings.ToLower(req.Address))
+	key := fmt.Sprintf("%s-eth-nfts", strings.ToLower(req.Address))
 	cached, err := e.cache.GetString(key)
 	if err == nil && cached != "" {
 		return data, json.Unmarshal([]byte(cached), &data)
@@ -1356,37 +1351,73 @@ func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) (*respon
 	return data, nil
 }
 
-func (e *Entity) listWalletAxieNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
+func (e *Entity) listWalletAxieNfts(req request.ListWalletAssetsRequest) ([]response.WalletNftData, error) {
 	res, err := e.svc.Skymavis.GetOwnedNfts(strings.ToLower(req.Address))
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listWalletAxieNfts] svc.Skymavis.GetOwnedAxies() failed")
 		return nil, err
 	}
 
+	// result := make([]response.WalletNftData, 4)
+	axies := make([]response.WalletNftMetadata, len(res.Data.Axies.Results))
+	accessories := make([]response.WalletNftMetadata, len(res.Data.Equipments.Results))
+	lands := make([]response.WalletNftMetadata, len(res.Data.Lands.Results))
+	items := make([]response.WalletNftMetadata, len(res.Data.Items.Results))
+	result := []response.WalletNftData{
+		{Total: res.Data.Axies.Total, Tokens: axies, CollectionName: "Axie"},
+		{Total: res.Data.Equipments.Total, Tokens: accessories, CollectionName: "Axie Accessory"},
+		{Total: res.Data.Lands.Total, Tokens: lands, CollectionName: "Axie Land"},
+		{Total: res.Data.Items.Total, Tokens: items, CollectionName: "Axie Land Item"},
+	}
 	// Axie collection
 	for i, axie := range res.Data.Axies.Results {
-		res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.TokenID)
+		axies[i] = response.WalletNftMetadata{
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.ID),
+			TokenName:      axie.Name,
+			Image:          axie.Image,
+		}
+		// res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.ID)
+		// res.Data.Axies.Results[i].TokenName = axie.Name
+		// result["axies"]
 	}
 
 	// Accessory collection
 	for i, acc := range res.Data.Equipments.Results {
-		res.Data.Equipments.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias)
-		res.Data.Equipments.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias)
+		// res.Data.Equipments.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias)
+		// res.Data.Equipments.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias)
+		// res.Data.Equipments.Results[i].TokenName = acc.Name
+		accessories[i] = response.WalletNftMetadata{
+			Image:          fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias),
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias),
+			TokenName:      acc.Name,
+		}
 	}
 
 	// Land collection
 	for i, land := range res.Data.Lands.Results {
-		res.Data.Lands.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row)
-		res.Data.Lands.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row)
+		// res.Data.Lands.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row)
+		// res.Data.Lands.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row)
+		// res.Data.Lands.Results[i].TokenName = fmt.Sprintf("%s plot (%d, %d)", land.LandType, land.Col, land.Row)
+		lands[i] = response.WalletNftMetadata{
+			Image:          fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row),
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row),
+			TokenName:      fmt.Sprintf("%s plot (%d, %d)", land.LandType, land.Col, land.Row),
+		}
 	}
 
 	// Land Item collection
 	for i, item := range res.Data.Items.Results {
-		res.Data.Items.Results[i].Image = item.FigureURL
-		res.Data.Items.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID)
+		// res.Data.Items.Results[i].Image = item.FigureURL
+		// res.Data.Items.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID)
+		// res.Data.Items.Results[i].TokenName = fmt.Sprintf("%s #%d", item.Name, item.ItemID)
+		items[i] = response.WalletNftMetadata{
+			Image:          item.FigureURL,
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID),
+			TokenName:      fmt.Sprintf("%s #%d", item.Name, item.ItemID),
+		}
 	}
 
-	return res.Data, nil
+	return result, nil
 }
 
 func (e *Entity) calculateEthTokenBalance(item krystal.Balance, chainID int) (bal, quote float64) {

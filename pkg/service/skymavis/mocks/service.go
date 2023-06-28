@@ -50,10 +50,10 @@ func (mr *MockServiceMockRecorder) GetAddressFarming(address interface{}) *gomoc
 }
 
 // GetOwnedNfts mocks base method.
-func (m *MockService) GetOwnedNfts(address string) (*response.NftResponse, error) {
+func (m *MockService) GetOwnedNfts(address string) (*response.AxieMarketNftResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOwnedNfts", address)
-	ret0, _ := ret[0].(*response.NftResponse)
+	ret0, _ := ret[0].(*response.AxieMarketNftResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

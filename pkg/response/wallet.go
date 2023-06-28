@@ -20,7 +20,7 @@ type ListAsset struct {
 	Balance           []WalletAssetData   `json:"balance"`
 	Farming           []LiquidityPosition `json:"farming"`
 	Staking           []WalletStakingData `json:"staking"`
-	Nft               *NftListData        `json:"nft"`
+	Nfts              []WalletNftData     `json:"nfts"`
 }
 
 type WalletStakingData struct {
@@ -147,12 +147,28 @@ type TokenDayData struct {
 	PriceUSD string `json:"priceUSD"`
 }
 
-// axie nft
-type NftResponse struct {
-	Data *NftListData `json:"data"`
+type WalletNftResponse struct {
+	Data []WalletNftData `json:"data"`
 }
 
-type NftListData struct {
+type WalletNftData struct {
+	Total          int64               `json:"total"`
+	CollectionName string              `json:"collection_name"`
+	Tokens         []WalletNftMetadata `json:"tokens"`
+}
+
+type WalletNftMetadata struct {
+	Image          string `json:"image"`
+	MarketplaceURL string `json:"marketplace_url"`
+	TokenName      string `json:"token_name"`
+}
+
+// axie nft
+type AxieMarketNftResponse struct {
+	Data *AxieNftListData `json:"data"`
+}
+
+type AxieNftListData struct {
 	Axies      *AxieNftResult      `json:"axies"`
 	Equipments *EquipmentNftResult `json:"equipments"`
 	Lands      *LandNftResult      `json:"lands"`
@@ -165,7 +181,7 @@ type AxieNftResult struct {
 }
 
 type AxieMetadata struct {
-	TokenID        string `json:"tokenId"`
+	ID             string `json:"id"`
 	Owner          string `json:"owner"`
 	Image          string `json:"image"`
 	Level          int    `json:"level"`
@@ -173,6 +189,12 @@ type AxieMetadata struct {
 	Name           string `json:"name"`
 	TokenAddress   string `json:"tokenAddress"`
 	MarketplaceURL string `json:"marketplace_url"`
+	TokenName      string `json:"token_name"`
+}
+
+type EquipmentNftResult struct {
+	Total   int64               `json:"total"`
+	Results []EquipmentMetadata `json:"results"`
 }
 
 type EquipmentMetadata struct {
@@ -184,11 +206,7 @@ type EquipmentMetadata struct {
 	Rarity         string   `json:"rarity"`
 	Image          string   `json:"image"`
 	MarketplaceURL string   `json:"marketplace_url"`
-}
-
-type EquipmentNftResult struct {
-	Total   int64               `json:"total"`
-	Results []EquipmentMetadata `json:"results"`
+	TokenName      string   `json:"token_name"`
 }
 
 type LandItemMetadata struct {
@@ -201,6 +219,7 @@ type LandItemMetadata struct {
 	Rarity         string `json:"rarity"`
 	Image          string `json:"image"`
 	MarketplaceURL string `json:"marketplace_url"`
+	TokenName      string `json:"token_name"`
 }
 
 type LandItemNftResult struct {
@@ -216,6 +235,7 @@ type LandMetadata struct {
 	Row            int    `json:"row"`
 	Image          string `json:"image"`
 	MarketplaceURL string `json:"marketplace_url"`
+	TokenName      string `json:"token_name"`
 }
 
 type LandNftResult struct {
