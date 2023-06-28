@@ -1,5 +1,51 @@
 basePath: /api/v1
 definitions:
+  discordgo.GuildFeature:
+    enum:
+    - ANIMATED_BANNER
+    - ANIMATED_ICON
+    - AUTO_MODERATION
+    - BANNER
+    - COMMUNITY
+    - DISCOVERABLE
+    - FEATURABLE
+    - INVITE_SPLASH
+    - MEMBER_VERIFICATION_GATE_ENABLED
+    - MONETIZATION_ENABLED
+    - MORE_STICKERS
+    - NEWS
+    - PARTNERED
+    - PREVIEW_ENABLED
+    - PRIVATE_THREADS
+    - ROLE_ICONS
+    - TICKETED_EVENTS_ENABLED
+    - VANITY_URL
+    - VERIFIED
+    - VIP_REGIONS
+    - WELCOME_SCREEN_ENABLED
+    type: string
+    x-enum-varnames:
+    - GuildFeatureAnimatedBanner
+    - GuildFeatureAnimatedIcon
+    - GuildFeatureAutoModeration
+    - GuildFeatureBanner
+    - GuildFeatureCommunity
+    - GuildFeatureDiscoverable
+    - GuildFeatureFeaturable
+    - GuildFeatureInviteSplash
+    - GuildFeatureMemberVerificationGateEnabled
+    - GuildFeatureMonetizationEnabled
+    - GuildFeatureMoreStickers
+    - GuildFeatureNews
+    - GuildFeaturePartnered
+    - GuildFeaturePreviewEnabled
+    - GuildFeaturePrivateThreads
+    - GuildFeatureRoleIcons
+    - GuildFeatureTicketedEventsEnabled
+    - GuildFeatureVanityURL
+    - GuildFeatureVerified
+    - GuildFeatureVipRegions
+    - GuildFeatureWelcomeScreenEnabled
   discordgo.User:
     properties:
       accent_color:
@@ -45,11 +91,12 @@ definitions:
           Only available when the request is authorized via a Bearer token.
         type: integer
       public_flags:
+        allOf:
+        - $ref: '#/definitions/discordgo.UserFlags'
         description: |-
           The public flags on a user's account.
           This is a combination of bit masks; the presence of a certain flag can
           be checked by performing a bitwise AND between this int and the flag.
-        type: integer
       system:
         description: Whether the user is an Official Discord System user (part of
           the urgent message system).
@@ -66,6 +113,38 @@ definitions:
         description: Whether the user's email is verified.
         type: boolean
     type: object
+  discordgo.UserFlags:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 64
+    - 128
+    - 256
+    - 512
+    - 1024
+    - 4096
+    - 16384
+    - 65536
+    - 131072
+    - 262144
+    type: integer
+    x-enum-varnames:
+    - UserFlagDiscordEmployee
+    - UserFlagDiscordPartner
+    - UserFlagHypeSquadEvents
+    - UserFlagBugHunterLevel1
+    - UserFlagHouseBravery
+    - UserFlagHouseBrilliance
+    - UserFlagHouseBalance
+    - UserFlagEarlySupporter
+    - UserFlagTeamUser
+    - UserFlagSystem
+    - UserFlagBugHunterLevel2
+    - UserFlagVerifiedBot
+    - UserFlagVerifiedBotDeveloper
+    - UserFlagDiscordCertifiedModerator
   entities.LoginResponse:
     properties:
       access_token:
@@ -116,6 +195,30 @@ definitions:
       status:
         type: string
     type: object
+  model.AlertFrequency:
+    enum:
+    - only_once
+    - once_a_day
+    - always
+    type: string
+    x-enum-varnames:
+    - OnlyOnce
+    - OnceADay
+    - Always
+  model.AlertType:
+    enum:
+    - price_reaches
+    - price_rises_above
+    - price_drops_to
+    - change_is_over
+    - change_is_under
+    type: string
+    x-enum-varnames:
+    - PriceReaches
+    - PriceRisesAbove
+    - PriceDropsTo
+    - ChangeIsOver
+    - ChangeIsUnder
   model.Chain:
     properties:
       coin_gecko_id:
@@ -129,6 +232,20 @@ definitions:
       short_name:
         type: string
     type: object
+  model.ChainType:
+    enum:
+    - evm
+    - ron
+    - sol
+    - sui
+    - apt
+    type: string
+    x-enum-varnames:
+    - ChainTypeEvm
+    - ChainTypeRonin
+    - ChainTypeSolana
+    - ChainTypeSui
+    - ChainTypeAptos
   model.CoingeckoSupportedTokens:
     properties:
       current_price:
@@ -228,7 +345,7 @@ definitions:
   model.DaoVote:
     properties:
       choice:
-        type: string
+        $ref: '#/definitions/model.VoteChoice'
       created_at:
         type: string
       id:
@@ -249,7 +366,7 @@ definitions:
       id:
         type: integer
       type:
-        type: string
+        $ref: '#/definitions/model.ProposalVotingType'
       updated_at:
         type: string
     type: object
@@ -436,7 +553,7 @@ definitions:
       address:
         type: string
       authority:
-        type: string
+        $ref: '#/definitions/model.ProposalAuthorityType'
       chain_id:
         type: integer
       created_at:
@@ -454,7 +571,7 @@ definitions:
       symbol:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/model.ProposalVotingType'
       updated_at:
         type: string
     type: object
@@ -1037,10 +1154,26 @@ definitions:
       status:
         type: string
     type: object
+  model.ProposalAuthorityType:
+    enum:
+    - admin
+    - token_holder
+    type: string
+    x-enum-varnames:
+    - Admin
+    - TokenHolder
+  model.ProposalVotingType:
+    enum:
+    - nft_collection
+    - crypto_token
+    type: string
+    x-enum-varnames:
+    - NFT
+    - CryptoToken
   model.Quest:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/model.QuestAction'
       frequency:
         type: integer
       id:
@@ -1050,10 +1183,28 @@ definitions:
           $ref: '#/definitions/model.QuestReward'
         type: array
       routine:
-        type: string
+        $ref: '#/definitions/model.QuestRoutine'
       title:
         type: string
     type: object
+  model.QuestAction:
+    enum:
+    - gm
+    - vote
+    - trade
+    - gift
+    - ticker
+    - watchlist
+    - bonus
+    type: string
+    x-enum-varnames:
+    - GM
+    - VOTE
+    - TRADE
+    - GIFT
+    - TICKER
+    - WATCHLIST
+    - BONUS
   model.QuestReward:
     properties:
       id:
@@ -1076,10 +1227,24 @@ definitions:
       name:
         type: string
     type: object
+  model.QuestRoutine:
+    enum:
+    - daily
+    - weekly
+    - monthly
+    - yearly
+    - once
+    type: string
+    x-enum-varnames:
+    - DAILY
+    - WEEKLY
+    - MONTHLY
+    - YEARLY
+    - ONCE
   model.QuestUserList:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/model.QuestAction'
       current:
         type: integer
       end_time:
@@ -1097,7 +1262,7 @@ definitions:
       quest_id:
         type: string
       routine:
-        type: string
+        $ref: '#/definitions/model.QuestRoutine'
       start_time:
         type: string
       target:
@@ -1237,6 +1402,26 @@ definitions:
       symbol:
         type: string
     type: object
+  model.TokenSupportRequestStatus:
+    enum:
+    - approved
+    - rejected
+    - pending
+    type: string
+    x-enum-varnames:
+    - TokenSupportApproved
+    - TokenSupportRejected
+    - TokenSupportPending
+  model.TrackingType:
+    enum:
+    - follow
+    - track
+    - copy
+    type: string
+    x-enum-varnames:
+    - TrackingTypeFollow
+    - TrackingTypeTrack
+    - TrackingTypeCopy
   model.TradeItem:
     properties:
       id:
@@ -1400,7 +1585,7 @@ definitions:
       message_id:
         type: string
       status:
-        type: string
+        $ref: '#/definitions/model.TokenSupportRequestStatus'
       symbol:
         type: string
       token_address:
@@ -1425,7 +1610,8 @@ definitions:
       guild_id:
         type: string
       user:
-        $ref: '#/definitions/model.User'
+        allOf:
+        - $ref: '#/definitions/model.User'
         description: preload user
       user_discord_id:
         type: string
@@ -1452,7 +1638,7 @@ definitions:
       alias:
         type: string
       chain_type:
-        type: string
+        $ref: '#/definitions/model.ChainType'
       created_at:
         type: string
       fetched_data:
@@ -1462,7 +1648,7 @@ definitions:
       net_worth:
         type: number
       type:
-        type: string
+        $ref: '#/definitions/model.TrackingType'
       user_id:
         type: string
     type: object
@@ -1497,6 +1683,16 @@ definitions:
       wallet_number:
         type: integer
     type: object
+  model.VoteChoice:
+    enum:
+    - "Yes"
+    - "No"
+    - Abstain
+    type: string
+    x-enum-varnames:
+    - "Yes"
+    - "No"
+    - Abstain
   request.AddNftWatchlistRequest:
     properties:
       chain:
@@ -1535,19 +1731,21 @@ definitions:
   request.AddTokenPriceAlertRequest:
     properties:
       alert_type:
+        allOf:
+        - $ref: '#/definitions/model.AlertType'
         enum:
         - price_reaches
         - price_rises_above
         - price_drops_to
         - change_is_over
         - change_is_under
-        type: string
       frequency:
+        allOf:
+        - $ref: '#/definitions/model.AlertFrequency'
         enum:
         - only_once
         - once_a_day
         - always
-        type: string
       price_by_percent:
         type: number
       symbol:
@@ -1588,7 +1786,7 @@ definitions:
       quest_id:
         type: string
       routine:
-        type: string
+        $ref: '#/definitions/model.QuestRoutine'
       user_id:
         type: string
     type: object
@@ -1712,7 +1910,7 @@ definitions:
   request.CreateDaoVoteRequest:
     properties:
       choice:
-        type: string
+        $ref: '#/definitions/model.VoteChoice'
       proposal_id:
         type: integer
       user_id:
@@ -1841,10 +2039,11 @@ definitions:
       address:
         type: string
       authority:
+        allOf:
+        - $ref: '#/definitions/model.ProposalAuthorityType'
         enum:
         - admin
         - token_holder
-        type: string
       chain:
         type: string
       channel_id:
@@ -1854,10 +2053,11 @@ definitions:
       required_amount:
         type: number
       type:
+        allOf:
+        - $ref: '#/definitions/model.ProposalVotingType'
         enum:
         - nft_collection
         - crypto_token
-        type: string
     required:
     - authority
     - channel_id
@@ -2265,7 +2465,7 @@ definitions:
   request.UpdateDaoVoteRequest:
     properties:
       choice:
-        type: string
+        $ref: '#/definitions/model.VoteChoice'
       user_id:
         type: string
     required:
@@ -2286,7 +2486,7 @@ definitions:
   request.UpdateQuestProgressRequest:
     properties:
       action:
-        type: string
+        $ref: '#/definitions/model.QuestAction'
       guild_id:
         type: string
       user_id:
@@ -2378,9 +2578,9 @@ definitions:
     type: object
   request.UpsertGuildDefaultCurrencyRequest:
     properties:
-      Symbol:
-        type: string
       guild_id:
+        type: string
+      symbol:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -2934,7 +3134,7 @@ definitions:
         type: boolean
       features:
         items:
-          type: string
+          $ref: '#/definitions/discordgo.GuildFeature'
         type: array
       icon:
         type: string
@@ -3204,7 +3404,7 @@ definitions:
       address:
         type: string
       authority:
-        type: string
+        $ref: '#/definitions/model.ProposalAuthorityType'
       chain:
         type: string
       chain_id:
@@ -3224,7 +3424,7 @@ definitions:
       symbol:
         type: string
       type:
-        type: string
+        $ref: '#/definitions/model.ProposalVotingType'
       updated_at:
         type: string
     type: object
@@ -4196,6 +4396,9 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigTokenRole'
         type: array
+      meta:
+        additionalProperties: true
+        type: object
     type: object
   response.ListGuildXPRoles:
     properties:
@@ -4225,13 +4428,13 @@ definitions:
   response.ListTokenPriceAlertResponse:
     properties:
       alert_type:
-        type: string
+        $ref: '#/definitions/model.AlertType'
       created_at:
         type: string
       currency:
         type: string
       frequency:
-        type: string
+        $ref: '#/definitions/model.AlertFrequency'
       price:
         type: number
       snoozed_to:
@@ -4307,12 +4510,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
@@ -4326,6 +4523,12 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4612,6 +4815,8 @@ definitions:
         type: string
       total_amount:
         type: number
+      tx_id:
+        type: integer
     type: object
   response.OffchainTipBotTransferTokenResponse:
     properties:
@@ -5532,9 +5737,21 @@ paths:
       - application/json
       description: Get user quest list
       parameters:
-      - in: query
+      - enum:
+        - daily
+        - weekly
+        - monthly
+        - yearly
+        - once
+        in: query
         name: routine
         type: string
+        x-enum-varnames:
+        - DAILY
+        - WEEKLY
+        - MONTHLY
+        - YEARLY
+        - ONCE
       - in: query
         name: user_id
         required: true
@@ -10194,20 +10411,20 @@ paths:
       description: Get vaults
       parameters:
       - in: query
-        name: evmAddress
+        name: evm_address
         type: string
       - in: query
-        name: guildID
+        name: guild_id
         type: string
       - default: "false"
         in: query
-        name: noFetchAmount
+        name: no_fetch_amount
         type: string
       - in: query
-        name: profileID
+        name: profile_id
         type: string
       - in: query
-        name: solanaAddress
+        name: solana_address
         type: string
       - in: query
         name: threshold

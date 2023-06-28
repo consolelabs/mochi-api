@@ -771,7 +771,21 @@
                 "summary": "Get user quest list",
                 "parameters": [
                     {
+                        "enum": [
+                            "daily",
+                            "weekly",
+                            "monthly",
+                            "yearly",
+                            "once"
+                        ],
                         "type": "string",
+                        "x-enum-varnames": [
+                            "DAILY",
+                            "WEEKLY",
+                            "MONTHLY",
+                            "YEARLY",
+                            "ONCE"
+                        ],
                         "name": "routine",
                         "in": "query"
                     },
@@ -7853,28 +7867,28 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "evmAddress",
+                        "name": "evm_address",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "guildID",
+                        "name": "guild_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "default": "false",
-                        "name": "noFetchAmount",
+                        "name": "no_fetch_amount",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "profileID",
+                        "name": "profile_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "solanaAddress",
+                        "name": "solana_address",
                         "in": "query"
                     },
                     {
@@ -8317,6 +8331,55 @@
         }
     },
     "definitions": {
+        "discordgo.GuildFeature": {
+            "type": "string",
+            "enum": [
+                "ANIMATED_BANNER",
+                "ANIMATED_ICON",
+                "AUTO_MODERATION",
+                "BANNER",
+                "COMMUNITY",
+                "DISCOVERABLE",
+                "FEATURABLE",
+                "INVITE_SPLASH",
+                "MEMBER_VERIFICATION_GATE_ENABLED",
+                "MONETIZATION_ENABLED",
+                "MORE_STICKERS",
+                "NEWS",
+                "PARTNERED",
+                "PREVIEW_ENABLED",
+                "PRIVATE_THREADS",
+                "ROLE_ICONS",
+                "TICKETED_EVENTS_ENABLED",
+                "VANITY_URL",
+                "VERIFIED",
+                "VIP_REGIONS",
+                "WELCOME_SCREEN_ENABLED"
+            ],
+            "x-enum-varnames": [
+                "GuildFeatureAnimatedBanner",
+                "GuildFeatureAnimatedIcon",
+                "GuildFeatureAutoModeration",
+                "GuildFeatureBanner",
+                "GuildFeatureCommunity",
+                "GuildFeatureDiscoverable",
+                "GuildFeatureFeaturable",
+                "GuildFeatureInviteSplash",
+                "GuildFeatureMemberVerificationGateEnabled",
+                "GuildFeatureMonetizationEnabled",
+                "GuildFeatureMoreStickers",
+                "GuildFeatureNews",
+                "GuildFeaturePartnered",
+                "GuildFeaturePreviewEnabled",
+                "GuildFeaturePrivateThreads",
+                "GuildFeatureRoleIcons",
+                "GuildFeatureTicketedEventsEnabled",
+                "GuildFeatureVanityURL",
+                "GuildFeatureVerified",
+                "GuildFeatureVipRegions",
+                "GuildFeatureWelcomeScreenEnabled"
+            ]
+        },
         "discordgo.User": {
             "type": "object",
             "properties": {
@@ -8366,7 +8429,11 @@
                 },
                 "public_flags": {
                     "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/discordgo.UserFlags"
+                        }
+                    ]
                 },
                 "system": {
                     "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
@@ -8385,6 +8452,41 @@
                     "type": "boolean"
                 }
             }
+        },
+        "discordgo.UserFlags": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                8,
+                64,
+                128,
+                256,
+                512,
+                1024,
+                4096,
+                16384,
+                65536,
+                131072,
+                262144
+            ],
+            "x-enum-varnames": [
+                "UserFlagDiscordEmployee",
+                "UserFlagDiscordPartner",
+                "UserFlagHypeSquadEvents",
+                "UserFlagBugHunterLevel1",
+                "UserFlagHouseBravery",
+                "UserFlagHouseBrilliance",
+                "UserFlagHouseBalance",
+                "UserFlagEarlySupporter",
+                "UserFlagTeamUser",
+                "UserFlagSystem",
+                "UserFlagBugHunterLevel2",
+                "UserFlagVerifiedBot",
+                "UserFlagVerifiedBotDeveloper",
+                "UserFlagDiscordCertifiedModerator"
+            ]
         },
         "entities.LoginResponse": {
             "type": "object",
@@ -8463,6 +8565,36 @@
                 }
             }
         },
+        "model.AlertFrequency": {
+            "type": "string",
+            "enum": [
+                "only_once",
+                "once_a_day",
+                "always"
+            ],
+            "x-enum-varnames": [
+                "OnlyOnce",
+                "OnceADay",
+                "Always"
+            ]
+        },
+        "model.AlertType": {
+            "type": "string",
+            "enum": [
+                "price_reaches",
+                "price_rises_above",
+                "price_drops_to",
+                "change_is_over",
+                "change_is_under"
+            ],
+            "x-enum-varnames": [
+                "PriceReaches",
+                "PriceRisesAbove",
+                "PriceDropsTo",
+                "ChangeIsOver",
+                "ChangeIsUnder"
+            ]
+        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -8482,6 +8614,23 @@
                     "type": "string"
                 }
             }
+        },
+        "model.ChainType": {
+            "type": "string",
+            "enum": [
+                "evm",
+                "ron",
+                "sol",
+                "sui",
+                "apt"
+            ],
+            "x-enum-varnames": [
+                "ChainTypeEvm",
+                "ChainTypeRonin",
+                "ChainTypeSolana",
+                "ChainTypeSui",
+                "ChainTypeAptos"
+            ]
         },
         "model.CoingeckoSupportedTokens": {
             "type": "object",
@@ -8634,7 +8783,7 @@
             "type": "object",
             "properties": {
                 "choice": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.VoteChoice"
                 },
                 "created_at": {
                     "type": "string"
@@ -8666,7 +8815,7 @@
                     "type": "integer"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ProposalVotingType"
                 },
                 "updated_at": {
                     "type": "string"
@@ -8952,7 +9101,7 @@
                     "type": "string"
                 },
                 "authority": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ProposalAuthorityType"
                 },
                 "chain_id": {
                     "type": "integer"
@@ -8979,7 +9128,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ProposalVotingType"
                 },
                 "updated_at": {
                     "type": "string"
@@ -9870,11 +10019,33 @@
                 }
             }
         },
+        "model.ProposalAuthorityType": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "token_holder"
+            ],
+            "x-enum-varnames": [
+                "Admin",
+                "TokenHolder"
+            ]
+        },
+        "model.ProposalVotingType": {
+            "type": "string",
+            "enum": [
+                "nft_collection",
+                "crypto_token"
+            ],
+            "x-enum-varnames": [
+                "NFT",
+                "CryptoToken"
+            ]
+        },
         "model.Quest": {
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestAction"
                 },
                 "frequency": {
                     "type": "integer"
@@ -9889,12 +10060,33 @@
                     }
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestRoutine"
                 },
                 "title": {
                     "type": "string"
                 }
             }
+        },
+        "model.QuestAction": {
+            "type": "string",
+            "enum": [
+                "gm",
+                "vote",
+                "trade",
+                "gift",
+                "ticker",
+                "watchlist",
+                "bonus"
+            ],
+            "x-enum-varnames": [
+                "GM",
+                "VOTE",
+                "TRADE",
+                "GIFT",
+                "TICKER",
+                "WATCHLIST",
+                "BONUS"
+            ]
         },
         "model.QuestReward": {
             "type": "object",
@@ -9930,11 +10122,28 @@
                 }
             }
         },
+        "model.QuestRoutine": {
+            "type": "string",
+            "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly",
+                "once"
+            ],
+            "x-enum-varnames": [
+                "DAILY",
+                "WEEKLY",
+                "MONTHLY",
+                "YEARLY",
+                "ONCE"
+            ]
+        },
         "model.QuestUserList": {
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestAction"
                 },
                 "current": {
                     "type": "integer"
@@ -9961,7 +10170,7 @@
                     "type": "string"
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestRoutine"
                 },
                 "start_time": {
                     "type": "string"
@@ -10173,6 +10382,32 @@
                     "type": "string"
                 }
             }
+        },
+        "model.TokenSupportRequestStatus": {
+            "type": "string",
+            "enum": [
+                "approved",
+                "rejected",
+                "pending"
+            ],
+            "x-enum-varnames": [
+                "TokenSupportApproved",
+                "TokenSupportRejected",
+                "TokenSupportPending"
+            ]
+        },
+        "model.TrackingType": {
+            "type": "string",
+            "enum": [
+                "follow",
+                "track",
+                "copy"
+            ],
+            "x-enum-varnames": [
+                "TrackingTypeFollow",
+                "TrackingTypeTrack",
+                "TrackingTypeCopy"
+            ]
         },
         "model.TradeItem": {
             "type": "object",
@@ -10423,7 +10658,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.TokenSupportRequestStatus"
                 },
                 "symbol": {
                     "type": "string"
@@ -10462,7 +10697,11 @@
                 },
                 "user": {
                     "description": "preload user",
-                    "$ref": "#/definitions/model.User"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    ]
                 },
                 "user_discord_id": {
                     "type": "string"
@@ -10502,7 +10741,7 @@
                     "type": "string"
                 },
                 "chain_type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ChainType"
                 },
                 "created_at": {
                     "type": "string"
@@ -10517,7 +10756,7 @@
                     "type": "number"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.TrackingType"
                 },
                 "user_id": {
                     "type": "string"
@@ -10570,6 +10809,19 @@
                     "type": "integer"
                 }
             }
+        },
+        "model.VoteChoice": {
+            "type": "string",
+            "enum": [
+                "Yes",
+                "No",
+                "Abstain"
+            ],
+            "x-enum-varnames": [
+                "Yes",
+                "No",
+                "Abstain"
+            ]
         },
         "request.AddNftWatchlistRequest": {
             "type": "object",
@@ -10629,21 +10881,29 @@
             "type": "object",
             "properties": {
                 "alert_type": {
-                    "type": "string",
                     "enum": [
                         "price_reaches",
                         "price_rises_above",
                         "price_drops_to",
                         "change_is_over",
                         "change_is_under"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AlertType"
+                        }
                     ]
                 },
                 "frequency": {
-                    "type": "string",
                     "enum": [
                         "only_once",
                         "once_a_day",
                         "always"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AlertFrequency"
+                        }
                     ]
                 },
                 "price_by_percent": {
@@ -10707,7 +10967,7 @@
                     "type": "string"
                 },
                 "routine": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestRoutine"
                 },
                 "user_id": {
                     "type": "string"
@@ -10903,7 +11163,7 @@
             ],
             "properties": {
                 "choice": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.VoteChoice"
                 },
                 "proposal_id": {
                     "type": "integer"
@@ -11096,10 +11356,14 @@
                     "type": "string"
                 },
                 "authority": {
-                    "type": "string",
                     "enum": [
                         "admin",
                         "token_holder"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ProposalAuthorityType"
+                        }
                     ]
                 },
                 "chain": {
@@ -11115,10 +11379,14 @@
                     "type": "number"
                 },
                 "type": {
-                    "type": "string",
                     "enum": [
                         "nft_collection",
                         "crypto_token"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ProposalVotingType"
+                        }
                     ]
                 }
             }
@@ -11741,7 +12009,7 @@
             ],
             "properties": {
                 "choice": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.VoteChoice"
                 },
                 "user_id": {
                     "type": "string"
@@ -11769,7 +12037,7 @@
             "type": "object",
             "properties": {
                 "action": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.QuestAction"
                 },
                 "guild_id": {
                     "type": "string"
@@ -11911,10 +12179,10 @@
         "request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
-                "Symbol": {
+                "guild_id": {
                     "type": "string"
                 },
-                "guild_id": {
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -12770,7 +13038,7 @@
                 "features": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/discordgo.GuildFeature"
                     }
                 },
                 "icon": {
@@ -13182,7 +13450,7 @@
                     "type": "string"
                 },
                 "authority": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ProposalAuthorityType"
                 },
                 "chain": {
                     "type": "string"
@@ -13212,7 +13480,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.ProposalVotingType"
                 },
                 "updated_at": {
                     "type": "string"
@@ -14715,6 +14983,10 @@
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigTokenRole"
                     }
+                },
+                "meta": {
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -14761,7 +15033,7 @@
             "type": "object",
             "properties": {
                 "alert_type": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.AlertType"
                 },
                 "created_at": {
                     "type": "string"
@@ -14770,7 +15042,7 @@
                     "type": "string"
                 },
                 "frequency": {
-                    "type": "string"
+                    "$ref": "#/definitions/model.AlertFrequency"
                 },
                 "price": {
                     "type": "number"
@@ -15347,6 +15619,9 @@
                 },
                 "total_amount": {
                     "type": "number"
+                },
+                "tx_id": {
+                    "type": "integer"
                 }
             }
         },
