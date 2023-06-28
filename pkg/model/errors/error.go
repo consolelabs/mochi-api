@@ -24,7 +24,8 @@ func GetStatusCode(err error) int {
 		code = http.StatusNotFound
 	case
 		ErrConflict,
-		ErrTokenRequestExisted:
+		ErrTokenRequestExisted,
+		ErrAliasAlreadyExisted:
 		code = http.StatusConflict
 	case
 		ErrInvalidChain,

@@ -8,7 +8,7 @@ import (
 )
 
 type WalletBaseRequest struct {
-	UserID string `uri:"id" binding:"required"`
+	UserID string `uri:"id" binding:"required" json:"-"`
 }
 
 type GetTrackingWalletsRequest struct {
@@ -104,4 +104,11 @@ func (r *TrackWalletRequest) Standardize() {
 	if strings.HasPrefix(addr, "ronin:") && len(addr) == 46 {
 		r.Address = "0x" + r.Address[6:]
 	}
+}
+
+type UpdateTrackingInfoRequest struct {
+	WalletBaseRequest
+	Address string `uri:"address" binding:"required" json:"-"`
+	// Request body, only update the following fields
+	Alias string `json:"alias"`
 }

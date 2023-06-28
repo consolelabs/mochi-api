@@ -33,4 +33,5 @@ var (
 	ErrProfile                                = NewStringError("Unknown error from Profile service", 400)
 	ErrCoingeckoNotSupported                  = NewStringError("Token not supported", 400)
 	ErrKyberRouteNotFound                     = NewStringError("Kyber route not found", 400)
+	ErrAliasAlreadyExisted                    = NewStringError("Alias already existed", 409)
 )

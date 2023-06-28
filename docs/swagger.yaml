@@ -2010,11 +2010,6 @@ definitions:
         type: string
     type: object
   request.GetTrackingWalletsRequest:
-    properties:
-      userID:
-        type: string
-    required:
-    - userID
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -2290,6 +2285,12 @@ definitions:
       guild_id:
         type: string
       user_id:
+        type: string
+    type: object
+  request.UpdateTrackingInfoRequest:
+    properties:
+      alias:
+        description: Request body, only update the following fields
         type: string
     type: object
   request.UpdateUserFeedbackRequest:
@@ -3538,13 +3539,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1h_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
+      usd_1h_change:
+        type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4310,6 +4311,16 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -4319,16 +4330,6 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -9913,6 +9914,38 @@ paths:
           schema:
             $ref: '#/definitions/response.GetTrackingWalletsResponse'
       summary: Get user's tracking wallets
+      tags:
+      - WatchList
+  /users/{id}/watchlists/wallets/{address}:
+    put:
+      consumes:
+      - application/json
+      description: Update tracked wallet's info
+      parameters:
+      - description: user Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: address or current alias of tracked wallet
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: req
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateTrackingInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetOneWalletResponse'
+      summary: Update tracked wallet's info
       tags:
       - WatchList
   /users/{id}/watchlists/wallets/track:
