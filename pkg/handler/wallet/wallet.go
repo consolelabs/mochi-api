@@ -255,25 +255,25 @@ func (h *Handler) ListAssets(c *gin.Context) {
 	}
 
 	// farming data
-	farmingData, err := h.entities.ListEthWalletFarming(req)
+	farmingData, err := h.entities.ListWalletFarmings(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletFarming() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletFarmings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	// staking data
-	stakingData, err := h.entities.ListEthWalletStaking(req)
+	stakingData, err := h.entities.ListWalletStakings(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletStaking() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletStakings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	// nft data
-	nftData, err := h.entities.ListEthWalletNfts(req)
+	nftData, err := h.entities.ListWalletNfts(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListEthWalletNfts() failed")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletNfts() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
