@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"math/rand"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -44,7 +46,11 @@ func (e *Entity) HandleTrigger(message request.AutoTriggerRequest) error {
 	// get message type, need describe use-case here
 	messageType := "invalid"
 	if message.Content != "" {
-		messageType = "createMessage"
+		if message.Source == "twitter" {
+			messageType = "twitterTweet"
+		} else {
+			messageType = "createMessage"
+		}
 	} else if message.Reaction != "" {
 		messageType = "reactionAdd"
 	} else {
@@ -136,6 +142,9 @@ func (e *Entity) AutoCheckConditionValues(conditionValue []model.AutoConditionVa
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.UserRoles, conditionValue[index].Matches)
 	case "authorRole":
 		valid = e.OperatorRoles(conditionValue[index].Operator, message.AuthorRoles, conditionValue[index].Matches)
+	case "twitterTweet":
+		err, valid = e.OperatorForHashtags(conditionValue[index].Operator, message.Content, conditionValue[index].Matches)
+
 	default:
 		valid = false
 	}
@@ -284,6 +293,47 @@ func (e *Entity) OperatorRoles(operator string, userRoles []string, requiredRole
 	return result
 }
 
+// validate all hashtag in message content for contain or not contain hashtag list in database
+// extract hashtag from tweet like: Hi #hashtag1 #hashtag2
+func (e *Entity) OperatorForHashtags(operator string, a string, b string) (error, bool) {
+	result := false
+	if len(a) == 0 {
+		return nil, false
+	}
+	regex := regexp.MustCompile(`#\w+`)
+	hashtags := regex.FindAllString(a, -1)
+
+	switch operator {
+	case "in":
+		bItems := strings.Split(b, ",")
+		for _, bItem := range bItems {
+			if bItem[0] != '#' {
+				bItem = "#" + bItem
+			}
+
+			if slices.Contains(hashtags, bItem) {
+				result = true
+				break
+			}
+		}
+	case "not in":
+		// parse json array to array and match
+		bItems := strings.Split(b, ",")
+		result = true // default hashtag not in
+		for _, bItem := range bItems {
+			if bItem[0] != '#' {
+				bItem = "#" + bItem
+			}
+			if slices.Contains(hashtags, bItem) {
+				result = false
+				break
+			}
+		}
+	default:
+		e.log.Debug("Invalid operator")
+	}
+	return nil, result
+}
 func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTriggerRequest) error {
 	for _, act := range action {
 		actionCount, err := e.repo.AutoActionHistory.CountByTriggerActionUserMessage(act.TriggerId, act.Id, message.AuthorId, message.MessageId)

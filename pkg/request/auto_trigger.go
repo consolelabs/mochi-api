@@ -14,4 +14,5 @@ type AutoTriggerRequest struct {
 	AuthorRoles     []string `json:"author_roles"`
 	Content         string   `json:"content"`
 	AuthorId        string   `json:"author_id"`
+	Source          string   `json:"source"`
 }
