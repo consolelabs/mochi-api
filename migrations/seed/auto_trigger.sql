@@ -11,6 +11,7 @@ INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (8, '
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (9, 'React type', 'reactType', '', now());
 INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (10, 'Action transfer vault', 'vaultTransfer', '', now());
 
+
 -- Seed data trigger
 INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (1, '462663954813157376', '567326528216760320', 'Trigger when send Message', true, now(), now());
 INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (2, '462663954813157376', '567326528216760320', 'React heart in general', true, now(), now());
@@ -22,13 +23,16 @@ INSERT INTO "public"."auto_actions" ("id", "user_ids", "trigger_id", "type_id", 
 (3, NULL, 2, 8, '', 3, '', 'Do action 3', 'Hello world 3', NULL, 1, '2023-06-23 05:57:10.905286');
 
 
+
 -- Seed data condition
 INSERT INTO public.auto_conditions(id, trigger_id, type_id, channel_id, index, platform, updated_at, created_at) VALUES (1, 2, 2, '1072722777687199744', 1, 'discord', now(), now());
+
 
 -- Seed data condition values
 INSERT INTO "public"."auto_condition_values" ("id", "condition_id", "child_id", "type_id", "index", "operator", "matches", "created_at") VALUES
 (3, 1, NULL, 7, 1, 'in', '1115906135799648257,711823851117608990,820988147399393322,462663954813157376', '2023-06-23 06:00:13.571917'),
 (4, 1, NULL, 9, 2, '==', '<:pepeheart:867454854686048256>', '2023-06-23 06:00:33.452028');
+(5, 1, NULL, 3, 3, '>=', '2', '2023-06-23 06:00:33.452028');
 
 INSERT INTO public.auto_embeds(id, author_id, action_id, title, description, color, url, type, fields, created_at)
 	VALUES (1, 'fbaca19d-4ecc-4627-92b6-81858536f921', 2, 'Embed 1', 'descript 1', '#000000', 'https://openai.com/research/measuring-goodharts-law', 'some types', 'any fields', now());
@@ -56,3 +60,18 @@ INSERT INTO public.auto_actions(id,  trigger_id, type_id, channel_ids, name, con
 -- 
 INSERT INTO chains (id, name, rpc, api_base_url, api_key, tx_base_url, currency, short_name, coin_gecko_id) VALUES 
 (137, 'Polygon', 'https://rpc-mainnet.maticvigil.com/', 'https://polygonscan.com','https://polygonscan.com', '', 'MATIC', 'MATIC', 'polygon');
+
+-- Seed data condition for test hashtag
+INSERT INTO public.auto_types(id, name, type, icon_url, created_at) VALUES (11, 'Hashtag in twitter tweet', 'twitterTweet', '', now());
+INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (3, '462663954813157376', '567326528216760320', 'Hashtag', true, now(), now());
+INSERT INTO public.auto_actions ("id", "user_ids", "trigger_id", "type_id", "channel_ids", "index", "action_data", "name", "content", "then_action_id", "limit_per_user", "created_at") VALUES 
+(5, NULL, 3, 11, '', 1, '', 'Do action for hashtag', 'Hello Hashtag', NULL, 1, now());
+INSERT INTO public.auto_conditions(id, trigger_id, type_id, channel_id, index, platform, updated_at, created_at) VALUES (2, 3, 11, '1072722777687199744', 1, 'twitter', now(), now());
+INSERT INTO public.auto_condition_values ("id", "condition_id", "child_id", "type_id", "index", "operator", "matches", "created_at") VALUES (6, 2, NULL, 11, 1, 'in', 'haha', now());-- for hashtag
+
+-- seed for test server
+INSERT INTO public.auto_triggers(id, discord_guild_id, user_discord_id, name, status, updated_at, created_at) VALUES (4, '711823851117608990', '567326528216760320', 'Hashtag test', true, now(), now());
+INSERT INTO public.auto_actions ("id", "user_ids", "trigger_id", "type_id", "channel_ids", "index", "action_data", "name", "content", "then_action_id", "limit_per_user", "created_at") VALUES 
+(6, NULL, 4, 11, '', 1, '', 'Do action for hashtag 2', 'Hello Hashtag 2', NULL, 1, now());
+INSERT INTO public.auto_conditions(id, trigger_id, type_id, channel_id, index, platform, updated_at, created_at) VALUES (3, 4, 11, '711823851117608992', 1, 'twitter', now(), now());
+INSERT INTO public.auto_condition_values ("id", "condition_id", "child_id", "type_id", "index", "operator", "matches", "created_at") VALUES (7, 3, NULL, 11, 1, 'in', 'haha', now());-- for hashtag
