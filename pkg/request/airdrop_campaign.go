@@ -41,13 +41,23 @@ func (r *GetAirdropCampaignRequest) Validate() error {
 	if r.Id <= 0 {
 		return errors.New("invalid id")
 	}
+
 	return nil
 }
 
 type GetAirdropCampaignsRequest struct {
 	ProfileId string `form:"profile_id" json:"profile_id"`
 	Status    string `form:"status" json:"status"`
+	Keyword   string `form:"keyword" json:"keyword"`
 	PaginationRequest
+}
+
+func (r *GetAirdropCampaignsRequest) Validate() error {
+	if r.Keyword != "" && len(r.Keyword) < 3 && !strings.HasPrefix(r.Keyword, "#") {
+		return errors.New("Keyword must be at least 3 characters")
+	}
+
+	return nil
 }
 
 type CreateAirdropCampaignRequest struct {

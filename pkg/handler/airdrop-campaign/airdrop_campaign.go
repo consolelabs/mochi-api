@@ -30,6 +30,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Accept      json
 // @Produce     json
 // @Param       status   query  string false  "status"
+// @Param       keyword   query  string false  "keyword"
 // @Param       profile_id   query  string false  "profile id"
 // @Param       page   query  string false  "page"
 // @Param       size   query  string false  "size"
@@ -39,6 +40,12 @@ func (h *Handler) GetAirdropCampaigns(c *gin.Context) {
 	req := request.GetAirdropCampaignsRequest{}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetAirdropCampaigns] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		h.log.Error(err, "[handler.GetAirdropCampaign] validate request failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

@@ -1,7 +1,8 @@
 package airdropcampaign
 
 type ListQuery struct {
-	Status string
-	Offset int
-	Limit  int
+	Status  string
+	Keyword string
+	Offset  int
+	Limit   int
 }

@@ -46,9 +46,10 @@ func (e *Entity) CreateAirdropCampaign(req *request.CreateAirdropCampaignRequest
 
 func (e *Entity) GetAirdropCampaigns(req request.GetAirdropCampaignsRequest) ([]model.AirdropCampaign, *response.PaginationResponse, error) {
 	acs, total, err := e.repo.AirdropCampaign.List(ac.ListQuery{
-		Offset: int(req.Page * req.Size),
-		Limit:  int(req.Size),
-		Status: req.Status,
+		Offset:  int(req.Page * req.Size),
+		Limit:   int(req.Size),
+		Status:  req.Status,
+		Keyword: req.Keyword,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetAirdropCampaigns] - e.repo.AirdropCampaign.List failed")
