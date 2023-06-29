@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
@@ -15,16 +17,45 @@ import (
 type skymavis struct {
 	cfg    *config.Config
 	logger logger.Logger
+	cache  cache.Cache
 }
 
-func New(cfg *config.Config) Service {
+func New(cfg *config.Config, cache cache.Cache) Service {
 	return &skymavis{
 		cfg:    cfg,
 		logger: logger.NewLogrusLogger(),
+		cache:  cache,
 	}
 }
 
+var (
+	farmingKey = "skymavis-farming"
+	nftKey     = "skymavis-nft"
+)
+
 func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingResponse, error) {
+	s.logger.Debug("start skymavis.GetAddressFarming()")
+	defer s.logger.Debug("end skymavis.GetAddressFarming()")
+
+	var data response.WalletFarmingResponse
+	// check if data cached
+
+	cached, err := s.doCacheFarming(address)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data skymavis-service, address: %s", address)
+		defer s.doNetworkFarming(address)
+		return &data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	// call network
+	return s.doNetworkFarming(address)
+}
+
+func (s *skymavis) doCacheFarming(address string) (string, error) {
+	return s.cache.GetString(fmt.Sprintf("%s-%s", farmingKey, strings.ToLower(address)))
+}
+
+func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResponse, error) {
 	q := fmt.Sprintf(`
 	{
 		liquidityPositions(where: {user: "%s"}) {
@@ -84,10 +115,37 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 		return nil, err
 	}
 
+	// cache krystal-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data skymavis-service, key: %s", farmingKey)
+	s.cache.Set(farmingKey, string(bytes), 7*24*time.Hour)
+
 	return res, nil
 }
-
 func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse, error) {
+	s.logger.Debug("start skymavis.GetOwnedNfts()")
+	defer s.logger.Debug("end skymavis.GetOwnedNfts()")
+
+	var data response.AxieMarketNftResponse
+	// check if data cached
+
+	cached, err := s.doCacheNft(address)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data skymavis-service, address: %s", address)
+		defer s.doNetworkNfts(address)
+		return &data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	// call network
+	return s.doNetworkNfts(address)
+}
+
+func (s *skymavis) doCacheNft(address string) (string, error) {
+	return s.cache.GetString(fmt.Sprintf("%s-%s", nftKey, strings.ToLower(address)))
+}
+
+func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftResponse, error) {
 	q := fmt.Sprintf(`
 	{
 		axies(owner: "%s", from: 0, size: 10) {
@@ -171,6 +229,12 @@ func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] failed to query")
 		return nil, err
 	}
+
+	// cache krystal-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data skymavis-service, key: %s", nftKey)
+	s.cache.Set(nftKey, string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }

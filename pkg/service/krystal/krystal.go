@@ -27,28 +27,42 @@ func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service 
 	}
 }
 
-func (n *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenResponse, error) {
-	n.logger.Debug("start krystal.GetBalanceTokenByAddress()")
-	defer n.logger.Debug("end krystal.GetBalanceTokenByAddress()")
+var (
+	key = "krystal-balance-token"
+)
+
+func (k *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenResponse, error) {
+	k.logger.Debug("start krystal.GetBalanceTokenByAddress()")
+	defer k.logger.Debug("end krystal.GetBalanceTokenByAddress()")
 
 	var data BalanceTokenResponse
 	// check if data cached
-	key := fmt.Sprintf("krystal-balance-token-%s", strings.ToLower(address))
-	cached, err := n.cache.GetString(key)
+
+	cached, err := k.doCache(address)
 	if err == nil && cached != "" {
-		n.logger.Infof("hit cache data krystal-service, address: %s", address)
+		k.logger.Infof("hit cache data krystal-service, address: %s", address)
+		defer k.doNetwork(address, data)
 		return &data, json.Unmarshal([]byte(cached), &data)
 	}
 
+	// call network
+	return k.doNetwork(address, data)
+}
+
+func (k *Krystal) doCache(address string) (string, error) {
+	return k.cache.GetString(fmt.Sprintf("%s-%s", key, strings.ToLower(address)))
+}
+
+func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*BalanceTokenResponse, error) {
 	chainIDs := []int{1, 56, 137, 43114, 25, 250, 42161, 1313161554, 8217, 10, 101}
 	chainIDsStr := strings.ReplaceAll(strings.Trim(fmt.Sprint(chainIDs), "[]"), " ", ",")
 
-	url := n.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/balance/token?addresses=ethereum:%s&quoteSymbols=usd&sparkline=false&chainIds=%s", address, chainIDsStr)
+	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/balance/token?addresses=ethereum:%s&quoteSymbols=usd&sparkline=false&chainIds=%s", address, chainIDsStr)
 
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &data,
-		Headers:   map[string]string{"x-rate-access-token": n.config.KrystalApiKey},
+		Headers:   map[string]string{"x-rate-access-token": k.config.KrystalApiKey},
 	}
 
 	statusCode, err := util.SendRequest(req)
@@ -59,8 +73,8 @@ func (n *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenRespons
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&data)
-	n.logger.Infof("cache data krystal-service, key: %s", key)
-	n.cache.Set(key, string(bytes), 30*time.Minute)
+	k.logger.Infof("cache data krystal-service, key: %s", key)
+	k.cache.Set(key, string(bytes), 7*24*time.Hour)
 
 	return &data, nil
 }
