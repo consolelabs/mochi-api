@@ -1135,19 +1135,11 @@ func (e *Entity) ListWalletFarmings(req request.ListWalletAssetsRequest) ([]resp
 }
 
 func (e *Entity) listRoninFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
-	res := &response.WalletFarmingResponse{Data: &response.WalletFarmingData{}}
-
-	// check if data cached
-	key := fmt.Sprintf("%s-ron-farming", strings.ToLower(req.Address))
-	cached, err := e.cache.GetString(key)
-	if err == nil && cached != "" {
-		return res.Data.LiquidityPositions, json.Unmarshal([]byte(cached), &res)
-	}
 
 	l := e.log.Fields(logger.Fields{"req": req})
 
 	// no cache -> re-fetch
-	res, err = e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
+	res, err := e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
 	if err != nil {
 		l.Error(err, "[entity.listRoninFarmings] svc.Skymavis.GetAddressFarming() failed")
 		return nil, err
@@ -1217,8 +1209,6 @@ func (e *Entity) listRoninFarmings(req request.ListWalletAssetsRequest) ([]respo
 
 	// cache farming data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return res.Data.LiquidityPositions, nil
 }
@@ -1322,13 +1312,6 @@ func (e *Entity) ListWalletNfts(req request.ListWalletAssetsRequest) ([]response
 func (e *Entity) listAxieNfts(req request.ListWalletAssetsRequest) ([]response.WalletNftData, error) {
 	var result []response.WalletNftData
 
-	// check if data cached
-	key := fmt.Sprintf("%s-ron-nfts", strings.ToLower(req.Address))
-	cached, err := e.cache.GetString(key)
-	if err == nil && cached != "" {
-		return result, json.Unmarshal([]byte(cached), &result)
-	}
-
 	// no cache -> re-fetch
 	res, err := e.svc.Skymavis.GetOwnedNfts(strings.ToLower(req.Address))
 	if err != nil {
@@ -1381,9 +1364,6 @@ func (e *Entity) listAxieNfts(req request.ListWalletAssetsRequest) ([]response.W
 			TokenName:      fmt.Sprintf("%s #%d", item.Name, item.ItemID),
 		}
 	}
-
-	bytes, _ := json.Marshal(result)
-	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return result, nil
 }

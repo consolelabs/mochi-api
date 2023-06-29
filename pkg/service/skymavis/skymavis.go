@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
@@ -114,6 +115,12 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 		return nil, err
 	}
 
+	// cache krystal-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data skymavis-service, key: %s", farmingKey)
+	s.cache.Set(farmingKey, string(bytes), 7*24*time.Hour)
+
 	return res, nil
 }
 func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse, error) {
@@ -222,6 +229,12 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] failed to query")
 		return nil, err
 	}
+
+	// cache krystal-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data skymavis-service, key: %s", nftKey)
+	s.cache.Set(nftKey, string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }
