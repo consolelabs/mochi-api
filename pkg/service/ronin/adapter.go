@@ -41,7 +41,8 @@ func (r *ronin) doNetworkAxieStakingAmount(address string) (float64, error) {
 
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(&amount)
+	formatAmount := util.BigIntToFloat(amount, 18)
+	bytes, _ := json.Marshal(formatAmount)
 	r.cache.Set(axieStakingAmountKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return util.BigIntToFloat(amount, 18), nil
@@ -55,7 +56,8 @@ func (r *ronin) doNetworkAxiePendingReward(address string) (float64, error) {
 
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(&amount)
+	formatAmount := util.BigIntToFloat(amount, 18)
+	bytes, _ := json.Marshal(formatAmount)
 	r.cache.Set(axiePendingRewardKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return util.BigIntToFloat(amount, 18), nil
@@ -82,10 +84,11 @@ func (r *ronin) doNetworkRonStakingAmount(address string) (float64, error) {
 
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(&totalStaking)
+	formatTotalStaking := util.BigIntToFloat(totalStaking, 18)
+	bytes, _ := json.Marshal(formatTotalStaking)
 	r.cache.Set(ronStakingAmountKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
-	return util.BigIntToFloat(totalStaking, 18), nil
+	return formatTotalStaking, nil
 }
 
 func (r *ronin) doNetworkRonPendingReward(address string) (float64, error) {
@@ -110,10 +113,11 @@ func (r *ronin) doNetworkRonPendingReward(address string) (float64, error) {
 
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(&totalReward)
+	formatTotalReward := util.BigIntToFloat(totalReward, 18)
+	bytes, _ := json.Marshal(formatTotalReward)
 	r.cache.Set(ronPendingRewardKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
-	return util.BigIntToFloat(totalReward, 18), nil
+	return formatTotalReward, nil
 }
 
 func (r *ronin) doNetworkLpPendingRewards(address string) (map[string]LpRewardData, error) {

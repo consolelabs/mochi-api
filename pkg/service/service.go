@@ -112,7 +112,7 @@ func NewService(
 		MochiPay:      mochipay.NewService(&cfg, log),
 		ChainExplorer: chainexplorer.NewService(cfg, log),
 		Sui:           sui.New(&cfg, log),
-		Birdeye:       birdeye.NewService(&cfg, log),
+		Birdeye:       birdeye.NewService(&cfg, log, cache),
 		Swap:          swap.New(&cfg, log),
 		Skymavis:      skymavis.New(&cfg, cache),
 		Ronin:         roninSvc,
