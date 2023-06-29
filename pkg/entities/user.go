@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"sort"
 	"time"
@@ -242,6 +243,11 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return nil, err
 	}
 
+	nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(userXP.TotalXP, true)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
 	res := &response.HandleUserActivityResponse{
 		GuildID:      req.GuildID,
 		ChannelID:    req.ChannelID,
@@ -250,11 +256,12 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		AddedXP:      earnedXP,
 		CurrentXP:    latestUserXP.TotalXP,
 		CurrentLevel: latestUserXP.Level,
+		NextLevel:    nextLevel,
 		Timestamp:    req.Timestamp,
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}
 
-	role, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.UserID)
+	role, levelNeeded, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.UserID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"guildId": req.GuildID,
@@ -268,7 +275,24 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 			e.log.Fields(logger.Fields{"guildId": req.GuildID}).Errorf(err, "[HandleUserActivities] - e.repo.GuildConfigLevelUpMessage.GetByGuildId failed")
 			return nil, err
 		}
-		e.svc.Discord.SendLevelUpMessage(config, role, res)
+
+		contentType := "header"
+		content, err := e.repo.Content.GetContentByType(contentType)
+		if err != nil {
+			e.log.Fields(logger.Fields{"type": contentType}).Errorf(err, "[entity.GetContentByType] - e.repo.Content.GetContentByType failed")
+			return nil, err
+		}
+
+		var contentDescription model.Description
+		err = json.Unmarshal(content.Description, &contentDescription)
+		if err != nil {
+			return nil, err
+		}
+
+		randomTipIdx := rand.Intn(len(contentDescription.Tip))
+		randomTip := contentDescription.Tip[randomTipIdx]
+
+		e.svc.Discord.SendLevelUpMessage(config, role, levelNeeded, randomTip, res)
 	}
 	return res, nil
 }
@@ -450,32 +474,32 @@ func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
 	return was, nil
 }
 
-func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, error) {
+func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, int, error) {
 	if e.discord == nil {
-		return "", nil
+		return "", 0, nil
 	}
 	configs, err := e.repo.GuildConfigLevelRole.GetByGuildID(guildID)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	gMember, err := e.discord.GuildMember(guildID, userID)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	if gMember.Roles == nil {
-		return "", fmt.Errorf("Member %s of guild %s has no role", userID, guildID)
+		return "", 0, fmt.Errorf("Member %s of guild %s has no role", userID, guildID)
 	}
 
 	for _, cfg := range configs {
 		for _, memRole := range gMember.Roles {
 			if cfg.RoleID == memRole {
-				return fmt.Sprintf("<@&%s>", cfg.RoleID), nil
+				return fmt.Sprintf("<@&%s>", cfg.RoleID), cfg.Level, nil
 			}
 		}
 	}
 
-	return "", nil
+	return "", 0, nil
 }
 
 func (e *Entity) HandleInviteTracker(inviter *discordgo.Member, invitee *discordgo.Member) (*response.HandleInviteHistoryResponse, error) {

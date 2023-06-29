@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/apilayer"
 	"github.com/defipod/mochi/pkg/service/apns"
@@ -67,8 +68,10 @@ func NewService(
 	cfg config.Config,
 	log logger.Logger,
 ) (*Service, error) {
+	s := pg.NewPostgresStore(&cfg)
+	repo := pg.NewRepo(s.DB())
 
-	discordSvc, err := discord.NewService(cfg, log)
+	discordSvc, err := discord.NewService(cfg, log, repo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
