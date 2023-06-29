@@ -3539,13 +3539,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4311,25 +4311,25 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
+      price_change_percentage_14d:
+        type: number
       price_change_percentage_1y:
         type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
       price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -8524,6 +8524,10 @@ paths:
       - description: status
         in: query
         name: status
+        type: string
+      - description: keyword
+        in: query
+        name: keyword
         type: string
       - description: profile id
         in: query
