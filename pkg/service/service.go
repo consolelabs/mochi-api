@@ -93,7 +93,7 @@ func NewService(
 
 	return &Service{
 		CoinGecko:     coingecko.NewService(&cfg),
-		Covalent:      covalent.NewService(&cfg, log),
+		Covalent:      covalent.NewService(&cfg, log, cache),
 		Commonwealth:  commonwealth.NewService(),
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
