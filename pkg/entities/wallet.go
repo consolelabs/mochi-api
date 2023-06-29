@@ -485,119 +485,60 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 }
 
 func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
-	// redis cache
-	value, err := e.cache.HashGet(req.Address + "-sol")
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
-		return nil, "", "", err
-	}
-
 	chainIDs := []int{999}
 	assets := make([]response.WalletAssetData, 0)
-	if len(value) == 0 {
-		for _, chainID := range chainIDs {
-			// get chain
-			chain, err := e.repo.Chain.GetByID(chainID)
-			if err != nil {
-				e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listSolWalletAssets] repo.Chain.GetByID() failed")
-				return nil, "", "", err
-			}
-
-			res, err := e.svc.Covalent.GetSolanaTokenBalances("solana-mainnet", req.Address, 3)
-			if err != nil {
-				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
-				return nil, "", "", err
-			}
-			if res.Data.Items == nil || len(res.Data.Items) == 0 {
-				continue
-			}
-			for _, item := range res.Data.Items {
-				if item.Type != "cryptocurrency" {
-					continue
-				}
-
-				tokenAddress := item.ContractAddress
-				if item.NativeToken {
-					tokenAddress = consts.SolAddress
-				}
-
-				bal, _ := e.calculateTokenBalance(item, chainID)
-
-				tokenPrice, err := e.svc.Birdeye.GetTokenPrice(tokenAddress)
-				if err != nil {
-					e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Birdeye.GetTokenPrice() failed")
-					continue
-				}
-
-				assets = append(assets, response.WalletAssetData{
-					ChainID:        chainID,
-					ContractName:   item.ContractName,
-					ContractSymbol: item.ContractTickerSymbol,
-					AssetBalance:   bal,
-					UsdBalance:     tokenPrice.Data.Value * bal,
-					Token: response.AssetToken{
-						Name:    item.ContractName,
-						Symbol:  item.ContractTickerSymbol,
-						Decimal: int64(item.ContractDecimals),
-						Price:   tokenPrice.Data.Value,
-						Native:  item.NativeToken,
-						Chain: response.AssetTokenChain{
-							Name:      res.Data.ChainName,
-							ShortName: chain.ShortName,
-						},
-					},
-					Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
-				})
-			}
-		}
-
-		encodeData := make(map[string]string)
-		if len(assets) == 0 {
-			encodeData["empty"] = "empty"
-		}
-
-		for _, asset := range assets {
-			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
-		}
-
-		err := e.cache.HashSet(req.Address+"-sol", encodeData, 3*time.Hour)
+	for _, chainID := range chainIDs {
+		// get chain
+		chain, err := e.repo.Chain.GetByID(chainID)
 		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
+			e.log.Fields(logger.Fields{"chainID": chainID}).Error(err, "[entity.listSolWalletAssets] repo.Chain.GetByID() failed")
 			return nil, "", "", err
 		}
 
-	} else {
-		for k, v := range value {
-			if k == "empty" {
-				break
+		res, err := e.svc.Covalent.GetSolanaTokenBalances("solana-mainnet", req.Address, 3)
+		if err != nil {
+			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
+			return nil, "", "", err
+		}
+		if res.Data.Items == nil || len(res.Data.Items) == 0 {
+			continue
+		}
+		for _, item := range res.Data.Items {
+			if item.Type != "cryptocurrency" {
+				continue
 			}
 
-			key := strings.Split(k, "-")
-			value := strings.Split(v, "-")
-			chainId, _ := strconv.Atoi(key[2])
-			decimal, _ := strconv.Atoi(key[3])
-			price, _ := strconv.ParseFloat(key[4], 64)
-			native, _ := strconv.ParseBool(key[5])
-			assetBalance, _ := strconv.ParseFloat(value[0], 64)
-			usdBalance, _ := strconv.ParseFloat(value[1], 64)
+			tokenAddress := item.ContractAddress
+			if item.NativeToken {
+				tokenAddress = consts.SolAddress
+			}
+
+			bal, _ := e.calculateTokenBalance(item, chainID)
+
+			tokenPrice, err := e.svc.Birdeye.GetTokenPrice(tokenAddress)
+			if err != nil {
+				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Birdeye.GetTokenPrice() failed")
+				continue
+			}
 
 			assets = append(assets, response.WalletAssetData{
-				ContractName:   key[0],
-				ContractSymbol: key[1],
-				ChainID:        chainId,
-				AssetBalance:   assetBalance,
-				UsdBalance:     usdBalance,
+				ChainID:        chainID,
+				ContractName:   item.ContractName,
+				ContractSymbol: item.ContractTickerSymbol,
+				AssetBalance:   bal,
+				UsdBalance:     tokenPrice.Data.Value * bal,
 				Token: response.AssetToken{
-					Name:    key[0],
-					Symbol:  key[1],
-					Decimal: int64(decimal),
-					Price:   price,
-					Native:  native,
+					Name:    item.ContractName,
+					Symbol:  item.ContractTickerSymbol,
+					Decimal: int64(item.ContractDecimals),
+					Price:   tokenPrice.Data.Value,
+					Native:  item.NativeToken,
 					Chain: response.AssetTokenChain{
-						Name: key[6],
+						Name:      res.Data.ChainName,
+						ShortName: chain.ShortName,
 					},
 				},
-				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),
+				Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
 			})
 		}
 	}
