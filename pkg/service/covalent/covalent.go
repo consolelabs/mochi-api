@@ -1,11 +1,14 @@
 package covalent
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
@@ -21,15 +24,21 @@ var networks = map[int]string{
 	42161: "arbitrum-mainnet",
 }
 
+var (
+	covalentSolanaTokenBalanceKey = "covalent-solana-balance-token"
+)
+
 type Covalent struct {
 	config *config.Config
 	logger logger.Logger
+	cache  cache.Cache
 }
 
-func NewService(cfg *config.Config, l logger.Logger) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
 	return &Covalent{
 		config: cfg,
 		logger: l,
+		cache:  cache,
 	}
 }
 
@@ -119,6 +128,28 @@ func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*Ge
 }
 
 func (c *Covalent) GetSolanaTokenBalances(chainName string, address string, retry int) (*GetTokenBalancesResponse, error) {
+	c.logger.Debug("start Covalent.GetSolanaTokenBalances()")
+	defer c.logger.Debug("end Covalent.GetSolanaTokenBalances()")
+
+	var data GetTokenBalancesResponse
+	// check if data cached
+
+	cached, err := c.doCacheSolanaTokenBalances(address)
+	if err == nil && cached != "" {
+		c.logger.Infof("hit cache data krystal-service, address: %s", address)
+		defer c.doNetworkSolanaTokenBalances(chainName, address, retry)
+		return &data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	// call network
+	return c.doNetworkSolanaTokenBalances(chainName, address, retry)
+}
+
+func (c *Covalent) doCacheSolanaTokenBalances(address string) (string, error) {
+	return c.cache.GetString(fmt.Sprintf("%s-%s", covalentSolanaTokenBalanceKey, strings.ToLower(address)))
+}
+
+func (c *Covalent) doNetworkSolanaTokenBalances(chainName string, address string, retry int) (*GetTokenBalancesResponse, error) {
 	endpoint := fmt.Sprintf("/%s/address/%s/balances_v2/?no-spam=true&no-nft-fetch=true&nft=false", chainName, address)
 	res := &GetTokenBalancesResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
@@ -133,6 +164,13 @@ func (c *Covalent) GetSolanaTokenBalances(chainName string, address string, retr
 			return c.GetSolanaTokenBalances(chainName, address, retry-1)
 		}
 	}
+
+	// cache solana-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	c.logger.Infof("cache data covalent-service, key: %s", covalentSolanaTokenBalanceKey)
+	c.cache.Set(covalentSolanaTokenBalanceKey, string(bytes), 7*24*time.Hour)
+
 	return res, nil
 }
 
