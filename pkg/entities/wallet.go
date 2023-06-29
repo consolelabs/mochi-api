@@ -383,115 +383,52 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		return nil, "", "", err
 	}
 
-	// redis cache
-	key := address + "-evm"
-	value, err := e.cache.HashGet(key)
+	// get all tokens balances by address & chainIds
+	res, err := e.svc.Krystal.GetBalanceTokenByAddress(address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] Failed to get cache data wallet")
+		e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.listEvmWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
 		return nil, "", "", err
 	}
 
 	assets := make([]response.WalletAssetData, 0)
-	if len(value) == 0 {
-		// get all tokens balances by address & chainIds
-		res, err := e.svc.Krystal.GetBalanceTokenByAddress(address)
+
+	for _, item := range res.Data {
+		chain, err := e.repo.Chain.GetByID(item.ChainId)
 		if err != nil {
-			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.listEvmWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
-			return nil, "", "", err
-		}
-
-		for _, item := range res.Data {
-			chain, err := e.repo.Chain.GetByID(item.ChainId)
-			if err != nil {
-				if errors.Is(err, gorm.ErrRecordNotFound) {
-					continue
-				}
-				e.log.Fields(logger.Fields{"chainID": item.ChainId}).Error(err, "[entity.listEvmWalletAssets] repo.Chain.GetByID() failed")
-				return nil, "", "", err
-			}
-
-			for _, bal := range item.Balances {
-				assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
-				// filter out dusty tokens
-				if quote < 0.001 {
-					continue
-				}
-				assets = append(assets, response.WalletAssetData{
-					ChainID:        item.ChainId,
-					ContractName:   bal.Token.Name,
-					ContractSymbol: bal.Token.Symbol,
-					AssetBalance:   assetBal,
-					UsdBalance:     quote,
-					Token: response.AssetToken{
-						Name:    bal.Token.Symbol,
-						Symbol:  bal.Token.Name,
-						Decimal: int64(bal.Token.Decimals),
-						Price:   bal.Quotes.Usd.Price,
-						Native:  bal.TokenType == "NATIVE",
-						Chain: response.AssetTokenChain{
-							Name:      item.ChainName,
-							ShortName: chain.ShortName,
-						},
-					},
-					Amount: util.FloatToString(fmt.Sprint(assetBal), int64(bal.Token.Decimals)),
-				})
-			}
-
-		}
-
-		encodeData := make(map[string]string)
-		if len(assets) == 0 {
-			encodeData["empty"] = "empty"
-		}
-
-		for _, asset := range assets {
-			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
-		}
-
-		err = e.cache.HashSet(key, encodeData, 3*time.Hour)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] Failed to set cache data wallet")
-			return nil, "", "", err
-		}
-
-	} else {
-		for k, v := range value {
-			if k == "empty" {
-				break
-			}
-
-			key := strings.Split(k, "-")
-			value := strings.Split(v, "-")
-			chainId, _ := strconv.Atoi(key[2])
-			decimal, _ := strconv.Atoi(key[3])
-			price, _ := strconv.ParseFloat(key[4], 64)
-			native, _ := strconv.ParseBool(key[5])
-			assetBalance, _ := strconv.ParseFloat(value[0], 64)
-			usdBalance, _ := strconv.ParseFloat(value[1], 64)
-			// filter out dusty tokens
-			if usdBalance < 0.001 {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
 				continue
 			}
+			e.log.Fields(logger.Fields{"chainID": item.ChainId}).Error(err, "[entity.listEvmWalletAssets] repo.Chain.GetByID() failed")
+			return nil, "", "", err
+		}
 
+		for _, bal := range item.Balances {
+			assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
+			// filter out dusty tokens
+			if quote < 0.001 {
+				continue
+			}
 			assets = append(assets, response.WalletAssetData{
-				ContractName:   key[0],
-				ContractSymbol: key[1],
-				ChainID:        chainId,
-				AssetBalance:   assetBalance,
-				UsdBalance:     usdBalance,
+				ChainID:        item.ChainId,
+				ContractName:   bal.Token.Name,
+				ContractSymbol: bal.Token.Symbol,
+				AssetBalance:   assetBal,
+				UsdBalance:     quote,
 				Token: response.AssetToken{
-					Name:    key[0],
-					Symbol:  key[1],
-					Decimal: int64(decimal),
-					Price:   price,
-					Native:  native,
+					Name:    bal.Token.Symbol,
+					Symbol:  bal.Token.Name,
+					Decimal: int64(bal.Token.Decimals),
+					Price:   bal.Quotes.Usd.Price,
+					Native:  bal.TokenType == "NATIVE",
 					Chain: response.AssetTokenChain{
-						Name: key[6],
+						Name:      item.ChainName,
+						ShortName: chain.ShortName,
 					},
 				},
-				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),
+				Amount: util.FloatToString(fmt.Sprint(assetBal), int64(bal.Token.Decimals)),
 			})
 		}
+
 	}
 
 	// calculate pnl
