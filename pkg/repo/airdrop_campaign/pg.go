@@ -1,6 +1,8 @@
 package airdropcampaign
 
 import (
+	"strings"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
@@ -40,6 +42,18 @@ func (pg *pg) List(q ListQuery) (acs []model.AirdropCampaign, total int64, err e
 
 	if q.Status != "" {
 		db = db.Where("status = ?", q.Status)
+	}
+
+	isSearchById := strings.HasPrefix(q.Keyword, "#")
+
+	if isSearchById {
+		searchCampaignId := []string{strings.TrimPrefix(q.Keyword, "#")}
+		db = db.Where("id = ?", searchCampaignId)
+	}
+
+	if q.Keyword != "" && !isSearchById {
+		likeKeyword := "%" + q.Keyword + "%"
+		db = db.Where("title ILIKE ? OR detail ILIKE ?", likeKeyword, likeKeyword)
 	}
 
 	db = db.Count(&total).Offset(q.Offset)

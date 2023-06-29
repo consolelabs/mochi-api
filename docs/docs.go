@@ -5324,6 +5324,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "profile id",
                         "name": "profile_id",
                         "in": "query"
