@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	errs "errors"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -18,9 +17,7 @@ import (
 	"gorm.io/plugin/dbresolver"
 
 	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/repo"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 // store is implimentation of repository
@@ -42,27 +39,29 @@ func (s *store) DB() *gorm.DB {
 	return s.database
 }
 
-// NewTransaction for database connection
-func (s *store) NewTransaction() (newRepo repo.Store, finallyFn repo.FinallyFunc) {
+// NewTx for database connection
+func (s *store) NewTransaction() (repo *repo.Repo, finalFn repo.IFinalFunc) {
 	newDB := s.database.Begin()
 
-	finallyFn = func(err error) error {
-		if err != nil {
-			nErr := newDB.Rollback().Error
-			if nErr != nil {
-				return errors.NewStringError(nErr.Error(), http.StatusInternalServerError)
-			}
-			return errors.NewStringError(err.Error(), util.ParseErrorCode(err))
-		}
+	fn := FinalFunc{db: newDB}
+	repo = NewRepo(newDB)
 
-		cErr := newDB.Commit().Error
-		if cErr != nil {
-			return errors.NewStringError(cErr.Error(), http.StatusInternalServerError)
-		}
-		return nil
+	return repo, fn
+}
+
+type FinalFunc struct {
+	db *gorm.DB
+}
+
+func (fn FinalFunc) Commit() error {
+	return fn.db.Commit().Error
+}
+
+func (fn FinalFunc) Rollback(err error) error {
+	if rErr := fn.db.Rollback().Error; rErr != nil {
+		return rErr
 	}
-
-	return &store{database: newDB}, finallyFn
+	return err
 }
 
 // NewPostgresStore postgres init by gorm

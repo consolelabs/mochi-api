@@ -9,6 +9,7 @@ import (
 	autoActionHistory "github.com/defipod/mochi/pkg/repo/auto_action_history"
 	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
 	"github.com/defipod/mochi/pkg/repo/chain"
+	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
@@ -128,6 +129,7 @@ import (
 // NewRepo new pg repo implementation
 func NewRepo(db *gorm.DB) *repo.Repo {
 	return &repo.Repo{
+		Store:                                NewStore(db),
 		DiscordGuilds:                        discordguilds.NewPG(db),
 		DiscordWalletVerification:            discordwalletverification.NewPG(db),
 		InviteHistories:                      invitehistories.NewPG(db),
@@ -247,5 +249,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProfileAirdropCampaign:               pac.NewPG(db),
 		AutoTrigger:                          autoTrigger.NewPG(db),
 		AutoActionHistory:                    autoActionHistory.NewPG(db),
+		CoingeckoInfo:                        coingeckoinfo.NewPG(db),
 	}
 }

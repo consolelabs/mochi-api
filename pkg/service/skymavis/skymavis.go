@@ -87,10 +87,10 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 	return res, nil
 }
 
-func (s *skymavis) GetOwnedNfts(address string) (*response.NftResponse, error) {
+func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse, error) {
 	q := fmt.Sprintf(`
 	{
-		axies(owner: "%s", size: 10, from: 0) {
+		axies(owner: "%s", from: 0, size: 10) {
 			total
 			results {
 				id
@@ -116,7 +116,7 @@ func (s *skymavis) GetOwnedNfts(address string) (*response.NftResponse, error) {
 				rarity
 			}
 		}
-		items(owner: "%s" from: 0, size: 10) {
+		items(owner: "%s", from: 0, size: 10) {
 			results {
 				tokenId
 				minPrice
@@ -155,7 +155,7 @@ func (s *skymavis) GetOwnedNfts(address string) (*response.NftResponse, error) {
 	}
 	body := bytes.NewBuffer(v)
 
-	res := &response.NftResponse{}
+	res := &response.AxieMarketNftResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
 		URL:       fmt.Sprintf("%s/graphql/marketplace", s.cfg.SkyMavisApiBaseUrl),
 		Method:    "POST",

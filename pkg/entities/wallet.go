@@ -53,10 +53,10 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*mod
 				continue
 			}
 		} else {
-			// 2. eth wallet
-			err := e.calculateEthWalletNetWorth(&wallet)
+			// 2. EVM wallet
+			err := e.calculateEvmWalletNetWorth(&wallet)
 			if err != nil {
-				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEthWalletNetWorth() failed")
+				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEvmWalletNetWorth() failed")
 				continue
 			}
 		}
@@ -95,7 +95,7 @@ func (e *Entity) upsertVerifiedWallet(req request.GetTrackingWalletsRequest) err
 		err = e.repo.UserWalletWatchlistItem.Upsert(&model.UserWalletWatchlistItem{
 			UserID:  req.UserID,
 			Address: userWallet.Address,
-			Type:    "eth",
+			Type:    "evm",
 			IsOwner: true,
 		})
 		if err != nil {
@@ -148,10 +148,10 @@ func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistIte
 	return nil
 }
 
-func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
+func (e *Entity) calculateEvmWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
 	res, err := e.svc.Krystal.GetBalanceTokenByAddress(wallet.Address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"address": wallet.Address}).Error(err, "[entity.calculateEthWalletNetWorth] svc.Krystal.GetBalanceTokenByAddress() failed")
+		e.log.Fields(logger.Fields{"address": wallet.Address}).Error(err, "[entity.calculateEvmWalletNetWorth] svc.Krystal.GetBalanceTokenByAddress() failed")
 		return err
 	}
 
@@ -161,7 +161,7 @@ func (e *Entity) calculateEthWalletNetWorth(wallet *model.UserWalletWatchlistIte
 
 	for _, item := range res.Data {
 		for _, bal := range item.Balances {
-			_, quote := e.calculateEthTokenBalance(bal, item.ChainId)
+			_, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
 			wallet.NetWorth += quote
 		}
 	}
@@ -303,26 +303,91 @@ func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
 
 func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
 	req.Standardize()
+
+	// Solana
 	if req.Type == "sol" {
 		return e.listSolWalletAssets(req)
 	}
+
+	// SUI
 	if req.Type == "sui" {
 		return e.listSuiWalletAssets(req)
 	}
-	return e.listEthWalletAssets(req)
+
+	// Ronin
+	if req.Type == "ron" {
+		return e.listRoninWalletAssets(req)
+	}
+
+	// EVM-based chains
+	return e.listEvmWalletAssets(req)
 }
 
-func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
+func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (data []response.WalletAssetData, pnl string, latestSnapshotBal string, err error) {
+	chainID := 2020
+	res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
+	if err != nil {
+		e.log.Fields(logger.Fields{"addr": req.Address}).Error(err, "[entity.listRoninWalletAssets] svc.Covalent.GetTokenBalances() failed")
+		return
+	}
+
+	if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
+		return
+	}
+
+	for _, item := range res.Data.Items {
+		if item.Type != "cryptocurrency" {
+			continue
+		}
+		bal, quote := e.calculateTokenBalance(item, 2020)
+		// filter out dusty tokens
+		if quote < 0.001 {
+			continue
+		}
+
+		data = append(data, response.WalletAssetData{
+			ChainID:        chainID,
+			ContractName:   item.ContractName,
+			ContractSymbol: item.ContractTickerSymbol,
+			AssetBalance:   bal,
+			UsdBalance:     quote,
+			Token: response.AssetToken{
+				Name:    item.ContractName,
+				Symbol:  item.ContractTickerSymbol,
+				Decimal: int64(item.ContractDecimals),
+				Price:   item.QuoteRate,
+				Native:  item.NativeToken,
+				Chain: response.AssetTokenChain{
+					Name:      res.Data.ChainName,
+					ShortName: "RON",
+				},
+			},
+			Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
+		})
+	}
+
+	// calculate pnl
+	pnl, latestSnapshotBal, err = e.calculateWalletSnapshot(req.Address, true, data)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listRoninWalletAssets] calculateWalletSnapshot() failed")
+		return nil, "", "", err
+	}
+
+	return
+}
+
+func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
 	address, err := util.ConvertToChecksumAddr(req.Address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] util.ConvertToChecksumAddr() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] util.ConvertToChecksumAddr() failed")
 		return nil, "", "", err
 	}
 
 	// redis cache
-	value, err := e.cache.HashGet(address + "-eth")
+	key := address + "-evm"
+	value, err := e.cache.HashGet(key)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] Failed to get cache data wallet")
 		return nil, "", "", err
 	}
 
@@ -331,7 +396,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		// get all tokens balances by address & chainIds
 		res, err := e.svc.Krystal.GetBalanceTokenByAddress(address)
 		if err != nil {
-			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.listEthWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
+			e.log.Fields(logger.Fields{"address": address}).Error(err, "[entity.listEvmWalletAssets] svc.Krystal.GetBalanceTokenByAddress() failed")
 			return nil, "", "", err
 		}
 
@@ -341,12 +406,12 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				if errors.Is(err, gorm.ErrRecordNotFound) {
 					continue
 				}
-				e.log.Fields(logger.Fields{"chainID": item.ChainId}).Error(err, "[entity.listEthWalletAssets] repo.Chain.GetByID() failed")
+				e.log.Fields(logger.Fields{"chainID": item.ChainId}).Error(err, "[entity.listEvmWalletAssets] repo.Chain.GetByID() failed")
 				return nil, "", "", err
 			}
 
 			for _, bal := range item.Balances {
-				assetBal, quote := e.calculateEthTokenBalance(bal, item.ChainId)
+				assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
 				// filter out dusty tokens
 				if quote < 0.001 {
 					continue
@@ -383,9 +448,9 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
 		}
 
-		err = e.cache.HashSet(address+"-eth", encodeData, 3*time.Hour)
+		err = e.cache.HashSet(key, encodeData, 3*time.Hour)
 		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] Failed to set cache data wallet")
 			return nil, "", "", err
 		}
 
@@ -432,7 +497,7 @@ func (e *Entity) listEthWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(address, true, assets)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] calculateWalletSnapshot() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] calculateWalletSnapshot() failed")
 		return assets, "", "", nil
 	}
 
@@ -603,7 +668,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(req.Address, false, assets)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] calculateWalletSnapshot() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listSolWalletAssets] calculateWalletSnapshot() failed")
 		return assets, "", "", nil
 	}
 
@@ -691,7 +756,7 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(req.Address, false, assets)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEthWalletAssets] calculateWalletSnapshot() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listSuiWalletAssets] calculateWalletSnapshot() failed")
 		return assets, "", "", nil
 	}
 
@@ -701,24 +766,27 @@ func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]res
 func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
 	req.Standardize()
 
+	// Solana
 	if req.Type == "sol" {
 		return e.listSolWalletTxns(req)
 	}
 
+	// Sui
 	if req.Type == "sui" {
 		return e.listSuiWalletTxns(req)
 	}
 
-	return e.listEthWalletTxns(req)
+	// ronin or EVM-based wallets
+	return e.listEvmWalletTxns(req)
 }
 
-func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+func (e *Entity) listEvmWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
 	chainIDs := []int{1, 56, 137, 250, 2020}
 	txns := make([]response.WalletTransactionData, 0)
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
 		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEthWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
+			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEvmWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
 			return nil, err
 		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
@@ -733,7 +801,7 @@ func (e *Entity) listEthWalletTxns(req request.ListWalletTransactionsRequest) ([
 			}
 			//
 			if err := e.parseCovalentTxData(item, &tx, req.Address); err != nil {
-				e.log.Fields(logger.Fields{"item": item, "tx": tx, "address": req.Address}).Error(err, "[entity.listEthWalletTxns] entity.parseCovalentTxData() failed")
+				e.log.Fields(logger.Fields{"item": item, "tx": tx, "address": req.Address}).Error(err, "[entity.listEvmWalletTxns] entity.parseCovalentTxData() failed")
 			}
 			txns = append(txns, tx)
 		}
@@ -902,20 +970,15 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 			if ok {
 				// batch case: 1 action -> 1 token
 				if strings.Contains(signature, "Batch") {
-					type valueObj struct {
-						Value string
-					}
-					_ids := ev.Decoded.Params[3].Value.([]valueObj)
-					_amounts := ev.Decoded.Params[4].Value.([]valueObj)
-					for i, _id := range _ids {
-						if contract.Name == "" {
-							action.Unit = _id.Value
-							amt, err := strconv.ParseFloat(_amounts[i].Value, 10)
-							if err != nil {
-								continue
-							}
-							action.Amount = amt
+					_ids := ev.Decoded.Params[3].Value.([]interface{})
+					_amounts := ev.Decoded.Params[4].Value.([]interface{})
+					if contract.Name == "" {
+						action.Unit = _ids[0].(map[string]interface{})["value"].(string)
+						amt, err := strconv.ParseFloat(_amounts[0].(map[string]interface{})["value"].(string), 10)
+						if err != nil {
+							continue
 						}
+						action.Amount = amt
 					}
 				}
 				handler(addr, ev, action)
@@ -1122,89 +1185,76 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 	}, nil
 }
 
-func (e *Entity) ListEthWalletFarming(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
+func (e *Entity) ListWalletFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
 	req.Standardize()
-	// TODO: only support EVM for now
-	if req.Type != "eth" && req.Type != "evm" {
-		return nil, nil
+
+	// Ronin
+	if req.Type == "ron" {
+		return e.listRoninFarmings(req)
 	}
 
+	// TODO: support Solana, Sui & other EVM-based chains
+	return nil, nil
+}
+
+func (e *Entity) listRoninFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
 	res := &response.WalletFarmingResponse{Data: &response.WalletFarmingData{}}
 
 	// check if data cached
-	key := fmt.Sprintf("%s-eth-farming", strings.ToLower(req.Address))
+	key := fmt.Sprintf("%s-ron-farming", strings.ToLower(req.Address))
 	cached, err := e.cache.GetString(key)
 	if err == nil && cached != "" {
 		return res.Data.LiquidityPositions, json.Unmarshal([]byte(cached), &res)
 	}
 
 	l := e.log.Fields(logger.Fields{"req": req})
+
 	// no cache -> re-fetch
-	// supported chains: RONIN
-	roninData, err := e.listRoninWalletFarmings(req)
+	res, err = e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
 	if err != nil {
-		l.Error(err, "[entity.ListEthWalletFarming] listRoninWalletFarmings() failed")
-		return nil, err
-	}
-
-	res.Data.LiquidityPositions = append(res.Data.LiquidityPositions, roninData...)
-
-	// cache farming data
-	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 3*time.Hour)
-
-	return res.Data.LiquidityPositions, nil
-}
-
-func (e *Entity) listRoninWalletFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {
-	l := e.log.Fields(logger.Fields{"req": req})
-
-	res, err := e.svc.Skymavis.GetAddressFarming(strings.ToLower(req.Address))
-	if err != nil {
-		l.Error(err, "[entity.listRoninWalletFarmings] svc.Skymavis.GetAddressFarming() failed")
+		l.Error(err, "[entity.listRoninFarmings] svc.Skymavis.GetAddressFarming() failed")
 		return nil, err
 	}
 
 	if res == nil || res.Data == nil {
-		l.Error(err, "[entity.listRoninWalletFarmings] svc.Skymavis.GetAddressFarming() response nil")
+		l.Error(err, "[entity.listRoninFarmings] svc.Skymavis.GetAddressFarming() response nil")
 		return nil, nil
 	}
 
 	rewards, err := e.svc.Ronin.GetLpPendingRewards(req.Address)
 	if err != nil {
-		l.Error(err, "[entity.listRoninWalletFarmings] svc.Ronin.GetLpPendingRewards() failed")
+		l.Error(err, "[entity.listRoninFarmings] svc.Ronin.GetLpPendingRewards() failed")
 		return nil, err
 	}
 
 	for i, p := range res.Data.LiquidityPositions {
 		totalLiquidity, err := strconv.ParseFloat(p.Pair.ReserveUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listRoninWalletFarmings] parse reserveUSD failed")
+			l.Error(err, "[entity.listRoninFarmings] parse reserveUSD failed")
 			return nil, err
 		}
 
 		totalSupply, err := strconv.ParseFloat(p.Pair.TotalSupply, 64)
 		if err != nil {
-			l.Error(err, "[entity.listRoninWalletFarmings] parse supply failed")
+			l.Error(err, "[entity.listRoninFarmings] parse supply failed")
 			return nil, err
 		}
 
 		lpTokenBalance, err := strconv.ParseFloat(p.LiquidityTokenBalance, 64)
 		if err != nil {
-			l.Error(err, "[entity.listRoninWalletFarmings] parse lp token balance failed")
+			l.Error(err, "[entity.listRoninFarmings] parse lp token balance failed")
 			return nil, err
 		}
 
 		token0Price, err := strconv.ParseFloat(p.Pair.Token0.TokenDayData[0].PriceUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listRoninWalletFarmings] parse token0 price failed")
+			l.Error(err, "[entity.listRoninFarmings] parse token0 price failed")
 			return nil, err
 		}
 
 		token1Price, err := strconv.ParseFloat(p.Pair.Token1.TokenDayData[0].PriceUSD, 64)
 		if err != nil {
-			l.Error(err, "[entity.listRoninWalletFarmings] parse token1 price failed")
+			l.Error(err, "[entity.listRoninFarmings] parse token1 price failed")
 			return nil, err
 		}
 
@@ -1228,47 +1278,39 @@ func (e *Entity) listRoninWalletFarmings(req request.ListWalletAssetsRequest) ([
 		}
 	}
 
+	// cache farming data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	e.cache.Set(key, string(bytes), 3*time.Hour)
+
 	return res.Data.LiquidityPositions, nil
 }
 
-func (e *Entity) ListEthWalletStaking(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
+func (e *Entity) ListWalletStakings(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
 	req.Standardize()
-	// TODO: only support EVM for now
-	if req.Type != "eth" && req.Type != "evm" {
-		return nil, nil
+
+	// Ronin
+	if req.Type == "ron" {
+		return e.listRoninStakings(req)
 	}
 
+	// TODO: support Solana, Sui & other EVM-based chains
+	return nil, nil
+}
+
+func (e *Entity) listRoninStakings(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
 	var res []response.WalletStakingData
 
 	// check if data cached
-	key := fmt.Sprintf("%s-eth-staking", strings.ToLower(req.Address))
+	key := fmt.Sprintf("%s-ron-staking", strings.ToLower(req.Address))
 	cached, err := e.cache.GetString(key)
 	if err == nil && cached != "" {
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
 	l := e.log.Fields(logger.Fields{"req": req})
+
 	// no cache -> re-fetch
-	// supported chains: RONIN
-	roninData, err := e.listRoninWalletStakings(req)
-	if err != nil {
-		l.Error(err, "[entity.ListEthWalletStaking] listRoninWalletStakings() failed")
-		return nil, err
-	}
-
-	res = append(res, roninData...)
-
-	// cache staking data
-	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 3*time.Hour)
-
-	return res, nil
-}
-
-func (e *Entity) listRoninWalletStakings(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
-	l := e.log.Fields(logger.Fields{"req": req})
-
 	axsStakingAmount, err := e.svc.Ronin.GetAxsStakingAmount(req.Address)
 	if err != nil {
 		l.Error(err, "[entity.listRoninWalletStakings] svc.Ronin.GetAxsStakingAmount failed")
@@ -1303,7 +1345,7 @@ func (e *Entity) listRoninWalletStakings(req request.ListWalletAssetsRequest) ([
 		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin(ronin) failed")
 	}
 
-	return []response.WalletStakingData{
+	res = []response.WalletStakingData{
 		{
 			TokenName: axsData.Name,
 			Symbol:    strings.ToUpper(axsData.Symbol),
@@ -1318,78 +1360,98 @@ func (e *Entity) listRoninWalletStakings(req request.ListWalletAssetsRequest) ([
 			Reward:    ronRewrds,
 			Price:     roninData.MarketData.CurrentPrice["usd"],
 		},
-	}, nil
-}
-
-func (e *Entity) ListEthWalletNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
-	req.Standardize()
-	// TODO: only support EVM for now
-	if req.Type != "eth" && req.Type != "evm" {
-		return nil, nil
 	}
 
-	data := &response.NftListData{}
-
-	// check if data cached
-	key := fmt.Sprintf("%s-eth-nft", strings.ToLower(req.Address))
-	cached, err := e.cache.GetString(key)
-	if err == nil && cached != "" {
-		return data, json.Unmarshal([]byte(cached), &data)
-	}
-
-	l := e.log.Fields(logger.Fields{"req": req})
-	// no cache -> re-fetch
-	// supported chains: Ronin
-	nfts, err := e.listWalletAxieNfts(req)
-	if err != nil {
-		l.Error(err, "[entity.ListEthWalletNfts] listWalletAxieNfts() failed")
-		return nil, err
-	}
-
-	data = nfts
-
-	// cache nft data
+	// cache staking data
 	// if error occurs -> ignore
-	bytes, _ := json.Marshal(data)
+	bytes, _ := json.Marshal(res)
 	e.cache.Set(key, string(bytes), 3*time.Hour)
 
-	return data, nil
+	return res, nil
 }
 
-func (e *Entity) listWalletAxieNfts(req request.ListWalletAssetsRequest) (*response.NftListData, error) {
+func (e *Entity) ListWalletNfts(req request.ListWalletAssetsRequest) ([]response.WalletNftData, error) {
+	req.Standardize()
+
+	// Ronin
+	if req.Type == "ron" {
+		return e.listAxieNfts(req)
+	}
+
+	// TODO: support Solana, Sui & other EVM-based chains
+	return nil, nil
+}
+
+func (e *Entity) listAxieNfts(req request.ListWalletAssetsRequest) ([]response.WalletNftData, error) {
+	var result []response.WalletNftData
+
+	// check if data cached
+	key := fmt.Sprintf("%s-ron-nfts", strings.ToLower(req.Address))
+	cached, err := e.cache.GetString(key)
+	if err == nil && cached != "" {
+		return result, json.Unmarshal([]byte(cached), &result)
+	}
+
+	// no cache -> re-fetch
 	res, err := e.svc.Skymavis.GetOwnedNfts(strings.ToLower(req.Address))
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listWalletAxieNfts] svc.Skymavis.GetOwnedAxies() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listAxieNfts] svc.Skymavis.GetOwnedAxies() failed")
 		return nil, err
 	}
 
+	axies := make([]response.WalletNftMetadata, len(res.Data.Axies.Results))
+	accessories := make([]response.WalletNftMetadata, len(res.Data.Equipments.Results))
+	lands := make([]response.WalletNftMetadata, len(res.Data.Lands.Results))
+	items := make([]response.WalletNftMetadata, len(res.Data.Items.Results))
+	result = []response.WalletNftData{
+		{Total: res.Data.Axies.Total, Tokens: axies, CollectionName: "Axie"},
+		{Total: res.Data.Equipments.Total, Tokens: accessories, CollectionName: "Axie Accessory"},
+		{Total: res.Data.Lands.Total, Tokens: lands, CollectionName: "Axie Land"},
+		{Total: res.Data.Items.Total, Tokens: items, CollectionName: "Axie Land Item"},
+	}
 	// Axie collection
 	for i, axie := range res.Data.Axies.Results {
-		res.Data.Axies.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.TokenID)
+		axies[i] = response.WalletNftMetadata{
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/axies/%s/", axie.ID),
+			TokenName:      axie.Name,
+			Image:          axie.Image,
+		}
 	}
 
 	// Accessory collection
 	for i, acc := range res.Data.Equipments.Results {
-		res.Data.Equipments.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias)
-		res.Data.Equipments.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias)
+		accessories[i] = response.WalletNftMetadata{
+			Image:          fmt.Sprintf("https://cdn.axieinfinity.com/marketplace-website/accessories/%s.png", acc.Alias),
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/accessories/%s/my-inventory/", acc.Alias),
+			TokenName:      acc.Name,
+		}
 	}
 
 	// Land collection
 	for i, land := range res.Data.Lands.Results {
-		res.Data.Lands.Results[i].Image = fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row)
-		res.Data.Lands.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row)
+		lands[i] = response.WalletNftMetadata{
+			Image:          fmt.Sprintf("https://cdn.axieinfinity.com/avatars/land/square/square_%d_%d.png", land.Col, land.Row),
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/lands/%d/%d/", land.Col, land.Row),
+			TokenName:      fmt.Sprintf("%s plot (%d, %d)", land.LandType, land.Col, land.Row),
+		}
 	}
 
 	// Land Item collection
 	for i, item := range res.Data.Items.Results {
-		res.Data.Items.Results[i].Image = item.FigureURL
-		res.Data.Items.Results[i].MarketplaceURL = fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID)
+		items[i] = response.WalletNftMetadata{
+			Image:          item.FigureURL,
+			MarketplaceURL: fmt.Sprintf("https://app.axieinfinity.com/marketplace/items/%s/%d/", item.Alias, item.ItemID),
+			TokenName:      fmt.Sprintf("%s #%d", item.Name, item.ItemID),
+		}
 	}
 
-	return res.Data, nil
+	bytes, _ := json.Marshal(result)
+	e.cache.Set(key, string(bytes), 3*time.Hour)
+
+	return result, nil
 }
 
-func (e *Entity) calculateEthTokenBalance(item krystal.Balance, chainID int) (bal, quote float64) {
+func (e *Entity) calculateEvmTokenBalance(item krystal.Balance, chainID int) (bal, quote float64) {
 	balance, ok := new(big.Float).SetString(item.Balance)
 	if !ok {
 		return
@@ -1402,4 +1464,52 @@ func (e *Entity) calculateEthTokenBalance(item krystal.Balance, chainID int) (ba
 		quote = item.Quotes.Usd.Value
 	}
 	return
+}
+
+func (e *Entity) UpdateTrackingInfo(req request.UpdateTrackingInfoRequest) (*model.UserWalletWatchlistItem, error) {
+	tx, ff := e.repo.Store.NewTransaction()
+
+	var (
+		wallet *model.UserWalletWatchlistItem
+		err    error
+	)
+	if req.Alias != "" {
+		wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
+			UserID:    req.UserID,
+			Query:     req.Alias,
+			ForUpdate: false,
+		})
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.GetOne failed")
+			return nil, ff.Rollback(err)
+		}
+	}
+
+	if wallet != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] alias already exists")
+		return nil, ff.Rollback(baseerr.ErrAliasAlreadyExisted)
+	}
+
+	wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
+		UserID:    req.UserID,
+		Query:     req.Address,
+		ForUpdate: true,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.GetOne failed")
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ff.Rollback(baseerr.ErrRecordNotFound)
+		}
+		return nil, ff.Rollback(err)
+	}
+
+	wallet.Alias = req.Alias
+
+	if err := tx.UserWalletWatchlistItem.Update(wallet); err != nil {
+		e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.UpdateTrackingInfo] tx.UserWalletWatchlistItem.Update failed")
+		return nil, ff.Rollback(err)
+	}
+
+	return wallet, ff.Commit()
 }

@@ -387,19 +387,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.Emojis:
-    properties:
-      code:
-        type: string
-      discord_id:
-        type: string
-      id:
-        type: integer
-      telegram_id:
-        type: string
-      twitter_id:
-        type: string
-    type: object
   model.Envelop:
     properties:
       command:
@@ -1022,6 +1009,19 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProductMetadataEmojis:
+    properties:
+      code:
+        type: string
+      discord_id:
+        type: string
+      id:
+        type: integer
+      telegram_id:
+        type: string
+      twitter_id:
+        type: string
+    type: object
   model.ProfileAirdropCampaign:
     properties:
       airdrop_campaign:
@@ -1470,6 +1470,8 @@ definitions:
     properties:
       created_at:
         type: string
+      discord_guild:
+        $ref: '#/definitions/model.DiscordGuild'
       guild_id:
         type: string
       id:
@@ -2008,11 +2010,6 @@ definitions:
         type: string
     type: object
   request.GetTrackingWalletsRequest:
-    properties:
-      userID:
-        type: string
-    required:
-    - userID
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -2290,6 +2287,12 @@ definitions:
       user_id:
         type: string
     type: object
+  request.UpdateTrackingInfoRequest:
+    properties:
+      alias:
+        description: Request body, only update the following fields
+        type: string
+    type: object
   request.UpdateUserFeedbackRequest:
     properties:
       id:
@@ -2376,9 +2379,9 @@ definitions:
     type: object
   request.UpsertGuildDefaultCurrencyRequest:
     properties:
-      Symbol:
-        type: string
       guild_id:
+        type: string
+      symbol:
         type: string
     type: object
   request.UpsertGuildPruneExcludeRequest:
@@ -2611,6 +2614,44 @@ definitions:
         type: string
       thumb:
         type: string
+    type: object
+  response.CoinGeckoInfoKeyValue:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  response.CoinGeckoInfoResponse:
+    properties:
+      communities:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
+      contracts:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
+      description_lines:
+        items:
+          type: string
+        type: array
+      explorers:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
+      tags:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
+      wallets:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
+      websites:
+        items:
+          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
+        type: array
     type: object
   response.CoinImage:
     properties:
@@ -3020,6 +3061,8 @@ definitions:
         items:
           type: string
         type: array
+      coingecko_info:
+        $ref: '#/definitions/response.CoinGeckoInfoResponse'
       coingecko_rank:
         type: integer
       coingecko_score:
@@ -4103,7 +4146,7 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/model.Emojis'
+          $ref: '#/definitions/model.ProductMetadataEmojis'
         type: array
     type: object
   response.ListGuildAdminRoles:
@@ -4154,6 +4197,9 @@ definitions:
         items:
           $ref: '#/definitions/model.GuildConfigTokenRole'
         type: array
+      meta:
+        additionalProperties: true
+        type: object
     type: object
   response.ListGuildXPRoles:
     properties:
@@ -4265,6 +4311,16 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -4274,16 +4330,6 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4562,12 +4608,16 @@ definitions:
   response.OffchainTipBotTransferToken:
     properties:
       amount_each:
+        type: number
+      id:
         description: |-
           SenderID    string  `json:"sender_id"`
           Recipients  string  `json:"recipient_id"`
-        type: number
+        type: string
       total_amount:
         type: number
+      tx_id:
+        type: integer
     type: object
   response.OffchainTipBotTransferTokenResponse:
     properties:
@@ -9864,6 +9914,38 @@ paths:
           schema:
             $ref: '#/definitions/response.GetTrackingWalletsResponse'
       summary: Get user's tracking wallets
+      tags:
+      - WatchList
+  /users/{id}/watchlists/wallets/{address}:
+    put:
+      consumes:
+      - application/json
+      description: Update tracked wallet's info
+      parameters:
+      - description: user Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: address or current alias of tracked wallet
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: req
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateTrackingInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetOneWalletResponse'
+      summary: Update tracked wallet's info
       tags:
       - WatchList
   /users/{id}/watchlists/wallets/track:

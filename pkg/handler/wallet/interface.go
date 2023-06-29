@@ -11,4 +11,5 @@ type IHandler interface {
 	ListAssets(c *gin.Context)
 	ListTransactions(c *gin.Context)
 	GenerateWalletVerification(c *gin.Context)
+	UpdateTrackingInfo(c *gin.Context)
 }

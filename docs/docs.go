@@ -7812,6 +7812,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/watchlists/wallets/{address}": {
+            "put": {
+                "description": "Update tracked wallet's info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Update tracked wallet's info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user Id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address or current alias of tracked wallet",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "req",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateTrackingInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetOneWalletResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "description": "Get user",
@@ -8885,26 +8933,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Emojis": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "telegram_id": {
-                    "type": "string"
-                },
-                "twitter_id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Envelop": {
             "type": "object",
             "properties": {
@@ -9855,6 +9883,26 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProductMetadataEmojis": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "discord_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "telegram_id": {
+                    "type": "string"
+                },
+                "twitter_id": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ProfileAirdropCampaign": {
             "type": "object",
             "properties": {
@@ -10537,6 +10585,9 @@ const docTemplate = `{
             "properties": {
                 "created_at": {
                     "type": "string"
+                },
+                "discord_guild": {
+                    "$ref": "#/definitions/model.DiscordGuild"
                 },
                 "guild_id": {
                     "type": "string"
@@ -11353,15 +11404,7 @@ const docTemplate = `{
             }
         },
         "request.GetTrackingWalletsRequest": {
-            "type": "object",
-            "required": [
-                "userID"
-            ],
-            "properties": {
-                "userID": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "request.GuildConfigDefaultNftTickerRequest": {
             "type": "object",
@@ -11784,6 +11827,15 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateTrackingInfoRequest": {
+            "type": "object",
+            "properties": {
+                "alias": {
+                    "description": "Request body, only update the following fields",
+                    "type": "string"
+                }
+            }
+        },
         "request.UpdateUserFeedbackRequest": {
             "type": "object",
             "properties": {
@@ -11916,10 +11968,10 @@ const docTemplate = `{
         "request.UpsertGuildDefaultCurrencyRequest": {
             "type": "object",
             "properties": {
-                "Symbol": {
+                "guild_id": {
                     "type": "string"
                 },
-                "guild_id": {
+                "symbol": {
                     "type": "string"
                 }
             }
@@ -12278,6 +12330,64 @@ const docTemplate = `{
                 },
                 "thumb": {
                     "type": "string"
+                }
+            }
+        },
+        "response.CoinGeckoInfoKeyValue": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.CoinGeckoInfoResponse": {
+            "type": "object",
+            "properties": {
+                "communities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "description_lines": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "explorers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "wallets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
+                },
+                "websites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.CoinGeckoInfoKeyValue"
+                    }
                 }
             }
         },
@@ -12910,6 +13020,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "coingecko_info": {
+                    "$ref": "#/definitions/response.CoinGeckoInfoResponse"
                 },
                 "coingecko_rank": {
                     "type": "integer"
@@ -14581,7 +14694,7 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Emojis"
+                        "$ref": "#/definitions/model.ProductMetadataEmojis"
                     }
                 }
             }
@@ -14659,6 +14772,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigTokenRole"
                     }
+                },
+                "meta": {
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -15283,11 +15400,17 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount_each": {
-                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
                     "type": "number"
+                },
+                "id": {
+                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
+                    "type": "string"
                 },
                 "total_amount": {
                     "type": "number"
+                },
+                "tx_id": {
+                    "type": "integer"
                 }
             }
         },

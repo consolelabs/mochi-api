@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -526,7 +527,20 @@ func (h *Handler) ListGuildTokenRoles(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+	currentMinute := time.Now().Minute()
+	var nextSync int
+
+	if currentMinute < 20 {
+		nextSync = 20 - currentMinute
+	} else if currentMinute < 40 {
+		nextSync = 40 - currentMinute
+	} else {
+		nextSync = 60 - currentMinute
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil, map[string]interface{}{
+		"next_sync": nextSync,
+	}))
 }
 
 // UpdateGuildTokenRole     godoc

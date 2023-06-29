@@ -24,7 +24,8 @@ init:
 	make migrate-up
 
 init-test:
-	docker-compose up -d postgres postgres_test
+	go install github.com/rubenv/sql-migrate/...@latest
+	docker-compose up -d postgres postgres_test redis
 	@echo "Waiting for database connection..."
 	@while ! docker exec $(POSTGRES_TEST_CONTAINER) pg_isready > /dev/null; do \
 		sleep 1; \

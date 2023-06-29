@@ -6,6 +6,7 @@ import (
 	autoActionHistory "github.com/defipod/mochi/pkg/repo/auto_action_history"
 	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
 	"github.com/defipod/mochi/pkg/repo/chain"
+	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
@@ -123,6 +124,7 @@ import (
 )
 
 type Repo struct {
+	Store                                Store
 	DiscordUserGMStreak                  discordusergmstreak.Store
 	DiscordUserUpvoteStreak              discorduserupvotestreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store
@@ -242,4 +244,5 @@ type Repo struct {
 	ProfileAirdropCampaign               pac.Store
 	AutoTrigger                          autoTrigger.Store
 	AutoActionHistory                    autoActionHistory.Store
+	CoingeckoInfo                        coingeckoinfo.Store
 }
