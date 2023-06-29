@@ -169,7 +169,7 @@ func (c *Covalent) doNetworkSolanaTokenBalances(chainName string, address string
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&res)
 	c.logger.Infof("cache data covalent-service, key: %s", covalentSolanaTokenBalanceKey)
-	c.cache.Set(covalentSolanaTokenBalanceKey, string(bytes), 7*24*time.Hour)
+	c.cache.Set(covalentSolanaTokenBalanceKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }
