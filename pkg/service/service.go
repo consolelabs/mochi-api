@@ -114,7 +114,7 @@ func NewService(
 		Sui:           sui.New(&cfg, log),
 		Birdeye:       birdeye.NewService(&cfg, log),
 		Swap:          swap.New(&cfg, log),
-		Skymavis:      skymavis.New(&cfg),
+		Skymavis:      skymavis.New(&cfg, cache),
 		Ronin:         roninSvc,
 		Krystal:       krystal.NewService(&cfg, log, cache),
 	}, nil
