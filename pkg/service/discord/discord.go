@@ -263,11 +263,17 @@ func (d *Discord) formatLevelUpMessage(uActivity *response.HandleUserActivityRes
 		return nil
 	}
 
+	lineEmoji, err := d.repo.Emojis.ListEmojis([]string{"LINE"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get line emoji")
+		return nil
+	}
+
 	description := []string{fmt.Sprintf("%s Congrats <@%s> on leveling up.\n", *starEmoji[0].DiscordId, uActivity.UserID)}
 	description = append(description, fmt.Sprintf("%s Your current level is %d.\n", *xpEmoji[0].DiscordId, uActivity.CurrentLevel))
 	description = append(description, fmt.Sprintf("%s To reach level %d, you would now need to have %d xp.\n", *gemEmoji[0].DiscordId, uActivity.CurrentLevel+1, uActivity.NextLevel.MinXP))
 	description = append(description, fmt.Sprintf("%s The next level role is %s, which is at level %d.\n", *badgeEmoji[0].DiscordId, role, levelRoleLevel))
-	description = append(description, strings.Repeat(":line:", 10)+"\n")
+	description = append(description, strings.Repeat(*lineEmoji[0].DiscordId, 10)+"\n")
 	description = append(description, fmt.Sprintf("%s Here are some things you can do to accrue xp:\n", *pointRightEmoji[0].DiscordId))
 	description = append(description, "+ Chatting\n")
 	description = append(description, "+ Invite your frens\n")
