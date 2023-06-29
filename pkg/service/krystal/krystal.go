@@ -74,7 +74,7 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&data)
 	k.logger.Infof("cache data krystal-service, key: %s", key)
-	k.cache.Set(key, string(bytes), 7*24*time.Hour)
+	k.cache.Set(key+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return &data, nil
 }
