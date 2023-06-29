@@ -1131,30 +1131,35 @@ func (e *Entity) listRoninStakings(req request.ListWalletAssetsRequest) ([]respo
 		return nil, err
 	}
 
-	axsData, err, _ := e.svc.CoinGecko.GetCoin("axie-infinity")
-	if err != nil {
-		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin('axie-infinity') failed")
-	}
+	// axsData, err, _ := e.svc.CoinGecko.GetCoin("axie-infinity")
+	// if err != nil {
+	// 	l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin('axie-infinity') failed")
+	// }
 
-	roninData, err, _ := e.svc.CoinGecko.GetCoin("ronin")
+	// roninData, err, _ := e.svc.CoinGecko.GetCoin("ronin")
+	// if err != nil {
+	// 	l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin(ronin) failed")
+	// }
+
+	prices, err := e.svc.CoinGecko.GetCoinPrice([]string{"axie-infinity", "ronin"}, "usd")
 	if err != nil {
-		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoin(ronin) failed")
+		l.Error(err, "[entity.listRoninWalletStakings] svc.CoinGecko.GetCoinPrice failed")
 	}
 
 	res = []response.WalletStakingData{
 		{
-			TokenName: axsData.Name,
-			Symbol:    strings.ToUpper(axsData.Symbol),
+			TokenName: "Axie Infinity",
+			Symbol:    strings.ToUpper("axs"),
 			Amount:    axsStakingAmount,
 			Reward:    axsRewards,
-			Price:     axsData.MarketData.CurrentPrice["usd"],
+			Price:     prices["axie-infinity"],
 		},
 		{
-			TokenName: roninData.Name,
-			Symbol:    strings.ToUpper(roninData.Symbol),
+			TokenName: "Ronin",
+			Symbol:    strings.ToUpper("ron"),
 			Amount:    ronStakingAmount,
 			Reward:    ronRewrds,
-			Price:     roninData.MarketData.CurrentPrice["usd"],
+			Price:     prices["ronin"],
 		},
 	}
 
