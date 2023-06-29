@@ -146,23 +146,12 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] entity.CreateGuildIfNotExists() failed")
 	}
 
-	uActivity, err := h.entities.HandleDiscordMessage(message)
-	if err != nil {
-		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
 	// TODO: use response data to send discord message to user
 	var resp *response.HandleUserActivityResponse
 	switch message.Type {
 	case consts.MessageTypeUserPremiumGuildSubscription:
 		resp, err = h.entities.BoostXPIncrease(message)
 	default:
-		if uActivity != nil {
-			// break if message was already handled
-			break
-		}
 		resp, err = h.entities.ChatXPIncrease(message)
 	}
 	if err != nil {

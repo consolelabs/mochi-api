@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"sort"
 	"time"
@@ -242,10 +243,10 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		return nil, err
 	}
 
-	nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, true)
-  if err != nil && err != gorm.ErrRecordNotFound {
-    return nil, err
-  }
+	nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(userXP.TotalXP, true)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
 
 	res := &response.HandleUserActivityResponse{
 		GuildID:      req.GuildID,
@@ -255,7 +256,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		AddedXP:      earnedXP,
 		CurrentXP:    latestUserXP.TotalXP,
 		CurrentLevel: latestUserXP.Level,
-    NextLevel:    nextLevel,
+		NextLevel:    nextLevel,
 		Timestamp:    req.Timestamp,
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}
@@ -275,14 +276,21 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 			return nil, err
 		}
 
-    content, err := e.repo.Content.GetContentByType(contentType) 
-    if err != nil {
-      e.log.Fields(logger.Fields{"type": contentType}).Errorf(err, "[entity.GetContentByType] - e.repo.Content.GetContentByType failed")
-      return nil, err
-    }
+		contentType := "header"
+		content, err := e.repo.Content.GetContentByType(contentType)
+		if err != nil {
+			e.log.Fields(logger.Fields{"type": contentType}).Errorf(err, "[entity.GetContentByType] - e.repo.Content.GetContentByType failed")
+			return nil, err
+		}
 
-    randomTipIdx := math.rand.Intn(len(content.Description.Tip))
-    randomTip := content.Description.Tip[randomTipIdx]
+		var contentDescription model.Description
+		err = json.Unmarshal(content.Description, &contentDescription)
+		if err != nil {
+			return nil, err
+		}
+
+		randomTipIdx := rand.Intn(len(contentDescription.Tip))
+		randomTip := contentDescription.Tip[randomTipIdx]
 
 		e.svc.Discord.SendLevelUpMessage(config, role, levelNeeded, randomTip, res)
 	}
