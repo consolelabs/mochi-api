@@ -43,7 +43,7 @@ func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingRes
 	cached, err := s.doCacheFarming(address)
 	if err == nil && cached != "" {
 		s.logger.Infof("hit cache data skymavis-service, address: %s", address)
-		defer s.doNetworkFarming(address)
+		go s.doNetworkFarming(address)
 		return &data, json.Unmarshal([]byte(cached), &data)
 	}
 
@@ -133,7 +133,7 @@ func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse
 	cached, err := s.doCacheNft(address)
 	if err == nil && cached != "" {
 		s.logger.Infof("hit cache data skymavis-service, address: %s", address)
-		defer s.doNetworkNfts(address)
+		go s.doNetworkNfts(address)
 		return &data, json.Unmarshal([]byte(cached), &data)
 	}
 

@@ -98,7 +98,7 @@ func (r *ronin) GetAxsStakingAmount(address string) (float64, error) {
 	var amount float64
 	cached, err := r.doCacheAxieStakingAmount(address)
 	if err == nil && cached != "" {
-		defer r.doNetworkAxieStakingAmount(address)
+		go r.doNetworkAxieStakingAmount(address)
 		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
@@ -110,7 +110,7 @@ func (r *ronin) GetAxsPendingRewards(address string) (float64, error) {
 	var amount float64
 	cached, err := r.doCacheAxiePendingReward(address)
 	if err == nil && cached != "" {
-		defer r.doNetworkAxiePendingReward(address)
+		go r.doNetworkAxiePendingReward(address)
 		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
@@ -122,7 +122,7 @@ func (r *ronin) GetRonStakingAmount(address string) (float64, error) {
 	var amount float64
 	cached, err := r.doCacheRonStakingAmount(address)
 	if err == nil && cached != "" {
-		defer r.doNetworkRonStakingAmount(address)
+		go r.doNetworkRonStakingAmount(address)
 		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
@@ -134,7 +134,7 @@ func (r *ronin) GetRonPendingRewards(address string) (float64, error) {
 	var amount float64
 	cached, err := r.doCacheRonPendingReward(address)
 	if err == nil && cached != "" {
-		defer r.doNetworkRonPendingReward(address)
+		go r.doNetworkRonPendingReward(address)
 		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
@@ -146,7 +146,7 @@ func (r *ronin) GetLpPendingRewards(address string) (map[string]LpRewardData, er
 	var amount map[string]LpRewardData
 	cached, err := r.doCacheLpPendingRewards(address)
 	if err == nil && cached != "" {
-		defer r.doNetworkLpPendingRewards(address)
+		go r.doNetworkLpPendingRewards(address)
 		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
