@@ -119,7 +119,7 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&res)
 	s.logger.Infof("cache data skymavis-service, key: %s", farmingKey)
-	s.cache.Set(farmingKey, string(bytes), 7*24*time.Hour)
+	s.cache.Set(farmingKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }
@@ -234,7 +234,7 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&res)
 	s.logger.Infof("cache data skymavis-service, key: %s", nftKey)
-	s.cache.Set(nftKey, string(bytes), 7*24*time.Hour)
+	s.cache.Set(nftKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }
