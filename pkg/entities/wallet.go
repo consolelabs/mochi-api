@@ -553,81 +553,20 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 }
 
 func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
-	// redis cache
-	value, err := e.cache.HashGet(req.Address + "-sui")
+	assets, err := e.svc.Sui.GetAddressAssets(req.Address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to get cache data wallet")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set get sui assets wallet")
 		return nil, "", "", err
 	}
 
-	assets := make([]response.WalletAssetData, 0)
-	if len(value) == 0 {
-		assets, err = e.svc.Sui.GetAddressAssets(req.Address)
+	for index, asset := range assets {
+		price, err := e.GetTokenPrice(asset.Token.Symbol, asset.Token.Name)
 		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set get sui assets wallet")
-			return nil, "", "", err
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set get price token from sui wallet")
+			continue
 		}
-
-		for index, asset := range assets {
-			price, err := e.GetTokenPrice(asset.Token.Symbol, asset.Token.Name)
-			if err != nil {
-				e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set get price token from sui wallet")
-				continue
-			}
-			assets[index].Token.Price = *price
-			assets[index].UsdBalance = assets[index].Token.Price * assets[index].AssetBalance
-		}
-
-		encodeData := make(map[string]string)
-		if len(assets) == 0 {
-			encodeData["empty"] = "empty"
-		}
-
-		for _, asset := range assets {
-			encodeData[fmt.Sprintf("%s-%s-%d-%d-%f-%v-%s", asset.ContractName, asset.ContractSymbol, asset.ChainID, asset.Token.Decimal, asset.Token.Price, asset.Token.Native, asset.Token.Chain.Name)] = fmt.Sprintf("%f-%f", asset.AssetBalance, asset.UsdBalance)
-		}
-
-		err := e.cache.HashSet(req.Address+"-sol", encodeData, 3*time.Hour)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
-			return nil, "", "", err
-		}
-
-	} else {
-		for k, v := range value {
-			if k == "empty" {
-				break
-			}
-
-			key := strings.Split(k, "-")
-			value := strings.Split(v, "-")
-			chainId, _ := strconv.Atoi(key[2])
-			decimal, _ := strconv.Atoi(key[3])
-			price, _ := strconv.ParseFloat(key[4], 64)
-			native, _ := strconv.ParseBool(key[5])
-			assetBalance, _ := strconv.ParseFloat(value[0], 64)
-			usdBalance, _ := strconv.ParseFloat(value[1], 64)
-
-			assets = append(assets, response.WalletAssetData{
-				ContractName:   key[0],
-				ContractSymbol: key[1],
-				ChainID:        chainId,
-				AssetBalance:   assetBalance,
-				UsdBalance:     usdBalance,
-				Token: response.AssetToken{
-					Name:    key[0],
-					Symbol:  key[1],
-					Decimal: int64(decimal),
-					Price:   price,
-					Native:  native,
-					Chain: response.AssetTokenChain{
-						Name:      key[6],
-						ShortName: "sui",
-					},
-				},
-				Amount: util.FloatToString(fmt.Sprint(assetBalance), int64(decimal)),
-			})
-		}
+		assets[index].Token.Price = *price
+		assets[index].UsdBalance = assets[index].Token.Price * assets[index].AssetBalance
 	}
 
 	// calculate pnl
