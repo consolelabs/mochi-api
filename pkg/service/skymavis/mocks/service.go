@@ -48,3 +48,18 @@ func (mr *MockServiceMockRecorder) GetAddressFarming(address interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddressFarming", reflect.TypeOf((*MockService)(nil).GetAddressFarming), address)
 }
+
+// GetOwnedNfts mocks base method.
+func (m *MockService) GetOwnedNfts(address string) (*response.NftResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOwnedNfts", address)
+	ret0, _ := ret[0].(*response.NftResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOwnedNfts indicates an expected call of GetOwnedNfts.
+func (mr *MockServiceMockRecorder) GetOwnedNfts(address interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOwnedNfts", reflect.TypeOf((*MockService)(nil).GetOwnedNfts), address)
+}

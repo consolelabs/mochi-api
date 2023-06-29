@@ -395,15 +395,15 @@ func (mr *MockServiceMockRecorder) SendGuildActivityLogs(channelID, userID, titl
 }
 
 // SendLevelUpMessage mocks base method.
-func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, uActivity *response.HandleUserActivityResponse) {
+func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SendLevelUpMessage", levelUpConfig, role, uActivity)
+	m.ctrl.Call(m, "SendLevelUpMessage", levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
 }
 
 // SendLevelUpMessage indicates an expected call of SendLevelUpMessage.
-func (mr *MockServiceMockRecorder) SendLevelUpMessage(levelUpConfig, role, uActivity interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendLevelUpMessage(levelUpConfig, role, levelRoleLevel, randomTip, uActivity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), levelUpConfig, role, uActivity)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
 }
 
 // SendMessage mocks base method.
