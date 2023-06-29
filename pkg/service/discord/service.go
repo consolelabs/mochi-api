@@ -23,7 +23,7 @@ type Service interface {
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
 	SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
-	SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, uActivity *response.HandleUserActivityResponse)
+	SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse)
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 	SendUpvoteMessage(discordID, source string, isStranger bool) error
 	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error

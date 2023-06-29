@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/repo"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -22,6 +23,7 @@ import (
 type Discord struct {
 	session                *discordgo.Session
 	log                    logger.Logger
+	repo                   *repo.Repo
 	mochiGuildID           string
 	mochiLogChannelID      string
 	mochiSaleChannelID     string
@@ -30,7 +32,7 @@ type Discord struct {
 }
 
 const (
-	mochiLogColor       = 0xFCD3C1
+	mochiLogColor       = 0x62A1FE
 	mochiTipLogColor    = 0xFFDC50
 	mochiUpvoteMsgColor = 0x47ffc2
 	mochiErrorColor     = 0xD94F50
@@ -40,6 +42,7 @@ const (
 func NewService(
 	cfg config.Config,
 	log logger.Logger,
+	repo *repo.Repo,
 ) (Service, error) {
 	// *** discord ***
 	discord, err := discordgo.New("Bot " + cfg.DiscordToken)
@@ -54,6 +57,7 @@ func NewService(
 		mochiSaleChannelID:     cfg.MochiSaleChannelID,
 		mochiActivityChannelID: cfg.MochiActivityChannelID,
 		mochiFeedbackChannelID: cfg.MochiFeedbackChannelID,
+		repo:                   repo,
 	}, nil
 }
 
@@ -191,7 +195,7 @@ func (d *Discord) SendGuildActivityLogs(channelID, userID, title, description st
 	return nil
 }
 
-func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, uActivity *response.HandleUserActivityResponse) {
+func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
 	// priority: config channel -> chat channel
 	channelID := levelUpConfig.ChannelID
 	if levelUpConfig.ChannelID == "" {
@@ -205,44 +209,83 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMess
 		role = "N/A"
 	}
 
-	description := fmt.Sprintf("<:pumpeet:930840081554624632> **You are leveled up to level %d, <@%s>**", uActivity.CurrentLevel, uActivity.UserID)
-	if levelUpConfig.Message != "" {
-		description = description + "\n\n" + strings.Replace(levelUpConfig.Message, "$name", fmt.Sprintf("<@%s>", uActivity.UserID), -1)
-		description = strings.Replace(description, `\n`, "\n", -1)
-	} else {
-		description = description + "\n\nThe results of hard work and dedication always look like luck to some. But you know you've earned every ounce of your success. <:mooning:930840083278487562> "
-	}
+	// TODO: get emoji from backend instead of hardcode
 
 	dcUser, err := d.session.User(uActivity.UserID)
 	if err != nil {
 		d.log.Errorf(err, "SendLevelUpMessage - failed to get discord user %s", uActivity.UserID)
 		return
 	}
-	image := ""
-	if levelUpConfig.ImageURL != "" {
-		image = levelUpConfig.ImageURL
-	}
 
-	msgEmbed := discordgo.MessageEmbed{
-		Title: "<:trophy:1060414870895464478> Level up!",
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: dcUser.AvatarURL(""),
-		},
-		Image: &discordgo.MessageEmbedImage{
-			URL: image,
-		},
-		Description: description,
-		Color:       mochiLogColor,
-		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("XP achieved: %d", uActivity.CurrentXP),
-		},
-		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
-	}
+	msgEmbed := d.formatLevelUpMessage(uActivity, dcUser, role, randomTip, levelRoleLevel)
 	d.log.Fields(logger.Fields{"channelId": channelID, "userID": uActivity.UserID}).Info("Sending level up message")
-	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
+	_, err = d.session.ChannelMessageSendEmbed(channelID, msgEmbed)
 	if err != nil {
 		d.log.Errorf(err, "SendLevelUpMessage - failed to send level up msg")
 		return
+	}
+}
+
+func (d *Discord) formatLevelUpMessage(uActivity *response.HandleUserActivityResponse, dcUser *discordgo.User, role, randomTip string, levelRoleLevel int) *discordgo.MessageEmbed {
+	starEmoji, err := d.repo.Emojis.ListEmojis([]string{"STAR"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get star emoji")
+		return nil
+	}
+
+	xpEmoji, err := d.repo.Emojis.ListEmojis([]string{"XP"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get xp emoji")
+		return nil
+	}
+
+	gemEmoji, err := d.repo.Emojis.ListEmojis([]string{"GEM"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get gem emoji")
+		return nil
+	}
+
+	badgeEmoji, err := d.repo.Emojis.ListEmojis([]string{"BADGE"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get badge emoji")
+		return nil
+	}
+
+	pointRightEmoji, err := d.repo.Emojis.ListEmojis([]string{"POINT_RIGHT"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get point right emoji")
+		return nil
+	}
+
+	trophyEmoji, err := d.repo.Emojis.ListEmojis([]string{"TROPHY"})
+	if err != nil {
+		d.log.Errorf(err, "formatLevelUpMessage - failed to get trophy emoji")
+		return nil
+	}
+
+	description := []string{fmt.Sprintf("%s Congrats <@%s> on leveling up.\n", *starEmoji[0].DiscordId, uActivity.UserID)}
+	description = append(description, fmt.Sprintf("%s Your current level is %d.\n", *xpEmoji[0].DiscordId, uActivity.CurrentLevel))
+	description = append(description, fmt.Sprintf("%s To reach level %d, you would now need to have %d xp.\n", *gemEmoji[0].DiscordId, uActivity.CurrentLevel+1, uActivity.NextLevel.MinXP))
+	description = append(description, fmt.Sprintf("%s The next level role is %s, which is at level %d.\n", *badgeEmoji[0].DiscordId, role, levelRoleLevel))
+	description = append(description, strings.Repeat(":line:", 10)+"\n")
+	description = append(description, fmt.Sprintf("%s Here are some things you can do to accrue xp:\n", *pointRightEmoji[0].DiscordId))
+	description = append(description, "+ Chatting\n")
+	description = append(description, "+ Invite your frens\n")
+	description = append(description, "+ Doing quests\n")
+	description = append(description, "+ Swap/tip/deposit/withdraw\n")
+
+	return &discordgo.MessageEmbed{
+		Title: fmt.Sprintf("%s Level up!", *trophyEmoji[0].DiscordId),
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
+			URL: dcUser.AvatarURL(""),
+		},
+		Description: strings.Join(description, ""),
+		Color:       mochiLogColor,
+		Footer: &discordgo.MessageEmbedFooter{
+			Text:    randomTip,
+			IconURL: "",
+		},
+		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
 	}
 }
 
