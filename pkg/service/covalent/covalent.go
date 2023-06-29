@@ -137,7 +137,7 @@ func (c *Covalent) GetSolanaTokenBalances(chainName string, address string, retr
 	cached, err := c.doCacheSolanaTokenBalances(address)
 	if err == nil && cached != "" {
 		c.logger.Infof("hit cache data krystal-service, address: %s", address)
-		defer c.doNetworkSolanaTokenBalances(chainName, address, retry)
+		go c.doNetworkSolanaTokenBalances(chainName, address, retry)
 		return &data, json.Unmarshal([]byte(cached), &data)
 	}
 

@@ -41,7 +41,7 @@ func (k *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenRespons
 	cached, err := k.doCache(address)
 	if err == nil && cached != "" {
 		k.logger.Infof("hit cache data krystal-service, address: %s", address)
-		defer k.doNetwork(address, data)
+		go k.doNetwork(address, data)
 		return &data, json.Unmarshal([]byte(cached), &data)
 	}
 
