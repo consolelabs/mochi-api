@@ -1,20 +1,19 @@
 package ronin
 
 import (
-	"math/big"
-	"strings"
+	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/contract/ronin/axs"
 	"github.com/defipod/mochi/pkg/contract/ronin/lp"
 	"github.com/defipod/mochi/pkg/contract/ronin/ron"
 	"github.com/defipod/mochi/pkg/contract/ronin/validator"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 type ronin struct {
@@ -25,9 +24,10 @@ type ronin struct {
 	// key   = staking token address
 	// value = lp staking pool instance
 	lpStakingPools map[string]*lp.Lp
+	cache          cache.Cache
 }
 
-func New(cfg *config.Config) (Service, error) {
+func New(cfg *config.Config, cache cache.Cache) (Service, error) {
 	client, err := ethclient.Dial(cfg.RpcUrl.Ronin)
 	if err != nil {
 		return nil, err
@@ -82,95 +82,74 @@ func New(cfg *config.Config) (Service, error) {
 		ronstaking:     ron,
 		lpStakingPools: lpStakingPools,
 		validator:      validator,
+		cache:          cache,
 	}, nil
 }
 
+var (
+	axieStakingAmountKey = "axie-staking-amount"
+	axiePendingRewardKey = "axie-pending-reward"
+	ronStakingAmountKey  = "ron-staking-amount"
+	ronPendingRewardKey  = "ron-pending-reward"
+	lpPendingRewardKey   = "lp-pending-reward"
+)
+
 func (r *ronin) GetAxsStakingAmount(address string) (float64, error) {
-	amount, err := r.axsstaking.GetStakingAmount(&bind.CallOpts{}, common.HexToAddress(address))
-	if err != nil {
-		return 0, nil
+	var amount float64
+	cached, err := r.doCacheAxieStakingAmount(address)
+	if err == nil && cached != "" {
+		defer r.doNetworkAxieStakingAmount(address)
+		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
-	return util.BigIntToFloat(amount, 18), nil
+	// call network
+	return r.doNetworkAxieStakingAmount(address)
 }
 
 func (r *ronin) GetAxsPendingRewards(address string) (float64, error) {
-	amount, err := r.axsstaking.GetPendingRewards(&bind.CallOpts{}, common.HexToAddress(address))
-	if err != nil {
-		return 0, nil
+	var amount float64
+	cached, err := r.doCacheAxiePendingReward(address)
+	if err == nil && cached != "" {
+		defer r.doNetworkAxiePendingReward(address)
+		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
-	return util.BigIntToFloat(amount, 18), nil
+	// call network
+	return r.doNetworkAxiePendingReward(address)
 }
 
 func (r *ronin) GetRonStakingAmount(address string) (float64, error) {
-	validators, err := r.validator.GetValidatorCandidates(&bind.CallOpts{})
-	if err != nil {
-		return 0, nil
+	var amount float64
+	cached, err := r.doCacheRonStakingAmount(address)
+	if err == nil && cached != "" {
+		defer r.doNetworkRonStakingAmount(address)
+		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
-	totalStaking := big.NewInt(0)
-	userAddr := common.HexToAddress(address)
-
-	// total RON staking amount = SUM of staking amount by each validator
-	for _, v := range validators {
-		amount, err := r.ronstaking.GetStakingAmount(&bind.CallOpts{}, v, userAddr)
-		if err != nil {
-			return 0, nil
-		}
-
-		totalStaking.Add(totalStaking, amount)
-	}
-
-	return util.BigIntToFloat(totalStaking, 18), nil
+	// call network
+	return r.doNetworkRonStakingAmount(address)
 }
 
 func (r *ronin) GetRonPendingRewards(address string) (float64, error) {
-	// get all validators
-	validators, err := r.validator.GetValidatorCandidates(&bind.CallOpts{})
-	if err != nil {
-		return 0, nil
+	var amount float64
+	cached, err := r.doCacheRonPendingReward(address)
+	if err == nil && cached != "" {
+		defer r.doNetworkRonPendingReward(address)
+		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
-	totalReward := big.NewInt(0)
-	userAddr := common.HexToAddress(address)
-
-	// total RON staking rewards = SUM of rewards by each validator
-	for _, v := range validators {
-		amount, err := r.ronstaking.GetReward(&bind.CallOpts{}, v, userAddr)
-		if err != nil {
-			return 0, nil
-		}
-
-		totalReward.Add(totalReward, amount)
-	}
-
-	return util.BigIntToFloat(totalReward, 18), nil
+	// call network
+	return r.doNetworkRonPendingReward(address)
 }
 
 func (r *ronin) GetLpPendingRewards(address string) (map[string]LpRewardData, error) {
-	// result data is a map with:
-	// - key   = staking token address
-	// - value = farming reward data
-	result := make(map[string]LpRewardData)
-	userAddr := common.HexToAddress(address)
-
-	for stakingToken, p := range r.lpStakingPools {
-		reward, err := p.GetPendingRewards(&bind.CallOpts{}, userAddr)
-		if err != nil {
-			return nil, err
-		}
-
-		rewardToken, err := p.GetRewardToken(&bind.CallOpts{})
-		if err != nil {
-			return nil, err
-		}
-
-		result[strings.ToLower(stakingToken)] = LpRewardData{
-			RewardToken: rewardToken.Hex(),
-			Reward:      util.BigIntToFloat(reward, 18),
-		}
+	var amount map[string]LpRewardData
+	cached, err := r.doCacheLpPendingRewards(address)
+	if err == nil && cached != "" {
+		defer r.doNetworkLpPendingRewards(address)
+		return amount, json.Unmarshal([]byte(cached), &amount)
 	}
 
-	return result, nil
+	// call network
+	return r.doNetworkLpPendingRewards(address)
 }
