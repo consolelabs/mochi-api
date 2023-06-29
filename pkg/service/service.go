@@ -76,11 +76,6 @@ func NewService(
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
 
-	roninSvc, err := ronin.New(&cfg)
-	if err != nil {
-		log.Error(err, "failed to init ronin svc")
-	}
-
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
 	if err != nil {
 		log.Fatal(err, "failed to init redis")
@@ -89,6 +84,11 @@ func NewService(
 	cache, err := cache.NewRedisCache(redisOpt)
 	if err != nil {
 		log.Fatal(err, "failed to init redis cache")
+	}
+
+	roninSvc, err := ronin.New(&cfg, cache)
+	if err != nil {
+		log.Error(err, "failed to init ronin svc")
 	}
 
 	return &Service{

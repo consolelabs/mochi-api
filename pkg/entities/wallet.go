@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -1148,9 +1147,6 @@ func (e *Entity) listRoninFarmings(req request.ListWalletAssetsRequest) ([]respo
 		}
 	}
 
-	// cache farming data
-	// if error occurs -> ignore
-
 	return res.Data.LiquidityPositions, nil
 }
 
@@ -1168,13 +1164,6 @@ func (e *Entity) ListWalletStakings(req request.ListWalletAssetsRequest) ([]resp
 
 func (e *Entity) listRoninStakings(req request.ListWalletAssetsRequest) ([]response.WalletStakingData, error) {
 	var res []response.WalletStakingData
-
-	// check if data cached
-	key := fmt.Sprintf("%s-ron-staking", strings.ToLower(req.Address))
-	cached, err := e.cache.GetString(key)
-	if err == nil && cached != "" {
-		return res, json.Unmarshal([]byte(cached), &res)
-	}
 
 	l := e.log.Fields(logger.Fields{"req": req})
 
@@ -1229,11 +1218,6 @@ func (e *Entity) listRoninStakings(req request.ListWalletAssetsRequest) ([]respo
 			Price:     roninData.MarketData.CurrentPrice["usd"],
 		},
 	}
-
-	// cache staking data
-	// if error occurs -> ignore
-	bytes, _ := json.Marshal(res)
-	e.cache.Set(key, string(bytes), 3*time.Hour)
 
 	return res, nil
 }
