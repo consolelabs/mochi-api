@@ -31,6 +31,7 @@ type HandleUserActivityResponse struct {
 	AddedXP      int       `json:"added_xp"`
 	CurrentXP    int       `json:"current_xp"`
 	CurrentLevel int       `json:"current_level"`
+  NextLevel    *model.ConfigXpLevel `json:"next_level"`
 	Timestamp    time.Time `json:"timestamp"`
 	LevelUp      bool      `json:"level_up"`
 }

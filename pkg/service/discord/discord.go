@@ -30,7 +30,7 @@ type Discord struct {
 }
 
 const (
-	mochiLogColor       = 0xFCD3C1
+	mochiLogColor       = 0x62A1FE
 	mochiTipLogColor    = 0xFFDC50
 	mochiUpvoteMsgColor = 0x47ffc2
 	mochiErrorColor     = 0xD94F50
@@ -191,7 +191,7 @@ func (d *Discord) SendGuildActivityLogs(channelID, userID, title, description st
 	return nil
 }
 
-func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, uActivity *response.HandleUserActivityResponse) {
+func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
 	// priority: config channel -> chat channel
 	channelID := levelUpConfig.ChannelID
 	if levelUpConfig.ChannelID == "" {
@@ -205,22 +205,22 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMess
 		role = "N/A"
 	}
 
-	description := fmt.Sprintf("<:pumpeet:930840081554624632> **You are leveled up to level %d, <@%s>**", uActivity.CurrentLevel, uActivity.UserID)
-	if levelUpConfig.Message != "" {
-		description = description + "\n\n" + strings.Replace(levelUpConfig.Message, "$name", fmt.Sprintf("<@%s>", uActivity.UserID), -1)
-		description = strings.Replace(description, `\n`, "\n", -1)
-	} else {
-		description = description + "\n\nThe results of hard work and dedication always look like luck to some. But you know you've earned every ounce of your success. <:mooning:930840083278487562> "
-	}
+  // TODO: get emoji from backend instead of hardcode
+  description := ftm.Sprintf("<a:star:1093923083934502982> Congrats <@%s> on leveling up.\n", uActivity.UserID)
+  description := ftm.Sprintf("<:xp:1058304395000938516> Your current level is %d\n.", uActivity.CurrentLevel)
+  description := ftm.Sprintf("<a:gem:1095990259877158964> To reach level %d, you would now need to have %d xp.\n", uActivity.CurrentLevel + 1, uActivity.NextLevel.MinXP)
+  description := ftm.Sprintf("<a:badge:1095990101642846258> The next level role is %s, which is at level %d.\n", role, levelRoleLevel)
+  description := ftm.Sprintf(strings.Repeat(":line:", 10) + "\n")
+  description := ftm.Sprintf("<a:_:1093923073557807175> Here are some things you can do to accrue xp:\n")
+  description := ftm.Sprintf("+ Chatting\n")
+  description := ftm.Sprintf("+ Invite your frens\n")
+  description := ftm.Sprintf("+ Doing quests\n")
+  description := ftm.Sprintf("+ Swap/tip/deposit/withdraw\n")
 
 	dcUser, err := d.session.User(uActivity.UserID)
 	if err != nil {
 		d.log.Errorf(err, "SendLevelUpMessage - failed to get discord user %s", uActivity.UserID)
 		return
-	}
-	image := ""
-	if levelUpConfig.ImageURL != "" {
-		image = levelUpConfig.ImageURL
 	}
 
 	msgEmbed := discordgo.MessageEmbed{
@@ -228,15 +228,12 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMess
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: dcUser.AvatarURL(""),
 		},
-		Image: &discordgo.MessageEmbedImage{
-			URL: image,
-		},
 		Description: description,
 		Color:       mochiLogColor,
 		Footer: &discordgo.MessageEmbedFooter{
-			Text: fmt.Sprintf("XP achieved: %d", uActivity.CurrentXP),
+			Text: randomTip,
 		},
-		Timestamp: time.Now().Format("2006-01-02T15:04:05Z07:00"),
+		Timestamp: time.Now(),
 	}
 	d.log.Fields(logger.Fields{"channelId": channelID, "userID": uActivity.UserID}).Info("Sending level up message")
 	_, err = d.session.ChannelMessageSendEmbed(channelID, &msgEmbed)
