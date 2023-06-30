@@ -66,8 +66,13 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 	}
 
 	statusCode, err := util.SendRequest(req)
-	if err != nil || statusCode != http.StatusOK {
+	if err != nil {
 		return nil, fmt.Errorf("[krystal.GetBalanceTokenByAddress] util.SendRequest() failed: %v", err)
+	}
+
+	if statusCode != http.StatusOK {
+		k.logger.Infof("krystal.GetBalanceTokenByAddress() failed, status code: %d", statusCode)
+		return &data, nil
 	}
 
 	// cache krystal-balance-token-data

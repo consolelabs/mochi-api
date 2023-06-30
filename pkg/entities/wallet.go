@@ -214,7 +214,8 @@ func (e *Entity) TrackWallet(mod model.UserWalletWatchlistItem, channelID, messa
 		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
 		return err
 	}
-	if existItem.ChainType != "" && !strings.EqualFold(existItem.ChainType.String(), mod.ChainType.String()) {
+
+	if existItem != nil && existItem.ChainType != "" && !strings.EqualFold(existItem.ChainType.String(), mod.ChainType.String()) {
 		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] wallet chain type does not match")
 		return baseerr.ErrChainTypeConflict
 	}
@@ -427,7 +428,6 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				Amount: util.FloatToString(fmt.Sprint(assetBal), int64(bal.Token.Decimals)),
 			})
 		}
-
 	}
 
 	// calculate pnl
