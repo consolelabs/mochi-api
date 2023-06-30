@@ -14,4 +14,5 @@ type Service interface {
 	GetFundingAsset(apiKey, apiSecret string) ([]response.BinanceUserAssetResponse, error)
 	GetStakingProductPosition(apiKey, apiSecret string) ([]response.BinanceStakingProductPosition, error)
 	GetLendingAccount(apiKey, apiSecret string) (*response.BinanceLendingAccount, error)
+	GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimpleEarnAccount, error)
 }

@@ -901,6 +901,20 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 		return nil, err
 	}
 
+	// simple earn
+	simpleEarnAcc, err := e.svc.Binance.GetSimpleEarn(req.ApiKey, req.ApiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Binance.GetSimpleEarn] Failed to get simple earn")
+		return nil, err
+	}
+
+	simpleEarnValue, err := strconv.ParseFloat(simpleEarnAcc.TotalAmountInBTC, 64)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Binance.GetSimpleEarn] Failed to parse asset value")
+		return nil, err
+	}
+
+	// all user asset
 	totalAssetValue := 0.0
 	if len(value) == 0 {
 		asset, err := e.SummarizeFundingAsset(req.Id, req.ApiKey, req.ApiSecret)
@@ -944,7 +958,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}
 
 	return &response.WalletBinanceResponse{
-		TotalBtc: totalAssetValue,
+		TotalBtc: totalAssetValue + simpleEarnValue,
 		Price:    btcPrice["bitcoin"],
 	}, err
 }
@@ -962,6 +976,12 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 			apiKey = acc.PlatformIdentifier
 			apiSecret = acc.PlatformMetadata.ApiSecret
 		}
+	}
+
+	simpleEarnAcc, err := e.svc.Binance.GetSimpleEarn(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Binance.GetSimpleEarn] Failed to get simple earn")
+		return nil, err
 	}
 
 	if apiKey == "" || apiSecret == "" {
@@ -998,6 +1018,14 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 	return &response.GetBinanceAsset{
 		Asset: formatFundingAsset,
 		Earn:  formatEarnAsset,
+		SimpleEarn: response.WalletBinanceAssetSimpleEarnResponse{
+			TotalAmountInBTC:          simpleEarnAcc.TotalAmountInBTC,
+			TotalAmountInUSDT:         simpleEarnAcc.TotalAmountInUSDT,
+			TotalFlexibleAmountInBTC:  simpleEarnAcc.TotalFlexibleAmountInBTC,
+			TotalFlexibleAmountInUSDT: simpleEarnAcc.TotalFlexibleAmountInUSDT,
+			TotalLockedInBTC:          simpleEarnAcc.TotalLockedInBTC,
+			TotalLockedInUSDT:         simpleEarnAcc.TotalLockedInUSDT,
+		},
 	}, nil
 }
 

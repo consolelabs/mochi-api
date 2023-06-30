@@ -296,3 +296,31 @@ func (b *Binance) GetLendingAccount(apiKey, apiSecret string) (*response.Binance
 
 	return res, nil
 }
+
+func (b *Binance) GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimpleEarnAccount, error) {
+	b.logger.Debug("start binance.GetSimpleEarn()")
+	defer b.logger.Debug("end binance.GetSimpleEarn()")
+
+	res := &response.BinanceSimpleEarnAccount{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-simple-earn-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetSimpleEarnAccount(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	// cache binance-simple-earn-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
+}
