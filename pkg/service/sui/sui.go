@@ -88,5 +88,6 @@ func (s *SuiService) GetAddressTxn(address string) ([]response.WalletTransaction
 	}
 
 	// call network
-	return s.doNetworkAddressTxn(address)
+	go s.doNetworkAddressTxn(address)
+	return []response.WalletTransactionData{}, nil
 }

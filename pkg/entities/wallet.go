@@ -605,6 +605,9 @@ func (e *Entity) listEvmWalletTxns(req request.ListWalletTransactionsRequest) ([
 			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listEvmWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
 			return nil, err
 		}
+		if res == nil {
+			continue
+		}
 		if res.Data.Items == nil || len(res.Data.Items) == 0 {
 			continue
 		}
@@ -651,6 +654,11 @@ func (e *Entity) listSolWalletTxns(req request.ListWalletTransactionsRequest) ([
 			e.log.Fields(logger.Fields{"txHash": item.TxHash}).Error(err, "[entity.listSolWalletTxns] svc.Solscan.GetTxDetails() failed")
 			return nil, err
 		}
+
+		if tx == nil {
+			continue
+		}
+
 		e.handleSolTransfers(req.Address, tx, &data)
 		e.handleSolTokenTransfers(req.Address, tx, &data)
 		res = append(res, data)
