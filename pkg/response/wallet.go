@@ -100,8 +100,18 @@ type WalletBinanceAssetResponse struct {
 }
 
 type GetBinanceAsset struct {
-	Asset []WalletAssetData `json:"asset"`
-	Earn  []WalletAssetData `json:"earn"`
+	Asset      []WalletAssetData                    `json:"asset"`
+	Earn       []WalletAssetData                    `json:"earn"`
+	SimpleEarn WalletBinanceAssetSimpleEarnResponse `json:"simple_earn"`
+}
+
+type WalletBinanceAssetSimpleEarnResponse struct {
+	TotalAmountInBTC          string `json:"total_amount_in_btc"`
+	TotalAmountInUSDT         string `json:"total_amount_in_usdt"`
+	TotalFlexibleAmountInBTC  string `json:"total_flexible_amount_in_btc"`
+	TotalFlexibleAmountInUSDT string `json:"total_flexible_amount_in_usdt"`
+	TotalLockedInBTC          string `json:"total_locked_in_btc"`
+	TotalLockedInUSDT         string `json:"total_locked_in_usdt"`
 }
 
 // sky mavis
