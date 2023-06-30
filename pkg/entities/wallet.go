@@ -408,6 +408,12 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			if quote < 0.001 {
 				continue
 			}
+
+			price := bal.Quotes.Usd.Price
+			if strings.EqualFold(bal.Token.Symbol, "ICY") {
+				price = 1.5
+			}
+
 			assets = append(assets, response.WalletAssetData{
 				ChainID:        item.ChainId,
 				ContractName:   bal.Token.Name,
@@ -418,7 +424,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					Name:    bal.Token.Name,
 					Symbol:  bal.Token.Symbol,
 					Decimal: int64(bal.Token.Decimals),
-					Price:   bal.Quotes.Usd.Price,
+					Price:   price,
 					Native:  bal.TokenType == "NATIVE",
 					Chain: response.AssetTokenChain{
 						Name:      item.ChainName,
