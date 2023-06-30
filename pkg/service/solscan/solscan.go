@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	resp "github.com/defipod/mochi/pkg/response"
@@ -14,18 +15,23 @@ import (
 type solscan struct {
 	config *config.Config
 	logger logger.Logger
+	cache  cache.Cache
 }
 
-func NewService(cfg *config.Config, l logger.Logger) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
 	return &solscan{
 		config: cfg,
 		logger: l,
+		cache:  cache,
 	}
 }
 
 var (
-	publicSolscanBaseURL = "https://public-api.solscan.io"
-	proSolscanBaseUrl    = "https://pro-api.solscan.io/v1.0"
+	publicSolscanBaseURL        = "https://public-api.solscan.io"
+	proSolscanBaseUrl           = "https://pro-api.solscan.io/v1.0"
+	solscanTransactionKey       = "solscan-transaction"
+	solscanTransactionDetailKey = "solscan-transaction-detail"
+	solscanTokenMetadataKey     = "solscan-token-metadata"
 )
 
 func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataResponse, error) {
@@ -113,14 +119,21 @@ func (s *solscan) fetchSolscanData(url string, v any) error {
 }
 
 func (s *solscan) GetTransactions(address string) ([]TransactionListItem, error) {
+	s.logger.Debug("start Solscan.GetTransactions()")
+	defer s.logger.Debug("end Solscan.GetTransactions()")
+
 	var res []TransactionListItem
-	url := fmt.Sprintf("%s/account/transactions?account=%s&limit=5", publicSolscanBaseURL, address)
-	err := s.fetchSolscanData(url, &res)
-	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTransactions] s.fetchSolscanData() failed")
-		return nil, err
+	// check if data cached
+
+	cached, err := s.doCacheTransaction(address)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data solscan-service, address: %s", address)
+		go s.doNetworkTransaction(address)
+		return res, json.Unmarshal([]byte(cached), &res)
 	}
-	return res, nil
+
+	// call network
+	return s.doNetworkTransaction(address)
 }
 
 func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
@@ -135,23 +148,37 @@ func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
 }
 
 func (s *solscan) GetTokenMetadata(tokenAddress string) (*TokenMetadataResponse, error) {
-	res := &TokenMetadataResponse{}
-	url := fmt.Sprintf("%s/token/meta?tokenAddress=%s", publicSolscanBaseURL, tokenAddress)
-	err := s.fetchSolscanData(url, &res)
-	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.GetTokenMetadata] s.fetchSolscanData() failed")
-		return nil, err
+	s.logger.Debug("start Solscan.GetTokenMetadata()")
+	defer s.logger.Debug("end Solscan.GetTokenMetadata()")
+
+	var res TokenMetadataResponse
+	// check if data cached
+
+	cached, err := s.doCacheTokenMetadata(tokenAddress)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data solscan-service, tokenAddress: %s", tokenAddress)
+		go s.doNetworkTokenMetadata(tokenAddress)
+		return &res, json.Unmarshal([]byte(cached), &res)
 	}
-	return res, nil
+
+	// call network
+	return s.doNetworkTokenMetadata(tokenAddress)
 }
 
 func (s *solscan) GetTxDetails(signature string) (*TransactionDetailsResponse, error) {
-	res := &TransactionDetailsResponse{}
-	url := fmt.Sprintf("%s/transaction/%s", publicSolscanBaseURL, signature)
-	err := s.fetchSolscanData(url, &res)
-	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.GetTxDetails] s.fetchSolscanData() failed")
-		return nil, err
+	s.logger.Debug("start Solscan.GetTxDetails()")
+	defer s.logger.Debug("end Solscan.GetTxDetails()")
+
+	var res TransactionDetailsResponse
+	// check if data cached
+
+	cached, err := s.doCacheTransactionDetail(signature)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data solscan-service, signature: %s", signature)
+		go s.doNetworkTransactionDetail(signature)
+		return &res, json.Unmarshal([]byte(cached), &res)
 	}
-	return res, nil
+
+	// call network
+	return s.doNetworkTransactionDetail(signature)
 }
