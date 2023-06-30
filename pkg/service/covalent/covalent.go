@@ -81,7 +81,8 @@ func (c *Covalent) GetTransactionsByAddress(chainID int, address string, size in
 	}
 
 	// call network
-	return c.doNetworkTransaction(chainID, address, size, retry)
+	go c.doNetworkTransaction(chainID, address, size, retry)
+	return nil, nil
 }
 
 func (c *Covalent) GetTransactionsByAddressV3(chainID int, address string, size int, retry int) (*GetTransactionsResponse, error) {
