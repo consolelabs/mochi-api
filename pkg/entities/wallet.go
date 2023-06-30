@@ -1015,6 +1015,13 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		return nil, err
 	}
 
+	// btc price
+	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		return nil, err
+	}
+
 	return &response.GetBinanceAsset{
 		Asset: formatFundingAsset,
 		Earn:  formatEarnAsset,
@@ -1025,6 +1032,7 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 			TotalFlexibleAmountInUSDT: simpleEarnAcc.TotalFlexibleAmountInUSDT,
 			TotalLockedInBTC:          simpleEarnAcc.TotalLockedInBTC,
 			TotalLockedInUSDT:         simpleEarnAcc.TotalLockedInUSDT,
+			BtcPrice:                  fmt.Sprintf("%f", btcPrice["bitcoin"]),
 		},
 	}, nil
 }
