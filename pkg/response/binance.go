@@ -120,3 +120,12 @@ type BinancePositionAmountVos struct {
 	AmountInBTC  string `json:"amountInBTC"`
 	AmountInUSDT string `json:"amountInUSDT"`
 }
+
+type BinanceSimpleEarnAccount struct {
+	TotalAmountInBTC          string `json:"totalAmountInBTC"`
+	TotalAmountInUSDT         string `json:"totalAmountInUSDT"`
+	TotalFlexibleAmountInBTC  string `json:"totalFlexibleAmountInBTC"`
+	TotalFlexibleAmountInUSDT string `json:"totalFlexibleAmountInUSDT"`
+	TotalLockedInBTC          string `json:"totalLockedInBTC"`
+	TotalLockedInUSDT         string `json:"totalLockedInUSDT"`
+}

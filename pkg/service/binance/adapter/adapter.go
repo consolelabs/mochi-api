@@ -170,3 +170,35 @@ func GetLendingAccount(apiKey, apiSecret string) (lendingAcc *response.BinanceLe
 
 	return lendingAcc, nil
 }
+
+func GetSimpleEarnAccount(apiKey, apiSecret string) (simpleEarn *response.BinanceSimpleEarnAccount, err error) {
+	q := map[string]string{
+		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", url+"/sapi/v1/simple-earn/account?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &simpleEarn)
+	if err != nil {
+		return nil, err
+	}
+
+	return simpleEarn, nil
+}
