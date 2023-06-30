@@ -133,7 +133,8 @@ func (s *solscan) GetTransactions(address string) ([]TransactionListItem, error)
 	}
 
 	// call network
-	return s.doNetworkTransaction(address)
+	go s.doNetworkTransaction(address)
+	return nil, nil
 }
 
 func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
@@ -180,5 +181,6 @@ func (s *solscan) GetTxDetails(signature string) (*TransactionDetailsResponse, e
 	}
 
 	// call network
-	return s.doNetworkTransactionDetail(signature)
+	go s.doNetworkTransactionDetail(signature)
+	return nil, nil
 }
