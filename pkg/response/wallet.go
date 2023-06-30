@@ -112,6 +112,7 @@ type WalletBinanceAssetSimpleEarnResponse struct {
 	TotalFlexibleAmountInUSDT string `json:"total_flexible_amount_in_usdt"`
 	TotalLockedInBTC          string `json:"total_locked_in_btc"`
 	TotalLockedInUSDT         string `json:"total_locked_in_usdt"`
+	BtcPrice                  string `json:"btc_price"`
 }
 
 // sky mavis
