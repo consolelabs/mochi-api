@@ -26,6 +26,7 @@ var networks = map[int]string{
 
 var (
 	covalentSolanaTokenBalanceKey = "covalent-solana-balance-token"
+	covalentTokenBalanceKey       = "covalent-balance-token"
 )
 
 type Covalent struct {
@@ -104,27 +105,21 @@ func (c *Covalent) GetTransactionsByAddressV3(chainID int, address string, size 
 }
 
 func (c *Covalent) GetTokenBalances(chainID int, address string, retry int) (*GetTokenBalancesResponse, error) {
-	endpoint := fmt.Sprintf("/%d/address/%s/balances_v2/?no-spam=true&no-nft-fetch=true&nft=false", chainID, address)
-	res := &GetTokenBalancesResponse{}
-	code, err := c.fetchCovalentData(endpoint, res)
-	if err != nil {
-		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] util.FetchData() failed")
-		return nil, err
-	}
-	if res.Error {
-		if res.ErrorCode == http.StatusNotAcceptable {
-			//TODO: predictably timeout -> should ignore now to avoid missing data from other chains. Will be fixed in the future
-			c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.fetchCovalentData] Endpoint will predictably time out")
-			return res, nil
-		}
+	c.logger.Debug("start Covalent.GetTokenBalances()")
+	defer c.logger.Debug("end Covalent.GetTokenBalances()")
 
-		if retry == 0 {
-			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
-		} else {
-			return c.GetTokenBalances(chainID, address, retry-1)
-		}
+	var data GetTokenBalancesResponse
+	// check if data cached
+
+	cached, err := c.doCacheTokenBalances(address)
+	if err == nil && cached != "" {
+		c.logger.Infof("hit cache data covalent-service, address: %s", address)
+		go c.doNetworkTokenBalances(chainID, address, retry)
+		return &data, json.Unmarshal([]byte(cached), &data)
 	}
-	return res, nil
+
+	// call network
+	return c.doNetworkTokenBalances(chainID, address, retry)
 }
 
 func (c *Covalent) GetSolanaTokenBalances(chainName string, address string, retry int) (*GetTokenBalancesResponse, error) {
@@ -170,6 +165,40 @@ func (c *Covalent) doNetworkSolanaTokenBalances(chainName string, address string
 	bytes, _ := json.Marshal(&res)
 	c.logger.Infof("cache data covalent-service, key: %s", covalentSolanaTokenBalanceKey)
 	c.cache.Set(covalentSolanaTokenBalanceKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
+
+	return res, nil
+}
+
+func (c *Covalent) doCacheTokenBalances(address string) (string, error) {
+	return c.cache.GetString(fmt.Sprintf("%s-%s", covalentTokenBalanceKey, strings.ToLower(address)))
+}
+
+func (c *Covalent) doNetworkTokenBalances(chainID int, address string, retry int) (*GetTokenBalancesResponse, error) {
+	endpoint := fmt.Sprintf("/%d/address/%s/balances_v2/?no-spam=true&no-nft-fetch=true&nft=false", chainID, address)
+	res := &GetTokenBalancesResponse{}
+	code, err := c.fetchCovalentData(endpoint, res)
+	if err != nil {
+		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] util.FetchData() failed")
+		return nil, err
+	}
+	if res.Error {
+		if res.ErrorCode == http.StatusNotAcceptable {
+			//TODO: predictably timeout -> should ignore now to avoid missing data from other chains. Will be fixed in the future
+			c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.fetchCovalentData] Endpoint will predictably time out")
+			return res, nil
+		}
+
+		if retry == 0 {
+			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+		} else {
+			return c.GetTokenBalances(chainID, address, retry-1)
+		}
+	}
+	// cache solana-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	c.logger.Infof("cache data covalent-service, key: %s", covalentTokenBalanceKey)
+	c.cache.Set(covalentTokenBalanceKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }
