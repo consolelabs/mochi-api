@@ -132,3 +132,6 @@ setup-githook:
 
 gen-swagger:
 	swag init  --parseDependency --parseInternal -g ./cmd/server/main.go
+
+pprof:
+	rm -f torch.svg && docker run uber/go-torch -u http://host.docker.internal:8200/debug/pprof -p -t=30 > torch.svg
