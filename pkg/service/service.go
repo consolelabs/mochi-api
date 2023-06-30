@@ -104,7 +104,7 @@ func NewService(
 		Snapshot:      snapshot.NewService(log),
 		Nghenhan:      nghenhan.NewService(),
 		Processor:     processor.NewProcessor(&cfg),
-		Solscan:       solscan.NewService(&cfg, log),
+		Solscan:       solscan.NewService(&cfg, log, cache),
 		Binance:       binance.NewService(&cfg, log, cache),
 		APILayer:      apilayer.NewService(&cfg),
 		Bluemove:      bluemove.New(&cfg, log),
