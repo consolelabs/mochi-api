@@ -415,8 +415,8 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				AssetBalance:   assetBal,
 				UsdBalance:     quote,
 				Token: response.AssetToken{
-					Name:    bal.Token.Symbol,
-					Symbol:  bal.Token.Name,
+					Name:    bal.Token.Name,
+					Symbol:  bal.Token.Symbol,
 					Decimal: int64(bal.Token.Decimals),
 					Price:   bal.Quotes.Usd.Price,
 					Native:  bal.TokenType == "NATIVE",
