@@ -359,6 +359,15 @@ func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page in
 		return nil, err
 	}
 
+	currentLr, err := e.repo.GuildConfigLevelRole.GetCurrentLevelRole(guildID, author.Level)
+	if err == nil {
+		author.CurrentLevelRole = currentLr
+	}
+	nextLr, _ := e.repo.GuildConfigLevelRole.GetNextLevelRole(guildID, author.Level)
+	if err == nil {
+		author.NextLevelRole = nextLr
+	}
+
 	total, err := e.repo.GuildUserXP.GetTotalTopUsersCount(guildID, query)
 	if err != nil {
 		return nil, err

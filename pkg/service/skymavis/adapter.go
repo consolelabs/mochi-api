@@ -101,7 +101,6 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 		return nil, err
 	}
 
-	// cache krystal-balance-token-data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&res)
 	s.logger.Infof("cache data skymavis-service, key: %s", nftKey)
@@ -174,11 +173,39 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 		return nil, err
 	}
 
-	// cache krystal-balance-token-data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&res)
 	s.logger.Infof("cache data skymavis-service, key: %s", farmingKey)
 	s.cache.Set(farmingKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
+
+	return res, nil
+}
+
+func (s *skymavis) doCacheInternalTxns(hash string) (string, error) {
+	return s.cache.GetString(fmt.Sprintf("%s-%s", internalTxsKey, strings.ToLower(hash)))
+}
+
+func (s *skymavis) doNetworkInternalTxs(hash string) (*response.SkymavisTransactionsResponse, error) {
+	res := &response.SkymavisTransactionsResponse{}
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:       fmt.Sprintf("%s/explorer/tx/%s/internal?from=0", s.cfg.SkyMavisApiBaseUrl, hash),
+		Method:    "GET",
+		Headers:   map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
+		ParseForm: res,
+	})
+	if err != nil {
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.doNetworkInternalTxs] util.SendRequest() failed")
+		return nil, err
+	}
+	if status != 200 {
+		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.doNetworkInternalTxs] failed to get internal txs")
+		return nil, err
+	}
+
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data skymavis-service, key: %s", internalTxsKey)
+	s.cache.Set(internalTxsKey+"-"+strings.ToLower(hash), string(bytes), 7*24*time.Hour)
 
 	return res, nil
 }

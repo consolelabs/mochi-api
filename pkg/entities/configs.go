@@ -259,7 +259,7 @@ func (e *Entity) checkRoleIDInDefaultRole(guildID, roleID string) error {
 }
 
 func (e *Entity) GetUserRoleByLevel(guildID string, level int) (string, error) {
-	config, err := e.repo.GuildConfigLevelRole.GetHighest(guildID, level)
+	config, err := e.repo.GuildConfigLevelRole.GetCurrentLevelRole(guildID, level)
 	if err != nil {
 		return "", err
 	}
