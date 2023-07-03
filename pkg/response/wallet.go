@@ -253,3 +253,23 @@ type LandNftResult struct {
 	Total   int64          `json:"total"`
 	Results []LandMetadata `json:"results"`
 }
+
+type SkymavisTransactionsResponse struct {
+	Results []SkymavisTransactionsResultItem `json:"results"`
+	Total   int64                            `json:"total"`
+}
+
+type SkymavisTransactionsResultItem struct {
+	TxHash      string `json:"tx_hash"`
+	Hash        string `json:"hash"`
+	From        string `json:"from"`
+	To          string `json:"to"`
+	Value       string `json:"value"`
+	Input       string `json:"input"`
+	Index       int    `json:"index"`
+	Success     bool   `json:"success"`
+	BlockNumber int    `json:"block_number"`
+	BlockHash   string `json:"block_hash"`
+	TxType      string `json:"tx_type"`
+	Timestamp   int    `json:"timestamp"`
+}
