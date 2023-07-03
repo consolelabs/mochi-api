@@ -78,19 +78,34 @@ func (mr *MockStoreMockRecorder) GetByRoleID(guildID, roleID interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRoleID", reflect.TypeOf((*MockStore)(nil).GetByRoleID), guildID, roleID)
 }
 
-// GetHighest mocks base method.
-func (m *MockStore) GetHighest(guildID string, level int) (*model.GuildConfigLevelRole, error) {
+// GetCurrentLevelRole mocks base method.
+func (m *MockStore) GetCurrentLevelRole(guildID string, level int) (*model.GuildConfigLevelRole, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetHighest", guildID, level)
+	ret := m.ctrl.Call(m, "GetCurrentLevelRole", guildID, level)
 	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetHighest indicates an expected call of GetHighest.
-func (mr *MockStoreMockRecorder) GetHighest(guildID, level interface{}) *gomock.Call {
+// GetCurrentLevelRole indicates an expected call of GetCurrentLevelRole.
+func (mr *MockStoreMockRecorder) GetCurrentLevelRole(guildID, level interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHighest", reflect.TypeOf((*MockStore)(nil).GetHighest), guildID, level)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentLevelRole", reflect.TypeOf((*MockStore)(nil).GetCurrentLevelRole), guildID, level)
+}
+
+// GetNextLevelRole mocks base method.
+func (m *MockStore) GetNextLevelRole(guildID string, currentLevel int) (*model.GuildConfigLevelRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNextLevelRole", guildID, currentLevel)
+	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNextLevelRole indicates an expected call of GetNextLevelRole.
+func (mr *MockStoreMockRecorder) GetNextLevelRole(guildID, currentLevel interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextLevelRole", reflect.TypeOf((*MockStore)(nil).GetNextLevelRole), guildID, currentLevel)
 }
 
 // UpsertOne mocks base method.

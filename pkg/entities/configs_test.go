@@ -138,9 +138,9 @@ func TestEntity_GetUserRoleByLevel(t *testing.T) {
 			MinXP: 100,
 		},
 	}
-	guildConfigLR.EXPECT().GetHighest("863278424433229854", 3).Return(&config, nil).AnyTimes()
-	guildConfigLR.EXPECT().GetHighest("863278424433229abc", gomock.Any()).Return(nil, errors.New("invalid guild id")).AnyTimes()
-	guildConfigLR.EXPECT().GetHighest(gomock.Any(), 1).Return(nil, gorm.ErrRecordNotFound)
+	guildConfigLR.EXPECT().GetCurrentLevelRole("863278424433229854", 3).Return(&config, nil).AnyTimes()
+	guildConfigLR.EXPECT().GetCurrentLevelRole("863278424433229abc", gomock.Any()).Return(nil, errors.New("invalid guild id")).AnyTimes()
+	guildConfigLR.EXPECT().GetCurrentLevelRole(gomock.Any(), 1).Return(nil, gorm.ErrRecordNotFound)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := &Entity{
