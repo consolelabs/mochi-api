@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -332,27 +333,23 @@ func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol stri
 func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []response.WalletAssetData {
 	for _, fWallet := range firstWallet {
 		if containsWalletAsset(secondWallet, fWallet.ContractSymbol) {
-			for i, itm := range secondWallet {
-				fAssetBtcValuation, err := strconv.ParseFloat(secondWallet[i].BtcValuation, 64)
-				if err != nil {
-					continue
-				}
+			for i, sWallet := range secondWallet {
+				if sWallet.ContractSymbol == fWallet.ContractSymbol && sWallet.ContractName == fWallet.ContractName {
+					sWalletAmount, err := util.StringToBigInt(sWallet.Amount)
+					if err != nil {
+						continue
+					}
 
-				uAssetBtcValudation, err := strconv.ParseFloat(fWallet.BtcValuation, 64)
-				if err != nil {
-					continue
-				}
+					fWalletAmount, err := util.StringToBigInt(fWallet.Amount)
+					if err != nil {
+						continue
+					}
 
-				fAssetFree, err := strconv.ParseFloat(secondWallet[i].Free, 64)
-				if err != nil {
-					continue
+					totalAmount := sWalletAmount.Add(sWalletAmount, fWalletAmount)
+					secondWallet[i].AssetBalance = fWallet.AssetBalance + sWallet.AssetBalance
+					secondWallet[i].UsdBalance = fWallet.UsdBalance + sWallet.UsdBalance
+					secondWallet[i].Amount = totalAmount.String()
 				}
-
-				uAssetFree, err := strconv.ParseFloat(fWallet.Free, 64)
-				if err != nil {
-					continue
-				}
-
 			}
 		} else {
 			secondWallet = append(secondWallet, fWallet)
@@ -361,4 +358,32 @@ func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []re
 	}
 
 	return secondWallet
+}
+
+func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []response.WalletAssetData {
+	resp := make([]response.WalletAssetData, 0)
+	for _, asset := range offchainBalance.Data {
+		chainId, _ := strconv.Atoi(asset.Token.ChainId)
+		itm := response.WalletAssetData{
+			// AssetBalance: assetValue,
+			ChainID:        chainId,
+			ContractName:   asset.Token.Name,
+			ContractSymbol: asset.Token.Symbol,
+			Amount:         asset.Amount,
+			Token: response.AssetToken{
+				Name:    asset.Token.Name,
+				Symbol:  asset.Token.Symbol,
+				Decimal: asset.Token.Decimal,
+				Price:   asset.Token.Price,
+				Native:  asset.Token.Native,
+				Chain: response.AssetTokenChain{
+					Name:      asset.Token.Chain.Name,
+					ShortName: asset.Token.Chain.Symbol,
+				},
+			},
+		}
+
+		resp = append(resp, itm)
+	}
+	return resp
 }

@@ -155,7 +155,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 
 		// get offchain and onchain balances of user
-		userGroup.GET("/:id/balances", h.AirdropCampaign.GetAirdropCampaigns) //:id is profile_id
+		userGroup.GET("/:id/balances", h.User.GetUserBalance) //:id is profile_id
 	}
 
 	communityGroup := v1.Group("/community")

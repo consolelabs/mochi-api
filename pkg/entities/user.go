@@ -831,5 +831,11 @@ func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
 			}
 		}
 	}
-	return nil, nil
+
+	evmBalance = append(evmBalance, solBalance...)
+	evmBalance = append(evmBalance, suiBalance...)
+	evmBalance = append(evmBalance, ronBalance...)
+	finalBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
+
+	return finalBals, nil
 }
