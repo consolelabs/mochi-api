@@ -32,6 +32,7 @@ var (
 	solscanTransactionKey       = "solscan-transaction"
 	solscanTransactionDetailKey = "solscan-transaction-detail"
 	solscanTokenMetadataKey     = "solscan-token-metadata"
+	solscanTokenBalanceKey      = "solscan-token-balance"
 )
 
 func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataResponse, error) {
@@ -138,14 +139,21 @@ func (s *solscan) GetTransactions(address string) ([]TransactionListItem, error)
 }
 
 func (s *solscan) GetTokenBalances(address string) ([]TokenAmountItem, error) {
+	s.logger.Debug("start Solscan.GetTokenBalances()")
+	defer s.logger.Debug("end Solscan.GetTokenBalances()")
+
 	var res []TokenAmountItem
-	url := fmt.Sprintf("%s/account/tokens?account=%s", publicSolscanBaseURL, address)
-	err := s.fetchSolscanData(url, &res)
-	if err != nil {
-		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTokenBalances] s.fetchSolscanData() failed")
-		return nil, err
+	// check if data cached
+
+	cached, err := s.doCacheTokenBalance(address)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data solscan-service, tokenAddress: %s", address)
+		go s.doNetworkTokenBalance(address)
+		return res, json.Unmarshal([]byte(cached), &res)
 	}
-	return res, nil
+
+	// call network
+	return s.doNetworkTokenBalance(address)
 }
 
 func (s *solscan) GetTokenMetadata(tokenAddress string) (*TokenMetadataResponse, error) {

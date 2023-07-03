@@ -120,7 +120,7 @@ func Init(cfg config.Config, log logger.Logger) error {
 		indexer:     indexer.NewIndexer(cfg, log),
 		abi:         abi.NewAbi(&cfg),
 		marketplace: marketplace.NewMarketplace(&cfg),
-		solana:      *chain.NewSolanaClient(&cfg, log),
+		solana:      *chain.NewSolanaClient(&cfg, log, cache),
 		kafka:       *kafka,
 	}
 

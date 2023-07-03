@@ -72,3 +72,24 @@ func (s *solscan) doNetworkTokenMetadata(tokenAddress string) (*TokenMetadataRes
 	s.cache.Set(fmt.Sprintf("%s-%s", solscanTokenMetadataKey, tokenAddress), string(bytes), 7*24*time.Hour)
 	return res, nil
 }
+
+func (s *solscan) doCacheTokenBalance(address string) (string, error) {
+	return s.cache.GetString(fmt.Sprintf("%s-%s", solscanTokenBalanceKey, strings.ToLower(address)))
+}
+
+func (s *solscan) doNetworkTokenBalance(address string) ([]TokenAmountItem, error) {
+	var res []TokenAmountItem
+	url := fmt.Sprintf("%s/account/tokens?account=%s", publicSolscanBaseURL, address)
+	err := s.fetchSolscanData(url, &res)
+	if err != nil {
+		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTokenBalances] s.fetchSolscanData() failed")
+		return nil, err
+	}
+
+	// cache solana-balance-token-data
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(&res)
+	s.logger.Infof("cache data solscan-service, key: %s", solscanTokenBalanceKey)
+	s.cache.Set(fmt.Sprintf("%s-%s", solscanTokenBalanceKey, strings.ToLower(address)), string(bytes), 7*24*time.Hour)
+	return res, nil
+}

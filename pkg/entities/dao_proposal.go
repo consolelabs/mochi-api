@@ -371,7 +371,7 @@ func (e *Entity) fetchTokenBalanceByChain(chainId int64, tokenAddress, walletAdd
 	log := e.log.Fields(logger.Fields{"chainID": chainId, "tokenAddress": tokenAddress, "walletAddress": walletAddress})
 	switch chainId {
 	case 999: // SOL
-		client := chain.NewSolanaClient(&e.cfg, e.log)
+		client := chain.NewSolanaClient(&e.cfg, e.log, nil)
 		bal, err := client.GetTokenBalance(walletAddress, tokenAddress)
 		if err != nil {
 			log.Error(err, "[e.fetchTokenbalanceByChain] solClient.GetTokenBalance failed")
