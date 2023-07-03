@@ -61,6 +61,7 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*mod
 		}
 
 		wallet.FetchedData = true
+		wallet.ChainType = model.ChainType(strings.ToUpper(wallet.ChainType.String()))
 		wallets[i] = wallet
 	}
 
