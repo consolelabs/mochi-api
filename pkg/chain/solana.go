@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"encoding/json"
 	"math/big"
 
 	"github.com/portto/solana-go-sdk/client"
@@ -10,6 +11,7 @@ import (
 	"github.com/portto/solana-go-sdk/rpc"
 	"github.com/portto/solana-go-sdk/types"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 )
@@ -18,25 +20,38 @@ type Solana struct {
 	config *config.Config
 	client *client.Client
 	logger logger.Logger
+	cache  cache.Cache
 }
 
-func NewSolanaClient(cfg *config.Config, l logger.Logger) *Solana {
+func NewSolanaClient(cfg *config.Config, l logger.Logger, cache cache.Cache) *Solana {
 	return &Solana{
 		config: cfg,
 		logger: l,
 		client: client.NewClient(rpc.MainnetRPCEndpoint),
+		cache:  cache,
 	}
 }
 
+var (
+	solanaBalanceKey = "solana-balance"
+)
+
 func (s *Solana) Balance(address string) (float64, error) {
-	balance, err := s.client.GetBalance(
-		context.TODO(),
-		address,
-	)
-	if err != nil {
-		s.logger.Fields(logger.Fields{"address": address}).Error(err, "[solana.Balance] client.GetBalance() failed")
+	s.logger.Debug("start Solana.Balance()")
+	defer s.logger.Debug("end Solana.Balance()")
+
+	var res float64
+	// check if data cached
+
+	cached, err := s.doCacheBalance(address)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data solana, address: %s", address)
+		go s.doNetworkBalance(address)
+		return res, json.Unmarshal([]byte(cached), &res)
 	}
-	return float64(balance) / 1e9, err
+
+	// call network
+	return s.doNetworkBalance(address)
 }
 
 func (s *Solana) GetTokenBalance(walletAddress, tokenAddress string) (*big.Int, error) {
