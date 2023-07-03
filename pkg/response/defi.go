@@ -89,20 +89,34 @@ type GetCoinResponse struct {
 	Tickers                      []TickerData                      `json:"tickers"`
 	ContractAddress              string                            `json:"contract_address"`
 	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
-	CoingeckoInfo                *CoinGeckoInfoResponse             `json:"coingecko_info"`
+	CoingeckoInfo                *TokenInfoResponse                `json:"coingecko_info"`
 }
 
-type CoinGeckoInfoResponse struct {
-	Contracts        []CoinGeckoInfoKeyValue `json:"contracts"`
-	Websites         []CoinGeckoInfoKeyValue `json:"websites"`
-	Explorers        []CoinGeckoInfoKeyValue `json:"explorers"`
-	Wallets          []CoinGeckoInfoKeyValue `json:"wallets"`
-	Communities      []CoinGeckoInfoKeyValue `json:"communities"`
-	Tags             []CoinGeckoInfoKeyValue `json:"tags"`
-	DescriptionLines []string                `json:"description_lines"`
+type TokenInfoResponse struct {
+	Name              string                       `json:"name"`
+	Icon              string                       `json:"icon"`
+	Contracts         []TokenInfoKeyValue          `json:"contracts"`
+	Websites          []TokenInfoKeyValue          `json:"websites"`
+	Explorers         []TokenInfoKeyValue          `json:"explorers"`
+	Wallets           []TokenInfoKeyValue          `json:"wallets"`
+	Communities       []TokenInfoKeyValue          `json:"communities"`
+	Tags              []TokenInfoKeyValue          `json:"tags"`
+	DescriptionLines  []string                     `json:"description_lines"`
+	GeckoTerminalInfo []TokenInfoGeckoTerminalInfo `json:"geckoterminal_info"`
 }
 
-type CoinGeckoInfoKeyValue struct {
+type TokenInfoGeckoTerminalInfo struct {
+	PoolName              string `json:"pool_name"`
+	FullyDilutedValuation string `json:"fully_diluted_valuation"`
+	Liquidity             string `json:"liquidity"`
+	Volume24h             string `json:"volume_24h"`
+	MarketCap             string `json:"market_cap"`
+	PriceInUSD            string `json:"price_in_usd"`
+	PriceInTargetToken    string `json:"price_in_target_token"`
+	PricePercentChange    string `json:"price_percent_change"`
+}
+
+type TokenInfoKeyValue struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
