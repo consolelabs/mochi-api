@@ -778,3 +778,58 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 	}
 	return len(members), nil
 }
+
+func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
+	// get offchain balance
+	offchainBalance, err := e.svc.MochiPay.GetListBalances(profileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiPay.GetListBalances failed")
+		return nil, err
+	}
+
+	// get all onchain account
+	profile, err := e.svc.MochiProfile.GetByID(profileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiProfile.GetByID failed")
+		return nil, err
+	}
+
+	var (
+		evmBalance []response.WalletAssetData
+		solBalance []response.WalletAssetData
+		suiBalance []response.WalletAssetData
+		ronBalance []response.WalletAssetData
+	)
+
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == "evm-chain" {
+			evmBalance, _, _, err = e.listEvmWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			if err != nil {
+				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listEvmWalletAssets failed")
+				return nil, err
+			}
+		}
+		if acc.Platform == "solana-chain" {
+			solBalance, _, _, err = e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			if err != nil {
+				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSolWalletAssets failed")
+				return nil, err
+			}
+		}
+		if acc.Platform == "sui-chain" {
+			suiBalance, _, _, err = e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			if err != nil {
+				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSuiWalletAssets failed")
+				return nil, err
+			}
+		}
+		if acc.Platform == "ronin-chain" {
+			ronBalance, _, _, err = e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			if err != nil {
+				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listRonWalletAssets failed")
+				return nil, err
+			}
+		}
+	}
+	return nil, nil
+}

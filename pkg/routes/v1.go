@@ -153,6 +153,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			userEarnGroup.GET("/airdrop-campaigns", h.AirdropCampaign.GetProfileAirdropCampaigns)
 			userEarnGroup.DELETE("/airdrop-campaigns/:airdrop_campaign_id", h.AirdropCampaign.DeleteProfileAirdropCampaign)
 		}
+
+		// get offchain and onchain balances of user
+		userGroup.GET("/:id/balances", h.AirdropCampaign.GetAirdropCampaigns) //:id is profile_id
 	}
 
 	communityGroup := v1.Group("/community")

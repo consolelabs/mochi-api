@@ -319,3 +319,46 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 
 	return resp, nil
 }
+
+func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol string) bool {
+	for _, w := range wallet {
+		if w.ContractSymbol == userAssetSymbol {
+			return true
+		}
+	}
+	return false
+}
+
+func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []response.WalletAssetData {
+	for _, fWallet := range firstWallet {
+		if containsWalletAsset(secondWallet, fWallet.ContractSymbol) {
+			for i, itm := range secondWallet {
+				fAssetBtcValuation, err := strconv.ParseFloat(secondWallet[i].BtcValuation, 64)
+				if err != nil {
+					continue
+				}
+
+				uAssetBtcValudation, err := strconv.ParseFloat(fWallet.BtcValuation, 64)
+				if err != nil {
+					continue
+				}
+
+				fAssetFree, err := strconv.ParseFloat(secondWallet[i].Free, 64)
+				if err != nil {
+					continue
+				}
+
+				uAssetFree, err := strconv.ParseFloat(fWallet.Free, 64)
+				if err != nil {
+					continue
+				}
+
+			}
+		} else {
+			secondWallet = append(secondWallet, fWallet)
+		}
+
+	}
+
+	return secondWallet
+}
