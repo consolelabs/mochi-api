@@ -324,7 +324,8 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 	return e.listEvmWalletAssets(req)
 }
 
-func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (data []response.WalletAssetData, pnl string, latestSnapshotBal string, err error) {
+func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (assets []response.WalletAssetData, pnl string, latestSnapshotBal string, err error) {
+	assets = make([]response.WalletAssetData, 0)
 	chainID := 2020
 	res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
 	if err != nil {
@@ -333,6 +334,7 @@ func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (dat
 	}
 
 	if res == nil || res.Data == nil || res.Data.Items == nil || len(res.Data.Items) == 0 {
+		e.log.Fields(logger.Fields{"addr": req.Address}).Error(err, "[entity.listRoninWalletAssets] no balances found")
 		return
 	}
 
@@ -346,7 +348,7 @@ func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (dat
 			continue
 		}
 
-		data = append(data, response.WalletAssetData{
+		assets = append(assets, response.WalletAssetData{
 			ChainID:        chainID,
 			ContractName:   item.ContractName,
 			ContractSymbol: item.ContractTickerSymbol,
@@ -368,10 +370,10 @@ func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (dat
 	}
 
 	// calculate pnl
-	pnl, latestSnapshotBal, err = e.calculateWalletSnapshot(req.Address, true, data)
+	pnl, latestSnapshotBal, err = e.calculateWalletSnapshot(req.Address, true, assets)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listRoninWalletAssets] calculateWalletSnapshot() failed")
-		return nil, "", "", err
+		return assets, "", "", nil
 	}
 
 	return
