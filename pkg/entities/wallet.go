@@ -320,7 +320,7 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 		return e.listRoninWalletAssets(req)
 	}
 
-	// EVM-based chains
+	// EVM
 	return e.listEvmWalletAssets(req)
 }
 
@@ -599,12 +599,17 @@ func (e *Entity) ListWalletTxns(req request.ListWalletTransactionsRequest) ([]re
 		return e.listSuiWalletTxns(req)
 	}
 
-	// ronin or EVM-based wallets
+	// Ronin
+	if req.Type == "ron" {
+		return e.listRoninWalletTxns(req)
+	}
+
+	// EVM
 	return e.listEvmWalletTxns(req)
 }
 
 func (e *Entity) listEvmWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
-	chainIDs := []int{1, 56, 137, 250, 2020}
+	chainIDs := []int{1, 56, 137, 250}
 	txns := make([]response.WalletTransactionData, 0)
 	for _, chainID := range chainIDs {
 		res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
@@ -631,6 +636,41 @@ func (e *Entity) listEvmWalletTxns(req request.ListWalletTransactionsRequest) ([
 			}
 			txns = append(txns, tx)
 		}
+	}
+	sort.Slice(txns, func(i, j int) bool {
+		return txns[i].SignedAt.Unix() > txns[j].SignedAt.Unix()
+	})
+	return txns, nil
+}
+
+func (e *Entity) listRoninWalletTxns(req request.ListWalletTransactionsRequest) ([]response.WalletTransactionData, error) {
+	chainID := 2020
+	txns := make([]response.WalletTransactionData, 0)
+	res, err := e.svc.Covalent.GetTransactionsByAddress(chainID, req.Address, 5, 5)
+	if err != nil {
+		e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listRoninWalletTxns] svc.Covalent.GetTransactionsByAddress() failed")
+		return nil, err
+	}
+	if res == nil {
+		return txns, nil
+	}
+	if res.Data.Items == nil || len(res.Data.Items) == 0 {
+		return txns, nil
+	}
+	for _, item := range res.Data.Items {
+		tx := response.WalletTransactionData{
+			ChainID:    chainID,
+			TxHash:     item.TxHash,
+			SignedAt:   item.BlockSignedAt,
+			Successful: item.Successful,
+		}
+
+		// fetch and parse internal txns
+		if err := e.parseSkymavisInternalTxnsData(&tx, req.Address); err != nil {
+			e.log.Fields(logger.Fields{"tx": tx, "address": req.Address}).Error(err, "[entity.listRoninWalletTxns] entity.parseSkymavisInternalTxnsData() failed")
+		}
+
+		txns = append(txns, tx)
 	}
 	sort.Slice(txns, func(i, j int) bool {
 		return txns[i].SignedAt.Unix() > txns[j].SignedAt.Unix()
@@ -1349,4 +1389,51 @@ func (e *Entity) UpdateTrackingInfo(req request.UpdateTrackingInfoRequest) (*mod
 	}
 
 	return wallet, ff.Commit()
+}
+
+func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionData, addr string) error {
+	res, err := e.svc.Skymavis.GetInternalTxnsByHash(data.TxHash)
+	if err != nil {
+		return err
+	}
+
+	if res.Total == 0 {
+		return nil
+	}
+
+	chain, _ := e.repo.Chain.GetByID(data.ChainID)
+	nativeSymbol := chain.Currency
+	scanBaseUrl := strings.Replace(chain.TxBaseURL, "/tx", "", 1)
+	data.ScanBaseUrl = scanBaseUrl
+
+	for _, item := range res.Results {
+		if !strings.EqualFold(item.TxType, "transfer") {
+			continue
+		}
+
+		if strings.EqualFold(item.Value, "0") {
+			continue
+		}
+
+		data.HasTransfer = true
+		value, err := util.StringToBigInt(item.Value)
+		if err != nil {
+			return err
+		}
+		amount := util.BigIntToFloat(value, 18)
+		if strings.EqualFold(item.From, addr) {
+			amount *= -1
+		}
+		data.Actions = append(data.Actions, response.WalletTransactionAction{
+			Name:           "Transfer",
+			Amount:         amount,
+			Unit:           nativeSymbol,
+			NativeTransfer: true,
+			From:           item.From,
+			To:             item.To,
+		})
+
+	}
+
+	return nil
 }

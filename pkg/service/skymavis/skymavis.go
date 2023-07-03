@@ -24,8 +24,9 @@ func New(cfg *config.Config, cache cache.Cache) Service {
 }
 
 var (
-	farmingKey = "skymavis-farming"
-	nftKey     = "skymavis-nft"
+	farmingKey     = "skymavis-farming"
+	nftKey         = "skymavis-nft"
+	internalTxsKey = "skymavis-internal-txs"
 )
 
 func (s *skymavis) GetAddressFarming(address string) (*response.WalletFarmingResponse, error) {
@@ -62,4 +63,22 @@ func (s *skymavis) GetOwnedNfts(address string) (*response.AxieMarketNftResponse
 
 	// call network
 	return s.doNetworkNfts(address)
+}
+
+func (s *skymavis) GetInternalTxnsByHash(hash string) (*response.SkymavisTransactionsResponse, error) {
+	s.logger.Debug("start skymavis.GetInternalTxnsByHash()")
+	defer s.logger.Debug("end skymavis.GetInternalTxnsByHash()")
+
+	var data response.SkymavisTransactionsResponse
+	// check if data cached
+
+	cached, err := s.doCacheInternalTxns(hash)
+	if err == nil && cached != "" {
+		s.logger.Infof("hit cache data skymavis-service, hash: %s", hash)
+		go s.doNetworkInternalTxs(hash)
+		return &data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	// call network
+	return s.doNetworkInternalTxs(hash)
 }
