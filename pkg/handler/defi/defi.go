@@ -575,7 +575,6 @@ func (h *Handler) GetGasTracker(c *gin.Context) {
 // @Summary     Get gas tracker of one chain
 // @Description Get gas tracker of one chain
 // @Tags        Defi
-// @Tags 		Public
 // @Accept      json
 // @Produce     json
 // @Param       chain   path  string true  "chain"

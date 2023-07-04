@@ -4293,8 +4293,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get gas tracker of one chain",
                 "parameters": [
