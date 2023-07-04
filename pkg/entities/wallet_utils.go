@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -318,4 +319,71 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 	}
 
 	return resp, nil
+}
+
+func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol string) bool {
+	for _, w := range wallet {
+		if w.ContractSymbol == userAssetSymbol {
+			return true
+		}
+	}
+	return false
+}
+
+func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []response.WalletAssetData {
+	for _, fWallet := range firstWallet {
+		if containsWalletAsset(secondWallet, fWallet.ContractSymbol) {
+			for i, sWallet := range secondWallet {
+				if sWallet.ContractSymbol == fWallet.ContractSymbol && sWallet.ContractName == fWallet.ContractName {
+					sWalletAmount, err := util.StringToBigInt(sWallet.Amount)
+					if err != nil {
+						continue
+					}
+
+					fWalletAmount, err := util.StringToBigInt(fWallet.Amount)
+					if err != nil {
+						continue
+					}
+
+					totalAmount := sWalletAmount.Add(sWalletAmount, fWalletAmount)
+					secondWallet[i].AssetBalance = fWallet.AssetBalance + sWallet.AssetBalance
+					secondWallet[i].UsdBalance = fWallet.UsdBalance + sWallet.UsdBalance
+					secondWallet[i].Amount = totalAmount.String()
+				}
+			}
+		} else {
+			secondWallet = append(secondWallet, fWallet)
+		}
+
+	}
+
+	return secondWallet
+}
+
+func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []response.WalletAssetData {
+	resp := make([]response.WalletAssetData, 0)
+	for _, asset := range offchainBalance.Data {
+		chainId, _ := strconv.Atoi(asset.Token.ChainId)
+		itm := response.WalletAssetData{
+			// AssetBalance: assetValue,
+			ChainID:        chainId,
+			ContractName:   asset.Token.Name,
+			ContractSymbol: asset.Token.Symbol,
+			Amount:         asset.Amount,
+			Token: response.AssetToken{
+				Name:    asset.Token.Name,
+				Symbol:  asset.Token.Symbol,
+				Decimal: asset.Token.Decimal,
+				Price:   asset.Token.Price,
+				Native:  asset.Token.Native,
+				Chain: response.AssetTokenChain{
+					Name:      asset.Token.Chain.Name,
+					ShortName: asset.Token.Chain.Symbol,
+				},
+			},
+		}
+
+		resp = append(resp, itm)
+	}
+	return resp
 }

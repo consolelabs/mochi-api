@@ -541,3 +541,14 @@ func (h *Handler) GetUserEnvelopStreak(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(streak, nil, nil, nil))
 }
+
+func (h *Handler) GetUserBalance(c *gin.Context) {
+	userID := c.Param("id")
+	balance, err := h.entities.GetUserBalance(userID)
+	if err != nil {
+		h.log.Fields(logger.Fields{"userID": userID}).Error(err, "[handler.GetUserBalance] - entities.GetUserBalance failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(balance, nil, nil, nil))
+}
