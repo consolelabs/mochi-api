@@ -5,7 +5,6 @@ import (
 	airdropcampaign "github.com/defipod/mochi/pkg/handler/airdrop-campaign"
 	apikey "github.com/defipod/mochi/pkg/handler/api-key"
 	"github.com/defipod/mochi/pkg/handler/auth"
-	"github.com/defipod/mochi/pkg/handler/cache"
 	"github.com/defipod/mochi/pkg/handler/community"
 	"github.com/defipod/mochi/pkg/handler/config"
 	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
@@ -14,8 +13,6 @@ import (
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
 	configtwittersales "github.com/defipod/mochi/pkg/handler/config-twitter-sales"
 	"github.com/defipod/mochi/pkg/handler/content"
-	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
-	"github.com/defipod/mochi/pkg/handler/data"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/dex"
 	"github.com/defipod/mochi/pkg/handler/emojis"
@@ -38,11 +35,9 @@ import (
 type Handler struct {
 	Healthcheck       healthz.IHandler
 	Auth              auth.IHandler
-	Cache             cache.IHandler
 	Community         community.IHandler
 	Guild             guild.IHandler
 	Config            config.IHandler
-	Data              data.IHandler
 	Defi              defi.IHandler
 	Nft               nft.IHandler
 	User              user.IHandler
@@ -54,7 +49,6 @@ type Handler struct {
 	ConfigCommunity   configcommunity.IHandler
 	ConfigDefi        configdefi.IHandler
 	ConfigRoles       configroles.IHandler
-	DaoVoting         daovoting.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
 	Wallet            wallet.IHandler
 	Telegram          telegram.IHandler
@@ -72,11 +66,9 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 	return &Handler{
 		Healthcheck:       healthz.New(),
 		Auth:              auth.New(entities, logger),
-		Cache:             cache.New(entities, logger),
 		Community:         community.New(entities, logger),
 		Guild:             guild.New(entities, logger),
 		Config:            config.New(entities, logger),
-		Data:              data.New(entities, logger),
 		Defi:              defi.New(entities, logger),
 		Nft:               nft.New(entities, logger),
 		User:              user.New(entities, logger),
@@ -88,7 +80,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ConfigCommunity:   configcommunity.New(entities, logger),
 		ConfigDefi:        configdefi.New(entities, logger),
 		ConfigRoles:       configroles.New(entities, logger),
-		DaoVoting:         daovoting.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
 		Wallet:            wallet.New(entities, logger),
 		Telegram:          telegram.New(entities, logger),

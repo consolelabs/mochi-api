@@ -171,40 +171,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/cache/upvote": {
-            "post": {
-                "description": "Set or overwrite an upvote message cache",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cache"
-                ],
-                "summary": "Set or overwrite an upvote message cache",
-                "parameters": [
-                    {
-                        "description": "Set upvote message cache request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.SetUpvoteMessageCacheRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/community/advertise": {
             "get": {
                 "description": "Get submitted ad",
@@ -4084,291 +4050,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/dao-voting/proposals": {
-            "get": {
-                "description": "Get dao proposals",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO-Voting"
-                ],
-                "summary": "Get dao proposals",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "user_discord_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllDaoProposals"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create dao proposal and then create a discussion channel for users to discuss about the proposal.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO Proposal"
-                ],
-                "summary": "Dao Proposal",
-                "parameters": [
-                    {
-                        "description": "Create dao proposal request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateDaoProposalRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateDaoProposalResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Detele DAO proposal and then remove its discussion channel.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO Proposal"
-                ],
-                "summary": "Delete DAO Proposal",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Proposal ID",
-                        "name": "proposal_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/dao-voting/proposals/vote": {
-            "post": {
-                "description": "Create dao vote",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dao-voting"
-                ],
-                "summary": "Create dao vote",
-                "parameters": [
-                    {
-                        "description": "Create dao vote request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateDaoVoteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/dao-voting/proposals/votes/{vote_id}": {
-            "put": {
-                "description": "Update dao vote",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dao-voting"
-                ],
-                "summary": "Update dao vote",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "DAO Vote ID",
-                        "name": "vote_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update dao vote request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpdateDaoVoteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UpdateVote"
-                        }
-                    }
-                }
-            }
-        },
-        "/dao-voting/token-holder/status": {
-            "get": {
-                "description": "Check token holder connect wallet yet? And have enough amount based on criteria (has 10 icy, 3 neko, havent connected walelt, …)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO-Voting"
-                ],
-                "summary": "Get status of token holder for creating proposal and voting",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "user-discord-id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TokenHolderStatus"
-                        }
-                    }
-                }
-            }
-        },
-        "/dao-voting/user-votes": {
-            "get": {
-                "description": "Get dao votes",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO-Voting"
-                ],
-                "summary": "Get dao votes",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "user_discord_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Proposal ID",
-                        "name": "proposal-id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllDaoProposalVotes"
-                        }
-                    }
-                }
-            }
-        },
-        "/dao-voting/votes": {
-            "get": {
-                "description": "Get dao proposal vote of user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "DAO-Voting"
-                ],
-                "summary": "Get dao proposal vote of user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Proposal ID",
-                        "name": "proposal_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "user_discord_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVote"
-                        }
-                    }
-                }
-            }
-        },
         "/data/configs/activities/{activity}": {
             "post": {
                 "description": "Toggle activity config",
@@ -4408,118 +4089,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/data/metrics": {
-            "get": {
-                "description": "API to get stats of collections, users, servers, ...",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Data"
-                ],
-                "summary": "Metric",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "total_servers | active_users | nft_collections | verified_wallets | supported_tokens | command_usage",
-                        "name": "q",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "case active_users",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DataMetric"
-                        }
-                    }
-                }
-            }
-        },
-        "/data/usage-stats/dao-tracker": {
-            "get": {
-                "description": "Get dao tracker usage across Mochi",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Data"
-                ],
-                "summary": "Metric",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "size",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DaoTrackerSpaceCountResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/data/usage-stats/proposal": {
-            "get": {
-                "description": "Get proposal usage across Mochi",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Data"
-                ],
-                "summary": "Metric",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "size",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GuildProposalUsageResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/defi/chains": {
             "get": {
                 "description": "List All Chain",
@@ -4530,8 +4099,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "List All Chain",
                 "responses": {
@@ -4554,8 +4122,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Search coin",
                 "parameters": [
@@ -4587,8 +4154,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get coin data from Binance Exchange",
                 "parameters": [
@@ -4620,8 +4186,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Compare token",
                 "parameters": [
@@ -4673,8 +4238,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get coin",
                 "parameters": [
@@ -4706,8 +4270,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get gas tracker of all chain",
                 "responses": {
@@ -4763,8 +4326,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get historical market chart",
                 "parameters": [
@@ -4810,8 +4372,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get coins market data of top coins",
                 "parameters": [
@@ -4957,8 +4518,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get supported token by address and chain id",
                 "parameters": [
@@ -5116,8 +4676,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get supported tokens",
                 "responses": {
@@ -5140,8 +4699,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get top 300 gainer and loser",
                 "parameters": [
@@ -5172,8 +4730,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get trending search of coins",
                 "responses": {
@@ -5196,8 +4753,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Get user's watchlist",
                 "parameters": [
@@ -5241,8 +4797,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Add to user's watchlist",
                 "parameters": [
@@ -5274,8 +4829,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi",
-                    "Public"
+                    "Defi"
                 ],
                 "summary": "Remove from user's watchlist",
                 "parameters": [
@@ -7442,77 +6996,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/upvote-leaderboard": {
-            "get": {
-                "description": "Get user upvote leaderboard",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user upvote leaderboard",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "streak / total",
-                        "name": "by",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserUpvoteLeaderboardResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/upvote-streak": {
-            "get": {
-                "description": "Get user current upvote streak",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user current upvote streak",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CurrentUserUpvoteStreakResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/users/wallets/{address}": {
             "get": {
                 "description": "Get user by guild_id address",
@@ -7908,8 +7391,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Vault",
-                    "Public"
+                    "Vault"
                 ],
                 "summary": "Get vaults",
                 "parameters": [
@@ -8560,6 +8042,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "is_native": {
+                    "type": "boolean"
+                },
                 "most_popular": {
                     "type": "boolean"
                 },
@@ -8599,139 +8084,6 @@ const docTemplate = `{
                 },
                 "min_xp": {
                     "type": "integer"
-                }
-            }
-        },
-        "model.DaoProposal": {
-            "type": "object",
-            "properties": {
-                "closed_at": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "creator_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "discussion_channel_id": {
-                    "type": "string"
-                },
-                "guild_config_dao_proposal_id": {
-                    "type": "integer"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "voting_channel_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DaoProposalVoteCount": {
-            "type": "object",
-            "properties": {
-                "choice": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "proposal_id": {
-                    "type": "string"
-                },
-                "sum": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.DaoProposalVoteOption": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "proposal_id": {
-                    "type": "integer"
-                },
-                "required_amount": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "vote_option": {
-                    "$ref": "#/definitions/model.DaoVoteOption"
-                },
-                "vote_option_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.DaoVote": {
-            "type": "object",
-            "properties": {
-                "choice": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "point": {
-                    "type": "number"
-                },
-                "proposal_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DaoVoteOption": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -8910,29 +8262,6 @@ const docTemplate = `{
                 },
                 "trend": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DiscordUserUpvoteStreak": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "last_streak_date": {
-                    "type": "string"
-                },
-                "streak_count": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
                 },
                 "updated_at": {
                     "type": "string"
@@ -9485,6 +8814,9 @@ const docTemplate = `{
         "model.GuildUserXP": {
             "type": "object",
             "properties": {
+                "current_level_role": {
+                    "$ref": "#/definitions/model.GuildConfigLevelRole"
+                },
                 "guild": {
                     "$ref": "#/definitions/model.DiscordGuild"
                 },
@@ -9496,6 +8828,9 @@ const docTemplate = `{
                 },
                 "level": {
                     "type": "integer"
+                },
+                "next_level_role": {
+                    "$ref": "#/definitions/model.GuildConfigLevelRole"
                 },
                 "nr_of_actions": {
                     "type": "integer"
@@ -10933,48 +10268,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateDaoProposalRequest": {
-            "type": "object",
-            "properties": {
-                "creator_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "vote_option": {
-                    "$ref": "#/definitions/request.VoteOptionRequest"
-                },
-                "voting_channel_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CreateDaoVoteRequest": {
-            "type": "object",
-            "required": [
-                "choice",
-                "proposal_id",
-                "user_id"
-            ],
-            "properties": {
-                "choice": {
-                    "type": "string"
-                },
-                "proposal_id": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.CreateDefaultRoleRequest": {
             "type": "object",
             "required": [
@@ -11640,23 +10933,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.SetUpvoteMessageCacheRequest": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "message_id": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.SwapRequest": {
             "type": "object",
             "required": [
@@ -11783,21 +11059,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "discord_user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.UpdateDaoVoteRequest": {
-            "type": "object",
-            "required": [
-                "choice",
-                "user_id"
-            ],
-            "properties": {
-                "choice": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -12127,26 +11388,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wallet_address": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.VoteOptionRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "required_amount": {
-                    "type": "integer"
-                },
-                "symbol": {
                     "type": "string"
                 }
             }
@@ -12640,14 +11881,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateDaoProposalResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.DaoProposal"
-                }
-            }
-        },
         "response.CreateEnvelop": {
             "type": "object",
             "properties": {
@@ -12720,42 +11953,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CurrentUserUpvoteStreakResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.GetUserCurrentUpvoteStreakResponse"
-                }
-            }
-        },
-        "response.DaoTrackerSpaceCountData": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "source": {
-                    "type": "string"
-                },
-                "space": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.DaoTrackerSpaceCountResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.DaoTrackerSpaceCountData"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/response.PaginationResponse"
-                }
-            }
-        },
         "response.DataFilterConfigByReaction": {
             "type": "object",
             "properties": {
@@ -12791,14 +11988,6 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "response.DataMetric": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.Metric"
                 }
             }
         },
@@ -12945,31 +12134,6 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
-                }
-            }
-        },
-        "response.GetAllDaoProposalVotes": {
-            "type": "object",
-            "properties": {
-                "proposal": {
-                    "$ref": "#/definitions/response.GetDaoProposalData"
-                },
-                "votes": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DaoVote"
-                    }
-                }
-            }
-        },
-        "response.GetAllDaoProposals": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DaoProposal"
-                    }
                 }
             }
         },
@@ -13122,50 +12286,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.NFTCollectionCount"
-                }
-            }
-        },
-        "response.GetDaoProposalData": {
-            "type": "object",
-            "properties": {
-                "closed_at": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "creator_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "discussion_channel_id": {
-                    "type": "string"
-                },
-                "guild_config_dao_proposal_id": {
-                    "type": "integer"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "points": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DaoProposalVoteCount"
-                    }
-                },
-                "title": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "voting_channel_id": {
-                    "type": "string"
                 }
             }
         },
@@ -13924,32 +13044,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserCurrentUpvoteStreakResponse": {
-            "type": "object",
-            "properties": {
-                "discord_id": {
-                    "type": "string"
-                },
-                "last_streak_time": {
-                    "type": "string"
-                },
-                "minutes_until_reset": {
-                    "type": "number"
-                },
-                "minutes_until_reset_discordbotlist": {
-                    "type": "number"
-                },
-                "minutes_until_reset_topgg": {
-                    "type": "number"
-                },
-                "streak_count": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
-                }
-            }
-        },
         "response.GetUserEnvelopStreak": {
             "type": "object",
             "properties": {
@@ -14047,20 +13141,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetUserUpvoteLeaderboardResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DiscordUserUpvoteStreak"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "response.GetUserWalletByGuildIDAddressResponse": {
             "type": "object",
             "properties": {
@@ -14077,14 +13157,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Vault"
                     }
-                }
-            }
-        },
-        "response.GetVote": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.DaoVote"
                 }
             }
         },
@@ -14169,37 +13241,6 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "response.GuildProposalUsageData": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "guild_name": {
-                    "type": "string"
-                },
-                "is_active": {
-                    "type": "boolean"
-                },
-                "proposal_count": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.GuildProposalUsageResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.GuildProposalUsageData"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
@@ -15039,53 +14080,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Metric": {
-            "type": "object",
-            "properties": {
-                "nft_collections": {
-                    "type": "integer"
-                },
-                "server_active_users": {
-                    "type": "integer"
-                },
-                "server_command_usage": {
-                    "type": "integer"
-                },
-                "server_token": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "server_token_supported": {
-                    "type": "integer"
-                },
-                "server_verified_wallets": {
-                    "type": "integer"
-                },
-                "total_active_users": {
-                    "type": "integer"
-                },
-                "total_command_usage": {
-                    "type": "integer"
-                },
-                "total_servers": {
-                    "type": "integer"
-                },
-                "total_token": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "total_token_supported": {
-                    "type": "integer"
-                },
-                "total_verified_wallets": {
-                    "type": "integer"
-                }
-            }
-        },
         "response.MonikerConfigData": {
             "type": "object",
             "properties": {
@@ -15803,34 +14797,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TokenHolderStatus": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.TokenHolderStatusData"
-                }
-            }
-        },
-        "response.TokenHolderStatusData": {
-            "type": "object",
-            "properties": {
-                "guild_config": {
-                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
-                },
-                "is_qualified": {
-                    "type": "boolean"
-                },
-                "is_wallet_connected": {
-                    "type": "boolean"
-                },
-                "user_holding_amount": {
-                    "type": "string"
-                },
-                "vote_config": {
-                    "$ref": "#/definitions/model.DaoProposalVoteOption"
-                }
-            }
-        },
         "response.TokenPriceAlertResponseData": {
             "type": "object",
             "properties": {
@@ -15950,14 +14916,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserFeedback"
-                }
-            }
-        },
-        "response.UpdateVote": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.DaoVote"
                 }
             }
         },

@@ -524,16 +524,6 @@ func (e *Entity) WebhookUpvoteStreak(userID, source string) error {
 	isStranger := err != nil
 	e.svc.Discord.SendUpvoteMessage(userID, source, isStranger)
 
-	cache, err := e.GetUpvoteMessageCache(userID)
-	if err != nil {
-		e.log.Errorf(err, "[e.WebhookUpvoteStreak] failed to get cache")
-		return err
-	}
-	if cache == nil {
-		return nil
-	}
-	e.svc.Discord.ReplyUpvoteMessage(cache, source)
-	e.RemoveUpvoteMessageCache(userID)
 	return nil
 }
 

@@ -12,7 +12,6 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -446,8 +445,6 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] calculateWalletSnapshot() failed")
 		return assets, "", "", nil
 	}
-
-	pp.Println("check asset data", assets)
 
 	return assets, pnl, latestSnapshotBal, nil
 }
