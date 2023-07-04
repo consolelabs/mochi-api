@@ -321,9 +321,9 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 	return resp, nil
 }
 
-func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol string) bool {
+func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol, userAssetName string, userAssetChainId int) bool {
 	for _, w := range wallet {
-		if w.ContractSymbol == userAssetSymbol {
+		if w.ContractSymbol == userAssetSymbol && w.ContractName == userAssetName && w.ChainID == userAssetChainId {
 			return true
 		}
 	}
@@ -332,9 +332,9 @@ func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol stri
 
 func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []response.WalletAssetData {
 	for _, fWallet := range firstWallet {
-		if containsWalletAsset(secondWallet, fWallet.ContractSymbol) {
+		if containsWalletAsset(secondWallet, fWallet.ContractSymbol, fWallet.ContractName, fWallet.ChainID) {
 			for i, sWallet := range secondWallet {
-				if sWallet.ContractSymbol == fWallet.ContractSymbol && sWallet.ContractName == fWallet.ContractName {
+				if sWallet.ContractSymbol == fWallet.ContractSymbol && sWallet.ContractName == fWallet.ContractName && sWallet.ChainID == fWallet.ChainID {
 					sWalletAmount, err := util.StringToBigInt(sWallet.Amount)
 					if err != nil {
 						continue
