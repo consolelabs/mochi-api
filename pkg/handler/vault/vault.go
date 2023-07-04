@@ -60,7 +60,6 @@ func (h *Handler) CreateVault(c *gin.Context) {
 // @Summary     Get vaults
 // @Description Get vaults
 // @Tags        Vault
-// @Tags        Public
 // @Accept      json
 // @Produce     json
 // @Param       req   query  request.GetVaultsRequest true  "get vaults request"
