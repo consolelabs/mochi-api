@@ -38,7 +38,7 @@ func (pg *pg) GetById(id int64) (ac *model.AirdropCampaign, err error) {
 }
 
 func (pg *pg) List(q ListQuery) (acs []model.AirdropCampaign, total int64, err error) {
-	db := pg.db.Model(&model.AirdropCampaign{}).Order("CASE WHEN deadline_at IS NOT NULL and deadline_at > NOW() THEN 0 WHEN deadline_at IS NULL THEN 1 ELSE 2 END, deadline_at ASC")
+	db := pg.db.Model(&model.AirdropCampaign{}).Order("created_at DESC")
 
 	if q.Status != "" {
 		db = db.Where("status = ?", q.Status)
