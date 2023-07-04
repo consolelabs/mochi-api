@@ -183,6 +183,10 @@ github.com/confluentinc/confluent-kafka-go v1.9.2 h1:gV/GxhMBUb03tFWkN+7kdhg+zf+
 github.com/confluentinc/confluent-kafka-go v1.9.2/go.mod h1:ptXNqsuDfYbAE/LBW6pnwWZElUoWxHoV8E43DCrliyo=
 github.com/consensys/bavard v0.1.8-0.20210406032232-f3452dc9b572/go.mod h1:Bpd0/3mZuaj6Sj+PqrmIquiOKy397AKGThQPaGzNXAQ=
 github.com/consensys/gnark-crypto v0.4.1-0.20210426202927-39ac3d4b3f1f/go.mod h1:815PAHg3wvysy0SyIqanF8gZ0Y1wjk/hrDHD/iT88+Q=
+github.com/consolelabs/mochi-typeset v0.0.0-20230703094050-21de677d97cf h1:vrGMC5SJc0qDsyWeZQyaVCK67nYdc9xQwM/cCZCT4kE=
+github.com/consolelabs/mochi-typeset v0.0.0-20230703094050-21de677d97cf/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
+github.com/consolelabs/mochi-typeset v0.0.0-20230703094855-f1b0e0173480 h1:XiugZF3F01IiaP5yzyrRxeuQiVD+PKLZKybGlFDGA+A=
+github.com/consolelabs/mochi-typeset v0.0.0-20230703094855-f1b0e0173480/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
