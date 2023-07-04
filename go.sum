@@ -189,6 +189,10 @@ github.com/consolelabs/mochi-typeset v0.0.0-20230703094855-f1b0e0173480 h1:XiugZ
 github.com/consolelabs/mochi-typeset v0.0.0-20230703094855-f1b0e0173480/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
 github.com/consolelabs/mochi-typeset v0.0.0-20230704025438-4dd207246ba4 h1:kUK7yglgxGKRlRMHirwG1oceUoIpjDepdxJ9kXvFRsw=
 github.com/consolelabs/mochi-typeset v0.0.0-20230704025438-4dd207246ba4/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
+github.com/consolelabs/mochi-typeset v0.0.0-20230704025644-fbca9b12fdaf h1:MT17H9QQjwgnWfcctLsWoI082IdIdKTdg7ObV8zABZQ=
+github.com/consolelabs/mochi-typeset v0.0.0-20230704025644-fbca9b12fdaf/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
+github.com/consolelabs/mochi-typeset v0.0.0-20230704041250-447934b0a927 h1:HTl8kEcBznJiQZrYr1QkZOVH3HvQ6qTkUxewsPxuF0s=
+github.com/consolelabs/mochi-typeset v0.0.0-20230704041250-447934b0a927/go.mod h1:1l+ERwKSifI2KpGzY8nLNdma5FrHQgTmBUMHs9kNJsg=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
