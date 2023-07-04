@@ -18,46 +18,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		authGroup.POST("/login", h.Auth.Login)
 		authGroup.POST("/logout", h.Auth.Logout)
 	}
-	cacheGroup := v1.Group("/cache")
-	{
-		cacheGroup.POST("/upvote", h.Cache.SetUpvoteMessageCache)
-	}
-
-	daoVoting := v1.Group("/dao-voting")
-	{
-		tokenHolderGroup := daoVoting.Group("/token-holder")
-		{
-			tokenHolderGroup.GET("status", h.DaoVoting.TokenHolderStatus)
-		}
-		proposalGroup := daoVoting.Group("/proposals")
-		{
-			proposalGroup.POST("/", h.DaoVoting.CreateProposal)
-			proposalGroup.GET("", h.DaoVoting.GetProposals)
-			proposalGroup.GET("/:proposal_id", h.DaoVoting.GetUserVotes)
-			proposalGroup.DELETE("/:proposal_id", h.DaoVoting.DeteteProposal)
-			voteGroup := proposalGroup.Group("/votes")
-			{
-				voteGroup.GET("", h.DaoVoting.GetVote)
-				voteGroup.POST("", h.DaoVoting.CreateDaoVote)
-				voteGroup.PUT("/:vote_id", h.DaoVoting.UpdateDaoVote)
-			}
-		}
-
-	}
-	dataGroup := v1.Group("/data")
-	{
-		dataGroup.GET("/metrics", h.Data.MetricByProperties)
-		usageGroup := dataGroup.Group("/usage-stats")
-		{
-			usageGroup.GET("/gitbook", h.Data.AddGitbookClick)
-			usageGroup.GET("/proposal", h.Data.MetricProposalUsage)
-			usageGroup.GET("/dao-tracker", h.Data.MetricDaoTracker)
-		}
-		activitygroup := dataGroup.Group("/activities")
-		{
-			activitygroup.POST("/:activity", h.Config.ToggleActivityConfig)
-		}
-	}
 
 	tipBotGroup := v1.Group("/tip")
 	{
@@ -67,7 +27,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		onchainGroup := tipBotGroup.Group("/onchain")
 		{
-			// onchainGroup.POST("/submit", h.Tip.SubmitOnchainTransfer)
 			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
 			onchainGroup.GET("/:user_id/transfers", h.Tip.GetOnchainTransfers)
 			onchainGroup.GET("/:user_id/balances", h.Tip.GetOnchainBalances)
@@ -86,9 +45,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			countStatsGroup.GET("", h.Guild.GetGuildStatsHandler)
 		}
-		// api to contact with discord
-		guildGroup.POST("/:guild_id/channels", h.Guild.CreateGuildChannel)
-		guildGroup.GET("/:guild_id/roles", h.Guild.GetGuildRoles)
 	}
 
 	userGroup := v1.Group("/users")
@@ -98,22 +54,14 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("/:id", h.User.GetUser)
 		userGroup.GET("/wallets/:address", h.User.GetUserWalletByGuildIDAddress)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
-		userGroup.GET("/upvote-streak", h.User.GetUserCurrentUpvoteStreak) // get users upvote streak
-		userGroup.GET("/upvote-leaderboard", h.User.GetUserUpvoteLeaderboard)
+		// TODO
 		userGroup.GET("/:id/transactions", h.User.GetUserTransaction)
+		// TODO
 		userGroup.GET("/top", h.User.GetTopUsers)
+		// TODO
 		userGroup.GET("/profiles", h.User.GetUserProfile)
-		// moved to /widget/device, to be removed
-		deviceGroup := userGroup.Group("/device")
-		{
-			deviceGroup.GET("", h.Widget.GetUserDevice)
-			deviceGroup.POST("", h.Widget.UpsertUserDevice)
-			deviceGroup.DELETE("", h.Widget.DeleteUserDevice)
-		}
-		userGroup.POST("/xp", h.User.SendUserXP)
-		userGroup.POST("/envelop", h.User.CreateEnvelop)
-		userGroup.GET("/:id/envelop-streak", h.User.GetUserEnvelopStreak) // get users upvote streak
 
+		// users/:id/wallet
 		walletsGroup := userGroup.Group("/:id/wallets")
 		{
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
@@ -125,6 +73,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			walletsGroup.GET("/:address/:type/txns", h.Wallet.ListTransactions)
 		}
 
+		cexGroup := userGroup.Group("/:id/cexs") // this is profile id
+		{
+			cexGroup.GET("/binance", h.Dex.SumarizeBinanceAsset)
+			cexGroup.GET("/:platform/assets", h.Dex.GetBinanceAssets)
+		}
+
+		// TODO: remove after migrate
 		dexGroup := userGroup.Group("/:id/dexs") // this is profile id
 		{
 			dexGroup.GET("/binance", h.Dex.SumarizeBinanceAsset)
@@ -185,19 +140,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			twitterGroup.POST("", h.Community.CreateTwitterPost)
 			twitterGroup.GET("/top", h.Community.GetTwitterLeaderboard)
 		}
-		// starboard
-		repostReactionGroup := communityGroup.Group("/repost-reactions")
-		{
-			repostReactionGroup.GET("/:guild_id", h.Community.GetRepostReactionConfigs)
-			repostReactionGroup.POST("", h.Community.ConfigRepostReaction)
-			repostReactionGroup.DELETE("", h.Community.RemoveRepostReactionConfig)
-			repostReactionGroup.POST("/conversation", h.Community.CreateConfigRepostReactionConversation)
-			repostReactionGroup.DELETE("/conversation", h.Community.RemoveConfigRepostReactionConversation)
-			repostReactionGroup.PUT("/message-repost", h.Community.EditMessageRepost)
-			repostReactionGroup.POST("/blacklist-channel", h.Community.CreateBlacklistChannelRepostConfig)
-			repostReactionGroup.GET("/blacklist-channel", h.Community.GetGuildBlacklistChannelRepostConfig)
-			repostReactionGroup.DELETE("/blacklist-channel", h.Community.DeleteBlacklistChannelRepostConfig)
-		}
 		levelupGroup := communityGroup.Group("/levelup")
 		{
 			levelupGroup.GET("", h.Community.GetLevelUpMessage)
@@ -208,10 +150,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			advertiseGroup.GET("", h.Community.GetAllAd)
 			advertiseGroup.GET("/:id", h.Community.GetAdById)
-			advertiseGroup.POST("", h.Community.CreateAd)
 			advertiseGroup.POST("/init", h.Community.InitAdSubmission)
-			advertiseGroup.DELETE("", h.Community.DeleteAdById)
-			advertiseGroup.PUT("", h.Community.UpdateAdById)
 		}
 		tagmeGroup := communityGroup.Group("/tagme")
 		{
@@ -223,21 +162,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	configGroup := v1.Group("/configs")
 	{
-		//
-		configGroup.GET("/upvote-tiers", h.ConfigChannel.GetUpvoteTiersConfig)
 		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
 		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
-		// prune exclude
-		configGroup.GET("/whitelist-prune", h.Config.GetGuildPruneExclude)
-		configGroup.POST("/whitelist-prune", h.Config.UpsertGuildPruneExclude)
-		configGroup.DELETE("/whitelist-prune", h.Config.DeleteGuildPruneExclude)
-		// moved to /widget/token-alert, to be removed
-		tokenAlertGroup := configGroup.Group("/token-alert")
-		{
-			tokenAlertGroup.GET("", h.Widget.GetUserTokenAlert)
-			tokenAlertGroup.POST("", h.Widget.UpsertUserTokenAlert)
-			tokenAlertGroup.DELETE("", h.Widget.DeleteUserTokenAlert)
-		}
+
 		configTwitterSaleGroup := configGroup.Group("/twitter-sales")
 		{
 			configTwitterSaleGroup.GET("", h.ConfigTwitterSale.Get)
@@ -245,6 +172,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
+	// v1/config-channels/
 	configChannelGroup := v1.Group("/config-channels")
 	{
 		configChannelGroup.GET("/gm", h.ConfigChannel.GetGmConfig)
@@ -253,10 +181,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.GET("/welcome", h.ConfigChannel.GetWelcomeChannelConfig)
 		configChannelGroup.POST("/welcome", h.ConfigChannel.UpsertWelcomeChannelConfig)
 		configChannelGroup.DELETE("/welcome", h.ConfigChannel.DeleteWelcomeChannelConfig)
-		// config vote channel
-		configChannelGroup.GET("/upvote", h.ConfigChannel.GetVoteChannelConfig)
-		configChannelGroup.POST("/upvote", h.ConfigChannel.UpsertVoteChannelConfig)
-		configChannelGroup.DELETE("/upvote", h.ConfigChannel.DeleteVoteChannelConfig)
 		// config tip notify channel
 		configChannelGroup.POST("/tip-notify", h.ConfigChannel.CreateConfigNotify)
 		configChannelGroup.GET("/tip-notify", h.ConfigChannel.ListConfigNotify)
@@ -265,20 +189,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.GET("/join-leave", h.ConfigChannel.GetJoinLeaveChannelConfig)
 		configChannelGroup.POST("/join-leave", h.ConfigChannel.UpsertJoinLeaveChannelConfig)
 		configChannelGroup.DELETE("/join-leave", h.ConfigChannel.DeleteJoinLeaveChannelConfig)
-		// config dao proposal channel
-		configChannelGroup.GET("/:guild_id/proposal", h.ConfigChannel.GetGuildConfigDaoProposal)
-		configChannelGroup.DELETE("/proposal", h.ConfigChannel.DeleteGuildConfigDaoProposal)
-		configChannelGroup.POST("/proposal", h.ConfigChannel.CreateProposalChannelConfig)
-		// config dao tracker channel
-		configDaoTrackerGroup := configChannelGroup.Group("/dao-tracker")
-		{
-			configDaoTrackerGroup.GET("/:guild_id", h.ConfigChannel.GetGuildConfigDaoTracker)
-			configDaoTrackerGroup.DELETE("", h.ConfigChannel.DeleteGuildConfigDaoTracker)
-			configDaoTrackerGroup.POST("", h.ConfigChannel.UpsertGuildConfigDaoTracker)
-			configDaoTrackerGroup.POST("cw-discussion-subs", h.ConfigChannel.CreateCommonwealthDiscussionSubscription)
-		}
 	}
 
+	// v1/config-roles/
 	configRoleGroup := v1.Group("/config-roles")
 	{
 		roleReactionGroup := configRoleGroup.Group("/reaction-roles")
@@ -315,18 +228,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			tokenRoleGroup.PUT("/:id", h.ConfigRoles.UpdateGuildTokenRole)
 			tokenRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildTokenRole)
 		}
-		xpRoleGroup := configRoleGroup.Group("/xp-roles")
-		{
-			xpRoleGroup.POST("", h.ConfigRoles.CreateGuildXPRole)
-			xpRoleGroup.GET("", h.ConfigRoles.ListGuildXPRoles)
-			xpRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildXPRole)
-		}
-		mixRoleGroup := configRoleGroup.Group("/mix-roles")
-		{
-			mixRoleGroup.POST("", h.ConfigRoles.CreateGuildMixRole)
-			mixRoleGroup.GET("", h.ConfigRoles.ListGuildMixRoles)
-			mixRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildMixRole)
-		}
 		adminRoleGroup := configRoleGroup.Group("/admin-roles")
 		{
 			adminRoleGroup.POST("", h.ConfigRoles.CreateGuildAdminRoles)
@@ -335,6 +236,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
+	// v1/config-community
 	configCommunityGroup := v1.Group("/config-community")
 	{
 		telegramGroup := configCommunityGroup.Group("/telegram")
@@ -356,6 +258,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 	}
 
+	// v1/config-defi
 	configDefiGroup := v1.Group("/config-defi")
 	{
 		defaultCurrencyGroup := configDefiGroup.Group("/default-currency")
@@ -458,6 +361,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.POST("/assign-role", h.Verify.AssignVerifiedRole)
 	}
 
+	// api/v1/nfts
 	nftsGroup := v1.Group("/nfts")
 	{
 		nftsGroup.GET("", h.Nft.ListAllNFTCollections)
@@ -469,6 +373,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		nftsGroup.GET("/sales", h.Nft.GetNftSalesHandler)
 		nftsGroup.GET("/new-listed", h.Nft.GetNewListedNFTCollection)
 		nftsGroup.GET("/icons", h.Nft.GetNftMetadataAttrIcon)
+		// api/v1/nfts/collections
 		collectionsGroup := nftsGroup.Group("/collections")
 		{
 			collectionsGroup.GET("/:symbol/detail", h.Nft.GetDetailNftCollection)
@@ -481,57 +386,33 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/tickers", h.Nft.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.Nft.GetNFTCollectionByAddressChain)
 		}
+		// api/v1/nfts/watchlist
 		nftWatchlistGroup := nftsGroup.Group("/watchlist")
 		{
 			nftWatchlistGroup.GET("", h.Nft.GetNftWatchlist)
 			nftWatchlistGroup.POST("", h.Nft.AddNftWatchlist)
 			nftWatchlistGroup.DELETE("", h.Nft.DeleteNftWatchlist)
 		}
-		trade := nftsGroup.Group("/trades")
-		{
-			trade.GET("/:id", h.Nft.GetTradeOffer)
-			trade.POST("", h.Nft.CreateTradeOffer)
-		}
 		defaultNftTickerGroup := nftsGroup.Group("/default-nft-ticker")
 		{
 			defaultNftTickerGroup.GET("", h.Nft.GetGuildDefaultNftTicker)
 			defaultNftTickerGroup.POST("", h.Nft.SetGuildDefaultNftTicker)
 		}
-		soulbound := nftsGroup.Group("/soulbound")
-		{
-			soulbound.GET("", h.Nft.GetSoulboundNFT)
-			soulbound.POST("", h.Nft.EnrichSoulboundNFT)
-		}
 	}
 
+	// TODO
+	// api/v1/fiat
 	fiatGroup := v1.Group("/fiat")
 	{
 		fiatGroup.GET("/historical-exchange-rates", h.Defi.GetFiatHistoricalExchangeRates)
 	}
 
-	widgetGroup := v1.Group("/widget")
-	{
-		tokenAlertGroup := widgetGroup.Group("/token-alert")
-		{
-			tokenAlertGroup.GET("", h.Widget.GetUserTokenAlert)
-			tokenAlertGroup.POST("", h.Widget.UpsertUserTokenAlert)
-			tokenAlertGroup.DELETE("", h.Widget.DeleteUserTokenAlert)
-		}
-		deviceGroup := widgetGroup.Group("/device")
-		{
-			deviceGroup.GET("", h.Widget.GetUserDevice)
-			deviceGroup.POST("", h.Widget.UpsertUserDevice)
-			deviceGroup.DELETE("", h.Widget.DeleteUserDevice)
-		}
-	}
 	webhook := v1.Group("/webhook")
 	{
 		webhook.POST("/discord", h.Webhook.HandleDiscordWebhook)
-		webhook.POST("/nft", h.Webhook.WebhookNftHandler)
-		webhook.POST("/topgg", h.Webhook.WebhookUpvoteTopGG)
-		webhook.POST("/discordbotlist", h.Webhook.WebhookUpvoteDiscordBot)
-		webhook.POST("/snapshot", h.Webhook.WebhookSnapshotProposal)
 	}
+
+	// TODO
 	dataWebhookGroup := v1.Group("/data-webhook")
 	{
 		dataWebhookGroup.POST("/notify-nft-integration", h.Webhook.NotifyNftCollectionIntegration)
@@ -540,11 +421,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		dataWebhookGroup.POST("/notify-sale-marketplace", h.Webhook.NotifySaleMarketplace)
 	}
 
+	// api/v1/telegram
 	telegramGroup := v1.Group("/telegram")
 	{
 		telegramGroup.GET("/:username", h.Telegram.GetByUsername)
 	}
 
+	// api/v1/vault
 	vaultGroup := v1.Group("/vault")
 	{
 		vaultGroup.GET("", h.Vault.GetVaults)
@@ -567,6 +450,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		vaultGroup.GET("/detail", h.Vault.GetVaultDetail)
 	}
 
+	// api/v1/swap
 	swapGroup := v1.Group("/swap")
 	{
 		swapGroup.GET("/route", h.Swap.GetSwapRoutes)
@@ -580,17 +464,24 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		apiKeyGroup.POST("/unlink-binance", h.ApiKey.UnlinkBinance)
 	}
 
+	// TODO
+	// move binance to this
+	// api/v1/users/:id/associate/binance
+
+	// api/v1/pk-pass
 	pkpassGroup := v1.Group("/pk-pass")
 	{
 		pkpassGroup.GET("", h.PkPass.GeneratePkPass)
 	}
 
+	// api/v1/product-metadata
 	productMetaData := v1.Group("/product-metadata")
 	{
 		productMetaData.GET("/emoji", h.Emojis.ListEmojis)
 		productMetaData.GET("/copy/:type", h.Content.GetTypeContent)
 	}
 
+	// api/v1/earns
 	earnGroup := v1.Group("/earns")
 	{
 		airdropCampaignGroup := earnGroup.Group("/airdrop-campaigns")

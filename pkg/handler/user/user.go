@@ -114,59 +114,6 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
-// GetUserCurrentUpvoteStreak     godoc
-// @Summary     Get user current upvote streak
-// @Description Get user current upvote streak
-// @Tags        User
-// @Accept      json
-// @Produce     json
-// @Param       discord_id query     string true "Discord ID"
-// @Success     200 {object} response.CurrentUserUpvoteStreakResponse
-// @Router      /users/upvote-streak [get]
-func (h *Handler) GetUserCurrentUpvoteStreak(c *gin.Context) {
-	discordID := c.Query("discord_id")
-	if discordID == "" {
-		h.log.Infof("[handler.GetUserCurrentUpvoteStreak] - missing params, discordID: %v", discordID)
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("discord_id is required"), nil))
-		return
-	}
-
-	res, code, err := h.entities.GetUserCurrentUpvoteStreak(discordID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"discordId": discordID}).Error(err, "[handler.GetUserCurrentUpvoteStreak] - failed to get user current upvote streak")
-		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
-}
-
-// GetUserUpvoteLeaderboard     godoc
-// @Summary     Get user upvote leaderboard
-// @Description Get user upvote leaderboard
-// @Tags        User
-// @Accept      json
-// @Produce     json
-// @Param       by query     string true "streak / total"
-// @Param       guild_id query     string true "Guild ID"
-// @Success     200 {object} response.GetUserUpvoteLeaderboardResponse
-// @Router      /users/upvote-leaderboard [get]
-func (h *Handler) GetUserUpvoteLeaderboard(c *gin.Context) {
-	by := c.Query("by")
-	if by == "" {
-		by = "total"
-	}
-	guildId := c.Query("guild_id")
-	res, err := h.entities.GetUpvoteLeaderboard(by, guildId)
-	if err != nil {
-		h.log.Error(err, "[handler.GetUserUpvoteLeaderboard] - failed to get upvote leaderboard by total")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
-}
-
 // GetMyInfo     godoc
 // @Summary     Get user info
 // @Description Get user info
