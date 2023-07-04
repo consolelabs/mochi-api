@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/consolelabs/mochi-typeset/typeset"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -18,8 +19,8 @@ import (
 )
 
 type KafkaNotification struct {
-	Type            string          `json:"type"`
-	TriggerMetadata TriggerMetadata `json:"trigger_metadata"`
+	Type            typeset.NotificationType `json:"type"`
+	TriggerMetadata TriggerMetadata          `json:"trigger_metadata"`
 }
 
 type TriggerMetadata struct {
@@ -345,7 +346,7 @@ func (e *Entity) DoAction(action []model.AutoAction, message request.AutoTrigger
 
 func (e *Entity) actionSendMessage(content string, embed *model.AutoEmbed, discordId string) error {
 	var message = KafkaNotification{
-		Type: "trigger",
+		Type: typeset.NOTIFICATION_TRIGGER,
 		TriggerMetadata: TriggerMetadata{
 			UserProfileID: discordId,
 			Content:       content,
