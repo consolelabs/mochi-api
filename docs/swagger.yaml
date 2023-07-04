@@ -3303,13 +3303,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1h_change:
-        type: number
-      usd_1y_change:
-        type: number
       usd_7d_change:
         type: number
       usd_14d_change:
+        type: number
+      usd_1h_change:
+        type: number
+      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -4024,12 +4024,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
@@ -4043,6 +4037,12 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -7517,7 +7517,6 @@ paths:
       summary: Get gas tracker of one chain
       tags:
       - Defi
-      - Public
   /defi/market-chart:
     get:
       consumes:
