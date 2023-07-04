@@ -86,7 +86,7 @@ require (
 	github.com/bytedance/sonic v1.9.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/consolelabs/mochi-typeset v0.0.0-20230703094855-f1b0e0173480 // indirect
+	github.com/consolelabs/mochi-typeset v0.0.0-20230704025438-4dd207246ba4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect

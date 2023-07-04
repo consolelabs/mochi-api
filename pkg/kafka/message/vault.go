@@ -1,12 +1,14 @@
 package message
 
+import "github.com/consolelabs/mochi-typeset/typeset"
+
 type Message struct {
 	Topic string `json:"topic"`
 }
 
 type VaultVoteTreasurer struct {
-	Type              string            `json:"type"`
-	VaultVoteMetadata VaultVoteMetadata `json:"vault_vote_metadata"`
+	Type              typeset.NotificationType `json:"type"`
+	VaultVoteMetadata VaultVoteMetadata        `json:"vault_vote_metadata"`
 }
 
 type VaultVoteMetadata struct {
