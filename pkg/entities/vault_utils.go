@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/consolelabs/mochi-typeset/typeset"
 	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
@@ -38,7 +39,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 	switch req.Type {
 	case "add":
 		return &message.VaultVoteTreasurer{
-			Type: "vault-vote",
+			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
 				TreasurerProfileId:       submitterProfile.ID,
 				TreasurerVote:            req.Choice,
@@ -64,7 +65,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 		}, daoVaultTotalTreasurerProposal
 	case "remove":
 		return &message.VaultVoteTreasurer{
-			Type: "vault-vote",
+			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
 				TreasurerProfileId:       submitterProfile.ID,
 				TreasurerVote:            req.Choice,
@@ -97,7 +98,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 		amountInNumber, _ := strconv.ParseFloat(treasurerReq.Amount, 64)
 
 		return &message.VaultVoteTreasurer{
-			Type: "vault-vote",
+			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
 				TreasurerProfileId:       submitterProfile.ID,
 				TreasurerVote:            req.Choice,

@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/consolelabs/mochi-typeset/typeset"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 
@@ -879,7 +880,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 
 	// noti result of this request to user
 	time.Sleep(3 * time.Second)
-	voteMessage.Type = "vault-proposal"
+	voteMessage.Type = typeset.NOTIFICATION_VAULT_PROPOSAL
 	voteMessage.VaultVoteMetadata.DaoVaultTotalTreasurer = daoVaultTotalTreasurerProposal
 	if resp.VoteResult.IsApproved {
 		err = e.repo.TreasurerRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
