@@ -447,30 +447,30 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		return nil, err
 	}
 
-	// userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{
-	// 		"guildId": guildID,
-	// 		"userId":  userID,
-	// 	}).Error(err, "[e.svc.Processor.GetUserFactionXp] - get user faction xp from Processor failed")
-	// 	return nil, err
-	// }
+	userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+		}).Error(err, "[e.svc.Processor.GetUserFactionXp] - get user faction xp from Processor failed")
+		return nil, err
+	}
 
 	return &response.GetUserProfileResponse{
-		ID:             userID,
-		CurrentLevel:   currentLevel,
-		NextLevel:      nextLevel,
-		GuildXP:        gUserXP.TotalXP,
-		NrOfActions:    gUserXP.NrOfActions,
-		Progress:       progress,
-		Guild:          gUserXP.Guild,
-		GuildRank:      gUserXP.GuildRank,
-		UserWallet:     userWallet,
+		ID:           userID,
+		CurrentLevel: currentLevel,
+		NextLevel:    nextLevel,
+		GuildXP:      gUserXP.TotalXP,
+		NrOfActions:  gUserXP.NrOfActions,
+		Progress:     progress,
+		Guild:        gUserXP.Guild,
+		GuildRank:    gUserXP.GuildRank,
+		UserWallet:   userWallet,
 		UserFactionXps: &model.UserFactionXpsMapping{
-			// ImperialXp: userFactionXp.Data.NobilityXp,
-			// RebellioXp: userFactionXp.Data.FameXp,
-			// MerchantXp: userFactionXp.Data.LoyaltyXp,
-			// AcademyXp:  userFactionXp.Data.ReputationXp,
+			ImperialXp: userFactionXp.Data.NobilityXp,
+			RebellioXp: userFactionXp.Data.FameXp,
+			MerchantXp: userFactionXp.Data.LoyaltyXp,
+			AcademyXp:  userFactionXp.Data.ReputationXp,
 		},
 	}, nil
 }
