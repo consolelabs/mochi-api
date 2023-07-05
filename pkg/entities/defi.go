@@ -352,7 +352,7 @@ func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *respons
 	return
 }
 
-func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, error) {
+func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedTokens, error) {
 	// TODO: do we need this?
 	if query == "skull" {
 		query = "skullswap-exchange"
@@ -384,6 +384,13 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 	if len(tokens) == 0 {
 		return []model.CoingeckoSupportedTokens{}, nil
 	}
+
+	defaultToken, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildId, query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery() failed")
+		return nil, err
+	}
+
 	largestToken := tokens[0]
 	var largestIdx int64
 	for i, t := range tokens {
@@ -394,7 +401,16 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		}
 		tokens[i].CurrentPrice = prices[t.ID]
 
-		// for multiple tokens, check is_native first
+		// for multiple tokens, check default ticker first
+		if defaultToken != nil {
+			if t.ID == defaultToken.DefaultTicker {
+				largestToken = tokens[i]
+				largestIdx = int64(i)
+				break
+			}
+		}
+
+		// then native
 		if t.IsNative {
 			largestToken = tokens[i]
 			largestIdx = int64(i)
@@ -470,7 +486,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	}
 
 	// ... else SearchCoins()
-	searchResult, err := e.SearchCoins(query)
+	searchResult, err := e.SearchCoins(query, "")
 	// searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
@@ -736,7 +752,7 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		req.CoinGeckoID = fmt.Sprintf("%s/%s", data.BaseCoin.ID, data.TargetCoin.ID)
 
 	case !isPair && req.CoinGeckoID == "":
-		tokens, err := e.SearchCoins(req.Symbol)
+		tokens, err := e.SearchCoins(req.Symbol, "")
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
 		if err != nil {
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
@@ -1238,7 +1254,7 @@ func (e *Entity) GetDominanceChartData(coinId string, days int) (*response.CoinP
 
 func (e *Entity) GetTokenPrice(symbol string, tokenName string) (*float64, error) {
 	var price float64
-	tokens, err := e.SearchCoins(strings.ToLower(symbol))
+	tokens, err := e.SearchCoins(strings.ToLower(symbol), "")
 	if err != nil {
 		e.log.Fields(logger.Fields{"symbol": strings.ToLower(symbol)}).Error(err, "[listSuiWalletAssets] svc.CoinGecko.SearchCoins() failed")
 		return nil, err
