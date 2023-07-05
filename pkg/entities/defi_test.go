@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"gorm.io/gorm"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -18,8 +21,6 @@ import (
 	"github.com/defipod/mochi/pkg/service"
 	mock_coingecko "github.com/defipod/mochi/pkg/service/coingecko/mocks"
 	"github.com/defipod/mochi/pkg/util/testhelper"
-	"github.com/golang/mock/gomock"
-	"gorm.io/gorm"
 )
 
 func TestEntity_GetUserWatchlist(t *testing.T) {
@@ -460,7 +461,7 @@ func TestEntity_SearchCoins(t *testing.T) {
 				}
 			}
 
-			got, err := e.SearchCoins(tt.query)
+			got, err := e.SearchCoins(tt.query, "")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.SearchCoins() error = %v, wantErr %v", err, tt.wantErr)
 				return
