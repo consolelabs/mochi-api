@@ -105,6 +105,7 @@ func ConvertInputToChainId(input string) string {
 		"9999":       "apt",
 		"9996":       "sui",
 		"999":        "sol",
+		"7979":       "dos",
 		"0xa86a":     "avax",
 		"42161":      "arb",
 		"1313161554": "aurora",
