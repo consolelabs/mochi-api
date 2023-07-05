@@ -8,6 +8,7 @@ type CoingeckoSupportedTokens struct {
 	MostPopular     bool    `json:"most_popular" gorm:"-"`
 	DetailPlatforms []byte  `json:"detail_platforms"`
 	IsNative        bool    `json:"is_native"`
+	IsPopular       bool    `json:"is_popular"`
 }
 
 type CoingeckoDetailPlatform struct {
