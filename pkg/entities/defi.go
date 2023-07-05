@@ -394,12 +394,21 @@ func (e *Entity) SearchCoins(query string) ([]model.CoingeckoSupportedTokens, er
 		}
 		tokens[i].CurrentPrice = prices[t.ID]
 
+		// for multiple tokens, check is_native first
 		if t.IsNative {
 			largestToken = tokens[i]
 			largestIdx = int64(i)
 			break
 		}
 
+		// then check is_popular
+		if t.IsPopular {
+			largestToken = tokens[i]
+			largestIdx = int64(i)
+			break
+		}
+
+		// then check price
 		if tokens[i].CurrentPrice > largestToken.CurrentPrice {
 			largestToken = tokens[i]
 			largestIdx = int64(i)
