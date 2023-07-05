@@ -105,3 +105,16 @@ type CreateEnvelop struct {
 type GetUserEnvelopStreak struct {
 	Data *model.UserEnvelopStreak `json:"data"`
 }
+
+type UserBalanceResponse struct {
+	Summarize []WalletAssetData  `json:"summarize"`
+	Onchain   UserBalanceOnchain `json:"onchain"`
+	Offchain  []WalletAssetData  `json:"offchain"`
+}
+
+type UserBalanceOnchain struct {
+	Evm []WalletAssetData `json:"evm"`
+	Sol []WalletAssetData `json:"sol"`
+	Sui []WalletAssetData `json:"sui"`
+	Ron []WalletAssetData `json:"ron"`
+}

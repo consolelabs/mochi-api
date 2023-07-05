@@ -788,7 +788,7 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 	return len(members), nil
 }
 
-func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
+func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse, error) {
 	// get offchain balance
 	offchainBalance, err := e.svc.MochiPay.GetListBalances(profileId)
 	if err != nil {
@@ -844,7 +844,16 @@ func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
 	evmBalance = append(evmBalance, solBalance...)
 	evmBalance = append(evmBalance, suiBalance...)
 	evmBalance = append(evmBalance, ronBalance...)
-	finalBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
+	summarizeBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
 
-	return finalBals, nil
+	return &response.UserBalanceResponse{
+		Summarize: summarizeBals,
+		Offchain:  formatOffchainBalance(*offchainBalance),
+		Onchain: response.UserBalanceOnchain{
+			Evm: evmBalance,
+			Sol: solBalance,
+			Sui: suiBalance,
+			Ron: ronBalance,
+		},
+	}, nil
 }
