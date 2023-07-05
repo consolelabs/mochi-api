@@ -7,16 +7,16 @@ type BalanceTokenResponse struct {
 type BalanceToken struct {
 	ChainName string    `json:"chainName"`
 	ChainId   int       `json:"chainId"`
-	ChainLogo string    `json:"chainLogo"`
 	Balances  []Balance `json:"balances"`
+	// ChainLogo string    `json:"chainLogo"`
 }
 
 type Balance struct {
-	Token       Token  `json:"token"`
-	TokenType   string `json:"tokenType"`
-	Balance     string `json:"balance"`
-	UserAddress string `json:"userAddress"`
-	Quotes      Quote  `json:"quotes"`
+	Token     Token  `json:"token"`
+	TokenType string `json:"tokenType"`
+	Balance   string `json:"balance"`
+	Quotes    Quote  `json:"quotes"`
+	// UserAddress string `json:"userAddress"`
 }
 
 type Token struct {
@@ -24,8 +24,8 @@ type Token struct {
 	Symbol   string `json:"symbol"`
 	Name     string `json:"name"`
 	Decimals int    `json:"decimals"`
-	Logo     string `json:"logo"`
-	Tag      string `json:"tag"`
+	// Logo     string `json:"logo"`
+	// Tag      string `json:"tag"`
 }
 
 type Quote struct {
@@ -33,9 +33,9 @@ type Quote struct {
 }
 
 type Usd struct {
-	Symbol                   string  `json:"symbol"`
-	Price                    float64 `json:"price"`
-	PriceChange24HPercentage float64 `json:"priceChange24hPercentage"`
-	Value                    float64 `json:"value"`
-	Timestamp                int     `json:"timestamp"`
+	Price float64 `json:"price"`
+	Value float64 `json:"value"`
+	// Symbol                   string  `json:"symbol"`
+	// PriceChange24HPercentage float64 `json:"priceChange24hPercentage"`
+	// Timestamp                int     `json:"timestamp"`
 }

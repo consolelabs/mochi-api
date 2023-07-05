@@ -1,38 +1,32 @@
 package response
 
 type SuiAllBalance struct {
-	Jsonrpc string                `json:"jsonrpc"`
-	Result  []SuiAllBalanceResult `json:"result"`
-	ID      int                   `json:"id"`
+	Result []SuiAllBalanceResult `json:"result"`
 }
 
 type SuiCoinMetadata struct {
-	Jsonrpc string                `json:"jsonrpc"`
-	Result  SuiCoinMetadataResult `json:"result"`
-	ID      int                   `json:"id"`
+	Result SuiCoinMetadataResult `json:"result"`
 }
 
 type SuiTransactionBlock struct {
-	Jsonrpc string                    `json:"jsonrpc"`
-	Result  SuiTransactionBlockResult `json:"result"`
-	ID      string                    `json:"id"`
+	Result SuiTransactionBlockResult `json:"result"`
 }
 
 type SuiAllBalanceResult struct {
-	CoinType        string `json:"coinType"`
-	CoinObjectCount int    `json:"coinObjectCount"`
-	TotalBalance    string `json:"totalBalance"`
-	LockedBalance   struct {
-	} `json:"lockedBalance"`
+	CoinType     string `json:"coinType"`
+	TotalBalance string `json:"totalBalance"`
+	// CoinObjectCount int    `json:"coinObjectCount"`
+	// LockedBalance   struct {
+	// 	} `json:"lockedBalance"`
 }
 
 type SuiCoinMetadataResult struct {
-	Decimals    int     `json:"decimals"`
-	Name        string  `json:"name"`
-	Symbol      string  `json:"symbol"`
-	Description string  `json:"description"`
-	IconURL     *string `json:"iconUrl"`
-	ID          string  `json:"id"`
+	Decimals int    `json:"decimals"`
+	Name     string `json:"name"`
+	Symbol   string `json:"symbol"`
+	// Description string  `json:"description"`
+	// IconURL     *string `json:"iconUrl"`
+	// ID          string  `json:"id"`
 }
 
 type SuiTransactionBlockResult struct {
@@ -41,10 +35,10 @@ type SuiTransactionBlockResult struct {
 		ObjectChanges  []SuiObjectChanges  `json:"objectChanges"`
 		BalanceChanges []SuiBalanceChanges `json:"balanceChanges"`
 		TimestampMs    string              `json:"timestampMs"`
-		Checkpoint     string              `json:"checkpoint"`
+		// Checkpoint     string              `json:"checkpoint"`
 	} `json:"data"`
-	NextCursor  string `json:"nextCursor"`
-	HasNextPage bool   `json:"hasNextPage"`
+	// NextCursor  string `json:"nextCursor"`
+	// HasNextPage bool   `json:"hasNextPage"`
 }
 
 type SuiObjectChanges struct {
@@ -53,11 +47,11 @@ type SuiObjectChanges struct {
 	Owner  struct {
 		AddressOwner string `json:"AddressOwner"`
 	} `json:"owner"`
-	ObjectType      string `json:"objectType"`
-	ObjectID        string `json:"objectId"`
-	Version         string `json:"version"`
-	PreviousVersion string `json:"previousVersion,omitempty"`
-	Digest          string `json:"digest"`
+	// ObjectType      string `json:"objectType"`
+	// ObjectID        string `json:"objectId"`
+	// Version         string `json:"version"`
+	// PreviousVersion string `json:"previousVersion,omitempty"`
+	// Digest          string `json:"digest"`
 }
 
 type SuiBalanceChanges struct {
