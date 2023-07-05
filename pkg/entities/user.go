@@ -447,30 +447,30 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		return nil, err
 	}
 
-	userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-		}).Error(err, "[e.svc.Processor.GetUserFactionXp] - get user faction xp from Processor failed")
-		return nil, err
-	}
+	// userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
+	// if err != nil {
+	// 	e.log.Fields(logger.Fields{
+	// 		"guildId": guildID,
+	// 		"userId":  userID,
+	// 	}).Error(err, "[e.svc.Processor.GetUserFactionXp] - get user faction xp from Processor failed")
+	// 	return nil, err
+	// }
 
 	return &response.GetUserProfileResponse{
-		ID:           userID,
-		CurrentLevel: currentLevel,
-		NextLevel:    nextLevel,
-		GuildXP:      gUserXP.TotalXP,
-		NrOfActions:  gUserXP.NrOfActions,
-		Progress:     progress,
-		Guild:        gUserXP.Guild,
-		GuildRank:    gUserXP.GuildRank,
-		UserWallet:   userWallet,
+		ID:             userID,
+		CurrentLevel:   currentLevel,
+		NextLevel:      nextLevel,
+		GuildXP:        gUserXP.TotalXP,
+		NrOfActions:    gUserXP.NrOfActions,
+		Progress:       progress,
+		Guild:          gUserXP.Guild,
+		GuildRank:      gUserXP.GuildRank,
+		UserWallet:     userWallet,
 		UserFactionXps: &model.UserFactionXpsMapping{
-			ImperialXp: userFactionXp.Data.NobilityXp,
-			RebellioXp: userFactionXp.Data.FameXp,
-			MerchantXp: userFactionXp.Data.LoyaltyXp,
-			AcademyXp:  userFactionXp.Data.ReputationXp,
+			// ImperialXp: userFactionXp.Data.NobilityXp,
+			// RebellioXp: userFactionXp.Data.FameXp,
+			// MerchantXp: userFactionXp.Data.LoyaltyXp,
+			// AcademyXp:  userFactionXp.Data.ReputationXp,
 		},
 	}, nil
 }
@@ -788,7 +788,7 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 	return len(members), nil
 }
 
-func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
+func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse, error) {
 	// get offchain balance
 	offchainBalance, err := e.svc.MochiPay.GetListBalances(profileId)
 	if err != nil {
@@ -844,7 +844,16 @@ func (e *Entity) GetUserBalance(profileId string) (interface{}, error) {
 	evmBalance = append(evmBalance, solBalance...)
 	evmBalance = append(evmBalance, suiBalance...)
 	evmBalance = append(evmBalance, ronBalance...)
-	finalBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
+	summarizeBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
 
-	return finalBals, nil
+	return &response.UserBalanceResponse{
+		Summarize: summarizeBals,
+		Offchain:  formatOffchainBalance(*offchainBalance),
+		Onchain: response.UserBalanceOnchain{
+			Evm: evmBalance,
+			Sol: solBalance,
+			Sui: suiBalance,
+			Ron: ronBalance,
+		},
+	}, nil
 }

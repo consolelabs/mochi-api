@@ -16,62 +16,62 @@ type decoded struct {
 }
 
 type decodedParams struct {
-	Name    string      `json:"name"`
-	Type    string      `json:"type"`
-	Indexed bool        `json:"indexed"`
-	Decoded bool        `json:"decoded"`
-	Value   interface{} `json:"value"`
+	Value interface{} `json:"value"`
+	// Name    string      `json:"name"`
+	// Type    string      `json:"type"`
+	// Indexed bool        `json:"indexed"`
+	// Decoded bool        `json:"decoded"`
 }
 
 type LogEvent struct {
-	BlockSignedAt              time.Time   `json:"block_signed_at"`
-	BlockHeight                int         `json:"block_height"`
-	TxOffset                   int         `json:"tx_offset"`
-	LogOffset                  int         `json:"log_offset"`
-	TxHash                     string      `json:"tx_hash"`
-	RawLogTopics               []string    `json:"raw_log_topics"`
-	SenderContractDecimals     int         `json:"sender_contract_decimals"`
-	SenderName                 string      `json:"sender_name"`
-	SenderContractTickerSymbol string      `json:"sender_contract_ticker_symbol"`
-	SenderAddress              string      `json:"sender_address"`
-	SenderAddressLabel         interface{} `json:"sender_address_label"`
-	SenderLogoURL              string      `json:"sender_logo_url"`
-	RawLogData                 string      `json:"raw_log_data"`
-	Decoded                    decoded     `json:"decoded"`
+	SenderContractDecimals     int     `json:"sender_contract_decimals"`
+	SenderName                 string  `json:"sender_name"`
+	SenderContractTickerSymbol string  `json:"sender_contract_ticker_symbol"`
+	SenderAddress              string  `json:"sender_address"`
+	Decoded                    decoded `json:"decoded"`
+	// BlockSignedAt              time.Time   `json:"block_signed_at"`
+	// BlockHeight                int         `json:"block_height"`
+	// TxOffset                   int         `json:"tx_offset"`
+	// LogOffset                  int         `json:"log_offset"`
+	// TxHash                     string      `json:"tx_hash"`
+	// RawLogTopics               []string    `json:"raw_log_topics"`
+	// SenderAddressLabel         interface{} `json:"sender_address_label"`
+	// SenderLogoURL              string      `json:"sender_logo_url"`
+	// RawLogData                 string      `json:"raw_log_data"`
 }
 
 type TransactionItemData struct {
-	BlockSignedAt    time.Time   `json:"block_signed_at"`
-	BlockHeight      int         `json:"block_height"`
-	TxHash           string      `json:"tx_hash"`
-	TxOffset         int         `json:"tx_offset"`
-	Successful       bool        `json:"successful"`
-	FromAddress      string      `json:"from_address"`
-	FromAddressLabel interface{} `json:"from_address_label"`
-	ToAddress        string      `json:"to_address"`
-	ToAddressLabel   interface{} `json:"to_address_label"`
-	Value            string      `json:"value"`
-	ValueQuote       float64     `json:"value_quote"`
-	GasOffered       int         `json:"gas_offered"`
-	GasSpent         int         `json:"gas_spent"`
-	GasPrice         int64       `json:"gas_price"`
-	FeesPaid         string      `json:"fees_paid"`
-	GasQuote         float64     `json:"gas_quote"`
-	GasQuoteRate     float64     `json:"gas_quote_rate"`
-	LogEvents        []LogEvent  `json:"log_events"`
-	TokenSymbol      string      `json:"-"`
-	TokenContract    string      `json:"-"`
-	Amount           float64     `json:"-"`
+	BlockSignedAt time.Time  `json:"block_signed_at"`
+	TxHash        string     `json:"tx_hash"`
+	Successful    bool       `json:"successful"`
+	FromAddress   string     `json:"from_address"`
+	ToAddress     string     `json:"to_address"`
+	Value         string     `json:"value"`
+	ValueQuote    float64    `json:"value_quote"`
+	LogEvents     []LogEvent `json:"log_events"`
+	// BlockHeight      int         `json:"block_height"`
+	// TxOffset         int         `json:"tx_offset"`
+	// FromAddressLabel interface{} `json:"from_address_label"`
+	// ToAddressLabel   interface{} `json:"to_address_label"`
+	// GasOffered       int         `json:"gas_offered"`
+	// GasSpent         int         `json:"gas_spent"`
+	// GasPrice         int64       `json:"gas_price"`
+	// FeesPaid         string      `json:"fees_paid"`
+	// GasQuote         float64     `json:"gas_quote"`
+	// GasQuoteRate     float64     `json:"gas_quote_rate"`
+	// TokenSymbol      string      `json:"-"`
+	// TokenContract    string      `json:"-"`
+	// Amount           float64     `json:"-"`
 }
 
 type GetTransactionsByAddressData struct {
-	Address       string                `json:"address"`
-	UpdatedAt     time.Time             `json:"updated_at"`
-	NextUpdateAt  time.Time             `json:"next_update_at"`
-	QuoteCurrency string                `json:"quote_currency"`
-	ChainID       int                   `json:"chain_id"`
-	Items         []TransactionItemData `json:"items"`
-	Pagination    pagination            `json:"pagination"`
+	// Address       string                `json:"address"`
+	// UpdatedAt     time.Time             `json:"updated_at"`
+	// NextUpdateAt  time.Time             `json:"next_update_at"`
+	// QuoteCurrency string                `json:"quote_currency"`
+	// ChainID       int                   `json:"chain_id"`
+	Items []TransactionItemData `json:"items"`
+	// Pagination    pagination            `json:"pagination"`
 }
 
 type GetTransactionsResponse struct {
@@ -129,28 +129,28 @@ type GetHistoricalPortfolioResponse struct {
 }
 
 type TokenBalanceItem struct {
-	ContractDecimals     int         `json:"contract_decimals"`
-	ContractName         string      `json:"contract_name"`
-	ContractTickerSymbol string      `json:"contract_ticker_symbol"`
-	ContractAddress      string      `json:"contract_address"`
-	LogoURL              string      `json:"logo_url"`
-	NativeToken          bool        `json:"native_token"`
-	Type                 string      `json:"type"`
-	Balance              string      `json:"balance"`
-	Quote                float64     `json:"quote"`
-	NftData              interface{} `json:"nft_data"`
-	QuoteRate            float64     `json:"quote_rate"`
+	ContractDecimals     int     `json:"contract_decimals"`
+	ContractName         string  `json:"contract_name"`
+	ContractTickerSymbol string  `json:"contract_ticker_symbol"`
+	ContractAddress      string  `json:"contract_address"`
+	NativeToken          bool    `json:"native_token"`
+	Type                 string  `json:"type"`
+	Balance              string  `json:"balance"`
+	Quote                float64 `json:"quote"`
+	QuoteRate            float64 `json:"quote_rate"`
+	// LogoURL              string      `json:"logo_url"`
+	// NftData              interface{} `json:"nft_data"`
 }
 
 type GetTokenBalancesData struct {
-	Address       string             `json:"address"`
-	UpdatedAt     time.Time          `json:"updated_at"`
-	NextUpdateAt  time.Time          `json:"next_update_at"`
-	QuoteCurrency string             `json:"quote_currency"`
-	ChainID       int                `json:"chain_id"`
-	ChainName     string             `json:"chain_name"`
-	Items         []TokenBalanceItem `json:"items"`
-	Pagination    interface{}        `json:"pagination"`
+	ChainName  string             `json:"chain_name"`
+	Items      []TokenBalanceItem `json:"items"`
+	Pagination interface{}        `json:"pagination"`
+	// Address       string             `json:"address"`
+	// UpdatedAt     time.Time          `json:"updated_at"`
+	// NextUpdateAt  time.Time          `json:"next_update_at"`
+	// QuoteCurrency string             `json:"quote_currency"`
+	// ChainID       int                `json:"chain_id"`
 }
 
 type GetTokenBalancesResponse struct {

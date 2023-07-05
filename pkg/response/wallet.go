@@ -192,15 +192,15 @@ type AxieNftResult struct {
 }
 
 type AxieMetadata struct {
-	ID             string `json:"id"`
-	Owner          string `json:"owner"`
-	Image          string `json:"image"`
-	Level          int    `json:"level"`
-	MinPrice       string `json:"minPrice"`
-	Name           string `json:"name"`
-	TokenAddress   string `json:"tokenAddress"`
-	MarketplaceURL string `json:"marketplace_url"`
-	TokenName      string `json:"token_name"`
+	ID    string `json:"id"`
+	Image string `json:"image"`
+	Name  string `json:"name"`
+	// Owner          string `json:"owner"`
+	// Level          int    `json:"level"`
+	// MinPrice       string `json:"minPrice"`
+	// TokenAddress   string `json:"tokenAddress"`
+	// MarketplaceURL string `json:"marketplace_url"`
+	// TokenName      string `json:"token_name"`
 }
 
 type EquipmentNftResult struct {
@@ -209,28 +209,28 @@ type EquipmentNftResult struct {
 }
 
 type EquipmentMetadata struct {
-	Total          int      `json:"total"`
-	Name           string   `json:"name"`
-	MinPrice       string   `json:"minPrice"`
-	Collections    []string `json:"collections"`
-	Alias          string   `json:"alias"`
-	Rarity         string   `json:"rarity"`
-	Image          string   `json:"image"`
-	MarketplaceURL string   `json:"marketplace_url"`
-	TokenName      string   `json:"token_name"`
+	Name  string `json:"name"`
+	Alias string `json:"alias"`
+	// Total          int      `json:"total"`
+	// MinPrice       string   `json:"minPrice"`
+	// Collections    []string `json:"collections"`
+	// Rarity         string   `json:"rarity"`
+	// Image          string   `json:"image"`
+	// MarketplaceURL string   `json:"marketplace_url"`
+	// TokenName      string   `json:"token_name"`
 }
 
 type LandItemMetadata struct {
-	TokenID        string `json:"tokenId"`
-	MinPrice       string `json:"minPrice"`
-	FigureURL      string `json:"figureURL"`
-	Name           string `json:"name"`
-	ItemID         int    `json:"itemId"`
-	Alias          string `json:"itemAlias"`
-	Rarity         string `json:"rarity"`
-	Image          string `json:"image"`
-	MarketplaceURL string `json:"marketplace_url"`
-	TokenName      string `json:"token_name"`
+	FigureURL string `json:"figureURL"`
+	Name      string `json:"name"`
+	ItemID    int    `json:"itemId"`
+	Alias     string `json:"itemAlias"`
+	// TokenID        string `json:"tokenId"`
+	// MinPrice       string `json:"minPrice"`
+	// Rarity         string `json:"rarity"`
+	// Image          string `json:"image"`
+	// MarketplaceURL string `json:"marketplace_url"`
+	// TokenName      string `json:"token_name"`
 }
 
 type LandItemNftResult struct {
@@ -239,14 +239,14 @@ type LandItemNftResult struct {
 }
 
 type LandMetadata struct {
-	TokenID        string `json:"tokenId"`
-	MinPrice       string `json:"minPrice"`
-	LandType       string `json:"landType"`
-	Col            int    `json:"col"`
-	Row            int    `json:"row"`
-	Image          string `json:"image"`
-	MarketplaceURL string `json:"marketplace_url"`
-	TokenName      string `json:"token_name"`
+	LandType string `json:"landType"`
+	Col      int    `json:"col"`
+	Row      int    `json:"row"`
+	// TokenID        string `json:"tokenId"`
+	// MinPrice       string `json:"minPrice"`
+	// Image          string `json:"image"`
+	// MarketplaceURL string `json:"marketplace_url"`
+	// TokenName      string `json:"token_name"`
 }
 
 type LandNftResult struct {
@@ -260,16 +260,16 @@ type SkymavisTransactionsResponse struct {
 }
 
 type SkymavisTransactionsResultItem struct {
-	TxHash      string `json:"tx_hash"`
-	Hash        string `json:"hash"`
-	From        string `json:"from"`
-	To          string `json:"to"`
-	Value       string `json:"value"`
-	Input       string `json:"input"`
-	Index       int    `json:"index"`
-	Success     bool   `json:"success"`
-	BlockNumber int    `json:"block_number"`
-	BlockHash   string `json:"block_hash"`
-	TxType      string `json:"tx_type"`
-	Timestamp   int    `json:"timestamp"`
+	From   string `json:"from"`
+	To     string `json:"to"`
+	Value  string `json:"value"`
+	TxType string `json:"tx_type"`
+	// TxHash      string `json:"tx_hash"`
+	// Hash        string `json:"hash"`
+	// Input       string `json:"input"`
+	// Index       int    `json:"index"`
+	// Success     bool   `json:"success"`
+	// BlockNumber int    `json:"block_number"`
+	// BlockHash   string `json:"block_hash"`
+	// Timestamp   int    `json:"timestamp"`
 }
