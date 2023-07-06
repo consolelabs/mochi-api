@@ -213,7 +213,7 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 		}
 	}
 
-	if swapRoutes.Aggregator == "jupiter" {
+	if swapRoutes.Aggregator == "jupyter" {
 		routeSummary = swapRoutes.SwapData
 	}
 
@@ -239,19 +239,39 @@ func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
 		return nil
 	}
 
-	fromTokenAddress, err := util.ConvertToChecksumAddr(route.Data.TokenIn.Address)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": route}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
-		return err
+	var fromTokenAddress, toTokenAddress string
+	if route.Provider != "jupyter" {
+		routeSummary := &model.RouteSummary{}
+		routeByte, _ := json.Marshal(route.Data.RouteSummary)
+		err := json.Unmarshal(routeByte, routeSummary)
+		if err != nil {
+			return err
+		}
+
+		fromTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenIn)
+		if err != nil {
+			return err
+		}
+
+		toTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenOut)
+		if err != nil {
+			return err
+		}
 	}
 
-	toTokenAddress, err := util.ConvertToChecksumAddr(route.Data.TokenOut.Address)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": route}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
-		return err
+	if route.Provider == "jupyter" {
+		quoteResp := &response.JupyterQuoteResponse{}
+		quoteByte, _ := json.Marshal(route.Data.RouteSummary)
+		err := json.Unmarshal(quoteByte, quoteResp)
+		if err != nil {
+			return err
+		}
+
+		fromTokenAddress = quoteResp.InputMint
+		toTokenAddress = quoteResp.OutputMint
 	}
 
-	err = e.svc.MochiPay.CreateBatchToken(mochipayrequest.CreateBatchTokenRequest{
+	err := e.svc.MochiPay.CreateBatchToken(mochipayrequest.CreateBatchTokenRequest{
 		Tokens: []mochipayrequest.CreateTokenRequest{
 			{
 				Id:          uuid.New().String(),
