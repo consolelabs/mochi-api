@@ -833,6 +833,17 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		return nil, err
 	}
 
+	// check treasurer_request to see column is_approved = true, this mean it is already executed
+	if treasurerReq.IsApproved {
+		return &response.CreateTreasurerSubmissionResponse{
+			Submission:       *submission,
+			TotalSubmissions: submissions,
+			VoteResult: response.VoteResult{
+				IsApproved: false, // this mean we not allow this request to execute once more
+			},
+		}, nil
+	}
+
 	totalApprovedSubmission := 0
 	totalRejectedSubmisison := 0
 	for _, submission := range submissions {
