@@ -153,6 +153,8 @@ func ConvertChainIdToChainName(chainId int64) string {
 		return "velas"
 	case 1313161554:
 		return "aurora"
+	case 999:
+		return "solana"
 	default:
 		return "ethereum"
 	}
@@ -184,6 +186,8 @@ func ConvertChainNameToChainId(chainName string) int64 {
 		return 106
 	case "aurora":
 		return 1313161554
+	case "solana":
+		return 999
 	default:
 		return 1
 	}
@@ -215,6 +219,8 @@ func ConvertCoingeckoChain(chainName string) int64 {
 		return 106
 	case "aurora":
 		return 1313161554
+	case "solana":
+		return 999
 	default:
 		return 0
 	}

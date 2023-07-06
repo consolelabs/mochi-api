@@ -1,16 +1,13 @@
 package request
 
-import (
-	"github.com/defipod/mochi/pkg/model"
-)
-
 type BuildSwapRouteRequest struct {
-	Recipient         string             `json:"recipient"`
-	Sender            string             `json:"sender"`
-	Source            string             `json:"source"`
-	SlippageTolerance int64              `json:"slippageTolerance"`
-	SkipSimulateTx    bool               `json:"skipSimulateTx"`
-	RouteSummary      model.RouteSummary `json:"routeSummary"`
+	Recipient         string      `json:"recipient"`
+	Sender            string      `json:"sender"`
+	Source            string      `json:"source"`
+	SlippageTolerance int64       `json:"slippageTolerance"`
+	SkipSimulateTx    bool        `json:"skipSimulateTx"`
+	RouteSummary      interface{} `json:"routeSummary"`
+	SwapData          interface{} `json:"swapData"`
 }
 
 type MochiPaySwapRequest struct {
@@ -27,4 +24,5 @@ type MochiPaySwapRequest struct {
 	EncodedData   string `json:"encoded_data"`
 	RouterAddress string `json:"router_address"`
 	Gas           string `json:"gas"`
+	Aggregator    string `json:"aggregator"`
 }

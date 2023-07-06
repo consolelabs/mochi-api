@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"golang.org/x/exp/slices"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -58,9 +59,59 @@ func (e *Entity) getAllChainToken(symbol string) (tokens []model.Token, err erro
 	return tokens, nil
 }
 
+func getAllChainDetailPlatform(platforms []CoingeckoDetailPlatform) (chains []int64) {
+	for _, platform := range platforms {
+		chains = append(chains, platform.ChainId)
+	}
+
+	return chains
+}
 func (e *Entity) UpsertDetailPlatforms(coins []model.CoingeckoSupportedTokens) (newCoins []model.CoingeckoSupportedTokens, err error) {
 	for _, coin := range coins {
 		if coin.DetailPlatforms != nil {
+			var platforms []CoingeckoDetailPlatform
+			err := json.Unmarshal(coin.DetailPlatforms, &platforms)
+			if err != nil {
+				return coins, err
+			}
+
+			chainsOfCoin := getAllChainDetailPlatform(platforms)
+			// TODO(trkhoi): remove when coingecko table has enough solana address
+			// if detailPlatform have solana -> continue
+			if slices.Contains(chainsOfCoin, int64(999)) {
+				newCoins = append(newCoins, coin)
+				continue
+			}
+
+			// if not, get data from coingecko
+			coinDetail, err, _ := e.svc.CoinGecko.GetCoin(coin.ID)
+			if err != nil {
+				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.svc.CoinGecko.GetCoin failed")
+				continue
+			}
+
+			for k, v := range coinDetail.DetailPlatforms {
+				if k == "solana" {
+					platforms = append(platforms, CoingeckoDetailPlatform{
+						ChainId: util.ConvertCoingeckoChain(k),
+						Address: v.ContractAddress,
+						Decimal: int64(v.DecimalPlace),
+					})
+				}
+			}
+
+			bytedetailPlatforms, err := json.Marshal(platforms)
+			if err != nil {
+				return coins, err
+			}
+
+			coin.DetailPlatforms = bytedetailPlatforms
+			_, err = e.repo.CoingeckoSupportedTokens.Upsert(&coin)
+			if err != nil {
+				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.repo.CoingeckoSupportedTokens.Upsert failed")
+				return coins, err
+			}
+
 			newCoins = append(newCoins, coin)
 			continue
 		}
@@ -122,37 +173,29 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 		return &response.SwapRouteResponse{}
 	}
 
-	newRoute := make([][]response.RouteElement, 0)
-	for _, route := range swapRoutes.Data.RouteSummary.Route {
-		newRouteElement := make([]response.RouteElement, 0)
-		for _, routeEle := range route {
-			newRouteElement = append(newRouteElement, response.RouteElement{
-				Pool:              routeEle.Pool,
-				TokenIn:           routeEle.TokenIn,
-				TokenOut:          routeEle.TokenOut,
-				LimitReturnAmount: routeEle.LimitReturnAmount,
-				SwapAmount:        routeEle.SwapAmount,
-				AmountOut:         routeEle.AmountOut,
-				Exchange:          routeEle.Exchange,
-				PoolLength:        routeEle.PoolLength,
-				PoolType:          routeEle.PoolType,
-				PoolExtra:         routeEle.PoolExtra,
-				Extra:             routeEle.Extra,
-				TokenOutSymbol:    req.To,
-			})
-		}
-		newRoute = append(newRoute, newRouteElement)
-
-	}
-	return &response.SwapRouteResponse{
-		Code:      swapRoutes.Code,
-		Message:   swapRoutes.Message,
-		ChainName: swapRoutes.Data.TokenIn.ChainName,
-		Data: response.SwapRoute{
-			TokenIn:       swapRoutes.Data.TokenIn,
-			TokenOut:      swapRoutes.Data.TokenOut,
-			RouterAddress: swapRoutes.Data.RouterAddress,
-			RouteSummary: response.RouteSummary{
+	var routeSummary interface{}
+	if swapRoutes.Aggregator == "kyber" {
+		newRoute := make([][]response.RouteElement, 0)
+		for _, route := range swapRoutes.Data.RouteSummary.Route {
+			newRouteElement := make([]response.RouteElement, 0)
+			for _, routeEle := range route {
+				newRouteElement = append(newRouteElement, response.RouteElement{
+					Pool:              routeEle.Pool,
+					TokenIn:           routeEle.TokenIn,
+					TokenOut:          routeEle.TokenOut,
+					LimitReturnAmount: routeEle.LimitReturnAmount,
+					SwapAmount:        routeEle.SwapAmount,
+					AmountOut:         routeEle.AmountOut,
+					Exchange:          routeEle.Exchange,
+					PoolLength:        routeEle.PoolLength,
+					PoolType:          routeEle.PoolType,
+					PoolExtra:         routeEle.PoolExtra,
+					Extra:             routeEle.Extra,
+					TokenOutSymbol:    req.To,
+				})
+			}
+			newRoute = append(newRoute, newRouteElement)
+			routeSummary = response.RouteSummary{
 				TokenIn:                      swapRoutes.Data.RouteSummary.TokenIn,
 				AmountIn:                     swapRoutes.Data.RouteSummary.AmountIn,
 				AmountInUsd:                  swapRoutes.Data.RouteSummary.AmountInUsd,
@@ -166,7 +209,25 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 				GasUsd:                       swapRoutes.Data.RouteSummary.GasUsd,
 				ExtraFee:                     swapRoutes.Data.RouteSummary.ExtraFee,
 				Route:                        newRoute,
-			},
+			}
+		}
+	}
+
+	if swapRoutes.Aggregator == "jupiter" {
+		routeSummary = swapRoutes.SwapData
+	}
+
+	return &response.SwapRouteResponse{
+		Code:      swapRoutes.Code,
+		Message:   swapRoutes.Message,
+		ChainName: swapRoutes.Data.TokenIn.ChainName,
+		Data: response.SwapRoute{
+			TokenIn:       swapRoutes.Data.TokenIn,
+			TokenOut:      swapRoutes.Data.TokenOut,
+			RouterAddress: swapRoutes.Data.RouterAddress,
+			RouteSummary:  routeSummary,
+			Aggregator:    swapRoutes.Aggregator,
+			SwapData:      swapRoutes.SwapData,
 		},
 	}
 }

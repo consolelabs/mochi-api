@@ -46,9 +46,19 @@ func (s *SwapService) GetBestRoute(routes []response.ProviderSwapRoutes) (*respo
 		return nil, nil
 	}
 
-	return &routes[0], nil
+	for _, route := range routes {
+		if route.Code == 1 {
+			return &route, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (s *SwapService) BuildSwapRoutes(chainName string, req *request.BuildSwapRouteRequest) (*response.BuildRoute, error) {
+	if chainName == "solana" {
+		return s.jupyter.BuildSwapRoutes(chainName, req)
+	}
+
 	return s.kyber.BuildSwapRoutes(chainName, req)
 }
