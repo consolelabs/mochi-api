@@ -36,8 +36,16 @@ type JupiterBuildRoute struct {
 }
 
 type JupyterQuoteResponse struct {
-	InputMint  string `json:"inputMint"`
-	OutputMint string `json:"outputMint"`
-	InAmount   string `json:"inAmount"`
-	OutAmount  string `json:"outAmount"`
+	InputMint            string      `json:"inputMint"`
+	OutputMint           string      `json:"outputMint"`
+	InAmount             string      `json:"inAmount"`
+	OutAmount            string      `json:"outAmount"`
+	OtherAmountThreshold string      `json:"otherAmountThreshold"`
+	SwapMode             string      `json:"swapMode"`
+	SlippageBps          int         `json:"slippageBps"`
+	PlatformFee          interface{} `json:"platformFee"`
+	PriceImpacePct       string      `json:"priceImpactPct"`
+	RoutePlan            []RoutePlan `json:"routePlan"`
+	ContextSlot          int64       `json:"contextSlot"`
+	TimeTaken            float64     `json:"timeTaken"`
 }

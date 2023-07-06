@@ -75,22 +75,24 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	chainId := util.ConvertChainNameToChainId(req.ChainName)
 
 	// hash swap address to compare with db
-	var fromTokenAddress, toTokenAddress string
+	var fromTokenAddress, toTokenAddress, amountIn, amountOut string
 	if req.ChainName != "solana" {
-		routeSummary := &model.RouteSummary{}
-		routeByte, _ := json.Marshal(req.RouteSummary)
-		err = json.Unmarshal(routeByte, routeSummary)
+		swapData := &model.RouteSummary{}
+		routeByte, _ := json.Marshal(req.SwapData)
+		err = json.Unmarshal(routeByte, swapData)
 		if err != nil {
 			return nil, err
 		}
 
-		fromTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenIn)
+		amountIn = swapData.AmountIn
+		amountOut = swapData.AmountOut
+		fromTokenAddress, err = util.ConvertToChecksumAddr(swapData.TokenIn)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
 			return nil, err
 		}
 
-		toTokenAddress, err = util.ConvertToChecksumAddr(routeSummary.TokenOut)
+		toTokenAddress, err = util.ConvertToChecksumAddr(swapData.TokenOut)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.ConvertToChecksumAddr] - cannot convert to checksum address")
 			return nil, err
@@ -99,7 +101,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 
 	if req.ChainName == "solana" {
 		quoteResp := &response.JupyterQuoteResponse{}
-		quoteByte, _ := json.Marshal(req.RouteSummary)
+		quoteByte, _ := json.Marshal(req.SwapData)
 		err = json.Unmarshal(quoteByte, quoteResp)
 		if err != nil {
 			return nil, err
@@ -107,6 +109,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 
 		fromTokenAddress = quoteResp.InputMint
 		toTokenAddress = quoteResp.OutputMint
+		amountIn = quoteResp.InAmount
+		amountOut = quoteResp.OutAmount
 	}
 
 	// get token from mochi pay
@@ -128,34 +132,6 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		return nil, err
 	}
 
-	// get balance -> temp cmt for better ux
-	// balance, err := e.svc.MochiPay.GetBalance(profile.ID, fromToken.Symbol, fmt.Sprintf("%d", chainId))
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - cannot get balance")
-	// 	return nil, err
-	// }
-	// if len(balance.Data) == 0 {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[mochi-pay.GetBalance] - balance not found")
-	// 	return nil, fmt.Errorf("insufficient balance")
-	// }
-
-	// compare balance and amountIn from swap route
-	// amountSwap, err := util.StringToBigInt(req.RouteSummary.AmountIn)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
-	// 	return nil, err
-	// }
-
-	// bal, err := util.StringToBigInt(balance.Data[0].Amount)
-	// if err != nil {
-	// 	e.log.Fields(logger.Fields{"req": req}).Error(err, "[util.StringToBigInt] - cannot convert string to big int")
-	// 	return nil, err
-	// }
-
-	// if amountSwap.Cmp(bal) == 1 {
-	// 	return nil, fmt.Errorf("insufficient balance")
-	// }
-
 	userPublicKey := e.cfg.CentralizedWalletAddress
 	if chainId == 999 {
 		userPublicKey = e.solana.GetCentralizedWalletAddress()
@@ -167,7 +143,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		Source:            consts.ClientID,
 		SkipSimulateTx:    false,
 		SlippageTolerance: 500,
-		RouteSummary:      req.RouteSummary,
+		RouteSummary:      req.SwapData,
+		// SwapData:          req.SwapData,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.BuildSwapRoutes] - cannot build swap routes")
@@ -182,8 +159,8 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		FromToken:     fromToken.Symbol,
 		ToToken:       toToken.Symbol,
 		ChainId:       chainId,
-		AmountIn:      buildRouteResp.Data.AmountIn,
-		AmountOut:     buildRouteResp.Data.AmountOut,
+		AmountIn:      amountIn,
+		AmountOut:     amountOut,
 		ChainName:     req.ChainName,
 		Address:       e.cfg.CentralizedWalletAddress,
 		RouterAddress: buildRouteResp.Data.RouterAddress,
