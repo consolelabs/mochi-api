@@ -91,6 +91,7 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 				}
 
 				route.Aggregator = "kyber-swap"
+				route.SwapData = route.Data.RouteSummary
 
 				k.logger.Fields(logger.Fields{"route": route}).Info("[kyber.GetRoutes] - get route")
 
