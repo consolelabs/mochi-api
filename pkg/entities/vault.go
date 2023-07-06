@@ -127,9 +127,11 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 			walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
 			if err != nil {
 				e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
-				return nil, err
+				vaults[i].TotalAmountSolana = "0"
 			}
-			vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+			if len(walletAssetsSolana) > 0 {
+				vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+			}
 		}
 	}
 

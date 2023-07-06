@@ -255,6 +255,8 @@ func (h *Handler) CreateTreasurerSubmission(c *gin.Context) {
 		return
 	}
 
+	// TODO: check if submission is finish
+
 	treasurerSubmission, err := h.entities.CreateTreasurerSubmission(&req)
 	if err != nil {
 		if strings.Contains(err.Error(), "submission already processed") {
