@@ -259,7 +259,7 @@ func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
 		}
 	}
 
-	if route.Provider == "solana" {
+	if route.Provider == "jupyter" {
 		quoteResp := &response.JupyterQuoteResponse{}
 		quoteByte, _ := json.Marshal(route.Data.RouteSummary)
 		err := json.Unmarshal(quoteByte, quoteResp)
