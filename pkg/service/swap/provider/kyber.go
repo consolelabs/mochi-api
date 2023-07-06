@@ -73,12 +73,24 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 	for _, fromToken := range fromTokens {
 		for _, toToken := range toTokens {
 			if toToken.ChainID == fromToken.ChainID {
+				// if chain solana then return empty for kyber
+				if fromToken.ChainID == 999 {
+					routes = append(routes, response.ProviderSwapRoutes{
+						Code:    0,
+						Message: "not supported",
+						Data:    response.RouteSummaryData{},
+					})
+
+					continue
+				}
 				// get routes
 				amount := util.FloatToString(amount, int64(fromToken.Decimals))
 				route, err := k.GetRoute(fromToken.Address, toToken.Address, util.ConvertChainIdToChainName(int64(fromToken.ChainID)), amount)
 				if err != nil {
 					return nil, err
 				}
+
+				route.Aggregator = "kyber"
 
 				k.logger.Fields(logger.Fields{"route": route}).Info("[kyber.GetRoutes] - get route")
 
