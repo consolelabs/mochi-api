@@ -87,7 +87,7 @@ func (j *JupyterProvider) GetRoute(fromToken, toToken, chain, amount string) (*r
 			},
 		},
 		SwapData:   res,
-		Aggregator: "jupiter",
+		Aggregator: "jupyter",
 	}, nil
 }
 

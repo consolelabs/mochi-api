@@ -10,6 +10,7 @@ type SwapRouteResponse struct {
 	Code      int64     `json:"code"`
 	Message   string    `json:"message"`
 	ChainName string    `json:"chainName"`
+	Provider  string    `json:"provider"`
 	Data      SwapRoute `json:"data"`
 }
 
