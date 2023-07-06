@@ -34,6 +34,22 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
+// GetLevelInfo mocks base method.
+func (m *MockStore) GetLevelInfo(xp int) (*model.ConfigXpLevel, *model.ConfigXpLevel, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLevelInfo", xp)
+	ret0, _ := ret[0].(*model.ConfigXpLevel)
+	ret1, _ := ret[1].(*model.ConfigXpLevel)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetLevelInfo indicates an expected call of GetLevelInfo.
+func (mr *MockStoreMockRecorder) GetLevelInfo(xp interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLevelInfo", reflect.TypeOf((*MockStore)(nil).GetLevelInfo), xp)
+}
+
 // GetNextLevel mocks base method.
 func (m *MockStore) GetNextLevel(xp int, next bool) (*model.ConfigXpLevel, error) {
 	m.ctrl.T.Helper()
