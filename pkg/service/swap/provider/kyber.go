@@ -90,7 +90,7 @@ func (k *KyberProvider) GetRoutes(fromTokens, toTokens []model.Token, amount str
 					return nil, err
 				}
 
-				route.Aggregator = "kyber"
+				route.Aggregator = "kyber-swap"
 
 				k.logger.Fields(logger.Fields{"route": route}).Info("[kyber.GetRoutes] - get route")
 
