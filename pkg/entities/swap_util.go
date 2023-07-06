@@ -174,7 +174,7 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 	}
 
 	var routeSummary interface{}
-	if swapRoutes.Aggregator == "kyber" {
+	if swapRoutes.Aggregator == "kyber-swap" {
 		newRoute := make([][]response.RouteElement, 0)
 		for _, route := range swapRoutes.Data.RouteSummary.Route {
 			newRouteElement := make([]response.RouteElement, 0)
@@ -229,6 +229,7 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 			Aggregator:    swapRoutes.Aggregator,
 			SwapData:      swapRoutes.SwapData,
 		},
+		Provider: swapRoutes.Aggregator,
 	}
 }
 
