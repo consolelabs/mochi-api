@@ -178,7 +178,7 @@ func (j *JupyterProvider) BuildSwapRoutes(chainName string, req *request.BuildSw
 	}
 
 	quoteResp := &response.JupyterQuoteResponse{}
-	quoteByte, _ := json.Marshal(req.RouteSummary)
+	quoteByte, _ := json.Marshal(req.SwapData)
 	err = json.Unmarshal(quoteByte, quoteResp)
 	if err != nil {
 		return nil, err

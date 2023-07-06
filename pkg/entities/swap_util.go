@@ -214,7 +214,46 @@ func (e *Entity) formatRouteSwap(req *request.GetSwapRouteRequest, swapRoutes *r
 	}
 
 	if swapRoutes.Aggregator == "jupyter" {
-		routeSummary = swapRoutes.SwapData
+		var swapData response.JupiterSwapRoutesSol
+		swapByte, _ := json.Marshal(swapRoutes.SwapData)
+		err := json.Unmarshal(swapByte, &swapData)
+		if err != nil {
+			return nil
+		}
+
+		newRoute := make([][]response.RouteElement, 0)
+		for _, route := range swapData.RoutePlan {
+			newRouteElement := make([]response.RouteElement, 0)
+			newRouteElement = append(newRouteElement, response.RouteElement{
+				Pool:              route.SwapInfo.AmmKey,
+				TokenIn:           route.SwapInfo.InputMint,
+				TokenOut:          route.SwapInfo.OutputMint,
+				LimitReturnAmount: "0",
+				SwapAmount:        route.SwapInfo.InAmount,
+				AmountOut:         route.SwapInfo.OutAmount,
+				// Exchange:       routeEle.Exchange,
+				// PoolLength:     routeEle.PoolLength,
+				PoolType:       route.SwapInfo.Label,
+				TokenOutSymbol: req.To,
+			})
+
+			newRoute = append(newRoute, newRouteElement)
+		}
+
+		routeSummary = response.RouteSummary{
+			TokenIn:                      swapData.InputMint,
+			AmountIn:                     swapData.InAmount,
+			AmountInUsd:                  "",
+			TokenInMarketPriceAvailable:  true,
+			TokenOut:                     swapData.OutputMint,
+			AmountOut:                    swapData.OutAmount,
+			AmountOutUsd:                 "",
+			TokenOutMarketPriceAvailable: true,
+			Gas:                          "",
+			GasPrice:                     "",
+			GasUsd:                       "",
+			Route:                        newRoute,
+		}
 	}
 
 	return &response.SwapRouteResponse{
