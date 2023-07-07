@@ -300,7 +300,7 @@ func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
 
 	if route.Provider == "jupyter" {
 		quoteResp := &response.JupyterQuoteResponse{}
-		quoteByte, _ := json.Marshal(route.Data.RouteSummary)
+		quoteByte, _ := json.Marshal(route.Data.SwapData)
 		err := json.Unmarshal(quoteByte, quoteResp)
 		if err != nil {
 			return err
