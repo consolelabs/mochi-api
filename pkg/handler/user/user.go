@@ -300,7 +300,6 @@ func (h *Handler) GetTransactionsByQuery(c *gin.Context) {
 // @Produce     json
 // @Param       member_id query     string true "Member ID"
 // @Param       guild_id query     string true "Guild ID"
-// @Success     200 {object} response.GetInvitesResponse
 // @Router      /community/invites/ [get]
 func (h *Handler) GetInvites(c *gin.Context) {
 	//TODO: add test

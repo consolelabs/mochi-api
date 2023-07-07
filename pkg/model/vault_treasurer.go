@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type Treasurer struct {
+type VaultTreasurer struct {
 	Id            int64     `json:"id"`
 	VaultId       int64     `json:"vault_id"`
 	GuildId       string    `json:"guild_id"`

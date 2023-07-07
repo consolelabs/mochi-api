@@ -474,149 +474,7 @@
                         "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetInvitesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/invites/aggregation": {
-            "get": {
-                "description": "Invites Aggregation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Invites Aggregation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Inviter ID",
-                        "name": "inviter",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.InvitesAggregationResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/invites/config": {
-            "get": {
-                "description": "Get invites tracker config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get invites tracker config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetInviteTrackerConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Configure invites",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Configure invites",
-                "parameters": [
-                    {
-                        "description": "Configure Invites request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigureInviteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ConfigureInvitesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/invites/leaderboard/{id}": {
-            "get": {
-                "description": "Get invites leaderboard",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get invites leaderboard",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetInvitesLeaderboardResponse"
-                        }
-                    }
-                }
+                "responses": {}
             }
         },
         "/community/levelup": {
@@ -826,202 +684,6 @@
                 }
             }
         },
-        "/community/repost-reactions": {
-            "post": {
-                "description": "Config Respost reaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Config Respost reaction",
-                "parameters": [
-                    {
-                        "description": "Config repost reaction request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove Respost reaction config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Remove Respost reaction config",
-                "parameters": [
-                    {
-                        "description": "Remove repost reaction config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/repost-reactions/blacklist-channel": {
-            "get": {
-                "description": "Get guild blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get guild blacklist channel repost config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Create blacklist channel repost config",
-                "parameters": [
-                    {
-                        "description": "Upsert join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete blacklist channel repost config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Delete blacklist channel repost config",
-                "parameters": [
-                    {
-                        "description": "Delete blacklist channel repost config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.BalcklistChannelRepostConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/repost-reactions/conversation": {
-            "post": {
-                "description": "Config Respost reaction with start stop",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Config Respost reaction with start stop",
-                "parameters": [
-                    {
-                        "description": "Config repost reaction start stop request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ConfigRepostReactionStartStop"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/community/repost-reactions/message-repost": {
             "put": {
                 "description": "edit message repost",
@@ -1051,38 +713,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/repost-reactions/{guild_id}": {
-            "get": {
-                "description": "Get Respost reaction configs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get Respost reaction configs",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetRepostReactionConfigsResponse"
                         }
                     }
                 }
@@ -1153,81 +783,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/twitter": {
-            "post": {
-                "description": "Create twitter post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Create twitter post",
-                "parameters": [
-                    {
-                        "description": "Create twitter post request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TwitterPost"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/twitter/top": {
-            "get": {
-                "description": "Create twitter post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Create twitter post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterLeaderboardResponse"
                         }
                     }
                 }
@@ -1451,14 +1006,7 @@
                         "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
+                "responses": {}
             },
             "post": {
                 "description": "Update or insert join-leave channel config",
@@ -1483,14 +1031,7 @@
                         }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
+                "responses": {}
             },
             "delete": {
                 "description": "Delete join-leave channel config",
@@ -1687,102 +1228,6 @@
                 }
             }
         },
-        "/config-channels/upvote": {
-            "get": {
-                "description": "Get vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Get vote channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Update or insert vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Update or insert vote channel config",
-                "parameters": [
-                    {
-                        "description": "Upsert vote channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertVoteChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetVoteChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete vote channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Delete vote channel config",
-                "parameters": [
-                    {
-                        "description": "Delete vote channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteVoteChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/config-channels/welcome": {
             "get": {
                 "description": "Get welcome channel config",
@@ -1906,319 +1351,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetGuildConfigDaoProposal"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-community/telegram": {
-            "get": {
-                "description": "Get telegram account linked with discord ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Get telegram account linked with discord ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "request",
-                        "name": "telegram_username",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetLinkedTelegramResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Link user's telegram with discord account",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Link user's telegram with discord account",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.LinkUserTelegramWithDiscordRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-community/twitter": {
-            "post": {
-                "description": "Create twitter config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Create twitter config",
-                "parameters": [
-                    {
-                        "description": "Create Twitter config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.GuildConfigTwitterFeed"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-community/twitter/blacklist": {
-            "get": {
-                "description": "get twitter blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Get twitter blacklist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterBlackListResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add an user to twitter watching blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Add an user to twitter watching blacklist",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AddToTwitterBlackListRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete an user from twitter watching blacklist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Delete an user from twitter watching blacklist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "twitter_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-community/twitter/hashtag": {
-            "get": {
-                "description": "get all twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Get all twitter hashtag config",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllTwitterHashtagConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Create twitter hashtag config",
-                "parameters": [
-                    {
-                        "description": "Create twitter hashtag config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TwitterHashtag"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-community/twitter/hashtag/{guild_id}": {
-            "get": {
-                "description": "get twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Get twitter hashtag config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTwitterHashtagConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete twitter hashtag config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigCommunity"
-                ],
-                "summary": "Delete twitter hashtag config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -3151,104 +2283,6 @@
                 }
             }
         },
-        "/config-roles/mix-roles": {
-            "post": {
-                "description": "Create guild Mix role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Create guild Mix role config",
-                "parameters": [
-                    {
-                        "description": "Create guild Mix role config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateGuildMixRole"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateGuildMixRole"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/mix-roles/": {
-            "get": {
-                "description": "Get list Mix role config of guild",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Get list Mix role config of guild",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListGuildMixRoles"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/mix-roles/{id}": {
-            "delete": {
-                "description": "Remove guild Mix role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Remove guild Mix role config",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Config ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/config-roles/nft-roles": {
             "get": {
                 "description": "List guild nft roles",
@@ -3633,104 +2667,6 @@
                 }
             }
         },
-        "/config-roles/xp-roles": {
-            "post": {
-                "description": "Create guild XP role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Create guild XP role config",
-                "parameters": [
-                    {
-                        "description": "Create guild XP role config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateGuildXPRole"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateGuildXPRole"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/xp-roles/": {
-            "get": {
-                "description": "Get list XP role config of guild",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Get list XP role config of guild",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListGuildXPRoles"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/xp-roles/{id}": {
-            "delete": {
-                "description": "Remove guild XP role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Remove guild XP role config",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Config ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/configs/nft-roles/group": {
             "delete": {
                 "description": "Remove guild group nft role",
@@ -3827,38 +2763,6 @@
                 }
             }
         },
-        "/configs/twitter": {
-            "get": {
-                "description": "Get all twitter config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get all twitter config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetAllTwitterConfigResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/configs/twitter-sales": {
             "get": {
                 "description": "Get twitter sale config",
@@ -3918,125 +2822,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.CreateTwitterSaleConfigResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/upvote-tiers": {
-            "get": {
-                "description": "Get all upvote tiers",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get all upvote tiers",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUpvoteTiersConfig"
-                        }
-                    }
-                }
-            }
-        },
-        "/configs/whitelist-prune": {
-            "get": {
-                "description": "Get prune exclusion config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Get prune exclusion config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildPruneExcludeResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert prune exclude config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Upsert prune exclude config",
-                "parameters": [
-                    {
-                        "description": "Upsert prune exlude request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete prune exclude config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Config"
-                ],
-                "summary": "Delete prune exclude config",
-                "parameters": [
-                    {
-                        "description": "Upsert prune exlude request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildPruneExcludeRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -5099,38 +3884,6 @@
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create guild",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Guild"
-                ],
-                "summary": "Create guild",
-                "parameters": [
-                    {
-                        "description": "Create Guild request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateGuildRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateGuildRequest"
-                        }
-                    }
-                }
             }
         },
         "/guilds/user-managed": {
@@ -5236,44 +3989,6 @@
                 }
             }
         },
-        "/guilds/{guild_id}/channels": {
-            "post": {
-                "description": "Create guild channel",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Guild"
-                ],
-                "summary": "Create guild channel",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "count_type",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/guilds/{guild_id}/custom-tokens": {
             "get": {
                 "description": "List all guild custom token",
@@ -5336,38 +4051,6 @@
                             "items": {
                                 "$ref": "#/definitions/response.DiscordGuildRole"
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/guilds/{guild_id}/stats": {
-            "get": {
-                "description": "Get guild stats",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Guild"
-                ],
-                "summary": "Get guild stats",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.DiscordGuildStat"
                         }
                     }
                 }
@@ -5889,38 +4572,6 @@
                 }
             }
         },
-        "/nfts/soulbound": {
-            "get": {
-                "description": "Get Nft Soulbound",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Get Nft Soulbound",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "collection address",
-                        "name": "collection_address",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetSoulBoundNFTResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/nfts/supported-chains": {
             "post": {
                 "description": "Get supported chains",
@@ -5992,72 +4643,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.IndexerGetNFTTokenTickersResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/nfts/trades": {
-            "post": {
-                "description": "Create Trade Offer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Create Trade Offer",
-                "parameters": [
-                    {
-                        "description": "Create Trade Offer Request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateTradeOfferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateTradeOfferResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/nfts/trades/{id}": {
-            "get": {
-                "description": "Get Trade Offer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Get Trade Offer",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Trade Offer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetTradeOfferResponse"
                         }
                     }
                 }
@@ -6620,38 +5205,6 @@
                 }
             }
         },
-        "/users/:id/envelop-streak": {
-            "get": {
-                "description": "Get user envelop streak",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user envelop streak",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserEnvelopStreak"
-                        }
-                    }
-                }
-            }
-        },
         "/users/:id/wallets": {
             "get": {
                 "description": "Get user's wallets",
@@ -6773,40 +5326,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetOneWalletResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/envelop": {
-            "post": {
-                "description": "Track user receive envelop",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Track user receive envelop",
-                "parameters": [
-                    {
-                        "description": "Create envelop request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateEnvelop"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateEnvelop"
                         }
                     }
                 }
@@ -6982,38 +5501,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.TopUser"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/wallets/{address}": {
-            "get": {
-                "description": "Get user by guild_id address",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user by guild_id address",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Address",
-                        "name": "address",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserWalletByGuildIDAddressResponse"
                         }
                     }
                 }
@@ -7428,40 +5915,6 @@
                 }
             }
         },
-        "/verify": {
-            "post": {
-                "description": "Verify wallet address",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Verification"
-                ],
-                "summary": "Verify wallet address",
-                "parameters": [
-                    {
-                        "description": "Verify wallet address request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.VerifyWalletAddressRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseStatus"
-                        }
-                    }
-                }
-            }
-        },
         "/verify/assign-role": {
             "post": {
                 "description": "Assign verified role if user has verified wallet address",
@@ -7619,232 +6072,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.NewGuildConfigWalletVerificationMessageResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/verify/generate": {
-            "post": {
-                "description": "Generate verification",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Verification"
-                ],
-                "summary": "Generate verification",
-                "parameters": [
-                    {
-                        "description": "Generate verification request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.GenerateVerificationRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GenerateVerificationResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/widget/device": {
-            "get": {
-                "description": "Get user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Get user current device data",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Device ID",
-                        "name": "device_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserDeviceResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Upsert user current device data",
-                "parameters": [
-                    {
-                        "description": "Upsert user device",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertUserDeviceRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete user current device data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Delete user current device data",
-                "parameters": [
-                    {
-                        "description": "Delete user device",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteUserDeviceRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/widget/token-alert": {
-            "get": {
-                "description": "Get user current token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Get user current token alerts",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Discord ID",
-                        "name": "discord_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.DiscordUserTokenAlertResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert user token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Upsert user token alerts",
-                "parameters": [
-                    {
-                        "description": "Upsert user token alert",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertDiscordUserAlertRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete user token alerts",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Widget"
-                ],
-                "summary": "Delete user token alerts",
-                "parameters": [
-                    {
-                        "description": "Delete user token alert",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteDiscordUserAlertRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -8036,6 +6263,9 @@
                 "is_native": {
                     "type": "boolean"
                 },
+                "is_popular": {
+                    "type": "boolean"
+                },
                 "most_popular": {
                     "type": "boolean"
                 },
@@ -8116,85 +6346,6 @@
                 }
             }
         },
-        "model.DiscordGuildStat": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "nr_of_animated_emojis": {
-                    "type": "integer"
-                },
-                "nr_of_announcement_channels": {
-                    "type": "integer"
-                },
-                "nr_of_bots": {
-                    "type": "integer"
-                },
-                "nr_of_categories": {
-                    "type": "integer"
-                },
-                "nr_of_channels": {
-                    "type": "integer"
-                },
-                "nr_of_custom_stickers": {
-                    "type": "integer"
-                },
-                "nr_of_emojis": {
-                    "type": "integer"
-                },
-                "nr_of_members": {
-                    "type": "integer"
-                },
-                "nr_of_roles": {
-                    "type": "integer"
-                },
-                "nr_of_server_stickers": {
-                    "type": "integer"
-                },
-                "nr_of_stage_channels": {
-                    "type": "integer"
-                },
-                "nr_of_static_emojis": {
-                    "type": "integer"
-                },
-                "nr_of_stickers": {
-                    "type": "integer"
-                },
-                "nr_of_text_channels": {
-                    "type": "integer"
-                },
-                "nr_of_users": {
-                    "type": "integer"
-                },
-                "nr_of_voice_channels": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.DiscordUserDevice": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "ios_noti_token": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.DiscordUserGMStreak": {
             "type": "object",
             "properties": {
@@ -8218,81 +6369,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "model.DiscordUserTokenAlert": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "device": {
-                    "$ref": "#/definitions/model.DiscordUserDevice"
-                },
-                "device_id": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_enable": {
-                    "type": "boolean"
-                },
-                "price_set": {
-                    "type": "number"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
-                },
-                "trend": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Envelop": {
-            "type": "object",
-            "properties": {
-                "command": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.ExtraFee": {
-            "type": "object",
-            "properties": {
-                "chargeFeeBy": {
-                    "type": "string"
-                },
-                "feeAmount": {
-                    "type": "string"
-                },
-                "feeReceiver": {
-                    "type": "string"
-                },
-                "isImBps": {
-                    "type": "boolean"
                 }
             }
         },
@@ -8454,23 +6530,6 @@
                 }
             }
         },
-        "model.GuildConfigInviteTracker": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "webhook_url": {
-                    "$ref": "#/definitions/model.JSONNullString"
-                }
-            }
-        },
         "model.GuildConfigLevelRole": {
             "type": "object",
             "properties": {
@@ -8510,70 +6569,6 @@
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigMixRole": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nft_requirement": {
-                    "$ref": "#/definitions/model.MixRoleNFTRequirement"
-                },
-                "nft_requirement_id": {
-                    "type": "integer"
-                },
-                "required_level": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "token_requirement": {
-                    "$ref": "#/definitions/model.MixRoleTokenRequirement"
-                },
-                "token_requirement_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigRepostReaction": {
-            "type": "object",
-            "properties": {
-                "emoji": {
-                    "type": "string"
-                },
-                "emoji_start": {
-                    "type": "string"
-                },
-                "emoji_stop": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "reaction_type": {
-                    "type": "string"
-                },
-                "repost_channel_id": {
                     "type": "string"
                 }
             }
@@ -8633,60 +6628,6 @@
                 }
             }
         },
-        "model.GuildConfigTwitterBlacklist": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "created_by": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "twitter_id": {
-                    "type": "string"
-                },
-                "twitter_username": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigTwitterFeed": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "twitter_access_token": {
-                    "type": "string"
-                },
-                "twitter_access_token_secret": {
-                    "type": "string"
-                },
-                "twitter_consumer_key": {
-                    "type": "string"
-                },
-                "twitter_consumer_secret": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigVoteChannel": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "model.GuildConfigWalletVerificationMessage": {
             "type": "object",
             "properties": {
@@ -8729,29 +6670,6 @@
                     "type": "string"
                 },
                 "welcome_message": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigXPRole": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "required_xp": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -8836,64 +6754,6 @@
                     "$ref": "#/definitions/model.User"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.JSONNullString": {
-            "type": "object",
-            "properties": {
-                "string": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if String is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "model.MixRoleNFTRequirement": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nft_collection": {
-                    "$ref": "#/definitions/model.NFTCollection"
-                },
-                "nft_collection_id": {
-                    "type": "string"
-                },
-                "required_amount": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.MixRoleTokenRequirement": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "required_amount": {
-                    "type": "number"
-                },
-                "token": {
-                    "$ref": "#/definitions/model.Token"
-                },
-                "token_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -9037,32 +6897,6 @@
                     "type": "string"
                 },
                 "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.NftSoulbound": {
-            "type": "object",
-            "properties": {
-                "collection_address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "total_soulbound": {
-                    "type": "integer"
-                },
-                "trait_type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "value": {
                     "type": "string"
                 }
             }
@@ -9394,90 +7228,6 @@
                 }
             }
         },
-        "model.RouteElement": {
-            "type": "object",
-            "properties": {
-                "amountOut": {
-                    "type": "string"
-                },
-                "exchange": {
-                    "type": "string"
-                },
-                "extra": {},
-                "limitReturnAmount": {
-                    "type": "string"
-                },
-                "pool": {
-                    "type": "string"
-                },
-                "poolExtra": {},
-                "poolLength": {
-                    "type": "integer"
-                },
-                "poolType": {
-                    "type": "string"
-                },
-                "swapAmount": {
-                    "type": "string"
-                },
-                "tokenIn": {
-                    "type": "string"
-                },
-                "tokenOut": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.RouteSummary": {
-            "type": "object",
-            "properties": {
-                "amountIn": {
-                    "type": "string"
-                },
-                "amountInUsd": {
-                    "type": "string"
-                },
-                "amountOut": {
-                    "type": "string"
-                },
-                "amountOutUsd": {
-                    "type": "string"
-                },
-                "extraFee": {
-                    "$ref": "#/definitions/model.ExtraFee"
-                },
-                "gas": {
-                    "type": "string"
-                },
-                "gasPrice": {
-                    "type": "string"
-                },
-                "gasUsd": {
-                    "type": "string"
-                },
-                "route": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/model.RouteElement"
-                        }
-                    }
-                },
-                "tokenIn": {
-                    "type": "string"
-                },
-                "tokenInMarketPriceAvailable": {
-                    "type": "boolean"
-                },
-                "tokenOut": {
-                    "type": "string"
-                },
-                "tokenOutMarketPriceAvailable": {
-                    "type": "boolean"
-                }
-            }
-        },
         "model.SaleBotMarketplace": {
             "type": "object",
             "properties": {
@@ -9562,133 +7312,6 @@
                 }
             }
         },
-        "model.TradeItem": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "is_from": {
-                    "type": "boolean"
-                },
-                "token_address": {
-                    "type": "string"
-                },
-                "token_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "trade_offer_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.TradeOffer": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "have_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.TradeItem"
-                    }
-                },
-                "id": {
-                    "type": "string"
-                },
-                "owner_address": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "want_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.TradeItem"
-                    }
-                }
-            }
-        },
-        "model.Treasurer": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_discord_id": {
-                    "type": "string"
-                },
-                "vault": {
-                    "$ref": "#/definitions/model.Vault"
-                },
-                "vault_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "model.TwitterPostStreak": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "last_streak_date": {
-                    "type": "string"
-                },
-                "streak_count": {
-                    "type": "integer"
-                },
-                "total_count": {
-                    "type": "integer"
-                },
-                "twitter_handle": {
-                    "type": "string"
-                },
-                "twitter_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UpvoteStreakTier": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "streak_required": {
-                    "type": "integer"
-                },
-                "vote_interval": {
-                    "type": "integer"
-                },
-                "xp_per_interval": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.User": {
             "type": "object",
             "properties": {
@@ -9708,17 +7331,6 @@
                     "type": "integer"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UserEnvelopStreak": {
-            "type": "object",
-            "properties": {
-                "total_envelop": {
-                    "type": "integer"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -9772,17 +7384,6 @@
                 }
             }
         },
-        "model.UserTelegramDiscordAssociation": {
-            "type": "object",
-            "properties": {
-                "discord_id": {
-                    "type": "string"
-                },
-                "telegram_username": {
-                    "type": "string"
-                }
-            }
-        },
         "model.UserTokenSupportRequest": {
             "type": "object",
             "properties": {
@@ -9827,30 +7428,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.UserWallet": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_type": {
-                    "$ref": "#/definitions/model.JSONNullString"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "user": {
-                    "description": "preload user",
-                    "$ref": "#/definitions/model.User"
                 },
                 "user_discord_id": {
                     "type": "string"
@@ -9945,7 +7522,7 @@
                 "treasurers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Treasurer"
+                        "$ref": "#/definitions/model.VaultTreasurer"
                     }
                 },
                 "updated_at": {
@@ -9955,6 +7532,35 @@
                     "type": "string"
                 },
                 "wallet_number": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.VaultTreasurer": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_discord_id": {
+                    "type": "string"
+                },
+                "vault": {
+                    "$ref": "#/definitions/model.Vault"
+                },
+                "vault_id": {
                     "type": "integer"
                 }
             }
@@ -9975,23 +7581,6 @@
                     "type": "string"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.AddToTwitterBlackListRequest": {
-            "type": "object",
-            "properties": {
-                "created_by": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "twitter_id": {
-                    "type": "string"
-                },
-                "twitter_username": {
                     "type": "string"
                 }
             }
@@ -10059,17 +7648,6 @@
                     "type": "string"
                 },
                 "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.BalcklistChannelRepostConfigRequest": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
                     "type": "string"
                 }
             }
@@ -10167,54 +7745,6 @@
                 }
             }
         },
-        "request.ConfigRepostReactionStartStop": {
-            "type": "object",
-            "properties": {
-                "emoji_start": {
-                    "type": "string"
-                },
-                "emoji_stop": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "repost_channel_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.ConfigRepostRequest": {
-            "type": "object",
-            "properties": {
-                "emoji": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "integer"
-                },
-                "repost_channel_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.ConfigureInviteRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "log_channel": {
-                    "type": "string"
-                },
-                "webhook_url": {
-                    "type": "string"
-                }
-            }
-        },
         "request.CreateAirdropCampaignRequest": {
             "type": "object",
             "properties": {
@@ -10274,21 +7804,6 @@
                 }
             }
         },
-        "request.CreateEnvelop": {
-            "type": "object",
-            "required": [
-                "command",
-                "user_id"
-            ],
-            "properties": {
-                "command": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.CreateGuildAdminRoleRequest": {
             "type": "object",
             "required": [
@@ -10304,41 +7819,6 @@
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "request.CreateGuildMixRole": {
-            "type": "object",
-            "required": [
-                "guild_id",
-                "role_id"
-            ],
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "nft_requirement": {
-                    "$ref": "#/definitions/request.MixRoleNFTRequirement"
-                },
-                "required_level": {
-                    "type": "integer"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "token_requirement": {
-                    "$ref": "#/definitions/request.MixRoleTokenRequirement"
-                }
-            }
-        },
-        "request.CreateGuildRequest": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         },
@@ -10366,24 +7846,6 @@
                 },
                 "role_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.CreateGuildXPRole": {
-            "type": "object",
-            "required": [
-                "guild_id",
-                "role_id"
-            ],
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "string"
-                },
-                "xp": {
-                    "type": "integer"
                 }
             }
         },
@@ -10500,29 +7962,6 @@
                 }
             }
         },
-        "request.CreateTradeOfferRequest": {
-            "type": "object",
-            "required": [
-                "owner_address"
-            ],
-            "properties": {
-                "have_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.TradeOfferItem"
-                    }
-                },
-                "owner_address": {
-                    "type": "string"
-                },
-                "want_items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.TradeOfferItem"
-                    }
-                }
-            }
-        },
         "request.CreateTwitterSaleConfigRequest": {
             "type": "object",
             "properties": {
@@ -10588,14 +8027,6 @@
                 }
             }
         },
-        "request.DeleteDiscordUserAlertRequest": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.DeleteGuildConfigDaoProposal": {
             "type": "object",
             "properties": {
@@ -10635,22 +8066,6 @@
                 }
             }
         },
-        "request.DeleteUserDeviceRequest": {
-            "type": "object",
-            "properties": {
-                "device_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.DeleteVoteChannelConfigRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.DeleteWelcomeConfigRequest": {
             "type": "object",
             "properties": {
@@ -10675,20 +8090,6 @@
                     "type": "string"
                 },
                 "repost_message_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.GenerateVerificationRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "is_reverify": {
-                    "type": "boolean"
-                },
-                "user_discord_id": {
                     "type": "string"
                 }
             }
@@ -10738,56 +8139,11 @@
                 }
             }
         },
-        "request.LinkUserTelegramWithDiscordRequest": {
-            "type": "object",
-            "required": [
-                "discord_id",
-                "telegram_username"
-            ],
-            "properties": {
-                "discord_id": {
-                    "type": "string"
-                },
-                "telegram_username": {
-                    "type": "string"
-                }
-            }
-        },
         "request.LoginRequest": {
             "type": "object",
             "properties": {
                 "access_token": {
                     "type": "string"
-                }
-            }
-        },
-        "request.MixRoleNFTRequirement": {
-            "type": "object",
-            "required": [
-                "amount",
-                "nft_id"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "integer"
-                },
-                "nft_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.MixRoleTokenRequirement": {
-            "type": "object",
-            "required": [
-                "amount",
-                "token_id"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "token_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -10931,12 +8287,14 @@
                 "userDiscordId"
             ],
             "properties": {
+                "aggregator": {
+                    "type": "string"
+                },
                 "chainName": {
                     "type": "string"
                 },
-                "routeSummary": {
-                    "$ref": "#/definitions/model.RouteSummary"
-                },
+                "routeSummary": {},
+                "swapData": {},
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -10969,79 +8327,6 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.TradeOfferItem": {
-            "type": "object",
-            "required": [
-                "token_address",
-                "token_ids"
-            ],
-            "properties": {
-                "token_address": {
-                    "type": "string"
-                },
-                "token_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "request.TwitterHashtag": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "from_twitter": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "hashtag": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "rule_id": {
-                    "type": "string"
-                },
-                "twitter_username": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.TwitterPost": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "tweet_id": {
-                    "type": "string"
-                },
-                "twitter_handle": {
-                    "type": "string"
-                },
-                "twitter_id": {
                     "type": "string"
                 }
             }
@@ -11146,35 +8431,6 @@
                 }
             }
         },
-        "request.UpsertDiscordUserAlertRequest": {
-            "type": "object",
-            "properties": {
-                "device_id": {
-                    "type": "string"
-                },
-                "discord_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_enable": {
-                    "type": "boolean"
-                },
-                "price_set": {
-                    "type": "number"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "token_id": {
-                    "type": "string"
-                },
-                "trend": {
-                    "type": "string"
-                }
-            }
-        },
         "request.UpsertGmConfigRequest": {
             "type": "object",
             "properties": {
@@ -11234,17 +8490,6 @@
                 }
             }
         },
-        "request.UpsertGuildPruneExcludeRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.UpsertGuildTokenConfigRequest": {
             "type": "object",
             "properties": {
@@ -11296,17 +8541,6 @@
                 }
             }
         },
-        "request.UpsertUserDeviceRequest": {
-            "type": "object",
-            "properties": {
-                "device_id": {
-                    "type": "string"
-                },
-                "ios_noti_token": {
-                    "type": "string"
-                }
-            }
-        },
         "request.UpsertUserTag": {
             "type": "object",
             "properties": {
@@ -11317,17 +8551,6 @@
                     "type": "boolean"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.UpsertVoteChannelConfigRequest": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
                     "type": "string"
                 }
             }
@@ -11365,20 +8588,6 @@
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.VerifyWalletAddressRequest": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "signature": {
-                    "type": "string"
-                },
-                "wallet_address": {
                     "type": "string"
                 }
             }
@@ -11856,14 +9065,6 @@
                 }
             }
         },
-        "response.ConfigureInvitesResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "string"
-                }
-            }
-        },
         "response.CreateCommonwealthDiscussionSubscription": {
             "type": "object",
             "properties": {
@@ -11872,35 +9073,11 @@
                 }
             }
         },
-        "response.CreateEnvelop": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.Envelop"
-                }
-            }
-        },
-        "response.CreateGuildMixRole": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigMixRole"
-                }
-            }
-        },
         "response.CreateGuildTokenRole": {
             "type": "object",
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigTokenRole"
-                }
-            }
-        },
-        "response.CreateGuildXPRole": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigXPRole"
                 }
             }
         },
@@ -11917,14 +9094,6 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigDaoProposal"
-                }
-            }
-        },
-        "response.CreateTradeOfferResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.TradeOffer"
                 }
             }
         },
@@ -12069,17 +9238,6 @@
                 }
             }
         },
-        "response.DiscordUserTokenAlertResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DiscordUserTokenAlert"
-                    }
-                }
-            }
-        },
         "response.GasTrackerResponse": {
             "type": "object",
             "properties": {
@@ -12113,42 +9271,6 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.GasTrackerResponse"
-                    }
-                }
-            }
-        },
-        "response.GenerateVerificationResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.GetAllTwitterConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigTwitterFeed"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.GetAllTwitterHashtagConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.TwitterHashtag"
                     }
                 }
             }
@@ -12417,17 +9539,6 @@
                 }
             }
         },
-        "response.GetGuildPruneExcludeResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.GuildPruneExcludeList"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
         "response.GetGuildResponse": {
             "type": "object",
             "properties": {
@@ -12510,39 +9621,6 @@
                 }
             }
         },
-        "response.GetInviteTrackerConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigInviteTracker"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.GetInvitesLeaderboardResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.UserInvitesAggregation"
-                    }
-                }
-            }
-        },
-        "response.GetInvitesResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "response.GetLevelRoleConfigsResponse": {
             "type": "object",
             "properties": {
@@ -12562,14 +9640,6 @@
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "response.GetLinkedTelegramResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.UserTelegramDiscordAssociation"
                 }
             }
         },
@@ -12751,17 +9821,6 @@
                 }
             }
         },
-        "response.GetRepostReactionConfigsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigRepostReaction"
-                    }
-                }
-            }
-        },
         "response.GetSaleTwitterConfigResponse": {
             "type": "object",
             "properties": {
@@ -12780,17 +9839,6 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.GuildConfigSalesTracker"
-                    }
-                }
-            }
-        },
-        "response.GetSoulBoundNFTResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.NftSoulbound"
                     }
                 }
             }
@@ -12908,14 +9956,6 @@
                 }
             }
         },
-        "response.GetTradeOfferResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.TradeOffer"
-                }
-            }
-        },
         "response.GetTrendingSearch": {
             "type": "object",
             "properties": {
@@ -12935,61 +9975,6 @@
             "properties": {
                 "item": {
                     "$ref": "#/definitions/response.Coin"
-                }
-            }
-        },
-        "response.GetTwitterBlackListResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigTwitterBlacklist"
-                    }
-                }
-            }
-        },
-        "response.GetTwitterHashtagConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.TwitterHashtag"
-                }
-            }
-        },
-        "response.GetTwitterLeaderboardResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.GetTwitterLeaderboardResponseData"
-                }
-            }
-        },
-        "response.GetTwitterLeaderboardResponseData": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.TwitterPostStreak"
-                    }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/response.PaginationResponse"
-                }
-            }
-        },
-        "response.GetUpvoteTiersConfig": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.UpvoteStreakTier"
-                    }
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -13035,14 +10020,6 @@
                 }
             }
         },
-        "response.GetUserEnvelopStreak": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.UserEnvelopStreak"
-                }
-            }
-        },
         "response.GetUserProfileResponse": {
             "type": "object",
             "properties": {
@@ -13075,9 +10052,6 @@
                 },
                 "user_faction_xps": {
                     "$ref": "#/definitions/model.UserFactionXpsMapping"
-                },
-                "user_wallet": {
-                    "$ref": "#/definitions/model.UserWallet"
                 }
             }
         },
@@ -13132,14 +10106,6 @@
                 }
             }
         },
-        "response.GetUserWalletByGuildIDAddressResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.UserWallet"
-                }
-            }
-        },
         "response.GetVaultsResponse": {
             "type": "object",
             "properties": {
@@ -13148,17 +10114,6 @@
                     "items": {
                         "$ref": "#/definitions/model.Vault"
                     }
-                }
-            }
-        },
-        "response.GetVoteChannelConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigVoteChannel"
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -13232,20 +10187,6 @@
                 },
                 "updated_at": {
                     "type": "string"
-                }
-            }
-        },
-        "response.GuildPruneExcludeList": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -13663,36 +10604,6 @@
                 }
             }
         },
-        "response.InvitesAggregationResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.UserInvitesAggregation"
-                }
-            }
-        },
-        "response.LinkUserTelegramWithDiscordResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.LinkUserTelegramWithDiscordResponseData"
-                }
-            }
-        },
-        "response.LinkUserTelegramWithDiscordResponseData": {
-            "type": "object",
-            "properties": {
-                "discord_id": {
-                    "type": "string"
-                },
-                "discord_username": {
-                    "type": "string"
-                },
-                "telegram_username": {
-                    "type": "string"
-                }
-            }
-        },
         "response.ListAllCustomTokenResponse": {
             "type": "object",
             "properties": {
@@ -13759,17 +10670,6 @@
                 }
             }
         },
-        "response.ListGuildMixRoles": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigMixRole"
-                    }
-                }
-            }
-        },
         "response.ListGuildNFTRoleConfigsResponse": {
             "type": "object",
             "properties": {
@@ -13814,17 +10714,6 @@
                 "meta": {
                     "type": "object",
                     "additionalProperties": true
-                }
-            }
-        },
-        "response.ListGuildXPRoles": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigXPRole"
-                    }
                 }
             }
         },
@@ -14568,93 +11457,6 @@
                 }
             }
         },
-        "response.RouteElement": {
-            "type": "object",
-            "properties": {
-                "amountOut": {
-                    "type": "string"
-                },
-                "exchange": {
-                    "type": "string"
-                },
-                "extra": {},
-                "limitReturnAmount": {
-                    "type": "string"
-                },
-                "pool": {
-                    "type": "string"
-                },
-                "poolExtra": {},
-                "poolLength": {
-                    "type": "integer"
-                },
-                "poolType": {
-                    "type": "string"
-                },
-                "swapAmount": {
-                    "type": "string"
-                },
-                "tokenIn": {
-                    "type": "string"
-                },
-                "tokenOut": {
-                    "type": "string"
-                },
-                "tokenOutSymbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.RouteSummary": {
-            "type": "object",
-            "properties": {
-                "amountIn": {
-                    "type": "string"
-                },
-                "amountInUsd": {
-                    "type": "string"
-                },
-                "amountOut": {
-                    "type": "string"
-                },
-                "amountOutUsd": {
-                    "type": "string"
-                },
-                "extraFee": {
-                    "$ref": "#/definitions/model.ExtraFee"
-                },
-                "gas": {
-                    "type": "string"
-                },
-                "gasPrice": {
-                    "type": "string"
-                },
-                "gasUsd": {
-                    "type": "string"
-                },
-                "route": {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/response.RouteElement"
-                        }
-                    }
-                },
-                "tokenIn": {
-                    "type": "string"
-                },
-                "tokenInMarketPriceAvailable": {
-                    "type": "boolean"
-                },
-                "tokenOut": {
-                    "type": "string"
-                },
-                "tokenOutMarketPriceAvailable": {
-                    "type": "boolean"
-                }
-            }
-        },
         "response.RouteToken": {
             "type": "object",
             "properties": {
@@ -14718,12 +11520,14 @@
         "response.SwapRoute": {
             "type": "object",
             "properties": {
-                "routeSummary": {
-                    "$ref": "#/definitions/response.RouteSummary"
+                "aggregator": {
+                    "type": "string"
                 },
+                "routeSummary": {},
                 "routerAddress": {
                     "type": "string"
                 },
+                "swapData": {},
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },
@@ -14745,6 +11549,9 @@
                     "$ref": "#/definitions/response.SwapRoute"
                 },
                 "message": {
+                    "type": "string"
+                },
+                "provider": {
                     "type": "string"
                 }
             }
@@ -14845,47 +11652,6 @@
                 }
             }
         },
-        "response.TwitterHashtag": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "from_twitter": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "hashtag": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "rule_id": {
-                    "type": "string"
-                },
-                "twitter_username": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "response.UnlinkBinance": {
             "type": "object",
             "properties": {
@@ -14933,17 +11699,6 @@
                 }
             }
         },
-        "response.UserDeviceResponse": {
-            "type": "object",
-            "properties": {
-                "device_id": {
-                    "type": "string"
-                },
-                "ios_noti_token": {
-                    "type": "string"
-                }
-            }
-        },
         "response.UserFeedbackResponse": {
             "type": "object",
             "properties": {
@@ -14960,23 +11715,6 @@
                     "type": "integer"
                 },
                 "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "response.UserInvitesAggregation": {
-            "type": "object",
-            "properties": {
-                "fake": {
-                    "type": "integer"
-                },
-                "inviter_id": {
-                    "type": "string"
-                },
-                "left": {
-                    "type": "integer"
-                },
-                "regular": {
                     "type": "integer"
                 }
             }

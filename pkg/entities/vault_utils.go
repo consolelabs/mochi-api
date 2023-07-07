@@ -14,7 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.TreasurerSubmission, treasurerReq *model.TreasurerRequest) (*message.VaultVoteTreasurer, map[string]string) {
+func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.VaultSubmission, treasurerReq *model.VaultRequest) (*message.VaultVoteTreasurer, map[string]string) {
 	daoVaultTotalTreasurer := make(map[string]string)
 	daoVaultTotalTreasurerProposal := make(map[string]string)
 	for _, treasurerSubmission := range treasurerSubmissions {

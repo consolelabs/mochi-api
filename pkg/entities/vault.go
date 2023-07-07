@@ -71,7 +71,7 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 	}
 
 	// default for vault creator will be added as treasurer
-	_, err = e.repo.Treasurer.Create(&model.Treasurer{
+	_, err = e.repo.VaultTreasurer.Create(&model.VaultTreasurer{
 		VaultId:       vault.Id,
 		GuildId:       req.GuildId,
 		UserDiscordId: req.VaultCreator,
@@ -196,14 +196,14 @@ func (e *Entity) CreateConfigThreshold(req *request.CreateConfigThresholdRequest
 	return vault, nil
 }
 
-func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*model.Treasurer, error) {
-	treasurer, err := e.repo.Treasurer.Create(&model.Treasurer{
+func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
+	treasurer, err := e.repo.VaultTreasurer.Create(&model.VaultTreasurer{
 		GuildId:       req.GuildId,
 		VaultId:       req.VaultId,
 		UserDiscordId: req.UserDiscordID,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.Create failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTreasurer.Create failed")
 		return nil, err
 	}
 
@@ -228,9 +228,9 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	treasurer, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	treasurer, err := e.repo.VaultTreasurer.GetByVaultId(vault.Id)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Treasurer.GetByVaultId failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.VaultTreasurer.GetByVaultId failed")
 		return err
 	}
 
@@ -250,9 +250,9 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	treasurerRequest, err := e.repo.TreasurerRequest.GetById(req.RequestId)
+	treasurerRequest, err := e.repo.VaultRequest.GetById(req.RequestId)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.TreasurerRequest.GetById failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.VaultRequest.GetById failed")
 		return err
 	}
 
@@ -364,9 +364,9 @@ func (e *Entity) AutoTransferVaultToken(req *model.AutoTransferVaultTokenRequest
 		return err
 	}
 
-	treasurer, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	treasurer, err := e.repo.VaultTreasurer.GetByVaultId(vault.Id)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.Treasurer.GetByVaultId failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AutoTransferVaultToken] - e.repo.VaultTreasurer.GetByVaultId failed")
 		return err
 	}
 
@@ -515,7 +515,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 
 	if req.Status == consts.TreasurerStatusSuccess {
 		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
-		title := fmt.Sprintf("<:check:1077631110047080478> Treasurer was successfully %s", action)
+		title := fmt.Sprintf("<:check:1077631110047080478> VaultTreasurer was successfully %s", action)
 		if action == consts.TreasurerTransferType {
 			description = fmt.Sprintf("%s %s %s has been sent to %s\nWe will notify you when all done.", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
 			title = "<:check:1077631110047080478> Transfer was successfullly submitted"
@@ -542,7 +542,7 @@ func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultReque
 		msg = discordgo.MessageSend{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title:       fmt.Sprintf("<:revoke:1077631119073230970> Treasurer was not %s", action),
+					Title:       fmt.Sprintf("<:revoke:1077631119073230970> VaultTreasurer was not %s", action),
 					Description: description,
 					Color:       0xD94F4F,
 					Timestamp:   time.Now().Format("2006-01-02T15:04:05Z"),
@@ -576,9 +576,9 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		return nil, err
 	}
 
-	treasurers, err := e.repo.Treasurer.GetByVaultId(vault.Id)
+	treasurers, err := e.repo.VaultTreasurer.GetByVaultId(vault.Id)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.GetByVaultId failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTreasurer.GetByVaultId failed")
 		return nil, err
 	}
 
@@ -604,7 +604,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	}
 
 	// create treasurer request
-	treasurerReq, err := e.repo.TreasurerRequest.Create(&model.TreasurerRequest{
+	treasurerReq, err := e.repo.VaultRequest.Create(&model.VaultRequest{
 		GuildId:       req.GuildId,
 		VaultId:       vault.Id,
 		UserDiscordId: req.UserDiscordId,
@@ -618,12 +618,12 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		MessageUrl:    req.MessageUrl,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Treasurer.Create failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTreasurer.Create failed")
 		return nil, err
 	}
 
 	// add submission with status pending for all treasurer in vaul
-	treasurerSubmission := make([]model.TreasurerSubmission, 0)
+	treasurerSubmission := make([]model.VaultSubmission, 0)
 
 	for _, treasurer := range treasurers {
 		status := consts.TreasurerSubmissionStatusPending
@@ -631,7 +631,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 			status = consts.TreasurerSubmissionStatusApproved
 		}
 
-		treasurerSubmission = append(treasurerSubmission, model.TreasurerSubmission{
+		treasurerSubmission = append(treasurerSubmission, model.VaultSubmission{
 			VaultId:    vault.Id,
 			GuildId:    req.GuildId,
 			RequestId:  treasurerReq.Id,
@@ -641,9 +641,9 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 		})
 	}
 
-	err = e.repo.TreasurerSubmission.Create(treasurerSubmission)
+	err = e.repo.VaultSubmission.Create(treasurerSubmission)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.TreasurerSubmission.Create failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultSubmission.Create failed")
 		return nil, err
 	}
 
@@ -658,12 +658,12 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 
 	return &response.CreateTreasurerRequestResponse{
 		Request:              *treasurerReq,
-		Treasurer:            treasurers,
+		VaultTreasurer:       treasurers,
 		IsDecidedAndExecuted: isDecidedAndExecuted,
 	}, nil
 }
 
-func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.TreasurerRequest, vault *model.Vault, treasurers []model.Treasurer) (bool, error) {
+func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.VaultRequest, vault *model.Vault, treasurers []model.VaultTreasurer) (bool, error) {
 	threshold, _ := strconv.ParseFloat(vault.Threshold, 64)
 	percentage := float64(1) / float64(len(treasurers)) * 100
 
@@ -725,7 +725,7 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 	return false, nil
 }
 
-func (e *Entity) validateTreasurer(treasurers []model.Treasurer, userDiscordId string) bool {
+func (e *Entity) validateTreasurer(treasurers []model.VaultTreasurer, userDiscordId string) bool {
 	for _, treasurer := range treasurers {
 		if treasurer.UserDiscordId == userDiscordId {
 			return true
@@ -775,7 +775,7 @@ func (e *Entity) validateBalance(token *mochipay.Token, address, solanaAddress, 
 }
 
 func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmission) (resp *response.CreateTreasurerSubmissionResponse, err error) {
-	treasurerReq, err := e.repo.TreasurerRequest.GetById(req.RequestId)
+	treasurerReq, err := e.repo.VaultRequest.GetById(req.RequestId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Vault.GetById failed")
 		return nil, err
@@ -800,7 +800,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		return nil, err
 	}
 
-	modelSubmission := model.TreasurerSubmission{
+	modelSubmission := model.VaultSubmission{
 		VaultId:   req.VaultId,
 		RequestId: req.RequestId,
 		Submitter: req.Sumitter,
@@ -808,28 +808,28 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	}
 
 	// get pending submission
-	_, err = e.repo.TreasurerSubmission.GetPendingSubmission(&modelSubmission)
+	_, err = e.repo.VaultSubmission.GetPendingSubmission(&modelSubmission)
 	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerSubmission.GetPendingSubmission failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.VaultSubmission.GetPendingSubmission failed")
 		return nil, err
 	}
 
 	// update pending submission
-	submission, err := e.repo.TreasurerSubmission.UpdatePendingSubmission(&modelSubmission)
+	submission, err := e.repo.VaultSubmission.UpdatePendingSubmission(&modelSubmission)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerSubmission.GetPendingSubmission failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.VaultSubmission.GetPendingSubmission failed")
 		return nil, err
 	}
 
 	// check if total submission >= threshold
 	// get all submission of this vault
-	submissions, err := e.repo.TreasurerSubmission.GetByRequestId(req.RequestId, req.VaultId)
+	submissions, err := e.repo.VaultSubmission.GetByRequestId(req.RequestId, req.VaultId)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerSubmission.GetByRequestId failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.VaultSubmission.GetByRequestId failed")
 		return nil, err
 	}
 
-	// check treasurer_request to see column is_approved = true, this mean it is already executed
+	// check vault_request to see column is_approved = true, this mean it is already executed
 	if treasurerReq.IsApproved {
 		return &response.CreateTreasurerSubmissionResponse{
 			Submission:       *submission,
@@ -892,9 +892,9 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	voteMessage.Type = typeset.NOTIFICATION_VAULT_PROPOSAL
 	voteMessage.VaultVoteMetadata.DaoVaultTotalTreasurer = daoVaultTotalTreasurerProposal
 	if resp.VoteResult.IsApproved {
-		err = e.repo.TreasurerRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
+		err = e.repo.VaultRequest.UpdateStatus(submission.RequestId, consts.TreasurerRequestStatusApproved)
 		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.TreasurerRequest.UpdateStatus failed")
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.VaultRequest.UpdateStatus failed")
 			return nil, err
 		}
 
@@ -921,14 +921,14 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	return resp, nil
 }
 
-func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultRequest) (*model.Treasurer, error) {
-	treasurer, err := e.repo.Treasurer.Delete(&model.Treasurer{
+func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
+	treasurer, err := e.repo.VaultTreasurer.Delete(&model.VaultTreasurer{
 		GuildId:       req.GuildId,
 		VaultId:       req.VaultId,
 		UserDiscordId: req.UserDiscordID,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.Treasurer.Create failed")
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.VaultTreasurer.Create failed")
 		return nil, err
 	}
 
@@ -965,23 +965,23 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 	}
 
 	// get treasurers
-	treasurers, err := e.repo.Treasurer.GetByGuildIdAndVaultId(guildId, vault.Id)
+	treasurers, err := e.repo.VaultTreasurer.GetByGuildIdAndVaultId(guildId, vault.Id)
 	if err != nil {
-		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.Treasurer.GetByGuildIdAndVaultName failed")
+		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.VaultTreasurer.GetByGuildIdAndVaultName failed")
 		return nil, err
 	}
 
 	// get current request
-	currentRequest, err := e.repo.TreasurerRequest.GetCurrentRequest(vault.Id, guildId)
+	currentRequest, err := e.repo.VaultRequest.GetCurrentRequest(vault.Id, guildId)
 	if err != nil {
-		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.TreasurerRequest.GetCurrentRequest failed")
+		e.log.Fields(logger.Fields{"guildId": guildId, "vaultName": vaultName}).Errorf(err, "[entity.GetVaultDetail] - e.repo.VaultRequest.GetCurrentRequest failed")
 		return nil, err
 	}
 
 	currentRequestResponse := make([]response.CurrentRequest, 0)
 	for _, req := range currentRequest {
 		totalApprovedSubmisison := 0
-		for _, sub := range req.TreasurerSubmission {
+		for _, sub := range req.VaultSubmission {
 			if sub.Status == consts.TreasurerSubmissionStatusApproved {
 				totalApprovedSubmisison++
 			}
@@ -992,7 +992,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 			Token:                   req.Token,
 			Amount:                  req.Amount,
 			Address:                 req.Address,
-			TotalSubmission:         int64(len(req.TreasurerSubmission)),
+			TotalSubmission:         int64(len(req.VaultSubmission)),
 			TotalApprovedSubmission: int64(totalApprovedSubmisison),
 		})
 	}
@@ -1022,7 +1022,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 		EstimatedTotal:      "",
 		Balance:             bal,
 		MyNft:               []response.MyNft{},
-		Treasurer:           treasurers,
+		VaultTreasurer:      treasurers,
 		RecentTransaction:   recentTxResponse,
 		CurrentRequest:      currentRequestResponse,
 		Threshold:           vault.Threshold,
@@ -1057,14 +1057,14 @@ func balanceVaultDetail(vault *model.Vault, bal []response.Balance) ([]response.
 	return bal, nil
 }
 
-func (e *Entity) GetTreasurerRequest(requestId string) (*model.TreasurerRequest, error) {
+func (e *Entity) GetTreasurerRequest(requestId string) (*model.VaultRequest, error) {
 	requestIdInt, err := strconv.Atoi(requestId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"requestId": requestId}).Errorf(err, "[entity.GetTreasurerRequest] - strconv.Atoi failed")
 		return nil, err
 	}
 
-	return e.repo.TreasurerRequest.GetById(int64(requestIdInt))
+	return e.repo.VaultRequest.GetById(int64(requestIdInt))
 }
 
 func (e *Entity) GetVaultTransactions(query vaulttxquery.VaultTransactionQuery) ([]model.VaultTransaction, error) {

@@ -77,9 +77,6 @@ import (
 	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
 	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	"github.com/defipod/mochi/pkg/repo/token"
-	"github.com/defipod/mochi/pkg/repo/treasurer"
-	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
-	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -92,7 +89,10 @@ import (
 	"github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
+	vaultrequest "github.com/defipod/mochi/pkg/repo/vault_request"
+	vaultsubmission "github.com/defipod/mochi/pkg/repo/vault_submission"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
+	vaulttreasurer "github.com/defipod/mochi/pkg/repo/vault_treasurer"
 	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
 
@@ -175,10 +175,10 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserTokenSupportRequest:              usertokensupportrequest.NewPG(db),
 		Vault:                                vault.NewPG(db),
 		VaultConfig:                          vaultconfig.NewPG(db),
-		Treasurer:                            treasurer.NewPG(db),
-		TreasurerRequest:                     treasurerrequest.NewPG(db),
+		VaultTreasurer:                       vaulttreasurer.NewPG(db),
+		VaultRequest:                         vaultrequest.NewPG(db),
 		KyberswapSupportedToken:              kyberswapsupportedtokens.NewPG(db),
-		TreasurerSubmission:                  treasurersubmission.NewPG(db),
+		VaultSubmission:                      vaultsubmission.NewPG(db),
 		VaultTransaction:                     vaulttransaction.NewPG(db),
 		UserTag:                              usertag.NewPG(db),
 		GuildConfigTipRange:                  guildconfigtiprange.NewPG(db),
