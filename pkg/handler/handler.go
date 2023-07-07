@@ -21,7 +21,6 @@ import (
 	"github.com/defipod/mochi/pkg/handler/nft"
 	pkpass "github.com/defipod/mochi/pkg/handler/pk-pass"
 	"github.com/defipod/mochi/pkg/handler/swap"
-	"github.com/defipod/mochi/pkg/handler/telegram"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
 	"github.com/defipod/mochi/pkg/handler/vault"
@@ -51,7 +50,6 @@ type Handler struct {
 	ConfigRoles       configroles.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
 	Wallet            wallet.IHandler
-	Telegram          telegram.IHandler
 	Vault             vault.IHandler
 	Swap              swap.IHandler
 	ApiKey            apikey.IHandler
@@ -82,7 +80,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ConfigRoles:       configroles.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
 		Wallet:            wallet.New(entities, logger),
-		Telegram:          telegram.New(entities, logger),
 		Vault:             vault.New(entities, logger),
 		Swap:              swap.New(entities, logger),
 		ApiKey:            apikey.New(entities, logger),

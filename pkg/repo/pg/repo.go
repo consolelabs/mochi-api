@@ -110,8 +110,6 @@ import (
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	usersubmittedad "github.com/defipod/mochi/pkg/repo/user_submitted_ad"
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
-	usertelegram "github.com/defipod/mochi/pkg/repo/user_telegram"
-	usertelegramdiscordassociation "github.com/defipod/mochi/pkg/repo/user_telegram_discord_association"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
 	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
@@ -183,7 +181,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
-		UserTelegramDiscordAssociation:       usertelegramdiscordassociation.NewPG(db),
 		MessageReaction:                      messagereaction.NewPG(db),
 		UserNftWatchlistItem:                 usernftwatchlistitem.NewPG(db),
 		Quest:                                quest.NewPG(db),
@@ -229,7 +226,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),
 		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
 		UserTokenSupportRequest:              usertokensupportrequest.NewPG(db),
-		UserTelegram:                         usertelegram.NewPG(db),
 		Vault:                                vault.NewPG(db),
 		VaultInfo:                            vaultinfo.NewPG(db),
 		VaultConfig:                          vaultconfig.NewPG(db),

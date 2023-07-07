@@ -239,11 +239,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	// v1/config-community
 	configCommunityGroup := v1.Group("/config-community")
 	{
-		telegramGroup := configCommunityGroup.Group("/telegram")
-		{
-			telegramGroup.GET("", h.ConfigCommunity.GetLinkedTelegram)
-			telegramGroup.POST("", h.ConfigCommunity.LinkUserTelegramWithDiscord)
-		}
 		twitterGroup := configCommunityGroup.Group("/twitter")
 		{
 			twitterGroup.POST("", h.ConfigCommunity.CreateTwitterConfig)
@@ -419,12 +414,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		dataWebhookGroup.POST("/notify-nft-add", h.Webhook.NotifyNftCollectionAdd)
 		dataWebhookGroup.POST("/notify-nft-sync", h.Webhook.NotifyNftCollectionSync)
 		dataWebhookGroup.POST("/notify-sale-marketplace", h.Webhook.NotifySaleMarketplace)
-	}
-
-	// api/v1/telegram
-	telegramGroup := v1.Group("/telegram")
-	{
-		telegramGroup.GET("/:username", h.Telegram.GetByUsername)
 	}
 
 	// api/v1/vault

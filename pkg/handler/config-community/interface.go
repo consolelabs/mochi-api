@@ -12,7 +12,4 @@ type IHandler interface {
 	AddToTwitterBlackList(c *gin.Context)
 	GetTwitterBlackList(c *gin.Context)
 	DeleteFromTwitterBlackList(c *gin.Context)
-
-	GetLinkedTelegram(c *gin.Context)
-	LinkUserTelegramWithDiscord(c *gin.Context)
 }
