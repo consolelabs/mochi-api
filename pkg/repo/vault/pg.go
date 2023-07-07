@@ -48,7 +48,7 @@ func (pg *pg) List(q ListQuery) (vaults []model.Vault, err error) {
 		db = db.Where("vaults.guild_id = ?", q.GuildID)
 	}
 	if q.UserDiscordID != "" {
-		db = db.Joins("join treasurers on vaults.id = treasurers.vault_id").Where("treasurers.user_discord_id = ?", q.UserDiscordID)
+		db = db.Joins("join vault_treasurers on vaults.id = vault_treasurers.vault_id").Where("vault_treasurers.user_discord_id = ?", q.UserDiscordID)
 	}
 	if q.EvmWallet != "" {
 		db = db.Where("vaults.wallet_address = ?", q.EvmWallet)
@@ -59,5 +59,5 @@ func (pg *pg) List(q ListQuery) (vaults []model.Vault, err error) {
 	if q.Threshold != "" {
 		db = db.Where("vaults.threshold = ?", q.Threshold)
 	}
-	return vaults, db.Preload("Treasurers").Find(&vaults).Error
+	return vaults, db.Preload("VaultTreasurers").Find(&vaults).Error
 }
