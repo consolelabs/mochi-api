@@ -8,7 +8,6 @@ import (
 	"math/rand"
 	"net/http"
 	"sort"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
