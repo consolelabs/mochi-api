@@ -20,7 +20,7 @@ func NewPG(db *gorm.DB) Store {
 
 func (pg *pg) Gets() ([]model.DiscordGuild, error) {
 	guilds := []model.DiscordGuild{}
-	err := pg.db.Where("active = TRUE").Preload("GuildConfigInviteTracker").Find(&guilds).Error
+	err := pg.db.Where("active = TRUE").Find(&guilds).Error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get guilds: %w", err)
 	}
@@ -50,7 +50,7 @@ func (pg *pg) CreateOrReactivate(guild model.DiscordGuild) error {
 
 func (pg *pg) GetByID(id string) (*model.DiscordGuild, error) {
 	var guild model.DiscordGuild
-	return &guild, pg.db.Preload("GuildConfigInviteTracker").Where("active = TRUE").First(&guild, "id = ?", id).Error
+	return &guild, pg.db.Where("active = TRUE").First(&guild, "id = ?", id).Error
 }
 
 func (pg *pg) ToggleGlobalXP(guildID string, globalXP bool) error {
