@@ -81,7 +81,6 @@ import (
 	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
 	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
-	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
@@ -159,7 +158,6 @@ type Repo struct {
 	QuestUserReward                      questuserreward.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
 	OffchainTipBotContract               offchaintipbotcontract.Store
-	TradeOffer                           tradeoffer.Store
 	QuestStreak                          queststreak.Store
 	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
 	OffchainTipBotUserBalanceSnapshot    offchaintipbotuserbalancesnapshot.Store

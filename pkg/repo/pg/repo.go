@@ -84,7 +84,6 @@ import (
 	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
 	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	"github.com/defipod/mochi/pkg/repo/token"
-	tradeoffer "github.com/defipod/mochi/pkg/repo/trade_offer"
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
@@ -164,7 +163,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
-		TradeOffer:                           tradeoffer.NewPG(db),
 		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
 		OffchainTipBotUserBalanceSnapshot:    offchaintipbotuserbalancesnapshot.NewPG(db),
 		GuildBlacklistChannelRepostConfigs:   guildblacklistchannelrepostconfigs.NewPG(db),
