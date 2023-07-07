@@ -21,9 +21,6 @@ type IHandler interface {
 	ListConfigNotify(c *gin.Context)
 	DeleteConfigNotify(c *gin.Context)
 
-	GetInviteTrackerConfig(c *gin.Context)
-	ConfigureInvites(c *gin.Context)
-
 	GetGuildConfigDaoProposal(c *gin.Context)
 	DeleteGuildConfigDaoProposal(c *gin.Context)
 	CreateProposalChannelConfig(c *gin.Context)

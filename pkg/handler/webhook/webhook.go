@@ -79,9 +79,6 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 	if err != nil {
 		h.log.Info("[handler.handleGuildMemberAdd] - failed to send notification")
 	}
-
-	h.handleInviteTracker(c, &member)
-
 }
 
 func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) {
@@ -107,23 +104,6 @@ func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) 
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
-}
-
-func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member) {
-	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to find inviter")
-	}
-
-	data, err := h.entities.HandleInviteTracker(inviter, invitee)
-	if err != nil {
-		h.log.Fields(logger.Fields{"inviter": inviter, "invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to handle invite tracker")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	data.IsVanity = isVanity
-
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {

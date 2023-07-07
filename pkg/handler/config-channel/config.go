@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -403,70 +402,6 @@ func (h *Handler) DeleteConfigNotify(c *gin.Context) {
 	err := h.entities.DeleteConfigNotify(id)
 	if err != nil {
 		h.log.Error(err, "[handler.DeleteConfigNotify] - failed to delete config notify")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-// GetInviteTrackerConfig     godoc
-// @Summary     Get invites tracker config
-// @Description Get invites tracker config
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Success     200 {object} response.GetInviteTrackerConfigResponse
-// @Router      /community/invites/config [get]
-func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetInviteTrackerConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	config, err := h.entities.GetInviteTrackerLogChannel(guildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetInviteTrackerConfig] - failed to get invite tracker log channel")
-
-		code := http.StatusInternalServerError
-		if err == gorm.ErrRecordNotFound {
-			code = http.StatusNotFound
-		}
-		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
-}
-
-// ConfigureInvites     godoc
-// @Summary     Configure invites
-// @Description Configure invites
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.ConfigureInviteRequest true "Configure Invites request"
-// @Success     200 {object} response.ConfigureInvitesResponse
-// @Router      /community/invites/config [post]
-func (h *Handler) ConfigureInvites(c *gin.Context) {
-	var req request.ConfigureInviteRequest
-	if err := req.Bind(c); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.ConfigureInvites] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		h.log.Fields(logger.Fields{"logChannel": req.LogChannel, "guildID": req.GuildID}).Error(err, "[handler.ConfigureInvites] - failed to validate request")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if err := h.entities.CreateOrUpdateInviteTrackerLogChannel(req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.ConfigureInvites] - failed to upsert invite tracker log channel")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

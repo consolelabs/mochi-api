@@ -54,13 +54,12 @@ func (e *Entity) GetGuilds() (*response.GetGuildsResponse, error) {
 	res.Data = make([]*response.GetGuildResponse, 0)
 	for _, g := range guilds {
 		res.Data = append(res.Data, &response.GetGuildResponse{
-			ID:           g.ID,
-			Name:         g.Name,
-			BotScopes:    g.BotScopes,
-			Alias:        g.Alias,
-			LogChannelID: g.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
-			LogChannel:   g.LogChannel,
-			Active:       g.Active,
+			ID:         g.ID,
+			Name:       g.Name,
+			BotScopes:  g.BotScopes,
+			Alias:      g.Alias,
+			LogChannel: g.LogChannel,
+			Active:     g.Active,
 		})
 	}
 
@@ -82,15 +81,14 @@ func (e *Entity) GetGuild(guildID string) (*response.GetGuildResponse, error) {
 	}
 
 	return &response.GetGuildResponse{
-		ID:           guild.ID,
-		Name:         guild.Name,
-		BotScopes:    guild.BotScopes,
-		Alias:        guild.Alias,
-		LogChannel:   guild.LogChannel,
-		LogChannelID: guild.GuildConfigInviteTracker.ChannelID, // TODO: refactor (rename)
-		GlobalXP:     guild.GlobalXP,
-		Active:       true,
-		Icon:         discordGuildInfo.Icon,
+		ID:         guild.ID,
+		Name:       guild.Name,
+		BotScopes:  guild.BotScopes,
+		Alias:      guild.Alias,
+		LogChannel: guild.LogChannel,
+		GlobalXP:   guild.GlobalXP,
+		Active:     true,
+		Icon:       discordGuildInfo.Icon,
 	}, nil
 }
 

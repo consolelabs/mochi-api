@@ -36,7 +36,6 @@ import (
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
-	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
@@ -55,7 +54,6 @@ import (
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
-	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	kyberswapsupportedtokens "github.com/defipod/mochi/pkg/repo/kyberswap_supported_tokens"
 	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
@@ -114,7 +112,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Store:                                NewStore(db),
 		DiscordGuilds:                        discordguilds.NewPG(db),
 		DiscordWalletVerification:            discordwalletverification.NewPG(db),
-		InviteHistories:                      invitehistories.NewPG(db),
 		Users:                                users.NewPG(db),
 		UserWallet:                           userwallet.NewPG(db),
 		GuildUsers:                           guildusers.NewPG(db),
@@ -123,7 +120,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigWelcomeChannel:            guildconfigwelcomechannel.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
-		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		CommonwealthLatestData:               commonwealthlastestdata.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultCurrency:           guildconfigdefaultcurrency.NewPG(db),
