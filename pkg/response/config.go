@@ -157,14 +157,6 @@ type GuildConfigDaoTrackerResponse struct {
 	Data *[]model.GuildConfigDaoTracker `json:"data"`
 }
 
-type CreateGuildMixRole struct {
-	Data *model.GuildConfigMixRole `json:"data"`
-}
-
-type ListGuildMixRoles struct {
-	Data []model.GuildConfigMixRole `json:"data"`
-}
-
 type GuildConfigTipRangeResponse struct {
 	GuildID   string    `json:"guild_id"`
 	Min       *float64  `json:"min,omitempty"`
