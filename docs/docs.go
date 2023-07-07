@@ -796,138 +796,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/config-channels/dao-tracker": {
-            "post": {
-                "description": "Create tracker channel config for dao voting",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Create tracker channel config",
-                "parameters": [
-                    {
-                        "description": "Create tracker channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertGuildConfigDaoTracer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete dao tracker config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Delete dao tracker channel config",
-                "parameters": [
-                    {
-                        "description": "Delete dao tracker channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteGuildConfigDaoTracker"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-channels/dao-tracker/cw-discussion-subs": {
-            "post": {
-                "description": "Subscribe commonwealth discussion",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Data"
-                ],
-                "summary": "Subscribe commonwealth discussion",
-                "parameters": [
-                    {
-                        "description": "Create cw discussion subscription request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateCommonwealthDiscussionSubscription"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateCommonwealthDiscussionSubscription"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-channels/dao-tracker/{guild_id}": {
-            "get": {
-                "description": "Get dao tracker channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Get dao tracker channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GuildConfigDaoTrackerResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/config-channels/gm": {
             "get": {
                 "description": "Get GM config",
@@ -1061,72 +929,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-channels/proposal": {
-            "post": {
-                "description": "Create proposal channel config for dao voting",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Create proposal channel config",
-                "parameters": [
-                    {
-                        "description": "Create proposal channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateProposalChannelConfig"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateProposalChannelConfigResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete dao proposal config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Delete dao proposal channel config",
-                "parameters": [
-                    {
-                        "description": "Delete dao proposal channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteGuildConfigDaoProposal"
                         }
                     }
                 ],
@@ -1327,38 +1129,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-channels/{guild_id}/proposal": {
-            "get": {
-                "description": "Get dao proposal channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Get dao proposal channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildConfigDaoProposal"
                         }
                     }
                 }
@@ -6285,26 +6055,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CommonwealthDiscussionSubscription": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "discord_thread_id": {
-                    "type": "string"
-                },
-                "discussion_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ConfigXpLevel": {
             "type": "object",
             "properties": {
@@ -6407,73 +6157,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigDaoProposal": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "authority": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guideline_channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "proposal_channel_id": {
-                    "type": "string"
-                },
-                "required_amount": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.GuildConfigDaoTracker": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "source": {
-                    "type": "string"
-                },
-                "space": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -7527,14 +7210,14 @@ const docTemplate = `{
                 "total_amount_solana": {
                     "type": "string"
                 },
-                "treasurers": {
+                "updated_at": {
+                    "type": "string"
+                },
+                "vault_treasurers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.VaultTreasurer"
                     }
-                },
-                "updated_at": {
-                    "type": "string"
                 },
                 "wallet_address": {
                     "type": "string"
@@ -7782,21 +7465,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateCommonwealthDiscussionSubscription": {
-            "type": "object",
-            "required": [
-                "discord_thread_id",
-                "discussion_id"
-            ],
-            "properties": {
-                "discord_thread_id": {
-                    "type": "string"
-                },
-                "discussion_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "request.CreateDefaultRoleRequest": {
             "type": "object",
             "required": [
@@ -7900,45 +7568,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.CreateProposalChannelConfig": {
-            "type": "object",
-            "required": [
-                "authority",
-                "channel_id",
-                "guild_id"
-            ],
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "authority": {
-                    "type": "string",
-                    "enum": [
-                        "admin",
-                        "token_holder"
-                    ]
-                },
-                "chain": {
-                    "type": "string"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "required_amount": {
-                    "type": "number"
-                },
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "nft_collection",
-                        "crypto_token"
-                    ]
-                }
-            }
-        },
         "request.CreateSalesTrackerConfigRequest": {
             "type": "object",
             "properties": {
@@ -8031,22 +7660,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.DeleteGuildConfigDaoProposal": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.DeleteGuildConfigDaoTracker": {
-            "type": "object",
-            "properties": {
-                "id": {
                     "type": "string"
                 }
             }
@@ -8455,20 +8068,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sticker": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.UpsertGuildConfigDaoTracer": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "snapshot_url": {
                     "type": "string"
                 }
             }
@@ -9073,14 +8672,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateCommonwealthDiscussionSubscription": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.CommonwealthDiscussionSubscription"
-                }
-            }
-        },
         "response.CreateGuildTokenRole": {
             "type": "object",
             "properties": {
@@ -9094,14 +8685,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.NFTCollection"
-                }
-            }
-        },
-        "response.CreateProposalChannelConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigDaoProposal"
                 }
             }
         },
@@ -9467,58 +9050,6 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.GuildConfigGmGn"
                 },
                 "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.GetGuildConfigDaoProposal": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.GetGuildConfigDaoProposalData"
-                }
-            }
-        },
-        "response.GetGuildConfigDaoProposalData": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "authority": {
-                    "type": "string"
-                },
-                "chain": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guideline_channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "proposal_channel_id": {
-                    "type": "string"
-                },
-                "required_amount": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -10147,17 +9678,6 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "response.GuildConfigDaoTrackerResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.GuildConfigDaoTracker"
-                    }
                 }
             }
         },
