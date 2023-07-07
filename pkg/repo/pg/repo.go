@@ -25,7 +25,6 @@ import (
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
-	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
@@ -40,9 +39,7 @@ import (
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
-	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
-	guildconfigrepostreaction "github.com/defipod/mochi/pkg/repo/guild_config_repost_reaction"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
 	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
@@ -126,9 +123,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
 		GuildConfigJoinLeaveChannel:          guildconfigjoinleavechannel.NewPG(db),
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
-		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
-		GuildConfigPruneExclude:              guildconfigpruneexclude.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
 		UserSubmittedAd:                      usersubmittedad.NewPG(db),
@@ -165,7 +160,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
 		OffchainTipBotUserBalanceSnapshot:    offchaintipbotuserbalancesnapshot.NewPG(db),
-		GuildBlacklistChannelRepostConfigs:   guildblacklistchannelrepostconfigs.NewPG(db),
 		OffchainTipBotTokens:                 offchaintipbottokens.NewPG(db),
 		OffchainTipBotActivityLogs:           offchaintipbotactivitylogs.NewPG(db),
 		OffchainTipBotTransferHistories:      offchaintipbottransferhistories.NewPG(db),
