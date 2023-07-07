@@ -41,7 +41,6 @@ import (
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
-	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -164,7 +163,6 @@ type Repo struct {
 	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
-	GuildConfigXPRole                    guildconfigxprole.Store
 	SaleBotMarketplace                   salebotmarketplace.Store
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigAdminRole                 guildconfigadminrole.Store
