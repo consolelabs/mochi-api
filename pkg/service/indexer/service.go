@@ -20,5 +20,4 @@ type Service interface {
 	GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error)
 	GetNFTCollectionTickersForWl(address string) (*res.IndexerNFTCollectionTickersResponse, error)
 	GetNftCollectionMetadata(collectionAddress, chainId string) (*res.IndexerNftCollectionMetadataResponse, error)
-	GetSoulBoundNFT(collectionAddress string) (*res.IndexerSoulBoundNFTResponse, error)
 }
