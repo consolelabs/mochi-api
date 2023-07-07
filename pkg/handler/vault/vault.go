@@ -83,17 +83,6 @@ func (h *Handler) GetVaults(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse[any](vault, nil, nil, nil))
 }
 
-func (h *Handler) GetVaultInfo(c *gin.Context) {
-	vaultInfo, err := h.entities.GetVaultInfo()
-	if err != nil {
-		h.log.Error(err, "[handler.GetVaultInfo] - failed to get vault info")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse[any](vaultInfo, nil, nil, nil))
-}
-
 func (h *Handler) GetVaultConfigChannel(c *gin.Context) {
 	guildId := c.Query("guild_id")
 	if guildId == "" {

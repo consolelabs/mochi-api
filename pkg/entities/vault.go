@@ -145,10 +145,6 @@ func sumBal(walletAssets []response.WalletAssetData) (sum float64) {
 	return
 }
 
-func (e *Entity) GetVaultInfo() (*model.VaultInfo, error) {
-	return e.repo.VaultInfo.Get()
-}
-
 func (e *Entity) GetVaultConfigChannel(guildId string) (*model.VaultConfig, error) {
 	vaultConfig, err := e.repo.VaultConfig.GetByGuildId(guildId)
 	if err != nil {

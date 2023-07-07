@@ -381,7 +381,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		vaultGroup.GET("", h.Vault.GetVaults)
 		vaultGroup.POST("", h.Vault.CreateVault)
-		vaultGroup.GET("/info", h.Vault.GetVaultInfo)
 		vaultGroup.POST("/config/channel", h.Vault.CreateConfigChannel)
 		vaultGroup.GET("/config/channel", h.Vault.GetVaultConfigChannel)
 		vaultGroup.PUT("/config/threshold", h.Vault.CreateConfigThreshold)
