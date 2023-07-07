@@ -60,7 +60,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
 			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets) // TODO: remove this endpoint
-			walletsGroup.POST("/generate-verification", h.Wallet.GenerateWalletVerification)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
 			walletsGroup.GET("/:address/:type/assets", h.Wallet.ListAssets)
