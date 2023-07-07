@@ -47,7 +47,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("me", middleware.AuthGuard(cfg), h.User.GetMyInfo)
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
-		userGroup.GET("/wallets/:address", h.User.GetUserWalletByGuildIDAddress)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
 		// TODO
 		userGroup.GET("/:id/transactions", h.User.GetUserTransaction)
@@ -61,7 +60,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
 			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets) // TODO: remove this endpoint
-			walletsGroup.POST("/generate-verification", h.Wallet.GenerateWalletVerification)
 			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
 			walletsGroup.GET("/:address/:type/assets", h.Wallet.ListAssets)
@@ -316,9 +314,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.GET("/config/:guild_id", h.Verify.GetGuildConfigWalletVerificationMessage)
 		verifyGroup.PUT("/config", h.Verify.UpdateGuildConfigWalletVerificationMessage)
 		verifyGroup.DELETE("/config", h.Verify.DeleteGuildConfigWalletVerificationMessage)
-		verifyGroup.POST("/generate", h.Verify.GenerateVerification)
-		verifyGroup.POST("", h.Verify.VerifyWalletAddress)
-		verifyGroup.POST("/assign-role", h.Verify.AssignVerifiedRole)
 	}
 
 	// api/v1/nfts
@@ -386,7 +381,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		vaultGroup.GET("", h.Vault.GetVaults)
 		vaultGroup.POST("", h.Vault.CreateVault)
-		vaultGroup.GET("/info", h.Vault.GetVaultInfo)
 		vaultGroup.POST("/config/channel", h.Vault.CreateConfigChannel)
 		vaultGroup.GET("/config/channel", h.Vault.GetVaultConfigChannel)
 		vaultGroup.PUT("/config/threshold", h.Vault.CreateConfigThreshold)

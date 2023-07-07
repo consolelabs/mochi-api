@@ -332,11 +332,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		}
 	}
 
-	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(userID, guildID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
 	userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
@@ -355,7 +350,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		Progress:     progress,
 		Guild:        gUserXP.Guild,
 		GuildRank:    gUserXP.GuildRank,
-		UserWallet:   userWallet,
 		UserFactionXps: &model.UserFactionXpsMapping{
 			ImperialXp: userFactionXp.Data.NobilityXp,
 			RebellioXp: userFactionXp.Data.FameXp,
@@ -363,14 +357,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 			AcademyXp:  userFactionXp.Data.ReputationXp,
 		},
 	}, nil
-}
-
-func (e *Entity) ListAllWalletAddresses() ([]model.WalletAddress, error) {
-	was, err := e.repo.UserWallet.ListWalletAddresses("evm")
-	if err != nil {
-		return nil, fmt.Errorf("failed to get wallet addresses: %v", err.Error())
-	}
-	return was, nil
 }
 
 func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, int, error) {
@@ -416,18 +402,6 @@ func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
 	return u, nil
 }
 
-func (e *Entity) GetUserWalletByGuildIDAddress(guildID, address string) (*model.UserWallet, error) {
-	uw, err := e.repo.UserWallet.GetOneByGuildIDAndAddress(guildID, address)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, ErrRecordNotFound
-		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-
-	return uw, nil
-}
-
 func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
 	discordGuilds, err := e.repo.DiscordGuilds.GetNonLeftGuilds()
 	if err != nil {
@@ -464,24 +438,6 @@ func (e *Entity) TotalActiveUsers(guildId string) (*response.Metric, error) {
 	return &response.Metric{
 		TotalActiveUsers:  sumActiveUsers,
 		ServerActiveUsers: currentGuildActiveUser,
-	}, nil
-}
-
-func (e *Entity) TotalVerifiedWallets(guildId string) (*response.Metric, error) {
-	totalVerfiedWallets, err := e.repo.DiscordWalletVerification.TotalVerifiedWallets()
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalVerifiedWallets] - cannot get total verified wallets")
-		return nil, err
-	}
-	guildVerifiedWallets, err := e.repo.DiscordWalletVerification.TotalVerifiedWalletsByGuildID(guildId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "[entities.TotalVerifiedWallets] - cannot get total verified wallets by guild id")
-		return nil, err
-	}
-
-	return &response.Metric{
-		TotalVerifiedWallets:  totalVerfiedWallets,
-		ServerVerifiedWallets: guildVerifiedWallets,
 	}, nil
 }
 

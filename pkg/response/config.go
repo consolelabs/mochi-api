@@ -145,24 +145,8 @@ type GetGuildLevelUpMessage struct {
 	Data *model.GuildConfigLevelupMessage `json:"data"`
 }
 
-type CreateGuildXPRole struct {
-	Data *model.GuildConfigXPRole `json:"data"`
-}
-
-type ListGuildXPRoles struct {
-	Data []model.GuildConfigXPRole `json:"data"`
-}
-
 type GuildConfigDaoTrackerResponse struct {
 	Data *[]model.GuildConfigDaoTracker `json:"data"`
-}
-
-type CreateGuildMixRole struct {
-	Data *model.GuildConfigMixRole `json:"data"`
-}
-
-type ListGuildMixRoles struct {
-	Data []model.GuildConfigMixRole `json:"data"`
 }
 
 type GuildConfigTipRangeResponse struct {

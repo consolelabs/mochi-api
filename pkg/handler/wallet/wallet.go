@@ -305,28 +305,3 @@ func (h *Handler) ListTransactions(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
 }
-
-func (h *Handler) GenerateWalletVerification(c *gin.Context) {
-	var uriReq request.WalletBaseRequest
-	if err := c.ShouldBindUri(&uriReq); err != nil {
-		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] ShouldBindUri() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	var req request.GenerateWalletVerificationRequest
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] BindJSON() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	req.UserID = uriReq.UserID
-
-	code, err := h.entities.GenerateWalletVerification(req)
-	if err != nil {
-		h.log.Error(err, "[handler.Wallet.GenerateWalletVerification] entity.GenerateWalletVerification() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(response.GenerateVerificationResponse{Code: code}, nil, nil, nil))
-}

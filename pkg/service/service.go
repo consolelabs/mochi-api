@@ -11,7 +11,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/pg"
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/apilayer"
-	"github.com/defipod/mochi/pkg/service/apns"
 	"github.com/defipod/mochi/pkg/service/binance"
 	"github.com/defipod/mochi/pkg/service/birdeye"
 	"github.com/defipod/mochi/pkg/service/bluemove"
@@ -42,7 +41,6 @@ type Service struct {
 	Discord       discord.Service
 	Indexer       indexer.Service
 	Abi           abi.Service
-	Apns          apns.Service
 	Cloud         cloud.Service
 	Processor     processor.Service
 	Solscan       solscan.Service
@@ -96,7 +94,6 @@ func NewService(
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
 		Abi:           abi.NewAbi(&cfg),
-		Apns:          apns.NewService(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
 		Snapshot:      snapshot.NewService(log),
 		Nghenhan:      nghenhan.NewService(),

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -28,13 +27,6 @@ import (
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*model.UserWalletWatchlist, error) {
-	if req.IsOwner {
-		// if error -> logging & ignore
-		if err := e.upsertVerifiedWallet(req); err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] entity.upsertVerifiedWallet() failed")
-		}
-	}
-
 	listQ := userwalletwatchlistitem.ListQuery{UserID: req.UserID, IsOwner: &req.IsOwner}
 
 	wallets, err := e.repo.UserWalletWatchlistItem.List(listQ)
@@ -78,46 +70,6 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*mod
 	}
 
 	return &result, nil
-}
-
-func (e *Entity) upsertVerifiedWallet(req request.GetTrackingWalletsRequest) error {
-	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(req.UserID, req.GuildID)
-	// query failed -> exit
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWallet.GetOneByDiscordIDAndGuildID() failed")
-		return err
-	}
-
-	// user has linked wallet from verify channel
-	existing, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: userWallet.Address})
-	// if not exists -> create
-	if err == gorm.ErrRecordNotFound {
-		err = e.repo.UserWalletWatchlistItem.Upsert(&model.UserWalletWatchlistItem{
-			UserID:  req.UserID,
-			Address: userWallet.Address,
-			Type:    "evm",
-			IsOwner: true,
-		})
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.Create() failed")
-			return err
-		}
-		return nil
-	}
-	// query failed -> exit
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.GetOne() failed")
-		return err
-	}
-	// if exists but is_owner = false -> update is_owner to true
-	if !existing.IsOwner {
-		err = e.repo.UserWalletWatchlistItem.UpdateOwnerFlag(req.UserID, userWallet.Address, true)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.UpdateOwnerFlag() failed")
-			return err
-		}
-	}
-	return nil
 }
 
 func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {
@@ -930,24 +882,6 @@ func (*Entity) handleErc1155TransferBatch(address string, ev covalent.LogEvent, 
 	} else {
 		action.Unit = fmt.Sprintf("%s [%s]", action.Contract.Symbol, action.Unit)
 	}
-}
-
-func (e *Entity) GenerateWalletVerification(req request.GenerateWalletVerificationRequest) (string, error) {
-	code := uuid.New().String()
-	err := e.repo.DiscordWalletVerification.UpsertOne(
-		model.DiscordWalletVerification{
-			Code:          code,
-			UserDiscordID: req.UserID,
-			GuildID:       "",
-			CreatedAt:     time.Now(),
-			ChannelID:     req.ChannelID,
-			MessageID:     req.MessageID,
-		},
-	)
-	if err != nil {
-		e.log.Error(err, "[entity.GenerateWalletVerification] repo.DiscordWalletVerification.UpsertOne failed")
-	}
-	return code, err
 }
 
 func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.WalletBinanceResponse, error) {

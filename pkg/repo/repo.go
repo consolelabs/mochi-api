@@ -12,7 +12,6 @@ import (
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
-	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
 	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
 	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
@@ -20,7 +19,6 @@ import (
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
@@ -43,7 +41,6 @@ import (
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
-	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -87,13 +84,11 @@ import (
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
-	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
-	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
@@ -106,9 +101,7 @@ type Repo struct {
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
 	CommonwealthLatestData               commonwealthlastestdata.Store
 	DiscordGuilds                        discordguilds.Store
-	DiscordWalletVerification            discordwalletverification.Store
 	Users                                users.Store
-	UserWallet                           userwallet.Store
 	GuildUsers                           guildusers.Store
 	Token                                token.Store
 	UserSubmittedAd                      usersubmittedad.Store
@@ -140,7 +133,6 @@ type Repo struct {
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
 	MessageReaction                      messagereaction.Store
 	UserNftWatchlistItem                 usernftwatchlistitem.Store
-	ConversationRepostHistories          conversationreposthistories.Store
 	Quest                                quest.Store
 	QuestRewardType                      questrewardtype.Store
 	QuestUserLog                         questuserlog.Store
@@ -170,7 +162,6 @@ type Repo struct {
 	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
-	GuildConfigXPRole                    guildconfigxprole.Store
 	SaleBotMarketplace                   salebotmarketplace.Store
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigAdminRole                 guildconfigadminrole.Store
@@ -179,7 +170,6 @@ type Repo struct {
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	Vault                                vault.Store
-	VaultInfo                            vaultinfo.Store
 	VaultConfig                          vaultconfig.Store
 	Treasurer                            treasurer.Store
 	TreasurerRequest                     treasurerrequest.Store
