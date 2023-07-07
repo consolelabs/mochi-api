@@ -8,7 +8,6 @@ import (
 	"github.com/defipod/mochi/pkg/handler/community"
 	"github.com/defipod/mochi/pkg/handler/config"
 	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
-	configcommunity "github.com/defipod/mochi/pkg/handler/config-community"
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
 	configtwittersales "github.com/defipod/mochi/pkg/handler/config-twitter-sales"
@@ -45,7 +44,6 @@ type Handler struct {
 	Tip               tip.IHandler
 	Widget            widget.IHandler
 	ConfigChannel     configchannel.IHandler
-	ConfigCommunity   configcommunity.IHandler
 	ConfigDefi        configdefi.IHandler
 	ConfigRoles       configroles.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
@@ -75,7 +73,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Tip:               tip.New(entities, logger),
 		Widget:            widget.New(entities, logger),
 		ConfigChannel:     configchannel.New(entities, logger),
-		ConfigCommunity:   configcommunity.New(entities, logger),
 		ConfigDefi:        configdefi.New(entities, logger),
 		ConfigRoles:       configroles.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),

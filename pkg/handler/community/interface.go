@@ -22,9 +22,6 @@ type IHandler interface {
 	GetGuildBlacklistChannelRepostConfig(c *gin.Context)
 	DeleteBlacklistChannelRepostConfig(c *gin.Context)
 
-	CreateTwitterPost(c *gin.Context)
-	GetTwitterLeaderboard(c *gin.Context)
-
 	UpsertLevelUpMessage(c *gin.Context)
 	GetLevelUpMessage(c *gin.Context)
 	DeleteLevelUpMessage(c *gin.Context)

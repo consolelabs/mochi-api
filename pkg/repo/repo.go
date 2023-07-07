@@ -52,9 +52,6 @@ import (
 	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
-	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
-	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
-	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
@@ -99,8 +96,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
-	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
-	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -150,19 +145,14 @@ type Repo struct {
 	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
-	GuildConfigTwitterFeed               guildconfigtwitterfeed.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
-	GuildConfigTwitterHashtag            guildconfigtwitterhashtag.Store
-	GuildConfigTwitterBlacklist          guildconfigtwitterblacklist.Store
 	DiscordGuildStats                    discordguildstats.Store
 	DiscordGuildStatChannels             discordguildstatchannels.Store
 	UpvoteStreakTier                     upvotestreaktier.Store
 	GuildConfigToken                     guildconfigtoken.Store
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store
-	TwitterPost                          twitterpost.Store
-	TwitterPostStreak                    twitterpoststreak.Store
 	GuildConfigActivity                  guildconfigactivity.Store
 	ConfigXPLevel                        configxplevel.Store
 	GuildUserActivityLog                 guilduseractivitylog.Store

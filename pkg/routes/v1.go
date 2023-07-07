@@ -135,11 +135,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 			questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
 		}
-		twitterGroup := communityGroup.Group("/twitter")
-		{
-			twitterGroup.POST("", h.Community.CreateTwitterPost)
-			twitterGroup.GET("/top", h.Community.GetTwitterLeaderboard)
-		}
 		levelupGroup := communityGroup.Group("/levelup")
 		{
 			levelupGroup.GET("", h.Community.GetLevelUpMessage)
@@ -233,23 +228,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			adminRoleGroup.POST("", h.ConfigRoles.CreateGuildAdminRoles)
 			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
 			adminRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildAdminRole)
-		}
-	}
-
-	// v1/config-community
-	configCommunityGroup := v1.Group("/config-community")
-	{
-		twitterGroup := configCommunityGroup.Group("/twitter")
-		{
-			twitterGroup.POST("", h.ConfigCommunity.CreateTwitterConfig)
-			twitterGroup.GET("", h.ConfigCommunity.GetAllTwitterConfig)
-			twitterGroup.GET("/hashtag/:guild_id", h.ConfigCommunity.GetTwitterHashtagConfig)
-			twitterGroup.DELETE("/hashtag/:guild_id", h.ConfigCommunity.DeleteTwitterHashtagConfig)
-			twitterGroup.POST("/hashtag", h.ConfigCommunity.CreateTwitterHashtagConfig)
-			twitterGroup.GET("/hashtag", h.ConfigCommunity.GetAllTwitterHashtagConfig)
-			twitterGroup.POST("/blacklist", h.ConfigCommunity.AddToTwitterBlackList)
-			twitterGroup.GET("/blacklist", h.ConfigCommunity.GetTwitterBlackList)
-			twitterGroup.DELETE("/blacklist", h.ConfigCommunity.DeleteFromTwitterBlackList)
 		}
 	}
 
