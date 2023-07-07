@@ -37,7 +37,6 @@ import (
 	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
-	guildconfigmixrole "github.com/defipod/mochi/pkg/repo/guild_config_mix_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
@@ -61,7 +60,6 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	nftsoulbound "github.com/defipod/mochi/pkg/repo/nft_soulbound"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
@@ -187,10 +185,8 @@ type Repo struct {
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
 	GuildConfigXPRole                    guildconfigxprole.Store
-	NftSoulbound                         nftsoulbound.Store
 	SaleBotMarketplace                   salebotmarketplace.Store
 	SaleBotTwitterConfig                 salebottwitterconfig.Store
-	GuildConfigMixRole                   guildconfigmixrole.Store
 	GuildConfigAdminRole                 guildconfigadminrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store

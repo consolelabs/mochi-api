@@ -40,7 +40,6 @@ import (
 	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
-	guildconfigmixrole "github.com/defipod/mochi/pkg/repo/guild_config_mix_role"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigpruneexclude "github.com/defipod/mochi/pkg/repo/guild_config_prune_exclude"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
@@ -64,7 +63,6 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	nftsoulbound "github.com/defipod/mochi/pkg/repo/nft_soulbound"
 	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
@@ -192,10 +190,8 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Emojis:                               emojis.NewPG(db),
 		GuildConfigXPRole:                    guildconfigxprole.NewPG(db),
-		NftSoulbound:                         nftsoulbound.NewPG(db),
 		SaleBotMarketplace:                   salebotmarketplace.NewPG(db),
 		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
-		GuildConfigMixRole:                   guildconfigmixrole.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
 		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),
 		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
