@@ -3,7 +3,6 @@ package discord
 import (
 	"encoding/json"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -665,120 +664,6 @@ func (d *Discord) SendMessage(channelID string, payload discordgo.MessageSend) e
 		return err
 	}
 	return nil
-}
-
-func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
-	proposalChannel, err := d.Channel(proposalChannelID)
-	if err != nil {
-		d.log.Fields(logger.Fields{
-			"proposalChannelID": proposalChannelID,
-		}).Error(err, "[discord.CreateDiscussionChannelForProposal] get channel failed")
-		return "", errors.ErrInvalidDiscordChannelID
-	}
-	discussChannelCreateData := discordgo.GuildChannelCreateData{
-		Name:                 proposalTitle,
-		Type:                 discordgo.ChannelTypeGuildText,
-		PermissionOverwrites: proposalChannel.PermissionOverwrites,
-		ParentID:             proposalChannel.ParentID,
-	}
-	discussionChannel, err := d.CreateChannel(guildId, discussChannelCreateData)
-	if err != nil {
-		d.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "CreateDiscussionChannelForProposal - GuildChannelCreate failed")
-		return "", err
-	}
-	return discussionChannel.ID, nil
-}
-
-func (d *Discord) NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error {
-	body := proposal.Proposal.Body
-	if len(body) > 250 {
-		body = body[0:249] + "..."
-	}
-	title := proposal.Proposal.Title
-	if len(title) > 70 {
-		title = title[0:69] + "..."
-	}
-	// remove image file name
-	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
-	res := reg.ReplaceAllString(body, " ")
-	msgEmbed := discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("<:mail:1058304339237666866> %s", title),
-		Description: fmt.Sprintf("%s\n\n<:social:933281365586227210> Vote [here](https://snapshot.org/#/%s/proposal/%s)\n<:transaction:933341692667506718> Voting will close at: <t:%d>", res, proposal.Proposal.Space.ID, proposal.Proposal.ID, proposal.Proposal.End),
-		Color:       mochiLogColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-	}
-	_, err := d.session.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
-		Content: "> @everyone",
-		Embed:   &msgEmbed,
-	})
-	if err != nil {
-		d.log.Error(err, "[discord.NotifyNewProposal] d.session.ChannelMessageSendEmbed() failed")
-	}
-	return err
-}
-
-func (d *Discord) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error {
-	body := req.Discussion.Plaintext
-	if len(body) > 250 {
-		body = body[0:249] + "..."
-	}
-	// remove image file name from body
-	reg := regexp.MustCompile(`[a-zA-Z]*(\.png|\.jpeg|\.jpg)`)
-	description := reg.ReplaceAllString(body, " ")
-	// remove - from title
-	regT := regexp.MustCompile(`%20`)
-	title := regT.ReplaceAllString(body, " ")
-	if len(title) > 70 {
-		title = title[0:69] + "..."
-	}
-	discussionLink := fmt.Sprintf("https://commonwealth.im/%s/%s/%d", req.Discussion.Chain, req.Discussion.Kind, req.Discussion.ID)
-	msgSend := discordgo.MessageSend{
-		Content: "> @everyone",
-		Embeds: []*discordgo.MessageEmbed{
-			{
-				Author: &discordgo.MessageEmbedAuthor{
-					Name:    req.Community.Name,
-					URL:     req.Community.Website,
-					IconURL: req.Community.IconURL,
-				},
-				Title:       title,
-				Description: description,
-				Color:       mochiLogColor,
-				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-				Footer: &discordgo.MessageEmbedFooter{
-					Text:    "commonwealth.im",
-					IconURL: "https://pbs.twimg.com/profile_images/1562880197376020480/6R_gefq8_400x400.jpg",
-				},
-			},
-		},
-		Components: []discordgo.MessageComponent{
-			discordgo.ActionsRow{
-				Components: []discordgo.MessageComponent{
-					discordgo.Button{
-						Label:    "Join Thread",
-						Style:    discordgo.PrimaryButton,
-						Disabled: false,
-						CustomID: fmt.Sprintf("proposal_join_thread_commonwealth-%s-%d", req.Community.CommunityID, req.Discussion.ID),
-						Emoji: discordgo.ComponentEmoji{
-							Name: "conversation",
-							ID:   "1078633892493410334",
-						},
-					},
-					discordgo.Button{
-						Label:    "Go To The Discussion",
-						Style:    discordgo.LinkButton,
-						Disabled: false,
-						URL:      discussionLink,
-					},
-				},
-			},
-		},
-	}
-	_, err := d.session.ChannelMessageSendComplex(req.ChannelID, &msgSend)
-	if err != nil {
-		d.log.Error(err, "[discord.NotifyNewProposal] d.session.ChannelMessageSendEmbed() failed")
-	}
-	return err
 }
 
 func (d *Discord) SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error {

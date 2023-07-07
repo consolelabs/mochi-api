@@ -6,10 +6,12 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"sync"
 
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/chain"
 	chainpkg "github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -17,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/token"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -255,4 +258,88 @@ func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(ad
 		return b, nil
 	}
 	return balanceOf, nil
+}
+
+func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID string) (*big.Int, error) {
+	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID, true)
+	if err != nil {
+		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
+		return nil, err
+	}
+	includedPlatform := mochiprofile.PlatformEVM
+	if chainId == 999 {
+		includedPlatform = mochiprofile.PlatformSol
+	}
+	var walletAddrs []string
+	for _, p := range profiles.AssociatedAccounts {
+		if p.Platform == includedPlatform {
+			walletAddrs = append(walletAddrs, p.PlatformIdentifier)
+		}
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(walletAddrs))
+	bals := make(chan *big.Int)
+	go func() {
+		wg.Wait()
+		close(bals)
+	}()
+
+	// Fetch balance concurrently
+	for _, addr := range walletAddrs {
+		go func(chainId int64, tokenAddress, currentWallet string) {
+			defer wg.Done()
+			bal, err := e.fetchTokenBalanceByChain(chainId, tokenAddress, currentWallet)
+			if err == nil {
+				bals <- bal
+			} else {
+				e.log.Fields(logger.Fields{"discordID": discordID, "tokenAddr": tokenAddress}).Error(err, "fetchTokenBalanceByChain() failed")
+			}
+		}(chainId, tokenAddress, addr)
+	}
+
+	counter := 0
+	totalBalances := big.NewInt(0)
+	for b := range bals {
+		totalBalances = big.NewInt(0).Add(totalBalances, b)
+		counter += 1
+	}
+
+	if counter < len(walletAddrs) {
+		return nil, fmt.Errorf("error while fetching balance - user %s", discordID)
+	}
+
+	return totalBalances, nil
+}
+
+func (e *Entity) fetchTokenBalanceByChain(chainId int64, tokenAddress, walletAddress string) (*big.Int, error) {
+	log := e.log.Fields(logger.Fields{"chainID": chainId, "tokenAddress": tokenAddress, "walletAddress": walletAddress})
+	switch chainId {
+	case 999: // SOL
+		client := chain.NewSolanaClient(&e.cfg, e.log, nil)
+		bal, err := client.GetTokenBalance(walletAddress, tokenAddress)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenbalanceByChain] solClient.GetTokenBalance failed")
+			return nil, err
+		}
+		return bal, nil
+	case 1, 10, 56, 137, 250, 42161: //EVM
+		token := model.Token{
+			Address: tokenAddress,
+			ChainID: int(chainId),
+		}
+		balanceOf, err := e.GetTokenBalanceFunc(strconv.FormatInt(chainId, 10), token)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - e.GetTokenBalanceFunc failed")
+			return nil, err
+		}
+		balance, err := balanceOf(walletAddress)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - get user balance failed")
+			return nil, err
+		}
+		return balance, err
+	default:
+		return nil, fmt.Errorf("chain is not supported")
+	}
 }

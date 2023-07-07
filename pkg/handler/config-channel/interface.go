@@ -20,13 +20,4 @@ type IHandler interface {
 	CreateConfigNotify(c *gin.Context)
 	ListConfigNotify(c *gin.Context)
 	DeleteConfigNotify(c *gin.Context)
-
-	GetGuildConfigDaoProposal(c *gin.Context)
-	DeleteGuildConfigDaoProposal(c *gin.Context)
-	CreateProposalChannelConfig(c *gin.Context)
-
-	GetGuildConfigDaoTracker(c *gin.Context)
-	DeleteGuildConfigDaoTracker(c *gin.Context)
-	UpsertGuildConfigDaoTracker(c *gin.Context)
-	CreateCommonwealthDiscussionSubscription(c *gin.Context)
 }

@@ -75,13 +75,10 @@ seed-db:
 gen-mock:
 	@mockgen -source=./pkg/repo/guild_user_xp/store.go -destination=./pkg/repo/guild_user_xp/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_user_activity_log/store.go -destination=./pkg/repo/guild_user_activity_log/mocks/store.go
-	@mockgen -source=./pkg/repo/invite_histories/store.go -destination=./pkg/repo/invite_histories/mocks/store.go
 	@mockgen -source=./pkg/repo/discord_guilds/store.go -destination=./pkg/repo/discord_guilds/mocks/store.go
 	@mockgen -source=./pkg/repo/config_xp_level/store.go -destination=./pkg/repo/config_xp_level/mocks/store.go
 	@mockgen -source=./pkg/repo/token/store.go -destination=./pkg/repo/token/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_token/store.go -destination=./pkg/repo/guild_config_token/mocks/store.go
-	@mockgen -source=./pkg/repo/discord_guild_stats/store.go -destination=./pkg/repo/discord_guild_stats/mocks/store.go
-	@mockgen -source=./pkg/repo/discord_guild_stat_channels/store.go -destination=./pkg/repo/discord_guild_stat_channels/mocks/store.go
 	@mockgen -source=./pkg/repo/chain/store.go -destination=./pkg/repo/chain/mocks/store.go
 	@mockgen -source=./pkg/service/coingecko/service.go -destination=./pkg/service/coingecko/mocks/service.go
 	@mockgen -source=./pkg/service/covalent/service.go -destination=./pkg/service/covalent/mocks/service.go
@@ -100,10 +97,7 @@ gen-mock:
 	@mockgen -source=./pkg/repo/user_watchlist_item/store.go -destination=./pkg/repo/user_watchlist_item/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_gm_gn/store.go -destination=./pkg/repo/guild_config_gm_gn/mocks/store.go
 	@mockgen -source=./pkg/repo/discord_user_gm_streak/store.go -destination=./pkg/repo/discord_user_gm_streak/mocks/store.go
-	@mockgen -source=./pkg/repo/user_telegram_discord_association/store.go -destination=./pkg/repo/user_telegram_discord_association/mocks/store.go
-	@mockgen -source=./pkg/repo/guild_config_vote_channel/store.go -destination=./pkg/repo/guild_config_vote_channel/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_welcome_channel/store.go -destination=./pkg/repo/guild_config_welcome_channel/mocks/store.go
-	@mockgen -source=./pkg/repo/guild_config_repost_reaction/store.go -destination=./pkg/repo/guild_config_repost_reaction/mocks/store.go
 	@mockgen -source=./pkg/repo/message_repost_history/store.go -destination=./pkg/repo/message_repost_history/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_default_roles/store.go -destination=./pkg/repo/guild_config_default_roles/mocks/store.go
 	@mockgen -source=./pkg/repo/guild_config_reaction_roles/store.go -destination=./pkg/repo/guild_config_reaction_roles/mocks/store.go
