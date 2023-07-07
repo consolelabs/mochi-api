@@ -92,50 +92,6 @@ func (e *Entity) DeleteWelcomeChannelConfig(req request.DeleteWelcomeConfigReque
 	return nil
 }
 
-func (e *Entity) GetVoteChannelConfig(guildID string) (*model.GuildConfigVoteChannel, error) {
-	config, err := e.repo.GuildConfigVoteChannel.GetByGuildID(guildID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetVoteChannelConfig] repo.GuildConfigVoteChannel.GetByGuildID failed")
-		return nil, err
-	}
-	return config, nil
-}
-
-func (e *Entity) UpsertVoteChannelConfig(req request.UpsertVoteChannelConfigRequest) (*model.GuildConfigVoteChannel, error) {
-	config, err := e.repo.GuildConfigVoteChannel.UpsertOne(&model.GuildConfigVoteChannel{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertVoteChannelConfig] repo.GuildConfigVoteChannel.UpsertOne failed")
-		return nil, err
-	}
-	return config, nil
-}
-
-func (e *Entity) DeleteVoteChannelConfig(req request.DeleteVoteChannelConfigRequest) error {
-	if err := e.repo.GuildConfigVoteChannel.DeleteOne(&model.GuildConfigVoteChannel{
-		GuildID: req.GuildID,
-	}); err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[Entity][DeleteVoteChannelConfig] repo.GuildConfigVoteChannel.DeleteOne failed")
-		return err
-	}
-
-	return nil
-}
-
-func (e *Entity) GetUpvoteTiersConfig() ([]model.UpvoteStreakTier, error) {
-	tiers, err := e.repo.UpvoteStreakTier.GetAll()
-	if err != nil {
-		e.log.Errorf(err, "[e.GetUpvoteTiersConfig] failed to get upvote tiers")
-		return nil, err
-	}
-	return tiers, nil
-}
-
 func (e *Entity) GetGuildTokens(guildID string) ([]model.Token, error) {
 	if guildID == "" {
 		return e.repo.Token.GetDefaultTokens()

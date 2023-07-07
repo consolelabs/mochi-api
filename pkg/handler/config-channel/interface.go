@@ -10,10 +10,6 @@ type IHandler interface {
 	UpsertWelcomeChannelConfig(c *gin.Context)
 	DeleteWelcomeChannelConfig(c *gin.Context)
 
-	GetVoteChannelConfig(c *gin.Context)
-	UpsertVoteChannelConfig(c *gin.Context)
-	DeleteVoteChannelConfig(c *gin.Context)
-	GetUpvoteTiersConfig(c *gin.Context)
 	GetSalesTrackerConfig(c *gin.Context)
 	CreateSalesTrackerConfig(c *gin.Context)
 

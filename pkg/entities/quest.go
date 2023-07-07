@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -380,21 +379,6 @@ func (e *Entity) finalizeUserQuestList(userID string, action string, list []mode
 	var m float64
 	if multiplier == nil {
 		switch action {
-		case string(model.VOTE):
-			voteStreak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(userID)
-			if err == gorm.ErrRecordNotFound {
-				m = 1
-			} else if err != nil {
-				e.log.Fields(logger.Fields{"userID": userID}).Error(err, "[entity.finalizeUserQuestList] repo.DiscordUserUpvoteStreak.GetByDiscordID() failed")
-				return nil, err
-			}
-			startOfYesterday := util.StartOfDay(time.Now().UTC().AddDate(0, 0, -1))
-			streakCount = voteStreak.StreakCount
-			// if user didn't vote yesterday, streak is broken
-			if util.StartOfDay(voteStreak.LastStreakDate).Before(startOfYesterday) {
-				// then assign streakCount = 0 will guarantee no streak quest is found => multiplier = 1
-				streakCount = 0
-			}
 		default:
 			m = 1
 		}

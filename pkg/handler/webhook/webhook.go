@@ -368,44 +368,6 @@ func (h *Handler) handleNftSales(c *gin.Context, req request.NotifySaleMarketpla
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
-func (h *Handler) WebhookUpvoteTopGG(c *gin.Context) {
-	req := request.WebhookUpvoteTopGG{}
-	err := c.BindJSON(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.TopGGSource)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to add upvote streak")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-func (h *Handler) WebhookUpvoteDiscordBot(c *gin.Context) {
-	req := request.WebhookUpvoteDiscordBot{}
-	err := c.BindJSON(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.DiscordBotListSource)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to add upvote streak")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, err, nil))
-}
-
 func (h *Handler) NotifyNftCollectionIntegration(c *gin.Context) {
 	req := request.NotifyCompleteNftIntegrationRequest{}
 	if err := c.BindJSON(&req); err != nil {

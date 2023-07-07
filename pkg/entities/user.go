@@ -17,7 +17,6 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) CreateUser(req request.CreateUserRequest) error {
@@ -97,114 +96,6 @@ func (e *Entity) UpsertBatchGMStreak(streaks []model.DiscordUserGMStreak) error 
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Errorf(err, "[e.UpsertOneGMStreak] fail to get all gm streaks")
 		return fmt.Errorf("failed to upsert gm streaks: %v", err)
-	}
-	return nil
-}
-
-func (e *Entity) GetUserCurrentUpvoteStreak(discordID string) (*response.GetUserCurrentUpvoteStreakResponse, int, error) {
-	streak, err := e.repo.DiscordUserUpvoteStreak.GetByDiscordID(discordID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Errorf(err, "[e.GetUserCurrentUpvoteStreak] fail to get user upvote streak")
-		return nil, http.StatusInternalServerError, fmt.Errorf("failed to get user's upvote streak: %v", err)
-	}
-	if err == gorm.ErrRecordNotFound {
-		e.log.Info("[e.GetUserCurrentUpvoteStreak] user upvote streak empty")
-		return nil, http.StatusOK, nil
-	}
-
-	var resetTime, topggTime, dcBotTime float64 = 0, 0, 0
-	expireTime := streak.LastStreakDate.Add(time.Hour * 12)
-	now := time.Now()
-	currTime := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), 0, 0, time.UTC)
-	if currTime.Before(expireTime) {
-		resetTime = util.MinuteLeftUntil(currTime, expireTime)
-	}
-
-	upvoteLogs, err := e.repo.DiscordUserUpvoteLog.GetByDiscordID(discordID)
-	if err != nil {
-		e.log.Info("[e.GetUserCurrentUpvoteStreak] user first time upvote")
-	}
-	for _, log := range upvoteLogs {
-		expireTime = log.LatestUpvoteTime.Add(time.Hour * 12)
-		switch log.Source {
-		case "topgg":
-			topggTime = util.MinuteLeftUntil(currTime, expireTime)
-		case "discordbotlist":
-			dcBotTime = util.MinuteLeftUntil(currTime, expireTime)
-		}
-
-	}
-
-	return &response.GetUserCurrentUpvoteStreakResponse{
-		UserID:                  streak.DiscordID,
-		ResetTime:               resetTime,
-		ResetTimeTopGG:          topggTime,
-		ResetTimeDiscordBotList: dcBotTime,
-		SteakCount:              streak.StreakCount,
-		TotalCount:              streak.TotalCount,
-		LastStreakTime:          streak.LastStreakDate,
-	}, http.StatusOK, nil
-}
-
-func (e *Entity) GetUpvoteLeaderboard(by, guildId string) ([]model.DiscordUserUpvoteStreak, error) {
-	if guildId == "" {
-		switch by {
-		case "total":
-			streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByTotal()
-			if err != nil && err != gorm.ErrRecordNotFound {
-				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote global leaderboard by total")
-				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
-			}
-			return streaks, nil
-		case "streak":
-			streaks, err := e.repo.DiscordUserUpvoteStreak.GetTopByStreak()
-			if err != nil && err != gorm.ErrRecordNotFound {
-				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote global leaderboard by streak")
-				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
-			}
-			return streaks, nil
-		default:
-			e.log.Infof("[e.GetUpvoteLeaderboard] invalid query string by=%s", by)
-			return nil, fmt.Errorf("invalid query string")
-		}
-	} else {
-		switch by {
-		case "total":
-			streaks, err := e.repo.DiscordUserUpvoteStreak.GetGuildTopByTotal(guildId)
-			if err != nil && err != gorm.ErrRecordNotFound {
-				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote guild leaderboard by total")
-				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
-			}
-			return streaks, nil
-		case "streak":
-			streaks, err := e.repo.DiscordUserUpvoteStreak.GetGuildTopByStreak(guildId)
-			if err != nil && err != gorm.ErrRecordNotFound {
-				e.log.Errorf(err, "[e.GetUpvoteLeaderboard] fail to get upvote guild leaderboard by streak")
-				return nil, fmt.Errorf("failed to get upvote leaderboard: %v", err)
-			}
-			return streaks, nil
-		default:
-			e.log.Infof("[e.GetUpvoteLeaderboard] invalid query string by=%s", by)
-			return nil, fmt.Errorf("invalid query string")
-		}
-	}
-
-}
-
-func (e *Entity) GetAllUpvoteStreak() ([]model.DiscordUserUpvoteStreak, error) {
-	streaks, err := e.repo.DiscordUserUpvoteStreak.GetAll()
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Errorf(err, "[e.GetAllUpvoteStreak] fail to get all upvote streaks")
-		return nil, fmt.Errorf("failed to get all upvote streaks: %v", err)
-	}
-	return streaks, nil
-}
-
-func (e *Entity) UpsertBatchUpvoteStreak(streak []model.DiscordUserUpvoteStreak) error {
-	err := e.repo.DiscordUserUpvoteStreak.UpsertBatch(streak)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Errorf(err, "[e.GetAllUpvoteStreak] fail to get all upvote streaks")
-		return fmt.Errorf("failed to upsert upvote streaks: %v", err)
 	}
 	return nil
 }
