@@ -20,8 +20,6 @@ import (
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
-	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
@@ -48,7 +46,6 @@ import (
 	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
-	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
 	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
@@ -92,7 +89,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
-	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -114,7 +110,6 @@ import (
 type Repo struct {
 	Store                                Store
 	DiscordUserGMStreak                  discordusergmstreak.Store
-	DiscordUserUpvoteStreak              discorduserupvotestreak.Store
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
@@ -131,7 +126,6 @@ type Repo struct {
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	UserFeedback                         userfeedback.Store
-	DiscordUserUpvoteLog                 discorduserupvotelog.Store
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigPruneExclude              guildconfigpruneexclude.Store
@@ -139,9 +133,7 @@ type Repo struct {
 	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
-	GuildConfigVoteChannel               guildconfigvotechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
-	UpvoteStreakTier                     upvotestreaktier.Store
 	GuildConfigToken                     guildconfigtoken.Store
 	NFTCollection                        nftcollection.Store
 	Activity                             activity.Store

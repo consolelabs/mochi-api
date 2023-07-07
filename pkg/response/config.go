@@ -39,11 +39,6 @@ type GetWelcomeChannelConfigResponse struct {
 	Data    *model.GuildConfigWelcomeChannel `json:"data"`
 }
 
-type GetVoteChannelConfigResponse struct {
-	Message string                        `json:"message"`
-	Data    *model.GuildConfigVoteChannel `json:"data"`
-}
-
 type GetSalesTrackerConfigResponse struct {
 	Data []model.GuildConfigSalesTracker `json:"data"`
 }
@@ -64,11 +59,6 @@ type ListGuildGroupNFTRolesResponse struct {
 type NewGuildGroupNFTRoleResponse struct {
 	Message string                      `json:"message"`
 	Data    *ConfigGroupNFTRoleResponse `json:"data"`
-}
-
-type GetUpvoteTiersConfig struct {
-	Message string                   `json:"message"`
-	Data    []model.UpvoteStreakTier `json:"data"`
 }
 
 type ConfigGroupNFTRoleResponse struct {

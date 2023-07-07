@@ -23,8 +23,6 @@ import (
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
-	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
@@ -51,7 +49,6 @@ import (
 	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
-	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
 	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
@@ -95,7 +92,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
-	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -127,10 +123,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
 		GuildConfigWelcomeChannel:            guildconfigwelcomechannel.NewPG(db),
-		GuildConfigVoteChannel:               guildconfigvotechannel.NewPG(db),
-		DiscordUserUpvoteStreak:              discorduserupvotestreak.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
-		DiscordUserUpvoteLog:                 discorduserupvotelog.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		CommonwealthLatestData:               commonwealthlastestdata.NewPG(db),
@@ -142,7 +135,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
-		UpvoteStreakTier:                     upvotestreaktier.NewPG(db),
 		GuildConfigPruneExclude:              guildconfigpruneexclude.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
