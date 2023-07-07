@@ -247,7 +247,6 @@ func (h *Handler) CreateSalesTrackerConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.GetVoteChannelConfigResponse
 // @Router      /config-channels/join-leave [get]
 func (h *Handler) GetJoinLeaveChannelConfig(c *gin.Context) {
 	guildID := c.Query("guild_id")
@@ -275,7 +274,6 @@ func (h *Handler) GetJoinLeaveChannelConfig(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.UpsertJoinLeaveChannelConfigRequest true "Upsert join-leave channel config request"
-// @Success     200 {object} response.GetVoteChannelConfigResponse
 // @Router      /config-channels/join-leave [post]
 func (h *Handler) UpsertJoinLeaveChannelConfig(c *gin.Context) {
 	var req request.UpsertJoinLeaveChannelConfigRequest

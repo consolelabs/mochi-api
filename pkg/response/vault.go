@@ -7,15 +7,15 @@ import (
 )
 
 type CreateTreasurerRequestResponse struct {
-	Request              model.TreasurerRequest `json:"request"`
-	Treasurer            []model.Treasurer      `json:"treasurer"`
+	Request              model.VaultRequest     `json:"request"`
+	VaultTreasurer       []model.VaultTreasurer `json:"treasurer"`
 	IsDecidedAndExecuted bool                   `json:"is_decided_and_executed"`
 }
 
 type CreateTreasurerSubmissionResponse struct {
-	Submission       model.TreasurerSubmission   `json:"submission"`
-	VoteResult       VoteResult                  `json:"vote_result"`
-	TotalSubmissions []model.TreasurerSubmission `json:"total_submissions"`
+	Submission       model.VaultSubmission   `json:"submission"`
+	VoteResult       VoteResult              `json:"vote_result"`
+	TotalSubmissions []model.VaultSubmission `json:"total_submissions"`
 }
 
 type VoteResult struct {
@@ -31,15 +31,15 @@ type VoteResult struct {
 }
 
 type VaultDetailResponse struct {
-	WalletAddress       string             `json:"wallet_address"`
-	SolanaWalletAddress string             `json:"solana_wallet_address"`
-	CurrentRequest      []CurrentRequest   `json:"current_request"`
-	Balance             []Balance          `json:"balance"`
-	MyNft               []MyNft            `json:"my_nft"`
-	EstimatedTotal      string             `json:"estimated_total"`
-	Treasurer           []model.Treasurer  `json:"treasurer"`
-	RecentTransaction   []VaultTransaction `json:"recent_transaction"`
-	Threshold           string             `json:"threshold"`
+	WalletAddress       string                 `json:"wallet_address"`
+	SolanaWalletAddress string                 `json:"solana_wallet_address"`
+	CurrentRequest      []CurrentRequest       `json:"current_request"`
+	Balance             []Balance              `json:"balance"`
+	MyNft               []MyNft                `json:"my_nft"`
+	EstimatedTotal      string                 `json:"estimated_total"`
+	VaultTreasurer      []model.VaultTreasurer `json:"treasurer"`
+	RecentTransaction   []VaultTransaction     `json:"recent_transaction"`
+	Threshold           string                 `json:"threshold"`
 }
 
 type VaultTransaction struct {
