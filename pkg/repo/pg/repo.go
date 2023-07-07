@@ -92,7 +92,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
-	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
@@ -175,7 +174,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
 		UserTokenSupportRequest:              usertokensupportrequest.NewPG(db),
 		Vault:                                vault.NewPG(db),
-		VaultInfo:                            vaultinfo.NewPG(db),
 		VaultConfig:                          vaultconfig.NewPG(db),
 		Treasurer:                            treasurer.NewPG(db),
 		TreasurerRequest:                     treasurerrequest.NewPG(db),

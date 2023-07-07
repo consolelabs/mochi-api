@@ -89,7 +89,6 @@ import (
 	users "github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
-	vaultinfo "github.com/defipod/mochi/pkg/repo/vault_info"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
@@ -171,7 +170,6 @@ type Repo struct {
 	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	Vault                                vault.Store
-	VaultInfo                            vaultinfo.Store
 	VaultConfig                          vaultconfig.Store
 	Treasurer                            treasurer.Store
 	TreasurerRequest                     treasurerrequest.Store
