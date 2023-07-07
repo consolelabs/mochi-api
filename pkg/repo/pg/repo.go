@@ -44,7 +44,6 @@ import (
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
-	guildconfigxprole "github.com/defipod/mochi/pkg/repo/guild_config_xp_role"
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
@@ -169,7 +168,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Emojis:                               emojis.NewPG(db),
-		GuildConfigXPRole:                    guildconfigxprole.NewPG(db),
 		SaleBotMarketplace:                   salebotmarketplace.NewPG(db),
 		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
