@@ -26,7 +26,6 @@ import (
 	"github.com/defipod/mochi/pkg/handler/verify"
 	"github.com/defipod/mochi/pkg/handler/wallet"
 	"github.com/defipod/mochi/pkg/handler/webhook"
-	"github.com/defipod/mochi/pkg/handler/widget"
 	"github.com/defipod/mochi/pkg/logger"
 )
 
@@ -42,7 +41,6 @@ type Handler struct {
 	Verify            verify.IHandler
 	Webhook           webhook.IHandler
 	Tip               tip.IHandler
-	Widget            widget.IHandler
 	ConfigChannel     configchannel.IHandler
 	ConfigDefi        configdefi.IHandler
 	ConfigRoles       configroles.IHandler
@@ -71,7 +69,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Verify:            verify.New(entities, logger),
 		Webhook:           webhook.New(entities, logger),
 		Tip:               tip.New(entities, logger),
-		Widget:            widget.New(entities, logger),
 		ConfigChannel:     configchannel.New(entities, logger),
 		ConfigDefi:        configdefi.New(entities, logger),
 		ConfigRoles:       configroles.New(entities, logger),

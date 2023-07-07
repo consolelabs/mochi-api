@@ -624,31 +624,6 @@ func (e *Entity) GetOneOrUpsertUser(discordID string) (*model.User, error) {
 	return u, nil
 }
 
-func (e *Entity) GetUserDevice(deviceID string) (*response.UserDeviceResponse, error) {
-	data, err := e.repo.DiscordUserDevice.GetByDeviceID(deviceID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-		e.log.Fields(logger.Fields{"deviceID": deviceID}).Error(err, "[e.repo.DiscordUserDevice.GetByDeviceID] - failed to get user device")
-		return nil, err
-	}
-	return &response.UserDeviceResponse{
-		DeviceID:     data.ID,
-		IosNotiToken: data.IosNotiToken,
-	}, nil
-}
-func (e *Entity) UpsertUserDevice(req *request.UpsertUserDeviceRequest) error {
-	return e.repo.DiscordUserDevice.UpsertOne(&model.DiscordUserDevice{
-		ID:           req.DeviceID,
-		IosNotiToken: req.IosNotiToken,
-		UpdatedAt:    time.Now().UTC(),
-	})
-}
-func (e *Entity) DeleteUserDevice(req *request.DeleteUserDeviceRequest) error {
-	return e.repo.DiscordUserDevice.RemoveByDeviceID(req.DeviceID)
-}
-
 func (e *Entity) GetUserWalletByGuildIDAddress(guildID, address string) (*model.UserWallet, error) {
 	uw, err := e.repo.UserWallet.GetOneByGuildIDAndAddress(guildID, address)
 	if err != nil {

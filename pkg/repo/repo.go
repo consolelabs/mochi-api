@@ -19,9 +19,7 @@ import (
 	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
-	discorduserdevice "github.com/defipod/mochi/pkg/repo/discord_user_device"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discordusertokenalert "github.com/defipod/mochi/pkg/repo/discord_user_token_alert"
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
@@ -130,8 +128,6 @@ type Repo struct {
 	Token                                token.Store
 	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	UserSubmittedAd                      usersubmittedad.Store
-	DiscordUserTokenAlert                discordusertokenalert.Store
-	DiscordUserDevice                    discorduserdevice.Store
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store
 	UserFeedback                         userfeedback.Store

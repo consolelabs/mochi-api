@@ -22,9 +22,7 @@ import (
 	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
-	discorduserdevice "github.com/defipod/mochi/pkg/repo/discord_user_device"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discordusertokenalert "github.com/defipod/mochi/pkg/repo/discord_user_token_alert"
 	discorduserupvotelog "github.com/defipod/mochi/pkg/repo/discord_user_upvote_log"
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
@@ -134,8 +132,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		DiscordUserUpvoteLog:                 discorduserupvotelog.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
-		DiscordUserTokenAlert:                discordusertokenalert.NewPG(db),
-		DiscordUserDevice:                    discorduserdevice.NewPG(db),
 		GuildConfigInviteTracker:             guildconfiginvitetracker.NewPG(db),
 		CommonwealthLatestData:               commonwealthlastestdata.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
