@@ -45,16 +45,9 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
-	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
-	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
-	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
-	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
-	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
-	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -136,17 +129,10 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserPass:                        questuserpass.NewPG(db),
 		QuestStreak:                          queststreak.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
-		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
-		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
-		OffchainTipBotUserBalanceSnapshot:    offchaintipbotuserbalancesnapshot.NewPG(db),
 		OffchainTipBotTokens:                 offchaintipbottokens.NewPG(db),
-		OffchainTipBotActivityLogs:           offchaintipbotactivitylogs.NewPG(db),
-		OffchainTipBotTransferHistories:      offchaintipbottransferhistories.NewPG(db),
 		MonikerConfig:                        monikerconfig.NewPG(db),
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
-		OffchainTipBotDepositLog:             offchaintipbotdepositlog.NewPG(db),
-		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Emojis:                               emojis.NewPG(db),

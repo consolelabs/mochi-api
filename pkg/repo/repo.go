@@ -42,16 +42,9 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
-	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
-	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
-	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
-	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
-	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
-	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -131,18 +124,11 @@ type Repo struct {
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
-	OffchainTipBotContract               offchaintipbotcontract.Store
 	QuestStreak                          queststreak.Store
-	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
-	OffchainTipBotUserBalanceSnapshot    offchaintipbotuserbalancesnapshot.Store
 	OffchainTipBotTokens                 offchaintipbottokens.Store
-	OffchainTipBotActivityLogs           offchaintipbotactivitylogs.Store
-	OffchainTipBotTransferHistories      offchaintipbottransferhistories.Store
 	MonikerConfig                        monikerconfig.Store
 	OffchainTipBotConfigNotify           offchaintipbotconfignotify.Store
 	NftAddRequestHistory                 nftaddrequesthistory.Store
-	OffchainTipBotDepositLog             offchaintipbotdepositlog.Store
-	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
 	SaleBotMarketplace                   salebotmarketplace.Store
