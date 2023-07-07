@@ -74,9 +74,6 @@ import (
 	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
 	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
-	"github.com/defipod/mochi/pkg/repo/treasurer"
-	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
-	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -89,7 +86,10 @@ import (
 	users "github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
+	vaultrequest "github.com/defipod/mochi/pkg/repo/vault_request"
+	vaultsubmission "github.com/defipod/mochi/pkg/repo/vault_submission"
 	vaulttransaction "github.com/defipod/mochi/pkg/repo/vault_transaction"
+	vaulttreasurer "github.com/defipod/mochi/pkg/repo/vault_treasurer"
 	walletsnapshot "github.com/defipod/mochi/pkg/repo/wallet_snapshot"
 )
 
@@ -171,10 +171,10 @@ type Repo struct {
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	Vault                                vault.Store
 	VaultConfig                          vaultconfig.Store
-	Treasurer                            treasurer.Store
-	TreasurerRequest                     treasurerrequest.Store
+	VaultTreasurer                       vaulttreasurer.Store
+	VaultRequest                         vaultrequest.Store
 	KyberswapSupportedToken              kyberswapsupportedtokens.Store
-	TreasurerSubmission                  treasurersubmission.Store
+	VaultSubmission                      vaultsubmission.Store
 	VaultTransaction                     vaulttransaction.Store
 	UserTag                              usertag.Store
 	GuildConfigTipRange                  guildconfigtiprange.Store

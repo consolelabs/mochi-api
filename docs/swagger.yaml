@@ -141,6 +141,8 @@ definitions:
         type: string
       is_native:
         type: boolean
+      is_popular:
+        type: boolean
       most_popular:
         type: boolean
       name:
@@ -193,58 +195,6 @@ definitions:
           $ref: '#/definitions/model.GuildRole'
         type: array
     type: object
-  model.DiscordGuildStat:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      nr_of_animated_emojis:
-        type: integer
-      nr_of_announcement_channels:
-        type: integer
-      nr_of_bots:
-        type: integer
-      nr_of_categories:
-        type: integer
-      nr_of_channels:
-        type: integer
-      nr_of_custom_stickers:
-        type: integer
-      nr_of_emojis:
-        type: integer
-      nr_of_members:
-        type: integer
-      nr_of_roles:
-        type: integer
-      nr_of_server_stickers:
-        type: integer
-      nr_of_stage_channels:
-        type: integer
-      nr_of_static_emojis:
-        type: integer
-      nr_of_stickers:
-        type: integer
-      nr_of_text_channels:
-        type: integer
-      nr_of_users:
-        type: integer
-      nr_of_voice_channels:
-        type: integer
-    type: object
-  model.DiscordUserDevice:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      ios_noti_token:
-        type: string
-      updated_at:
-        type: string
-    type: object
   model.DiscordUserGMStreak:
     properties:
       created_at:
@@ -261,55 +211,6 @@ definitions:
         type: integer
       updated_at:
         type: string
-    type: object
-  model.DiscordUserTokenAlert:
-    properties:
-      created_at:
-        type: string
-      device:
-        $ref: '#/definitions/model.DiscordUserDevice'
-      device_id:
-        type: string
-      discord_id:
-        type: string
-      id:
-        type: string
-      is_enable:
-        type: boolean
-      price_set:
-        type: number
-      symbol:
-        type: string
-      token_id:
-        type: string
-      trend:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  model.Envelop:
-    properties:
-      command:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      updated_at:
-        type: string
-      user_id:
-        type: string
-    type: object
-  model.ExtraFee:
-    properties:
-      chargeFeeBy:
-        type: string
-      feeAmount:
-        type: string
-      feeReceiver:
-        type: string
-      isImBps:
-        type: boolean
     type: object
   model.GuildConfigActivity:
     properties:
@@ -414,17 +315,6 @@ definitions:
       sticker:
         type: string
     type: object
-  model.GuildConfigInviteTracker:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      webhook_url:
-        $ref: '#/definitions/model.JSONNullString'
-    type: object
   model.GuildConfigLevelRole:
     properties:
       guild_id:
@@ -451,48 +341,6 @@ definitions:
       message:
         type: string
       updated_at:
-        type: string
-    type: object
-  model.GuildConfigMixRole:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      nft_requirement:
-        $ref: '#/definitions/model.MixRoleNFTRequirement'
-      nft_requirement_id:
-        type: integer
-      required_level:
-        type: integer
-      role_id:
-        type: string
-      token_requirement:
-        $ref: '#/definitions/model.MixRoleTokenRequirement'
-      token_requirement_id:
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  model.GuildConfigRepostReaction:
-    properties:
-      emoji:
-        type: string
-      emoji_start:
-        type: string
-      emoji_stop:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      quantity:
-        type: integer
-      reaction_type:
-        type: string
-      repost_channel_id:
         type: string
     type: object
   model.GuildConfigSalesTracker:
@@ -531,41 +379,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.GuildConfigTwitterBlacklist:
-    properties:
-      created_at:
-        type: string
-      created_by:
-        type: string
-      guild_id:
-        type: string
-      twitter_id:
-        type: string
-      twitter_username:
-        type: string
-    type: object
-  model.GuildConfigTwitterFeed:
-    properties:
-      guild_id:
-        type: string
-      twitter_access_token:
-        type: string
-      twitter_access_token_secret:
-        type: string
-      twitter_consumer_key:
-        type: string
-      twitter_consumer_secret:
-        type: string
-    type: object
-  model.GuildConfigVoteChannel:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-    type: object
   model.GuildConfigWalletVerificationMessage:
     properties:
       content:
@@ -594,21 +407,6 @@ definitions:
       id:
         type: string
       welcome_message:
-        type: string
-    type: object
-  model.GuildConfigXPRole:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      required_xp:
-        type: integer
-      role_id:
-        type: string
-      updated_at:
         type: string
     type: object
   model.GuildRole:
@@ -664,44 +462,6 @@ definitions:
       user:
         $ref: '#/definitions/model.User'
       user_id:
-        type: string
-    type: object
-  model.JSONNullString:
-    properties:
-      string:
-        type: string
-      valid:
-        description: Valid is true if String is not NULL
-        type: boolean
-    type: object
-  model.MixRoleNFTRequirement:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      nft_collection:
-        $ref: '#/definitions/model.NFTCollection'
-      nft_collection_id:
-        type: string
-      required_amount:
-        type: integer
-      updated_at:
-        type: string
-    type: object
-  model.MixRoleTokenRequirement:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      required_amount:
-        type: number
-      token:
-        $ref: '#/definitions/model.Token'
-      token_id:
-        type: integer
-      updated_at:
         type: string
     type: object
   model.MonikerConfig:
@@ -796,23 +556,6 @@ definitions:
       name:
         type: string
       symbol:
-        type: string
-    type: object
-  model.NftSoulbound:
-    properties:
-      collection_address:
-        type: string
-      created_at:
-        type: string
-      id:
-        type: integer
-      total_soulbound:
-        type: integer
-      trait_type:
-        type: string
-      updated_at:
-        type: string
-      value:
         type: string
     type: object
   model.OffchainTipBotToken:
@@ -1030,62 +773,6 @@ definitions:
       user_id:
         type: string
     type: object
-  model.RouteElement:
-    properties:
-      amountOut:
-        type: string
-      exchange:
-        type: string
-      extra: {}
-      limitReturnAmount:
-        type: string
-      pool:
-        type: string
-      poolExtra: {}
-      poolLength:
-        type: integer
-      poolType:
-        type: string
-      swapAmount:
-        type: string
-      tokenIn:
-        type: string
-      tokenOut:
-        type: string
-    type: object
-  model.RouteSummary:
-    properties:
-      amountIn:
-        type: string
-      amountInUsd:
-        type: string
-      amountOut:
-        type: string
-      amountOutUsd:
-        type: string
-      extraFee:
-        $ref: '#/definitions/model.ExtraFee'
-      gas:
-        type: string
-      gasPrice:
-        type: string
-      gasUsd:
-        type: string
-      route:
-        items:
-          items:
-            $ref: '#/definitions/model.RouteElement'
-          type: array
-        type: array
-      tokenIn:
-        type: string
-      tokenInMarketPriceAvailable:
-        type: boolean
-      tokenOut:
-        type: string
-      tokenOutMarketPriceAvailable:
-        type: boolean
-    type: object
   model.SaleBotMarketplace:
     properties:
       id:
@@ -1141,89 +828,6 @@ definitions:
       symbol:
         type: string
     type: object
-  model.TradeItem:
-    properties:
-      id:
-        type: string
-      is_from:
-        type: boolean
-      token_address:
-        type: string
-      token_ids:
-        items:
-          type: string
-        type: array
-      trade_offer_id:
-        type: string
-    type: object
-  model.TradeOffer:
-    properties:
-      created_at:
-        type: string
-      have_items:
-        items:
-          $ref: '#/definitions/model.TradeItem'
-        type: array
-      id:
-        type: string
-      owner_address:
-        type: string
-      updated_at:
-        type: string
-      want_items:
-        items:
-          $ref: '#/definitions/model.TradeItem'
-        type: array
-    type: object
-  model.Treasurer:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      role:
-        type: string
-      updated_at:
-        type: string
-      user_discord_id:
-        type: string
-      vault:
-        $ref: '#/definitions/model.Vault'
-      vault_id:
-        type: integer
-    type: object
-  model.TwitterPostStreak:
-    properties:
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      last_streak_date:
-        type: string
-      streak_count:
-        type: integer
-      total_count:
-        type: integer
-      twitter_handle:
-        type: string
-      twitter_id:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  model.UpvoteStreakTier:
-    properties:
-      id:
-        type: integer
-      streak_required:
-        type: integer
-      vote_interval:
-        type: integer
-      xp_per_interval:
-        type: integer
-    type: object
   model.User:
     properties:
       discriminator:
@@ -1237,13 +841,6 @@ definitions:
       nr_of_join:
         type: integer
       username:
-        type: string
-    type: object
-  model.UserEnvelopStreak:
-    properties:
-      total_envelop:
-        type: integer
-      user_id:
         type: string
     type: object
   model.UserFactionXpsMapping:
@@ -1278,13 +875,6 @@ definitions:
       status:
         type: string
     type: object
-  model.UserTelegramDiscordAssociation:
-    properties:
-      discord_id:
-        type: string
-      telegram_username:
-        type: string
-    type: object
   model.UserTokenSupportRequest:
     properties:
       channel_id:
@@ -1315,22 +905,6 @@ definitions:
         type: string
       updated_at:
         type: string
-      user_discord_id:
-        type: string
-    type: object
-  model.UserWallet:
-    properties:
-      address:
-        type: string
-      chain_type:
-        $ref: '#/definitions/model.JSONNullString'
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      user:
-        $ref: '#/definitions/model.User'
-        description: preload user
       user_discord_id:
         type: string
     type: object
@@ -1392,13 +966,32 @@ definitions:
         type: string
       treasurers:
         items:
-          $ref: '#/definitions/model.Treasurer'
+          $ref: '#/definitions/model.VaultTreasurer'
         type: array
       updated_at:
         type: string
       wallet_address:
         type: string
       wallet_number:
+        type: integer
+    type: object
+  model.VaultTreasurer:
+    properties:
+      created_at:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: integer
+      role:
+        type: string
+      updated_at:
+        type: string
+      user_discord_id:
+        type: string
+      vault:
+        $ref: '#/definitions/model.Vault'
+      vault_id:
         type: integer
     type: object
   request.AddNftWatchlistRequest:
@@ -1412,17 +1005,6 @@ definitions:
       guild_id:
         type: string
       user_id:
-        type: string
-    type: object
-  request.AddToTwitterBlackListRequest:
-    properties:
-      created_by:
-        type: string
-      guild_id:
-        type: string
-      twitter_id:
-        type: string
-      twitter_username:
         type: string
     type: object
   request.AddToWatchlistRequest:
@@ -1470,13 +1052,6 @@ definitions:
     required:
     - guild_id
     - user_discord_id
-    type: object
-  request.BalcklistChannelRepostConfigRequest:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
-        type: string
     type: object
   request.ClaimOnchainTransferRequest:
     properties:
@@ -1538,37 +1113,6 @@ definitions:
       role_id:
         type: string
     type: object
-  request.ConfigRepostReactionStartStop:
-    properties:
-      emoji_start:
-        type: string
-      emoji_stop:
-        type: string
-      guild_id:
-        type: string
-      repost_channel_id:
-        type: string
-    type: object
-  request.ConfigRepostRequest:
-    properties:
-      emoji:
-        type: string
-      guild_id:
-        type: string
-      quantity:
-        type: integer
-      repost_channel_id:
-        type: string
-    type: object
-  request.ConfigureInviteRequest:
-    properties:
-      guild_id:
-        type: string
-      log_channel:
-        type: string
-      webhook_url:
-        type: string
-    type: object
   request.CreateAirdropCampaignRequest:
     properties:
       deadline_at:
@@ -1608,16 +1152,6 @@ definitions:
     - guild_id
     - role_id
     type: object
-  request.CreateEnvelop:
-    properties:
-      command:
-        type: string
-      user_id:
-        type: string
-    required:
-    - command
-    - user_id
-    type: object
   request.CreateGuildAdminRoleRequest:
     properties:
       guild_id:
@@ -1629,29 +1163,6 @@ definitions:
     required:
     - guild_id
     - role_ids
-    type: object
-  request.CreateGuildMixRole:
-    properties:
-      guild_id:
-        type: string
-      nft_requirement:
-        $ref: '#/definitions/request.MixRoleNFTRequirement'
-      required_level:
-        type: integer
-      role_id:
-        type: string
-      token_requirement:
-        $ref: '#/definitions/request.MixRoleTokenRequirement'
-    required:
-    - guild_id
-    - role_id
-    type: object
-  request.CreateGuildRequest:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
     type: object
   request.CreateGuildTokenRole:
     properties:
@@ -1669,18 +1180,6 @@ definitions:
     - address
     - amount
     - chain
-    - guild_id
-    - role_id
-    type: object
-  request.CreateGuildXPRole:
-    properties:
-      guild_id:
-        type: string
-      role_id:
-        type: string
-      xp:
-        type: integer
-    required:
     - guild_id
     - role_id
     type: object
@@ -1759,21 +1258,6 @@ definitions:
       token:
         type: string
     type: object
-  request.CreateTradeOfferRequest:
-    properties:
-      have_items:
-        items:
-          $ref: '#/definitions/request.TradeOfferItem'
-        type: array
-      owner_address:
-        type: string
-      want_items:
-        items:
-          $ref: '#/definitions/request.TradeOfferItem'
-        type: array
-    required:
-    - owner_address
-    type: object
   request.CreateTwitterSaleConfigRequest:
     properties:
       address:
@@ -1818,11 +1302,6 @@ definitions:
     - token_chain
     - user_discord_id
     type: object
-  request.DeleteDiscordUserAlertRequest:
-    properties:
-      id:
-        type: string
-    type: object
   request.DeleteGuildConfigDaoProposal:
     properties:
       id:
@@ -1848,16 +1327,6 @@ definitions:
     - guild_id
     - moniker
     type: object
-  request.DeleteUserDeviceRequest:
-    properties:
-      device_id:
-        type: string
-    type: object
-  request.DeleteVoteChannelConfigRequest:
-    properties:
-      guild_id:
-        type: string
-    type: object
   request.DeleteWelcomeConfigRequest:
     properties:
       guild_id:
@@ -1874,15 +1343,6 @@ definitions:
       repost_channel_id:
         type: string
       repost_message_id:
-        type: string
-    type: object
-  request.GenerateVerificationRequest:
-    properties:
-      guild_id:
-        type: string
-      is_reverify:
-        type: boolean
-      user_discord_id:
         type: string
     type: object
   request.GetTrackingWalletsRequest:
@@ -1914,40 +1374,10 @@ definitions:
       guild_id:
         type: string
     type: object
-  request.LinkUserTelegramWithDiscordRequest:
-    properties:
-      discord_id:
-        type: string
-      telegram_username:
-        type: string
-    required:
-    - discord_id
-    - telegram_username
-    type: object
   request.LoginRequest:
     properties:
       access_token:
         type: string
-    type: object
-  request.MixRoleNFTRequirement:
-    properties:
-      amount:
-        type: integer
-      nft_id:
-        type: string
-    required:
-    - amount
-    - nft_id
-    type: object
-  request.MixRoleTokenRequirement:
-    properties:
-      amount:
-        type: number
-      token_id:
-        type: integer
-    required:
-    - amount
-    - token_id
     type: object
   request.NewGuildConfigWalletVerificationMessageRequest:
     properties:
@@ -2038,10 +1468,12 @@ definitions:
     type: object
   request.SwapRequest:
     properties:
+      aggregator:
+        type: string
       chainName:
         type: string
-      routeSummary:
-        $ref: '#/definitions/model.RouteSummary'
+      routeSummary: {}
+      swapData: {}
       userDiscordId:
         type: string
     required:
@@ -2068,54 +1500,6 @@ definitions:
     - address
     - chain_type
     - type
-    type: object
-  request.TradeOfferItem:
-    properties:
-      token_address:
-        type: string
-      token_ids:
-        items:
-          type: string
-        type: array
-    required:
-    - token_address
-    - token_ids
-    type: object
-  request.TwitterHashtag:
-    properties:
-      channel_id:
-        type: string
-      from_twitter:
-        items:
-          type: string
-        type: array
-      guild_id:
-        type: string
-      hashtag:
-        items:
-          type: string
-        type: array
-      rule_id:
-        type: string
-      twitter_username:
-        items:
-          type: string
-        type: array
-      user_id:
-        type: string
-    type: object
-  request.TwitterPost:
-    properties:
-      content:
-        type: string
-      guild_id:
-        type: string
-      tweet_id:
-        type: string
-      twitter_handle:
-        type: string
-      twitter_id:
-        type: string
     type: object
   request.UnlinkBinance:
     properties:
@@ -2182,25 +1566,6 @@ definitions:
       symbol:
         type: string
     type: object
-  request.UpsertDiscordUserAlertRequest:
-    properties:
-      device_id:
-        type: string
-      discord_id:
-        type: string
-      id:
-        type: string
-      is_enable:
-        type: boolean
-      price_set:
-        type: number
-      symbol:
-        type: string
-      token_id:
-        type: string
-      trend:
-        type: string
-    type: object
   request.UpsertGmConfigRequest:
     properties:
       channel_id:
@@ -2239,13 +1604,6 @@ definitions:
       symbol:
         type: string
     type: object
-  request.UpsertGuildPruneExcludeRequest:
-    properties:
-      guild_id:
-        type: string
-      role_id:
-        type: string
-    type: object
   request.UpsertGuildTokenConfigRequest:
     properties:
       active:
@@ -2280,13 +1638,6 @@ definitions:
     - moniker
     - token
     type: object
-  request.UpsertUserDeviceRequest:
-    properties:
-      device_id:
-        type: string
-      ios_noti_token:
-        type: string
-    type: object
   request.UpsertUserTag:
     properties:
       guild_id:
@@ -2294,13 +1645,6 @@ definitions:
       is_active:
         type: boolean
       user_id:
-        type: string
-    type: object
-  request.UpsertVoteChannelConfigRequest:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
         type: string
     type: object
   request.UpsertWelcomeConfigRequest:
@@ -2325,15 +1669,6 @@ definitions:
       message_id:
         type: string
       username:
-        type: string
-    type: object
-  request.VerifyWalletAddressRequest:
-    properties:
-      code:
-        type: string
-      signature:
-        type: string
-      wallet_address:
         type: string
     type: object
   response.AddToWatchlistResponse:
@@ -2643,35 +1978,15 @@ definitions:
       updated_at:
         type: string
     type: object
-  response.ConfigureInvitesResponse:
-    properties:
-      data:
-        type: string
-    type: object
   response.CreateCommonwealthDiscussionSubscription:
     properties:
       data:
         $ref: '#/definitions/model.CommonwealthDiscussionSubscription'
     type: object
-  response.CreateEnvelop:
-    properties:
-      data:
-        $ref: '#/definitions/model.Envelop'
-    type: object
-  response.CreateGuildMixRole:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigMixRole'
-    type: object
   response.CreateGuildTokenRole:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigTokenRole'
-    type: object
-  response.CreateGuildXPRole:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigXPRole'
     type: object
   response.CreateNFTCollectionResponse:
     properties:
@@ -2682,11 +1997,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.GuildConfigDaoProposal'
-    type: object
-  response.CreateTradeOfferResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.TradeOffer'
     type: object
   response.CreateTwitterSaleConfigResponse:
     properties:
@@ -2781,13 +2091,6 @@ definitions:
       unicode_emoji:
         type: string
     type: object
-  response.DiscordUserTokenAlertResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.DiscordUserTokenAlert'
-        type: array
-    type: object
   response.GasTrackerResponse:
     properties:
       chain:
@@ -2810,29 +2113,6 @@ definitions:
       data:
         items:
           $ref: '#/definitions/response.GasTrackerResponse'
-        type: array
-    type: object
-  response.GenerateVerificationResponse:
-    properties:
-      code:
-        type: string
-      status:
-        type: string
-    type: object
-  response.GetAllTwitterConfigResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigTwitterFeed'
-        type: array
-      message:
-        type: string
-    type: object
-  response.GetAllTwitterHashtagConfigResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.TwitterHashtag'
         type: array
     type: object
   response.GetAllUserSubmittedAdResponse:
@@ -3008,13 +2288,6 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildConfigLevelupMessage'
     type: object
-  response.GetGuildPruneExcludeResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.GuildPruneExcludeList'
-      message:
-        type: string
-    type: object
   response.GetGuildResponse:
     properties:
       active:
@@ -3068,27 +2341,6 @@ definitions:
       data:
         $ref: '#/definitions/response.CoinPriceHistoryResponse'
     type: object
-  response.GetInviteTrackerConfigResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigInviteTracker'
-      message:
-        type: string
-    type: object
-  response.GetInvitesLeaderboardResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.UserInvitesAggregation'
-        type: array
-    type: object
-  response.GetInvitesResponse:
-    properties:
-      data:
-        items:
-          type: string
-        type: array
-    type: object
   response.GetLevelRoleConfigsResponse:
     properties:
       data:
@@ -3103,11 +2355,6 @@ definitions:
         type: integer
       total:
         type: integer
-    type: object
-  response.GetLinkedTelegramResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.UserTelegramDiscordAssociation'
     type: object
   response.GetListAllChainsResponse:
     properties:
@@ -3224,13 +2471,6 @@ definitions:
       data:
         $ref: '#/definitions/model.UserWalletWatchlistItem'
     type: object
-  response.GetRepostReactionConfigsResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigRepostReaction'
-        type: array
-    type: object
   response.GetSaleTwitterConfigResponse:
     properties:
       data:
@@ -3243,13 +2483,6 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.GuildConfigSalesTracker'
-        type: array
-    type: object
-  response.GetSoulBoundNFTResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.NftSoulbound'
         type: array
     type: object
   response.GetSuggestionNFTCollectionsResponse:
@@ -3303,13 +2536,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3325,11 +2558,6 @@ definitions:
       data:
         $ref: '#/definitions/model.UserWalletWatchlist'
     type: object
-  response.GetTradeOfferResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.TradeOffer'
-    type: object
   response.GetTrendingSearch:
     properties:
       coins:
@@ -3343,41 +2571,6 @@ definitions:
     properties:
       item:
         $ref: '#/definitions/response.Coin'
-    type: object
-  response.GetTwitterBlackListResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigTwitterBlacklist'
-        type: array
-    type: object
-  response.GetTwitterHashtagConfigResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.TwitterHashtag'
-    type: object
-  response.GetTwitterLeaderboardResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.GetTwitterLeaderboardResponseData'
-    type: object
-  response.GetTwitterLeaderboardResponseData:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.TwitterPostStreak'
-        type: array
-      metadata:
-        $ref: '#/definitions/response.PaginationResponse'
-    type: object
-  response.GetUpvoteTiersConfig:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.UpvoteStreakTier'
-        type: array
-      message:
-        type: string
     type: object
   response.GetUserBalances:
     properties:
@@ -3406,11 +2599,6 @@ definitions:
       data:
         $ref: '#/definitions/model.DiscordUserGMStreak'
     type: object
-  response.GetUserEnvelopStreak:
-    properties:
-      data:
-        $ref: '#/definitions/model.UserEnvelopStreak'
-    type: object
   response.GetUserProfileResponse:
     properties:
       about_me:
@@ -3433,8 +2621,6 @@ definitions:
         type: number
       user_faction_xps:
         $ref: '#/definitions/model.UserFactionXpsMapping'
-      user_wallet:
-        $ref: '#/definitions/model.UserWallet'
     type: object
   response.GetUserQuestListResponse:
     properties:
@@ -3469,24 +2655,12 @@ definitions:
       string:
         type: string
     type: object
-  response.GetUserWalletByGuildIDAddressResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.UserWallet'
-    type: object
   response.GetVaultsResponse:
     properties:
       data:
         items:
           $ref: '#/definitions/model.Vault'
         type: array
-    type: object
-  response.GetVoteChannelConfigResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigVoteChannel'
-      message:
-        type: string
     type: object
   response.GetWatchlistResponse:
     properties:
@@ -3534,15 +2708,6 @@ definitions:
         type: number
       updated_at:
         type: string
-    type: object
-  response.GuildPruneExcludeList:
-    properties:
-      guild_id:
-        type: string
-      roles:
-        items:
-          type: string
-        type: array
     type: object
   response.IndexerChain:
     properties:
@@ -3815,25 +2980,6 @@ definitions:
       symbol:
         type: string
     type: object
-  response.InvitesAggregationResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.UserInvitesAggregation'
-    type: object
-  response.LinkUserTelegramWithDiscordResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponseData'
-    type: object
-  response.LinkUserTelegramWithDiscordResponseData:
-    properties:
-      discord_id:
-        type: string
-      discord_username:
-        type: string
-      telegram_username:
-        type: string
-    type: object
   response.ListAllCustomTokenResponse:
     properties:
       data:
@@ -3876,13 +3022,6 @@ definitions:
           $ref: '#/definitions/response.ListGuildNFTRoleConfigsResponse'
         type: array
     type: object
-  response.ListGuildMixRoles:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigMixRole'
-        type: array
-    type: object
   response.ListGuildNFTRoleConfigsResponse:
     properties:
       color:
@@ -3913,13 +3052,6 @@ definitions:
       meta:
         additionalProperties: true
         type: object
-    type: object
-  response.ListGuildXPRoles:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigXPRole'
-        type: array
     type: object
   response.ListMyGuildsResponse:
     properties:
@@ -4024,6 +3156,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
@@ -4037,12 +3175,6 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4406,64 +3538,6 @@ definitions:
       role:
         $ref: '#/definitions/response.Role'
     type: object
-  response.RouteElement:
-    properties:
-      amountOut:
-        type: string
-      exchange:
-        type: string
-      extra: {}
-      limitReturnAmount:
-        type: string
-      pool:
-        type: string
-      poolExtra: {}
-      poolLength:
-        type: integer
-      poolType:
-        type: string
-      swapAmount:
-        type: string
-      tokenIn:
-        type: string
-      tokenOut:
-        type: string
-      tokenOutSymbol:
-        type: string
-    type: object
-  response.RouteSummary:
-    properties:
-      amountIn:
-        type: string
-      amountInUsd:
-        type: string
-      amountOut:
-        type: string
-      amountOutUsd:
-        type: string
-      extraFee:
-        $ref: '#/definitions/model.ExtraFee'
-      gas:
-        type: string
-      gasPrice:
-        type: string
-      gasUsd:
-        type: string
-      route:
-        items:
-          items:
-            $ref: '#/definitions/response.RouteElement'
-          type: array
-        type: array
-      tokenIn:
-        type: string
-      tokenInMarketPriceAvailable:
-        type: boolean
-      tokenOut:
-        type: string
-      tokenOutMarketPriceAvailable:
-        type: boolean
-    type: object
   response.RouteToken:
     properties:
       address:
@@ -4505,10 +3579,12 @@ definitions:
     type: object
   response.SwapRoute:
     properties:
-      routeSummary:
-        $ref: '#/definitions/response.RouteSummary'
+      aggregator:
+        type: string
+      routeSummary: {}
       routerAddress:
         type: string
+      swapData: {}
       tokenIn:
         $ref: '#/definitions/response.RouteToken'
       tokenOut:
@@ -4523,6 +3599,8 @@ definitions:
       data:
         $ref: '#/definitions/response.SwapRoute'
       message:
+        type: string
+      provider:
         type: string
     type: object
   response.SwapRouteResponseData:
@@ -4587,33 +3665,6 @@ definitions:
           $ref: '#/definitions/model.OffchainTipBotTransferHistory'
         type: array
     type: object
-  response.TwitterHashtag:
-    properties:
-      channel_id:
-        type: string
-      created_at:
-        type: string
-      from_twitter:
-        items:
-          type: string
-        type: array
-      guild_id:
-        type: string
-      hashtag:
-        items:
-          type: string
-        type: array
-      rule_id:
-        type: string
-      twitter_username:
-        items:
-          type: string
-        type: array
-      updated_at:
-        type: string
-      user_id:
-        type: string
-    type: object
   response.UnlinkBinance:
     properties:
       message:
@@ -4644,13 +3695,6 @@ definitions:
       username:
         type: string
     type: object
-  response.UserDeviceResponse:
-    properties:
-      device_id:
-        type: string
-      ios_noti_token:
-        type: string
-    type: object
   response.UserFeedbackResponse:
     properties:
       data:
@@ -4662,17 +3706,6 @@ definitions:
       size:
         type: integer
       total:
-        type: integer
-    type: object
-  response.UserInvitesAggregation:
-    properties:
-      fake:
-        type: integer
-      inviter_id:
-        type: string
-      left:
-        type: integer
-      regular:
         type: integer
     type: object
   response.UserTransactionResponse:
@@ -5006,101 +4039,8 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetInvitesResponse'
+      responses: {}
       summary: Get invites
-      tags:
-      - Community
-  /community/invites/aggregation:
-    get:
-      consumes:
-      - application/json
-      description: Invites Aggregation
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      - description: Inviter ID
-        in: query
-        name: inviter
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.InvitesAggregationResponse'
-      summary: Invites Aggregation
-      tags:
-      - Community
-  /community/invites/config:
-    get:
-      consumes:
-      - application/json
-      description: Get invites tracker config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetInviteTrackerConfigResponse'
-      summary: Get invites tracker config
-      tags:
-      - Community
-    post:
-      consumes:
-      - application/json
-      description: Configure invites
-      parameters:
-      - description: Configure Invites request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigureInviteRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ConfigureInvitesResponse'
-      summary: Configure invites
-      tags:
-      - Community
-  /community/invites/leaderboard/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get invites leaderboard
-      parameters:
-      - description: Guild ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetInvitesLeaderboardResponse'
-      summary: Get invites leaderboard
       tags:
       - Community
   /community/levelup:
@@ -5236,155 +4176,6 @@ paths:
       summary: Update user's quest progress
       tags:
       - Community
-  /community/repost-reactions:
-    delete:
-      consumes:
-      - application/json
-      description: Remove Respost reaction config
-      parameters:
-      - description: Remove repost reaction config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove Respost reaction config
-      tags:
-      - Community
-    post:
-      consumes:
-      - application/json
-      description: Config Respost reaction
-      parameters:
-      - description: Config repost reaction request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Respost reaction
-      tags:
-      - Community
-  /community/repost-reactions/{guild_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get Respost reaction configs
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetRepostReactionConfigsResponse'
-      summary: Get Respost reaction configs
-      tags:
-      - Community
-  /community/repost-reactions/blacklist-channel:
-    delete:
-      consumes:
-      - application/json
-      description: Delete blacklist channel repost config
-      parameters:
-      - description: Delete blacklist channel repost config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete blacklist channel repost config
-      tags:
-      - Community
-    get:
-      consumes:
-      - application/json
-      description: Get guild blacklist channel repost config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Get guild blacklist channel repost config
-      tags:
-      - Community
-    post:
-      consumes:
-      - application/json
-      description: Create blacklist channel repost config
-      parameters:
-      - description: Upsert join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.BalcklistChannelRepostConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create blacklist channel repost config
-      tags:
-      - Community
-  /community/repost-reactions/conversation:
-    post:
-      consumes:
-      - application/json
-      description: Config Respost reaction with start stop
-      parameters:
-      - description: Config repost reaction start stop request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigRepostReactionStartStop'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Respost reaction with start stop
-      tags:
-      - Community
   /community/repost-reactions/message-repost:
     put:
       consumes:
@@ -5451,54 +4242,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Upsert user tag
-      tags:
-      - Community
-  /community/twitter:
-    post:
-      consumes:
-      - application/json
-      description: Create twitter post
-      parameters:
-      - description: Create twitter post request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TwitterPost'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter post
-      tags:
-      - Community
-  /community/twitter/top:
-    get:
-      consumes:
-      - application/json
-      description: Create twitter post
-      parameters:
-      - in: query
-        name: guild_id
-        required: true
-        type: string
-      - in: query
-        name: page
-        type: integer
-      - in: query
-        name: size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterLeaderboardResponse'
-      summary: Create twitter post
       tags:
       - Community
   /config-channels/{guild_id}/proposal:
@@ -5684,11 +4427,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      responses: {}
       summary: Get join-leave channel config
       tags:
       - ConfigChannel
@@ -5705,11 +4444,7 @@ paths:
           $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
+      responses: {}
       summary: Update or insert join-leave channel config
       tags:
       - ConfigChannel
@@ -5819,69 +4554,6 @@ paths:
       summary: OffChain Tip Bot - Config notify
       tags:
       - ConfigChannel
-  /config-channels/upvote:
-    delete:
-      consumes:
-      - application/json
-      description: Delete vote channel config
-      parameters:
-      - description: Delete vote channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteVoteChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete vote channel config
-      tags:
-      - ConfigChannel
-    get:
-      consumes:
-      - application/json
-      description: Get vote channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Get vote channel config
-      tags:
-      - ConfigChannel
-    post:
-      consumes:
-      - application/json
-      description: Update or insert vote channel config
-      parameters:
-      - description: Upsert vote channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertVoteChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetVoteChannelConfigResponse'
-      summary: Update or insert vote channel config
-      tags:
-      - ConfigChannel
   /config-channels/welcome:
     delete:
       consumes:
@@ -5945,211 +4617,6 @@ paths:
       summary: Update or insert welcome channel config
       tags:
       - ConfigChannel
-  /config-community/telegram:
-    get:
-      consumes:
-      - application/json
-      description: Get telegram account linked with discord ID
-      parameters:
-      - description: request
-        in: query
-        name: telegram_username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetLinkedTelegramResponse'
-      summary: Get telegram account linked with discord ID
-      tags:
-      - ConfigCommunity
-    post:
-      consumes:
-      - application/json
-      description: Link user's telegram with discord account
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.LinkUserTelegramWithDiscordRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/response.LinkUserTelegramWithDiscordResponse'
-      summary: Link user's telegram with discord account
-      tags:
-      - ConfigCommunity
-  /config-community/twitter:
-    post:
-      consumes:
-      - application/json
-      description: Create twitter config
-      parameters:
-      - description: Create Twitter config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/model.GuildConfigTwitterFeed'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter config
-      tags:
-      - ConfigCommunity
-  /config-community/twitter/blacklist:
-    delete:
-      consumes:
-      - application/json
-      description: Delete an user from twitter watching blacklist
-      parameters:
-      - in: query
-        name: guild_id
-        required: true
-        type: string
-      - in: query
-        name: twitter_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Delete an user from twitter watching blacklist
-      tags:
-      - ConfigCommunity
-    get:
-      consumes:
-      - application/json
-      description: get twitter blacklist
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterBlackListResponse'
-      summary: Get twitter blacklist
-      tags:
-      - ConfigCommunity
-    post:
-      consumes:
-      - application/json
-      description: Add an user to twitter watching blacklist
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.AddToTwitterBlackListRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Add an user to twitter watching blacklist
-      tags:
-      - ConfigCommunity
-  /config-community/twitter/hashtag:
-    get:
-      consumes:
-      - application/json
-      description: get all twitter hashtag config
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetAllTwitterHashtagConfigResponse'
-      summary: Get all twitter hashtag config
-      tags:
-      - ConfigCommunity
-    post:
-      consumes:
-      - application/json
-      description: Create twitter hashtag config
-      parameters:
-      - description: Create twitter hashtag config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.TwitterHashtag'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create twitter hashtag config
-      tags:
-      - ConfigCommunity
-  /config-community/twitter/hashtag/{guild_id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete twitter hashtag config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete twitter hashtag config
-      tags:
-      - ConfigCommunity
-    get:
-      consumes:
-      - application/json
-      description: get twitter hashtag config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTwitterHashtagConfigResponse'
-      summary: Get twitter hashtag config
-      tags:
-      - ConfigCommunity
   /config-defi/custom-tokens:
     post:
       consumes:
@@ -6758,70 +5225,6 @@ paths:
       summary: Get level role config
       tags:
       - ConfigRole
-  /config-roles/mix-roles:
-    post:
-      consumes:
-      - application/json
-      description: Create guild Mix role config
-      parameters:
-      - description: Create guild Mix role config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateGuildMixRole'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateGuildMixRole'
-      summary: Create guild Mix role config
-      tags:
-      - ConfigRole
-  /config-roles/mix-roles/:
-    get:
-      consumes:
-      - application/json
-      description: Get list Mix role config of guild
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListGuildMixRoles'
-      summary: Get list Mix role config of guild
-      tags:
-      - ConfigRole
-  /config-roles/mix-roles/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove guild Mix role config
-      parameters:
-      - description: Config ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove guild Mix role config
-      tags:
-      - ConfigRole
   /config-roles/nft-roles:
     delete:
       consumes:
@@ -7074,70 +5477,6 @@ paths:
       summary: Update guild token role config
       tags:
       - ConfigRole
-  /config-roles/xp-roles:
-    post:
-      consumes:
-      - application/json
-      description: Create guild XP role config
-      parameters:
-      - description: Create guild XP role config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateGuildXPRole'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateGuildXPRole'
-      summary: Create guild XP role config
-      tags:
-      - ConfigRole
-  /config-roles/xp-roles/:
-    get:
-      consumes:
-      - application/json
-      description: Get list XP role config of guild
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListGuildXPRoles'
-      summary: Get list XP role config of guild
-      tags:
-      - ConfigRole
-  /config-roles/xp-roles/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Remove guild XP role config
-      parameters:
-      - description: Config ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Remove guild XP role config
-      tags:
-      - ConfigRole
   /configs/nft-roles/group:
     delete:
       consumes:
@@ -7201,27 +5540,6 @@ paths:
       summary: Create sales tracker config
       tags:
       - Config
-  /configs/twitter:
-    get:
-      consumes:
-      - application/json
-      description: Get all twitter config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetAllTwitterConfigResponse'
-      summary: Get all twitter config
-      tags:
-      - Config
   /configs/twitter-sales:
     get:
       consumes:
@@ -7264,84 +5582,6 @@ paths:
       summary: Create twitter sale config
       tags:
       - ConfigTwitterSale
-  /configs/upvote-tiers:
-    get:
-      consumes:
-      - application/json
-      description: Get all upvote tiers
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUpvoteTiersConfig'
-      summary: Get all upvote tiers
-      tags:
-      - Config
-  /configs/whitelist-prune:
-    delete:
-      consumes:
-      - application/json
-      description: Delete prune exclude config
-      parameters:
-      - description: Upsert prune exlude request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete prune exclude config
-      tags:
-      - Config
-    get:
-      consumes:
-      - application/json
-      description: Get prune exclusion config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetGuildPruneExcludeResponse'
-      summary: Get prune exclusion config
-      tags:
-      - Config
-    post:
-      consumes:
-      - application/json
-      description: Upsert prune exclude config
-      parameters:
-      - description: Upsert prune exlude request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertGuildPruneExcludeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert prune exclude config
-      tags:
-      - Config
   /data/configs/activities/{activity}:
     post:
       consumes:
@@ -8038,27 +6278,6 @@ paths:
       summary: Get guilds
       tags:
       - Guild
-    post:
-      consumes:
-      - application/json
-      description: Create guild
-      parameters:
-      - description: Create Guild request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateGuildRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/request.CreateGuildRequest'
-      summary: Create guild
-      tags:
-      - Guild
   /guilds/{guild_id}:
     get:
       consumes:
@@ -8106,31 +6325,6 @@ paths:
       summary: Update guild
       tags:
       - Guild
-  /guilds/{guild_id}/channels:
-    post:
-      consumes:
-      - application/json
-      description: Create guild channel
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      - description: Guild ID
-        in: query
-        name: count_type
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Create guild channel
-      tags:
-      - Guild
   /guilds/{guild_id}/custom-tokens:
     get:
       consumes:
@@ -8173,27 +6367,6 @@ paths:
               $ref: '#/definitions/response.DiscordGuildRole'
             type: array
       summary: Update guild
-      tags:
-      - Guild
-  /guilds/{guild_id}/stats:
-    get:
-      consumes:
-      - application/json
-      description: Get guild stats
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.DiscordGuildStat'
-      summary: Get guild stats
       tags:
       - Guild
   /guilds/user-managed:
@@ -8628,27 +6801,6 @@ paths:
       summary: Get NFT sales
       tags:
       - NFT
-  /nfts/soulbound:
-    get:
-      consumes:
-      - application/json
-      description: Get Nft Soulbound
-      parameters:
-      - description: collection address
-        in: query
-        name: collection_address
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetSoulBoundNFTResponse'
-      summary: Get Nft Soulbound
-      tags:
-      - NFT
   /nfts/supported-chains:
     post:
       consumes:
@@ -8698,49 +6850,6 @@ paths:
           schema:
             $ref: '#/definitions/response.IndexerGetNFTTokenTickersResponse'
       summary: Get NFT token tickers
-      tags:
-      - NFT
-  /nfts/trades:
-    post:
-      consumes:
-      - application/json
-      description: Create Trade Offer
-      parameters:
-      - description: Create Trade Offer Request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateTradeOfferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateTradeOfferResponse'
-      summary: Create Trade Offer
-      tags:
-      - NFT
-  /nfts/trades/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get Trade Offer
-      parameters:
-      - description: Trade Offer ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetTradeOfferResponse'
-      summary: Get Trade Offer
       tags:
       - NFT
   /nfts/trading-volume:
@@ -9042,27 +7151,6 @@ paths:
       summary: Create User
       tags:
       - User
-  /users/:id/envelop-streak:
-    get:
-      consumes:
-      - application/json
-      description: Get user envelop streak
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserEnvelopStreak'
-      summary: Get user envelop streak
-      tags:
-      - User
   /users/:id/wallets:
     get:
       consumes:
@@ -9357,28 +7445,6 @@ paths:
       summary: Get user
       tags:
       - User
-  /users/envelop:
-    post:
-      consumes:
-      - application/json
-      description: Track user receive envelop
-      parameters:
-      - description: Create envelop request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateEnvelop'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateEnvelop'
-      summary: Track user receive envelop
-      tags:
-      - User
   /users/gmstreak:
     get:
       consumes:
@@ -9496,27 +7562,6 @@ paths:
       summary: Get top users
       tags:
       - User
-  /users/wallets/{address}:
-    get:
-      consumes:
-      - application/json
-      description: Get user by guild_id address
-      parameters:
-      - description: Address
-        in: path
-        name: address
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserWalletByGuildIDAddressResponse'
-      summary: Get user by guild_id address
-      tags:
-      - User
   /users/xp:
     post:
       consumes:
@@ -9574,28 +7619,6 @@ paths:
       summary: Get vaults
       tags:
       - Vault
-  /verify:
-    post:
-      consumes:
-      - application/json
-      description: Verify wallet address
-      parameters:
-      - description: Verify wallet address request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.VerifyWalletAddressRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseStatus'
-      summary: Verify wallet address
-      tags:
-      - Verification
   /verify/assign-role:
     post:
       consumes:
@@ -9702,154 +7725,6 @@ paths:
       summary: Get guild config wallet verification message
       tags:
       - Verification
-  /verify/generate:
-    post:
-      consumes:
-      - application/json
-      description: Generate verification
-      parameters:
-      - description: Generate verification request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.GenerateVerificationRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GenerateVerificationResponse'
-      summary: Generate verification
-      tags:
-      - Verification
-  /widget/device:
-    delete:
-      consumes:
-      - application/json
-      description: Delete user current device data
-      parameters:
-      - description: Delete user device
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteUserDeviceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete user current device data
-      tags:
-      - Widget
-    get:
-      consumes:
-      - application/json
-      description: Get user current device data
-      parameters:
-      - description: Device ID
-        in: query
-        name: device_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UserDeviceResponse'
-      summary: Get user current device data
-      tags:
-      - Widget
-    post:
-      consumes:
-      - application/json
-      description: Upsert user current device data
-      parameters:
-      - description: Upsert user device
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertUserDeviceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert user current device data
-      tags:
-      - Widget
-  /widget/token-alert:
-    delete:
-      consumes:
-      - application/json
-      description: Delete user token alerts
-      parameters:
-      - description: Delete user token alert
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteDiscordUserAlertRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete user token alerts
-      tags:
-      - Widget
-    get:
-      consumes:
-      - application/json
-      description: Get user current token alerts
-      parameters:
-      - description: Discord ID
-        in: query
-        name: discord_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.DiscordUserTokenAlertResponse'
-      summary: Get user current token alerts
-      tags:
-      - Widget
-    post:
-      consumes:
-      - application/json
-      description: Upsert user token alerts
-      parameters:
-      - description: Upsert user token alert
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertDiscordUserAlertRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Upsert user token alerts
-      tags:
-      - Widget
 securityDefinitions:
   ApiKeyAuth:
     in: header
