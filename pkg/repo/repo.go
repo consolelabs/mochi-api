@@ -18,8 +18,6 @@ import (
 	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
 	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
-	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
-	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discorduserdevice "github.com/defipod/mochi/pkg/repo/discord_user_device"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
@@ -147,8 +145,6 @@ type Repo struct {
 	GuildConfigRepostReaction            guildconfigrepostreaction.Store
 	GuildConfigVoteChannel               guildconfigvotechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
-	DiscordGuildStats                    discordguildstats.Store
-	DiscordGuildStatChannels             discordguildstatchannels.Store
 	UpvoteStreakTier                     upvotestreaktier.Store
 	GuildConfigToken                     guildconfigtoken.Store
 	NFTCollection                        nftcollection.Store

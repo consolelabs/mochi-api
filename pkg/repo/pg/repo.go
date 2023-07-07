@@ -21,8 +21,6 @@ import (
 	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
 	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
-	discordguildstatchannels "github.com/defipod/mochi/pkg/repo/discord_guild_stat_channels"
-	discordguildstats "github.com/defipod/mochi/pkg/repo/discord_guild_stats"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discorduserdevice "github.com/defipod/mochi/pkg/repo/discord_user_device"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
@@ -150,8 +148,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		UpvoteStreakTier:                     upvotestreaktier.NewPG(db),
 		GuildConfigPruneExclude:              guildconfigpruneexclude.NewPG(db),
-		DiscordGuildStats:                    discordguildstats.NewPG(db),
-		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
 		UserSubmittedAd:                      usersubmittedad.NewPG(db),

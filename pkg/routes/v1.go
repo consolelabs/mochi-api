@@ -35,16 +35,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	guildGroup := v1.Group("/guilds")
 	{
-		guildGroup.POST("", h.Guild.CreateGuild)
 		guildGroup.GET("", h.Guild.GetGuilds)
 		guildGroup.GET("/:guild_id", h.Guild.GetGuild)
 		guildGroup.GET("/:guild_id/custom-tokens", h.ConfigDefi.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.Guild.ListMyGuilds)
 		guildGroup.PUT("/:guild_id", h.Guild.UpdateGuild)
-		countStatsGroup := guildGroup.Group("/:guild_id/stats")
-		{
-			countStatsGroup.GET("", h.Guild.GetGuildStatsHandler)
-		}
 	}
 
 	userGroup := v1.Group("/users")
