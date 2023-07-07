@@ -18,7 +18,5 @@ type IHandler interface {
 	InvitesAggregation(c *gin.Context)
 
 	SendUserXP(c *gin.Context)
-	CreateEnvelop(c *gin.Context)
-	GetUserEnvelopStreak(c *gin.Context)
 	GetUserBalance(c *gin.Context)
 }
