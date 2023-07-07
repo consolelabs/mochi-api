@@ -47,7 +47,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.GET("me", middleware.AuthGuard(cfg), h.User.GetMyInfo)
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
-		userGroup.GET("/wallets/:address", h.User.GetUserWalletByGuildIDAddress)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
 		// TODO
 		userGroup.GET("/:id/transactions", h.User.GetUserTransaction)
@@ -316,9 +315,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.GET("/config/:guild_id", h.Verify.GetGuildConfigWalletVerificationMessage)
 		verifyGroup.PUT("/config", h.Verify.UpdateGuildConfigWalletVerificationMessage)
 		verifyGroup.DELETE("/config", h.Verify.DeleteGuildConfigWalletVerificationMessage)
-		verifyGroup.POST("/generate", h.Verify.GenerateVerification)
-		verifyGroup.POST("", h.Verify.VerifyWalletAddress)
-		verifyGroup.POST("/assign-role", h.Verify.AssignVerifiedRole)
 	}
 
 	// api/v1/nfts

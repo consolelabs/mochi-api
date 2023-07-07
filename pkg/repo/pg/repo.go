@@ -15,7 +15,6 @@ import (
 	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
-	conversationreposthistories "github.com/defipod/mochi/pkg/repo/conversation_repost_histories"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
 	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
 	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
@@ -23,7 +22,6 @@ import (
 	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
-	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
@@ -91,7 +89,6 @@ import (
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
-	userwallet "github.com/defipod/mochi/pkg/repo/user_wallet"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
@@ -107,9 +104,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 	return &repo.Repo{
 		Store:                                NewStore(db),
 		DiscordGuilds:                        discordguilds.NewPG(db),
-		DiscordWalletVerification:            discordwalletverification.NewPG(db),
 		Users:                                users.NewPG(db),
-		UserWallet:                           userwallet.NewPG(db),
 		GuildUsers:                           guildusers.NewPG(db),
 		Token:                                token.NewPG(db),
 		DiscordUserGMStreak:                  discordusergmstreak.NewPG(db),
@@ -155,7 +150,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserReward:                      questuserreward.NewPG(db),
 		QuestUserPass:                        questuserpass.NewPG(db),
 		QuestStreak:                          queststreak.NewPG(db),
-		ConversationRepostHistories:          conversationreposthistories.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
 		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
 		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),

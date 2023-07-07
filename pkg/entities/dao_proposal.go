@@ -123,32 +123,33 @@ func (e *Entity) DeleteDaoProposal(proposalId string) error {
 }
 
 func (e *Entity) TokenHolderStatus(query request.TokenHolderStatusRequest) (*response.TokenHolderStatus, error) {
-	userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(query.UserID, query.GuildID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return &response.TokenHolderStatus{
-				Data: &response.TokenHolderStatusData{IsWalletConnected: false},
-			}, nil
-		}
-		e.log.Fields(logger.Fields{
-			"userID":  query.UserID,
-			"guildID": query.GuildID,
-		}).Error(err, "[entities.TokenHolderStatus] - repo.UserWallet.GetOneByDiscordIDAndGuildID failed")
-		return nil, err
-	}
+	// userWallet, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(query.UserID, query.GuildID)
+	// if err != nil {
+	// 	if err == gorm.ErrRecordNotFound {
+	// 		return &response.TokenHolderStatus{
+	// 			Data: &response.TokenHolderStatusData{IsWalletConnected: false},
+	// 		}, nil
+	// 	}
+	// 	e.log.Fields(logger.Fields{
+	// 		"userID":  query.UserID,
+	// 		"guildID": query.GuildID,
+	// 	}).Error(err, "[entities.TokenHolderStatus] - repo.UserWallet.GetOneByDiscordIDAndGuildID failed")
+	// 	return nil, err
+	// }
 	// Not connect to wallet
-	if userWallet.Address == "" {
-		return &response.TokenHolderStatus{
-			Data: &response.TokenHolderStatusData{IsWalletConnected: false},
-		}, nil
-	}
+	// if userWallet.Address == "" {
+	// 	return &response.TokenHolderStatus{
+	// 		Data: &response.TokenHolderStatusData{IsWalletConnected: false},
+	// 	}, nil
+	// }
+	userWalletAddress := ""
 
 	// Connected to wallet, check another criteria for the action
 	switch query.Action {
 	case request.CreateProposal:
-		return e.tokenHolderStatusForCreatingProposal(userWallet.Address, query)
+		return e.tokenHolderStatusForCreatingProposal(userWalletAddress, query)
 	case request.Vote:
-		return e.tokenHolderStatusForVoting(userWallet.Address, query)
+		return e.tokenHolderStatusForVoting(userWalletAddress, query)
 	default:
 		// invalid action or not supported
 		e.log.Fields(logger.Fields{

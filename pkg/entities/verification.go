@@ -3,17 +3,13 @@ package entities
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -197,178 +193,6 @@ func (e *Entity) DeleteGuildConfigWalletVerificationMessage(guildID string) erro
 		return fmt.Errorf("failed to delete guild config verification: %v", err.Error())
 	}
 
-	return nil
-}
-
-func (e *Entity) GenerateVerification(req request.GenerateVerificationRequest) (data string, statusCode int, err error) {
-	_, err = e.repo.GuildConfigWalletVerificationMessage.GetOne(req.GuildID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return "", http.StatusBadRequest, fmt.Errorf("this guild has not set verification config")
-		}
-		return "", http.StatusInternalServerError, fmt.Errorf("failed to get guild config verification: %v", err.Error())
-	}
-
-	uw, err := e.repo.UserWallet.GetOneByDiscordIDAndGuildID(req.UserDiscordID, req.GuildID)
-	switch err {
-	case nil:
-		if !req.IsReverify {
-			return uw.Address, http.StatusConflict, fmt.Errorf("already have a verified wallet")
-		}
-	case gorm.ErrRecordNotFound:
-		if req.IsReverify {
-			return "", http.StatusBadRequest, fmt.Errorf("unverified user")
-		}
-	default:
-		return "", http.StatusInternalServerError, err
-	}
-
-	code := uuid.New().String()
-	if err := e.repo.DiscordWalletVerification.UpsertOne(
-		model.DiscordWalletVerification{
-			Code:          code,
-			UserDiscordID: req.UserDiscordID,
-			GuildID:       req.GuildID,
-			CreatedAt:     time.Now(),
-		},
-	); err != nil {
-		return "", http.StatusInternalServerError, err
-	}
-
-	return code, http.StatusOK, nil
-}
-
-func (e *Entity) VerifyWalletAddress(req request.VerifyWalletAddressRequest) (int, error) {
-	verification, err := e.repo.DiscordWalletVerification.GetByValidCode(req.Code)
-	if err != nil {
-		return http.StatusBadRequest, fmt.Errorf("invalid code")
-	}
-
-	if err := util.VerifySig(req.WalletAddress, req.Signature, fmt.Sprintf(
-		"This will help us connect your discord account to the wallet address.\n\nMochiBotCode=%s", req.Code)); err != nil {
-		return http.StatusBadRequest, err
-	}
-
-	// case add wallet
-	if verification.GuildID == "" {
-		err = e.handleWalletAddition(req.WalletAddress, *verification)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.VerifyWalletAddress] entity.handleWalletAddition() failed")
-			return http.StatusInternalServerError, err
-		}
-		return http.StatusOK, nil
-	}
-
-	_, err = e.repo.Users.GetOne(verification.UserDiscordID)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.GetOne() failed")
-		return http.StatusInternalServerError, err
-	}
-	if err == gorm.ErrRecordNotFound {
-		err = e.repo.Users.UpsertMany([]model.User{{ID: verification.UserDiscordID}})
-		if err != nil {
-			e.log.Fields(logger.Fields{"userID": verification.UserDiscordID}).Error(err, "[entity.VerifyWalletAddress] repo.Users.UpsertMany() failed")
-			return http.StatusInternalServerError, err
-		}
-	}
-
-	uw, err := e.repo.UserWallet.GetOneByGuildIDAndAddress(verification.GuildID, req.WalletAddress)
-	switch err {
-	case nil:
-		if uw.UserDiscordID != verification.UserDiscordID {
-			// this address is already used by another user in this guild
-			return http.StatusBadRequest, fmt.Errorf("this wallet address already belong to another user")
-		}
-
-	case gorm.ErrRecordNotFound:
-		if err := e.repo.UserWallet.UpsertOne(model.UserWallet{
-			UserDiscordID: verification.UserDiscordID,
-			GuildID:       verification.GuildID,
-			Address:       req.WalletAddress,
-		}); err != nil {
-			return http.StatusInternalServerError, fmt.Errorf("failed to upsert user wallet: %v", err.Error())
-		}
-
-	default:
-		return http.StatusInternalServerError, fmt.Errorf("failed to get user wallet: %v", err.Error())
-	}
-
-	// assign role to user if guild has config
-	err = e.VerifyWalletAssignRole(verification, req)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"req": req,
-		}).Error(err, "[entities.VerifyWalletAddress] failed to assign role")
-		return http.StatusInternalServerError, err
-	}
-
-	if err := e.repo.DiscordWalletVerification.DeleteByCode(verification.Code); err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to delete verification: %v", err.Error())
-	}
-
-	return http.StatusOK, nil
-}
-
-func (e *Entity) VerifyWalletAssignRole(verification *model.DiscordWalletVerification, req request.VerifyWalletAddressRequest) error {
-	guildConfigVerification, err := e.repo.GuildConfigWalletVerificationMessage.GetOne(verification.GuildID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			e.log.Fields(logger.Fields{
-				"guild_id": verification.GuildID,
-			}).Info("[entities.VerifyWalletAssignRole] Guild does not have config verification")
-			return nil
-		}
-		e.log.Fields(logger.Fields{
-			"guild_id": verification.GuildID,
-		}).Error(err, "[entities.VerifyWalletAssignRole] Failed to get guild config verification")
-		return err
-	}
-
-	// check guild has config role for verify wallet, if yes then assign role, if not return
-	if guildConfigVerification.VerifyRoleID != "" {
-		// assign role to user
-		err := e.discord.GuildMemberRoleAdd(verification.GuildID, verification.UserDiscordID, guildConfigVerification.VerifyRoleID)
-		if err != nil {
-			// allow acceptable error like bot not have access to assign role
-			if util.IsAcceptableErr(err) {
-				e.log.Fields(logger.Fields{
-					"guild_id":        verification.GuildID,
-					"user_discord_id": verification.UserDiscordID,
-					"verify_role_id":  guildConfigVerification.VerifyRoleID,
-				}).Infof("[entities.VerifyWalletAssignRole] Acceptable errors: %v", err)
-				return nil
-			}
-			e.log.Fields(logger.Fields{
-				"guild_id":        verification.GuildID,
-				"user_discord_id": verification.UserDiscordID,
-				"verify_role_id":  guildConfigVerification.VerifyRoleID,
-			}).Error(err, "[entities.VerifyWalletAssignRole] Failed to assign role to user")
-			return err
-		}
-	}
-	return nil
-}
-
-func (e *Entity) handleWalletAddition(walletAddress string, verification model.DiscordWalletVerification) error {
-	mod := model.UserWalletWatchlistItem{
-		UserID:    verification.UserDiscordID,
-		Address:   walletAddress,
-		Type:      model.TrackingTypeFollow,
-		ChainType: model.ChainTypeEvm,
-		IsOwner:   true,
-	}
-
-	err := e.TrackWallet(mod, verification.ChannelID, verification.MessageID)
-	if err != nil {
-		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.handleWalletAddition] entity.TrackWallet() failed")
-		return err
-	}
-
-	err = e.repo.DiscordWalletVerification.DeleteByCode(verification.Code)
-	if err != nil {
-		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.handleWalletAddition] repo.DiscordWalletVerification.DeleteByCode() failed")
-		return err
-	}
 	return nil
 }
 
