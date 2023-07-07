@@ -28,7 +28,6 @@ import (
 	discorduserupvotestreak "github.com/defipod/mochi/pkg/repo/discord_user_upvote_streak"
 	discordwalletverification "github.com/defipod/mochi/pkg/repo/discord_wallet_verification"
 	"github.com/defipod/mochi/pkg/repo/emojis"
-	"github.com/defipod/mochi/pkg/repo/envelop"
 	guildblacklistchannelrepostconfigs "github.com/defipod/mochi/pkg/repo/guild_blacklist_channel_repost_configs"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
@@ -215,7 +214,6 @@ type Repo struct {
 	DaoGuidelineMessages                 daoguidelinemessages.Store
 	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
-	Envelop                              envelop.Store
 	Emojis                               emojis.Store
 	GuildConfigXPRole                    guildconfigxprole.Store
 	NftSoulbound                         nftsoulbound.Store
