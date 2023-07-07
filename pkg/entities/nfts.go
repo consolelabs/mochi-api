@@ -1295,33 +1295,3 @@ func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQu
 func (e *Entity) TotalNftCollection() (int64, error) {
 	return e.repo.NFTCollection.TotalNftCollection()
 }
-
-func (e *Entity) EnrichSoulboundNFT(collectionAddress string) error {
-	res, err := e.indexer.GetSoulBoundNFT(collectionAddress)
-	if err != nil {
-		e.log.Errorf(err, "[indexer.EnrichSoulboundNFT] failed to get soulbound of collection. Address: %s, TokenID: %s, query: %s", collectionAddress)
-		return err
-	}
-
-	nftSoulBound := make([]model.NftSoulbound, 0)
-	for _, soulBound := range res.Data {
-		nftSoulBound = append(nftSoulBound, model.NftSoulbound{
-			CollectionAddress: collectionAddress,
-			TraitType:         soulBound.TraitType,
-			Value:             soulBound.Value,
-			TotalSoulbound:    soulBound.Count,
-		})
-	}
-
-	err = e.repo.NftSoulbound.CreateSoulBounds(nftSoulBound)
-	if err != nil {
-		e.log.Errorf(err, "[indexer.EnrichSoulboundNFT] failed to create soulbound of collection. Address: %s, TokenID: %s, query: %s", collectionAddress)
-		return err
-	}
-
-	return nil
-}
-
-func (e *Entity) GetSoulboundNFT(collectionAddress string) ([]model.NftSoulbound, error) {
-	return e.repo.NftSoulbound.GetSoulBoundsByCollectionAddress(collectionAddress)
-}
