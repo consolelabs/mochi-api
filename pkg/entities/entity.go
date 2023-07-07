@@ -2,8 +2,6 @@ package entities
 
 import (
 	"errors"
-	"fmt"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/redis/v8"
@@ -12,7 +10,6 @@ import (
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/chain"
 	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/discordwallet"
 	"github.com/defipod/mochi/pkg/kafka"
 	"github.com/defipod/mochi/pkg/logger"
@@ -22,7 +19,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/abi"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/marketplace"
-	"github.com/defipod/mochi/pkg/util"
 	"github.com/defipod/mochi/pkg/vaultwallet"
 )
 
@@ -124,12 +120,6 @@ func Init(cfg config.Config, log logger.Logger) error {
 		kafka:       *kafka,
 	}
 
-	if e.discord != nil && e.cache != nil {
-		if err := e.initInviteTrackerCache(); err != nil {
-			log.Error(err, "failed to init invite tracker cache")
-		}
-	}
-
 	return nil
 }
 
@@ -155,45 +145,6 @@ func setDiscordIntents(discord *discordgo.Session) {
 	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildMembers)
 	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentDirectMessages)
 	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentGuildInvites)
-}
-
-func (e *Entity) initInviteTrackerCache() error {
-	guilds, err := e.GetGuilds()
-	if err != nil {
-		return fmt.Errorf("failed to get guilds: %w", err)
-	}
-
-	for _, guild := range guilds.Data {
-		// check if mochi bot has permission in guild
-		guild, _ := e.GetGuildById(guild.ID)
-		if guild == nil {
-			continue
-		}
-		// logic invite tracker cache
-		invites, err := e.discord.GuildInvites(guild.ID)
-		if util.IsAcceptableErr(err) {
-			e.log.Fields(logger.Fields{"guild_id": guild.ID}).Infof("[entity.initInviteTrackerCache] discord.GuildInvites failed: %v", err)
-			return nil
-		}
-		if err != nil {
-			return fmt.Errorf("failed to get invites for guild %s: %v", guild.ID, err)
-		}
-
-		invitesUses := make(map[string]string)
-		for _, invite := range invites {
-			invitesUses[invite.Code] = strconv.Itoa(invite.Uses)
-		}
-
-		if len(invitesUses) > 0 {
-			if err := e.cache.HashSet(consts.CachePrefixInviteTracker+guild.ID, invitesUses, 0); err != nil {
-				return fmt.Errorf("failed to cache invites for guild %s: %w", guild.ID, err)
-			}
-		}
-
-		e.log.Fields(logger.Fields{guild.ID: invites}).Debug("cache guild invites")
-	}
-
-	return nil
 }
 
 func New(cfg config.Config, log logger.Logger, repo *repo.Repo, store repo.Store, dcwallet discordwallet.IDiscordWallet, discord *discordgo.Session, cache cache.Cache, svc *service.Service, indexer indexer.Service, abi abi.Service, marketplace marketplace.Service, page *rod.Page) *Entity {
