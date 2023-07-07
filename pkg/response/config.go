@@ -90,10 +90,6 @@ type EditGuildNFTRoleResponse struct {
 	Data    *model.GuildConfigNFTRole `json:"data"`
 }
 
-type GetRepostReactionConfigsResponse struct {
-	Data []model.GuildConfigRepostReaction `json:"data"`
-}
-
 type ToggleActivityConfigResponse struct {
 	Message string                     `json:"message"`
 	Data    *model.GuildConfigActivity `json:"data"`
