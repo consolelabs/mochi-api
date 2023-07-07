@@ -10,10 +10,6 @@ type IHandler interface {
 	UpsertWelcomeChannelConfig(c *gin.Context)
 	DeleteWelcomeChannelConfig(c *gin.Context)
 
-	GetVoteChannelConfig(c *gin.Context)
-	UpsertVoteChannelConfig(c *gin.Context)
-	DeleteVoteChannelConfig(c *gin.Context)
-	GetUpvoteTiersConfig(c *gin.Context)
 	GetSalesTrackerConfig(c *gin.Context)
 	CreateSalesTrackerConfig(c *gin.Context)
 
@@ -24,9 +20,6 @@ type IHandler interface {
 	CreateConfigNotify(c *gin.Context)
 	ListConfigNotify(c *gin.Context)
 	DeleteConfigNotify(c *gin.Context)
-
-	GetInviteTrackerConfig(c *gin.Context)
-	ConfigureInvites(c *gin.Context)
 
 	GetGuildConfigDaoProposal(c *gin.Context)
 	DeleteGuildConfigDaoProposal(c *gin.Context)

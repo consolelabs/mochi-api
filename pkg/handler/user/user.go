@@ -354,67 +354,6 @@ func (h *Handler) GetInvites(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(invites, nil, nil, nil))
 }
 
-// GetInvitesLeaderboard     godoc
-// @Summary     Get invites leaderboard
-// @Description Get invites leaderboard
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       id path     string true "Guild ID"
-// @Success     200 {object} response.GetInvitesLeaderboardResponse
-// @Router      /community/invites/leaderboard/{id} [get]
-func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
-	guildID := c.Param("id")
-	if guildID == "" {
-		h.log.Info("[handler.GetInvitesLeaderboard] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	leaderboard, err := h.entities.GetInvitesLeaderboard(guildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetInvitesLeaderboard] - failed to get invite leaderboards")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(leaderboard, nil, nil, nil))
-}
-
-// InvitesAggregation     godoc
-// @Summary     Invites Aggregation
-// @Description Invites Aggregation
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Param       inviter query     string true "Inviter ID"
-// @Success     200 {object} response.InvitesAggregationResponse
-// @Router      /community/invites/aggregation [get]
-func (h *Handler) InvitesAggregation(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.InvitesAggregation] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-	inviterID := c.Query("inviter_id")
-	if inviterID == "" {
-		h.log.Info("[handler.InvitesAggregation] - inviter id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("inviter_id is required"), nil))
-		return
-	}
-
-	aggregation, err := h.entities.GetUserInvitesAggregation(guildID, inviterID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID, "inviterID": inviterID}).Error(err, "[handler.InvitesAggregation] - failed to get user invites aggregation")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(aggregation, nil, nil, nil))
-}
-
 // SendUserXP     godoc
 // @Summary     Send User XP
 // @Description Send User XP
@@ -440,53 +379,6 @@ func (h *Handler) SendUserXP(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-// CreateEnvelop     godoc
-// @Summary     Track user receive envelop
-// @Description Track user receive envelop
-// @Tags        User
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.CreateEnvelop true "Create envelop request"
-// @Success     200 {object} response.CreateEnvelop
-// @Router      /users/envelop [post]
-func (h *Handler) CreateEnvelop(c *gin.Context) {
-	var req request.CreateEnvelop
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateEnvelop] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	envelop, err := h.entities.CreateEnvelop(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateEnvelop] - entities.CreateEnvelop failed")
-		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(envelop, nil, nil, nil))
-}
-
-// GetUserEnvelopStreak     godoc
-// @Summary     Get user envelop streak
-// @Description Get user envelop streak
-// @Tags        User
-// @Accept      json
-// @Produce     json
-// @Param       id path     string true "User ID"
-// @Success     200 {object} response.GetUserEnvelopStreak
-// @Router      /users/:id/envelop-streak [get]
-func (h *Handler) GetUserEnvelopStreak(c *gin.Context) {
-	userID := c.Param("id")
-	streak, err := h.entities.GetUserEnvelopStreak(userID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"userID": userID}).Error(err, "[handler.GetUserEnvelopStreak] - entities.GetUserEnvelopStreak failed")
-		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	c.JSON(http.StatusOK, response.CreateResponse(streak, nil, nil, nil))
 }
 
 func (h *Handler) GetUserBalance(c *gin.Context) {

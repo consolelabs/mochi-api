@@ -11,20 +11,6 @@ type IHandler interface {
 	ClaimQuestsRewards(c *gin.Context)
 	UpdateQuestProgress(c *gin.Context)
 
-	GetRepostReactionConfigs(c *gin.Context)
-	ConfigRepostReaction(c *gin.Context)
-	RemoveRepostReactionConfig(c *gin.Context)
-	CreateConfigRepostReactionConversation(c *gin.Context)
-	RemoveConfigRepostReactionConversation(c *gin.Context)
-	EditMessageRepost(c *gin.Context)
-
-	CreateBlacklistChannelRepostConfig(c *gin.Context)
-	GetGuildBlacklistChannelRepostConfig(c *gin.Context)
-	DeleteBlacklistChannelRepostConfig(c *gin.Context)
-
-	CreateTwitterPost(c *gin.Context)
-	GetTwitterLeaderboard(c *gin.Context)
-
 	UpsertLevelUpMessage(c *gin.Context)
 	GetLevelUpMessage(c *gin.Context)
 	DeleteLevelUpMessage(c *gin.Context)

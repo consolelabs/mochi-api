@@ -39,11 +39,6 @@ type GetWelcomeChannelConfigResponse struct {
 	Data    *model.GuildConfigWelcomeChannel `json:"data"`
 }
 
-type GetVoteChannelConfigResponse struct {
-	Message string                        `json:"message"`
-	Data    *model.GuildConfigVoteChannel `json:"data"`
-}
-
 type GetSalesTrackerConfigResponse struct {
 	Data []model.GuildConfigSalesTracker `json:"data"`
 }
@@ -64,11 +59,6 @@ type ListGuildGroupNFTRolesResponse struct {
 type NewGuildGroupNFTRoleResponse struct {
 	Message string                      `json:"message"`
 	Data    *ConfigGroupNFTRoleResponse `json:"data"`
-}
-
-type GetUpvoteTiersConfig struct {
-	Message string                   `json:"message"`
-	Data    []model.UpvoteStreakTier `json:"data"`
 }
 
 type ConfigGroupNFTRoleResponse struct {
@@ -100,18 +90,9 @@ type EditGuildNFTRoleResponse struct {
 	Data    *model.GuildConfigNFTRole `json:"data"`
 }
 
-type GetRepostReactionConfigsResponse struct {
-	Data []model.GuildConfigRepostReaction `json:"data"`
-}
-
 type ToggleActivityConfigResponse struct {
 	Message string                     `json:"message"`
 	Data    *model.GuildConfigActivity `json:"data"`
-}
-
-type GetAllTwitterConfigResponse struct {
-	Message string                         `json:"message"`
-	Data    []model.GuildConfigTwitterFeed `json:"data"`
 }
 
 type GetTwitterHashtagConfigResponse struct {
@@ -120,10 +101,6 @@ type GetTwitterHashtagConfigResponse struct {
 
 type GetAllTwitterHashtagConfigResponse struct {
 	Data []TwitterHashtag `json:"data"`
-}
-
-type GetTwitterBlackListResponse struct {
-	Data []model.GuildConfigTwitterBlacklist `json:"data"`
 }
 
 type GetDefaultTokenResponse struct {

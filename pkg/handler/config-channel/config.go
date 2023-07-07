@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -186,123 +185,6 @@ func (h *Handler) DeleteWelcomeChannelConfig(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-// GetVoteChannelConfig     godoc
-// @Summary     Get vote channel config
-// @Description Get vote channel config
-// @Tags        ConfigChannel
-// @Accept      json
-// @Produce     json
-// @Param       guild_id   query  string true  "Guild ID"
-// @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /config-channels/upvote [get]
-func (h *Handler) GetVoteChannelConfig(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	config, err := h.entities.GetVoteChannelConfig(guildID)
-
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetVoteChannelConfig] - failed to get vote channel config")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
-}
-
-// UpsertVoteChannelConfig     godoc
-// @Summary     Update or insert vote channel config
-// @Description Update or insert vote channel config
-// @Tags        ConfigChannel
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.UpsertVoteChannelConfigRequest true "Upsert vote channel config request"
-// @Success     200 {object} response.GetVoteChannelConfigResponse
-// @Router      /config-channels/upvote [post]
-func (h *Handler) UpsertVoteChannelConfig(c *gin.Context) {
-	var req request.UpsertVoteChannelConfigRequest
-
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	if req.GuildID == "" {
-		h.log.Info("[handler.UpsertVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-	if req.ChannelID == "" {
-		h.log.Info("[handler.UpsertVoteChannelConfig] - channel id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("channel_id is required"), nil))
-		return
-	}
-
-	config, err := h.entities.UpsertVoteChannelConfig(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[handler.UpsertVoteChannelConfig] - failed to upsert vote channel config")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
-}
-
-// DeleteVoteChannelConfig     godoc
-// @Summary     Delete vote channel config
-// @Description Delete vote channel config
-// @Tags        ConfigChannel
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.DeleteVoteChannelConfigRequest true "Delete vote channel config request"
-// @Success     200 {object} response.ResponseMessage
-// @Router      /config-channels/upvote [delete]
-func (h *Handler) DeleteVoteChannelConfig(c *gin.Context) {
-	var req request.DeleteVoteChannelConfigRequest
-
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	if req.GuildID == "" {
-		h.log.Info("[handler.DeleteVoteChannelConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	if err := h.entities.DeleteVoteChannelConfig(req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.DeleteVoteChannelConfig] - failed to delete vote channel config")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-// GetUpvoteTiersConfig     godoc
-// @Summary     Get all upvote tiers
-// @Description Get all upvote tiers
-// @Tags        Config
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} response.GetUpvoteTiersConfig
-// @Router      /configs/upvote-tiers [get]
-func (h *Handler) GetUpvoteTiersConfig(c *gin.Context) {
-	tiers, err := h.entities.GetUpvoteTiersConfig()
-	if err != nil {
-		h.log.Error(err, "[handler.GetUpvoteTiersConfig] - failed to get upvote tiers")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(tiers, nil, nil, nil))
 }
 
 // GetSalesTrackerConfig     godoc
@@ -520,70 +402,6 @@ func (h *Handler) DeleteConfigNotify(c *gin.Context) {
 	err := h.entities.DeleteConfigNotify(id)
 	if err != nil {
 		h.log.Error(err, "[handler.DeleteConfigNotify] - failed to delete config notify")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-// GetInviteTrackerConfig     godoc
-// @Summary     Get invites tracker config
-// @Description Get invites tracker config
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Success     200 {object} response.GetInviteTrackerConfigResponse
-// @Router      /community/invites/config [get]
-func (h *Handler) GetInviteTrackerConfig(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetInviteTrackerConfig] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	config, err := h.entities.GetInviteTrackerLogChannel(guildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetInviteTrackerConfig] - failed to get invite tracker log channel")
-
-		code := http.StatusInternalServerError
-		if err == gorm.ErrRecordNotFound {
-			code = http.StatusNotFound
-		}
-		c.JSON(code, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
-}
-
-// ConfigureInvites     godoc
-// @Summary     Configure invites
-// @Description Configure invites
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       Request  body request.ConfigureInviteRequest true "Configure Invites request"
-// @Success     200 {object} response.ConfigureInvitesResponse
-// @Router      /community/invites/config [post]
-func (h *Handler) ConfigureInvites(c *gin.Context) {
-	var req request.ConfigureInviteRequest
-	if err := req.Bind(c); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.ConfigureInvites] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		h.log.Fields(logger.Fields{"logChannel": req.LogChannel, "guildID": req.GuildID}).Error(err, "[handler.ConfigureInvites] - failed to validate request")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if err := h.entities.CreateOrUpdateInviteTrackerLogChannel(req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.ConfigureInvites] - failed to upsert invite tracker log channel")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

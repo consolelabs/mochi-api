@@ -89,11 +89,6 @@ type CurrentUserUpvoteStreakResponse struct {
 	Data GetUserCurrentUpvoteStreakResponse `json:"data"`
 }
 
-type GetUserUpvoteLeaderboardResponse struct {
-	Message string                           `json:"message"`
-	Data    *[]model.DiscordUserUpvoteStreak `json:"data"`
-}
-
 type GetUserWalletByGuildIDAddressResponse struct {
 	Data *model.UserWallet `json:"data"`
 }

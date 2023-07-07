@@ -33,9 +33,4 @@ type IHandler interface {
 	GetSuggestionNFTCollections(c *gin.Context)
 	GetNftTokenTickers(c *gin.Context)
 	GetNftSalesHandler(c *gin.Context)
-
-	CreateTradeOffer(c *gin.Context)
-	GetTradeOffer(c *gin.Context)
-	EnrichSoulboundNFT(c *gin.Context)
-	GetSoulboundNFT(c *gin.Context)
 }

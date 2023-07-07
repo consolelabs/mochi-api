@@ -8,7 +8,6 @@ import (
 	"github.com/defipod/mochi/pkg/handler/community"
 	"github.com/defipod/mochi/pkg/handler/config"
 	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
-	configcommunity "github.com/defipod/mochi/pkg/handler/config-community"
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
 	configtwittersales "github.com/defipod/mochi/pkg/handler/config-twitter-sales"
@@ -21,14 +20,12 @@ import (
 	"github.com/defipod/mochi/pkg/handler/nft"
 	pkpass "github.com/defipod/mochi/pkg/handler/pk-pass"
 	"github.com/defipod/mochi/pkg/handler/swap"
-	"github.com/defipod/mochi/pkg/handler/telegram"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
 	"github.com/defipod/mochi/pkg/handler/vault"
 	"github.com/defipod/mochi/pkg/handler/verify"
 	"github.com/defipod/mochi/pkg/handler/wallet"
 	"github.com/defipod/mochi/pkg/handler/webhook"
-	"github.com/defipod/mochi/pkg/handler/widget"
 	"github.com/defipod/mochi/pkg/logger"
 )
 
@@ -44,14 +41,11 @@ type Handler struct {
 	Verify            verify.IHandler
 	Webhook           webhook.IHandler
 	Tip               tip.IHandler
-	Widget            widget.IHandler
 	ConfigChannel     configchannel.IHandler
-	ConfigCommunity   configcommunity.IHandler
 	ConfigDefi        configdefi.IHandler
 	ConfigRoles       configroles.IHandler
 	ConfigTwitterSale configtwittersales.IHandler
 	Wallet            wallet.IHandler
-	Telegram          telegram.IHandler
 	Vault             vault.IHandler
 	Swap              swap.IHandler
 	ApiKey            apikey.IHandler
@@ -75,14 +69,11 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Verify:            verify.New(entities, logger),
 		Webhook:           webhook.New(entities, logger),
 		Tip:               tip.New(entities, logger),
-		Widget:            widget.New(entities, logger),
 		ConfigChannel:     configchannel.New(entities, logger),
-		ConfigCommunity:   configcommunity.New(entities, logger),
 		ConfigDefi:        configdefi.New(entities, logger),
 		ConfigRoles:       configroles.New(entities, logger),
 		ConfigTwitterSale: configtwittersales.New(entities, logger),
 		Wallet:            wallet.New(entities, logger),
-		Telegram:          telegram.New(entities, logger),
 		Vault:             vault.New(entities, logger),
 		Swap:              swap.New(entities, logger),
 		ApiKey:            apikey.New(entities, logger),

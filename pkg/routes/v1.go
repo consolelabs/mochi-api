@@ -35,16 +35,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	guildGroup := v1.Group("/guilds")
 	{
-		guildGroup.POST("", h.Guild.CreateGuild)
 		guildGroup.GET("", h.Guild.GetGuilds)
 		guildGroup.GET("/:guild_id", h.Guild.GetGuild)
 		guildGroup.GET("/:guild_id/custom-tokens", h.ConfigDefi.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.Guild.ListMyGuilds)
 		guildGroup.PUT("/:guild_id", h.Guild.UpdateGuild)
-		countStatsGroup := guildGroup.Group("/:guild_id/stats")
-		{
-			countStatsGroup.GET("", h.Guild.GetGuildStatsHandler)
-		}
 	}
 
 	userGroup := v1.Group("/users")
@@ -115,14 +110,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	communityGroup := v1.Group("/community")
 	{
-		invitesGroup := communityGroup.Group("/invites")
-		{
-			invitesGroup.GET("/", h.User.GetInvites)
-			invitesGroup.GET("/config", h.ConfigChannel.GetInviteTrackerConfig)
-			invitesGroup.POST("/config", h.ConfigChannel.ConfigureInvites)
-			invitesGroup.GET("/leaderboard/:id", h.User.GetInvitesLeaderboard)
-			invitesGroup.GET("/aggregation", h.User.InvitesAggregation)
-		}
 		feedbackGroup := communityGroup.Group("/feedback")
 		{
 			feedbackGroup.POST("", h.Community.HandleUserFeedback)
@@ -134,11 +121,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			questGroup.GET("", h.Community.GetUserQuestList)
 			questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 			questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
-		}
-		twitterGroup := communityGroup.Group("/twitter")
-		{
-			twitterGroup.POST("", h.Community.CreateTwitterPost)
-			twitterGroup.GET("/top", h.Community.GetTwitterLeaderboard)
 		}
 		levelupGroup := communityGroup.Group("/levelup")
 		{
@@ -233,28 +215,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			adminRoleGroup.POST("", h.ConfigRoles.CreateGuildAdminRoles)
 			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
 			adminRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildAdminRole)
-		}
-	}
-
-	// v1/config-community
-	configCommunityGroup := v1.Group("/config-community")
-	{
-		telegramGroup := configCommunityGroup.Group("/telegram")
-		{
-			telegramGroup.GET("", h.ConfigCommunity.GetLinkedTelegram)
-			telegramGroup.POST("", h.ConfigCommunity.LinkUserTelegramWithDiscord)
-		}
-		twitterGroup := configCommunityGroup.Group("/twitter")
-		{
-			twitterGroup.POST("", h.ConfigCommunity.CreateTwitterConfig)
-			twitterGroup.GET("", h.ConfigCommunity.GetAllTwitterConfig)
-			twitterGroup.GET("/hashtag/:guild_id", h.ConfigCommunity.GetTwitterHashtagConfig)
-			twitterGroup.DELETE("/hashtag/:guild_id", h.ConfigCommunity.DeleteTwitterHashtagConfig)
-			twitterGroup.POST("/hashtag", h.ConfigCommunity.CreateTwitterHashtagConfig)
-			twitterGroup.GET("/hashtag", h.ConfigCommunity.GetAllTwitterHashtagConfig)
-			twitterGroup.POST("/blacklist", h.ConfigCommunity.AddToTwitterBlackList)
-			twitterGroup.GET("/blacklist", h.ConfigCommunity.GetTwitterBlackList)
-			twitterGroup.DELETE("/blacklist", h.ConfigCommunity.DeleteFromTwitterBlackList)
 		}
 	}
 
@@ -419,12 +379,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		dataWebhookGroup.POST("/notify-nft-add", h.Webhook.NotifyNftCollectionAdd)
 		dataWebhookGroup.POST("/notify-nft-sync", h.Webhook.NotifyNftCollectionSync)
 		dataWebhookGroup.POST("/notify-sale-marketplace", h.Webhook.NotifySaleMarketplace)
-	}
-
-	// api/v1/telegram
-	telegramGroup := v1.Group("/telegram")
-	{
-		telegramGroup.GET("/:username", h.Telegram.GetByUsername)
 	}
 
 	// api/v1/vault

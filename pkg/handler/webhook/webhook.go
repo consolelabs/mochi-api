@@ -79,9 +79,6 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 	if err != nil {
 		h.log.Info("[handler.handleGuildMemberAdd] - failed to send notification")
 	}
-
-	h.handleInviteTracker(c, &member)
-
 }
 
 func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) {
@@ -107,23 +104,6 @@ func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) 
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
-}
-
-func (h *Handler) handleInviteTracker(c *gin.Context, invitee *discordgo.Member) {
-	inviter, isVanity, err := h.entities.FindInviter(invitee.GuildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to find inviter")
-	}
-
-	data, err := h.entities.HandleInviteTracker(inviter, invitee)
-	if err != nil {
-		h.log.Fields(logger.Fields{"inviter": inviter, "invitee": invitee}).Error(err, "[handler.handleInviteTracker] - failed to handle invite tracker")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	data.IsVanity = isVanity
-
-	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
 
 func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
@@ -217,41 +197,8 @@ func (h *Handler) handleMessageReactionAdd(c *gin.Context, data json.RawMessage)
 		return
 	}
 
-	// starboard repost conversation
-	repostConversation, err := h.entities.CreateRepostConversationReactionEvent(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-	if repostConversation != nil {
-		c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{
-			Status:               "OK",
-			RepostChannelID:      repostConversation.RepostChannelID,
-			ReactionType:         "conversation",
-			OriginStartMessageID: repostConversation.OriginStartMessageID,
-			OriginStopMessageID:  repostConversation.OriginStopMessageID,
-		}, nil, nil, nil))
-		return
-	}
-
-	// starboard repost message
-	repostMessage, err := h.entities.CreateRepostMessageReactionEvent(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionAdd] - failed to create repost reaction event")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if repostMessage == nil {
-		c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{Status: "OK"}, nil, nil, nil))
-		return
-	}
-
 	c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{
-		Status:          "OK",
-		RepostChannelID: repostMessage.RepostChannelID,
-		RepostMessageID: repostMessage.RepostMessageID,
+		Status: "OK",
 	}, nil, nil, nil))
 }
 
@@ -276,22 +223,7 @@ func (h *Handler) handleMessageReactionRemove(c *gin.Context, data json.RawMessa
 		return
 	}
 
-	msgRepostHistory, err := h.entities.GetMessageRepostHistory(req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.handleMessageReactionRemove] - failed to get repost reaction config")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	if msgRepostHistory == nil {
-		c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{Status: "OK"}, nil, nil, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{
-		RepostChannelID: msgRepostHistory.RepostChannelID,
-		RepostMessageID: msgRepostHistory.RepostMessageID,
-	}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse(response.RepostReactionEventData{}, nil, nil, nil))
 }
 
 func (h *Handler) handleMessageDelete(c *gin.Context, data json.RawMessage) {
@@ -366,44 +298,6 @@ func (h *Handler) handleNftSales(c *gin.Context, req request.NotifySaleMarketpla
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
-}
-
-func (h *Handler) WebhookUpvoteTopGG(c *gin.Context) {
-	req := request.WebhookUpvoteTopGG{}
-	err := c.BindJSON(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.TopGGSource)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteTopGG] - failed to add upvote streak")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
-}
-
-func (h *Handler) WebhookUpvoteDiscordBot(c *gin.Context) {
-	req := request.WebhookUpvoteDiscordBot{}
-	err := c.BindJSON(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err = h.entities.WebhookUpvoteStreak(req.UserID, consts.DiscordBotListSource)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookUpvoteDiscordBot] - failed to add upvote streak")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, err, nil))
 }
 
 func (h *Handler) NotifyNftCollectionIntegration(c *gin.Context) {
