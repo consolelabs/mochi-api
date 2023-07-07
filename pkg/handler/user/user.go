@@ -354,67 +354,6 @@ func (h *Handler) GetInvites(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(invites, nil, nil, nil))
 }
 
-// GetInvitesLeaderboard     godoc
-// @Summary     Get invites leaderboard
-// @Description Get invites leaderboard
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       id path     string true "Guild ID"
-// @Success     200 {object} response.GetInvitesLeaderboardResponse
-// @Router      /community/invites/leaderboard/{id} [get]
-func (h *Handler) GetInvitesLeaderboard(c *gin.Context) {
-	guildID := c.Param("id")
-	if guildID == "" {
-		h.log.Info("[handler.GetInvitesLeaderboard] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-
-	leaderboard, err := h.entities.GetInvitesLeaderboard(guildID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetInvitesLeaderboard] - failed to get invite leaderboards")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(leaderboard, nil, nil, nil))
-}
-
-// InvitesAggregation     godoc
-// @Summary     Invites Aggregation
-// @Description Invites Aggregation
-// @Tags        Community
-// @Accept      json
-// @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Param       inviter query     string true "Inviter ID"
-// @Success     200 {object} response.InvitesAggregationResponse
-// @Router      /community/invites/aggregation [get]
-func (h *Handler) InvitesAggregation(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.InvitesAggregation] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
-	inviterID := c.Query("inviter_id")
-	if inviterID == "" {
-		h.log.Info("[handler.InvitesAggregation] - inviter id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("inviter_id is required"), nil))
-		return
-	}
-
-	aggregation, err := h.entities.GetUserInvitesAggregation(guildID, inviterID)
-	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID, "inviterID": inviterID}).Error(err, "[handler.InvitesAggregation] - failed to get user invites aggregation")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(aggregation, nil, nil, nil))
-}
-
 // SendUserXP     godoc
 // @Summary     Send User XP
 // @Description Send User XP

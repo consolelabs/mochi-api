@@ -33,7 +33,6 @@ import (
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
-	guildconfiginvitetracker "github.com/defipod/mochi/pkg/repo/guild_config_invite_tracker"
 	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
@@ -52,7 +51,6 @@ import (
 	guilduseractivitylog "github.com/defipod/mochi/pkg/repo/guild_user_activity_log"
 	guilduserxp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	guildusers "github.com/defipod/mochi/pkg/repo/guild_users"
-	invitehistories "github.com/defipod/mochi/pkg/repo/invite_histories"
 	kyberswapsupportedtokens "github.com/defipod/mochi/pkg/repo/kyberswap_supported_tokens"
 	messagereaction "github.com/defipod/mochi/pkg/repo/message_reaction"
 	messagereposthistory "github.com/defipod/mochi/pkg/repo/message_repost_history"
@@ -114,12 +112,10 @@ type Repo struct {
 	CommonwealthLatestData               commonwealthlastestdata.Store
 	DiscordGuilds                        discordguilds.Store
 	DiscordWalletVerification            discordwalletverification.Store
-	InviteHistories                      invitehistories.Store
 	Users                                users.Store
 	UserWallet                           userwallet.Store
 	GuildUsers                           guildusers.Store
 	Token                                token.Store
-	GuildConfigInviteTracker             guildconfiginvitetracker.Store
 	UserSubmittedAd                      usersubmittedad.Store
 	GuildConfigWelcomeChannel            guildconfigwelcomechannel.Store
 	GuildConfigReactionRole              guildconfigreactionrole.Store

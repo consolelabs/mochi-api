@@ -13,10 +13,6 @@ type IHandler interface {
 	GetUserTransaction(c *gin.Context)
 	GetTransactionsByQuery(c *gin.Context)
 
-	GetInvites(c *gin.Context)
-	GetInvitesLeaderboard(c *gin.Context)
-	InvitesAggregation(c *gin.Context)
-
 	SendUserXP(c *gin.Context)
 	GetUserBalance(c *gin.Context)
 }

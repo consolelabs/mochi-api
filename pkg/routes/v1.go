@@ -110,14 +110,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	communityGroup := v1.Group("/community")
 	{
-		invitesGroup := communityGroup.Group("/invites")
-		{
-			invitesGroup.GET("/", h.User.GetInvites)
-			invitesGroup.GET("/config", h.ConfigChannel.GetInviteTrackerConfig)
-			invitesGroup.POST("/config", h.ConfigChannel.ConfigureInvites)
-			invitesGroup.GET("/leaderboard/:id", h.User.GetInvitesLeaderboard)
-			invitesGroup.GET("/aggregation", h.User.InvitesAggregation)
-		}
 		feedbackGroup := communityGroup.Group("/feedback")
 		{
 			feedbackGroup.POST("", h.Community.HandleUserFeedback)
