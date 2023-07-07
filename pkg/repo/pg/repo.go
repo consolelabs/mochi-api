@@ -55,9 +55,6 @@ import (
 	guildconfigtiprange "github.com/defipod/mochi/pkg/repo/guild_config_tip_range"
 	guildconfigtoken "github.com/defipod/mochi/pkg/repo/guild_config_token"
 	guildconfigtokenrole "github.com/defipod/mochi/pkg/repo/guild_config_token_role"
-	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
-	guildconfigtwitterfeed "github.com/defipod/mochi/pkg/repo/guild_config_twitter_feed"
-	guildconfigtwitterhashtag "github.com/defipod/mochi/pkg/repo/guild_config_twitter_hashtag"
 	guildconfigvotechannel "github.com/defipod/mochi/pkg/repo/guild_config_vote_channel"
 	guildconfigwalletverificationmessage "github.com/defipod/mochi/pkg/repo/guild_config_wallet_verification_message"
 	guildconfigwelcomechannel "github.com/defipod/mochi/pkg/repo/guild_config_welcome_channel"
@@ -102,8 +99,6 @@ import (
 	"github.com/defipod/mochi/pkg/repo/treasurer"
 	treasurerrequest "github.com/defipod/mochi/pkg/repo/treasurer_request"
 	treasurersubmission "github.com/defipod/mochi/pkg/repo/treasurer_submission"
-	twitterpost "github.com/defipod/mochi/pkg/repo/twitter_post"
-	twitterpoststreak "github.com/defipod/mochi/pkg/repo/twitter_post_streak"
 	upvotestreaktier "github.com/defipod/mochi/pkg/repo/upvote_streak_tiers"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -154,16 +149,12 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigRepostReaction:            guildconfigrepostreaction.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		UpvoteStreakTier:                     upvotestreaktier.NewPG(db),
-		GuildConfigTwitterFeed:               guildconfigtwitterfeed.NewPG(db),
-		GuildConfigTwitterHashtag:            guildconfigtwitterhashtag.NewPG(db),
 		GuildConfigPruneExclude:              guildconfigpruneexclude.NewPG(db),
 		DiscordGuildStats:                    discordguildstats.NewPG(db),
 		DiscordGuildStatChannels:             discordguildstatchannels.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),
 		NFTCollection:                        nftcollection.NewPG(db),
-		TwitterPost:                          twitterpost.NewPG(db),
 		UserSubmittedAd:                      usersubmittedad.NewPG(db),
-		TwitterPostStreak:                    twitterpoststreak.NewPG(db),
 		UserFeedback:                         userfeedback.NewPG(db),
 		Activity:                             activity.NewPG(db),
 		GuildConfigActivity:                  guildconfigactivity.NewPG(db),
@@ -202,7 +193,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotTokens:                 offchaintipbottokens.NewPG(db),
 		OffchainTipBotActivityLogs:           offchaintipbotactivitylogs.NewPG(db),
 		OffchainTipBotTransferHistories:      offchaintipbottransferhistories.NewPG(db),
-		GuildConfigTwitterBlacklist:          guildconfigtwitterblacklist.NewPG(db),
 		MonikerConfig:                        monikerconfig.NewPG(db),
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),

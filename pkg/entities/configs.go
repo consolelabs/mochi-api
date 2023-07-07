@@ -13,7 +13,6 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
-	guildconfigtwitterblacklist "github.com/defipod/mochi/pkg/repo/guild_config_twitter_blacklist"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -703,104 +702,6 @@ func (e *Entity) ToggleActivityConfig(guildID, activityName string) (*model.Guil
 	return &config, nil
 }
 
-func (e *Entity) GetAllTwitterConfig() ([]model.GuildConfigTwitterFeed, error) {
-	configs, err := e.repo.GuildConfigTwitterFeed.GetAll()
-	if err != nil {
-		e.log.Errorf(err, "[e.GetAllTwitterConfig] failed to get all twitter configs")
-		return nil, fmt.Errorf("failed to get twitter configs: %v", err.Error())
-	}
-	return configs, nil
-}
-func (e *Entity) CreateTwitterConfig(req *model.GuildConfigTwitterFeed) error {
-	err := e.repo.GuildConfigTwitterFeed.UpsertOne(req)
-	if err != nil {
-		e.log.Errorf(err, "[e.CreateTwitterConfig] failed to upsert twitter configs")
-		return fmt.Errorf("failed to upsert twitter configs: %v", err.Error())
-	}
-	return nil
-}
-
-func (e *Entity) GetTwitterHashtagConfig(guildId string) (*response.TwitterHashtag, error) {
-	hashtag, err := e.repo.GuildConfigTwitterHashtag.GetByGuildID(guildId)
-	if err != nil {
-		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get twitter hashtag configs")
-		return nil, err
-	}
-	return &response.TwitterHashtag{
-		UserID:          hashtag.UserID,
-		GuildID:         hashtag.GuildID,
-		ChannelID:       hashtag.ChannelID,
-		Hashtag:         strings.Split(hashtag.Hashtag, ","),
-		TwitterUsername: strings.Split(hashtag.TwitterUsername, ","),
-		RuleID:          hashtag.RuleID,
-		FromTwitter:     strings.Split(hashtag.FromTwitter, ","),
-		CreatedAt:       hashtag.CreatedAt,
-		UpdatedAt:       hashtag.UpdatedAt,
-	}, nil
-}
-
-func (e *Entity) GetAllTwitterHashtagConfig() ([]response.TwitterHashtag, error) {
-	data, err := e.repo.GuildConfigTwitterHashtag.GetAll()
-	hashtags := []response.TwitterHashtag{}
-	if err != nil {
-		e.log.Errorf(err, "[e.GetTwitterHashtagConfig] failed to get twitter hashtag configs")
-		return nil, err
-	}
-	for _, tag := range data {
-		hashtags = append(hashtags, response.TwitterHashtag{
-			UserID:          tag.UserID,
-			GuildID:         tag.GuildID,
-			ChannelID:       tag.ChannelID,
-			Hashtag:         strings.Split(tag.Hashtag, ","),
-			TwitterUsername: strings.Split(tag.TwitterUsername, ","),
-			RuleID:          tag.RuleID,
-			FromTwitter:     strings.Split(tag.FromTwitter, ","),
-			CreatedAt:       tag.CreatedAt,
-			UpdatedAt:       tag.UpdatedAt,
-		})
-	}
-	return hashtags, nil
-}
-
-func (e *Entity) DeleteTwitterHashtagConfig(guildId string) error {
-	err := e.repo.GuildConfigTwitterHashtag.DeleteByGuildID(guildId)
-	if err != nil {
-		e.log.Errorf(err, "[e.DeleteTwitterHashtagConfig] failed to delete twitter hashtag configs")
-		return fmt.Errorf("failed to delete twitter hashtags: %v", err.Error())
-	}
-	return nil
-}
-
-func (e *Entity) CreateTwitterHashtagConfig(req *request.TwitterHashtag) error {
-	hashtags := ""
-	usernames := ""
-	fromTwitter := ""
-	for _, tag := range req.Hashtag {
-		hashtags += tag + ","
-	}
-	for _, usr := range req.TwitterUsername {
-		usernames += usr + ","
-	}
-	for _, from := range req.FromTwitter {
-		fromTwitter += from + ","
-	}
-	err := e.repo.GuildConfigTwitterHashtag.UpsertOne(&model.GuildConfigTwitterHashtag{
-		UserID:          req.UserID,
-		GuildID:         req.GuildID,
-		ChannelID:       req.ChannelID,
-		RuleID:          req.RuleID,
-		Hashtag:         strings.TrimSuffix(hashtags, ","), //save as '#abc,#bca,#abe'
-		TwitterUsername: strings.TrimSuffix(usernames, ","),
-		FromTwitter:     strings.TrimSuffix(fromTwitter, ","),
-		UpdatedAt:       time.Now(),
-	})
-	if err != nil {
-		e.log.Errorf(err, "[e.CreateTwitterHashtagConfig] failed to upsert twitter hashtag configs")
-		return fmt.Errorf("failed to create twitter hashtag: %v", err.Error())
-	}
-	return nil
-}
-
 func (e *Entity) GetDefaultCollectionSymbol(guildID string) ([]model.GuildConfigDefaultCollection, error) {
 	data, err := e.repo.GuildConfigDefaultCollection.GetByGuildID(guildID)
 	if err != nil {
@@ -940,23 +841,6 @@ func (e *Entity) DeleteBlacklistChannelRepostConfig(req request.BalcklistChannel
 		return err
 	}
 	return nil
-}
-
-func (e *Entity) AddToTwitterBlackList(req request.AddToTwitterBlackListRequest) error {
-	return e.repo.GuildConfigTwitterBlacklist.Upsert(&model.GuildConfigTwitterBlacklist{
-		GuildID:         req.GuildID,
-		TwitterUsername: req.TwitterUsername,
-		TwitterID:       req.TwitterID,
-		CreatedBy:       req.CreatedBy,
-	})
-}
-
-func (e *Entity) DeleteFromTwitterBlackList(req request.DeleteFromTwitterBlackListRequest) error {
-	return e.repo.GuildConfigTwitterBlacklist.Delete(req.GuildID, req.TwitterID)
-}
-
-func (e *Entity) GetTwitterBlackList(guildID string) ([]model.GuildConfigTwitterBlacklist, error) {
-	return e.repo.GuildConfigTwitterBlacklist.List(guildconfigtwitterblacklist.ListQuery{GuildID: guildID})
 }
 
 func (e *Entity) GetUserTokenAlert(discordID string) (*response.DiscordUserTokenAlertResponse, error) {

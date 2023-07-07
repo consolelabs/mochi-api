@@ -33,7 +33,6 @@ import (
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/sui"
 	"github.com/defipod/mochi/pkg/service/swap"
-	"github.com/defipod/mochi/pkg/service/twitter"
 )
 
 type Service struct {
@@ -44,7 +43,6 @@ type Service struct {
 	Indexer       indexer.Service
 	Abi           abi.Service
 	Apns          apns.Service
-	Twitter       twitter.Service
 	Cloud         cloud.Service
 	Processor     processor.Service
 	Solscan       solscan.Service
@@ -99,7 +97,6 @@ func NewService(
 		Indexer:       indexer.NewIndexer(cfg, log),
 		Abi:           abi.NewAbi(&cfg),
 		Apns:          apns.NewService(&cfg),
-		Twitter:       twitter.NewTwitter(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
 		Snapshot:      snapshot.NewService(log),
 		Nghenhan:      nghenhan.NewService(),

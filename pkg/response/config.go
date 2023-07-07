@@ -109,21 +109,12 @@ type ToggleActivityConfigResponse struct {
 	Data    *model.GuildConfigActivity `json:"data"`
 }
 
-type GetAllTwitterConfigResponse struct {
-	Message string                         `json:"message"`
-	Data    []model.GuildConfigTwitterFeed `json:"data"`
-}
-
 type GetTwitterHashtagConfigResponse struct {
 	Data *TwitterHashtag `json:"data"`
 }
 
 type GetAllTwitterHashtagConfigResponse struct {
 	Data []TwitterHashtag `json:"data"`
-}
-
-type GetTwitterBlackListResponse struct {
-	Data []model.GuildConfigTwitterBlacklist `json:"data"`
 }
 
 type GetDefaultTokenResponse struct {
