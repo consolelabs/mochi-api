@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	mdwgin "github.com/consolelabs/mochi-toolkit/middleware/gin"
+	mdwgin "github.com/consolelabs/mochi-toolkit/http/middleware/gin"
 	typesetservice "github.com/consolelabs/mochi-typeset/common/service/typeset"
 	typesetqueue "github.com/consolelabs/mochi-typeset/queue"
 	"github.com/gin-contrib/cors"
