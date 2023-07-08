@@ -117,16 +117,14 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 			if err != nil {
 				return
 			}
-			if _, err := util.SendRequest(util.SendRequestQuery{
+			util.SendRequest(util.SendRequestQuery{
 				Method: http.MethodPost,
 				URL:    fmt.Sprintf("%v/api/v1/audit", cfg.MochiAuditServerHost),
 				Headers: map[string]string{
 					"Content-Type": "application/json",
 				},
 				Body: bytes.NewReader(body),
-			}); err != nil {
-				l.Error(err, "failed to send audit message")
-			}
+			})
 		}()
 	})
 
