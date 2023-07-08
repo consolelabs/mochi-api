@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +11,9 @@ import (
 	"strings"
 	"time"
 
+	mdwgin "github.com/consolelabs/mochi-toolkit/middleware/gin"
+	typesetservice "github.com/consolelabs/mochi-typeset/common/service/typeset"
+	typesetqueue "github.com/consolelabs/mochi-typeset/queue"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -21,6 +26,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/routes"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 // @title          Swagger API
@@ -93,6 +99,36 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 		gin.LoggerWithWriter(gin.DefaultWriter, "/healthz"),
 		gin.Recovery(),
 	)
+	r.Use(func(ctx *gin.Context) {
+		cr := mdwgin.CaptureRequest(ctx)
+		b, err := json.Marshal(cr)
+		if err != nil {
+			l.Error(err, "cannot marshal capture request")
+			ctx.Next()
+			return
+		}
+		go func() {
+			kfkMsg := typesetqueue.KafkaMessage{
+				Type:   typesetqueue.KAFKA_MESSAGE_TYPE_AUDIT,
+				Data:   b,
+				Sender: typesetservice.SERVICE_MOCHI_API,
+			}
+			body, err := json.Marshal(kfkMsg)
+			if err != nil {
+				return
+			}
+			if _, err := util.SendRequest(util.SendRequestQuery{
+				Method: http.MethodPost,
+				URL:    fmt.Sprintf("%v/api/v1/audit", cfg.MochiAuditServerHost),
+				Headers: map[string]string{
+					"Content-Type": "application/json",
+				},
+				Body: bytes.NewReader(body),
+			}); err != nil {
+				l.Error(err, "failed to send audit message")
+			}
+		}()
+	})
 
 	h := handler.New(e, l)
 

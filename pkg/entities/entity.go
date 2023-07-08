@@ -132,6 +132,9 @@ func (e *Entity) GetSvc() *service.Service {
 func (e *Entity) GetLogger() logger.Logger {
 	return e.log
 }
+func (e *Entity) GetKafka() *kafka.Kafka {
+	return &e.kafka
+}
 
 func Shutdown() error {
 	e.store.Shutdown()
