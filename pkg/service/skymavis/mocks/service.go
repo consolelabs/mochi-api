@@ -49,6 +49,21 @@ func (mr *MockServiceMockRecorder) GetAddressFarming(address interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddressFarming", reflect.TypeOf((*MockService)(nil).GetAddressFarming), address)
 }
 
+// GetInternalTxnsByHash mocks base method.
+func (m *MockService) GetInternalTxnsByHash(hash string) (*response.SkymavisTransactionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetInternalTxnsByHash", hash)
+	ret0, _ := ret[0].(*response.SkymavisTransactionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetInternalTxnsByHash indicates an expected call of GetInternalTxnsByHash.
+func (mr *MockServiceMockRecorder) GetInternalTxnsByHash(hash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInternalTxnsByHash", reflect.TypeOf((*MockService)(nil).GetInternalTxnsByHash), hash)
+}
+
 // GetOwnedNfts mocks base method.
 func (m *MockService) GetOwnedNfts(address string) (*response.AxieMarketNftResponse, error) {
 	m.ctrl.T.Helper()

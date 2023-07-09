@@ -67,21 +67,6 @@ func (mr *MockServiceMockRecorder) CreateChannel(guildID, createData interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChannel", reflect.TypeOf((*MockService)(nil).CreateChannel), guildID, createData)
 }
 
-// CreateDiscussionChannelForProposal mocks base method.
-func (m *MockService) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDiscussionChannelForProposal", guildId, proposalChannelID, proposalTitle)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateDiscussionChannelForProposal indicates an expected call of CreateDiscussionChannelForProposal.
-func (mr *MockServiceMockRecorder) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDiscussionChannelForProposal", reflect.TypeOf((*MockService)(nil).CreateDiscussionChannelForProposal), guildId, proposalChannelID, proposalTitle)
-}
-
 // DeleteChannel mocks base method.
 func (m *MockService) DeleteChannel(channelId string) error {
 	m.ctrl.T.Helper()
@@ -254,20 +239,6 @@ func (mr *MockServiceMockRecorder) NotifyMemberLeave(req, jlChannelId interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyMemberLeave", reflect.TypeOf((*MockService)(nil).NotifyMemberLeave), req, jlChannelId)
 }
 
-// NotifyNewCommonwealthDiscussion mocks base method.
-func (m *MockService) NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyNewCommonwealthDiscussion", req)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyNewCommonwealthDiscussion indicates an expected call of NotifyNewCommonwealthDiscussion.
-func (mr *MockServiceMockRecorder) NotifyNewCommonwealthDiscussion(req interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewCommonwealthDiscussion", reflect.TypeOf((*MockService)(nil).NotifyNewCommonwealthDiscussion), req)
-}
-
 // NotifyNewGuild mocks base method.
 func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
 	m.ctrl.T.Helper()
@@ -280,20 +251,6 @@ func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
 func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
-}
-
-// NotifyNewProposal mocks base method.
-func (m *MockService) NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyNewProposal", channelID, proposal)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyNewProposal indicates an expected call of NotifyNewProposal.
-func (mr *MockServiceMockRecorder) NotifyNewProposal(channelID, proposal interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewProposal", reflect.TypeOf((*MockService)(nil).NotifyNewProposal), channelID, proposal)
 }
 
 // NotifyStealAveragePrice mocks base method.

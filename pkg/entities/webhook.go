@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -554,39 +553,6 @@ func (e *Entity) HandleMemberAdd(member *discordgo.Member) error {
 		return err
 	}
 	return nil
-}
-
-func (e *Entity) HandleSnapshotEvent(req *request.SnapshotEvent) error {
-	if req.Event != "proposal/start" {
-		return nil
-	}
-	// id: 'proposal/QmZ21uS8tVucpaNq2LZCbZUmHhYYXunC1ZS2gPDNWwPWD9'
-	proposalId := strings.ReplaceAll(req.ID, "proposal/", "")
-	// get proposal
-	proposal, err := e.svc.Snapshot.GetSnapshotProposal(proposalId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Snapshot.GetSnapshotProposal] failed")
-		return err
-	}
-	// get guild configs
-	configs, err := e.repo.GuildConfigDaoTracker.GetAllBySpaceAndSource(req.Space, "snapshot")
-	if err != nil {
-		e.log.Fields(logger.Fields{"space": req.Space}).Error(err, "[repo.GuildConfigDaoTracker.GetAllBySpace] failed")
-		return err
-	}
-	// send message to guilds
-	var wg sync.WaitGroup
-	for _, tracker := range configs {
-		wg.Add(1)
-		go e.sendProposalToDiscord(&wg, tracker.ChannelID, proposal)
-	}
-	wg.Wait()
-	return nil
-}
-
-func (e *Entity) sendProposalToDiscord(wg *sync.WaitGroup, channelId string, proposal *response.SnapshotProposalDataResponse) {
-	defer wg.Done()
-	e.svc.Discord.NotifyNewProposal(channelId, *proposal)
 }
 
 func (e *Entity) HandleGuildCreate(guildID string) error {

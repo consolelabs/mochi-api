@@ -17,7 +17,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/chainexplorer"
 	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
-	"github.com/defipod/mochi/pkg/service/commonwealth"
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -28,7 +27,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/processor"
 	"github.com/defipod/mochi/pkg/service/ronin"
 	"github.com/defipod/mochi/pkg/service/skymavis"
-	"github.com/defipod/mochi/pkg/service/snapshot"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/sui"
 	"github.com/defipod/mochi/pkg/service/swap"
@@ -37,14 +35,12 @@ import (
 type Service struct {
 	CoinGecko     coingecko.Service
 	Covalent      covalent.Service
-	Commonwealth  commonwealth.Service
 	Discord       discord.Service
 	Indexer       indexer.Service
 	Abi           abi.Service
 	Cloud         cloud.Service
 	Processor     processor.Service
 	Solscan       solscan.Service
-	Snapshot      snapshot.Service
 	Nghenhan      nghenhan.Service
 	Binance       binance.Service
 	APILayer      apilayer.Service
@@ -90,12 +86,10 @@ func NewService(
 	return &Service{
 		CoinGecko:     coingecko.NewService(&cfg),
 		Covalent:      covalent.NewService(&cfg, log, cache),
-		Commonwealth:  commonwealth.NewService(),
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
 		Abi:           abi.NewAbi(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
-		Snapshot:      snapshot.NewService(log),
 		Nghenhan:      nghenhan.NewService(),
 		Processor:     processor.NewProcessor(&cfg),
 		Solscan:       solscan.NewService(&cfg, log, cache),

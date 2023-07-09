@@ -124,10 +124,6 @@ type GuildConfigDefaultCurrencyResponse struct {
 	CreatedAt   time.Time                  `json:"created_at"`
 }
 
-type CreateProposalChannelConfigResponse struct {
-	Data model.GuildConfigDaoProposal `json:"data"`
-}
-
 type CreateGuildTokenRole struct {
 	Data *model.GuildConfigTokenRole `json:"data"`
 }
@@ -143,10 +139,6 @@ type UpdateGuildTokenRole struct {
 
 type GetGuildLevelUpMessage struct {
 	Data *model.GuildConfigLevelupMessage `json:"data"`
-}
-
-type GuildConfigDaoTrackerResponse struct {
-	Data *[]model.GuildConfigDaoTracker `json:"data"`
 }
 
 type GuildConfigTipRangeResponse struct {

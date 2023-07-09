@@ -369,23 +369,6 @@ func (h *Handler) NotifySaleMarketplace(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
-func (h *Handler) WebhookSnapshotProposal(c *gin.Context) {
-	var req request.SnapshotEvent
-	if err := c.Bind(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookSnapshotProposal] - failed to read JSON")
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-		return
-	}
-	err := h.entities.HandleSnapshotEvent(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.WebhookSnapshotProposal] - failed to handle snapshot event")
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
-}
-
 func (h *Handler) handleAutoTrigger(e string, c *gin.Context, data json.RawMessage) {
 	h.log.Info("[handler.handleAutoTrigger] - handling auto trigger")
 	var req request.AutoTriggerRequest

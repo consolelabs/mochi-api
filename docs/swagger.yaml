@@ -150,19 +150,6 @@ definitions:
       symbol:
         type: string
     type: object
-  model.CommonwealthDiscussionSubscription:
-    properties:
-      created_at:
-        type: string
-      discord_thread_id:
-        type: string
-      discussion_id:
-        type: integer
-      id:
-        type: integer
-      updated_at:
-        type: string
-    type: object
   model.ConfigXpLevel:
     properties:
       level:
@@ -230,50 +217,6 @@ definitions:
       id:
         type: integer
       role_id:
-        type: string
-    type: object
-  model.GuildConfigDaoProposal:
-    properties:
-      address:
-        type: string
-      authority:
-        type: string
-      chain_id:
-        type: integer
-      created_at:
-        type: string
-      guideline_channel_id:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      proposal_channel_id:
-        type: string
-      required_amount:
-        type: string
-      symbol:
-        type: string
-      type:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  model.GuildConfigDaoTracker:
-    properties:
-      channel_id:
-        type: string
-      created_at:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      source:
-        type: string
-      space:
-        type: string
-      updated_at:
         type: string
     type: object
   model.GuildConfigDefaultCollection:
@@ -964,12 +907,12 @@ definitions:
         type: string
       total_amount_solana:
         type: string
-      treasurers:
+      updated_at:
+        type: string
+      vault_treasurers:
         items:
           $ref: '#/definitions/model.VaultTreasurer'
         type: array
-      updated_at:
-        type: string
       wallet_address:
         type: string
       wallet_number:
@@ -1132,16 +1075,6 @@ definitions:
       title:
         type: string
     type: object
-  request.CreateCommonwealthDiscussionSubscription:
-    properties:
-      discord_thread_id:
-        type: string
-      discussion_id:
-        type: integer
-    required:
-    - discord_thread_id
-    - discussion_id
-    type: object
   request.CreateDefaultRoleRequest:
     properties:
       guild_id:
@@ -1211,33 +1144,6 @@ definitions:
       status:
         type: string
     type: object
-  request.CreateProposalChannelConfig:
-    properties:
-      address:
-        type: string
-      authority:
-        enum:
-        - admin
-        - token_holder
-        type: string
-      chain:
-        type: string
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      required_amount:
-        type: number
-      type:
-        enum:
-        - nft_collection
-        - crypto_token
-        type: string
-    required:
-    - authority
-    - channel_id
-    - guild_id
-    type: object
   request.CreateSalesTrackerConfigRequest:
     properties:
       chain:
@@ -1301,16 +1207,6 @@ definitions:
     - token_address
     - token_chain
     - user_discord_id
-    type: object
-  request.DeleteGuildConfigDaoProposal:
-    properties:
-      id:
-        type: string
-    type: object
-  request.DeleteGuildConfigDaoTracker:
-    properties:
-      id:
-        type: string
     type: object
   request.DeleteJoinLeaveChannelConfigRequest:
     properties:
@@ -1577,15 +1473,6 @@ definitions:
       msg:
         type: string
       sticker:
-        type: string
-    type: object
-  request.UpsertGuildConfigDaoTracer:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
-        type: string
-      snapshot_url:
         type: string
     type: object
   request.UpsertGuildConfigTipRangeRequest:
@@ -1978,11 +1865,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  response.CreateCommonwealthDiscussionSubscription:
-    properties:
-      data:
-        $ref: '#/definitions/model.CommonwealthDiscussionSubscription'
-    type: object
   response.CreateGuildTokenRole:
     properties:
       data:
@@ -1992,11 +1874,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.NFTCollection'
-    type: object
-  response.CreateProposalChannelConfigResponse:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigDaoProposal'
     type: object
   response.CreateTwitterSaleConfigResponse:
     properties:
@@ -2237,40 +2114,6 @@ definitions:
       data:
         $ref: '#/definitions/model.GuildConfigGmGn'
       message:
-        type: string
-    type: object
-  response.GetGuildConfigDaoProposal:
-    properties:
-      data:
-        $ref: '#/definitions/response.GetGuildConfigDaoProposalData'
-    type: object
-  response.GetGuildConfigDaoProposalData:
-    properties:
-      address:
-        type: string
-      authority:
-        type: string
-      chain:
-        type: string
-      chain_id:
-        type: integer
-      created_at:
-        type: string
-      guideline_channel_id:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      proposal_channel_id:
-        type: string
-      required_amount:
-        type: string
-      symbol:
-        type: string
-      type:
-        type: string
-      updated_at:
         type: string
     type: object
   response.GetGuildDefaultNftTickerResponse:
@@ -2536,13 +2379,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2677,13 +2520,6 @@ definitions:
         $ref: '#/definitions/model.GuildConfigWelcomeChannel'
       message:
         type: string
-    type: object
-  response.GuildConfigDaoTrackerResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.GuildConfigDaoTracker'
-        type: array
     type: object
   response.GuildConfigDefaultCurrencyResponse:
     properties:
@@ -4244,113 +4080,6 @@ paths:
       summary: Upsert user tag
       tags:
       - Community
-  /config-channels/{guild_id}/proposal:
-    get:
-      consumes:
-      - application/json
-      description: Get dao proposal channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetGuildConfigDaoProposal'
-      summary: Get dao proposal channel config
-      tags:
-      - ConfigChannel
-  /config-channels/dao-tracker:
-    delete:
-      consumes:
-      - application/json
-      description: Delete dao tracker config
-      parameters:
-      - description: Delete dao tracker channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteGuildConfigDaoTracker'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete dao tracker channel config
-      tags:
-      - ConfigChannel
-    post:
-      consumes:
-      - application/json
-      description: Create tracker channel config for dao voting
-      parameters:
-      - description: Create tracker channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertGuildConfigDaoTracer'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create tracker channel config
-      tags:
-      - ConfigChannel
-  /config-channels/dao-tracker/{guild_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get dao tracker channel config
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GuildConfigDaoTrackerResponse'
-      summary: Get dao tracker channel config
-      tags:
-      - ConfigChannel
-  /config-channels/dao-tracker/cw-discussion-subs:
-    post:
-      consumes:
-      - application/json
-      description: Subscribe commonwealth discussion
-      parameters:
-      - description: Create cw discussion subscription request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateCommonwealthDiscussionSubscription'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateCommonwealthDiscussionSubscription'
-      summary: Subscribe commonwealth discussion
-      tags:
-      - Data
   /config-channels/gm:
     get:
       consumes:
@@ -4446,49 +4175,6 @@ paths:
       - application/json
       responses: {}
       summary: Update or insert join-leave channel config
-      tags:
-      - ConfigChannel
-  /config-channels/proposal:
-    delete:
-      consumes:
-      - application/json
-      description: Delete dao proposal config
-      parameters:
-      - description: Delete dao proposal channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteGuildConfigDaoProposal'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete dao proposal channel config
-      tags:
-      - ConfigChannel
-    post:
-      consumes:
-      - application/json
-      description: Create proposal channel config for dao voting
-      parameters:
-      - description: Create proposal channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateProposalChannelConfig'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateProposalChannelConfigResponse'
-      summary: Create proposal channel config
       tags:
       - ConfigChannel
   /config-channels/tip-notify:

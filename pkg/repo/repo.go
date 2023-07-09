@@ -8,22 +8,13 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
-	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
-	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
-	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
-	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
-	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
-	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
-	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
-	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
-	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -99,7 +90,6 @@ type Repo struct {
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
-	CommonwealthLatestData               commonwealthlastestdata.Store
 	DiscordGuilds                        discordguilds.Store
 	Users                                users.Store
 	GuildUsers                           guildusers.Store
@@ -111,7 +101,6 @@ type Repo struct {
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigLevelUpMessage            guildconfiglevelupmessage.Store
-	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
 	GuildConfigToken                     guildconfigtoken.Store
@@ -153,12 +142,6 @@ type Repo struct {
 	OffchainTipBotConfigNotify           offchaintipbotconfignotify.Store
 	NftAddRequestHistory                 nftaddrequesthistory.Store
 	OffchainTipBotDepositLog             offchaintipbotdepositlog.Store
-	GuildConfigDaoProposal               guildconfigdaoproposal.Store
-	DaoProposal                          daoproposal.Store
-	DaoVote                              daovote.Store
-	DaoProposalVoteOption                daoproposalvoteoption.Store
-	DaoVoteOption                        daovoteoption.Store
-	DaoGuidelineMessages                 daoguidelinemessages.Store
 	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
@@ -167,7 +150,6 @@ type Repo struct {
 	GuildConfigAdminRole                 guildconfigadminrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store
-	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	Vault                                vault.Store
 	VaultConfig                          vaultconfig.Store
