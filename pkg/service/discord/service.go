@@ -35,11 +35,6 @@ type Service interface {
 	CreateChannel(guildID string, createData discordgo.GuildChannelCreateData) (*discordgo.Channel, error)
 	DeleteChannel(channelId string) error
 
-	// DAO voting
-	NotifyNewProposal(channelID string, proposal response.SnapshotProposalDataResponse) error
-	NotifyNewCommonwealthDiscussion(req request.NewCommonwealthDiscussionRequest) error
-	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
-
 	// Price alert
 	SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error
 

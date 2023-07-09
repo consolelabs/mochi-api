@@ -8,22 +8,13 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
-	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
-	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
-	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
-	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
-	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
-	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
-	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
-	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
-	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -51,16 +42,9 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
-	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
-	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
-	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
-	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
-	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
-	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -99,7 +83,6 @@ type Repo struct {
 	GuildConfigGmGn                      guildconfiggmgn.Store
 	GuildConfigSalesTracker              guildconfigsalestracker.Store
 	GuildConfigWalletVerificationMessage guildconfigwalletverificationmessage.Store
-	CommonwealthLatestData               commonwealthlastestdata.Store
 	DiscordGuilds                        discordguilds.Store
 	Users                                users.Store
 	GuildUsers                           guildusers.Store
@@ -111,7 +94,6 @@ type Repo struct {
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigLevelUpMessage            guildconfiglevelupmessage.Store
-	GuildConfigDaoTracker                guildconfigdaotracker.Store
 	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
 	GuildConfigToken                     guildconfigtoken.Store
@@ -142,24 +124,11 @@ type Repo struct {
 	QuestReward                          questreward.Store
 	QuestUserReward                      questuserreward.Store
 	OffchainTipBotChain                  offchaintipbotchain.Store
-	OffchainTipBotContract               offchaintipbotcontract.Store
 	QuestStreak                          queststreak.Store
-	OffchainTipBotUserBalances           offchaintipbotuserbalances.Store
-	OffchainTipBotUserBalanceSnapshot    offchaintipbotuserbalancesnapshot.Store
 	OffchainTipBotTokens                 offchaintipbottokens.Store
-	OffchainTipBotActivityLogs           offchaintipbotactivitylogs.Store
-	OffchainTipBotTransferHistories      offchaintipbottransferhistories.Store
 	MonikerConfig                        monikerconfig.Store
 	OffchainTipBotConfigNotify           offchaintipbotconfignotify.Store
 	NftAddRequestHistory                 nftaddrequesthistory.Store
-	OffchainTipBotDepositLog             offchaintipbotdepositlog.Store
-	GuildConfigDaoProposal               guildconfigdaoproposal.Store
-	DaoProposal                          daoproposal.Store
-	DaoVote                              daovote.Store
-	DaoProposalVoteOption                daoproposalvoteoption.Store
-	DaoVoteOption                        daovoteoption.Store
-	DaoGuidelineMessages                 daoguidelinemessages.Store
-	OnchainTipBotTransaction             onchaintipbottransaction.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
 	SaleBotMarketplace                   salebotmarketplace.Store
@@ -167,7 +136,6 @@ type Repo struct {
 	GuildConfigAdminRole                 guildconfigadminrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store
-	CommonwealthDiscussionSubscription   commonwealthdiscussionsubscription.Store
 	UserTokenSupportRequest              usertokensupportrequest.Store
 	Vault                                vault.Store
 	VaultConfig                          vaultconfig.Store

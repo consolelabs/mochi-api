@@ -2,8 +2,6 @@ package request
 
 import (
 	"fmt"
-
-	"github.com/defipod/mochi/pkg/model"
 )
 
 type UpsertGmConfigRequest struct {
@@ -143,16 +141,6 @@ type BalcklistChannelRepostConfigRequest struct {
 type UpsertGuildDefaultCurrencyRequest struct {
 	GuildID string `json:"guild_id"`
 	Symbol  string `json:"symbol"`
-}
-
-type CreateProposalChannelConfig struct {
-	GuildID        string                      `json:"guild_id" binding:"required"`
-	ChannelID      string                      `json:"channel_id" binding:"required"`
-	Authority      model.ProposalAuthorityType `json:"authority" binding:"required" enums:"admin,token_holder"`
-	Type           model.ProposalVotingType    `json:"type" enums:"nft_collection,crypto_token"`
-	Address        string                      `json:"address"`
-	Chain          string                      `json:"chain"`
-	RequiredAmount float64                     `json:"required_amount"`
 }
 
 type CreateGuildTokenRole struct {

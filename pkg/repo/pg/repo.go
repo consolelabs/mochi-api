@@ -11,22 +11,13 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
-	commonwealthdiscussionsubscription "github.com/defipod/mochi/pkg/repo/commonwealth_discussion_subscriptions"
-	commonwealthlastestdata "github.com/defipod/mochi/pkg/repo/commonwealth_latest_data"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
-	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
-	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
-	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
-	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
-	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
-	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
-	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -54,16 +45,9 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
-	offchaintipbotactivitylogs "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_activity_logs"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
-	offchaintipbotcontract "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_contract"
-	offchaintipbotdepositlog "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_deposit_log"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
-	offchaintipbottransferhistories "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_transfer_histories"
-	offchaintipbotuserbalancesnapshot "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balance_snapshot"
-	offchaintipbotuserbalances "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_user_balances"
-	onchaintipbottransaction "github.com/defipod/mochi/pkg/repo/onchain_tip_bot_transaction"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -108,10 +92,8 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigWelcomeChannel:            guildconfigwelcomechannel.NewPG(db),
 		GuildConfigGmGn:                      guildconfiggmgn.NewPG(db),
 		GuildConfigSalesTracker:              guildconfigsalestracker.NewPG(db),
-		CommonwealthLatestData:               commonwealthlastestdata.NewPG(db),
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultCurrency:           guildconfigdefaultcurrency.NewPG(db),
-		GuildConfigDaoTracker:                guildconfigdaotracker.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
 		GuildConfigJoinLeaveChannel:          guildconfigjoinleavechannel.NewPG(db),
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
@@ -147,23 +129,10 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		QuestUserPass:                        questuserpass.NewPG(db),
 		QuestStreak:                          queststreak.NewPG(db),
 		OffchainTipBotChain:                  offchaintipbotchain.NewPG(db),
-		OffchainTipBotContract:               offchaintipbotcontract.NewPG(db),
-		OffchainTipBotUserBalances:           offchaintipbotuserbalances.NewPG(db),
-		OffchainTipBotUserBalanceSnapshot:    offchaintipbotuserbalancesnapshot.NewPG(db),
 		OffchainTipBotTokens:                 offchaintipbottokens.NewPG(db),
-		OffchainTipBotActivityLogs:           offchaintipbotactivitylogs.NewPG(db),
-		OffchainTipBotTransferHistories:      offchaintipbottransferhistories.NewPG(db),
 		MonikerConfig:                        monikerconfig.NewPG(db),
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
-		OffchainTipBotDepositLog:             offchaintipbotdepositlog.NewPG(db),
-		GuildConfigDaoProposal:               guildconfigdaoproposal.NewPG(db),
-		DaoProposal:                          daoproposal.NewPG(db),
-		DaoVote:                              daovote.NewPG(db),
-		DaoProposalVoteOption:                daoproposalvoteoption.NewPG(db),
-		DaoVoteOption:                        daovoteoption.NewPG(db),
-		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
-		OnchainTipBotTransaction:             onchaintipbottransaction.NewPG(db),
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
 		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Emojis:                               emojis.NewPG(db),
@@ -171,7 +140,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		SaleBotTwitterConfig:                 salebottwitterconfig.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
 		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),
-		CommonwealthDiscussionSubscription:   commonwealthdiscussionsubscription.NewPG(db),
 		UserTokenSupportRequest:              usertokensupportrequest.NewPG(db),
 		Vault:                                vault.NewPG(db),
 		VaultConfig:                          vaultconfig.NewPG(db),

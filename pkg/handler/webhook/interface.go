@@ -20,7 +20,6 @@ type IHandler interface {
 	handleGuildDelete(c *gin.Context, data json.RawMessage)
 	WebhookNftHandler(c *gin.Context)
 	handleNftSales(c *gin.Context, req request.NotifySaleMarketplaceRequest)
-	WebhookSnapshotProposal(c *gin.Context)
 	NotifyNftCollectionIntegration(c *gin.Context)
 	NotifyNftCollectionSync(c *gin.Context)
 	NotifyNftCollectionAdd(c *gin.Context)

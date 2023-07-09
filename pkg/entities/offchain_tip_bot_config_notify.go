@@ -45,29 +45,13 @@ func (e *Entity) ListConfigNotify(guildId string) (rs []response.ConfigNotifyRes
 
 	configModels := make([]response.ConfigNotifyResponse, 0)
 	for _, config := range configs {
-		var totalTx int64
-		if config.Token == "*" {
-			totalTx, err = e.repo.OffchainTipBotTransferHistories.GetTotalTransactionByGuild(guildId)
-			if err != nil {
-				e.log.Error(err, "[entities.ListConfigNotify] - failed to get total transaction by guild")
-				return nil, err
-			}
-
-		} else {
-			_, totalTx, err = e.repo.OffchainTipBotTransferHistories.GetTotalTransactionByGuildAndToken(guildId, config.Token)
-			if err != nil {
-				e.log.Error(err, "[entities.ListConfigNotify] - failed to get total transaction by guild and token")
-				return nil, err
-			}
-		}
 		configModels = append(configModels, response.ConfigNotifyResponse{
-			Id:               config.ID.String(),
-			GuildId:          config.GuildID,
-			ChannelId:        config.ChannelID,
-			Token:            config.Token,
-			CreatedAt:        config.CreatedAt.String(),
-			UpdatedAt:        config.UpdatedAt.String(),
-			TotalTransaction: totalTx,
+			Id:        config.ID.String(),
+			GuildId:   config.GuildID,
+			ChannelId: config.ChannelID,
+			Token:     config.Token,
+			CreatedAt: config.CreatedAt.String(),
+			UpdatedAt: config.UpdatedAt.String(),
 		})
 	}
 	return configModels, nil
