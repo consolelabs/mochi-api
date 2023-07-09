@@ -106,244 +106,6 @@
                 }
             }
         },
-        "/auth/login": {
-            "post": {
-                "description": "Login",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Login",
-                "parameters": [
-                    {
-                        "description": "Login request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.LoginResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "description": "Logout",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Logout",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.LogoutResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/advertise": {
-            "get": {
-                "description": "Get submitted ad",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get submitted ad",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ad's id, or 'random'",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserSubmittedAdResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update ad submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Update ad submission",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create ad submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Create ad submission",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "creator_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "description",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "image",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "introduction",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "name": "is_podtown_ad",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete ad submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Delete ad submission",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "name": "id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/community/advertise/init": {
-            "post": {
-                "description": "Init ad submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Init ad submission",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "channel_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/community/feedback": {
             "get": {
                 "description": "Get users' feedbacks",
@@ -1767,7 +1529,41 @@
                 }
             }
         },
-        "/config-roles/admin-roles": {
+        "/config-roles/reaction-roles/filter": {
+            "post": {
+                "description": "Filter config by reaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Filter config by reaction",
+                "parameters": [
+                    {
+                        "description": "Filter config by reaction request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.RoleReactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
+                        }
+                    }
+                }
+            }
+        },
+        "/config/role/{guild_id}/admin": {
             "get": {
                 "description": "Get list admin role config of guild",
                 "consumes": [
@@ -1831,7 +1627,7 @@
                 }
             }
         },
-        "/config-roles/admin-roles/{id}": {
+        "/config/role/{guild_id}/admin/{id}": {
             "delete": {
                 "description": "Remove guild admin role config",
                 "consumes": [
@@ -1863,7 +1659,7 @@
                 }
             }
         },
-        "/config-roles/default-roles": {
+        "/config/role/{guild_id}/default": {
             "get": {
                 "description": "Get default roles by guild id",
                 "consumes": [
@@ -1957,7 +1753,37 @@
                 }
             }
         },
-        "/config-roles/level-roles": {
+        "/config/role/{guild_id}/level": {
+            "get": {
+                "description": "Get level role config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ConfigRole"
+                ],
+                "summary": "Get level role config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetLevelRoleConfigsResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Config level role",
                 "consumes": [
@@ -1986,38 +1812,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/level-roles/{guild_id}": {
-            "get": {
-                "description": "Get level role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Get level role config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetLevelRoleConfigsResponse"
                         }
                     }
                 }
@@ -2053,7 +1847,7 @@
                 }
             }
         },
-        "/config-roles/nft-roles": {
+        "/config/role/{guild_id}/nft": {
             "get": {
                 "description": "List guild nft roles",
                 "consumes": [
@@ -2147,7 +1941,7 @@
                 }
             }
         },
-        "/config-roles/nft-roles/group": {
+        "/config/role/{guild_id}/nft/group": {
             "delete": {
                 "description": "Remove guild group nft role",
                 "consumes": [
@@ -2179,7 +1973,7 @@
                 }
             }
         },
-        "/config-roles/reaction-roles": {
+        "/config/role/{guild_id}/reaction": {
             "get": {
                 "description": "Get all role reaction configs",
                 "consumes": [
@@ -2275,9 +2069,9 @@
                 }
             }
         },
-        "/config-roles/reaction-roles/filter": {
-            "post": {
-                "description": "Filter config by reaction",
+        "/config/role/{guild_id}/token": {
+            "get": {
+                "description": "Get list token role config of guild",
                 "consumes": [
                     "application/json"
                 ],
@@ -2287,29 +2081,25 @@
                 "tags": [
                     "ConfigRole"
                 ],
-                "summary": "Filter config by reaction",
+                "summary": "Get list token role config of guild",
                 "parameters": [
                     {
-                        "description": "Filter config by reaction request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.RoleReactionRequest"
-                        }
+                        "type": "string",
+                        "description": "Guild ID",
+                        "name": "guild_id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.DataFilterConfigByReaction"
+                            "$ref": "#/definitions/response.ListGuildTokenRoles"
                         }
                     }
                 }
-            }
-        },
-        "/config-roles/token-roles": {
+            },
             "post": {
                 "description": "Create guild token role config",
                 "consumes": [
@@ -2343,69 +2133,7 @@
                 }
             }
         },
-        "/config-roles/token-roles/{guild_id}": {
-            "get": {
-                "description": "Get list token role config of guild",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Get list token role config of guild",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ListGuildTokenRoles"
-                        }
-                    }
-                }
-            }
-        },
-        "/config-roles/token-roles/{id}": {
-            "put": {
-                "description": "Update guild token role config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigRole"
-                ],
-                "summary": "Update guild token role config",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Config ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UpdateGuildTokenRole"
-                        }
-                    }
-                }
-            },
+        "/config/role/{guild_id}/token/{id}": {
             "delete": {
                 "description": "Remove guild token role config",
                 "consumes": [
@@ -4760,153 +4488,6 @@
                 }
             }
         },
-        "/tip/onchain/claim": {
-            "post": {
-                "description": "Onchain Tip Bot - Submit transfer transaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Onchain Tip Bot - Submit transfer transaction",
-                "parameters": [
-                    {
-                        "description": "req",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.ClaimOnchainTransferRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ClaimOnchainTransferResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/onchain/{user_id}/balances": {
-            "get": {
-                "description": "Onchain Tip Bot - Get user's onchain balances",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Onchain Tip Bot - Get user's onchain balances",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userId",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetUserBalancesResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/onchain/{user_id}/transfers": {
-            "get": {
-                "description": "Onchain Tip Bot - Get user's onchain transfers",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Onchain Tip Bot - Get user's onchain transfers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "userId",
-                        "name": "user_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "status",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetOnchainTransfersResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tip/transactions": {
-            "get": {
-                "description": "Get transactions by query",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tip"
-                ],
-                "summary": "Get transactions by query",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "sender ID",
-                        "name": "sender_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "receiver ID",
-                        "name": "receiver_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "token",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TransactionsResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/tip/transfer": {
             "post": {
                 "description": "API transfer token for tip, airdrop, ...",
@@ -5135,38 +4716,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetUserCurrentGMStreakResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me": {
-            "get": {
-                "description": "Get user info",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user info",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authorization",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetMyInfoResponse"
                         }
                     }
                 }
@@ -5439,38 +4988,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/{id}/transactions": {
-            "get": {
-                "description": "Get user transaction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get user transaction",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user discord ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserTransactionResponse"
                         }
                     }
                 }
@@ -5849,86 +5366,6 @@
         }
     },
     "definitions": {
-        "discordgo.User": {
-            "type": "object",
-            "properties": {
-                "accent_color": {
-                    "description": "User's banner color, encoded as an integer representation of hexadecimal color code",
-                    "type": "integer"
-                },
-                "avatar": {
-                    "description": "The hash of the user's avatar. Use Session.UserAvatar\nto retrieve the avatar itself.",
-                    "type": "string"
-                },
-                "banner": {
-                    "description": "The hash of the user's banner image.",
-                    "type": "string"
-                },
-                "bot": {
-                    "description": "Whether the user is a bot.",
-                    "type": "boolean"
-                },
-                "discriminator": {
-                    "description": "The discriminator of the user (4 numbers after name).",
-                    "type": "string"
-                },
-                "email": {
-                    "description": "The email of the user. This is only present when\nthe application possesses the email scope for the user.",
-                    "type": "string"
-                },
-                "flags": {
-                    "description": "The flags on a user's account.\nOnly available when the request is authorized via a Bearer token.",
-                    "type": "integer"
-                },
-                "id": {
-                    "description": "The ID of the user.",
-                    "type": "string"
-                },
-                "locale": {
-                    "description": "The user's chosen language option.",
-                    "type": "string"
-                },
-                "mfa_enabled": {
-                    "description": "Whether the user has multi-factor authentication enabled.",
-                    "type": "boolean"
-                },
-                "premium_type": {
-                    "description": "The type of Nitro subscription on a user's account.\nOnly available when the request is authorized via a Bearer token.",
-                    "type": "integer"
-                },
-                "public_flags": {
-                    "description": "The public flags on a user's account.\nThis is a combination of bit masks; the presence of a certain flag can\nbe checked by performing a bitwise AND between this int and the flag.",
-                    "type": "integer"
-                },
-                "system": {
-                    "description": "Whether the user is an Official Discord System user (part of the urgent message system).",
-                    "type": "boolean"
-                },
-                "token": {
-                    "description": "The token of the user. This is only present for\nthe user represented by the current session.",
-                    "type": "string"
-                },
-                "username": {
-                    "description": "The user's username.",
-                    "type": "string"
-                },
-                "verified": {
-                    "description": "Whether the user's email is verified.",
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.LoginResponse": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "expires_at": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.Activity": {
             "type": "object",
             "properties": {
@@ -6619,119 +6056,6 @@
                 }
             }
         },
-        "model.OffchainTipBotTransferHistory": {
-            "type": "object",
-            "properties": {
-                "action": {
-                    "type": "string"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fee_amount": {
-                    "type": "number"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "log_id": {
-                    "type": "string"
-                },
-                "receiver_id": {
-                    "type": "string"
-                },
-                "sender_id": {
-                    "type": "string"
-                },
-                "service_fee": {
-                    "type": "number"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.OnchainTipBotTransaction": {
-            "type": "object",
-            "properties": {
-                "all": {
-                    "type": "boolean"
-                },
-                "amount": {
-                    "type": "number"
-                },
-                "channel_id": {
-                    "type": "string"
-                },
-                "claimed_at": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "duration": {
-                    "type": "integer"
-                },
-                "each": {
-                    "type": "boolean"
-                },
-                "full_command": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "recipient_address": {
-                    "type": "string"
-                },
-                "recipients": {
-                    "type": "string"
-                },
-                "sender": {
-                    "type": "string"
-                },
-                "string": {
-                    "description": "(pending, claimed)",
-                    "type": "string"
-                },
-                "token_symbol": {
-                    "type": "string"
-                },
-                "transfer_type": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ProductMetadataEmojis": {
             "type": "object",
             "properties": {
@@ -7335,20 +6659,6 @@
                 }
             }
         },
-        "request.ClaimOnchainTransferRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "claim_id": {
-                    "type": "integer"
-                },
-                "user_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.ClaimQuestsRewardsRequest": {
             "type": "object",
             "properties": {
@@ -7403,7 +6713,7 @@
                 "group_name": {
                     "type": "string"
                 },
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "number_of_tokens": {
@@ -7417,7 +6727,7 @@
         "request.ConfigLevelRoleRequest": {
             "type": "object",
             "properties": {
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "level": {
@@ -7459,12 +6769,8 @@
         },
         "request.CreateDefaultRoleRequest": {
             "type": "object",
-            "required": [
-                "guild_id",
-                "role_id"
-            ],
             "properties": {
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "role_id": {
@@ -7474,12 +6780,8 @@
         },
         "request.CreateGuildAdminRoleRequest": {
             "type": "object",
-            "required": [
-                "guild_id",
-                "role_ids"
-            ],
             "properties": {
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "role_ids": {
@@ -7492,13 +6794,6 @@
         },
         "request.CreateGuildTokenRole": {
             "type": "object",
-            "required": [
-                "address",
-                "amount",
-                "chain",
-                "guild_id",
-                "role_id"
-            ],
             "properties": {
                 "address": {
                     "type": "string"
@@ -7509,7 +6804,7 @@
                 "chain": {
                     "type": "string"
                 },
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "role_id": {
@@ -7752,14 +7047,6 @@
                 }
             }
         },
-        "request.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "access_token": {
-                    "type": "string"
-                }
-            }
-        },
         "request.NewGuildConfigWalletVerificationMessageRequest": {
             "type": "object",
             "properties": {
@@ -7859,7 +7146,7 @@
                 "channel_id": {
                     "type": "string"
                 },
-                "guild_id": {
+                "guildID": {
                     "type": "string"
                 },
                 "message_id": {
@@ -8282,43 +7569,6 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.GasTrackerResponse"
-                }
-            }
-        },
-        "response.ClaimOnchainTransfer": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "amount_in_usd": {
-                    "type": "number"
-                },
-                "recipient_address": {
-                    "type": "string"
-                },
-                "recipient_id": {
-                    "type": "string"
-                },
-                "sender_id": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "tx_hash": {
-                    "type": "string"
-                },
-                "tx_url": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.ClaimOnchainTransferResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.ClaimOnchainTransfer"
                 }
             }
         },
@@ -8858,17 +8108,6 @@
                 }
             }
         },
-        "response.GetAllUserSubmittedAdResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.GetAllUserSubmittedAdResponse"
-                    }
-                }
-            }
-        },
         "response.GetCoinResponse": {
             "type": "object",
             "properties": {
@@ -9196,14 +8435,6 @@
                 }
             }
         },
-        "response.GetMyInfoResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/discordgo.User"
-                }
-            }
-        },
         "response.GetNFTActivityData": {
             "type": "object",
             "properties": {
@@ -9329,17 +8560,6 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.GetNftWatchlist"
-                    }
-                }
-            }
-        },
-        "response.GetOnchainTransfersResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OnchainTipBotTransaction"
                     }
                 }
             }
@@ -9509,40 +8729,6 @@
                 }
             }
         },
-        "response.GetUserBalances": {
-            "type": "object",
-            "properties": {
-                "balances": {
-                    "type": "number"
-                },
-                "balances_in_usd": {
-                    "type": "number"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "rate_in_usd": {
-                    "type": "number"
-                },
-                "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.GetUserBalancesResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.GetUserBalances"
-                    }
-                }
-            }
-        },
         "response.GetUserCurrentGMStreakResponse": {
             "type": "object",
             "properties": {
@@ -9602,38 +8788,6 @@
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.User"
-                }
-            }
-        },
-        "response.GetUserSubmittedAdResponse": {
-            "type": "object",
-            "properties": {
-                "ad_channel_id": {
-                    "type": "string"
-                },
-                "creator_id": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "image": {
-                    "type": "string"
-                },
-                "introduction": {
-                    "type": "string"
-                },
-                "is_podtown_ad": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "string": {
-                    "type": "string"
                 }
             }
         },
@@ -10293,17 +9447,6 @@
                     "type": "string"
                 },
                 "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.LogoutResponse": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 }
             }
@@ -11161,30 +10304,11 @@
                 }
             }
         },
-        "response.TransactionsResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
-                    }
-                }
-            }
-        },
         "response.UnlinkBinance": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "response.UpdateGuildTokenRole": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigTokenRole"
                 }
             }
         },
@@ -11236,17 +10360,6 @@
                 },
                 "total": {
                     "type": "integer"
-                }
-            }
-        },
-        "response.UserTransactionResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.OffchainTipBotTransferHistory"
-                    }
                 }
             }
         },

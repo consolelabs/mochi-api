@@ -13,11 +13,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	// API for Mpchi interface
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
-	authGroup := v1.Group("/auth")
-	{
-		authGroup.POST("/login", h.Auth.Login)
-		authGroup.POST("/logout", h.Auth.Logout)
-	}
 
 	tipBotGroup := v1.Group("/tip")
 	{
@@ -35,7 +30,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	userGroup := v1.Group("/users")
 	{
-		userGroup.GET("me", middleware.AuthGuard(cfg), h.User.GetMyInfo)
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
@@ -123,7 +117,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	}
 
-	configGroup := v1.Group("/configs")
+	configGroup := v1.Group("/config")
 	{
 		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
 		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
@@ -154,10 +148,20 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.DELETE("/join-leave", h.ConfigChannel.DeleteJoinLeaveChannelConfig)
 	}
 
-	// v1/config-roles/
-	configRoleGroup := v1.Group("/config-roles")
+	// TODO:
+	// v1/config/role/{guild-id}
+	// v1/config/role/{guild-id}/reaction
+	// // GET
+	// // POST
+	// // DELETE
+	// v1/config/role/{guild-id}/default
+	// v1/config/role/{guild-id}/level
+	// v1/config/role/{guild-id}/nft
+	// v1/config/role/{guild-id}/token
+	// v1/config/role/{guild-id}/bot-manager
+	configRoleGroup := configGroup.Group("/role/:guild_id")
 	{
-		roleReactionGroup := configRoleGroup.Group("/reaction-roles")
+		roleReactionGroup := configRoleGroup.Group("/reaction")
 		{
 			roleReactionGroup.GET("", h.ConfigRoles.GetAllRoleReactionConfigs)
 			roleReactionGroup.POST("", h.ConfigRoles.AddReactionRoleConfig)
@@ -165,37 +169,36 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			roleReactionGroup.POST("/filter", h.ConfigRoles.FilterConfigByReaction)
 
 		}
-		defaultRoleGroup := configRoleGroup.Group("/default-roles")
+		roleDefaultGroup := configRoleGroup.Group("/default")
 		{
-			defaultRoleGroup.GET("", h.ConfigRoles.GetDefaultRolesByGuildID)
-			defaultRoleGroup.POST("", h.ConfigRoles.CreateDefaultRole)
-			defaultRoleGroup.DELETE("", h.ConfigRoles.DeleteDefaultRoleByGuildID)
+			roleDefaultGroup.GET("", h.ConfigRoles.GetDefaultRolesByGuildID)
+			roleDefaultGroup.POST("", h.ConfigRoles.CreateDefaultRole)
+			roleDefaultGroup.DELETE("", h.ConfigRoles.DeleteDefaultRoleByGuildID)
 		}
-		levelRoleGroup := configRoleGroup.Group("/level-roles")
+		levelRoleGroup := configRoleGroup.Group("/level")
 		{
 			levelRoleGroup.POST("", h.ConfigRoles.ConfigLevelRole)
-			levelRoleGroup.GET("/:guild_id", h.ConfigRoles.GetLevelRoleConfigs)
-			levelRoleGroup.DELETE("/:guild_id", h.ConfigRoles.RemoveLevelRoleConfig)
+			levelRoleGroup.GET("", h.ConfigRoles.GetLevelRoleConfigs)
+			levelRoleGroup.DELETE("", h.ConfigRoles.RemoveLevelRoleConfig)
 		}
-		nftRoleGroup := configRoleGroup.Group("/nft-roles")
+		nftRoleGroup := configRoleGroup.Group("/nft")
 		{
 			nftRoleGroup.GET("", h.ConfigRoles.ListGuildGroupNFTRoles)
 			nftRoleGroup.POST("", h.ConfigRoles.NewGuildGroupNFTRole)
 			nftRoleGroup.DELETE("/group", h.ConfigRoles.RemoveGuildGroupNFTRole)
-			nftRoleGroup.DELETE("/", h.ConfigRoles.RemoveGuildNFTRole)
+			nftRoleGroup.DELETE("", h.ConfigRoles.RemoveGuildNFTRole)
 		}
-		tokenRoleGroup := configRoleGroup.Group("/token-roles")
+		tokenRoleGroup := configRoleGroup.Group("/token")
 		{
 			tokenRoleGroup.POST("", h.ConfigRoles.CreateGuildTokenRole)
-			tokenRoleGroup.GET(":guild_id", h.ConfigRoles.ListGuildTokenRoles)
-			tokenRoleGroup.PUT("/:id", h.ConfigRoles.UpdateGuildTokenRole)
+			tokenRoleGroup.GET("", h.ConfigRoles.ListGuildTokenRoles)
 			tokenRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildTokenRole)
 		}
-		adminRoleGroup := configRoleGroup.Group("/admin-roles")
+		adminRoleGroup := configRoleGroup.Group("/bot-manager")
 		{
 			adminRoleGroup.POST("", h.ConfigRoles.CreateGuildAdminRoles)
 			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
-			adminRoleGroup.DELETE("/:id", h.ConfigRoles.RemoveGuildAdminRole)
+			adminRoleGroup.DELETE(":id", h.ConfigRoles.RemoveGuildAdminRole)
 		}
 	}
 
