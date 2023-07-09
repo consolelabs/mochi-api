@@ -13,10 +13,6 @@ type IHandler interface {
 	GetSalesTrackerConfig(c *gin.Context)
 	CreateSalesTrackerConfig(c *gin.Context)
 
-	GetJoinLeaveChannelConfig(c *gin.Context)
-	UpsertJoinLeaveChannelConfig(c *gin.Context)
-	DeleteJoinLeaveChannelConfig(c *gin.Context)
-
 	CreateConfigNotify(c *gin.Context)
 	ListConfigNotify(c *gin.Context)
 	DeleteConfigNotify(c *gin.Context)

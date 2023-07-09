@@ -24,7 +24,6 @@ import (
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
-	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
@@ -94,7 +93,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		GuildConfigReactionRole:              guildconfigreactionrole.NewPG(db),
 		GuildConfigDefaultCurrency:           guildconfigdefaultcurrency.NewPG(db),
 		GuildConfigDefaultRole:               guildconfigdefaultrole.NewPG(db),
-		GuildConfigJoinLeaveChannel:          guildconfigjoinleavechannel.NewPG(db),
 		GuildConfigDefaultCollection:         guildconfigdefaultcollection.NewPG(db),
 		GuildConfigWalletVerificationMessage: guildconfigwalletverificationmessage.NewPG(db),
 		GuildConfigToken:                     guildconfigtoken.NewPG(db),

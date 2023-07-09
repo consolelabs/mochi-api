@@ -18,8 +18,6 @@ type Service interface {
 
 	// moderation logs
 	NotifyNewGuild(newGuildID string, count int) error
-	NotifyMemberJoin(discordID, avatar, jlChannelID string, userCount int64) error
-	NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlChannelId string) error
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
 	SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
