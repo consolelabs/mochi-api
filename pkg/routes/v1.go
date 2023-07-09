@@ -154,7 +154,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.DELETE("/join-leave", h.ConfigChannel.DeleteJoinLeaveChannelConfig)
 	}
 
-	// v1/config-roles/
+	// TODO:
+	// v1/config/role/{guild-id}
+	// v1/config/role/{guild-id}/reaction
+	// // GET
+	// // POST
+	// // DELETE
+	// v1/config/role/{guild-id}/default
+	// v1/config/role/{guild-id}/level
+	// v1/config/role/{guild-id}/nft
+	// v1/config/role/{guild-id}/token
+	// v1/config/role/{guild-id}/bot-manager
 	configRoleGroup := v1.Group("/config-roles")
 	{
 		roleReactionGroup := configRoleGroup.Group("/reaction-roles")
