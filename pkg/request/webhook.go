@@ -12,19 +12,6 @@ type HandleDiscordWebhookRequest struct {
 	Data  json.RawMessage `json:"data"`
 }
 
-type WebhookUpvoteTopGG struct {
-	BotID     string `json:"bot"`
-	UserID    string `json:"user"`
-	Type      string `json:"type"`
-	IsWeekend bool   `json:"isWeekend"`
-}
-type WebhookUpvoteDiscordBot struct {
-	Admin    bool   `json:"admin"`
-	Avatar   string `json:"avatar"`
-	Username string `json:"username"`
-	UserID   string `json:"id"`
-}
-
 const (
 	// guild
 	GUILD_CREATE = "guildCreate"

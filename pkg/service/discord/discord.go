@@ -31,11 +31,10 @@ type Discord struct {
 }
 
 const (
-	mochiLogColor       = 0x62A1FE
-	mochiTipLogColor    = 0xFFDC50
-	mochiUpvoteMsgColor = 0x47ffc2
-	mochiErrorColor     = 0xD94F50
-	mochiSuccessColor   = 0x5cd97d
+	mochiLogColor     = 0x62A1FE
+	mochiTipLogColor  = 0xFFDC50
+	mochiErrorColor   = 0xD94F50
+	mochiSuccessColor = 0x5cd97d
 )
 
 func NewService(
@@ -365,45 +364,6 @@ func (d *Discord) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _typ
 	return nil
 }
 
-func (d *Discord) SendUpvoteMessage(discordID, source string, isStranger bool) error {
-	if discordID == "" || source == "" {
-		return nil
-	}
-
-	voteRemindStr := "\n\nCheck your progress and vote for Mochi with `$vote`"
-	msgEmbed := discordgo.MessageEmbed{}
-	if isStranger {
-		// user can upvote without being in a guild
-		sourceName, sourceUrl := util.UpvoteSourceNameAndUrl(source)
-		msgEmbed = discordgo.MessageEmbed{
-			Title:       "Thank you stranger.",
-			Description: fmt.Sprintf("A mysterious person just upvoted Mochi on [%s](%s). Thank you, whoever you are", sourceName, sourceUrl) + voteRemindStr,
-			Color:       mochiUpvoteMsgColor,
-			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-			Image: &discordgo.MessageEmbedImage{
-				URL: "https://cdn.discordapp.com/attachments/986854719999864863/1019481825804029972/unknown.png",
-			},
-		}
-	} else {
-		embed := util.GenerateUpvoteMessage(discordID, source)
-		msgEmbed = discordgo.MessageEmbed{
-			Title:       embed.Title,
-			Description: embed.Description + voteRemindStr,
-			Color:       mochiUpvoteMsgColor,
-			Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-			Image: &discordgo.MessageEmbedImage{
-				URL: embed.Image,
-			},
-		}
-	}
-	_, err := d.session.ChannelMessageSendEmbed(d.mochiActivityChannelID, &msgEmbed)
-	if err != nil {
-		return fmt.Errorf("[svc.Discord.SendUpvoteMessage] - ChannelMessageSendEmbed failed to channel %s: %s", d.mochiActivityChannelID, err.Error())
-	}
-
-	return nil
-}
-
 func (d *Discord) generateGuildInviteLink(guild *discordgo.Guild) string {
 	inviteUrl := ""
 	channels, err := d.session.GuildChannels(guild.ID)
@@ -421,34 +381,6 @@ func (d *Discord) generateGuildInviteLink(guild *discordgo.Guild) string {
 		}
 	}
 	return inviteUrl
-}
-
-// Reply to the lastest $vote message
-func (d *Discord) ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error {
-	embed := util.GenerateUpvoteMessage(msg.UserID, source)
-	voteRemindStr := "\n\nCheck your progress and vote for Mochi with `$vote`"
-	if msg.GuildID != d.mochiGuildID {
-		voteRemindStr += "\n[Join Mochi server](https://discord.gg/FUDwZ2GqnN) <:threat:1019815998116859965>"
-	}
-	msgEmbed := discordgo.MessageEmbed{
-		Title:       embed.Title,
-		Description: embed.Description + voteRemindStr,
-		Color:       mochiUpvoteMsgColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-		Image: &discordgo.MessageEmbedImage{
-			URL: embed.Image,
-		},
-	}
-	_, err := d.session.ChannelMessageSendEmbedReply(msg.ChannelID, &msgEmbed, &discordgo.MessageReference{
-		MessageID: msg.MessageID,
-		ChannelID: msg.ChannelID,
-		GuildID:   msg.GuildID,
-	})
-	if err != nil {
-		d.log.Error(err, "[discord.ReplyUpvoteMessage] failed to reply")
-		return err
-	}
-	return nil
 }
 
 func (d *Discord) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error {

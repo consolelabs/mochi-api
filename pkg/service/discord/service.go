@@ -23,8 +23,6 @@ type Service interface {
 	SendGuildActivityLogs(channelID, userID, title, description string) error
 	SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse)
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
-	SendUpvoteMessage(discordID, source string, isStranger bool) error
-	ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error
 	NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error
 	SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error
 
