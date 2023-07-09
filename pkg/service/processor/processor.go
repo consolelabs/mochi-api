@@ -3,13 +3,11 @@ package processor
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
-	"github.com/defipod/mochi/pkg/request"
 )
 
 type processor struct {
@@ -81,28 +79,4 @@ func (p *processor) GetUserFactionXp(userDiscordId string) (*model.GetUserFactio
 		return nil, err
 	}
 	return res, nil
-}
-
-func (p *processor) HandleUserUpvote(req *request.UserUpvoteProcessorRequest) error {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return err
-	}
-
-	jsonBody := bytes.NewBuffer(body)
-	var client = &http.Client{}
-	request, err := http.NewRequest("POST", p.config.ProcessorServerHost+"/user_transaction", jsonBody)
-	if err != nil {
-		return err
-	}
-	request.Header.Add("Content-Type", "application/json")
-
-	response, err := client.Do(request)
-	if err != nil || response.StatusCode != 200 {
-		return fmt.Errorf("failed to handle user upvote: %s", err)
-	}
-
-	defer response.Body.Close()
-
-	return nil
 }
