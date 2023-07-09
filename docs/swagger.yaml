@@ -1,78 +1,5 @@
 basePath: /api/v1
 definitions:
-  discordgo.User:
-    properties:
-      accent_color:
-        description: User's banner color, encoded as an integer representation of
-          hexadecimal color code
-        type: integer
-      avatar:
-        description: |-
-          The hash of the user's avatar. Use Session.UserAvatar
-          to retrieve the avatar itself.
-        type: string
-      banner:
-        description: The hash of the user's banner image.
-        type: string
-      bot:
-        description: Whether the user is a bot.
-        type: boolean
-      discriminator:
-        description: The discriminator of the user (4 numbers after name).
-        type: string
-      email:
-        description: |-
-          The email of the user. This is only present when
-          the application possesses the email scope for the user.
-        type: string
-      flags:
-        description: |-
-          The flags on a user's account.
-          Only available when the request is authorized via a Bearer token.
-        type: integer
-      id:
-        description: The ID of the user.
-        type: string
-      locale:
-        description: The user's chosen language option.
-        type: string
-      mfa_enabled:
-        description: Whether the user has multi-factor authentication enabled.
-        type: boolean
-      premium_type:
-        description: |-
-          The type of Nitro subscription on a user's account.
-          Only available when the request is authorized via a Bearer token.
-        type: integer
-      public_flags:
-        description: |-
-          The public flags on a user's account.
-          This is a combination of bit masks; the presence of a certain flag can
-          be checked by performing a bitwise AND between this int and the flag.
-        type: integer
-      system:
-        description: Whether the user is an Official Discord System user (part of
-          the urgent message system).
-        type: boolean
-      token:
-        description: |-
-          The token of the user. This is only present for
-          the user represented by the current session.
-        type: string
-      username:
-        description: The user's username.
-        type: string
-      verified:
-        description: Whether the user's email is verified.
-        type: boolean
-    type: object
-  entities.LoginResponse:
-    properties:
-      access_token:
-        type: string
-      expires_at:
-        type: integer
-    type: object
   model.Activity:
     properties:
       guild_default:
@@ -524,81 +451,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  model.OffchainTipBotTransferHistory:
-    properties:
-      action:
-        type: string
-      amount:
-        type: number
-      created_at:
-        type: string
-      fee_amount:
-        type: number
-      guild_id:
-        type: string
-      id:
-        type: string
-      log_id:
-        type: string
-      receiver_id:
-        type: string
-      sender_id:
-        type: string
-      service_fee:
-        type: number
-      status:
-        type: string
-      token:
-        type: string
-      tx_hash:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  model.OnchainTipBotTransaction:
-    properties:
-      all:
-        type: boolean
-      amount:
-        type: number
-      channel_id:
-        type: string
-      claimed_at:
-        type: string
-      created_at:
-        type: string
-      duration:
-        type: integer
-      each:
-        type: boolean
-      full_command:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: integer
-      image:
-        type: string
-      message:
-        type: string
-      recipient_address:
-        type: string
-      recipients:
-        type: string
-      sender:
-        type: string
-      string:
-        description: (pending, claimed)
-        type: string
-      token_symbol:
-        type: string
-      transfer_type:
-        type: string
-      tx_hash:
-        type: string
-      updated_at:
-        type: string
-    type: object
   model.ProductMetadataEmojis:
     properties:
       code:
@@ -996,15 +848,6 @@ definitions:
     - guild_id
     - user_discord_id
     type: object
-  request.ClaimOnchainTransferRequest:
-    properties:
-      address:
-        type: string
-      claim_id:
-        type: integer
-      user_id:
-        type: string
-    type: object
   request.ClaimQuestsRewardsRequest:
     properties:
       quest_id:
@@ -1040,7 +883,7 @@ definitions:
         type: array
       group_name:
         type: string
-      guild_id:
+      guildID:
         type: string
       number_of_tokens:
         type: integer
@@ -1049,7 +892,7 @@ definitions:
     type: object
   request.ConfigLevelRoleRequest:
     properties:
-      guild_id:
+      guildID:
         type: string
       level:
         type: integer
@@ -1077,25 +920,19 @@ definitions:
     type: object
   request.CreateDefaultRoleRequest:
     properties:
-      guild_id:
+      guildID:
         type: string
       role_id:
         type: string
-    required:
-    - guild_id
-    - role_id
     type: object
   request.CreateGuildAdminRoleRequest:
     properties:
-      guild_id:
+      guildID:
         type: string
       role_ids:
         items:
           type: string
         type: array
-    required:
-    - guild_id
-    - role_ids
     type: object
   request.CreateGuildTokenRole:
     properties:
@@ -1105,16 +942,10 @@ definitions:
         type: number
       chain:
         type: string
-      guild_id:
+      guildID:
         type: string
       role_id:
         type: string
-    required:
-    - address
-    - amount
-    - chain
-    - guild_id
-    - role_id
     type: object
   request.CreateNFTCollectionRequest:
     properties:
@@ -1270,11 +1101,6 @@ definitions:
       guild_id:
         type: string
     type: object
-  request.LoginRequest:
-    properties:
-      access_token:
-        type: string
-    type: object
   request.NewGuildConfigWalletVerificationMessageRequest:
     properties:
       content:
@@ -1340,7 +1166,7 @@ definitions:
     properties:
       channel_id:
         type: string
-      guild_id:
+      guildID:
         type: string
       message_id:
         type: string
@@ -1617,30 +1443,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.GasTrackerResponse'
-    type: object
-  response.ClaimOnchainTransfer:
-    properties:
-      amount:
-        type: number
-      amount_in_usd:
-        type: number
-      recipient_address:
-        type: string
-      recipient_id:
-        type: string
-      sender_id:
-        type: string
-      symbol:
-        type: string
-      tx_hash:
-        type: string
-      tx_url:
-        type: string
-    type: object
-  response.ClaimOnchainTransferResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.ClaimOnchainTransfer'
     type: object
   response.ClaimQuestsRewardsResponse:
     properties:
@@ -1992,13 +1794,6 @@ definitions:
           $ref: '#/definitions/response.GasTrackerResponse'
         type: array
     type: object
-  response.GetAllUserSubmittedAdResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.GetAllUserSubmittedAdResponse'
-        type: array
-    type: object
   response.GetCoinResponse:
     properties:
       asset_platform:
@@ -2213,11 +2008,6 @@ definitions:
           $ref: '#/definitions/model.GuildConfigDefaultTicker'
         type: array
     type: object
-  response.GetMyInfoResponse:
-    properties:
-      data:
-        $ref: '#/definitions/discordgo.User'
-    type: object
   response.GetNFTActivityData:
     properties:
       data:
@@ -2302,13 +2092,6 @@ definitions:
           $ref: '#/definitions/response.GetNftWatchlist'
         type: array
     type: object
-  response.GetOnchainTransfersResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.OnchainTipBotTransaction'
-        type: array
-    type: object
   response.GetOneWalletResponse:
     properties:
       data:
@@ -2379,13 +2162,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2414,28 +2197,6 @@ definitions:
     properties:
       item:
         $ref: '#/definitions/response.Coin'
-    type: object
-  response.GetUserBalances:
-    properties:
-      balances:
-        type: number
-      balances_in_usd:
-        type: number
-      id:
-        type: string
-      name:
-        type: string
-      rate_in_usd:
-        type: number
-      symbol:
-        type: string
-    type: object
-  response.GetUserBalancesResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.GetUserBalances'
-        type: array
     type: object
   response.GetUserCurrentGMStreakResponse:
     properties:
@@ -2476,27 +2237,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.User'
-    type: object
-  response.GetUserSubmittedAdResponse:
-    properties:
-      ad_channel_id:
-        type: string
-      creator_id:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      image:
-        type: string
-      introduction:
-        type: string
-      is_podtown_ad:
-        type: boolean
-      name:
-        type: string
-      string:
-        type: string
     type: object
   response.GetVaultsResponse:
     properties:
@@ -2926,13 +2666,6 @@ definitions:
       updated_at:
         type: string
       user_discord_id:
-        type: string
-    type: object
-  response.LogoutResponse:
-    properties:
-      message:
-        type: string
-      status:
         type: string
     type: object
   response.MarketData:
@@ -3494,22 +3227,10 @@ definitions:
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
     type: object
-  response.TransactionsResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.OffchainTipBotTransferHistory'
-        type: array
-    type: object
   response.UnlinkBinance:
     properties:
       message:
         type: string
-    type: object
-  response.UpdateGuildTokenRole:
-    properties:
-      data:
-        $ref: '#/definitions/model.GuildConfigTokenRole'
     type: object
   response.UpdateUserFeedbackResponse:
     properties:
@@ -3543,13 +3264,6 @@ definitions:
         type: integer
       total:
         type: integer
-    type: object
-  response.UserTransactionResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.OffchainTipBotTransferHistory'
-        type: array
     type: object
   util.Pagination:
     properties:
@@ -3639,158 +3353,6 @@ paths:
       summary: Unlink binance
       tags:
       - ApiKey
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: Login
-      parameters:
-      - description: Login request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.LoginResponse'
-      summary: Login
-      tags:
-      - Auth
-  /auth/logout:
-    post:
-      consumes:
-      - application/json
-      description: Logout
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.LogoutResponse'
-      summary: Logout
-      tags:
-      - Auth
-  /community/advertise:
-    delete:
-      consumes:
-      - application/json
-      description: Delete ad submission
-      parameters:
-      - in: query
-        name: id
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete ad submission
-      tags:
-      - Community
-    get:
-      consumes:
-      - application/json
-      description: Get submitted ad
-      parameters:
-      - description: ad's id, or 'random'
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserSubmittedAdResponse'
-      summary: Get submitted ad
-      tags:
-      - Community
-    post:
-      consumes:
-      - application/json
-      description: Create ad submission
-      parameters:
-      - in: query
-        name: creator_id
-        type: string
-      - in: query
-        name: description
-        type: string
-      - in: query
-        name: image
-        type: string
-      - in: query
-        name: introduction
-        type: string
-      - in: query
-        name: is_podtown_ad
-        type: boolean
-      - in: query
-        name: name
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Create ad submission
-      tags:
-      - Community
-    put:
-      consumes:
-      - application/json
-      description: Update ad submission
-      parameters:
-      - in: query
-        name: id
-        type: integer
-      - in: query
-        name: status
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Update ad submission
-      tags:
-      - Community
-  /community/advertise/init:
-    post:
-      consumes:
-      - application/json
-      description: Init ad submission
-      parameters:
-      - in: query
-        name: channel_id
-        type: string
-      - in: query
-        name: guild_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Init ad submission
-      tags:
-      - Community
   /community/feedback:
     get:
       consumes:
@@ -4723,7 +4285,29 @@ paths:
       summary: Config Default token
       tags:
       - ConfigDefi
-  /config-roles/admin-roles:
+  /config-roles/reaction-roles/filter:
+    post:
+      consumes:
+      - application/json
+      description: Filter config by reaction
+      parameters:
+      - description: Filter config by reaction request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RoleReactionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DataFilterConfigByReaction'
+      summary: Filter config by reaction
+      tags:
+      - ConfigRole
+  /config/role/{guild_id}/admin:
     get:
       consumes:
       - application/json
@@ -4765,7 +4349,7 @@ paths:
       summary: Create guild admin role config
       tags:
       - ConfigRole
-  /config-roles/admin-roles/{id}:
+  /config/role/{guild_id}/admin/{id}:
     delete:
       consumes:
       - application/json
@@ -4786,7 +4370,7 @@ paths:
       summary: Remove guild admin role config
       tags:
       - ConfigRole
-  /config-roles/default-roles:
+  /config/role/{guild_id}/default:
     delete:
       consumes:
       - application/json
@@ -4848,29 +4432,7 @@ paths:
       summary: Create default role
       tags:
       - ConfigRole
-  /config-roles/level-roles:
-    post:
-      consumes:
-      - application/json
-      description: Config level role
-      parameters:
-      - description: Config level role request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ConfigLevelRoleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Config Level role
-      tags:
-      - ConfigRole
-  /config-roles/level-roles/{guild_id}:
+  /config/role/{guild_id}/level:
     delete:
       consumes:
       - application/json
@@ -4911,7 +4473,28 @@ paths:
       summary: Get level role config
       tags:
       - ConfigRole
-  /config-roles/nft-roles:
+    post:
+      consumes:
+      - application/json
+      description: Config level role
+      parameters:
+      - description: Config level role request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConfigLevelRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Config Level role
+      tags:
+      - ConfigRole
+  /config/role/{guild_id}/nft:
     delete:
       consumes:
       - application/json
@@ -4973,7 +4556,7 @@ paths:
       summary: New guild nft role
       tags:
       - ConfigRole
-  /config-roles/nft-roles/group:
+  /config/role/{guild_id}/nft/group:
     delete:
       consumes:
       - application/json
@@ -4994,7 +4577,7 @@ paths:
       summary: Remove guild group nft role
       tags:
       - ConfigRole
-  /config-roles/reaction-roles:
+  /config/role/{guild_id}/reaction:
     delete:
       consumes:
       - application/json
@@ -5057,29 +4640,27 @@ paths:
       summary: Add reaction role config
       tags:
       - ConfigRole
-  /config-roles/reaction-roles/filter:
-    post:
+  /config/role/{guild_id}/token:
+    get:
       consumes:
       - application/json
-      description: Filter config by reaction
+      description: Get list token role config of guild
       parameters:
-      - description: Filter config by reaction request
-        in: body
-        name: Request
+      - description: Guild ID
+        in: path
+        name: guild_id
         required: true
-        schema:
-          $ref: '#/definitions/request.RoleReactionRequest'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.DataFilterConfigByReaction'
-      summary: Filter config by reaction
+            $ref: '#/definitions/response.ListGuildTokenRoles'
+      summary: Get list token role config of guild
       tags:
       - ConfigRole
-  /config-roles/token-roles:
     post:
       consumes:
       - application/json
@@ -5101,28 +4682,7 @@ paths:
       summary: Create guild token role config
       tags:
       - ConfigRole
-  /config-roles/token-roles/{guild_id}:
-    get:
-      consumes:
-      - application/json
-      description: Get list token role config of guild
-      parameters:
-      - description: Guild ID
-        in: path
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ListGuildTokenRoles'
-      summary: Get list token role config of guild
-      tags:
-      - ConfigRole
-  /config-roles/token-roles/{id}:
+  /config/role/{guild_id}/token/{id}:
     delete:
       consumes:
       - application/json
@@ -5141,26 +4701,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Remove guild token role config
-      tags:
-      - ConfigRole
-    put:
-      consumes:
-      - application/json
-      description: Update guild token role config
-      parameters:
-      - description: Config ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UpdateGuildTokenRole'
-      summary: Update guild token role config
       tags:
       - ConfigRole
   /configs/nft-roles/group:
@@ -6697,102 +6237,6 @@ paths:
       summary: Get swap route for token pairs
       tags:
       - Swap
-  /tip/onchain/{user_id}/balances:
-    get:
-      consumes:
-      - application/json
-      description: Onchain Tip Bot - Get user's onchain balances
-      parameters:
-      - description: userId
-        in: path
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetUserBalancesResponse'
-      summary: Onchain Tip Bot - Get user's onchain balances
-      tags:
-      - Tip
-  /tip/onchain/{user_id}/transfers:
-    get:
-      consumes:
-      - application/json
-      description: Onchain Tip Bot - Get user's onchain transfers
-      parameters:
-      - description: userId
-        in: query
-        name: user_id
-        type: string
-      - description: status
-        in: query
-        name: status
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetOnchainTransfersResponse'
-      summary: Onchain Tip Bot - Get user's onchain transfers
-      tags:
-      - Tip
-  /tip/onchain/claim:
-    post:
-      consumes:
-      - application/json
-      description: Onchain Tip Bot - Submit transfer transaction
-      parameters:
-      - description: req
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.ClaimOnchainTransferRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ClaimOnchainTransferResponse'
-      summary: Onchain Tip Bot - Submit transfer transaction
-      tags:
-      - Tip
-  /tip/transactions:
-    get:
-      consumes:
-      - application/json
-      description: Get transactions by query
-      parameters:
-      - description: sender ID
-        in: query
-        name: sender_id
-        type: string
-      - description: receiver ID
-        in: query
-        name: receiver_id
-        type: string
-      - description: token
-        in: query
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TransactionsResponse'
-      summary: Get transactions by query
-      tags:
-      - Tip
   /tip/transfer:
     post:
       consumes:
@@ -7009,27 +6453,6 @@ paths:
       summary: Delete profile airdrop campaign
       tags:
       - Airdrop-campaigns
-  /users/{id}/transactions:
-    get:
-      consumes:
-      - application/json
-      description: Get user transaction
-      parameters:
-      - description: user discord ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.UserTransactionResponse'
-      summary: Get user transaction
-      tags:
-      - User
   /users/{id}/watchlists/wallets:
     get:
       consumes:
@@ -7155,27 +6578,6 @@ paths:
           schema:
             $ref: '#/definitions/response.GetUserCurrentGMStreakResponse'
       summary: Get user current GM streak
-      tags:
-      - User
-  /users/me:
-    get:
-      consumes:
-      - application/json
-      description: Get user info
-      parameters:
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetMyInfoResponse'
-      summary: Get user info
       tags:
       - User
   /users/profiles/:

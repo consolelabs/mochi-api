@@ -37,9 +37,9 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.DataListRoleReactionResponse
-// @Router      /config-roles/reaction-roles [get]
+// @Router      /config/role/{guild_id}/reaction [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
-	guildID := c.Query("guild_id")
+	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetAllRoleReactionConfigs] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
@@ -64,9 +64,15 @@ func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.RoleReactionUpdateRequest true "Add reaction role config request"
 // @Success     200 {object} response.RoleReactionConfigResponse
-// @Router      /config-roles/reaction-roles [post]
+// @Router      /config/role/{guild_id}/reaction [post]
 func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
+
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
@@ -92,12 +98,18 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.RoleReactionUpdateRequest true "Remove reaction role config request"
 // @Success     200 {object} response.ResponseSucess
-// @Router      /config-roles/reaction-roles [delete]
+// @Router      /config/role/{guild_id}/reaction [delete]
 func (h *Handler) RemoveReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.RemoveReactionRoleConfig] - failed to read JSON")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -155,9 +167,9 @@ func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.DefaultRoleResponse
-// @Router      /config-roles/default-roles [get]
+// @Router      /config/role/{guild_id}/default [get]
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
-	guildID := c.Query("guild_id")
+	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.GetDefaultRolesByGuildID] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
@@ -182,9 +194,15 @@ func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.CreateDefaultRoleRequest true "Create default role request"
 // @Success     200 {object} response.DefaultRoleResponse
-// @Router      /config-roles/default-roles [post]
+// @Router      /config/role/{guild_id}/default [post]
 func (h *Handler) CreateDefaultRole(c *gin.Context) {
 	body := request.CreateDefaultRoleRequest{}
+
+	if err := c.BindUri(&body); err != nil {
+		h.log.Fields(logger.Fields{"body": body}).Error(err, "[handler.CreateDefaultRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
 	if err := c.BindJSON(&body); err != nil {
 		h.log.Fields(logger.Fields{"body": body}).Error(err, "[handler.CreateDefaultRole] - failed to read JSON")
@@ -214,17 +232,18 @@ func (h *Handler) CreateDefaultRole(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ResponseSucess
-// @Router      /config-roles/default-roles [delete]
+// @Router      /config/role/{guild_id}/default [delete]
 func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.DeleteDefaultRoleByGuildID] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	body := request.CreateDefaultRoleRequest{}
+	if err := c.BindUri(&body); err != nil {
+		h.log.Fields(logger.Fields{"body": body}).Error(err, "[handler.CreateDefaultRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	err := h.entities.DeleteDefaultRoleConfig(guildID)
+
+	err := h.entities.DeleteDefaultRoleConfig(body.GuildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
+		h.log.Fields(logger.Fields{"guildID": body.GuildID}).Error(err, "[handler.DeleteDefaultRoleByGuildID] - failed to delete default role config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -240,9 +259,9 @@ func (h *Handler) DeleteDefaultRoleByGuildID(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ListGuildGroupNFTRolesResponse
-// @Router      /config-roles/nft-roles [get]
+// @Router      /config/role/{guild_id}/nft [get]
 func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
-	guildID := c.Query("guild_id")
+	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.ListGuildGroupNFTRoles] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
@@ -267,10 +286,15 @@ func (h *Handler) ListGuildGroupNFTRoles(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.ConfigGroupNFTRoleRequest true "New NFT role request"
 // @Success     200 {object} response.NewGuildGroupNFTRoleResponse
-// @Router      /config-roles/nft-roles [post]
+// @Router      /config/role/{guild_id}/nft [post]
 func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 	var req request.ConfigGroupNFTRoleRequest
 	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := c.BindUri(&req); err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
@@ -293,7 +317,7 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 // @Produce     json
 // @Param       config_ids  query string true "32951e68-9959-4e1d-88ca-22b442e19efe|45d06941-468b-4e5e-8b8f-d20c77c87805"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/nft-roles [delete]
+// @Router      /config/role/{guild_id}/nft [delete]
 func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 	configIDs := c.Query("config_ids")
 
@@ -316,7 +340,7 @@ func (h *Handler) RemoveGuildNFTRole(c *gin.Context) {
 // @Produce     json
 // @Param       group_config_id  query string true "Group config ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/nft-roles/group [delete]
+// @Router      /config/role/{guild_id}/nft/group [delete]
 func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 	groupConfigID := c.Query("group_config_id")
 
@@ -336,9 +360,14 @@ func (h *Handler) RemoveGuildGroupNFTRole(c *gin.Context) {
 // @Produce     json
 // @Param       Request  body request.ConfigLevelRoleRequest true "Config level role request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/level-roles [post]
+// @Router      /config/role/{guild_id}/level [post]
 func (h *Handler) ConfigLevelRole(c *gin.Context) {
 	var req request.ConfigLevelRoleRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -378,7 +407,7 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.GetLevelRoleConfigsResponse
-// @Router      /config-roles/level-roles/{guild_id} [get]
+// @Router      /config/role/{guild_id}/level [get]
 func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -405,7 +434,7 @@ func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/level-roles/{guild_id} [delete]
+// @Router      /config/role/{guild_id}/level [delete]
 func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -445,10 +474,15 @@ func (h *Handler) RemoveLevelRoleConfig(c *gin.Context) {
 // @Produce     json
 // @Param       Request   body  request.CreateGuildTokenRole true  "Create guild token role config request"
 // @Success     200 {object} response.CreateGuildTokenRole
-// @Router      /config-roles/token-roles [post]
+// @Router      /config/role/{guild_id}/token [post]
 func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
 	req := request.CreateGuildTokenRole{}
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := c.BindUri(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
@@ -511,7 +545,7 @@ func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   path  string true  "Guild ID"
 // @Success     200 {object} response.ListGuildTokenRoles
-// @Router      /config-roles/token-roles/{guild_id} [get]
+// @Router      /config/role/{guild_id}/token [get]
 func (h *Handler) ListGuildTokenRoles(c *gin.Context) {
 	guildID := c.Param("guild_id")
 	if guildID == "" {
@@ -543,50 +577,6 @@ func (h *Handler) ListGuildTokenRoles(c *gin.Context) {
 	}))
 }
 
-// UpdateGuildTokenRole     godoc
-// @Summary     Update guild token role config
-// @Description Update guild token role config
-// @Tags        ConfigRole
-// @Accept      json
-// @Produce     json
-// @Param       id path  int true  "Config ID"
-// @Success     200 {object} response.UpdateGuildTokenRole
-// @Router      /config-roles/token-roles/{id} [put]
-func (h *Handler) UpdateGuildTokenRole(c *gin.Context) {
-	idStr := c.Param("id")
-	if idStr == "" {
-		h.log.Info("[handler.UpdateGuildTokenRole] - id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("id is required"), nil))
-		return
-	}
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		h.log.Fields(logger.Fields{
-			"id": idStr,
-		}).Error(err, "[handler.UpdateGuildTokenRole] - strconv.Atoi failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid id"), nil))
-		return
-	}
-
-	req := request.UpdateGuildTokenRole{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateGuildTokenRole] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	config, err := h.entities.UpdateGuildTokenRole(id, req)
-	if err != nil {
-		h.log.Fields(logger.Fields{
-			"id": id, "req": req,
-		}).Error(err, "[handler.UpdateGuildTokenRole] - e.UpdateGuildTokenRole failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
-}
-
 // RemoveGuildTokenRole     godoc
 // @Summary     Remove guild token role config
 // @Description Remove guild token role config
@@ -595,7 +585,7 @@ func (h *Handler) UpdateGuildTokenRole(c *gin.Context) {
 // @Produce     json
 // @Param       id  path  int true  "Config ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/token-roles/{id} [delete]
+// @Router      /config/role/{guild_id}/token/{id} [delete]
 func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
 	idStr := c.Param("id")
 	if idStr == "" {
@@ -647,10 +637,15 @@ func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
 // @Produce     json
 // @Param       Request   body  request.CreateGuildAdminRoleRequest true  "Create guild admin role config request"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/admin-roles [post]
+// @Router      /config/role/{guild_id}/admin [post]
 func (h *Handler) CreateGuildAdminRoles(c *gin.Context) {
 	req := request.CreateGuildAdminRoleRequest{}
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildAdminRoles] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := c.BindUri(&req); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildAdminRoles] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
@@ -678,9 +673,9 @@ func (h *Handler) CreateGuildAdminRoles(c *gin.Context) {
 // @Produce     json
 // @Param       guild_id   query  string true  "Guild ID"
 // @Success     200 {object} response.ListGuildAdminRoles
-// @Router      /config-roles/admin-roles [get]
+// @Router      /config/role/{guild_id}/admin [get]
 func (h *Handler) ListGuildAdminRoles(c *gin.Context) {
-	guildID := c.Query("guild_id")
+	guildID := c.Param("guild_id")
 	if guildID == "" {
 		h.log.Info("[handler.ListGuildAdminRoles] - guild id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
@@ -705,7 +700,7 @@ func (h *Handler) ListGuildAdminRoles(c *gin.Context) {
 // @Produce     json
 // @Param       id  path  int true  "Config ID"
 // @Success     200 {object} response.ResponseMessage
-// @Router      /config-roles/admin-roles/{id} [delete]
+// @Router      /config/role/{guild_id}/admin/{id} [delete]
 func (h *Handler) RemoveGuildAdminRole(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)

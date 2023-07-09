@@ -7,7 +7,7 @@ type RoleReactionRequest struct {
 }
 
 type RoleReactionUpdateRequest struct {
-	GuildID   string `json:"guild_id"`
+	GuildID   string `uri:"guild_id"`
 	MessageID string `json:"message_id"`
 	ChannelID string `json:"channel_id"`
 	Reaction  string `json:"reaction"`

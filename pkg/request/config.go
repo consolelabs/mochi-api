@@ -47,13 +47,13 @@ type UpsertGuildTokenConfigRequest struct {
 }
 
 type ConfigLevelRoleRequest struct {
-	GuildID string `json:"guild_id"`
+	GuildID string `uri:"guild_id"`
 	RoleID  string `json:"role_id"`
 	Level   int    `json:"level"`
 }
 
 type ConfigGroupNFTRoleRequest struct {
-	GuildID           string   `json:"guild_id"`
+	GuildID           string   `uri:"guild_id"`
 	RoleID            string   `json:"role_id"`
 	GroupName         string   `json:"group_name"`
 	CollectionAddress []string `json:"collection_address"`
@@ -144,11 +144,11 @@ type UpsertGuildDefaultCurrencyRequest struct {
 }
 
 type CreateGuildTokenRole struct {
-	GuildID string  `json:"guild_id" binding:"required"`
-	RoleID  string  `json:"role_id" binding:"required"`
-	Chain   string  `json:"chain" binding:"required"`
-	Address string  `json:"address" binding:"required"`
-	Amount  float64 `json:"amount" binding:"required"`
+	GuildID string  `uri:"guild_id"`
+	RoleID  string  `json:"role_id"`
+	Chain   string  `json:"chain"`
+	Address string  `json:"address"`
+	Amount  float64 `json:"amount"`
 }
 
 type UpdateGuildTokenRole struct {
