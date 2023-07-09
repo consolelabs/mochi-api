@@ -6,7 +6,6 @@ type IHandler interface {
 	IndexUsers(c *gin.Context)
 	GetUser(c *gin.Context)
 	GetUserCurrentGMStreak(c *gin.Context)
-	GetMyInfo(c *gin.Context)
 	GetTopUsers(c *gin.Context)
 	GetUserProfile(c *gin.Context)
 

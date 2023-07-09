@@ -114,28 +114,6 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
-// GetMyInfo     godoc
-// @Summary     Get user info
-// @Description Get user info
-// @Tags        User
-// @Accept      json
-// @Produce     json
-// @Param       Authorization header   string true "Authorization"
-// @Success     200 {object} response.GetMyInfoResponse
-// @Router      /users/me [get]
-func (h *Handler) GetMyInfo(c *gin.Context) {
-	accessToken := c.GetString("discord_access_token")
-
-	du, err := h.entities.GetMyDiscordInfo(accessToken)
-	if err != nil {
-		h.log.Fields(logger.Fields{"token": accessToken}).Error(err, "[handler.GetMyInfo] - failed to get discord info")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse(du, nil, nil, nil))
-}
-
 // GetTopUsers     godoc
 // @Summary     Get top users
 // @Description Get top users
