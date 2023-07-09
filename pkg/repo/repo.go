@@ -21,7 +21,6 @@ import (
 	guildconfigdefaultticker "github.com/defipod/mochi/pkg/repo/guild_config_default_ticker"
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
-	guildconfigjoinleavechannel "github.com/defipod/mochi/pkg/repo/guild_config_join_leave_channel"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
@@ -92,7 +91,6 @@ type Repo struct {
 	GuildConfigDefaultRole               guildconfigdefaultrole.Store
 	GuildConfigDefaultCollection         guildconfigdefaultcollection.Store
 	GuildConfigLevelUpMessage            guildconfiglevelupmessage.Store
-	GuildConfigJoinLeaveChannel          guildconfigjoinleavechannel.Store
 	GuildConfigDefaultCurrency           guildconfigdefaultcurrency.Store
 	GuildConfigToken                     guildconfigtoken.Store
 	NFTCollection                        nftcollection.Store

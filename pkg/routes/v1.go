@@ -142,10 +142,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.POST("/tip-notify", h.ConfigChannel.CreateConfigNotify)
 		configChannelGroup.GET("/tip-notify", h.ConfigChannel.ListConfigNotify)
 		configChannelGroup.DELETE("/tip-notify/:id", h.ConfigChannel.DeleteConfigNotify)
-		// config join-leave channel
-		configChannelGroup.GET("/join-leave", h.ConfigChannel.GetJoinLeaveChannelConfig)
-		configChannelGroup.POST("/join-leave", h.ConfigChannel.UpsertJoinLeaveChannelConfig)
-		configChannelGroup.DELETE("/join-leave", h.ConfigChannel.DeleteJoinLeaveChannelConfig)
 	}
 
 	// TODO:
