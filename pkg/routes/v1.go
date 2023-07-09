@@ -21,16 +21,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	tipBotGroup := v1.Group("/tip")
 	{
-		// offchain tip bot
-		tipBotGroup.GET("/transactions", h.User.GetTransactionsByQuery)
 		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
-
-		onchainGroup := tipBotGroup.Group("/onchain")
-		{
-			onchainGroup.POST("/claim", h.Tip.ClaimOnchainTransfer)
-			onchainGroup.GET("/:user_id/transfers", h.Tip.GetOnchainTransfers)
-			onchainGroup.GET("/:user_id/balances", h.Tip.GetOnchainBalances)
-		}
 	}
 
 	guildGroup := v1.Group("/guilds")
@@ -48,8 +39,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
-		// TODO
-		userGroup.GET("/:id/transactions", h.User.GetUserTransaction)
 		// TODO
 		userGroup.GET("/top", h.User.GetTopUsers)
 		// TODO

@@ -7,7 +7,9 @@
         "name": "Binance-Peg Dogecoin",
         "current_price": 0.1,
         "most_popular": false,
-        "detail_platforms": null
+        "detail_platforms": null,
+        "is_native": false,
+        "is_popular": false
       },
       {
         "id": "dogecoin",
@@ -15,7 +17,9 @@
         "name": "Dogecoin",
         "current_price": 0.2,
         "most_popular": true,
-        "detail_platforms": null
+        "detail_platforms": null,
+        "is_native": false,
+        "is_popular": false
       }
     ],
     "target_suggestions": null,
