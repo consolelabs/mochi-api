@@ -253,20 +253,6 @@ func (mr *MockServiceMockRecorder) NotifyStealFloorPrice(price, floor, url, name
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealFloorPrice", reflect.TypeOf((*MockService)(nil).NotifyStealFloorPrice), price, floor, url, name, image)
 }
 
-// ReplyUpvoteMessage mocks base method.
-func (m *MockService) ReplyUpvoteMessage(msg *response.SetUpvoteMessageCacheResponse, source string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReplyUpvoteMessage", msg, source)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ReplyUpvoteMessage indicates an expected call of ReplyUpvoteMessage.
-func (mr *MockServiceMockRecorder) ReplyUpvoteMessage(msg, source interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReplyUpvoteMessage", reflect.TypeOf((*MockService)(nil).ReplyUpvoteMessage), msg, source)
-}
-
 // SendDM mocks base method.
 func (m *MockService) SendDM(userID string, payload discordgo.MessageSend) error {
 	m.ctrl.T.Helper()
@@ -375,18 +361,4 @@ func (m *MockService) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, 
 func (mr *MockServiceMockRecorder) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRolesLog", reflect.TypeOf((*MockService)(nil).SendUpdateRolesLog), guildID, logChannelID, userID, roleID, _type)
-}
-
-// SendUpvoteMessage mocks base method.
-func (m *MockService) SendUpvoteMessage(discordID, source string, isStranger bool) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendUpvoteMessage", discordID, source, isStranger)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendUpvoteMessage indicates an expected call of SendUpvoteMessage.
-func (mr *MockServiceMockRecorder) SendUpvoteMessage(discordID, source, isStranger interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpvoteMessage", reflect.TypeOf((*MockService)(nil).SendUpvoteMessage), discordID, source, isStranger)
 }
