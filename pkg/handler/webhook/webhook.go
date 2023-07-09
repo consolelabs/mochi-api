@@ -75,10 +75,6 @@ func (h *Handler) handleGuildMemberAdd(c *gin.Context, data json.RawMessage) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	err = h.entities.HandleMemberAdd(&member)
-	if err != nil {
-		h.log.Info("[handler.handleGuildMemberAdd] - failed to send notification")
-	}
 }
 
 func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) {
@@ -93,13 +89,6 @@ func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) 
 	if err := discordgo.Unmarshal(byteData, &req); err != nil {
 		h.log.Info("[handler.handleGuildMemberRemove] - failed to unmarshal data")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err = h.entities.HandleMemberRemove(&req)
-	if err != nil {
-		h.log.Error(err, "[handler.handleGuildMemberRemove] - failed to handle guild member remove")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 

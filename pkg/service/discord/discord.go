@@ -466,39 +466,6 @@ func (d *Discord) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLe
 	return err
 }
 
-func (d *Discord) NotifyMemberLeave(req *request.MemberRemoveWebhookRequest, jlChannelID string) error {
-	msg := &discordgo.MessageEmbed{
-		Title:       "Say goodbye :wave:",
-		Description: fmt.Sprintf("%s has left the server :wave:", req.Username),
-		Color:       mochiErrorColor,
-		Footer:      &discordgo.MessageEmbedFooter{Text: "Leaving", IconURL: req.Avatar},
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-	}
-	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)
-	if err != nil {
-		d.log.Fields(logger.Fields{"req": req}).Error(err, "session.ChannelMessageSendEmbed() failed")
-		return err
-	}
-	return nil
-}
-
-func (d *Discord) NotifyMemberJoin(discordID, avatar, jlChannelID string, userCount int64) error {
-	postfix := util.NumberPostfix(int(userCount))
-	msg := &discordgo.MessageEmbed{
-		Title:       fmt.Sprintf("Welcome the %v%s member of your server :tada:", userCount, postfix),
-		Footer:      &discordgo.MessageEmbedFooter{Text: "Onboarding", IconURL: avatar},
-		Description: fmt.Sprintf("<@%s> has just joined your server. Give a heartwarming welcome :wave:", discordID),
-		Color:       mochiSuccessColor,
-		Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
-	}
-	_, err := d.session.ChannelMessageSendEmbed(jlChannelID, msg)
-	if err != nil {
-		d.log.Fields(logger.Fields{"discordID": discordID, "JLChannelID": jlChannelID}).Error(err, "session.ChannelMessageSendEmbed() failed")
-		return err
-	}
-	return nil
-}
-
 func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
 	title := "Feedback received."
 	if req.Command != "" {

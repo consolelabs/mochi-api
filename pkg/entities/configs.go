@@ -461,41 +461,6 @@ func (e *Entity) EditMessageRepost(req *request.EditMessageRepostRequest) error 
 	return nil
 }
 
-func (e *Entity) GetJoinLeaveChannelConfig(guildID string) (*model.GuildConfigJoinLeaveChannel, error) {
-	config, err := e.repo.GuildConfigJoinLeaveChannel.GetByGuildID(guildID)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
-		}
-		e.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[Entity][GetJoinLeaveChannelConfig] repo.GuildConfigJoinLeaveChannel.GetByGuildID failed")
-		return nil, err
-	}
-	return config, nil
-}
-
-func (e *Entity) UpsertJoinLeaveChannelConfig(req request.UpsertJoinLeaveChannelConfigRequest) (*model.GuildConfigJoinLeaveChannel, error) {
-	config, err := e.repo.GuildConfigJoinLeaveChannel.UpsertOne(&model.GuildConfigJoinLeaveChannel{
-		GuildID:   req.GuildID,
-		ChannelID: req.ChannelID,
-	})
-	if err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID, "channelID": req.ChannelID}).Error(err, "[Entity][UpsertJoinLeaveChannelConfig] repo.GuildConfigJoinLeaveChannel.UpsertOne failed")
-		return nil, err
-	}
-	return config, nil
-}
-
-func (e *Entity) DeleteJoinLeaveChannelConfig(req request.DeleteJoinLeaveChannelConfigRequest) error {
-	if err := e.repo.GuildConfigJoinLeaveChannel.DeleteOne(&model.GuildConfigJoinLeaveChannel{
-		GuildID: req.GuildID,
-	}); err != nil {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[Entity][DeleteJoinLeaveChannelConfig] repo.GuildConfigJoinLeaveChannel.DeleteOne failed")
-		return err
-	}
-
-	return nil
-}
-
 func (e *Entity) UpsertMonikerConfig(req request.UpsertMonikerConfigRequest) error {
 	token, err := e.repo.OffchainTipBotTokens.GetBySymbol(req.Token)
 	if err != nil {
