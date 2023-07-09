@@ -4,7 +4,6 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	airdropcampaign "github.com/defipod/mochi/pkg/handler/airdrop-campaign"
 	apikey "github.com/defipod/mochi/pkg/handler/api-key"
-	"github.com/defipod/mochi/pkg/handler/auth"
 	"github.com/defipod/mochi/pkg/handler/community"
 	"github.com/defipod/mochi/pkg/handler/config"
 	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
@@ -31,7 +30,6 @@ import (
 
 type Handler struct {
 	Healthcheck       healthz.IHandler
-	Auth              auth.IHandler
 	Community         community.IHandler
 	Guild             guild.IHandler
 	Config            config.IHandler
@@ -59,7 +57,6 @@ type Handler struct {
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
 	return &Handler{
 		Healthcheck:       healthz.New(),
-		Auth:              auth.New(entities, logger),
 		Community:         community.New(entities, logger),
 		Guild:             guild.New(entities, logger),
 		Config:            config.New(entities, logger),

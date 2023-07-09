@@ -13,11 +13,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	// API for Mpchi interface
 	v1 := r.Group("/api/v1")
 	v1.Use(middleware.WithAuthContext(cfg))
-	authGroup := v1.Group("/auth")
-	{
-		authGroup.POST("/login", h.Auth.Login)
-		authGroup.POST("/logout", h.Auth.Logout)
-	}
 
 	tipBotGroup := v1.Group("/tip")
 	{
@@ -35,7 +30,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 	userGroup := v1.Group("/users")
 	{
-		userGroup.GET("me", middleware.AuthGuard(cfg), h.User.GetMyInfo)
 		userGroup.POST("", h.User.IndexUsers)
 		userGroup.GET("/:id", h.User.GetUser)
 		userGroup.GET("/gmstreak", h.User.GetUserCurrentGMStreak)
