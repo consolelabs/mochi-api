@@ -171,3 +171,6 @@ func (r *UpsertGuildConfigTipRangeRequest) Validate() error {
 
 	return nil
 }
+
+type ConfigLogChannelRequest struct {
+}

@@ -309,3 +309,11 @@ func (h *Handler) DeleteConfigNotify(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+func (h *Handler) CreateGuildConfigLogChannel(c *gin.Context) {
+
+}
+
+func (h *Handler) GetGuildConfigLogChannel(c *gin.Context) {
+
+}

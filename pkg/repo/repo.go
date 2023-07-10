@@ -23,6 +23,7 @@ import (
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
 	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
+	guildconfiglogchannel "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
 	guildconfigsalestracker "github.com/defipod/mochi/pkg/repo/guild_config_sales_tracker"
@@ -54,8 +55,6 @@ import (
 	questuserlog "github.com/defipod/mochi/pkg/repo/quest_user_log"
 	questuserpass "github.com/defipod/mochi/pkg/repo/quest_user_pass"
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
-	salebotmarketplace "github.com/defipod/mochi/pkg/repo/sale_bot_marketplace"
-	salebottwitterconfig "github.com/defipod/mochi/pkg/repo/sale_bot_twitter_config"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
@@ -127,8 +126,6 @@ type Repo struct {
 	NftAddRequestHistory                 nftaddrequesthistory.Store
 	GuildConfigTokenRole                 guildconfigtokenrole.Store
 	Emojis                               emojis.Store
-	SaleBotMarketplace                   salebotmarketplace.Store
-	SaleBotTwitterConfig                 salebottwitterconfig.Store
 	GuildConfigAdminRole                 guildconfigadminrole.Store
 	UserWalletWatchlistItem              userwalletwatchlistitem.Store
 	UserTokenPriceAlert                  usertokenpricealert.Store
@@ -149,4 +146,5 @@ type Repo struct {
 	AutoTrigger                          autoTrigger.Store
 	AutoActionHistory                    autoActionHistory.Store
 	CoingeckoInfo                        coingeckoinfo.Store
+	GuildConfigLogChannel                guildconfiglogchannel.Store
 }
