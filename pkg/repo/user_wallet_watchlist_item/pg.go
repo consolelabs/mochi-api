@@ -20,8 +20,8 @@ func NewPG(db *gorm.DB) Store {
 func (pg *pg) List(q ListQuery) ([]model.UserWalletWatchlistItem, error) {
 	var items []model.UserWalletWatchlistItem
 	db := pg.db
-	if q.UserID != "" {
-		db = db.Where("user_id = ?", q.UserID)
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
 	}
 	if q.IsOwner != nil {
 		db = db.Where("is_owner = ?", *q.IsOwner)
@@ -34,7 +34,7 @@ func (pg *pg) GetOne(q GetOneQuery) (*model.UserWalletWatchlistItem, error) {
 
 	q.Query = strings.ToLower(q.Query)
 
-	query := pg.db.Where("user_id = ?", q.UserID).Where("lower(address) = ? OR lower(alias) = ?", q.Query, q.Query)
+	query := pg.db.Where("profile_id = ?", q.ProfileID).Where("lower(address) = ? OR lower(alias) = ?", q.Query, q.Query)
 
 	if q.ForUpdate {
 		query = query.Clauses(clause.Locking{Strength: "UPDATE"})
@@ -51,7 +51,7 @@ func (pg *pg) Upsert(item *model.UserWalletWatchlistItem) error {
 	// return pg.db.Create(item).Error
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "user_id"}, {Name: "address"}},
+		Columns:   []clause.Column{{Name: "profile_id"}, {Name: "address"}},
 		DoUpdates: clause.AssignmentColumns([]string{"alias", "type"}),
 	}).Create(item).Error
 	if err != nil {
@@ -62,7 +62,7 @@ func (pg *pg) Upsert(item *model.UserWalletWatchlistItem) error {
 }
 
 func (pg *pg) Remove(q DeleteQuery) error {
-	db := pg.db.Where("user_id = ?", q.UserID)
+	db := pg.db.Where("profile_id = ?", q.ProfileID)
 	if q.Address != "" {
 		db = db.Where("address = ?", q.Address)
 	}
@@ -72,14 +72,14 @@ func (pg *pg) Remove(q DeleteQuery) error {
 	return db.Delete(&model.UserWalletWatchlistItem{}).Error
 }
 
-func (pg *pg) UpdateOwnerFlag(userID, address string, isOwner bool) error {
-	return pg.db.Model(&model.UserWalletWatchlistItem{}).Where("user_id = ? AND address = ?", userID, address).Update("is_owner", isOwner).Error
+func (pg *pg) UpdateOwnerFlag(profileID, address string, isOwner bool) error {
+	return pg.db.Model(&model.UserWalletWatchlistItem{}).Where("profile_id = ? AND address = ?", profileID, address).Update("is_owner", isOwner).Error
 }
 
 func (pg *pg) Update(item *model.UserWalletWatchlistItem) error {
 	return pg.db.
 		Model(&model.UserWalletWatchlistItem{}).
 		Select("alias"). // This is just a trick to update with zero values
-		Where("user_id = ? AND address = ?", item.UserID, item.Address).
+		Where("profile_id = ? AND address = ?", item.ProfileID, item.Address).
 		Updates(item).Error
 }

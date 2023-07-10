@@ -30,7 +30,7 @@ func (n *Nghenhan) GetFiatHistoricalChart(base, target, interval string, limit i
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
-		return nil, fmt.Errorf("[nghenhan.GetFiatHistoricalChart] util.SendRequest() failed: %v", err)
+		return nil, fmt.Errorf("[nghenhan.GetFiatHistoricalChart] util.SendRequest() failed for pair %s-%s: %v", base, target, err)
 	}
 	return &data, nil
 }

@@ -27,11 +27,11 @@ import (
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*model.UserWalletWatchlist, error) {
-	listQ := userwalletwatchlistitem.ListQuery{UserID: req.UserID, IsOwner: &req.IsOwner}
+	listQ := userwalletwatchlistitem.ListQuery{ProfileID: req.ProfileID, IsOwner: &req.IsOwner}
 
 	wallets, err := e.repo.UserWalletWatchlistItem.List(listQ)
 	if err != nil {
-		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.List() failed")
+		e.log.Fields(logger.Fields{"userID": req.ProfileID}).Error(err, "[entity.GetTrackingWallets] repo.UserWalletWatchlistItem.List() failed")
 		return nil, err
 	}
 
@@ -138,9 +138,9 @@ func (e *Entity) calculateTokenBalance(item covalent.TokenBalanceItem, chainID i
 
 func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalletWatchlistItem, error) {
 	req.Standardize()
-	wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: req.UserID, Query: req.AliasOrAddress})
+	wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{ProfileID: req.ProfileID, Query: req.AliasOrAddress})
 	if err != nil {
-		e.log.Fields(logger.Fields{"userID": req.UserID}).Error(err, "[entity.GetOneWallet] repo.UserWalletWatchlistItem.GetOne() failed")
+		e.log.Fields(logger.Fields{"userID": req.ProfileID}).Error(err, "[entity.GetOneWallet] repo.UserWalletWatchlistItem.GetOne() failed")
 		return nil, err
 	}
 	return wallet, nil
@@ -148,7 +148,7 @@ func (e *Entity) GetOneWallet(req request.GetOneWalletRequest) (*model.UserWalle
 
 func (e *Entity) TrackWallet(mod model.UserWalletWatchlistItem, channelID, messageID string) error {
 	if mod.Alias != "" {
-		wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: mod.UserID, Query: mod.Alias})
+		wallet, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{ProfileID: mod.ProfileID, Query: mod.Alias})
 		if err != nil && err != gorm.ErrRecordNotFound {
 			e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
 			return err
@@ -162,7 +162,7 @@ func (e *Entity) TrackWallet(mod model.UserWalletWatchlistItem, channelID, messa
 		}
 	}
 
-	existItem, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{UserID: mod.UserID, Query: mod.Address})
+	existItem, err := e.repo.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{ProfileID: mod.ProfileID, Query: mod.Address})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		e.log.Fields(logger.Fields{"mod": mod}).Error(err, "[entity.TrackWallet] repo.UserWalletWatchlistItem.GetOne() failed")
 		return err
@@ -220,7 +220,7 @@ func (e *Entity) notifyWalletAddition(mod model.UserWalletWatchlistItem, channel
 					discordgo.Button{
 						Label:    "Rename Label",
 						Style:    discordgo.SecondaryButton,
-						CustomID: fmt.Sprintf("wallet_rename-%s-%s", mod.UserID, mod.Address),
+						CustomID: fmt.Sprintf("wallet_rename-%s-%s", mod.ProfileID, mod.Address),
 						Emoji: discordgo.ComponentEmoji{
 							Name: "pencil",
 							ID:   util.GetEmojiID("pencil"),
@@ -229,7 +229,7 @@ func (e *Entity) notifyWalletAddition(mod model.UserWalletWatchlistItem, channel
 					discordgo.Button{
 						Label:    "Add More",
 						Style:    discordgo.SecondaryButton,
-						CustomID: fmt.Sprintf("wallet_add_more-%s", mod.UserID),
+						CustomID: fmt.Sprintf("wallet_add_more-%s", mod.ProfileID),
 						Emoji: discordgo.ComponentEmoji{
 							Name: "plus",
 							ID:   util.GetEmojiID("plus"),
@@ -248,9 +248,9 @@ func (e *Entity) notifyWalletAddition(mod model.UserWalletWatchlistItem, channel
 
 func (e *Entity) UntrackWallet(req request.UntrackWalletRequest) error {
 	return e.repo.UserWalletWatchlistItem.Remove(userwalletwatchlistitem.DeleteQuery{
-		UserID:  req.UserID,
-		Address: req.Address,
-		Alias:   req.Alias,
+		ProfileID: req.ProfileID,
+		Address:   req.Address,
+		Alias:     req.Alias,
 	})
 }
 
@@ -1288,7 +1288,7 @@ func (e *Entity) UpdateTrackingInfo(req request.UpdateTrackingInfoRequest) (*mod
 	)
 	if req.Alias != "" {
 		wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
-			UserID:    req.UserID,
+			ProfileID: req.ProfileID,
 			Query:     req.Alias,
 			ForUpdate: false,
 		})
@@ -1304,7 +1304,7 @@ func (e *Entity) UpdateTrackingInfo(req request.UpdateTrackingInfoRequest) (*mod
 	}
 
 	wallet, err = tx.UserWalletWatchlistItem.GetOne(userwalletwatchlistitem.GetOneQuery{
-		UserID:    req.UserID,
+		ProfileID: req.ProfileID,
 		Query:     req.Address,
 		ForUpdate: true,
 	})

@@ -1,9 +1,9 @@
-package userwatchlistitem
+package usertokenwatchlistitem
 
 import "github.com/defipod/mochi/pkg/model"
 
 type UserWatchlistQuery struct {
-	UserID      string
+	ProfileID   string
 	CoinGeckoID string
 	Symbol      string
 	Limit       int
@@ -17,8 +17,8 @@ type CountQuery struct {
 }
 
 type Store interface {
-	List(q UserWatchlistQuery) (items []model.UserWatchlistItem, total int64, err error)
-	Create(item *model.UserWatchlistItem) error
-	Delete(userID, symbol string) (rows int64, err error)
+	List(q UserWatchlistQuery) (items []model.UserTokenWatchlistItem, total int64, err error)
+	Create(item *model.UserTokenWatchlistItem) error
+	Delete(profileID, symbol string) (rows int64, err error)
 	Count(CountQuery) (count int64, err error)
 }

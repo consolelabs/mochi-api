@@ -7,23 +7,23 @@ import (
 	"github.com/defipod/mochi/pkg/model/errors"
 )
 
-type WalletBaseRequest struct {
-	UserID string `uri:"id" binding:"required" json:"-"`
+type WatchlistBaseRequest struct {
+	ProfileID string `uri:"id" binding:"required" json:"-"`
 }
 
 type GetTrackingWalletsRequest struct {
-	WalletBaseRequest
-	IsOwner bool   `json:"-"`
-	GuildID string `json:"-"`
+	ProfileID string
+	IsOwner   bool   `json:"-"`
+	GuildID   string `json:"-"`
 }
 
 type GetOneWalletRequest struct {
-	WalletBaseRequest
+	WatchlistBaseRequest
 	AliasOrAddress string `uri:"address" binding:"required"`
 }
 
 type TrackWalletRequest struct {
-	UserID    string `json:"-"`
+	ProfileID string `json:"-"`
 	Address   string `json:"address" binding:"required"`
 	Alias     string `json:"alias"`
 	ChainType string `json:"chain_type" binding:"required"`
@@ -45,7 +45,7 @@ func (req TrackWalletRequest) RequestToUserWalletWatchlistItemModel() (model.Use
 	}
 
 	return model.UserWalletWatchlistItem{
-		UserID:    req.UserID,
+		ProfileID: req.ProfileID,
 		Address:   req.Address,
 		Alias:     req.Alias,
 		ChainType: chainType,
@@ -55,19 +55,19 @@ func (req TrackWalletRequest) RequestToUserWalletWatchlistItemModel() (model.Use
 }
 
 type UntrackWalletRequest struct {
-	UserID  string `json:"user_id" binding:"required"`
+	WatchlistBaseRequest
 	Address string `json:"address"`
 	Alias   string `json:"alias"`
 }
 
 type ListWalletAssetsRequest struct {
-	WalletBaseRequest
+	WatchlistBaseRequest
 	Address string `uri:"address" binding:"required"`
 	Type    string `uri:"type" binding:"required"`
 }
 
 type ListWalletTransactionsRequest struct {
-	WalletBaseRequest
+	WatchlistBaseRequest
 	Address string `uri:"address" binding:"required"`
 	Type    string `uri:"type" binding:"required"`
 }
@@ -110,7 +110,7 @@ func (r *TrackWalletRequest) Standardize() {
 }
 
 type UpdateTrackingInfoRequest struct {
-	WalletBaseRequest
+	WatchlistBaseRequest
 	Address string `uri:"address" binding:"required" json:"-"`
 	// Request body, only update the following fields
 	Alias string `json:"alias"`

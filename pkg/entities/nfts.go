@@ -1028,7 +1028,7 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 		return nil, err
 	}
 	chainID, _ := strconv.Atoi(collection.ChainID)
-	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, UserID: req.UserID, ChainID: collection.ChainID, Symbol: collection.Symbol}
+	listQ := usernftwatchlistitem.UserNftWatchlistQuery{CollectionAddress: req.CollectionAddress, ProfileID: req.ProfileID, ChainID: collection.ChainID, Symbol: collection.Symbol}
 	_, total, err := e.repo.UserNftWatchlistItem.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddNftToWatchlist] repo.UserWatchlistItem.List() failed")
@@ -1039,7 +1039,7 @@ func (e *Entity) AddNftWatchlist(req request.AddNftWatchlistRequest) (*response.
 	}
 
 	err = e.repo.UserNftWatchlistItem.Create(&model.UserNftWatchlistItem{
-		UserID:            req.UserID,
+		ProfileID:         req.ProfileID,
 		Symbol:            collection.Symbol,
 		CollectionAddress: collection.Address,
 		ChainId:           int64(chainID),
@@ -1116,7 +1116,7 @@ func (e *Entity) SuggestCollection(req request.AddNftWatchlistRequest) (*respons
 }
 
 func (e *Entity) DeleteNftWatchlist(req request.DeleteNftWatchlistRequest) error {
-	rows, err := e.repo.UserNftWatchlistItem.Delete(req.UserID, req.Symbol)
+	rows, err := e.repo.UserNftWatchlistItem.Delete(req.ProfileID, req.Symbol)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.DeleteNftWatchlist] repo.UserNftWatchlistItem.Delete() failed")
 	}
@@ -1127,11 +1127,11 @@ func (e *Entity) DeleteNftWatchlist(req request.DeleteNftWatchlistRequest) error
 	return err
 }
 
-func (e *Entity) GetNftWatchlist(req *request.GetNftWatchlistRequest) (*response.GetNftWatchlistResponse, error) {
+func (e *Entity) GetNftWatchlist(req *request.ListTrackingNftsRequest) (*response.GetNftWatchlistResponse, error) {
 	q := usernftwatchlistitem.UserNftWatchlistQuery{
-		UserID: req.UserID,
-		Offset: req.Page * req.Size,
-		Limit:  req.Size,
+		ProfileID: req.ProfileID,
+		Offset:    req.Page * req.Size,
+		Limit:     req.Size,
 	}
 	list, _, err := e.repo.UserNftWatchlistItem.List(q)
 	if err != nil {

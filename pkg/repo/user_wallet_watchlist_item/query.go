@@ -1,18 +1,18 @@
 package userwalletwatchlistitem
 
 type ListQuery struct {
-	UserID  string
-	IsOwner *bool
+	ProfileID string
+	IsOwner   *bool
 }
 
 type GetOneQuery struct {
-	UserID    string
+	ProfileID string
 	Query     string
 	ForUpdate bool
 }
 
 type DeleteQuery struct {
-	UserID  string
-	Address string
-	Alias   string
+	ProfileID string
+	Address   string
+	Alias     string
 }
