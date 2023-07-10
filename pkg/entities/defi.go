@@ -358,6 +358,7 @@ func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedT
 		query = "skullswap-exchange"
 	}
 
+	// get list tokens
 	tokens, err := e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
@@ -368,20 +369,29 @@ func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedT
 		return []model.CoingeckoSupportedTokens{}, nil
 	}
 
+	// get default token
 	defaultToken, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildId, query)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery() failed")
 		return nil, err
 	}
 
+	// get list tokens symbol
+	listCoingeckoIds := make([]string, 0)
+	for _, t := range tokens {
+		listCoingeckoIds = append(listCoingeckoIds, t.ID)
+	}
+
+	// get prices of all tokens
+	prices, err := e.svc.CoinGecko.GetCoinPrice(listCoingeckoIds, "usd")
+	if err != nil {
+		e.log.Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinPrice() failed")
+		return nil, nil
+	}
+
 	largestToken := tokens[0]
 	var largestIdx int64
 	for i, t := range tokens {
-		prices, err := e.svc.CoinGecko.GetCoinPrice([]string{t.ID}, "usd")
-		if err != nil {
-			e.log.Fields(logger.Fields{"id": t.ID}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoinPrice() failed")
-			continue
-		}
 		tokens[i].CurrentPrice = prices[t.ID]
 
 		// for multiple tokens, check default ticker first
