@@ -12,9 +12,11 @@ type WatchlistBaseRequest struct {
 }
 
 type GetTrackingWalletsRequest struct {
-	ProfileID string
-	IsOwner   bool   `json:"-"`
-	GuildID   string `json:"-"`
+	ProfileID   string
+	IsOwner     bool   `json:"-"`
+	GuildID     string `json:"-"`
+	WithBalance bool   `form:"with_balance"`
+	Address     string `form:"address"`
 }
 
 type GetOneWalletRequest struct {

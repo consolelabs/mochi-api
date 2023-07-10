@@ -3,6 +3,7 @@ package watchlist
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -25,7 +26,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 	}
 }
 
-// ListTrackingWallets godoc
+// ListUserTrackingWallets godoc
 // @Summary     Get user's tracking wallets
 // @Description Get user's tracking wallets
 // @Tags        WatchList
@@ -34,7 +35,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Param       id   			path  string true  "profile ID"
 // @Success     200 {object} response.GetTrackingWalletsResponse
 // @Router      /users/{id}/watchlists/wallets [get]
-func (h *Handler) ListTrackingWallets(c *gin.Context) {
+func (h *Handler) ListUserTrackingWallets(c *gin.Context) {
 	var base request.WatchlistBaseRequest
 	if err := c.BindUri(&base); err != nil {
 		h.log.Error(err, "[handler.ListTrackingWallets] BindUri() failed")
@@ -42,7 +43,10 @@ func (h *Handler) ListTrackingWallets(c *gin.Context) {
 		return
 	}
 
-	req := request.GetTrackingWalletsRequest{ProfileID: base.ProfileID}
+	req := request.GetTrackingWalletsRequest{
+		ProfileID:   base.ProfileID,
+		WithBalance: true,
+	}
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")
@@ -390,4 +394,37 @@ func (h *Handler) UntrackNft(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": nil})
+}
+
+// ListTrackingWallets go doc
+// @Summary     Get tracking wallets
+// @Description Get tracking wallets
+// @Tags        WatchList
+// @Accept      json
+// @Produce     json
+// @Param 			address 	query  string false  "address"
+// @Param       with_balance	 query  bool false  "with balance"
+// @Success     200 {object} response.GetTrackingWalletsResponse
+// @Router      /watchlists/wallets [get]
+func (h *Handler) ListTrackingWallets(c *gin.Context) {
+	var (
+		req request.GetTrackingWalletsRequest
+		err error
+	)
+
+	req.WithBalance, err = strconv.ParseBool(c.Query("with_balance"))
+	if err != nil {
+		// Default false
+		req.WithBalance = false
+	}
+
+	req.Address = c.Query("address")
+
+	items, err := h.entities.GetTrackingWallets(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(items, nil, nil, nil))
 }

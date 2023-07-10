@@ -4,6 +4,7 @@ import "github.com/gin-gonic/gin"
 
 type IHandler interface {
 	// wallets
+	ListUserTrackingWallets(c *gin.Context)
 	ListTrackingWallets(c *gin.Context)
 	TrackWallet(c *gin.Context)
 	UntrackWallet(c *gin.Context)
