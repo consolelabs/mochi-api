@@ -11,7 +11,7 @@ UPDATE user_nft_watchlist_items SET profile_id = user_id WHERE user_id is not nu
 UPDATE user_wallet_watchlist_items SET profile_id = user_id WHERE user_id is not null;
 
 ALTER TABLE public.user_nft_watchlist_items
-    add constraint user_nft_watchlist_items_profile_id_symbol_collection_address__key
+    add constraint user_nft_watchlist_items_pid_symbol_collection_address__key
         unique (profile_id, symbol, collection_address, chain_id);
 ALTER TABLE public.user_wallet_watchlist_items
     add unique (profile_id, address);
