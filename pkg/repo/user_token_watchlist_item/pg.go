@@ -1,4 +1,4 @@
-package userwatchlistitem
+package usertokenwatchlistitem
 
 import (
 	"gorm.io/gorm"
@@ -14,12 +14,12 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) List(q UserWatchlistQuery) ([]model.UserWatchlistItem, int64, error) {
-	var items []model.UserWatchlistItem
+func (pg *pg) List(q UserWatchlistQuery) ([]model.UserTokenWatchlistItem, int64, error) {
+	var items []model.UserTokenWatchlistItem
 	var total int64
-	db := pg.db.Table("user_watchlist_items")
-	if q.UserID != "" {
-		db = db.Where("user_id = ?", q.UserID)
+	db := pg.db.Table("user_token_watchlist_items")
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
 	}
 	if q.CoinGeckoID != "" {
 		db = db.Where("coin_gecko_id = ?", q.CoinGeckoID)
@@ -34,17 +34,17 @@ func (pg *pg) List(q UserWatchlistQuery) ([]model.UserWatchlistItem, int64, erro
 	return items, total, db.Find(&items).Error
 }
 
-func (pg *pg) Create(item *model.UserWatchlistItem) error {
+func (pg *pg) Create(item *model.UserTokenWatchlistItem) error {
 	return pg.db.Create(item).Error
 }
 
-func (pg *pg) Delete(userID, symbol string) (int64, error) {
-	tx := pg.db.Where("user_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserWatchlistItem{})
+func (pg *pg) Delete(profileID, symbol string) (int64, error) {
+	tx := pg.db.Where("profile_id = ? AND symbol ILIKE ?", profileID, symbol).Delete(&model.UserTokenWatchlistItem{})
 	return tx.RowsAffected, tx.Error
 }
 
 func (pg *pg) Count(q CountQuery) (count int64, err error) {
-	db := pg.db.Model(&model.UserWatchlistItem{})
+	db := pg.db.Model(&model.UserTokenWatchlistItem{})
 	if q.CoingeckoId != "" {
 		db = db.Where("coin_gecko_id like ? OR coin_gecko_id like ? OR coin_gecko_id like ?", q.CoingeckoId, q.CoingeckoId+"/%", "%/"+q.CoingeckoId)
 	}

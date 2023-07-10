@@ -35,23 +35,23 @@ func (input *TransferRequest) Bind(c *gin.Context) (err error) {
 	return err
 }
 
-type GetUserWatchlistRequest struct {
-	UserID      string `json:"user_id" form:"user_id" binding:"required"`
+type ListTrackingTokensRequest struct {
+	ProfileID   string
 	CoinGeckoID string `json:"coin_gecko_id" form:"coin_gecko_id"`
-	Page        int    `json:"page" form:"page"`
-	Size        int    `json:"size" form:"size"`
+	Page        int    `json:"page" form:"page,default=0"`
+	Size        int    `json:"size" form:"size,default=16"`
 }
 
 type AddToWatchlistRequest struct {
-	UserID      string `json:"user_id"`
+	WatchlistBaseRequest
 	Symbol      string `json:"symbol"`
 	CoinGeckoID string `json:"coin_gecko_id"`
 	IsFiat      bool   `json:"is_fiat"`
 }
 
 type RemoveFromWatchlistRequest struct {
-	UserID string `json:"user_id" form:"user_id" binding:"required"`
-	Symbol string `json:"symbol" form:"symbol" binding:"required"`
+	WatchlistBaseRequest
+	Symbol string `json:"symbol" binding:"required"`
 }
 
 type GetFiatHistoricalExchangeRatesRequest struct {

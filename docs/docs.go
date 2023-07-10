@@ -622,88 +622,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/config-channels/join-leave": {
-            "get": {
-                "description": "Get join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Get join-leave channel config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "post": {
-                "description": "Update or insert join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Update or insert join-leave channel config",
-                "parameters": [
-                    {
-                        "description": "Upsert join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpsertJoinLeaveChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Delete join-leave channel config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigChannel"
-                ],
-                "summary": "Delete join-leave channel config",
-                "parameters": [
-                    {
-                        "description": "Delete join-leave channel config request",
-                        "name": "Request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.DeleteJoinLeaveChannelConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/config-channels/tip-notify": {
             "get": {
                 "description": "API get list config notify channel for token",
@@ -3025,119 +2943,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/watchlist": {
-            "get": {
-                "description": "Get user's watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Get user's watchlist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "coin_gecko_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetWatchlistResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add to user's watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Add to user's watchlist",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AddToWatchlistRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.AddToWatchlistResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove from user's watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Remove from user's watchlist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "symbol",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
         "/earns/airdrop-campaigns": {
             "get": {
                 "description": "Get Airdrop Campaign List",
@@ -4186,121 +3991,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/nfts/watchlist": {
-            "get": {
-                "description": "Get user's nft watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Get user's nft watchlist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user_id",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "page",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "size",
-                        "name": "size",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetNftWatchlistResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add to user's nft watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Add to user's nft watchlist",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.AddNftWatchlistRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.NftWatchlistSuggestResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove from user's nft watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "NFT"
-                ],
-                "summary": "Remove from user's nft watchlist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "symbol",
-                        "name": "symbol",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "user_id",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object"
-                        }
-                    }
-                }
-            }
-        },
         "/nfts/{symbol}/{id}": {
             "get": {
                 "description": "Get NFT Detail",
@@ -4600,52 +4290,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetTrackingWalletsResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Untrack a wallet",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Wallet"
-                ],
-                "summary": "Untrack a wallet",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "name": "address",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "alias",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
                         }
                     }
                 }
@@ -5001,6 +4645,247 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/watchlists/nfts": {
+            "get": {
+                "description": "Get user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Get user's nft watchlist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "profileID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetNftWatchlistResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/nfts/track": {
+            "post": {
+                "description": "Add to user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Add to user's nft watchlist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddNftWatchlistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.NftWatchlistSuggestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/nfts/untrack": {
+            "post": {
+                "description": "Remove from user's nft watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Remove from user's nft watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "profileID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/tokens": {
+            "get": {
+                "description": "Get user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Get user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "coin_gecko_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "profileID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetWatchlistResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/tokens/track": {
+            "post": {
+                "description": "Add to user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Add to user's watchlist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AddToWatchlistRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.AddToWatchlistResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/tokens/untrack": {
+            "post": {
+                "description": "Remove from user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Remove from user's watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "symbol",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/watchlists/wallets": {
             "get": {
                 "description": "Get user's tracking wallets",
@@ -5017,7 +4902,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user ID",
+                        "description": "profile ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -5062,6 +4947,48 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/request.TrackWalletRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/watchlists/wallets/untrack": {
+            "post": {
+                "description": "Untrack a wallet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Untrack a wallet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "alias",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -6496,10 +6423,10 @@ const docTemplate = `{
                 "net_worth": {
                     "type": "number"
                 },
-                "type": {
+                "profile_id": {
                     "type": "string"
                 },
-                "user_id": {
+                "type": {
                     "type": "string"
                 }
             }
@@ -6594,9 +6521,6 @@ const docTemplate = `{
                 },
                 "guild_id": {
                     "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
@@ -6610,9 +6534,6 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "symbol": {
-                    "type": "string"
-                },
-                "user_id": {
                     "type": "string"
                 }
             }
@@ -6959,14 +6880,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.DeleteJoinLeaveChannelConfigRequest": {
-            "type": "object",
-            "properties": {
-                "guild_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.DeleteMonikerConfigRequest": {
             "type": "object",
             "required": [
@@ -7011,7 +6924,12 @@ const docTemplate = `{
             }
         },
         "request.GetTrackingWalletsRequest": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "profileID": {
+                    "type": "string"
+                }
+            }
         },
         "request.GuildConfigDefaultNftTickerRequest": {
             "type": "object",
@@ -7394,17 +7312,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.UpsertJoinLeaveChannelConfigRequest": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "guild_id": {
                     "type": "string"
                 }
             }
