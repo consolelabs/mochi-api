@@ -24,6 +24,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/vault"
 	"github.com/defipod/mochi/pkg/handler/verify"
 	"github.com/defipod/mochi/pkg/handler/wallet"
+	"github.com/defipod/mochi/pkg/handler/watchlist.go"
 	"github.com/defipod/mochi/pkg/handler/webhook"
 	"github.com/defipod/mochi/pkg/logger"
 )
@@ -52,6 +53,7 @@ type Handler struct {
 	Dex               dex.IHandler
 	Content           content.IHandler
 	AirdropCampaign   airdropcampaign.IHandler
+	Watchlist         watchlist.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -79,5 +81,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Dex:               dex.New(entities, logger),
 		Content:           content.New(entities, logger),
 		AirdropCampaign:   airdropcampaign.New(entities, logger),
+		Watchlist:         watchlist.New(entities, logger),
 	}
 }

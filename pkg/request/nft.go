@@ -1,7 +1,7 @@
 package request
 
 type AddNftWatchlistRequest struct {
-	UserID            string `json:"user_id"`
+	WatchlistBaseRequest
 	GuildID           string `json:"guild_id"`
 	CollectionSymbol  string `json:"collection_symbol"`
 	CollectionAddress string `json:"collection_address"`
@@ -9,14 +9,14 @@ type AddNftWatchlistRequest struct {
 }
 
 type DeleteNftWatchlistRequest struct {
-	UserID string `json:"user_id" form:"user_id" binding:"required"`
-	Symbol string `json:"symbol" form:"symbol" binding:"required"`
+	ProfileID string
+	Symbol    string `json:"symbol" binding:"required"`
 }
 
-type GetNftWatchlistRequest struct {
-	UserID string `json:"user_id" form:"user_id" binding:"required"`
-	Page   int    `json:"page" form:"page"`
-	Size   int    `json:"size" form:"size"`
+type ListTrackingNftsRequest struct {
+	ProfileID string
+	Page      int `form:"page,default=0"`
+	Size      int `form:"size,default=16"`
 }
 
 type GetNFTCollectionTickersRequest struct {

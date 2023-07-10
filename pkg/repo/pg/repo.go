@@ -66,8 +66,8 @@ import (
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
+	usertokenwatchlistitem "github.com/defipod/mochi/pkg/repo/user_token_watchlist_item"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
-	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	"github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
@@ -110,7 +110,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		MessageRepostHistory:                 messagereposthistory.NewPG(db),
 		MochiNFTSales:                        mochinftsales.NewPG(db),
 		GuildConfigDefaultTicker:             guildconfigdefaultticker.NewPG(db),
-		UserWatchlistItem:                    userwatchlistitem.NewPG(db),
+		UserTokenWatchlistItem:               usertokenwatchlistitem.NewPG(db),
 		GuildConfigGroupNFTRole:              guildconfiggroupnftrole.NewPG(db),
 		CoingeckoSupportedTokens:             coingeckosupportedtokens.NewPG(db),
 		MessageReaction:                      messagereaction.NewPG(db),

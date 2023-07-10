@@ -1,8 +1,9 @@
 package usernftwatchlistitem
 
 import (
-	"github.com/defipod/mochi/pkg/model"
 	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/model"
 )
 
 type pg struct {
@@ -17,8 +18,8 @@ func (pg *pg) List(q UserNftWatchlistQuery) ([]model.UserNftWatchlistItem, int64
 	var items []model.UserNftWatchlistItem
 	var total int64
 	db := pg.db.Table("user_nft_watchlist_items")
-	if q.UserID != "" {
-		db = db.Where("user_id = ?", q.UserID)
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
 	}
 	if q.Symbol != "" {
 		db = db.Where("symbol ILIKE ?", q.Symbol)
@@ -41,7 +42,7 @@ func (pg *pg) Create(item *model.UserNftWatchlistItem) error {
 	return pg.db.Create(item).Error
 }
 
-func (pg *pg) Delete(userID, symbol string) (int64, error) {
-	tx := pg.db.Where("user_id = ? AND symbol ILIKE ?", userID, symbol).Delete(&model.UserNftWatchlistItem{})
+func (pg *pg) Delete(profileID, symbol string) (int64, error) {
+	tx := pg.db.Where("profile_id = ? AND symbol ILIKE ?", profileID, symbol).Delete(&model.UserNftWatchlistItem{})
 	return tx.RowsAffected, tx.Error
 }

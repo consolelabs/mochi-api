@@ -734,9 +734,9 @@ definitions:
         type: boolean
       net_worth:
         type: number
-      type:
+      profile_id:
         type: string
-      user_id:
+      type:
         type: string
     type: object
   model.Vault:
@@ -799,8 +799,6 @@ definitions:
         type: string
       guild_id:
         type: string
-      user_id:
-        type: string
     type: object
   request.AddToWatchlistRequest:
     properties:
@@ -809,8 +807,6 @@ definitions:
       is_fiat:
         type: boolean
       symbol:
-        type: string
-      user_id:
         type: string
     type: object
   request.AddTokenPriceAlertRequest:
@@ -1039,11 +1035,6 @@ definitions:
     - token_chain
     - user_discord_id
     type: object
-  request.DeleteJoinLeaveChannelConfigRequest:
-    properties:
-      guild_id:
-        type: string
-    type: object
   request.DeleteMonikerConfigRequest:
     properties:
       guild_id:
@@ -1073,6 +1064,9 @@ definitions:
         type: string
     type: object
   request.GetTrackingWalletsRequest:
+    properties:
+      profileID:
+        type: string
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -1324,13 +1318,6 @@ definitions:
       guild_id:
         type: string
       symbol:
-        type: string
-    type: object
-  request.UpsertJoinLeaveChannelConfigRequest:
-    properties:
-      channel_id:
-        type: string
-      guild_id:
         type: string
     type: object
   request.UpsertMonikerConfigRequest:
@@ -3684,61 +3671,6 @@ paths:
       summary: Update or insert GM config
       tags:
       - ConfigChannel
-  /config-channels/join-leave:
-    delete:
-      consumes:
-      - application/json
-      description: Delete join-leave channel config
-      parameters:
-      - description: Delete join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteJoinLeaveChannelConfigRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete join-leave channel config
-      tags:
-      - ConfigChannel
-    get:
-      consumes:
-      - application/json
-      description: Get join-leave channel config
-      parameters:
-      - description: Guild ID
-        in: query
-        name: guild_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get join-leave channel config
-      tags:
-      - ConfigChannel
-    post:
-      consumes:
-      - application/json
-      description: Update or insert join-leave channel config
-      parameters:
-      - description: Upsert join-leave channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpsertJoinLeaveChannelConfigRequest'
-      produces:
-      - application/json
-      responses: {}
-      summary: Update or insert join-leave channel config
-      tags:
-      - ConfigChannel
   /config-channels/tip-notify:
     get:
       consumes:
@@ -5265,79 +5197,6 @@ paths:
       summary: Get trending search of coins
       tags:
       - Defi
-  /defi/watchlist:
-    delete:
-      consumes:
-      - application/json
-      description: Remove from user's watchlist
-      parameters:
-      - in: query
-        name: symbol
-        required: true
-        type: string
-      - in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: object
-      summary: Remove from user's watchlist
-      tags:
-      - Defi
-    get:
-      consumes:
-      - application/json
-      description: Get user's watchlist
-      parameters:
-      - in: query
-        name: coin_gecko_id
-        type: string
-      - in: query
-        name: page
-        type: integer
-      - in: query
-        name: size
-        type: integer
-      - in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetWatchlistResponse'
-      summary: Get user's watchlist
-      tags:
-      - Defi
-    post:
-      consumes:
-      - application/json
-      description: Add to user's watchlist
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.AddToWatchlistRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.AddToWatchlistResponse'
-      summary: Add to user's watchlist
-      tags:
-      - Defi
   /earns/airdrop-campaigns:
     get:
       consumes:
@@ -6099,83 +5958,6 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
-  /nfts/watchlist:
-    delete:
-      consumes:
-      - application/json
-      description: Remove from user's nft watchlist
-      parameters:
-      - description: symbol
-        in: query
-        name: symbol
-        required: true
-        type: string
-      - description: user_id
-        in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: object
-      summary: Remove from user's nft watchlist
-      tags:
-      - NFT
-    get:
-      consumes:
-      - application/json
-      description: Get user's nft watchlist
-      parameters:
-      - description: user_id
-        in: query
-        name: user_id
-        required: true
-        type: string
-      - description: page
-        in: query
-        name: page
-        required: true
-        type: string
-      - description: size
-        in: query
-        name: size
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.GetNftWatchlistResponse'
-      summary: Get user's nft watchlist
-      tags:
-      - NFT
-    post:
-      consumes:
-      - application/json
-      description: Add to user's nft watchlist
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.AddNftWatchlistRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.NftWatchlistSuggestResponse'
-      summary: Add to user's nft watchlist
-      tags:
-      - NFT
   /swap:
     post:
       consumes:
@@ -6308,36 +6090,6 @@ paths:
       summary: Get user's wallets
       tags:
       - Wallet
-    post:
-      consumes:
-      - application/json
-      description: Untrack a wallet
-      parameters:
-      - description: user ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - in: query
-        name: address
-        type: string
-      - in: query
-        name: alias
-        type: string
-      - in: query
-        name: user_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Untrack a wallet
-      tags:
-      - Wallet
   /users/:id/wallets/:query:
     get:
       consumes:
@@ -6453,13 +6205,168 @@ paths:
       summary: Delete profile airdrop campaign
       tags:
       - Airdrop-campaigns
+  /users/{id}/watchlists/nfts:
+    get:
+      consumes:
+      - application/json
+      description: Get user's nft watchlist
+      parameters:
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: profileID
+        type: string
+      - in: query
+        name: size
+        type: integer
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetNftWatchlistResponse'
+      summary: Get user's nft watchlist
+      tags:
+      - WatchList
+  /users/{id}/watchlists/nfts/track:
+    post:
+      consumes:
+      - application/json
+      description: Add to user's nft watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddNftWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.NftWatchlistSuggestResponse'
+      summary: Add to user's nft watchlist
+      tags:
+      - WatchList
+  /users/{id}/watchlists/nfts/untrack:
+    post:
+      consumes:
+      - application/json
+      description: Remove from user's nft watchlist
+      parameters:
+      - in: query
+        name: profileID
+        type: string
+      - in: query
+        name: symbol
+        required: true
+        type: string
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's nft watchlist
+      tags:
+      - WatchList
+  /users/{id}/watchlists/tokens:
+    get:
+      consumes:
+      - application/json
+      description: Get user's watchlist
+      parameters:
+      - in: query
+        name: coin_gecko_id
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: profileID
+        type: string
+      - in: query
+        name: size
+        type: integer
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetWatchlistResponse'
+      summary: Get user's watchlist
+      tags:
+      - WatchList
+  /users/{id}/watchlists/tokens/track:
+    post:
+      consumes:
+      - application/json
+      description: Add to user's watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.AddToWatchlistRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.AddToWatchlistResponse'
+      summary: Add to user's watchlist
+      tags:
+      - WatchList
+  /users/{id}/watchlists/tokens/untrack:
+    post:
+      consumes:
+      - application/json
+      description: Remove from user's watchlist
+      parameters:
+      - in: query
+        name: symbol
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Remove from user's watchlist
+      tags:
+      - WatchList
   /users/{id}/watchlists/wallets:
     get:
       consumes:
       - application/json
       description: Get user's tracking wallets
       parameters:
-      - description: user ID
+      - description: profile ID
         in: path
         name: id
         required: true
@@ -6531,6 +6438,33 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Track new wallet
+      tags:
+      - WatchList
+  /users/{id}/watchlists/wallets/untrack:
+    post:
+      consumes:
+      - application/json
+      description: Untrack a wallet
+      parameters:
+      - description: user ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - in: query
+        name: address
+        type: string
+      - in: query
+        name: alias
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Untrack a wallet
       tags:
       - WatchList
   /users/{user_id}:

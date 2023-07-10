@@ -6,10 +6,6 @@ type IHandler interface {
 	GetHistoricalMarketChart(c *gin.Context)
 	GetFiatHistoricalExchangeRates(c *gin.Context)
 
-	GetUserWatchlist(c *gin.Context)
-	AddToWatchlist(c *gin.Context)
-	RemoveFromWatchlist(c *gin.Context)
-
 	GetSupportedTokens(c *gin.Context)
 	GetSupportedToken(c *gin.Context)
 	GetCoin(c *gin.Context)

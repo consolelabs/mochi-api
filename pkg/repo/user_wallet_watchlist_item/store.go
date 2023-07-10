@@ -7,6 +7,6 @@ type Store interface {
 	GetOne(GetOneQuery) (*model.UserWalletWatchlistItem, error)
 	Upsert(*model.UserWalletWatchlistItem) error
 	Remove(DeleteQuery) error
-	UpdateOwnerFlag(userID, address string, isOwner bool) error
+	UpdateOwnerFlag(profileID, address string, isOwner bool) error
 	Update(*model.UserWalletWatchlistItem) error
 }

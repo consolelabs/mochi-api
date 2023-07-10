@@ -42,8 +42,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		walletsGroup := userGroup.Group("/:id/wallets")
 		{
 			walletsGroup.GET("", h.Wallet.ListOwnedWallets)
-			walletsGroup.GET("/tracking", h.Wallet.ListTrackingWallets) // TODO: remove this endpoint
-			walletsGroup.POST("/untrack", h.Wallet.Untrack)
 			walletsGroup.GET("/:address", h.Wallet.GetOne)
 			walletsGroup.GET("/:address/:type/assets", h.Wallet.ListAssets)
 			walletsGroup.GET("/:address/:type/txns", h.Wallet.ListTransactions)
@@ -71,11 +69,23 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		//    What is the virtual entity? => Watchlist that is not a table in the DB, but can be extended by /watchlists to point to user's watchlist
 		// 		Wallets is also the virtual entity here, it is different from the wallet in the DB, but it is the wallet that user want to watch
 		// 		What is the action? => track/untrack
-		watchListGroup := userGroup.Group("/:id/watchlists")
+		watchListGroup := userGroup.Group("/:id/watchlists") //:id is profile_id
 		{
-			watchListGroup.POST("/wallets/track", h.Wallet.Track)
-			watchListGroup.GET("/wallets", h.Wallet.ListTrackingWallets)
-			watchListGroup.PUT("/wallets/:address", h.Wallet.UpdateTrackingInfo)
+			// wallets
+			watchListGroup.POST("/wallets/track", h.Watchlist.TrackWallet)
+			walletsGroup.POST("/wallets/untrack", h.Watchlist.UntrackWallet)
+			watchListGroup.GET("/wallets", h.Watchlist.ListTrackingWallets)
+			watchListGroup.PUT("/wallets/:address", h.Watchlist.UpdateTrackingWalletInfo)
+
+			// tokens
+			watchListGroup.POST("/tokens/track", h.Watchlist.TrackToken)
+			watchListGroup.POST("/tokens/untrack", h.Watchlist.UntrackToken)
+			watchListGroup.GET("/tokens", h.Watchlist.ListTrackingTokens)
+
+			// nfts
+			watchListGroup.POST("/nfts/track", h.Watchlist.TrackNft)
+			watchListGroup.POST("/nfts/untrack", h.Watchlist.UntrackNft)
+			watchListGroup.GET("/nfts", h.Watchlist.ListTrackingNfts)
 		}
 
 		userEarnGroup := userGroup.Group("/:id/earns") //:id is profile_id
@@ -270,19 +280,13 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/trending", h.Defi.GetTrendingSearch)
 		defiGroup.GET("/top-gainer-loser", h.Defi.TopGainerLoser)
 
-		watchlistGroup := defiGroup.Group("/watchlist")
-		{
-			watchlistGroup.GET("", h.Defi.GetUserWatchlist)
-			watchlistGroup.POST("", h.Defi.AddToWatchlist)
-			watchlistGroup.DELETE("", h.Defi.RemoveFromWatchlist)
-		}
-
 		priceAlertGroup := defiGroup.Group("/price-alert")
 		{
 			priceAlertGroup.GET("", h.Defi.GetUserListPriceAlert)
 			priceAlertGroup.POST("", h.Defi.AddTokenPriceAlert)
 			priceAlertGroup.DELETE("", h.Defi.RemoveTokenPriceAlert)
 		}
+
 		gasTrackerGroup := defiGroup.Group("/gas-tracker")
 		{
 			gasTrackerGroup.GET("", h.Defi.GetGasTracker)
@@ -323,13 +327,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/tickers", h.Nft.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.Nft.GetNFTCollectionByAddressChain)
 		}
-		// api/v1/nfts/watchlist
-		nftWatchlistGroup := nftsGroup.Group("/watchlist")
-		{
-			nftWatchlistGroup.GET("", h.Nft.GetNftWatchlist)
-			nftWatchlistGroup.POST("", h.Nft.AddNftWatchlist)
-			nftWatchlistGroup.DELETE("", h.Nft.DeleteNftWatchlist)
-		}
+
 		defaultNftTickerGroup := nftsGroup.Group("/default-nft-ticker")
 		{
 			defaultNftTickerGroup.GET("", h.Nft.GetGuildDefaultNftTicker)

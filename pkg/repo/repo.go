@@ -63,8 +63,8 @@ import (
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
+	usertokenwatchlistitem "github.com/defipod/mochi/pkg/repo/user_token_watchlist_item"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
-	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
 	users "github.com/defipod/mochi/pkg/repo/users"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaultconfig "github.com/defipod/mochi/pkg/repo/vault_config"
@@ -106,7 +106,7 @@ type Repo struct {
 	MessageRepostHistory                 messagereposthistory.Store
 	MochiNFTSales                        mochinftsales.Store
 	GuildConfigDefaultTicker             guildconfigdefaultticker.Store
-	UserWatchlistItem                    userwatchlistitem.Store
+	UserTokenWatchlistItem               usertokenwatchlistitem.Store
 	GuildConfigGroupNFTRole              guildconfiggroupnftrole.Store
 	CoingeckoSupportedTokens             coingeckosupportedtokens.Store
 	MessageReaction                      messagereaction.Store

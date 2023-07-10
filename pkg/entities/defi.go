@@ -23,7 +23,7 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	"github.com/defipod/mochi/pkg/repo/token"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
-	userwatchlistitem "github.com/defipod/mochi/pkg/repo/user_watchlist_item"
+	usertokenwatchlistitem "github.com/defipod/mochi/pkg/repo/user_token_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -141,7 +141,7 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart, isWithCoingeckoInf
 	}
 
 	// get number of user's watchlist usage
-	watchlistUsers, err := e.repo.UserWatchlistItem.Count(userwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
+	watchlistUsers, err := e.repo.UserTokenWatchlistItem.Count(usertokenwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
 	if err != nil {
 		e.log.Error(err, "[entity.GetCoinData] repo.UserWatchlistItem.Count() failed")
 		return nil, err, 500
@@ -359,10 +359,26 @@ func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedT
 	}
 
 	// get list tokens
-	tokens, err := e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
-	if err != nil {
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
 		return nil, err
+	}
+
+	//
+	var tokens []model.CoingeckoSupportedTokens
+	switch true {
+	// found token with id = query
+	case err == nil:
+		tokens = append(tokens, *token)
+
+	// no id = given query -> find list by symbol
+	default:
+		tokens, err = e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
+		if err != nil {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+			return nil, err
+		}
 	}
 
 	if len(tokens) == 0 {
@@ -582,21 +598,21 @@ func (e *Entity) GetListGuildDefaultTicker(guildID string) ([]model.GuildConfigD
 	return configs, nil
 }
 
-func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*response.GetWatchlistResponse, error) {
-	q := userwatchlistitem.UserWatchlistQuery{
-		UserID:      req.UserID,
+func (e *Entity) GetUserWatchlist(req request.ListTrackingTokensRequest) (*response.GetWatchlistResponse, error) {
+	q := usertokenwatchlistitem.UserWatchlistQuery{
+		ProfileID:   req.ProfileID,
 		CoinGeckoID: req.CoinGeckoID,
 		Offset:      req.Page * req.Size,
 		Limit:       req.Size,
 	}
-	list, total, err := e.repo.UserWatchlistItem.List(q)
+	list, total, err := e.repo.UserTokenWatchlistItem.List(q)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
 	}
 
 	tickers := make([]string, 0)
-	pairs := make([]model.UserWatchlistItem, 0)
+	pairs := make([]model.UserTokenWatchlistItem, 0)
 	isDefault := false
 	for _, item := range list {
 		if strings.Contains(item.Symbol, "/") {
@@ -694,7 +710,7 @@ func (e *Entity) GetUserWatchlist(req request.GetUserWatchlistRequest) (*respons
 	}
 	// handle quest logs
 	log := &model.QuestUserLog{
-		UserID: req.UserID,
+		UserID: req.ProfileID,
 		Action: model.QuestAction(model.WATCHLIST),
 	}
 	if err := e.UpdateUserQuestProgress(log); err != nil {
@@ -764,24 +780,24 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 
 	}
 
-	listQ := userwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, UserID: req.UserID}
-	_, total, err := e.repo.UserWatchlistItem.List(listQ)
+	listQ := usertokenwatchlistitem.UserWatchlistQuery{CoinGeckoID: req.CoinGeckoID, ProfileID: req.ProfileID}
+	_, total, err := e.repo.UserTokenWatchlistItem.List(listQ)
 	if err != nil {
-		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.List() failed")
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.AddToWatchlist] repo.UserTokenWatchlistItem.List() failed")
 		return nil, err
 	}
 	if total == 1 {
 		return nil, baseerrs.ErrConflict
 	}
 
-	err = e.repo.UserWatchlistItem.Create(&model.UserWatchlistItem{
-		UserID:      req.UserID,
+	err = e.repo.UserTokenWatchlistItem.Create(&model.UserTokenWatchlistItem{
+		ProfileID:   req.ProfileID,
 		Symbol:      req.Symbol,
 		CoinGeckoID: req.CoinGeckoID,
 		IsFiat:      req.IsFiat,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserWatchlistItem.Create() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.AddToWatchlist] repo.UserTokenWatchlistItem.Create() failed")
 		return nil, err
 	}
 
@@ -818,9 +834,9 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 }
 
 func (e *Entity) RemoveFromWatchlist(req request.RemoveFromWatchlistRequest) error {
-	rows, err := e.repo.UserWatchlistItem.Delete(req.UserID, req.Symbol)
+	rows, err := e.repo.UserTokenWatchlistItem.Delete(req.ProfileID, req.Symbol)
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserWatchlistItem.Delete() failed")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] repo.UserTokenWatchlistItem.Delete() failed")
 	}
 	if rows == 0 {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.RemoveFromWatchlist] item not found")

@@ -11,7 +11,7 @@ type UserWalletWatchlist struct {
 }
 
 type UserWalletWatchlistItem struct {
-	UserID      string       `json:"user_id"`
+	ProfileID   string       `json:"profile_id"`
 	Address     string       `json:"address"`
 	Alias       string       `json:"alias"`
 	ChainType   ChainType    `json:"chain_type"`
