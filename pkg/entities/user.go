@@ -332,15 +332,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		}
 	}
 
-	userFactionXp, err := e.svc.Processor.GetUserFactionXp(userID)
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"guildId": guildID,
-			"userId":  userID,
-		}).Error(err, "[e.svc.Processor.GetUserFactionXp] - get user faction xp from Processor failed")
-		return nil, err
-	}
-
 	return &response.GetUserProfileResponse{
 		ID:           userID,
 		CurrentLevel: currentLevel,
@@ -350,12 +341,6 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		Progress:     progress,
 		Guild:        gUserXP.Guild,
 		GuildRank:    gUserXP.GuildRank,
-		UserFactionXps: &model.UserFactionXpsMapping{
-			ImperialXp: userFactionXp.Data.NobilityXp,
-			RebellioXp: userFactionXp.Data.FameXp,
-			MerchantXp: userFactionXp.Data.LoyaltyXp,
-			AcademyXp:  userFactionXp.Data.ReputationXp,
-		},
 	}, nil
 }
 

@@ -141,7 +141,7 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart, isWithCoingeckoInf
 	}
 
 	// get number of user's watchlist usage
-	watchlistUsers, err := e.repo.UserTokenWatchlistItem.Count(usertokenwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "user_id"})
+	watchlistUsers, err := e.repo.UserTokenWatchlistItem.Count(usertokenwatchlistitem.CountQuery{CoingeckoId: coinID, Distinct: "profile_id"})
 	if err != nil {
 		e.log.Error(err, "[entity.GetCoinData] repo.UserWatchlistItem.Count() failed")
 		return nil, err, 500
