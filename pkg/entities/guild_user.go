@@ -29,11 +29,16 @@ func (e *Entity) SendUserXP(req request.SendUserXPRequest) error {
 	}
 	records := []model.GuildUserActivityLog{}
 	for _, recipient := range req.Recipients {
+		profile, err := e.svc.MochiProfile.GetByDiscordID(recipient, true)
+		if err != nil {
+			continue
+		}
 		records = append(records, model.GuildUserActivityLog{
 			GuildID:      req.GuildID,
 			UserID:       recipient,
 			ActivityName: "sendXP",
 			EarnedXP:     amountXP,
+			ProfileID:    profile.ID,
 		})
 	}
 	return e.repo.GuildUserActivityLog.CreateBatch(records)

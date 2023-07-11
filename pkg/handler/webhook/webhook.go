@@ -45,7 +45,7 @@ func (h *Handler) HandleDiscordWebhook(c *gin.Context) {
 	case request.GUILD_MEMBER_REMOVE:
 		h.handleGuildMemberRemove(c, req.Data)
 	case request.MESSAGE_CREATE:
-		h.handleMessageCreate(c, req.Data)
+		h.handleMessageCreate(c, req)
 	case request.MESSAGE_DELETE:
 		h.handleMessageDelete(c, req.Data)
 	case request.GUILD_CREATE:
@@ -95,9 +95,9 @@ func (h *Handler) handleGuildMemberRemove(c *gin.Context, data json.RawMessage) 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "ok"}, nil, nil, nil))
 }
 
-func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
+func (h *Handler) handleMessageCreate(c *gin.Context, req request.HandleDiscordWebhookRequest) {
 	message := &discordgo.Message{}
-	byteData, err := data.MarshalJSON()
+	byteData, err := req.Data.MarshalJSON()
 	if err != nil {
 		h.log.Error(err, "[handler.handleMessageCreate] - failed to json marshal data")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
@@ -115,7 +115,7 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] entity.CreateGuildIfNotExists() failed")
 	}
 
-	_, err = h.entities.HandleDiscordMessage(message)
+	_, err = h.entities.HandleDiscordMessage(message, req.ProfileID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle discord message")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
@@ -126,9 +126,9 @@ func (h *Handler) handleMessageCreate(c *gin.Context, data json.RawMessage) {
 	var resp *response.HandleUserActivityResponse
 	switch message.Type {
 	case consts.MessageTypeUserPremiumGuildSubscription:
-		resp, err = h.entities.BoostXPIncrease(message)
+		resp, err = h.entities.BoostXPIncrease(message, req.ProfileID)
 	default:
-		resp, err = h.entities.ChatXPIncrease(message)
+		resp, err = h.entities.ChatXPIncrease(message, req.ProfileID)
 	}
 	if err != nil {
 		h.log.Fields(logger.Fields{"message": message}).Error(err, "[handler.handleMessageCreate] - failed to handle user activity")

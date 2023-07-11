@@ -3,7 +3,6 @@ package user
 import (
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -120,59 +119,20 @@ func (h *Handler) GetUserCurrentGMStreak(c *gin.Context) {
 // @Tags        User
 // @Accept      json
 // @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Param       user_id query     string true "User ID"
-// @Param       page query     int false "Page" default(0)
-// @Param       limit query     int false "Limit" default(10)
-// @Param       query query     string false "Query to search by name"
-// @Param       sort query     string false "ASC / DESC"
+// @Param       req query     request.GetTopUsersRequest true "query"
 // @Success     200 {object} response.TopUser
 // @Router      /users/top [get]
 func (h *Handler) GetTopUsers(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetTopUsers] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	var req request.GetTopUsersRequest
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetTopUsers] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	userID := c.Query("user_id")
-	if userID == "" {
-		h.log.Info("[handler.GetTopUsers] - user id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
-		return
-	}
-
-	pageStr := c.Query("page")
-	if pageStr == "" {
-		pageStr = "0"
-	}
-	page, err := strconv.Atoi(pageStr)
+	data, err := h.entities.GetTopUsers(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"page": pageStr}).Error(err, "[handler.GetTopUsers] - invalid page")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("page must be an integer"), nil))
-		return
-	}
-
-	query := c.Query("query")
-
-	sort := c.Query("sort")
-
-	limitStr := c.Query("limit")
-	if limitStr == "" {
-		limitStr = "10"
-	}
-
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil {
-		h.log.Fields(logger.Fields{"limit": limit}).Error(err, "[handler.GetTopUsers] - invalid limit")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("limit must be an integer"), nil))
-		return
-	}
-
-	data, err := h.entities.GetTopUsers(guildID, userID, query, sort, limit, page)
-	if err != nil {
-		h.log.Fields(logger.Fields{"page": pageStr, "limit": limit, "guildID": guildID, "userID": userID}).Error(err, "[handler.GetTopUsers] - failed to get top users")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetTopUsers] entity.GetTopUsers() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -186,28 +146,20 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 // @Tags        User
 // @Accept      json
 // @Produce     json
-// @Param       guild_id query     string true "Guild ID"
-// @Param       user_id query     string true "User ID"
+// @Param       req query     request.GetUserProfileRequest true "query"
 // @Success     200 {object} response.GetDataUserProfileResponse
 // @Router      /users/profiles/ [get]
 func (h *Handler) GetUserProfile(c *gin.Context) {
-	guildID := c.Query("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetUserProfile] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	var req request.GetUserProfileRequest
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetUserProfile] BindQuery() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	userID := c.Query("user_id")
-	if userID == "" {
-		h.log.Info("[handler.GetUserProfile] - user id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("user_id is required"), nil))
-		return
-	}
-
-	data, err := h.entities.GetUserProfile(guildID, userID)
+	data, err := h.entities.GetUserProfile(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID, "userID": userID}).Error(err, "[handler.GetUserProfile] - failed to get user profile")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetUserProfile] - failed to get user profile")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
