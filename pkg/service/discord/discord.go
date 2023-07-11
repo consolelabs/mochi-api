@@ -225,37 +225,37 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMess
 }
 
 func (d *Discord) formatLevelUpMessage(uActivity *response.HandleUserActivityResponse, dcUser *discordgo.User, role, randomTip string, levelRoleLevel int) *discordgo.MessageEmbed {
-	starEmoji, err := d.repo.Emojis.ListEmojis([]string{"STAR"})
+	starEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_STAR"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get star emoji")
 		return nil
 	}
 
-	xpEmoji, err := d.repo.Emojis.ListEmojis([]string{"XP"})
+	xpEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_XP"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get xp emoji")
 		return nil
 	}
 
-	gemEmoji, err := d.repo.Emojis.ListEmojis([]string{"GEM"})
+	gemEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_GEM"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get gem emoji")
 		return nil
 	}
 
-	badgeEmoji, err := d.repo.Emojis.ListEmojis([]string{"BADGE"})
+	badgeEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_BADGE_1"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get badge emoji")
 		return nil
 	}
 
-	pointRightEmoji, err := d.repo.Emojis.ListEmojis([]string{"POINT_RIGHT"})
+	pointRightEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_POINTING_RIGHT"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get point right emoji")
 		return nil
 	}
 
-	trophyEmoji, err := d.repo.Emojis.ListEmojis([]string{"TROPHY"})
+	trophyEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_TROPHY"})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get trophy emoji")
 		return nil
