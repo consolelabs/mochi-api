@@ -27,7 +27,7 @@ import (
 )
 
 func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*model.UserWalletWatchlist, error) {
-	listQ := userwalletwatchlistitem.ListQuery{ProfileID: req.ProfileID, IsOwner: &req.IsOwner}
+	listQ := userwalletwatchlistitem.ListQuery{ProfileID: req.ProfileID, IsOwner: &req.IsOwner, Address: req.Address}
 
 	wallets, err := e.repo.UserWalletWatchlistItem.List(listQ)
 	if err != nil {
@@ -35,26 +35,28 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*mod
 		return nil, err
 	}
 
-	for i, wallet := range wallets {
-		// 1. solana wallet
-		if wallet.ChainType == model.ChainTypeSolana {
-			err = e.calculateSolWalletNetWorth(&wallet)
-			if err != nil {
-				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateSolanaWalletNetWorth() failed")
-				continue
+	if req.WithBalance {
+		for i, wallet := range wallets {
+			// 1. solana wallet
+			if wallet.ChainType == model.ChainTypeSolana {
+				err = e.calculateSolWalletNetWorth(&wallet)
+				if err != nil {
+					e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateSolanaWalletNetWorth() failed")
+					continue
+				}
+			} else {
+				// 2. EVM wallet
+				err := e.calculateEvmWalletNetWorth(&wallet)
+				if err != nil {
+					e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEvmWalletNetWorth() failed")
+					continue
+				}
 			}
-		} else {
-			// 2. EVM wallet
-			err := e.calculateEvmWalletNetWorth(&wallet)
-			if err != nil {
-				e.log.Fields(logger.Fields{"wallet": wallet}).Error(err, "[entity.GetTrackingWallets] entity.calculateEvmWalletNetWorth() failed")
-				continue
-			}
-		}
 
-		wallet.FetchedData = true
-		wallet.ChainType = model.ChainType(strings.ToUpper(wallet.ChainType.String()))
-		wallets[i] = wallet
+			wallet.FetchedData = true
+			wallet.ChainType = model.ChainType(strings.ToUpper(wallet.ChainType.String()))
+			wallets[i] = wallet
+		}
 	}
 
 	var result model.UserWalletWatchlist
