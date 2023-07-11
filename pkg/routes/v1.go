@@ -118,30 +118,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 			questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
 		}
-		levelupGroup := communityGroup.Group("/levelup")
-		{
-			levelupGroup.GET("", h.Community.GetLevelUpMessage)
-			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
-			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
-		}
 		tagmeGroup := communityGroup.Group("/tagme")
 		{
 			tagmeGroup.GET("", h.Community.GetUserTag)
 			tagmeGroup.POST("", h.Community.UpsertUserTag)
 		}
 
-	}
-
-	configGroup := v1.Group("/config")
-	{
-		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
-		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
-
-		configTwitterSaleGroup := configGroup.Group("/twitter-sales")
-		{
-			configTwitterSaleGroup.GET("", h.ConfigTwitterSale.Get)
-			configTwitterSaleGroup.POST("", h.ConfigTwitterSale.Create)
-		}
 	}
 
 	// v1/config-channels/
@@ -159,17 +141,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.DELETE("/tip-notify/:id", h.ConfigChannel.DeleteConfigNotify)
 	}
 
-	// TODO:
-	// v1/config/role/{guild-id}
-	// v1/config/role/{guild-id}/reaction
-	// // GET
-	// // POST
-	// // DELETE
-	// v1/config/role/{guild-id}/default
-	// v1/config/role/{guild-id}/level
-	// v1/config/role/{guild-id}/nft
-	// v1/config/role/{guild-id}/token
-	// v1/config/role/{guild-id}/bot-manager
+	configGroup := v1.Group("/config")
+	{
+		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
+		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
+	}
+
 	configRoleGroup := configGroup.Group("/role/:guild_id")
 	{
 		roleReactionGroup := configRoleGroup.Group("/reaction")
@@ -211,6 +188,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
 			adminRoleGroup.DELETE(":id", h.ConfigRoles.RemoveGuildAdminRole)
 		}
+	}
+
+	// config
+	// POST api/v1/config/{guild-id}/log-channel {log_type, channel_id, guild_id}
+	// GET api/v1/config/{guild-id}/log-channel
+	// db
+	// guild_config_log_channel {log_type, channel_id, guild_id}
+	configLogChannelGroup := configGroup.Group("/log-channel/:guild_id")
+	{
+		configLogChannelGroup.POST("", h.ConfigChannel.CreateGuildConfigLogChannel)
+		configLogChannelGroup.GET(":log_type", h.ConfigChannel.GetGuildConfigLogChannel)
 	}
 
 	// v1/config-defi

@@ -16,4 +16,7 @@ type IHandler interface {
 	CreateConfigNotify(c *gin.Context)
 	ListConfigNotify(c *gin.Context)
 	DeleteConfigNotify(c *gin.Context)
+
+	GetGuildConfigLogChannel(c *gin.Context)
+	CreateGuildConfigLogChannel(c *gin.Context)
 }
