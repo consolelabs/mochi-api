@@ -172,5 +172,13 @@ func (r *UpsertGuildConfigTipRangeRequest) Validate() error {
 	return nil
 }
 
-type ConfigLogChannelRequest struct {
+type CreateConfigLogChannelRequest struct {
+	GuildID   string `uri:"guild_id"`
+	ChannelID string `json:"channel_id"`
+	LogType   string `json:"log_type"`
+}
+
+type QueryConfigLogChannel struct {
+	GuildID string `uri:"guild_id"`
+	LogType string `uri:"log_type"`
 }

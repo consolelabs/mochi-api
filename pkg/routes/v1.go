@@ -199,7 +199,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	configLogChannelGroup := configGroup.Group("/log-channel/:guild_id")
 	{
 		configLogChannelGroup.POST("", h.ConfigChannel.CreateGuildConfigLogChannel)
-		configLogChannelGroup.GET("", h.ConfigChannel.GetGuildConfigLogChannel)
+		configLogChannelGroup.GET(":log_type", h.ConfigChannel.GetGuildConfigLogChannel)
 	}
 
 	// v1/config-defi

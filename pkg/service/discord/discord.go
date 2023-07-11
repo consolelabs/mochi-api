@@ -193,10 +193,10 @@ func (d *Discord) SendGuildActivityLogs(channelID, userID, title, description st
 	return nil
 }
 
-func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
+func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
 	// priority: config channel -> chat channel
-	channelID := levelUpConfig.ChannelID
-	if levelUpConfig.ChannelID == "" {
+	channelID := levelUpConfig.ChannelId
+	if levelUpConfig.ChannelId == "" {
 		channelID = uActivity.ChannelID
 	}
 	if channelID == "" {

@@ -1,6 +1,6 @@
 
 -- +migrate Up
-create table if not exists guild_config_log_channel (
+create table if not exists guild_config_log_channels (
     id serial primary key,
     guild_id text,
     channel_id text,
@@ -9,6 +9,6 @@ create table if not exists guild_config_log_channel (
     updated_at timestamp not null default now()
 );
 
-create unique index guild_config_log_channel_guild_id_log_type_channel_id_uindex on guild_config_log_channel (guild_id, log_type, channel_id);
+create unique index guild_config_log_channels_guild_id_log_type_uindex on guild_config_log_channels (guild_id, log_type);
 -- +migrate Down
-drop table if exists guild_config_log_channel;
+drop table if exists guild_config_log_channels;

@@ -311,9 +311,42 @@ func (h *Handler) DeleteConfigNotify(c *gin.Context) {
 }
 
 func (h *Handler) CreateGuildConfigLogChannel(c *gin.Context) {
+	req := request.CreateConfigLogChannelRequest{}
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildConfigLogChannel] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildConfigLogChannel] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
+	_, err := h.entities.CreateGuildConfigLogChannel(req)
+	if err != nil {
+		h.log.Error(err, "[handler.CreateGuildConfigLogChannel] - failed to create config notify")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
 func (h *Handler) GetGuildConfigLogChannel(c *gin.Context) {
+	req := request.QueryConfigLogChannel{}
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.CreateGuildConfigLogChannel] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
+	config, err := h.entities.GetGuildConfigLogChannel(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetGuildConfigLogChannel] - failed to get config notify")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -337,7 +338,20 @@ func (e *Entity) sendGmGnMessage(discordID string, guildID string, streak *model
 		}).Error(err, "[Entity][sendGmGnMessage] failed to get guild data")
 		return err
 	}
-	err = e.svc.Discord.NotifyGmStreak(guild.LogChannel, discordID, streak.StreakCount, *podTownXps)
+	// get logchannel gm
+	logChannel, err := e.repo.GuildConfigLogChannel.Get(query.Query{LogType: "gm", GuildId: guildID})
+	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildID": guildID,
+		}).Error(err, "[Entity][sendGmGnMessage] failed to get log channel")
+		return err
+	}
+
+	if len(logChannel) == 0 {
+		return nil
+	}
+
+	err = e.svc.Discord.NotifyGmStreak(logChannel[0].ChannelId, discordID, streak.StreakCount, *podTownXps)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"channelID": guild.LogChannel,
