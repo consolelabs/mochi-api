@@ -14,9 +14,16 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetOne(guildID, userID string) (*model.GuildUserXP, error) {
+func (pg *pg) GetOne(q GetOneQuery) (*model.GuildUserXP, error) {
 	userXP := &model.GuildUserXP{}
-	return userXP, pg.db.Where("guild_id = ? AND user_id = ?", guildID, userID).Preload("Guild").First(userXP).Error
+	db := pg.db.Where("guild_id = ?", q.GuildID)
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
+	}
+	if q.UserID != "" {
+		db = db.Where("user_id = ?", q.UserID)
+	}
+	return userXP, db.Preload("Guild").First(userXP).Error
 }
 
 func (pg *pg) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {

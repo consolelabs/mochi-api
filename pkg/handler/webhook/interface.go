@@ -12,7 +12,7 @@ type IHandler interface {
 	HandleDiscordWebhook(c *gin.Context)
 	handleGuildMemberAdd(c *gin.Context, data json.RawMessage)
 	handleGuildMemberRemove(c *gin.Context, data json.RawMessage)
-	handleMessageCreate(c *gin.Context, data json.RawMessage)
+	handleMessageCreate(c *gin.Context, req request.HandleDiscordWebhookRequest)
 	handleMessageDelete(c *gin.Context, data json.RawMessage)
 	handleGuildCreate(c *gin.Context, data json.RawMessage)
 	handleMessageReactionAdd(c *gin.Context, data json.RawMessage)

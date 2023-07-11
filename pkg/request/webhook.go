@@ -8,8 +8,9 @@ import (
 )
 
 type HandleDiscordWebhookRequest struct {
-	Event string          `json:"event"`
-	Data  json.RawMessage `json:"data"`
+	Event     string          `json:"event"`
+	Data      json.RawMessage `json:"data"`
+	ProfileID string          `json:"profile_id"`
 }
 
 const (
