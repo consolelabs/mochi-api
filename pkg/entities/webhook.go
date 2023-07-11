@@ -135,7 +135,7 @@ func (e *Entity) GetUserGlobalInviteCodes(guildID, userID string) ([]string, err
 	return resp, nil
 }
 
-func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) HandleDiscordMessage(message *discordgo.Message, profileID string) (*response.HandleUserActivityResponse, error) {
 	// TODO(trkhoi): temp keep hardcode of Pod Town emoji, remove when it has been added to the database
 	guildConfigGms, err := e.repo.GuildConfigGmGn.GetLatestByGuildID(message.GuildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -158,23 +158,15 @@ func (e *Entity) HandleDiscordMessage(message *discordgo.Message) (*response.Han
 			break
 		}
 	}
-	var (
-		discordID      = message.Author.ID
-		authorAvatar   = message.Author.Avatar
-		authorUsername = message.Author.Username
-		guildID        = message.GuildID
-		sentAt         = message.Timestamp
-		channelID      = message.ChannelID
-		isGmMessage    = isMatchMsg || strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
-	)
+	isGmMessage := isMatchMsg || strings.EqualFold("gm", message.Content) || strings.EqualFold("gn", message.Content) || isGmEmoji || isGmSticker
 
 	switch {
 	case isGmMessage:
-		if !util.IsMatchChannel(channelID, guildConfigGms) {
+		if !util.IsMatchChannel(message.ChannelID, guildConfigGms) {
 			// do nothing if not gm channel
 			return nil, nil
 		}
-		return e.newUserGM(authorAvatar, authorUsername, discordID, guildID, channelID, sentAt)
+		return e.newUserGM(message, profileID)
 	}
 	return nil, nil
 }
@@ -188,7 +180,15 @@ func (e *Entity) HandleMochiSalesMessage(message *request.TwitterSalesMessage) e
 	return nil
 }
 
-func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, channelID string, sentAt time.Time) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) newUserGM(message *discordgo.Message, profileID string) (*response.HandleUserActivityResponse, error) {
+	var (
+		discordID      = message.Author.ID
+		authorAvatar   = message.Author.Avatar
+		authorUsername = message.Author.Username
+		guildID        = message.GuildID
+		sentAt         = message.Timestamp
+		channelID      = message.ChannelID
+	)
 	chatDate := time.Date(sentAt.Year(), sentAt.Month(), sentAt.Day(), 0, 0, 0, 0, time.UTC)
 	streak, err := e.repo.DiscordUserGMStreak.GetByDiscordIDGuildID(discordID, guildID)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -282,6 +282,7 @@ func (e *Entity) newUserGM(authorAvatar, authorUsername, discordID, guildID, cha
 		GuildID:   guildID,
 		ChannelID: channelID,
 		UserID:    discordID,
+		ProfileID: profileID,
 		Action:    "gm_streak",
 		Timestamp: sentAt,
 	})
@@ -398,7 +399,7 @@ func (e *Entity) composeGmGnMessageEmbed(description, authorUsername, authorAvat
 	}
 }
 
-func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) ChatXPIncrease(message *discordgo.Message, profileID string) (*response.HandleUserActivityResponse, error) {
 	if message.Content == "" {
 		return &response.HandleUserActivityResponse{
 			GuildID:      message.GuildID,
@@ -427,6 +428,7 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 			GuildID:   message.GuildID,
 			ChannelID: message.ChannelID,
 			UserID:    message.Author.ID,
+			ProfileID: profileID,
 			Action:    "chat",
 			Timestamp: message.Timestamp,
 		})
@@ -450,15 +452,16 @@ func (e *Entity) ChatXPIncrease(message *discordgo.Message) (*response.HandleUse
 	return resp, nil
 }
 
-func (e *Entity) BoostXPIncrease(message *discordgo.Message) (*response.HandleUserActivityResponse, error) {
+func (e *Entity) BoostXPIncrease(message *discordgo.Message, profileID string) (*response.HandleUserActivityResponse, error) {
 	log := logger.NewLogrusLogger()
 	log.Infof("New boost event start at guildID %v by user %v", message.GuildID, message.Author.ID)
 	var resp *response.HandleUserActivityResponse
 
 	resp, err := e.HandleUserActivities(&request.HandleUserActivityRequest{
-		GuildID: message.GuildID,
-		UserID:  message.Author.ID,
-		Action:  "boost",
+		GuildID:   message.GuildID,
+		UserID:    message.Author.ID,
+		ProfileID: profileID,
+		Action:    "boost",
 	})
 	if err != nil {
 		log.Info("Failed to handle user boost activity")

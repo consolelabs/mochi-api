@@ -15,6 +15,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
+	"github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -103,7 +104,7 @@ func (e *Entity) UpsertBatchGMStreak(streaks []model.DiscordUserGMStreak) error 
 func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*response.HandleUserActivityResponse, error) {
 	l := e.log.Fields(logger.Fields{"req": req})
 
-	userXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
+	userXP, err := e.repo.GuildUserXP.GetOne(guild_user_xp.GetOneQuery{GuildID: req.GuildID, ProfileID: req.ProfileID})
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -117,18 +118,25 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		earnedXP = gActivityConfig.Activity.XP
 	}
 
-	if err := e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
+	err = e.repo.GuildUserActivityLog.CreateOne(model.GuildUserActivityLog{
 		GuildID:      req.GuildID,
 		UserID:       req.UserID,
+		ProfileID:    req.ProfileID,
 		ActivityName: req.Action,
 		EarnedXP:     earnedXP,
 		CreatedAt:    req.Timestamp,
-	}); err != nil {
+	})
+	if err != nil {
 		l.Error(err, "[entity.HandleUserActivities] repo.GuildUserActivityLog.CreateOne() failed")
 		return nil, err
 	}
 
-	latestUserXP, err := e.repo.GuildUserXP.GetOne(req.GuildID, req.UserID)
+	err = e.repo.GuildUserActivityLog.UpdateInvalidRecords(req.UserID, req.ProfileID)
+	if err != nil {
+		l.Error(err, "[entity.HandleUserActivities] repo.GuildUserActivityLog.UpdateInvalidRecords() failed")
+	}
+
+	latestUserXP, err := e.repo.GuildUserXP.GetOne(guild_user_xp.GetOneQuery{GuildID: req.GuildID, ProfileID: req.ProfileID})
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		l.Error(err, "[entity.HandleUserActivities] repo.GuildUserXP.GetOne() failed")
 		return nil, err
@@ -142,7 +150,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 	res := &response.HandleUserActivityResponse{
 		GuildID:      req.GuildID,
 		ChannelID:    req.ChannelID,
-		UserID:       req.UserID,
+		UserID:       req.ProfileID,
 		Action:       req.Action,
 		AddedXP:      earnedXP,
 		CurrentXP:    latestUserXP.TotalXP,
@@ -152,14 +160,14 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}
 
-	role, levelNeeded, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.UserID)
+	role, levelNeeded, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.ProfileID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
 			"guildId": req.GuildID,
-			"userId":  req.UserID,
+			"userId":  req.ProfileID,
 		}).Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed")
 	} else if res.LevelUp {
-		e.log.Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID}).Info("User leveled up")
+		e.log.Fields(logger.Fields{"guildID": req.GuildID, "userID": req.ProfileID}).Info("User leveled up")
 		// get level up config
 		config, err := e.repo.GuildConfigLogChannel.Get(query.Query{LogType: "level", GuildId: req.GuildID})
 		if err != nil && err != gorm.ErrRecordNotFound {
@@ -210,9 +218,9 @@ func (e *Entity) InitGuildDefaultActivityConfigs(guildID string) error {
 	return e.repo.GuildConfigActivity.UpsertMany(configs)
 }
 
-func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page int) (*response.TopUser, error) {
-	offset := page * limit
-	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(guildID, query, sort, limit, offset)
+func (e *Entity) GetTopUsers(req request.GetTopUsersRequest) (*response.TopUser, error) {
+	offset := req.Page * req.Limit
+	leaderboard, err := e.repo.GuildUserXP.GetTopUsers(req.GuildID, req.Query, req.Sort, req.Limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -249,21 +257,21 @@ func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page in
 		}
 	}
 
-	author, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+	author, err := e.repo.GuildUserXP.GetOne(guild_user_xp.GetOneQuery{GuildID: req.GuildID, ProfileID: req.ProfileID})
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
-	currentLr, err := e.repo.GuildConfigLevelRole.GetCurrentLevelRole(guildID, author.Level)
+	currentLr, err := e.repo.GuildConfigLevelRole.GetCurrentLevelRole(req.GuildID, author.Level)
 	if err == nil {
 		author.CurrentLevelRole = currentLr
 	}
-	nextLr, _ := e.repo.GuildConfigLevelRole.GetNextLevelRole(guildID, author.Level)
+	nextLr, _ := e.repo.GuildConfigLevelRole.GetNextLevelRole(req.GuildID, author.Level)
 	if err == nil {
 		author.NextLevelRole = nextLr
 	}
 
-	total, err := e.repo.GuildUserXP.GetTotalTopUsersCount(guildID, query)
+	total, err := e.repo.GuildUserXP.GetTotalTopUsersCount(req.GuildID, req.Query)
 	if err != nil {
 		return nil, err
 	}
@@ -271,8 +279,8 @@ func (e *Entity) GetTopUsers(guildID, userID, query, sort string, limit, page in
 	return &response.TopUser{
 		Metadata: response.PaginationResponse{
 			Pagination: model.Pagination{
-				Page: int64(page),
-				Size: int64(limit),
+				Page: int64(req.Page),
+				Size: int64(req.Limit),
 			},
 			Total: total,
 		},
@@ -310,8 +318,8 @@ func (e *Entity) ListGuildMembers(guildID string) ([]*discordgo.Member, error) {
 	return res, nil
 }
 
-func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfileResponse, error) {
-	gUserXP, err := e.repo.GuildUserXP.GetOne(guildID, userID)
+func (e *Entity) GetUserProfile(req request.GetUserProfileRequest) (*response.GetUserProfileResponse, error) {
+	gUserXP, err := e.repo.GuildUserXP.GetOne(guild_user_xp.GetOneQuery{GuildID: req.GuildID, ProfileID: req.ProfileID})
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -331,20 +339,13 @@ func (e *Entity) GetUserProfile(guildID, userID string) (*response.GetUserProfil
 		progress = 1
 	}
 
-	if gUserXP.Guild == nil {
-		if gUserXP.Guild, err = e.repo.DiscordGuilds.GetByID(guildID); err != nil {
-			return nil, err
-		}
-	}
-
 	return &response.GetUserProfileResponse{
-		ID:           userID,
+		ID:           gUserXP.ProfileID,
 		CurrentLevel: currentLevel,
 		NextLevel:    nextLevel,
 		GuildXP:      gUserXP.TotalXP,
 		NrOfActions:  gUserXP.NrOfActions,
 		Progress:     progress,
-		Guild:        gUserXP.Guild,
 		GuildRank:    gUserXP.GuildRank,
 	}, nil
 }
