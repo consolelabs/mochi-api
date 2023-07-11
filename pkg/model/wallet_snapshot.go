@@ -11,3 +11,8 @@ type WalletSnapshot struct {
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
+
+type EvmAddress struct {
+	Address   string         `json:"address"`
+	ChainType JSONNullString `json:"chain_type"`
+}

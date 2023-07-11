@@ -14,3 +14,9 @@ type UserNFTBalancesByGuild struct {
 	UserDiscordId string `json:"user_discord_id"`
 	TotalBalance  int64  `json:"total_balance"`
 }
+
+type UserAddressNFTBalancesByGuild struct {
+	UserAddress  string `json:"user_address"`
+	TotalBalance int64  `json:"total_balance"`
+	StakingNeko  int64  `json:"staking_neko"`
+}

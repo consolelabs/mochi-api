@@ -37,31 +37,27 @@ func (pg *pg) Upsert(balance model.UserNFTBalance) error {
 }
 
 // user nft balances for all collections in 1 guild
-func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFTRole, error) {
-	var res []model.MemberNFTRole
+func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.UserAddressNFTBalancesByGuild, error) {
+	var res []model.UserAddressNFTBalancesByGuild
 	rows, err := pg.db.Raw(`
-	SELECT DISTINCT ON (temp.user_discord_id)
-		user_discord_id, role_id
+	SELECT DISTINCT ON (temp.user_address)
+		user_address, total_balance, staking_neko
 	FROM (
 		SELECT
-			final_balance.user_discord_id AS user_discord_id,
+			final_balance.user_address AS user_address,
 			sum(final_balance.balance) AS total_balance,
 			final_config.id AS group_id,
 			final_config.role_id AS role_id,
 			final_config.number_of_tokens AS number_of_tokens,
-			final_balance.staking_nekos AS staking_nekos
+			final_balance.staking_nekos AS staking_neko
 		FROM (
 			SELECT
 				bals.user_address,
 				bals.nft_collection_id,
-				wall.user_discord_id,
 				bals.balance,
 				bals.staking_nekos
 			FROM
-				user_nft_balances AS bals
-				INNER JOIN user_wallets AS wall ON wall.address = bals.user_address
-			WHERE
-				wall.guild_id = ?) AS final_balance
+				user_nft_balances AS bals) AS final_balance
 			INNER JOIN (
 				SELECT
 					a.id, config.nft_collection_id, a.guild_id, a.role_id, a.number_of_tokens
@@ -71,23 +67,21 @@ func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.MemberNFT
 				WHERE
 					guild_id = ?) AS final_config ON final_config.nft_collection_id = final_balance.nft_collection_id
 			GROUP BY
-				user_discord_id,
+				user_address,
 				group_id,
 				role_id,
 				number_of_tokens,
 				staking_nekos) AS temp
-	WHERE
-		COALESCE(temp.total_balance, 0) + COALESCE(temp.staking_nekos, 0) >= temp.number_of_tokens
 	ORDER BY
-		temp.user_discord_id,
+		temp.user_address,
 		temp.number_of_tokens DESC;
-	`, guildID, guildID).Rows()
+	`, guildID).Rows()
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		tmp := model.MemberNFTRole{}
-		if err := rows.Scan(&tmp.UserDiscordID, &tmp.RoleID); err != nil {
+		tmp := model.UserAddressNFTBalancesByGuild{}
+		if err := rows.Scan(&tmp.UserAddress, &tmp.TotalBalance, &tmp.StakingNeko); err != nil {
 			return nil, err
 		}
 		res = append(res, tmp)
