@@ -137,10 +137,6 @@ type UpdateGuildTokenRole struct {
 	Data *model.GuildConfigTokenRole `json:"data"`
 }
 
-type GetGuildLevelUpMessage struct {
-	Data *model.GuildConfigLevelupMessage `json:"data"`
-}
-
 type GuildConfigTipRangeResponse struct {
 	GuildID   string    `json:"guild_id"`
 	Min       *float64  `json:"min,omitempty"`

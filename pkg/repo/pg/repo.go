@@ -25,7 +25,6 @@ import (
 	guildconfiggmgn "github.com/defipod/mochi/pkg/repo/guild_config_gm_gn"
 	guildconfiggroupnftrole "github.com/defipod/mochi/pkg/repo/guild_config_group_nft_role"
 	guildconfiglevelrole "github.com/defipod/mochi/pkg/repo/guild_config_level_role"
-	guildconfiglevelupmessage "github.com/defipod/mochi/pkg/repo/guild_config_levelup_message"
 	guildconfiglogchannel "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	guildconfignftrole "github.com/defipod/mochi/pkg/repo/guild_config_nft_role"
 	guildconfigreactionrole "github.com/defipod/mochi/pkg/repo/guild_config_reaction_roles"
@@ -130,7 +129,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		OffchainTipBotConfigNotify:           offchaintipbotconfignotify.NewPG(db),
 		NftAddRequestHistory:                 nftaddrequesthistory.NewPG(db),
 		GuildConfigTokenRole:                 guildconfigtokenrole.NewPG(db),
-		GuildConfigLevelUpMessage:            guildconfiglevelupmessage.NewPG(db),
 		Emojis:                               emojis.NewPG(db),
 		UserWalletWatchlistItem:              userwalletwatchlistitem.NewPG(db),
 		UserTokenPriceAlert:                  usertokenpricealert.NewPG(db),

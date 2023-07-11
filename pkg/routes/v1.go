@@ -113,12 +113,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 			questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
 		}
-		levelupGroup := communityGroup.Group("/levelup")
-		{
-			levelupGroup.GET("", h.Community.GetLevelUpMessage)
-			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
-			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
-		}
 		tagmeGroup := communityGroup.Group("/tagme")
 		{
 			tagmeGroup.GET("", h.Community.GetUserTag)
