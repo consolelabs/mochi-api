@@ -43,16 +43,15 @@ type TopUser struct {
 }
 
 type GetUserProfileResponse struct {
-	ID             string                       `json:"id"`
-	AboutMe        string                       `json:"about_me"`
-	CurrentLevel   *model.ConfigXpLevel         `json:"current_level"`
-	NextLevel      *model.ConfigXpLevel         `json:"next_level"`
-	GuildXP        int                          `json:"guild_xp"`
-	NrOfActions    int                          `json:"nr_of_actions"`
-	Progress       float64                      `json:"progress"`
-	Guild          *model.DiscordGuild          `json:"guild"`
-	GuildRank      int                          `json:"guild_rank"`
-	UserFactionXps *model.UserFactionXpsMapping `json:"user_faction_xps"`
+	ID           string               `json:"id"`
+	AboutMe      string               `json:"about_me"`
+	CurrentLevel *model.ConfigXpLevel `json:"current_level"`
+	NextLevel    *model.ConfigXpLevel `json:"next_level"`
+	GuildXP      int                  `json:"guild_xp"`
+	NrOfActions  int                  `json:"nr_of_actions"`
+	Progress     float64              `json:"progress"`
+	Guild        *model.DiscordGuild  `json:"guild"`
+	GuildRank    int                  `json:"guild_rank"`
 }
 
 // For swagger
