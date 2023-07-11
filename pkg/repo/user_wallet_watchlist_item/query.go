@@ -2,7 +2,9 @@ package userwalletwatchlistitem
 
 type ListQuery struct {
 	ProfileID string
+	UserID    string
 	IsOwner   *bool
+	Address   string
 }
 
 type GetOneQuery struct {

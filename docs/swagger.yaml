@@ -1065,8 +1065,12 @@ definitions:
     type: object
   request.GetTrackingWalletsRequest:
     properties:
+      address:
+        type: string
       profileID:
         type: string
+      withBalance:
+        type: boolean
     type: object
   request.GuildConfigDefaultNftTickerRequest:
     properties:
@@ -2149,13 +2153,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_7d_change:
+        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
-        type: number
-      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2712,16 +2716,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
@@ -2731,6 +2725,16 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -6747,6 +6751,30 @@ paths:
       summary: Get guild config wallet verification message
       tags:
       - Verification
+  /watchlists/wallets:
+    get:
+      consumes:
+      - application/json
+      description: Get tracking wallets
+      parameters:
+      - description: address
+        in: query
+        name: address
+        type: string
+      - description: with balance
+        in: query
+        name: with_balance
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetTrackingWalletsResponse'
+      summary: Get tracking wallets
+      tags:
+      - WatchList
 securityDefinitions:
   ApiKeyAuth:
     in: header

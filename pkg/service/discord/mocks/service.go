@@ -310,7 +310,7 @@ func (mr *MockServiceMockRecorder) SendGuildActivityLogs(channelID, userID, titl
 }
 
 // SendLevelUpMessage mocks base method.
-func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
+func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SendLevelUpMessage", levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
 }

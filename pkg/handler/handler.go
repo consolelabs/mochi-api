@@ -9,7 +9,6 @@ import (
 	configchannel "github.com/defipod/mochi/pkg/handler/config-channel"
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
-	configtwittersales "github.com/defipod/mochi/pkg/handler/config-twitter-sales"
 	"github.com/defipod/mochi/pkg/handler/content"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/dex"
@@ -30,57 +29,55 @@ import (
 )
 
 type Handler struct {
-	Healthcheck       healthz.IHandler
-	Community         community.IHandler
-	Guild             guild.IHandler
-	Config            config.IHandler
-	Defi              defi.IHandler
-	Nft               nft.IHandler
-	User              user.IHandler
-	Verify            verify.IHandler
-	Webhook           webhook.IHandler
-	Tip               tip.IHandler
-	ConfigChannel     configchannel.IHandler
-	ConfigDefi        configdefi.IHandler
-	ConfigRoles       configroles.IHandler
-	ConfigTwitterSale configtwittersales.IHandler
-	Wallet            wallet.IHandler
-	Vault             vault.IHandler
-	Swap              swap.IHandler
-	ApiKey            apikey.IHandler
-	PkPass            pkpass.IHandler
-	Emojis            emojis.IHandler
-	Dex               dex.IHandler
-	Content           content.IHandler
-	AirdropCampaign   airdropcampaign.IHandler
-	Watchlist         watchlist.IHandler
+	Healthcheck     healthz.IHandler
+	Community       community.IHandler
+	Guild           guild.IHandler
+	Config          config.IHandler
+	Defi            defi.IHandler
+	Nft             nft.IHandler
+	User            user.IHandler
+	Verify          verify.IHandler
+	Webhook         webhook.IHandler
+	Tip             tip.IHandler
+	ConfigChannel   configchannel.IHandler
+	ConfigDefi      configdefi.IHandler
+	ConfigRoles     configroles.IHandler
+	Wallet          wallet.IHandler
+	Vault           vault.IHandler
+	Swap            swap.IHandler
+	ApiKey          apikey.IHandler
+	PkPass          pkpass.IHandler
+	Emojis          emojis.IHandler
+	Dex             dex.IHandler
+	Content         content.IHandler
+	AirdropCampaign airdropcampaign.IHandler
+	Watchlist       watchlist.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
 	return &Handler{
-		Healthcheck:       healthz.New(),
-		Community:         community.New(entities, logger),
-		Guild:             guild.New(entities, logger),
-		Config:            config.New(entities, logger),
-		Defi:              defi.New(entities, logger),
-		Nft:               nft.New(entities, logger),
-		User:              user.New(entities, logger),
-		Verify:            verify.New(entities, logger),
-		Webhook:           webhook.New(entities, logger),
-		Tip:               tip.New(entities, logger),
-		ConfigChannel:     configchannel.New(entities, logger),
-		ConfigDefi:        configdefi.New(entities, logger),
-		ConfigRoles:       configroles.New(entities, logger),
-		ConfigTwitterSale: configtwittersales.New(entities, logger),
-		Wallet:            wallet.New(entities, logger),
-		Vault:             vault.New(entities, logger),
-		Swap:              swap.New(entities, logger),
-		ApiKey:            apikey.New(entities, logger),
-		PkPass:            pkpass.New(entities, logger),
-		Emojis:            emojis.New(entities, logger),
-		Dex:               dex.New(entities, logger),
-		Content:           content.New(entities, logger),
-		AirdropCampaign:   airdropcampaign.New(entities, logger),
-		Watchlist:         watchlist.New(entities, logger),
+		Healthcheck:     healthz.New(),
+		Community:       community.New(entities, logger),
+		Guild:           guild.New(entities, logger),
+		Config:          config.New(entities, logger),
+		Defi:            defi.New(entities, logger),
+		Nft:             nft.New(entities, logger),
+		User:            user.New(entities, logger),
+		Verify:          verify.New(entities, logger),
+		Webhook:         webhook.New(entities, logger),
+		Tip:             tip.New(entities, logger),
+		ConfigChannel:   configchannel.New(entities, logger),
+		ConfigDefi:      configdefi.New(entities, logger),
+		ConfigRoles:     configroles.New(entities, logger),
+		Wallet:          wallet.New(entities, logger),
+		Vault:           vault.New(entities, logger),
+		Swap:            swap.New(entities, logger),
+		ApiKey:          apikey.New(entities, logger),
+		PkPass:          pkpass.New(entities, logger),
+		Emojis:          emojis.New(entities, logger),
+		Dex:             dex.New(entities, logger),
+		Content:         content.New(entities, logger),
+		AirdropCampaign: airdropcampaign.New(entities, logger),
+		Watchlist:       watchlist.New(entities, logger),
 	}
 }

@@ -14,6 +14,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -160,7 +161,7 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 	} else if res.LevelUp {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "userID": req.UserID}).Info("User leveled up")
 		// get level up config
-		config, err := e.repo.GuildConfigLevelUpMessage.GetByGuildId(req.GuildID)
+		config, err := e.repo.GuildConfigLogChannel.Get(query.Query{LogType: "level", GuildId: req.GuildID})
 		if err != nil && err != gorm.ErrRecordNotFound {
 			e.log.Fields(logger.Fields{"guildId": req.GuildID}).Errorf(err, "[HandleUserActivities] - e.repo.GuildConfigLevelUpMessage.GetByGuildId failed")
 			return nil, err
@@ -182,7 +183,11 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		randomTipIdx := rand.Intn(len(contentDescription.Tip))
 		randomTip := contentDescription.Tip[randomTipIdx]
 
-		e.svc.Discord.SendLevelUpMessage(config, role, levelNeeded, randomTip, res)
+		if len(config) == 0 {
+			e.log.Fields(logger.Fields{"guildId": req.GuildID}).Errorf(err, "[HandleUserActivities] - e.repo.GuildConfigLevelUpMessage.GetByGuildId failed")
+			return nil, err
+		}
+		e.svc.Discord.SendLevelUpMessage(&config[0], role, levelNeeded, randomTip, res)
 	}
 	return res, nil
 }

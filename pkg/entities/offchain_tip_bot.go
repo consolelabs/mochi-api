@@ -12,6 +12,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -131,45 +132,43 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 		return
 	}
 	// Do not return error here, just log it
-	configNotifyChannels, err := e.repo.OffchainTipBotConfigNotify.GetByGuildID(req.GuildID)
+	configNotifyChannels, err := e.repo.GuildConfigLogChannel.Get(query.Query{LogType: "tip", GuildId: req.GuildID})
 	if err != nil {
 		e.log.Fields(logger.Fields{"guild_id": req.GuildID}).Error(err, "[entity.sendLogNotify] repo.OffchainTipBotConfigNotify.GetByGuildID() failed")
 		return
 	}
 
 	for _, configNotifyChannel := range configNotifyChannels {
-		if strings.EqualFold(req.Token, configNotifyChannel.Token) || configNotifyChannel.Token == "*" {
-			var recipients []string
-			for _, recipient := range req.Recipients {
-				recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
+		var recipients []string
+		for _, recipient := range req.Recipients {
+			recipients = append(recipients, fmt.Sprintf("<@%s>", recipient))
+		}
+		recipientsStr := strings.Join(recipients, ", ")
+		descriptionFormat := ""
+		name := ""
+		switch req.TransferType {
+		case "tip":
+			name = "Someone sent out money"
+			descriptionFormat = "<@%s> has just sent %s **%s %s** at <#%s>"
+			if req.Each {
+				descriptionFormat = "<@%s> has just sent %s **%s %s** each at <#%s>"
 			}
-			recipientsStr := strings.Join(recipients, ", ")
-			descriptionFormat := ""
-			name := ""
-			switch req.TransferType {
-			case "tip":
-				name = "Someone sent out money"
-				descriptionFormat = "<@%s> has just sent %s **%s %s** at <#%s>"
-				if req.Each {
-					descriptionFormat = "<@%s> has just sent %s **%s %s** each at <#%s>"
-				}
-			case "airdrop":
-				name = "Someone dropped money"
-				descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
-			}
-			description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachStr, strings.ToUpper(req.Token), req.ChannelID)
-			if req.Message != "" {
-				description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
-			}
-			author := &discordgo.MessageEmbedAuthor{
-				Name:    name,
-				IconURL: "https://cdn.discordapp.com/emojis/1093923019988148354.gif?size=240&quality=lossless",
-			}
+		case "airdrop":
+			name = "Someone dropped money"
+			descriptionFormat = "<@%s> has just airdropped %s **%s %s** at <#%s>"
+		}
+		description := fmt.Sprintf(descriptionFormat, req.Sender, recipientsStr, amountEachStr, strings.ToUpper(req.Token), req.ChannelID)
+		if req.Message != "" {
+			description += fmt.Sprintf("\n<a:_:1095990167350816869> **%s**", req.Message)
+		}
+		author := &discordgo.MessageEmbedAuthor{
+			Name:    name,
+			IconURL: "https://cdn.discordapp.com/emojis/1093923019988148354.gif?size=240&quality=lossless",
+		}
 
-			err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelID, req.Sender, author, description, req.Image)
-			if err != nil {
-				e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelID}).Error(err, "[entity.sendLogNotify] discord.ChannelMessageSendEmbed() failed")
-			}
+		err := e.svc.Discord.SendTipActivityLogs(configNotifyChannel.ChannelId, req.Sender, author, description, req.Image)
+		if err != nil {
+			e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelId}).Error(err, "[entity.sendLogNotify] discord.ChannelMessageSendEmbed() failed")
 		}
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
+	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -797,4 +798,19 @@ func (e *Entity) RemoveGuildConfigTipRange(guildID string) error {
 	}
 
 	return nil
+}
+
+func (e *Entity) CreateGuildConfigLogChannel(req request.CreateConfigLogChannelRequest) (*model.GuildConfigLogChannel, error) {
+	return e.repo.GuildConfigLogChannel.Upsert(&model.GuildConfigLogChannel{
+		GuildId:   req.GuildID,
+		ChannelId: req.ChannelID,
+		LogType:   req.LogType,
+	})
+}
+
+func (e *Entity) GetGuildConfigLogChannel(req request.QueryConfigLogChannel) ([]model.GuildConfigLogChannel, error) {
+	return e.repo.GuildConfigLogChannel.Get(query.Query{
+		GuildId: req.GuildID,
+		LogType: req.LogType,
+	})
 }

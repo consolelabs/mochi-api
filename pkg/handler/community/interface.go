@@ -11,10 +11,6 @@ type IHandler interface {
 	ClaimQuestsRewards(c *gin.Context)
 	UpdateQuestProgress(c *gin.Context)
 
-	UpsertLevelUpMessage(c *gin.Context)
-	GetLevelUpMessage(c *gin.Context)
-	DeleteLevelUpMessage(c *gin.Context)
-
 	GetUserTag(c *gin.Context)
 	UpsertUserTag(c *gin.Context)
 }

@@ -69,23 +69,28 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		//    What is the virtual entity? => Watchlist that is not a table in the DB, but can be extended by /watchlists to point to user's watchlist
 		// 		Wallets is also the virtual entity here, it is different from the wallet in the DB, but it is the wallet that user want to watch
 		// 		What is the action? => track/untrack
-		watchListGroup := userGroup.Group("/:id/watchlists") //:id is profile_id
+		userWatchListGroup := userGroup.Group("/:id/watchlists") //:id is profile_id
 		{
 			// wallets
-			watchListGroup.POST("/wallets/track", h.Watchlist.TrackWallet)
+			userWatchListGroup.POST("/wallets/track", h.Watchlist.TrackWallet)
 			walletsGroup.POST("/wallets/untrack", h.Watchlist.UntrackWallet)
-			watchListGroup.GET("/wallets", h.Watchlist.ListTrackingWallets)
-			watchListGroup.PUT("/wallets/:address", h.Watchlist.UpdateTrackingWalletInfo)
+			userWatchListGroup.GET("/wallets", h.Watchlist.ListUserTrackingWallets)
+			userWatchListGroup.PUT("/wallets/:address", h.Watchlist.UpdateTrackingWalletInfo)
 
 			// tokens
-			watchListGroup.POST("/tokens/track", h.Watchlist.TrackToken)
-			watchListGroup.POST("/tokens/untrack", h.Watchlist.UntrackToken)
-			watchListGroup.GET("/tokens", h.Watchlist.ListTrackingTokens)
+			userWatchListGroup.POST("/tokens/track", h.Watchlist.TrackToken)
+			userWatchListGroup.POST("/tokens/untrack", h.Watchlist.UntrackToken)
+			userWatchListGroup.GET("/tokens", h.Watchlist.ListTrackingTokens)
 
 			// nfts
-			watchListGroup.POST("/nfts/track", h.Watchlist.TrackNft)
-			watchListGroup.POST("/nfts/untrack", h.Watchlist.UntrackNft)
-			watchListGroup.GET("/nfts", h.Watchlist.ListTrackingNfts)
+			userWatchListGroup.POST("/nfts/track", h.Watchlist.TrackNft)
+			userWatchListGroup.POST("/nfts/untrack", h.Watchlist.UntrackNft)
+			userWatchListGroup.GET("/nfts", h.Watchlist.ListTrackingNfts)
+		}
+
+		watchListGroup := v1.Group("/watchlists")
+		{
+			watchListGroup.GET("/wallets", h.Watchlist.ListTrackingWallets)
 		}
 
 		userEarnGroup := userGroup.Group("/:id/earns") //:id is profile_id
@@ -113,30 +118,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			questGroup.POST("/progress", h.Community.UpdateQuestProgress)
 			questGroup.POST("/claim", h.Community.ClaimQuestsRewards)
 		}
-		levelupGroup := communityGroup.Group("/levelup")
-		{
-			levelupGroup.GET("", h.Community.GetLevelUpMessage)
-			levelupGroup.POST("", h.Community.UpsertLevelUpMessage)
-			levelupGroup.DELETE("", h.Community.DeleteLevelUpMessage)
-		}
 		tagmeGroup := communityGroup.Group("/tagme")
 		{
 			tagmeGroup.GET("", h.Community.GetUserTag)
 			tagmeGroup.POST("", h.Community.UpsertUserTag)
 		}
 
-	}
-
-	configGroup := v1.Group("/config")
-	{
-		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
-		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
-
-		configTwitterSaleGroup := configGroup.Group("/twitter-sales")
-		{
-			configTwitterSaleGroup.GET("", h.ConfigTwitterSale.Get)
-			configTwitterSaleGroup.POST("", h.ConfigTwitterSale.Create)
-		}
 	}
 
 	// v1/config-channels/
@@ -154,17 +141,12 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.DELETE("/tip-notify/:id", h.ConfigChannel.DeleteConfigNotify)
 	}
 
-	// TODO:
-	// v1/config/role/{guild-id}
-	// v1/config/role/{guild-id}/reaction
-	// // GET
-	// // POST
-	// // DELETE
-	// v1/config/role/{guild-id}/default
-	// v1/config/role/{guild-id}/level
-	// v1/config/role/{guild-id}/nft
-	// v1/config/role/{guild-id}/token
-	// v1/config/role/{guild-id}/bot-manager
+	configGroup := v1.Group("/config")
+	{
+		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
+		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
+	}
+
 	configRoleGroup := configGroup.Group("/role/:guild_id")
 	{
 		roleReactionGroup := configRoleGroup.Group("/reaction")
@@ -206,6 +188,17 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			adminRoleGroup.GET("", h.ConfigRoles.ListGuildAdminRoles)
 			adminRoleGroup.DELETE(":id", h.ConfigRoles.RemoveGuildAdminRole)
 		}
+	}
+
+	// config
+	// POST api/v1/config/{guild-id}/log-channel {log_type, channel_id, guild_id}
+	// GET api/v1/config/{guild-id}/log-channel
+	// db
+	// guild_config_log_channel {log_type, channel_id, guild_id}
+	configLogChannelGroup := configGroup.Group("/log-channel/:guild_id")
+	{
+		configLogChannelGroup.POST("", h.ConfigChannel.CreateGuildConfigLogChannel)
+		configLogChannelGroup.GET(":log_type", h.ConfigChannel.GetGuildConfigLogChannel)
 	}
 
 	// v1/config-defi

@@ -26,6 +26,10 @@ func (pg *pg) List(q ListQuery) ([]model.UserWalletWatchlistItem, error) {
 	if q.IsOwner != nil {
 		db = db.Where("is_owner = ?", *q.IsOwner)
 	}
+	if q.Address != "" {
+		db = db.Where("address ILIKE ?", q.Address)
+	}
+
 	return items, db.Find(&items).Error
 }
 

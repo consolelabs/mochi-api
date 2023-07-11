@@ -21,7 +21,7 @@ type Service interface {
 	SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error
 	SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error
 	SendGuildActivityLogs(channelID, userID, title, description string) error
-	SendLevelUpMessage(levelUpConfig *model.GuildConfigLevelupMessage, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse)
+	SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse)
 	NotifyGmStreak(channelID string, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error
 	NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error
 	SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error

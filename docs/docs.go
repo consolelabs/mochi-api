@@ -5298,6 +5298,43 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/watchlists/wallets": {
+            "get": {
+                "description": "Get tracking wallets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WatchList"
+                ],
+                "summary": "Get tracking wallets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "with balance",
+                        "name": "with_balance",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetTrackingWalletsResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -6926,8 +6963,14 @@ const docTemplate = `{
         "request.GetTrackingWalletsRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
                 "profileID": {
                     "type": "string"
+                },
+                "withBalance": {
+                    "type": "boolean"
                 }
             }
         },
