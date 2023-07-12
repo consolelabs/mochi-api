@@ -39,16 +39,16 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Success     200 {object} response.DataListRoleReactionResponse
 // @Router      /config/role/{guild_id}/reaction [get]
 func (h *Handler) GetAllRoleReactionConfigs(c *gin.Context) {
-	guildID := c.Param("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetAllRoleReactionConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	var req request.GetRoleReactionConfigsRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Info("[handler.GetAllRoleReactionConfigs] BindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	resp, err := h.entities.ListAllReactionRoles(guildID)
+	resp, err := h.entities.ListAllReactionRoles(req.GuildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetAllRoleReactionConfigs] - failed to list all reaction roles")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetAllRoleReactionConfigs] - failed to list all reaction roles")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -69,13 +69,13 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	var req request.RoleReactionUpdateRequest
 
 	if err := c.BindUri(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] BindUri() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to read JSON")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] BindJSON() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -169,16 +169,16 @@ func (h *Handler) FilterConfigByReaction(c *gin.Context) {
 // @Success     200 {object} response.DefaultRoleResponse
 // @Router      /config/role/{guild_id}/default [get]
 func (h *Handler) GetDefaultRolesByGuildID(c *gin.Context) {
-	guildID := c.Param("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetDefaultRolesByGuildID] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	var req request.CreateDefaultRoleRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetDefaultRolesByGuildID] BindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	data, err := h.entities.GetDefaultRoleByGuildID(guildID)
+	data, err := h.entities.GetDefaultRoleByGuildID(req.GuildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetDefaultRolesByGuildID] - failed to get default roles")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetDefaultRolesByGuildID] - failed to get default roles")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -374,11 +374,6 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 		return
 	}
 
-	if req.GuildID == "" {
-		h.log.Info("[handler.ConfigLevelRole] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
-		return
-	}
 	if req.RoleID == "" {
 		h.log.Info("[handler.ConfigLevelRole] - role id empty")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("role_id is required"), nil))
@@ -409,16 +404,16 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 // @Success     200 {object} response.GetLevelRoleConfigsResponse
 // @Router      /config/role/{guild_id}/level [get]
 func (h *Handler) GetLevelRoleConfigs(c *gin.Context) {
-	guildID := c.Param("guild_id")
-	if guildID == "" {
-		h.log.Info("[handler.GetLevelRoleConfigs] - guild id empty")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+	var req request.ConfigLevelRoleRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Info("[handler.GetLevelRoleConfigs] BindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	data, err := h.entities.GetGuildLevelRoleConfigs(guildID)
+	data, err := h.entities.GetGuildLevelRoleConfigs(req.GuildID)
 	if err != nil {
-		h.log.Fields(logger.Fields{"guildID": guildID}).Error(err, "[handler.GetLevelRoleConfigs] - failed to get guild level role config")
+		h.log.Fields(logger.Fields{"guildID": req.GuildID}).Error(err, "[handler.GetLevelRoleConfigs] - failed to get guild level role config")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

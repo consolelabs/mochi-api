@@ -6,5 +6,4 @@ import (
 
 type Service interface {
 	CreateUserTransaction(createUserTransactionRequest model.CreateUserTransaction) (*model.CreateUserTxResponse, error)
-	GetUserFactionXp(userDiscordId string) (*model.GetUserFactionXpsResponse, error)
 }

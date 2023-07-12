@@ -1,0 +1,10 @@
+{
+  "data": null,
+  "error": "Key: 'GetTopUsersRequest.ProfileID' Error:Field validation for 'ProfileID' failed on the 'required' tag",
+  "errors": [
+    {
+      "field": "ProfileID",
+      "msg": "Field validation for 'ProfileID' failed on the 'required' tag"
+    }
+  ]
+}

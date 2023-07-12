@@ -13,3 +13,7 @@ type RoleReactionUpdateRequest struct {
 	Reaction  string `json:"reaction"`
 	RoleID    string `json:"role_id"`
 }
+
+type GetRoleReactionConfigsRequest struct {
+	GuildID string `uri:"guild_id" binding:"required"`
+}

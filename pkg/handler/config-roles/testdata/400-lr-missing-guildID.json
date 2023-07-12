@@ -1,6 +1,6 @@
 {
   "data": null,
-  "error": "Key: 'CreateDefaultRoleRequest.GuildID' Error:Field validation for 'GuildID' failed on the 'required' tag",
+  "error": "Key: 'ConfigLevelRoleRequest.GuildID' Error:Field validation for 'GuildID' failed on the 'required' tag",
   "errors": [
     {
       "field": "GuildID",
