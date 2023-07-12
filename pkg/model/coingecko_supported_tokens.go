@@ -1,5 +1,7 @@
 package model
 
+import "gorm.io/gorm"
+
 type CoingeckoSupportedTokens struct {
 	ID              string  `json:"id"`
 	Symbol          string  `json:"symbol"`
@@ -14,4 +16,13 @@ type CoingeckoSupportedTokens struct {
 type CoingeckoDetailPlatform struct {
 	ChainId int64  `json:"chain_id"`
 	Address string `json:"address"`
+}
+
+func (t *CoingeckoSupportedTokens) BeforeSave(tx *gorm.DB) error {
+	// avoid invalid json error while insert/update
+	if len(t.DetailPlatforms) == 0 {
+		t.DetailPlatforms = []byte("[]")
+	}
+
+	return nil
 }
