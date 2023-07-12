@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"math"
@@ -72,6 +73,28 @@ func (e *Entity) GetTrackingWallets(req request.GetTrackingWalletsRequest) (*mod
 	}
 
 	return &result, nil
+}
+
+func (e *Entity) ListAllWalletAddresses() ([]model.EvmAddress, error) {
+	listWalletAddress := make([]model.EvmAddress, 0)
+
+	evmAccount, err := e.svc.MochiProfile.GetAllEvmAccount()
+	if err != nil {
+		e.log.Error(err, "[entity.ListAllWalletAddresses] get all evm account failed")
+		return listWalletAddress, err
+	}
+
+	var chainType model.JSONNullString
+	chainType.NullString = sql.NullString{String: consts.EvmChainType, Valid: true}
+
+	for _, account := range evmAccount {
+		listWalletAddress = append(listWalletAddress, model.EvmAddress{
+			Address:   account.PlatformIdentifier,
+			ChainType: chainType,
+		})
+	}
+
+	return listWalletAddress, err
 }
 
 func (e *Entity) calculateSolWalletNetWorth(wallet *model.UserWalletWatchlistItem) error {

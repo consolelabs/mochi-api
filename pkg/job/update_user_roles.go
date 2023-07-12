@@ -235,7 +235,7 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
-	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(hrConfigs, guildID)
+	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(guildID)
 	if err != nil {
 		l.Error(err, "[updateNFTRoles] entity.ListMemberNFTRolesToAdd failed")
 		return err
