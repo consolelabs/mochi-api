@@ -8,6 +8,7 @@ import (
 
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -225,16 +226,55 @@ func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigGro
 	return e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
 }
 
-func (e *Entity) ListMemberNFTRolesToAdd(listGroupConfigNFTRoles []model.GuildConfigGroupNFTRole, guildID string) (map[[2]string]bool, error) {
-	mrs, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(guildID)
+func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, error) {
+	// 1. get nft balance of user address
+	userAddressNFTBalance, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(guildID)
 	if err != nil {
 		return nil, err
 	}
+
+	// 2. get balance of user discord
+	userDiscordNFTBalance := make(map[string]int64)
+
+	evmAccount, err := e.svc.MochiProfile.GetAllEvmAccount()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, evmAcc := range evmAccount {
+		for _, user := range userAddressNFTBalance {
+			if evmAcc.PlatformIdentifier == user.UserAddress {
+				profileId, err := e.svc.MochiProfile.GetByID(evmAcc.ProfileID)
+				if err != nil {
+					continue
+				}
+
+				for _, acc := range profileId.AssociatedAccounts {
+					if acc.Platform == consts.PlatformDiscord {
+						userDiscordNFTBalance[acc.PlatformIdentifier] += user.TotalBalance + user.StakingNeko
+					}
+				}
+
+			}
+		}
+	}
+
+	// 3. map role Id -> user discord
 	rolesToAdd := make(map[[2]string]bool)
 
-	for _, mr := range mrs {
-		rolesToAdd[[2]string{mr.UserDiscordID, mr.RoleID}] = true
+	guildConfigGroupNFTRole, err := e.ListGuildNFTRoleConfigs(guildID)
+	if err != nil {
+		return nil, err
 	}
+
+	for _, config := range guildConfigGroupNFTRole {
+		for key, value := range userDiscordNFTBalance {
+			if int(value) >= config.NumberOfTokens {
+				rolesToAdd[[2]string{key, config.RoleID}] = true
+			}
+		}
+	}
+
 	return rolesToAdd, nil
 }
 

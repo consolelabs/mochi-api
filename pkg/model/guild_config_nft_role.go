@@ -13,3 +13,8 @@ type MemberNFTRole struct {
 	UserDiscordID string `json:"user_id"`
 	RoleID        string `json:"role_id"`
 }
+
+type UserAddressNFTRole struct {
+	UserAddress string `json:"user_address"`
+	RoleID      string `json:"role_id"`
+}
