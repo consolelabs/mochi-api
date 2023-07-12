@@ -1,4 +1,10 @@
 {
-    "data": null,
-    "error":"guild_id is required"
+  "data": null,
+  "error": "Key: 'GetTopUsersRequest.GuildID' Error:Field validation for 'GuildID' failed on the 'required' tag",
+  "errors": [
+    {
+      "field": "GuildID",
+      "msg": "Field validation for 'GuildID' failed on the 'required' tag"
+    }
+  ]
 }

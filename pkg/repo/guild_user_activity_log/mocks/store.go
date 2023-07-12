@@ -62,16 +62,16 @@ func (mr *MockStoreMockRecorder) CreateOne(record interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), record)
 }
 
-// CreateOneNoGuild mocks base method.
-func (m *MockStore) CreateOneNoGuild(record model.GuildUserActivityLog) error {
+// UpdateInvalidRecords mocks base method.
+func (m *MockStore) UpdateInvalidRecords(userID, profileID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOneNoGuild", record)
+	ret := m.ctrl.Call(m, "UpdateInvalidRecords", userID, profileID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreateOneNoGuild indicates an expected call of CreateOneNoGuild.
-func (mr *MockStoreMockRecorder) CreateOneNoGuild(record interface{}) *gomock.Call {
+// UpdateInvalidRecords indicates an expected call of UpdateInvalidRecords.
+func (mr *MockStoreMockRecorder) UpdateInvalidRecords(userID, profileID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOneNoGuild", reflect.TypeOf((*MockStore)(nil).CreateOneNoGuild), record)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInvalidRecords", reflect.TypeOf((*MockStore)(nil).UpdateInvalidRecords), userID, profileID)
 }

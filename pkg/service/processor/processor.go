@@ -54,29 +54,3 @@ func (p *processor) CreateUserTransaction(createUserTransactionRequest model.Cre
 	}
 	return res, nil
 }
-
-func (p *processor) GetUserFactionXp(userDiscordId string) (*model.GetUserFactionXpsResponse, error) {
-	var client = &http.Client{}
-	request, err := http.NewRequest("GET", p.config.ProcessorServerHost+"/users?user_discord_id="+userDiscordId, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-
-	defer response.Body.Close()
-	resBody, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	res := &model.GetUserFactionXpsResponse{}
-	err = json.Unmarshal(resBody, res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
-}

@@ -34,19 +34,19 @@ func TestHandler_GetDefaultRolesByGuildID(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		query            string
+		param            string
 		wantCode         int
 		wantResponsePath string
 	}{
 		{
 			name:             "guild_has_been_configured",
-			query:            "guild_id=895659000996200508",
+			param:            "895659000996200508",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/response/default_role/200_guild_has_been_configured.json",
 		},
 		{
 			name:             "guild_is_not_configured",
-			query:            "guild_id=863278424433229854",
+			param:            "863278424433229854",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/response/default_role/200_guild_is_not_configured.json",
 		},
@@ -60,7 +60,8 @@ func TestHandler_GetDefaultRolesByGuildID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/default-roles?%s", tt.query), nil)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/config/role/%s/default", tt.param), nil)
+			ctx.AddParam("guild_id", tt.param)
 
 			h.GetDefaultRolesByGuildID(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -124,7 +125,8 @@ func TestHandler_CreateDefaultRole(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/configs/default-roles", bytes.NewBuffer(body))
+			ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/config/role/%s/default", tt.args.GuildID), bytes.NewBuffer(body))
+			ctx.AddParam("guild_id", tt.args.GuildID)
 
 			h.CreateDefaultRole(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -150,19 +152,19 @@ func TestHandler_DeleteDefaultRoleByGuildID(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		query            string
+		param            string
 		wantCode         int
 		wantResponsePath string
 	}{
 		{
 			name:             "guild_has_been_configured",
-			query:            "guild_id=895659000996200508",
+			param:            "guild_id=895659000996200508",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/200-message-ok.json",
 		},
 		{
 			name:             "guild_is_not_configured",
-			query:            "guild_id=863278424433229854",
+			param:            "guild_id=863278424433229854",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/200-message-ok.json",
 		},
@@ -176,7 +178,8 @@ func TestHandler_DeleteDefaultRoleByGuildID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/api/v1/configs/default-roles?%s", tt.query), nil)
+			ctx.Request = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/api/v1/config/role/%s/default", tt.param), nil)
+			ctx.AddParam("guild_id", tt.param)
 
 			h.DeleteDefaultRoleByGuildID(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -202,24 +205,24 @@ func TestHandler_GetAllRoleReactionConfigs(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		query            string
+		param            string
 		wantCode         int
 		wantResponsePath string
 	}{
 		{
 			name:             "200_ok",
-			query:            "guild_id=895659000996200508",
+			param:            "895659000996200508",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/response/role_reaction_config/200.json",
 		},
 		{
 			name:             "400_empty_guild_id",
 			wantCode:         http.StatusBadRequest,
-			wantResponsePath: "testdata/400-missing-guildID.json",
+			wantResponsePath: "testdata/400-rr-missing-guildID.json",
 		},
 		{
 			name:             "200_guild_does_not_have_config",
-			query:            "guild_id=895659000996200123",
+			param:            "895659000996200123",
 			wantCode:         http.StatusOK,
 			wantResponsePath: "testdata/response/role_reaction_config/200_empty_config.json",
 		},
@@ -228,7 +231,8 @@ func TestHandler_GetAllRoleReactionConfigs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/reaction-roles?%s", tt.query), nil)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/config/role/%s/reaction", tt.param), nil)
+			ctx.AddParam("guild_id", tt.param)
 
 			h.GetAllRoleReactionConfigs(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -254,7 +258,7 @@ func TestHandler_AddReactionRoleConfig(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		args             interface{}
+		args             request.RoleReactionUpdateRequest
 		wantCode         int
 		wantResponsePath string
 	}{
@@ -293,7 +297,8 @@ func TestHandler_AddReactionRoleConfig(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/configs/reaction-roles", bytes.NewBuffer(body))
+			ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/config/role/%s/reaction", tt.args.GuildID), bytes.NewBuffer(body))
+			ctx.AddParam("guild_id", tt.args.GuildID)
 
 			h.AddReactionRoleConfig(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -483,7 +488,7 @@ func TestHandler_ConfigLevelRole(t *testing.T) {
 		{
 			name:             "empty_body",
 			wantCode:         http.StatusBadRequest,
-			wantResponsePath: "testdata/400-missing-guildID.json",
+			wantResponsePath: "testdata/400-lr-missing-guildID.json",
 		},
 		{
 			name: "update_level_with_zero_value",
@@ -505,7 +510,8 @@ func TestHandler_ConfigLevelRole(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodPost, "/api/v1/configs/level-roles", bytes.NewBuffer(body))
+			ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/config/role/%s/level", tt.args.GuildID), bytes.NewBuffer(body))
+			ctx.AddParam("guild_id", tt.args.GuildID)
 
 			h.ConfigLevelRole(ctx)
 			require.Equal(t, tt.wantCode, w.Code)
@@ -550,14 +556,14 @@ func TestHandler_GetLevelRoleConfigs(t *testing.T) {
 		{
 			name:             "empty_param",
 			wantCode:         http.StatusBadRequest,
-			wantResponsePath: "testdata/400-missing-guildID.json",
+			wantResponsePath: "testdata/400-lr-missing-guildID.json",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/configs/level-roles/%s", tt.param), nil)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/config/role/%s/level", tt.param), nil)
 			ctx.AddParam("guild_id", tt.param)
 
 			h.GetLevelRoleConfigs(ctx)
@@ -620,14 +626,14 @@ func TestHandler_RemoveLevelRoleConfig(t *testing.T) {
 			name:             "empty_param",
 			query:            "level=5",
 			wantCode:         http.StatusBadRequest,
-			wantResponsePath: "testdata/400-missing-guildID.json",
+			wantResponsePath: "testdata/400-common-missing-guildID.json",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/api/v1/configs/level-roles/%s?%s", tt.param, tt.query), nil)
+			ctx.Request = httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/api/v1/config/role/%s/level?%s", tt.param, tt.query), nil)
 			ctx.AddParam("guild_id", tt.param)
 
 			h.RemoveLevelRoleConfig(ctx)
@@ -654,22 +660,23 @@ func TestHandler_ListGuildNFTRoles(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		query            string
+		param            string
 		wantCode         int
 		wantResponsePath string
 	}{
 		{
 			name:             "fail to get - lack of guildID",
-			query:            "",
+			param:            "",
 			wantCode:         http.StatusBadRequest,
-			wantResponsePath: "testdata/400-missing-guildID.json",
+			wantResponsePath: "testdata/400-common-missing-guildID.json",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/config-roles/nft-roles?%s", tt.query), nil)
+			ctx.Request = httptest.NewRequest(http.MethodGet, fmt.Sprintf("/api/v1/config/role/%s/nft", tt.param), nil)
+			ctx.AddParam("guild_id", tt.param)
 
 			h.ListGuildGroupNFTRoles(ctx)
 			require.Equal(t, tt.wantCode, w.Code)

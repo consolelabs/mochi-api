@@ -6,27 +6,18 @@
       "total": 1
     },
     "author": {
-      "guild_id": "552427722551459840",
-      "user_id": "393034938028392449",
-      "total_xp": 7,
+      "guild_id": "",
+      "user_id": "",
+      "total_xp": 0,
       "level": 0,
       "user": null,
-      "guild": {
-        "id": "552427722551459840",
-        "name": "bestKN",
-        "bot_scopes": ["*"],
-        "alias": "",
-        "roles": null,
-        "created_at": "2022-04-20T16:36:20.014Z",
-        "global_xp": false,
-        "log_channel": "1016561468369551370",
-        "active": true
-      },
+      "guild": null,
       "current_level_role": null,
       "next_level_role": null,
-      "guild_rank": 1,
-      "nr_of_actions": 1,
-      "progress": 0
+      "guild_rank": 0,
+      "nr_of_actions": 0,
+      "progress": 0,
+      "profile_id": ""
     },
     "leaderboard": [
       {
@@ -57,7 +48,8 @@
         "nr_of_actions": 1,
         "progress": 0.35,
         "current_level_role": null,
-        "next_level_role": null
+        "next_level_role": null,
+        "profile_id": ""
       }
     ]
   }
