@@ -65,7 +65,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 
 	cXpValue := model.ConfigXpLevel{}
 
-	cXp.EXPECT().GetNextLevel(gomock.Any(), gomock.Any()).Return(&cXpValue, nil).AnyTimes()
+	cXp.EXPECT().GetLevelInfo(gomock.Any()).Return(&cXpValue, &cXpValue, nil).AnyTimes()
 
 	userXP := model.GuildUserXP{
 		GuildID:   "981128899280908299",
