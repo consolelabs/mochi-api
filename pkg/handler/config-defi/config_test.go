@@ -177,7 +177,7 @@ func TestHandler_HandlerGuildCustomTokenConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(w)
-			ctx.Request = httptest.NewRequest("POST", "/api/v1/configs/token", nil)
+			ctx.Request = httptest.NewRequest("POST", "/api/v1/config-defi/custom-tokens", nil)
 			util.SetRequestBody(ctx, tt.req)
 
 			coingeckoMock.EXPECT().GetCoin(tt.coingeckoSupportToken.ID).Return(tt.coingeckoResponse, nil, 0).AnyTimes()

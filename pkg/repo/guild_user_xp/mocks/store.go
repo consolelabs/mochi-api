@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	model "github.com/defipod/mochi/pkg/model"
+	guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,18 +51,18 @@ func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call 
 }
 
 // GetOne mocks base method.
-func (m *MockStore) GetOne(guildID, userID string) (*model.GuildUserXP, error) {
+func (m *MockStore) GetOne(arg0 guild_user_xp.GetOneQuery) (*model.GuildUserXP, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOne", guildID, userID)
+	ret := m.ctrl.Call(m, "GetOne", arg0)
 	ret0, _ := ret[0].(*model.GuildUserXP)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetOne indicates an expected call of GetOne.
-func (mr *MockStoreMockRecorder) GetOne(guildID, userID interface{}) *gomock.Call {
+func (mr *MockStoreMockRecorder) GetOne(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOne", reflect.TypeOf((*MockStore)(nil).GetOne), guildID, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOne", reflect.TypeOf((*MockStore)(nil).GetOne), arg0)
 }
 
 // GetTopUsers mocks base method.

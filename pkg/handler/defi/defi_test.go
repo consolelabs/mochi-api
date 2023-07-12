@@ -465,9 +465,7 @@ func TestHandler_SearchCoins(t *testing.T) {
 			ctx.Request = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/defi/coins?query=%s", tt.query), nil)
 
 			if tt.coinIds != nil && len(tt.coinIds) != 0 {
-				for _, coinId := range tt.coinIds {
-					coingeckoMock.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
-				}
+				coingeckoMock.EXPECT().GetCoinPrice(tt.coinIds, "usd").Return(tt.coinPrices, nil).AnyTimes()
 			}
 
 			h.SearchCoins(ctx)

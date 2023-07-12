@@ -17,8 +17,10 @@ import (
 	mock_config_xp_level "github.com/defipod/mochi/pkg/repo/config_xp_level/mocks"
 	mock_discord_guilds "github.com/defipod/mochi/pkg/repo/discord_guilds/mocks"
 	mock_discord_user_gm_streak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak/mocks"
+	"github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	mock_guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp/mocks"
 	"github.com/defipod/mochi/pkg/repo/pg"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/abi"
@@ -54,32 +56,26 @@ func TestEntity_GetUserProfile(t *testing.T) {
 	svc, _ := service.NewService(cfg, log)
 	uXp := mock_guild_user_xp.NewMockStore(ctrl)
 	cXp := mock_config_xp_level.NewMockStore(ctrl)
-	dcG := mock_discord_guilds.NewMockStore(ctrl)
+	// dcG := mock_discord_guilds.NewMockStore(ctrl)
 	processor := mock_processor.NewMockService(ctrl)
 	svc.Processor = processor
 
 	r.GuildUserXP = uXp
 	r.ConfigXPLevel = cXp
-	r.DiscordGuilds = dcG
 
 	cXpValue := model.ConfigXpLevel{}
 
 	cXp.EXPECT().GetNextLevel(gomock.Any(), gomock.Any()).Return(&cXpValue, nil).AnyTimes()
 
-	dcGValue := model.DiscordGuild{}
-
-	dcG.EXPECT().GetByID("981128899280908299").Return(&dcGValue, nil).AnyTimes()
-
 	userXP := model.GuildUserXP{
-		GuildID: "981128899280908299",
-		UserID:  "963641551416881183",
+		GuildID:   "981128899280908299",
+		ProfileID: "963641551416881183",
 	}
 
-	uXp.EXPECT().GetOne("981128899280908299", "963641551416881183").Return(&userXP, nil).AnyTimes()
+	uXp.EXPECT().GetOne(guild_user_xp.GetOneQuery{GuildID: "981128899280908299", ProfileID: "963641551416881183"}).Return(&userXP, nil).AnyTimes()
 
-	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("cannot find user")).AnyTimes()
-	uXp.EXPECT().GetOne("abc", "963641551416881183").Return(nil, errors.New("cannot find guild")).AnyTimes()
-	processor.EXPECT().GetUserFactionXp("963641551416881183").Return(&model.GetUserFactionXpsResponse{}, nil).AnyTimes()
+	uXp.EXPECT().GetOne(guild_user_xp.GetOneQuery{GuildID: "abc", ProfileID: "abc"}).Return(nil, errors.New("cannot find user")).AnyTimes()
+	uXp.EXPECT().GetOne(guild_user_xp.GetOneQuery{GuildID: "abc", ProfileID: "963641551416881183"}).Return(nil, errors.New("cannot find guild")).AnyTimes()
 
 	tests := []struct {
 		name    string
@@ -100,14 +96,12 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				userID:  "963641551416881183",
 			},
 			want: &response.GetUserProfileResponse{
-				ID:             "963641551416881183",
-				CurrentLevel:   &cXpValue,
-				NextLevel:      &cXpValue,
-				GuildXP:        0,
-				NrOfActions:    0,
-				Progress:       1,
-				Guild:          &dcGValue,
-				UserFactionXps: &model.UserFactionXpsMapping{},
+				ID:           "963641551416881183",
+				CurrentLevel: &cXpValue,
+				NextLevel:    &cXpValue,
+				GuildXP:      0,
+				NrOfActions:  0,
+				Progress:     1,
 			},
 			wantErr: false,
 		},
@@ -151,7 +145,7 @@ func TestEntity_GetUserProfile(t *testing.T) {
 				svc:      tt.fields.svc,
 				cfg:      tt.fields.cfg,
 			}
-			got, err := e.GetUserProfile(tt.args.guildID, tt.args.userID)
+			got, err := e.GetUserProfile(request.GetUserProfileRequest{GuildID: tt.args.guildID, ProfileID: tt.args.userID})
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetUserProfile() error = %v, wantErr %v", err, tt.wantErr)
@@ -221,9 +215,9 @@ func TestEntity_GetTopUsers(t *testing.T) {
 
 	dcG.EXPECT().GetByID("981128899280908299").Return(&dcGValue, nil).AnyTimes()
 
-	uXp.EXPECT().GetOne("981128899280908299", "963641551416881183").Return(&userXP, nil).AnyTimes()
+	uXp.EXPECT().GetOne(guild_user_xp.GetOneQuery{GuildID: "981128899280908299", ProfileID: "963641551416881183"}).Return(&userXP, nil).AnyTimes()
 
-	uXp.EXPECT().GetOne("abc", "abc").Return(nil, errors.New("cannot find user")).AnyTimes()
+	uXp.EXPECT().GetOne(guild_user_xp.GetOneQuery{GuildID: "abc", ProfileID: "abc"}).Return(nil, errors.New("cannot find user")).AnyTimes()
 	tests := []struct {
 		name    string
 		fields  fields
@@ -283,7 +277,7 @@ func TestEntity_GetTopUsers(t *testing.T) {
 				cfg:      tt.fields.cfg,
 			}
 
-			got, err := e.GetTopUsers(tt.args.guildID, tt.args.userID, "", "", tt.args.limit, tt.args.page)
+			got, err := e.GetTopUsers(request.GetTopUsersRequest{GuildID: tt.args.guildID, ProfileID: tt.args.userID, Query: "", Sort: "", Limit: tt.args.limit, Page: tt.args.page})
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.GetTopUsers() error = %v, wantErr %v", err, tt.wantErr)
 				return

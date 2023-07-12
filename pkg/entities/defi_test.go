@@ -447,15 +447,14 @@ func TestEntity_SearchCoins(t *testing.T) {
 			wantErr:                false,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockCoingeckoSupportToken.EXPECT().GetOne(tt.query).Return(tt.coinGeckoTokenFound, tt.coinGeckoTokenError).AnyTimes()
 			mockCoingeckoSupportToken.EXPECT().List(coingeckosupportedtokens.ListQuery{Symbol: tt.query}).Return(tt.coinGeckoSuggestTokens, nil).AnyTimes()
 
 			if tt.coinIds != nil && len(tt.coinIds) != 0 {
-				for _, coinId := range tt.coinIds {
-					mockServiceCoingecko.EXPECT().GetCoinPrice([]string{coinId}, "usd").Return(map[string]float64{coinId: tt.coinPrices[coinId]}, nil).AnyTimes()
-				}
+				mockServiceCoingecko.EXPECT().GetCoinPrice(tt.coinIds, "usd").Return(tt.coinPrices, nil).AnyTimes()
 			}
 
 			got, err := e.SearchCoins(tt.query, "")

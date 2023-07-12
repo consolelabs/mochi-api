@@ -31,7 +31,7 @@ type UpsertGuildTokenConfigRequest struct {
 }
 
 type ConfigLevelRoleRequest struct {
-	GuildID string `uri:"guild_id"`
+	GuildID string `uri:"guild_id" binding:"required"`
 	RoleID  string `json:"role_id"`
 	Level   int    `json:"level"`
 }
