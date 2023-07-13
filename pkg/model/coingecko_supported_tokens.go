@@ -9,6 +9,7 @@ type CoingeckoSupportedTokens struct {
 	DetailPlatforms []byte  `json:"detail_platforms" gorm:"default:'[]'"`
 	IsNative        bool    `json:"is_native"`
 	IsPopular       bool    `json:"is_popular"`
+	IsNotSupported  bool    `json:"is_not_supported"`
 }
 
 type CoingeckoDetailPlatform struct {

@@ -38,6 +38,9 @@ func (pg *pg) Upsert(item *model.CoingeckoSupportedTokens) (int64, error) {
 	if len(item.DetailPlatforms) != 0 {
 		updateColumns = append(updateColumns, "detail_platforms")
 	}
+	if item.IsNotSupported {
+		updateColumns = append(updateColumns, "is_not_supported")
+	}
 
 	tx := pg.db.Begin()
 	tx = tx.Clauses(clause.OnConflict{
