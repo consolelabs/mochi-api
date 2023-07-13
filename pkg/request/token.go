@@ -16,3 +16,8 @@ type UpsertCustomTokenConfigRequest struct {
 	GuildDefault bool   `json:"guild_default" gorm:"default:0"`
 	Active       bool   `json:"active" gorm:"default:false"`
 }
+
+type FindTokenByContractAddressRequest struct {
+	ChainId int    `form:"chain_id" binding:"required"`
+	Address string `form:"address" binding:"required"`
+}

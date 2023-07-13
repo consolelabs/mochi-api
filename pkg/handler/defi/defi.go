@@ -423,6 +423,34 @@ func (h *Handler) CreateUserTokenSupportRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
+// FindTokenByContractAddress godoc
+// @Summary     Find token by contract address
+// @Description Find token by contract address
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       chain_id query string true  "Chain ID"
+// @Param       address query string true  "Contract address"
+// @Success     200 {object} response.FindTokenByContractAddressResponse
+// @Router      /defi/custom-tokens [get]
+func (h *Handler) FindTokenByContractAddress(c *gin.Context) {
+	req := &request.FindTokenByContractAddressRequest{}
+	if err := c.ShouldBindQuery(req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.FindTokenByContractAddress] - c.ShouldBindQuery failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.FindTokenByContractAddress(req.ChainId, req.Address)
+	if err != nil {
+		h.log.Error(err, "[handler.FindTokenByContractAddress] - entities.FindTokenByContractAddress failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}
+
 // ApproveUserTokenSupportRequest     godoc
 // @Summary     Approve support token request
 // @Description Approve support token request

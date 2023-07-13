@@ -253,6 +253,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("")
 		defiGroup.GET("/tokens", h.Defi.GetSupportedTokens)
 		defiGroup.GET("/token", h.Defi.GetSupportedToken)
+		defiGroup.GET("/custom-tokens", h.Defi.FindTokenByContractAddress)
 
 		tokenSupportReqGroup := defiGroup.Group("/token-support")
 		{
