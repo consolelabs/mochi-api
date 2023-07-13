@@ -247,109 +247,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/community/levelup": {
-            "get": {
-                "description": "Get levelup message",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Get levelup message",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildLevelUpMessage"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Upsert levelup message",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Upsert levelup message",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "channel_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "image_url",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "message",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetGuildLevelUpMessage"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete levelup message",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Community"
-                ],
-                "summary": "Delete levelup message",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "guild_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ResponseMessage"
-                        }
-                    }
-                }
-            }
-        },
         "/community/quests": {
             "get": {
                 "description": "Get user quest list",
@@ -2187,70 +2084,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/configs/twitter-sales": {
-            "get": {
-                "description": "Get twitter sale config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigTwitterSale"
-                ],
-                "summary": "Get twitter sale config",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "marketplace name",
-                        "name": "marketplace",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.GetSaleTwitterConfigResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create twitter sale config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ConfigTwitterSale"
-                ],
-                "summary": "Create twitter sale config",
-                "parameters": [
-                    {
-                        "description": "req",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.CreateTwitterSaleConfigRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CreateTwitterSaleConfigResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/data/configs/activities/{activity}": {
             "post": {
                 "description": "Toggle activity config",
@@ -2456,6 +2289,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetCoinResponseWrapper"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/custom-tokens": {
+            "get": {
+                "description": "Find token by contract address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Find token by contract address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chain ID",
+                        "name": "chain_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Contract address",
+                        "name": "address",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.FindTokenByContractAddressResponse"
                         }
                     }
                 }
@@ -4389,15 +4261,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
+                        "name": "guildID",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
+                        "name": "profileID",
                         "in": "query",
                         "required": true
                     }
@@ -4428,41 +4298,33 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Guild ID",
-                        "name": "guild_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
+                        "name": "guildID",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "default": 0,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "description": "Query to search by name",
+                        "name": "profileID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "name": "query",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "ASC / DESC",
                         "name": "sort",
                         "in": "query"
                     }
@@ -5639,32 +5501,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.GuildConfigLevelupMessage": {
-            "type": "object",
-            "properties": {
-                "channel_id": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.GuildConfigSalesTracker": {
             "type": "object",
             "properties": {
@@ -5835,6 +5671,9 @@ const docTemplate = `{
                 },
                 "nr_of_actions": {
                     "type": "integer"
+                },
+                "profile_id": {
+                    "type": "string"
                 },
                 "progress": {
                     "type": "number"
@@ -6207,52 +6046,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.SaleBotMarketplace": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.SaleBotTwitterConfig": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "collection_name": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "marketplace": {
-                    "$ref": "#/definitions/model.SaleBotMarketplace"
-                },
-                "marketplace_id": {
-                    "type": "integer"
-                },
-                "slug": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Token": {
             "type": "object",
             "properties": {
@@ -6311,23 +6104,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "model.UserFactionXpsMapping": {
-            "type": "object",
-            "properties": {
-                "academy_xp": {
-                    "type": "integer"
-                },
-                "imperial_xp": {
-                    "type": "integer"
-                },
-                "merchant_xp": {
-                    "type": "integer"
-                },
-                "rebellio_xp": {
-                    "type": "integer"
                 }
             }
         },
@@ -6692,6 +6468,9 @@ const docTemplate = `{
         },
         "request.ConfigLevelRoleRequest": {
             "type": "object",
+            "required": [
+                "guildID"
+            ],
             "properties": {
                 "guildID": {
                     "type": "string"
@@ -6735,6 +6514,9 @@ const docTemplate = `{
         },
         "request.CreateDefaultRoleRequest": {
             "type": "object",
+            "required": [
+                "guildID"
+            ],
             "properties": {
                 "guildID": {
                     "type": "string"
@@ -6848,20 +6630,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.CreateTwitterSaleConfigRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "chain_id": {
-                    "type": "integer"
-                },
-                "marketplace": {
                     "type": "string"
                 }
             }
@@ -7888,14 +7656,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.CreateTwitterSaleConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.SaleBotTwitterConfig"
-                }
-            }
-        },
         "response.CreateUserTokenSupportRequest": {
             "type": "object",
             "properties": {
@@ -8026,6 +7786,14 @@ const docTemplate = `{
                 },
                 "unicode_emoji": {
                     "type": "string"
+                }
+            }
+        },
+        "response.FindTokenByContractAddressResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.Token"
                 }
             }
         },
@@ -8256,14 +8024,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.GuildConfigDefaultTicker"
-                }
-            }
-        },
-        "response.GetGuildLevelUpMessage": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/model.GuildConfigLevelupMessage"
                 }
             }
         },
@@ -8530,17 +8290,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.GetSaleTwitterConfigResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.SaleBotTwitterConfig"
-                    }
-                }
-            }
-        },
         "response.GetSalesTrackerConfigResponse": {
             "type": "object",
             "properties": {
@@ -8698,14 +8447,8 @@ const docTemplate = `{
         "response.GetUserProfileResponse": {
             "type": "object",
             "properties": {
-                "about_me": {
-                    "type": "string"
-                },
                 "current_level": {
                     "$ref": "#/definitions/model.ConfigXpLevel"
-                },
-                "guild": {
-                    "$ref": "#/definitions/model.DiscordGuild"
                 },
                 "guild_rank": {
                     "type": "integer"
@@ -8724,9 +8467,6 @@ const docTemplate = `{
                 },
                 "progress": {
                     "type": "number"
-                },
-                "user_faction_xps": {
-                    "$ref": "#/definitions/model.UserFactionXpsMapping"
                 }
             }
         },
@@ -10212,6 +9952,20 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.GuildConfigActivity"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.Token": {
+            "type": "object",
+            "properties": {
+                "decimal": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
                     "type": "string"
                 }
             }

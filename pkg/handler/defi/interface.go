@@ -29,4 +29,6 @@ type IHandler interface {
 	GetChainGasTracker(c *gin.Context)
 	GetTrendingSearch(c *gin.Context)
 	TopGainerLoser(c *gin.Context)
+
+	FindTokenByContractAddress(c *gin.Context)
 }
