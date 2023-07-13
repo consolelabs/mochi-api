@@ -48,18 +48,3 @@ func (mr *MockServiceMockRecorder) CreateUserTransaction(createUserTransactionRe
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserTransaction", reflect.TypeOf((*MockService)(nil).CreateUserTransaction), createUserTransactionRequest)
 }
-
-// GetUserFactionXp mocks base method.
-func (m *MockService) GetUserFactionXp(userDiscordId string) (*model.GetUserFactionXpsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserFactionXp", userDiscordId)
-	ret0, _ := ret[0].(*model.GetUserFactionXpsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUserFactionXp indicates an expected call of GetUserFactionXp.
-func (mr *MockServiceMockRecorder) GetUserFactionXp(userDiscordId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserFactionXp", reflect.TypeOf((*MockService)(nil).GetUserFactionXp), userDiscordId)
-}

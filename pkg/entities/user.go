@@ -324,12 +324,7 @@ func (e *Entity) GetUserProfile(req request.GetUserProfileRequest) (*response.Ge
 		return nil, err
 	}
 
-	currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(gUserXP.TotalXP, false)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
-	}
-
-	nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(gUserXP.TotalXP, true)
+	currentLevel, nextLevel, err := e.repo.ConfigXPLevel.GetLevelInfo(gUserXP.TotalXP)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
