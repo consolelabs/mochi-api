@@ -1131,7 +1131,7 @@ func (e *Entity) GetBinanceCoinPrice(symbol string) (*response.GetTickerPriceRes
 }
 
 func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
-	listChainSupportGasTracker := []string{"ftm", "bsc", "eth", "polygon"}
+	listChainSupportGasTracker := []string{"ftm", "bsc", "eth", "matic"}
 	listChain := make([]model.Chain, 0)
 	for _, chainSp := range listChainSupportGasTracker {
 		chain, err := e.repo.Chain.GetByShortName(chainSp)
