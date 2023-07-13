@@ -72,6 +72,7 @@ type Config struct {
 	IndexerServerHost      string
 	MochiProfileServerHost string
 	MochiPayServerHost     string
+	MochiAuditServerHost   string
 
 	PodtownServerHost string
 
@@ -263,6 +264,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		MochiProfileServerHost: v.GetString("MOCHI_PROFILE_SERVER_HOST"),
 		MochiPayServerHost:     v.GetString("MOCHI_PAY_SERVER_HOST"),
+		MochiAuditServerHost:   v.GetString("MOCHI_AUDIT_SERVER_HOST"),
 
 		RpcUrl: RpcUrl{
 			Eth:      v.GetString("ETH_RPC"),
