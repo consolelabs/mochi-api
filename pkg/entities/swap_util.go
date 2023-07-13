@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"golang.org/x/exp/slices"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
@@ -68,50 +67,15 @@ func getAllChainDetailPlatform(platforms []CoingeckoDetailPlatform) (chains []in
 }
 func (e *Entity) UpsertDetailPlatforms(coins []model.CoingeckoSupportedTokens) (newCoins []model.CoingeckoSupportedTokens, err error) {
 	for _, coin := range coins {
-		if coin.DetailPlatforms != nil {
-			var platforms []CoingeckoDetailPlatform
-			err := json.Unmarshal(coin.DetailPlatforms, &platforms)
-			if err != nil {
-				return coins, err
-			}
+		// there are a lot of coingecko_id which is not supported anymore so detail_platform will always remain []
+		// check is_not_supported = true to skip query that
+		var detailPlatforms []CoingeckoDetailPlatform
+		err := json.Unmarshal(coin.DetailPlatforms, &detailPlatforms)
+		if err != nil {
+			return coins, err
+		}
 
-			chainsOfCoin := getAllChainDetailPlatform(platforms)
-			// TODO(trkhoi): remove when coingecko table has enough solana address
-			// if detailPlatform have solana -> continue
-			if slices.Contains(chainsOfCoin, int64(999)) {
-				newCoins = append(newCoins, coin)
-				continue
-			}
-
-			// if not, get data from coingecko
-			coinDetail, err, _ := e.svc.CoinGecko.GetCoin(coin.ID)
-			if err != nil {
-				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.svc.CoinGecko.GetCoin failed")
-				continue
-			}
-
-			for k, v := range coinDetail.DetailPlatforms {
-				if k == "solana" {
-					platforms = append(platforms, CoingeckoDetailPlatform{
-						ChainId: util.ConvertCoingeckoChain(k),
-						Address: v.ContractAddress,
-						Decimal: int64(v.DecimalPlace),
-					})
-				}
-			}
-
-			bytedetailPlatforms, err := json.Marshal(platforms)
-			if err != nil {
-				return coins, err
-			}
-
-			coin.DetailPlatforms = bytedetailPlatforms
-			_, err = e.repo.CoingeckoSupportedTokens.Upsert(&coin)
-			if err != nil {
-				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.repo.CoingeckoSupportedTokens.Upsert failed")
-				return coins, err
-			}
-
+		if (coin.DetailPlatforms != nil && coin.IsNotSupported) || coin.IsNative || len(detailPlatforms) > 0 {
 			newCoins = append(newCoins, coin)
 			continue
 		}
@@ -128,6 +92,7 @@ func (e *Entity) UpsertDetailPlatforms(coins []model.CoingeckoSupportedTokens) (
 			}
 
 			coin.DetailPlatforms = bytedetailPlatforms
+			coin.IsNotSupported = true
 			_, err = e.repo.CoingeckoSupportedTokens.Upsert(&coin)
 			if err != nil {
 				e.log.Fields(logger.Fields{"coinGeckoId": coin.ID}).Error(err, "[entity.UpsertAllChainTokenData] e.repo.CoingeckoSupportedTokens.Upsert failed")
