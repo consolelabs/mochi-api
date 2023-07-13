@@ -34,11 +34,23 @@ func (pg *pg) List(q ListQuery) ([]model.CoingeckoSupportedTokens, error) {
 }
 
 func (pg *pg) Upsert(item *model.CoingeckoSupportedTokens) (int64, error) {
+	updateColumns := []string{"name", "symbol"}
+	if len(item.DetailPlatforms) != 0 {
+		updateColumns = append(updateColumns, "detail_platforms")
+	}
+	if item.IsNotSupported {
+		updateColumns = append(updateColumns, "is_not_supported")
+	}
+
 	tx := pg.db.Begin()
-	tx = tx.Clauses(clause.OnConflict{UpdateAll: true}).Create(item)
+	tx = tx.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "id"}},
+		DoUpdates: clause.AssignmentColumns(updateColumns),
+	}).Create(item)
 	if err := tx.Error; err != nil {
 		tx.Rollback()
 		return 0, err
 	}
+
 	return tx.RowsAffected, tx.Commit().Error
 }

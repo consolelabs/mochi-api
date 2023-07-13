@@ -235,7 +235,7 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 		return err
 	}
 
-	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(guildID)
+	rolesToAdd, err := job.entity.ListMemberNFTRolesToAdd(guildID, members)
 	if err != nil {
 		l.Error(err, "[updateNFTRoles] entity.ListMemberNFTRolesToAdd failed")
 		return err
@@ -277,6 +277,8 @@ func (job *updateUserRoles) updateNFTRoles(guildID string) error {
 	for roleToAdd := range rolesToAdd {
 		userID := roleToAdd[0]
 		roleID := roleToAdd[1]
+
+		// implement add role for member
 		gMemberRoleLog := job.log.Fields(logger.Fields{
 			"guildId": guildID,
 			"userId":  userID,
