@@ -56,9 +56,9 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 	}
 
 	// get token info
-	token, err := e.findTokenByContractAddress(chainID, req.TokenAddress)
+	token, err := e.FindTokenByContractAddress(chainID, req.TokenAddress)
 	if err != nil {
-		l.Error(err, "[entity.CreateUserTokenSupportRequest] findTokenByContractAddress() failed")
+		l.Error(err, "[entity.CreateUserTokenSupportRequest] FindTokenByContractAddress() failed")
 		return nil, errors.ErrTokenNotFound
 	}
 
@@ -95,7 +95,7 @@ func (e *Entity) CreateUserTokenSupportRequest(req request.CreateUserTokenSuppor
 	return tokenReq, nil
 }
 
-func (e *Entity) findTokenByContractAddress(chainID int, address string) (*response.GetCoinByContractResponseData, error) {
+func (e *Entity) FindTokenByContractAddress(chainID int, address string) (*response.GetCoinByContractResponseData, error) {
 	var platformID string
 	// special handling for solana
 	if chainID == 999 {
@@ -103,7 +103,7 @@ func (e *Entity) findTokenByContractAddress(chainID int, address string) (*respo
 	} else {
 		platforms, err := e.svc.CoinGecko.GetAssetPlatforms()
 		if err != nil {
-			e.log.Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetAssetPlatforms() failed")
+			e.log.Error(err, "[entity.FindTokenByContractAddress] svc.CoinGecko.GetAssetPlatforms() failed")
 			return nil, err
 		}
 
@@ -126,18 +126,18 @@ func (e *Entity) findTokenByContractAddress(chainID int, address string) (*respo
 	}
 	// if fail to fetch data -> continue looking up
 	if err != nil {
-		e.log.Fields(logger.Fields{"ChainID": chainID}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
+		e.log.Fields(logger.Fields{"ChainID": chainID}).Error(err, "[entity.FindTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
 		// return nil, err
 	}
 
 	// now try to find with covalent
 	res, err, status := e.svc.Covalent.GetHistoricalTokenPrices(chainID, "usd", address)
 	if err != nil {
-		e.log.Fields(logger.Fields{"ChainID": chainID, "status": status}).Error(err, "[entity.findTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
+		e.log.Fields(logger.Fields{"ChainID": chainID, "status": status}).Error(err, "[entity.FindTokenByContractAddress] svc.CoinGecko.GetCoinByContract() failed")
 		return nil, err
 	}
 	if len(res.Data) == 0 {
-		e.log.Fields(logger.Fields{"ChainID": chainID, "contract": address}).Error(err, "[entity.findTokenByContractAddress] Token contract not found")
+		e.log.Fields(logger.Fields{"ChainID": chainID, "contract": address}).Error(err, "[entity.FindTokenByContractAddress] Token contract not found")
 		err = fmt.Errorf("Token contract %s not found", address)
 		return nil, err
 	}
