@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -226,7 +227,7 @@ func (e *Entity) ListGuildNFTRoleConfigs(guildID string) ([]model.GuildConfigGro
 	return e.repo.GuildConfigGroupNFTRole.ListByGuildID(guildID)
 }
 
-func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, error) {
+func (e *Entity) ListMemberNFTRolesToAdd(guildID string, members []*discordgo.Member) (map[[2]string]bool, error) {
 	// 1. get nft balance of user address
 	userAddressNFTBalance, err := e.repo.UserNFTBalance.GetUserNFTBalancesByUserInGuild(guildID)
 	if err != nil {
@@ -272,6 +273,23 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string) (map[[2]string]bool, er
 			if int(value) >= config.NumberOfTokens {
 				rolesToAdd[[2]string{key, config.RoleID}] = true
 			}
+		}
+	}
+
+	for roleToAdd := range rolesToAdd {
+		userID := roleToAdd[0]
+		roleID := roleToAdd[1]
+		isMember := false
+
+		// check is member of guild
+		for _, member := range members {
+			if userID == member.User.ID {
+				isMember = true
+				break
+			}
+		}
+		if !isMember {
+			delete(rolesToAdd, [2]string{userID, roleID})
 		}
 	}
 
