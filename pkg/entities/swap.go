@@ -157,6 +157,7 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 		OriginId:      req.UserDiscordId,
 		Platform:      consts.PlatformDiscord,
 		FromToken:     fromToken.Symbol,
+		Decimal:       fromToken.Decimal,
 		ToToken:       toToken.Symbol,
 		ChainId:       chainId,
 		AmountIn:      amountIn,
