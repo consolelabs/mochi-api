@@ -16,3 +16,8 @@ type GuildConfigGroupNFTRole struct {
 	UpdatedAt          time.Time            `json:"updated_at"`
 	GuildConfigNFTRole []GuildConfigNFTRole `json:"guild_config_nft_role" gorm:"foreignkey:group_id"`
 }
+
+type UpdateUserRolesOptions struct {
+	// GuildID is the guild ID to update token roles
+	GuildID string
+}

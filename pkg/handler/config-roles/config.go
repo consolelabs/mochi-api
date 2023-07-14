@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -306,6 +307,20 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	// update user roles in the background after the request is done
+	defer func() {
+		h.log.Fields(logger.Fields{"request": req}).Info("[handler.NewGuildGroupNFTRole] - start to updateUserRoles...")
+		if err := job.NewUpdateUserNFTBalancesJob(h.entities).Run(); err != nil {
+			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to run job NewUpdateUserNFTBalancesJob")
+		}
+		if err = job.NewUpdateUserRolesJob(h.entities, &model.UpdateUserRolesOptions{
+			GuildID: req.GuildID,
+		}).Run(); err != nil {
+			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to run job NewUpdateUserRolesJob")
+		}
+	}()
+
 	c.JSON(http.StatusOK, response.CreateResponse(newRole, nil, nil, nil))
 }
 
