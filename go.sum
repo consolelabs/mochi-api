@@ -161,8 +161,8 @@ github.com/confluentinc/confluent-kafka-go v1.9.2 h1:gV/GxhMBUb03tFWkN+7kdhg+zf+
 github.com/confluentinc/confluent-kafka-go v1.9.2/go.mod h1:ptXNqsuDfYbAE/LBW6pnwWZElUoWxHoV8E43DCrliyo=
 github.com/consensys/bavard v0.1.8-0.20210406032232-f3452dc9b572/go.mod h1:Bpd0/3mZuaj6Sj+PqrmIquiOKy397AKGThQPaGzNXAQ=
 github.com/consensys/gnark-crypto v0.4.1-0.20210426202927-39ac3d4b3f1f/go.mod h1:815PAHg3wvysy0SyIqanF8gZ0Y1wjk/hrDHD/iT88+Q=
-github.com/consolelabs/mochi-toolkit v0.0.0-20230709060007-bde05d67750e h1:g2lU5DbrD9PniEv4IS9QVr+JRdlRVim8YwIWgHfkfoQ=
-github.com/consolelabs/mochi-toolkit v0.0.0-20230709060007-bde05d67750e/go.mod h1:ZShtpSO6HNmj+G2W/vFDi28BneoLis6AWYnRIAnfIxU=
+github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905 h1:n5JZF1xv7w+UoOjtx2VrROuqUYAFm9uDRwPeSgmxV+M=
+github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905/go.mod h1:ZShtpSO6HNmj+G2W/vFDi28BneoLis6AWYnRIAnfIxU=
 github.com/consolelabs/mochi-typeset v0.0.0-20230710093529-da67331efb36 h1:HImEW/+EXnBlB2R0fV8timikqVVrH8USmOY2cgI8zFo=
 github.com/consolelabs/mochi-typeset v0.0.0-20230710093529-da67331efb36/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
