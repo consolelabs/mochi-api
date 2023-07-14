@@ -101,7 +101,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 	)
 	r.Use(func(ctx *gin.Context) {
 		cr := mdwgin.CaptureRequest(ctx, &mdwgin.CaptureRequestOptions{
-			ExcludePaths: []string{"/healthz"},
+			ExcludePaths: []string{"/healthz", "/webhook/discord"},
 		})
 		if cr == nil {
 			ctx.Next()
