@@ -39,7 +39,7 @@ func (m *MochiPay) SwapMochiPay(req request.MochiPaySwapRequest) error {
 	jsonBody := bytes.NewBuffer(payload)
 
 	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/swap", m.config.MochiPayServerHost)
+	url := fmt.Sprintf("%s/api/v1/mochi-wallet/swap", m.config.MochiPayServerHost)
 	request, err := http.NewRequest("POST", url, jsonBody)
 	if err != nil {
 		return err
