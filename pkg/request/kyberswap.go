@@ -25,4 +25,5 @@ type MochiPaySwapRequest struct {
 	RouterAddress string `json:"router_address"`
 	Gas           string `json:"gas"`
 	Aggregator    string `json:"aggregator"`
+	Decimal       int64  `json:"decimal"`
 }
