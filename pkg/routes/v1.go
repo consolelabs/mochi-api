@@ -73,7 +73,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			// wallets
 			userWatchListGroup.POST("/wallets/track", h.Watchlist.TrackWallet)
-			walletsGroup.POST("/wallets/untrack", h.Watchlist.UntrackWallet)
+			userWatchListGroup.POST("/wallets/untrack", h.Watchlist.UntrackWallet)
 			userWatchListGroup.GET("/wallets", h.Watchlist.ListUserTrackingWallets)
 			userWatchListGroup.PUT("/wallets/:address", h.Watchlist.UpdateTrackingWalletInfo)
 

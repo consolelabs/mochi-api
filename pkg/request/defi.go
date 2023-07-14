@@ -51,7 +51,7 @@ type AddToWatchlistRequest struct {
 
 type RemoveFromWatchlistRequest struct {
 	WatchlistBaseRequest
-	Symbol string `json:"symbol" binding:"required"`
+	Symbol string `json:"symbol"`
 }
 
 type GetFiatHistoricalExchangeRatesRequest struct {
