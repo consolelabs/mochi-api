@@ -100,7 +100,13 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 		gin.Recovery(),
 	)
 	r.Use(func(ctx *gin.Context) {
-		cr := mdwgin.CaptureRequest(ctx)
+		cr := mdwgin.CaptureRequest(ctx, &mdwgin.CaptureRequestOptions{
+			ExcludePaths: []string{"/healthz", "/webhook/discord"},
+		})
+		if cr == nil {
+			ctx.Next()
+			return
+		}
 		b, err := json.Marshal(cr)
 		if err != nil {
 			l.Error(err, "cannot marshal capture request")
