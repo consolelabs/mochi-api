@@ -16,7 +16,13 @@ type UserNFTBalancesByGuild struct {
 }
 
 type UserAddressNFTBalancesByGuild struct {
-	UserAddress  string `json:"user_address"`
-	TotalBalance int64  `json:"total_balance"`
-	StakingNeko  int64  `json:"staking_neko"`
+	UserAddress     string `json:"user_address"`
+	TotalBalance    int64  `json:"total_balance"`
+	StakingNeko     int64  `json:"staking_neko"`
+	NftCollectionID string `json:"nft_collection_id"`
+}
+
+type UserNFTBalanceIdentify struct {
+	UserDiscordId   string `json:"user_discord_id"`
+	NftCollectionId string `json:"nft_collection_id"`
 }

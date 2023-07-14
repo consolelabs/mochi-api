@@ -235,13 +235,14 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string, members []*discordgo.Me
 	}
 
 	// 2. get balance of user discord
-	userDiscordNFTBalance := make(map[string]int64)
+	userDiscordNFTBalance := make(map[model.UserNFTBalanceIdentify]int64)
 
 	evmAccount, err := e.svc.MochiProfile.GetAllEvmAccount()
 	if err != nil {
 		return nil, err
 	}
 
+	// map user address -> user discord id
 	for _, evmAcc := range evmAccount {
 		for _, user := range userAddressNFTBalance {
 			if evmAcc.PlatformIdentifier == user.UserAddress {
@@ -249,10 +250,12 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string, members []*discordgo.Me
 				if err != nil {
 					continue
 				}
-
 				for _, acc := range profileId.AssociatedAccounts {
 					if acc.Platform == consts.PlatformDiscord {
-						userDiscordNFTBalance[acc.PlatformIdentifier] += user.TotalBalance + user.StakingNeko
+						userDiscordNFTBalance[model.UserNFTBalanceIdentify{
+							UserDiscordId:   acc.PlatformIdentifier,
+							NftCollectionId: user.NftCollectionID,
+						}] += user.TotalBalance + user.StakingNeko
 					}
 				}
 
@@ -268,20 +271,24 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string, members []*discordgo.Me
 		return nil, err
 	}
 
-	for _, config := range guildConfigGroupNFTRole {
-		for key, value := range userDiscordNFTBalance {
-			if int(value) >= config.NumberOfTokens {
-				rolesToAdd[[2]string{key, config.RoleID}] = true
+	for _, groupConfig := range guildConfigGroupNFTRole {
+		for _, config := range groupConfig.GuildConfigNFTRole {
+			for key, value := range userDiscordNFTBalance {
+				if key.NftCollectionId == config.NFTCollectionID.UUID.String() {
+					if int(value) >= groupConfig.NumberOfTokens {
+						rolesToAdd[[2]string{key.UserDiscordId, groupConfig.RoleID}] = true
+					}
+				}
 			}
 		}
 	}
 
+	// check is member of guild
 	for roleToAdd := range rolesToAdd {
 		userID := roleToAdd[0]
 		roleID := roleToAdd[1]
 		isMember := false
 
-		// check is member of guild
 		for _, member := range members {
 			if userID == member.User.ID {
 				isMember = true
