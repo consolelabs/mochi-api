@@ -7,4 +7,5 @@ type IHandler interface {
 	GetGuildConfigWalletVerificationMessage(c *gin.Context)
 	UpdateGuildConfigWalletVerificationMessage(c *gin.Context)
 	DeleteGuildConfigWalletVerificationMessage(c *gin.Context)
+	AssignVerifiedRole(c *gin.Context)
 }

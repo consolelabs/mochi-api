@@ -294,6 +294,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		verifyGroup.GET("/config/:guild_id", h.Verify.GetGuildConfigWalletVerificationMessage)
 		verifyGroup.PUT("/config", h.Verify.UpdateGuildConfigWalletVerificationMessage)
 		verifyGroup.DELETE("/config", h.Verify.DeleteGuildConfigWalletVerificationMessage)
+		verifyGroup.POST("/assign-role", h.Verify.AssignVerifiedRole)
 	}
 
 	// api/v1/nfts
