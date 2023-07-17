@@ -15,6 +15,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/emojis"
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
+	"github.com/defipod/mochi/pkg/handler/invest"
 	"github.com/defipod/mochi/pkg/handler/nft"
 	pkpass "github.com/defipod/mochi/pkg/handler/pk-pass"
 	"github.com/defipod/mochi/pkg/handler/swap"
@@ -52,6 +53,7 @@ type Handler struct {
 	Content         content.IHandler
 	AirdropCampaign airdropcampaign.IHandler
 	Watchlist       watchlist.IHandler
+	Invest invest.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -79,5 +81,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Content:         content.New(entities, logger),
 		AirdropCampaign: airdropcampaign.New(entities, logger),
 		Watchlist:       watchlist.New(entities, logger),
+		Invest: invest.New(entities, logger),
 	}
 }

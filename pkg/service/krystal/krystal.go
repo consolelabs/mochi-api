@@ -49,6 +49,31 @@ func (k *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenRespons
 	return k.doNetwork(address, data)
 }
 
+func (k *Krystal) GetEarningOptions(platforms, chainIds, types, statuses, address string) (*GetEarningOptionsResponse, error) {
+	resp := &GetEarningOptionsResponse{}
+	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/earning/options?platforms=%s&chainIds=%s&types=%s&statuses=%s&address=%s", platforms, chainIds, types, statuses, address)
+	req := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: resp,
+		Headers: map[string]string{
+			"accept":              "application/json",
+			"x-rate-access-token": k.config.KrystalApiKey,
+		},
+	}
+
+	statusCode, err := util.SendRequest(req)
+	if err != nil {
+		return nil, fmt.Errorf("[krystal.GetEarningOptions] util.SendRequest() failed: %v", err)
+	}
+
+	if statusCode != http.StatusOK {
+		k.logger.Infof("krystal.GetEarningOptions() failed, status code: %d", statusCode)
+		return nil, fmt.Errorf("krystal.GetEarningOptions() failed, status code: %d", statusCode)
+	}
+
+	return resp, nil
+}
+
 func (k *Krystal) doCache(address string) (string, error) {
 	return k.cache.GetString(fmt.Sprintf("%s-%s", key, strings.ToLower(address)))
 }
