@@ -352,7 +352,7 @@ func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *respons
 	return
 }
 
-func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedTokens, error) {
+func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.CoingeckoSupportedTokens, error) {
 	// TODO: do we need this?
 	if query == "skull" {
 		query = "skullswap-exchange"
@@ -409,9 +409,8 @@ func (e *Entity) SearchCoins(query, guildId string) ([]model.CoingeckoSupportedT
 	var largestIdx int64
 	for i, t := range tokens {
 		tokens[i].CurrentPrice = prices[t.ID]
-
 		// for multiple tokens, check default ticker first
-		if defaultToken != nil {
+		if !noDefault && defaultToken != nil {
 			if t.ID == defaultToken.DefaultTicker {
 				largestToken = tokens[i]
 				largestIdx = int64(i)
@@ -495,7 +494,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	}
 
 	// ... else SearchCoins()
-	searchResult, err := e.SearchCoins(query, "")
+	searchResult, err := e.SearchCoins(query, "", false)
 	// searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
@@ -761,7 +760,7 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		req.CoinGeckoID = fmt.Sprintf("%s/%s", data.BaseCoin.ID, data.TargetCoin.ID)
 
 	case !isPair && req.CoinGeckoID == "":
-		tokens, err := e.SearchCoins(req.Symbol, "")
+		tokens, err := e.SearchCoins(req.Symbol, "", false)
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
 		if err != nil {
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
@@ -1263,7 +1262,7 @@ func (e *Entity) GetDominanceChartData(coinId string, days int) (*response.CoinP
 
 func (e *Entity) GetTokenPrice(symbol string, tokenName string) (*float64, error) {
 	var price float64
-	tokens, err := e.SearchCoins(strings.ToLower(symbol), "")
+	tokens, err := e.SearchCoins(strings.ToLower(symbol), "", false)
 	if err != nil {
 		e.log.Fields(logger.Fields{"symbol": strings.ToLower(symbol)}).Error(err, "[listSuiWalletAssets] svc.CoinGecko.SearchCoins() failed")
 		return nil, err
