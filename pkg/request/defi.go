@@ -84,3 +84,9 @@ type GetMarketDataRequest struct {
 type TopGainerLoserRequest struct {
 	Duration string `json:"duration" form:"duration,default=24h"`
 }
+
+type SearchCoinRequest struct {
+	Query     string `form:"query"`
+	NoDefault bool   `form:"no_default,default=false"`
+	GuildId   string `form:"guild_id"`
+}

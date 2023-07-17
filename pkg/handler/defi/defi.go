@@ -156,16 +156,14 @@ func (h *Handler) GetCoin(c *gin.Context) {
 // @Success     200 {object} response.SearchCoinResponse
 // @Router      /defi/coins [get]
 func (h *Handler) SearchCoins(c *gin.Context) {
-	query := c.Query("query")
-	if query == "" {
-		h.log.Info("[handler.SearchCoins] query is required")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
+	req := request.SearchCoinRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.SearchCoins] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	guildId := c.Query("guild_id")
-
-	tokens, err := h.entities.SearchCoins(query, guildId)
+	tokens, err := h.entities.SearchCoins(req.Query, req.GuildId, req.NoDefault)
 	if err != nil {
 		h.log.Error(err, "[handler.SearchCoins] entities.SearchCoins() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
