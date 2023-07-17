@@ -68,6 +68,8 @@ definitions:
         type: string
       is_native:
         type: boolean
+      is_not_supported:
+        type: boolean
       is_popular:
         type: boolean
       most_popular:
@@ -1904,6 +1906,13 @@ definitions:
       data:
         $ref: '#/definitions/response.CoinPriceHistoryResponse'
     type: object
+  response.GetInvestListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.InvestItem'
+        type: array
+    type: object
   response.GetLevelRoleConfigsResponse:
     properties:
       data:
@@ -2080,13 +2089,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
-      usd_1y_change:
-        type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -2465,6 +2474,67 @@ definitions:
         type: integer
       is_native:
         type: boolean
+      symbol:
+        type: string
+    type: object
+  response.InvestChain:
+    properties:
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+    type: object
+  response.InvestItem:
+    properties:
+      apy:
+        type: number
+      chain:
+        $ref: '#/definitions/response.InvestChain'
+      platforms:
+        items:
+          $ref: '#/definitions/response.InvestPlatforms'
+        type: array
+      token:
+        $ref: '#/definitions/response.InvestToken'
+      tvl:
+        type: number
+    type: object
+  response.InvestPlatforms:
+    properties:
+      apy:
+        type: number
+      desc:
+        type: string
+      logo:
+        type: string
+      name:
+        type: string
+      reward_apy:
+        type: number
+      status:
+        $ref: '#/definitions/response.InvestStatus'
+      tvl:
+        type: number
+      type:
+        type: string
+    type: object
+  response.InvestStatus:
+    properties:
+      detail:
+        type: string
+      value:
+        type: string
+    type: object
+  response.InvestToken:
+    properties:
+      address:
+        type: string
+      decimals:
+        type: integer
+      name:
+        type: string
       symbol:
         type: string
     type: object
@@ -5327,6 +5397,42 @@ paths:
       summary: Get my guilds list
       tags:
       - Guild
+  /invests:
+    get:
+      consumes:
+      - application/json
+      description: Get invest list
+      parameters:
+      - description: the filterd chain ids, split by comma
+        in: query
+        name: chainIds
+        type: string
+      - description: the filterd platforms (aave_v2, aave_v3), split by comma
+        in: query
+        name: platforms
+        type: string
+      - description: the filterd types (stake, lend), split by comma
+        in: query
+        name: types
+        type: string
+      - description: the filtered token address
+        in: query
+        name: address
+        type: string
+      - description: the filtered status (active, inactive)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetInvestListResponse'
+      summary: Get invest list
+      tags:
+      - Invest
   /nfts:
     get:
       consumes:
@@ -6200,7 +6306,6 @@ paths:
       parameters:
       - in: query
         name: symbol
-        required: true
         type: string
       produces:
       - application/json

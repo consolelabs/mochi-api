@@ -3239,6 +3239,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/invests": {
+            "get": {
+                "description": "Get invest list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Invest"
+                ],
+                "summary": "Get invest list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the filterd chain ids, split by comma",
+                        "name": "chainIds",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "the filterd platforms (aave_v2, aave_v3), split by comma",
+                        "name": "platforms",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "the filterd types (stake, lend), split by comma",
+                        "name": "types",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "the filtered token address",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "the filtered status (active, inactive)",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetInvestListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/nfts": {
             "get": {
                 "description": "List all nft collections",
@@ -4734,8 +4789,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "symbol",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -5302,6 +5356,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "is_native": {
+                    "type": "boolean"
+                },
+                "is_not_supported": {
                     "type": "boolean"
                 },
                 "is_popular": {
@@ -8109,6 +8166,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetInvestListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.InvestItem"
+                    }
+                }
+            }
+        },
         "response.GetLevelRoleConfigsResponse": {
             "type": "object",
             "properties": {
@@ -8970,6 +9038,100 @@ const docTemplate = `{
                 },
                 "is_native": {
                     "type": "boolean"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.InvestChain": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.InvestItem": {
+            "type": "object",
+            "properties": {
+                "apy": {
+                    "type": "number"
+                },
+                "chain": {
+                    "$ref": "#/definitions/response.InvestChain"
+                },
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.InvestPlatforms"
+                    }
+                },
+                "token": {
+                    "$ref": "#/definitions/response.InvestToken"
+                },
+                "tvl": {
+                    "type": "number"
+                }
+            }
+        },
+        "response.InvestPlatforms": {
+            "type": "object",
+            "properties": {
+                "apy": {
+                    "type": "number"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "reward_apy": {
+                    "type": "number"
+                },
+                "status": {
+                    "$ref": "#/definitions/response.InvestStatus"
+                },
+                "tvl": {
+                    "type": "number"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.InvestStatus": {
+            "type": "object",
+            "properties": {
+                "detail": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.InvestToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "decimals": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "symbol": {
                     "type": "string"
