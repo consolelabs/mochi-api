@@ -59,5 +59,5 @@ func (pg *pg) List(q ListQuery) (vaults []model.Vault, err error) {
 	if q.Threshold != "" {
 		db = db.Where("vaults.threshold = ?", q.Threshold)
 	}
-	return vaults, db.Preload("VaultTreasurers").Find(&vaults).Error
+	return vaults, db.Preload("VaultTreasurers").Preload("DiscordGuild").Find(&vaults).Error
 }
