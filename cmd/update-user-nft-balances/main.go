@@ -16,7 +16,7 @@ func main() {
 	}
 
 	log.Info("start job updateUserNFTBalances ...")
-	if err := job.NewUpdateUserNFTBalancesJob(entities.Get(), log).Run(); err != nil {
+	if err := job.NewUpdateUserNFTBalancesJob(entities.Get()).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 	}
 

@@ -11,10 +11,10 @@ type updateUserNFTBalances struct {
 	log    logger.Logger
 }
 
-func NewUpdateUserNFTBalancesJob(e *entities.Entity, l logger.Logger) Job {
+func NewUpdateUserNFTBalancesJob(e *entities.Entity) Job {
 	return &updateUserNFTBalances{
 		entity: e,
-		log:    l,
+		log:    e.GetLogger(),
 	}
 }
 

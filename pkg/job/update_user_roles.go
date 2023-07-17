@@ -8,6 +8,8 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -16,21 +18,41 @@ type updateUserRoles struct {
 	entity  *entities.Entity
 	service *service.Service
 	log     logger.Logger
+	opts    *model.UpdateUserRolesOptions
 }
 
-func NewUpdateUserRolesJob(e *entities.Entity, svc *service.Service, l logger.Logger) Job {
+func NewUpdateUserRolesJob(e *entities.Entity, opts *model.UpdateUserRolesOptions) Job {
+	if opts == nil {
+		opts = &model.UpdateUserRolesOptions{}
+	}
 	return &updateUserRoles{
 		entity:  e,
-		service: svc,
-		log:     l,
+		service: e.GetSvc(),
+		log:     e.GetLogger(),
+		opts:    opts,
 	}
 }
 
 func (job *updateUserRoles) Run() error {
-	guilds, err := job.entity.GetGuilds()
-	if err != nil {
-		job.log.Error(err, "entity.GetGuilds failed")
-		return err
+	var guilds *response.GetGuildsResponse
+	var err error
+
+	switch {
+	case job.opts.GuildID != "":
+		guild, err := job.entity.GetGuild(job.opts.GuildID)
+		if err != nil {
+			job.log.Error(err, "entity.GetGuild failed")
+			return err
+		}
+		guilds = &response.GetGuildsResponse{
+			Data: []*response.GetGuildResponse{guild},
+		}
+	default:
+		guilds, err = job.entity.GetGuilds()
+		if err != nil {
+			job.log.Error(err, "entity.GetGuilds failed")
+			return err
+		}
 	}
 
 	for _, guild := range guilds.Data {
