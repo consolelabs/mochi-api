@@ -8,7 +8,8 @@
       "most_popular": false,
       "detail_platforms": "W10=",
       "is_native": false,
-      "is_popular": false
+      "is_popular": false,
+      "is_not_supported": false
     },
     {
       "id": "dogecoin",
@@ -18,7 +19,8 @@
       "most_popular": true,
       "detail_platforms": "W10=",
       "is_native": false,
-      "is_popular": false
+      "is_popular": false,
+      "is_not_supported": false
     }
   ]
 }
