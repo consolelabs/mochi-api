@@ -27,8 +27,8 @@ func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service 
 	}
 }
 
-var (
-	key = "krystal-balance-token"
+const (
+	tokenBalanceKey = "krystal-balance-token"
 )
 
 func (k *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenResponse, error) {
@@ -49,8 +49,35 @@ func (k *Krystal) GetBalanceTokenByAddress(address string) (*BalanceTokenRespons
 	return k.doNetwork(address, data)
 }
 
+func (k *Krystal) GetEarningOptions(platforms, chainIds, types, statuses, address string) (*GetEarningOptionsResponse, error) {
+	resp := &GetEarningOptionsResponse{}
+	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/earning/options?platforms=%s&chainIds=%s&types=%s&statuses=%s&address=%s", platforms, chainIds, types, statuses, address)
+	req := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: resp,
+		Headers: map[string]string{
+			"accept":              "application/json",
+			"x-rate-access-token": k.config.KrystalApiKey,
+		},
+	}
+
+	cached, err := k.cache.GetString(url)
+	if err == nil && cached != "" {
+		k.logger.Infof("hit cache data krystal-service, url: %s", url)
+		go k.doNetworkGeneric(req, resp)
+		return resp, json.Unmarshal([]byte(cached), resp)
+	}
+
+	if err := k.doNetworkGeneric(req, resp); err != nil {
+		k.logger.Error(err, "[krystal.GetEarningOptions] k.doNetworkGeneric() failed")
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 func (k *Krystal) doCache(address string) (string, error) {
-	return k.cache.GetString(fmt.Sprintf("%s-%s", key, strings.ToLower(address)))
+	return k.cache.GetString(fmt.Sprintf("%s-%s", tokenBalanceKey, strings.ToLower(address)))
 }
 
 func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*BalanceTokenResponse, error) {
@@ -78,8 +105,31 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 	// cache krystal-balance-token-data
 	// if error occurs -> ignore
 	bytes, _ := json.Marshal(&data)
-	k.logger.Infof("cache data krystal-service, key: %s", key)
-	k.cache.Set(key+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
+	k.logger.Infof("cache data krystal-service, key: %s", tokenBalanceKey)
+	k.cache.Set(tokenBalanceKey+"-"+strings.ToLower(address), string(bytes), 7*24*time.Hour)
 
 	return &data, nil
+}
+
+func (k *Krystal) doNetworkGeneric(req util.SendRequestQuery, response interface{}) error {
+	statusCode, err := util.SendRequest(req)
+	if err != nil {
+		return fmt.Errorf("[krystal.doNetworkGeneric] util.SendRequest() failed: %v", err)
+	}
+
+	if statusCode != http.StatusOK {
+		err = fmt.Errorf("krystal.doNetworkGeneric() failed, status code: %d", statusCode)
+		k.logger.Error(err, "krystal.doNetworkGeneric() failed")
+		return err
+	}
+
+	// cache data
+	// if error occurs -> ignore
+	cacheKey := req.URL
+	bytes, _ := json.Marshal(&req.ParseForm)
+	k.logger.Infof("cache data krystal-service, key: %s", cacheKey)
+	k.cache.Set(cacheKey, string(bytes), 7*24*time.Hour)
+
+	return nil
+
 }

@@ -415,4 +415,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			airdropCampaignGroup.GET("/stats", h.AirdropCampaign.GetAirdropCampaignStats)
 		}
 	}
+
+	investApiGroup := v1.Group("/invests")
+	{
+		investApiGroup.GET("/", h.Invest.GetInvestList)
+	}
 }
