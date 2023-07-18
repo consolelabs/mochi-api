@@ -9,7 +9,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
 
-	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -245,20 +244,11 @@ func (e *Entity) ListMemberNFTRolesToAdd(guildID string, members []*discordgo.Me
 	// map user address -> user discord id
 	for _, evmAcc := range evmAccount {
 		for _, user := range userAddressNFTBalance {
-			if evmAcc.PlatformIdentifier == user.UserAddress {
-				profileId, err := e.svc.MochiProfile.GetByID(evmAcc.ProfileID)
-				if err != nil {
-					continue
-				}
-				for _, acc := range profileId.AssociatedAccounts {
-					if acc.Platform == consts.PlatformDiscord {
-						userDiscordNFTBalance[model.UserNFTBalanceIdentify{
-							UserDiscordId:   acc.PlatformIdentifier,
-							NftCollectionId: user.NftCollectionID,
-						}] += user.TotalBalance + user.StakingNeko
-					}
-				}
-
+			if evmAcc.PlatformIdentifier == user.UserAddress && evmAcc.DiscordId != "" {
+				userDiscordNFTBalance[model.UserNFTBalanceIdentify{
+					UserDiscordId:   evmAcc.DiscordId,
+					NftCollectionId: user.NftCollectionID,
+				}] += user.TotalBalance + user.StakingNeko
 			}
 		}
 	}

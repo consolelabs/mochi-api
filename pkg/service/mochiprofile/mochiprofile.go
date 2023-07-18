@@ -184,10 +184,9 @@ func (m *MochiProfile) GetByID(profileID string) (*GetProfileResponse, error) {
 	return &res, nil
 }
 
-func (m *MochiProfile) GetAllEvmAccount() ([]*AssociatedAccount, error) {
-	url := fmt.Sprintf("%s/api/v1/profiles/get-evm-account", m.config.MochiProfileServerHost)
+func (m *MochiProfile) GetAllEvmAccount() (res []*EvmAssociatedAccount, err error) {
+	url := fmt.Sprintf("%s/api/v1/associated-accounts/get-evm-account", m.config.MochiProfileServerHost)
 
-	var res []*AssociatedAccount
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &res,
