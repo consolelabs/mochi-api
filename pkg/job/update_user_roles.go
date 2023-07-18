@@ -44,9 +44,11 @@ func (job *updateUserRoles) Run() error {
 			job.log.Error(err, "entity.GetGuild failed")
 			return err
 		}
-		guilds = &response.GetGuildsResponse{
-			Data: []*response.GetGuildResponse{guild},
+		if err := job.updateNFTRoles(guild.ID); err != nil {
+			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
 		}
+		return nil
+
 	default:
 		guilds, err = job.entity.GetGuilds()
 		if err != nil {
