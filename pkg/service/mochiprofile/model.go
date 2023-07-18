@@ -47,3 +47,14 @@ type ProfileApiKeyResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
+
+type EvmAssociatedAccount struct {
+	ID                 string           `json:"id"`
+	ProfileID          string           `json:"profile_id"`
+	Platform           Platform         `json:"platform"`
+	PlatformIdentifier string           `json:"platform_identifier"`
+	PlatformMetadata   PlatformMetadata `json:"platform_metadata"`
+	DiscordId          string           `json:"discord_id"`
+	CreatedAt          time.Time        `json:"created_at"`
+	UpdatedAt          time.Time        `json:"updated_at"`
+}
