@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -349,4 +350,85 @@ func (h *Handler) GetGuildConfigLogChannel(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// GetGuildConfigDaoProposal     godoc
+// @Summary     Get dao proposal channel config
+// @Description Get dao proposal channel config
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       guild_id   query  string true  "Guild ID"
+// @Success     200 {object} response.GetGuildConfigDaoProposal
+// @Router      /config-channels/{guild_id}/proposal [get]
+func (h *Handler) GetGuildConfigDaoProposal(c *gin.Context) {
+	guildId := c.Param("guild_id")
+	if guildId == "" {
+		h.log.Info("[handler.GetGuildConfigDaoProposal] - guild id empty")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("guild_id is required"), nil))
+		return
+	}
+
+	config, err := h.entities.GetGuildConfigDaoProposalByGuildID(guildId)
+	if err != nil {
+		h.log.Error(err, "[handler.GetGuildConfigDaoProposal] - failed to get configs")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// DeleteVoteChannelConfig     godoc
+// @Summary     Delete dao proposal channel config
+// @Description Delete dao proposal config
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.DeleteGuildConfigDaoProposal true "Delete dao proposal channel config request"
+// @Success     200 {object} response.ResponseMessage
+// @Router      /config-channels/{guild_id}/proposal [delete]
+func (h *Handler) DeleteGuildConfigDaoProposal(c *gin.Context) {
+	var req request.DeleteGuildConfigDaoProposal
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.DeleteGuildConfigDaoProposal] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.DeleteGuildConfigDaoProposalByGuildID(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.DeleteGuildConfigDaoProposalByGuildID] - failed to delete configs")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+// CreateProposalChannelConfig     godoc
+// @Summary     Create proposal channel config
+// @Description Create proposal channel config for dao voting
+// @Tags        ConfigChannel
+// @Accept      json
+// @Produce     json
+// @Param       Request  body request.CreateProposalChannelConfig true "Create proposal channel config request"
+// @Success     200 {object} response.CreateProposalChannelConfigResponse
+// @Router      /config-channels/{guild_id}/proposal [post]
+func (h *Handler) CreateProposalChannelConfig(c *gin.Context) {
+	var req request.CreateProposalChannelConfig
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateProposalChannelConfig] - failed to read JSON request")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	config, err := h.entities.CreateProposalChannelConfig(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateProposalChannelConfig] - entities.CreateProposalChannelConfig failed")
+		c.JSON(errs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(config, nil, err, nil))
 }

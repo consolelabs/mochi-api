@@ -10,11 +10,18 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
+	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
+	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
+	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
+	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
+	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
+	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
+	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -145,4 +152,11 @@ type Repo struct {
 	AutoActionHistory                    autoActionHistory.Store
 	CoingeckoInfo                        coingeckoinfo.Store
 	GuildConfigLogChannel                guildconfiglogchannel.Store
+	GuildConfigDaoTracker                guildconfigdaotracker.Store
+	GuildConfigDaoProposal               guildconfigdaoproposal.Store
+	DaoProposal                          daoproposal.Store
+	DaoVote                              daovote.Store
+	DaoProposalVoteOption                daoproposalvoteoption.Store
+	DaoVoteOption                        daovoteoption.Store
+	DaoGuidelineMessages                 daoguidelinemessages.Store
 }

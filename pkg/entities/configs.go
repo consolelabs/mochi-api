@@ -879,3 +879,15 @@ func (e *Entity) GetGuildConfigLogChannel(req request.QueryConfigLogChannel) ([]
 		LogType: req.LogType,
 	})
 }
+
+func (e *Entity) GetGuildConfigDaoTracker(guildId string) (*[]model.GuildConfigDaoTracker, error) {
+	return e.repo.GuildConfigDaoTracker.GetAllByGuildID(guildId)
+}
+
+func (e *Entity) GetAllDaoTrackerBySpaceAndSource(space, source string) ([]model.GuildConfigDaoTracker, error) {
+	return e.repo.GuildConfigDaoTracker.GetAllBySpaceAndSource(space, source)
+}
+
+func (e *Entity) DeleteGuildConfigDaoTracker(req request.DeleteGuildConfigDaoTracker) error {
+	return e.repo.GuildConfigDaoTracker.DeleteByID(req.ID)
+}

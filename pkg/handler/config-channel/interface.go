@@ -19,4 +19,7 @@ type IHandler interface {
 
 	GetGuildConfigLogChannel(c *gin.Context)
 	CreateGuildConfigLogChannel(c *gin.Context)
+	GetGuildConfigDaoProposal(c *gin.Context)
+	DeleteGuildConfigDaoProposal(c *gin.Context)
+	CreateProposalChannelConfig(c *gin.Context)
 }
