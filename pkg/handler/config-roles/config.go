@@ -311,9 +311,6 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 	// update user roles in the background after the request is done
 	defer func() {
 		h.log.Fields(logger.Fields{"request": req}).Info("[handler.NewGuildGroupNFTRole] - start to updateUserRoles...")
-		if err := job.NewUpdateUserNFTBalancesJob(h.entities).Run(); err != nil {
-			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to run job NewUpdateUserNFTBalancesJob")
-		}
 		if err = job.NewUpdateUserRolesJob(h.entities, &model.UpdateUserRolesOptions{
 			GuildID: req.GuildID,
 		}).Run(); err != nil {
