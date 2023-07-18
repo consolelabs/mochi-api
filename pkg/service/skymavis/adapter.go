@@ -24,7 +24,6 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 			results {
 				id
 				image
-				level
 				minPrice
 				name
 				owner
