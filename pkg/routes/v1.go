@@ -139,6 +139,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		configChannelGroup.POST("/tip-notify", h.ConfigChannel.CreateConfigNotify)
 		configChannelGroup.GET("/tip-notify", h.ConfigChannel.ListConfigNotify)
 		configChannelGroup.DELETE("/tip-notify/:id", h.ConfigChannel.DeleteConfigNotify)
+		// proposal
+		configChannelGroup.GET("/:guild_id/proposal", h.ConfigChannel.GetGuildConfigDaoProposal)
+		configChannelGroup.POST("/:guild_id/proposal", h.ConfigChannel.CreateProposalChannelConfig)
+		configChannelGroup.DELETE("/:guild_id/proposal", h.ConfigChannel.DeleteGuildConfigDaoProposal)
 	}
 
 	configGroup := v1.Group("/config")
@@ -419,5 +423,27 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	investApiGroup := v1.Group("/invests")
 	{
 		investApiGroup.GET("/", h.Invest.GetInvestList)
+	}
+
+	daoVoting := v1.Group("/dao-voting")
+	{
+		tokenHolderGroup := daoVoting.Group("/token-holder")
+		{
+			tokenHolderGroup.GET("status", h.DaoVoting.TokenHolderStatus)
+		}
+		proposalGroup := daoVoting.Group("/proposals")
+		{
+			proposalGroup.POST("", h.DaoVoting.CreateProposal)
+			proposalGroup.GET("", h.DaoVoting.GetProposals)
+			proposalGroup.GET("/:proposal_id", h.DaoVoting.GetUserVotes)
+			proposalGroup.DELETE("/:proposal_id", h.DaoVoting.DeteteProposal)
+			voteGroup := proposalGroup.Group("/votes")
+			{
+				voteGroup.GET("", h.DaoVoting.GetVote)
+				voteGroup.POST("", h.DaoVoting.CreateDaoVote)
+				voteGroup.PUT("/:vote_id", h.DaoVoting.UpdateDaoVote)
+			}
+		}
+
 	}
 }

@@ -13,11 +13,18 @@ import (
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
+	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
+	daoproposal "github.com/defipod/mochi/pkg/repo/dao_proposal"
+	daoproposalvoteoption "github.com/defipod/mochi/pkg/repo/dao_proposal_vote_option"
+	daovote "github.com/defipod/mochi/pkg/repo/dao_vote"
+	daovoteoption "github.com/defipod/mochi/pkg/repo/dao_vote_option"
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
+	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
+	guildconfigdaotracker "github.com/defipod/mochi/pkg/repo/guild_config_dao_tracker"
 	guildconfigdefaultcollection "github.com/defipod/mochi/pkg/repo/guild_config_default_collection"
 	guildconfigdefaultcurrency "github.com/defipod/mochi/pkg/repo/guild_config_default_currency"
 	guildconfigdefaultrole "github.com/defipod/mochi/pkg/repo/guild_config_default_roles"
@@ -150,5 +157,12 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		AutoTrigger:                          autoTrigger.NewPG(db),
 		AutoActionHistory:                    autoActionHistory.NewPG(db),
 		CoingeckoInfo:                        coingeckoinfo.NewPG(db),
+		GuildConfigDaoTracker:                guildconfigdaotracker.NewPG(db),
+		GuildConfigDaoProposal:               guildconfigdaoproposal.NewPG(db),
+		DaoProposal:                          daoproposal.NewPG(db),
+		DaoVote:                              daovote.NewPG(db),
+		DaoProposalVoteOption:                daoproposalvoteoption.NewPG(db),
+		DaoVoteOption:                        daovoteoption.NewPG(db),
+		DaoGuidelineMessages:                 daoguidelinemessages.NewPG(db),
 	}
 }

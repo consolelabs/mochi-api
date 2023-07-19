@@ -148,3 +148,11 @@ type GuildConfigTipRangeResponse struct {
 type ListGuildAdminRoles struct {
 	Data []model.GuildConfigAdminRole `json:"data"`
 }
+
+type CreateProposalChannelConfigResponse struct {
+	Data model.GuildConfigDaoProposal `json:"data"`
+}
+
+type GuildConfigDaoTrackerResponse struct {
+	Data *[]model.GuildConfigDaoTracker `json:"data"`
+}

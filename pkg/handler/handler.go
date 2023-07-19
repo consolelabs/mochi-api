@@ -10,6 +10,7 @@ import (
 	configdefi "github.com/defipod/mochi/pkg/handler/config-defi"
 	configroles "github.com/defipod/mochi/pkg/handler/config-roles"
 	"github.com/defipod/mochi/pkg/handler/content"
+	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/dex"
 	"github.com/defipod/mochi/pkg/handler/emojis"
@@ -44,6 +45,7 @@ type Handler struct {
 	ConfigDefi      configdefi.IHandler
 	ConfigRoles     configroles.IHandler
 	Wallet          wallet.IHandler
+	DaoVoting       daovoting.IHandler
 	Vault           vault.IHandler
 	Swap            swap.IHandler
 	ApiKey          apikey.IHandler
@@ -53,7 +55,7 @@ type Handler struct {
 	Content         content.IHandler
 	AirdropCampaign airdropcampaign.IHandler
 	Watchlist       watchlist.IHandler
-	Invest invest.IHandler
+	Invest          invest.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -81,6 +83,7 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Content:         content.New(entities, logger),
 		AirdropCampaign: airdropcampaign.New(entities, logger),
 		Watchlist:       watchlist.New(entities, logger),
-		Invest: invest.New(entities, logger),
+		Invest:          invest.New(entities, logger),
+		DaoVoting:       daovoting.New(entities, logger),
 	}
 }
