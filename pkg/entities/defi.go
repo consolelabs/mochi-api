@@ -655,7 +655,8 @@ func (e *Entity) GetUserWatchlist(req request.ListTrackingTokensRequest) (*respo
 			}
 			if len(fiatRate) == 0 {
 				e.log.Fields(logger.Fields{"pair": pair}).Error(err, "[entity.GetUserWatchlist] Nghenhan.GetFiatHistoricalChart returned no data")
-				return nil, err
+				// return nil, err
+				fiatRate = append(fiatRate, 0)
 			}
 
 			lastestPrice := fiatRate[len(fiatRate)-1]
