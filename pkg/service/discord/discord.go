@@ -685,3 +685,25 @@ func (d *Discord) GetGuildRoles(guildID string) ([]*model.DiscordGuildRole, erro
 
 	return roles, nil
 }
+
+func (d *Discord) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
+	proposalChannel, err := d.Channel(proposalChannelID)
+	if err != nil {
+		d.log.Fields(logger.Fields{
+			"proposalChannelID": proposalChannelID,
+		}).Error(err, "[discord.CreateDiscussionChannelForProposal] get channel failed")
+		return "", errors.ErrInvalidDiscordChannelID
+	}
+	discussChannelCreateData := discordgo.GuildChannelCreateData{
+		Name:                 proposalTitle,
+		Type:                 discordgo.ChannelTypeGuildText,
+		PermissionOverwrites: proposalChannel.PermissionOverwrites,
+		ParentID:             proposalChannel.ParentID,
+	}
+	discussionChannel, err := d.CreateChannel(guildId, discussChannelCreateData)
+	if err != nil {
+		d.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "CreateDiscussionChannelForProposal - GuildChannelCreate failed")
+		return "", err
+	}
+	return discussionChannel.ID, nil
+}
