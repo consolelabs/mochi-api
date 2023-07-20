@@ -45,15 +45,18 @@ func (e *Entity) CreateDaoProposal(req *request.CreateDaoProposalRequest) (*mode
 		optionId = &tokenOptId
 	}
 
-	token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainID))
-	if err != nil {
-		e.log.Fields(logger.Fields{
-			"walletAddress": config.Address,
-			"chainId":       config.ChainID,
-		}).Error(err, "[entities.CreateDaoProposal] - repo.Token.GetByAddress failed")
-		return nil, err
+	requiredAmtBig := "0"
+	if config.Authority != "admin" {
+		token, err := e.repo.Token.GetByAddress(config.Address, int(config.ChainID))
+		if err != nil {
+			e.log.Fields(logger.Fields{
+				"walletAddress": config.Address,
+				"chainId":       config.ChainID,
+			}).Error(err, "[entities.CreateDaoProposal] - repo.Token.GetByAddress failed")
+			return nil, err
+		}
+		requiredAmtBig = big.NewInt(1).Mul(big.NewInt(1), math.BigPow(10, int64(token.Decimals))).Text(10)
 	}
-	requiredAmtBig := big.NewInt(1).Mul(big.NewInt(1), math.BigPow(10, int64(token.Decimals))).Text(10)
 	proposalVoteOption := model.DaoProposalVoteOption{
 		ProposalId:     daoProposal.Id,
 		Address:        config.Address,
