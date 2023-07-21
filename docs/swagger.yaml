@@ -2337,13 +2337,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
-      usd_1h_change:
-        type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1h_change:
         type: number
       usd_24h_change:
         type: number
@@ -2960,6 +2960,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
@@ -2973,12 +2979,6 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3459,21 +3459,31 @@ definitions:
       vote_config:
         $ref: '#/definitions/model.DaoProposalVoteOption'
     type: object
-  response.TokenInfoGeckoTerminalInfo:
+  response.TokenInfoDexPool:
     properties:
+      address:
+        type: string
+      base_token_price_native:
+        type: string
+      base_token_price_usd:
+        type: string
+      dex:
+        type: string
       fully_diluted_valuation:
         type: string
-      liquidity:
+      liquidity_usd:
         type: string
       market_cap:
         type: string
-      pool_name:
+      name:
         type: string
-      price_in_target_token:
+      price_change_percentage_1h:
         type: string
-      price_in_usd:
+      price_change_percentage_24h:
         type: string
-      price_percent_change:
+      quote_token_price_native:
+        type: string
+      quote_token_price_usd:
         type: string
       volume_24h:
         type: string
@@ -3499,13 +3509,13 @@ definitions:
         items:
           type: string
         type: array
+      dex_pools:
+        items:
+          $ref: '#/definitions/response.TokenInfoDexPool'
+        type: array
       explorers:
         items:
           $ref: '#/definitions/response.TokenInfoKeyValue'
-        type: array
-      geckoterminal_info:
-        items:
-          $ref: '#/definitions/response.TokenInfoGeckoTerminalInfo'
         type: array
       icon:
         type: string

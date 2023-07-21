@@ -10959,28 +10959,43 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TokenInfoGeckoTerminalInfo": {
+        "response.TokenInfoDexPool": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "base_token_price_native": {
+                    "type": "string"
+                },
+                "base_token_price_usd": {
+                    "type": "string"
+                },
+                "dex": {
+                    "type": "string"
+                },
                 "fully_diluted_valuation": {
                     "type": "string"
                 },
-                "liquidity": {
+                "liquidity_usd": {
                     "type": "string"
                 },
                 "market_cap": {
                     "type": "string"
                 },
-                "pool_name": {
+                "name": {
                     "type": "string"
                 },
-                "price_in_target_token": {
+                "price_change_percentage_1h": {
                     "type": "string"
                 },
-                "price_in_usd": {
+                "price_change_percentage_24h": {
                     "type": "string"
                 },
-                "price_percent_change": {
+                "quote_token_price_native": {
+                    "type": "string"
+                },
+                "quote_token_price_usd": {
                     "type": "string"
                 },
                 "volume_24h": {
@@ -11020,16 +11035,16 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "dex_pools": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.TokenInfoDexPool"
+                    }
+                },
                 "explorers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.TokenInfoKeyValue"
-                    }
-                },
-                "geckoterminal_info": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.TokenInfoGeckoTerminalInfo"
                     }
                 },
                 "icon": {
