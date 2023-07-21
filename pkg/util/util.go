@@ -529,6 +529,10 @@ func FetchData(url string, parseForm interface{}) (int, error) {
 		return statusCode, err
 	}
 
+	bstr := string(b)
+
+	_ = bstr
+
 	return statusCode, json.Unmarshal(b, parseForm)
 }
 func GetMaxFloat64(arr []float64) float64 {

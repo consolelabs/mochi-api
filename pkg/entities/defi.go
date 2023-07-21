@@ -177,17 +177,16 @@ func (e *Entity) GetTokenInfo(query string) (*response.TokenInfoResponse, error)
 	// }
 
 	tokenInfo := &response.TokenInfoResponse{Name: query}
-	dat, err := e.getCoingeckoInfo(query)
-	if err != nil {
-		e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
-	}
+	// dat, err := e.getCoingeckoInfo(query)
+	// if err != nil {
+	// 	e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
+	// }
 
-	if dat != nil {
-		tokenInfo = dat
-	}
+	// if dat != nil {
+	// 	tokenInfo = dat
+	// }
 
-	err = e.getGeckoTerminalTokenInfo(tokenInfo, query)
-	if err != nil {
+	if err := e.getGeckoTerminalTokenInfo(tokenInfo, query); err != nil {
 		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
 	}
 
@@ -223,8 +222,8 @@ func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse
 
 	wp := workerpool.New(5)
 
-	geckoterminalInfos := make([]response.TokenInfoGeckoTerminalInfo, 0)
-	geckoterminalInfosLock := sync.Mutex{}
+	dexPools := make([]response.TokenInfoDexPool, 0)
+	dexPoolsMu := sync.Mutex{}
 
 	for _, p := range search.Data.Attributes.Pools {
 		p := p
@@ -236,24 +235,29 @@ func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse
 					return
 				}
 
-				// poolPage, err := e.svc.GeckoTerminal.ScrapePool(*p.Network.Identifier, p.APIAddress)
-				// if err != nil {
-				// 	e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.ScrapePool() failed")
-				// 	return err
-				// }
-				geckoterminalInfosLock.Lock()
-				defer geckoterminalInfosLock.Unlock()
+				dexPoolsMu.Lock()
+				defer dexPoolsMu.Unlock()
 
-				geckoterminalInfos = append(geckoterminalInfos,
-					response.TokenInfoGeckoTerminalInfo{
-						PoolName:              pool.Data.Attributes.Name,
-						FullyDilutedValuation: pool.Data.Attributes.FullyDilutedValuation,
-						// Liquidity:             poolPage.Liquidity,
-						// Volume24h:             poolPage.Volume24h,
-						// MarketCap:             poolPage.MarketCap,
-						PriceInUSD:         pool.Data.Attributes.PriceInUsd,
-						PriceInTargetToken: pool.Data.Attributes.PriceInTargetToken,
-						PricePercentChange: pool.Data.Attributes.PricePercentChange,
+				marketCap := ""
+				if pool.Data.Attributes.MarketCapUsd != nil {
+					marketCap = *pool.Data.Attributes.MarketCapUsd
+				}
+
+				dexPools = append(dexPools,
+					response.TokenInfoDexPool{
+						Name:                     pool.Data.Attributes.Name,
+						Address:                  pool.Data.Attributes.Address,
+						Dex:                      pool.Data.Relationships.Dex.Data.ID,
+						FullyDilutedValuation:    pool.Data.Attributes.FdvUsd,
+						LiquidityUsd:             pool.Data.Attributes.ReserveInUsd,
+						Volume24h:                pool.Data.Attributes.VolumeUsd.H24,
+						MarketCap:                marketCap,
+						BaseTokenPriceUsd:        pool.Data.Attributes.BaseTokenPriceUsd,
+						BaseTokenPriceNative:     pool.Data.Attributes.BaseTokenPriceNativeCurrency,
+						QuoteTokenPriceUsd:       pool.Data.Attributes.QuoteTokenPriceUsd,
+						QuoteTokenPriceNative:    pool.Data.Attributes.QuoteTokenPriceNativeCurrency,
+						PriceChangePercentage1H:  pool.Data.Attributes.PriceChangePercentage.H1,
+						PriceChangePercentage24H: pool.Data.Attributes.PriceChangePercentage.H24,
 					})
 			}
 		})
@@ -261,12 +265,12 @@ func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse
 
 	wp.StopWait()
 
-	// sort by price
-	sort.Slice(geckoterminalInfos, func(i, j int) bool {
-		return geckoterminalInfos[i].PriceInUSD > geckoterminalInfos[j].PriceInUSD
+	// sort by 24h volume
+	sort.Slice(dexPools, func(i, j int) bool {
+		return dexPools[i].Volume24h > dexPools[j].Volume24h
 	})
 
-	tokenInfo.GeckoTerminalInfo = geckoterminalInfos
+	tokenInfo.DexPools = dexPools
 
 	return nil
 }
