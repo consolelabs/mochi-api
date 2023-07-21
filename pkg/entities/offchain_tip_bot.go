@@ -63,6 +63,10 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 		return nil, err
 	}
 
+	if len(senderBalance.Data) == 0 {
+		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+	}
+
 	bal, err := util.StringToBigInt(senderBalance.Data[0].Amount)
 	if err != nil {
 		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
