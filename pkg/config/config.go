@@ -385,6 +385,8 @@ func LoadTestConfig() Config {
 		RpcUrl: RpcUrl{
 			Ronin: "sample",
 		},
+
+		ChromeHost: "http://localhost:3000",
 	}
 	return cfg
 }

@@ -86,6 +86,93 @@ definitions:
       min_xp:
         type: integer
     type: object
+  model.DaoProposal:
+    properties:
+      closed_at:
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      description:
+        type: string
+      discussion_channel_id:
+        type: string
+      guild_config_dao_proposal_id:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      voting_channel_id:
+        type: string
+    type: object
+  model.DaoProposalVoteCount:
+    properties:
+      choice:
+        type: string
+      guild_id:
+        type: string
+      proposal_id:
+        type: string
+      sum:
+        type: integer
+    type: object
+  model.DaoProposalVoteOption:
+    properties:
+      address:
+        type: string
+      chain_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      proposal_id:
+        type: integer
+      required_amount:
+        type: string
+      symbol:
+        type: string
+      updated_at:
+        type: string
+      vote_option:
+        $ref: '#/definitions/model.DaoVoteOption'
+      vote_option_id:
+        type: integer
+    type: object
+  model.DaoVote:
+    properties:
+      choice:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      point:
+        type: number
+      proposal_id:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.DaoVoteOption:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.DiscordGuild:
     properties:
       active:
@@ -889,6 +976,34 @@ definitions:
       title:
         type: string
     type: object
+  request.CreateDaoProposalRequest:
+    properties:
+      creator_id:
+        type: string
+      description:
+        type: string
+      guild_id:
+        type: string
+      title:
+        type: string
+      vote_option:
+        $ref: '#/definitions/request.VoteOptionRequest'
+      voting_channel_id:
+        type: string
+    type: object
+  request.CreateDaoVoteRequest:
+    properties:
+      choice:
+        type: string
+      proposal_id:
+        type: integer
+      user_id:
+        type: string
+    required:
+    - choice
+    - proposal_id
+    - user_id
+    type: object
   request.CreateDefaultRoleRequest:
     properties:
       guildID:
@@ -1226,6 +1341,16 @@ definitions:
       discord_user_id:
         type: string
     type: object
+  request.UpdateDaoVoteRequest:
+    properties:
+      choice:
+        type: string
+      user_id:
+        type: string
+    required:
+    - choice
+    - user_id
+    type: object
   request.UpdateGuildRequest:
     properties:
       active:
@@ -1375,6 +1500,19 @@ definitions:
       username:
         type: string
     type: object
+  request.VoteOptionRequest:
+    properties:
+      address:
+        type: string
+      chain_id:
+        type: integer
+      id:
+        type: integer
+      required_amount:
+        type: integer
+      symbol:
+        type: string
+    type: object
   response.AddToWatchlistResponse:
     properties:
       data:
@@ -1471,44 +1609,6 @@ definitions:
         type: string
       thumb:
         type: string
-    type: object
-  response.CoinGeckoInfoKeyValue:
-    properties:
-      key:
-        type: string
-      value:
-        type: string
-    type: object
-  response.CoinGeckoInfoResponse:
-    properties:
-      communities:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
-      contracts:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
-      description_lines:
-        items:
-          type: string
-        type: array
-      explorers:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
-      tags:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
-      wallets:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
-      websites:
-        items:
-          $ref: '#/definitions/response.CoinGeckoInfoKeyValue'
-        type: array
     type: object
   response.CoinImage:
     properties:
@@ -1658,6 +1758,11 @@ definitions:
       updated_at:
         type: string
     type: object
+  response.CreateDaoProposalResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.DaoProposal'
+    type: object
   response.CreateGuildTokenRole:
     properties:
       data:
@@ -1790,6 +1895,22 @@ definitions:
           $ref: '#/definitions/response.GasTrackerResponse'
         type: array
     type: object
+  response.GetAllDaoProposalVotes:
+    properties:
+      proposal:
+        $ref: '#/definitions/response.GetDaoProposalData'
+      votes:
+        items:
+          $ref: '#/definitions/model.DaoVote'
+        type: array
+    type: object
+  response.GetAllDaoProposals:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.DaoProposal'
+        type: array
+    type: object
   response.GetCoinResponse:
     properties:
       asset_platform:
@@ -1803,7 +1924,7 @@ definitions:
           type: string
         type: array
       coingecko_info:
-        $ref: '#/definitions/response.CoinGeckoInfoResponse'
+        $ref: '#/definitions/response.TokenInfoResponse'
       coingecko_rank:
         type: integer
       coingecko_score:
@@ -1867,6 +1988,35 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.NFTCollectionCount'
+    type: object
+  response.GetDaoProposalData:
+    properties:
+      closed_at:
+        type: string
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      description:
+        type: string
+      discussion_channel_id:
+        type: string
+      guild_config_dao_proposal_id:
+        type: integer
+      guild_id:
+        type: string
+      id:
+        type: integer
+      points:
+        items:
+          $ref: '#/definitions/model.DaoProposalVoteCount'
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+      voting_channel_id:
+        type: string
     type: object
   response.GetDataUserProfileResponse:
     properties:
@@ -2187,13 +2337,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2263,6 +2413,11 @@ definitions:
         items:
           $ref: '#/definitions/model.Vault'
         type: array
+    type: object
+  response.GetVote:
+    properties:
+      data:
+        $ref: '#/definitions/model.DaoVote'
     type: object
   response.GetWatchlistResponse:
     properties:
@@ -3286,6 +3441,89 @@ definitions:
       symbol:
         type: string
     type: object
+  response.TokenHolderStatus:
+    properties:
+      data:
+        $ref: '#/definitions/response.TokenHolderStatusData'
+    type: object
+  response.TokenHolderStatusData:
+    properties:
+      guild_config:
+        $ref: '#/definitions/model.GuildConfigDaoProposal'
+      is_qualified:
+        type: boolean
+      is_wallet_connected:
+        type: boolean
+      user_holding_amount:
+        type: string
+      vote_config:
+        $ref: '#/definitions/model.DaoProposalVoteOption'
+    type: object
+  response.TokenInfoGeckoTerminalInfo:
+    properties:
+      fully_diluted_valuation:
+        type: string
+      liquidity:
+        type: string
+      market_cap:
+        type: string
+      pool_name:
+        type: string
+      price_in_target_token:
+        type: string
+      price_in_usd:
+        type: string
+      price_percent_change:
+        type: string
+      volume_24h:
+        type: string
+    type: object
+  response.TokenInfoKeyValue:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  response.TokenInfoResponse:
+    properties:
+      communities:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+      contracts:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+      description_lines:
+        items:
+          type: string
+        type: array
+      explorers:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+      geckoterminal_info:
+        items:
+          $ref: '#/definitions/response.TokenInfoGeckoTerminalInfo'
+        type: array
+      icon:
+        type: string
+      name:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+      wallets:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+      websites:
+        items:
+          $ref: '#/definitions/response.TokenInfoKeyValue'
+        type: array
+    type: object
   response.TokenPriceAlertResponseData:
     properties:
       alert_type:
@@ -3325,6 +3563,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.UserFeedback'
+    type: object
+  response.UpdateVote:
+    properties:
+      data:
+        $ref: '#/definitions/model.DaoVote'
     type: object
   response.User:
     properties:
@@ -3666,6 +3909,27 @@ paths:
       tags:
       - Community
   /config-channels/{guild_id}/proposal:
+    delete:
+      consumes:
+      - application/json
+      description: Delete dao proposal config
+      parameters:
+      - description: Delete dao proposal channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.DeleteGuildConfigDaoProposal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete dao proposal channel config
+      tags:
+      - ConfigChannel
     get:
       consumes:
       - application/json
@@ -3684,6 +3948,27 @@ paths:
           schema:
             $ref: '#/definitions/response.GetGuildConfigDaoProposal'
       summary: Get dao proposal channel config
+      tags:
+      - ConfigChannel
+    post:
+      consumes:
+      - application/json
+      description: Create proposal channel config for dao voting
+      parameters:
+      - description: Create proposal channel config request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateProposalChannelConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateProposalChannelConfigResponse'
+      summary: Create proposal channel config
       tags:
       - ConfigChannel
   /config-channels/gm:
@@ -3726,49 +4011,6 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseMessage'
       summary: Update or insert GM config
-      tags:
-      - ConfigChannel
-  /config-channels/proposal:
-    delete:
-      consumes:
-      - application/json
-      description: Delete dao proposal config
-      parameters:
-      - description: Delete dao proposal channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.DeleteGuildConfigDaoProposal'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ResponseMessage'
-      summary: Delete dao proposal channel config
-      tags:
-      - ConfigChannel
-    post:
-      consumes:
-      - application/json
-      description: Create proposal channel config for dao voting
-      parameters:
-      - description: Create proposal channel config request
-        in: body
-        name: Request
-        required: true
-        schema:
-          $ref: '#/definitions/request.CreateProposalChannelConfig'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CreateProposalChannelConfigResponse'
-      summary: Create proposal channel config
       tags:
       - ConfigChannel
   /config-channels/tip-notify:
@@ -4798,6 +5040,196 @@ paths:
       summary: Create sales tracker config
       tags:
       - Config
+  /dao-voting/proposals:
+    delete:
+      consumes:
+      - application/json
+      description: Detele DAO proposal and then remove its discussion channel.
+      parameters:
+      - description: Proposal ID
+        in: path
+        name: proposal_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Delete DAO Proposal
+      tags:
+      - DAO Proposal
+    get:
+      consumes:
+      - application/json
+      description: Get dao proposals
+      parameters:
+      - description: Discord ID
+        in: query
+        name: user_discord_id
+        required: true
+        type: string
+      - description: Guild ID
+        in: query
+        name: guild_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllDaoProposals'
+      summary: Get dao proposals
+      tags:
+      - DAO-Voting
+    post:
+      consumes:
+      - application/json
+      description: Create dao proposal and then create a discussion channel for users
+        to discuss about the proposal.
+      parameters:
+      - description: Create dao proposal request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDaoProposalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateDaoProposalResponse'
+      summary: Dao Proposal
+      tags:
+      - DAO Proposal
+  /dao-voting/proposals/vote:
+    post:
+      consumes:
+      - application/json
+      description: Create dao vote
+      parameters:
+      - description: Create dao vote request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDaoVoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseMessage'
+      summary: Create dao vote
+      tags:
+      - Dao-voting
+  /dao-voting/proposals/votes/{vote_id}:
+    put:
+      consumes:
+      - application/json
+      description: Update dao vote
+      parameters:
+      - description: DAO Vote ID
+        in: path
+        name: vote_id
+        required: true
+        type: string
+      - description: Update dao vote request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateDaoVoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UpdateVote'
+      summary: Update dao vote
+      tags:
+      - Dao-voting
+  /dao-voting/token-holder/status:
+    get:
+      consumes:
+      - application/json
+      description: Check token holder connect wallet yet? And have enough amount based
+        on criteria (has 10 icy, 3 neko, havent connected walelt, …)
+      parameters:
+      - description: Discord ID
+        in: query
+        name: user-discord-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TokenHolderStatus'
+      summary: Get status of token holder for creating proposal and voting
+      tags:
+      - DAO-Voting
+  /dao-voting/user-votes:
+    get:
+      consumes:
+      - application/json
+      description: Get dao votes
+      parameters:
+      - description: Discord ID
+        in: query
+        name: user_discord_id
+        required: true
+        type: string
+      - description: Proposal ID
+        in: query
+        name: proposal-id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetAllDaoProposalVotes'
+      summary: Get dao votes
+      tags:
+      - DAO-Voting
+  /dao-voting/votes:
+    get:
+      consumes:
+      - application/json
+      description: Get dao proposal vote of user
+      parameters:
+      - description: Proposal ID
+        in: query
+        name: proposal_id
+        required: true
+        type: string
+      - description: Discord ID
+        in: query
+        name: user_discord_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetVote'
+      summary: Get dao proposal vote of user
+      tags:
+      - DAO-Voting
   /data/configs/activities/{activity}:
     post:
       consumes:
@@ -5246,6 +5678,28 @@ paths:
       summary: Get supported tokens
       tags:
       - Defi
+  /defi/tokens/info:
+    get:
+      consumes:
+      - application/json
+      description: Get token info
+      parameters:
+      - description: token query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TokenInfoResponse'
+      summary: Get token info
+      tags:
+      - Defi
+      - Public
   /defi/top-gainer-loser:
     get:
       consumes:

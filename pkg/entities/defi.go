@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -125,7 +124,7 @@ func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pa
 	return
 }
 
-func (e *Entity) GetCoinData(coinID string, isDominanceChart, isWithCoingeckoInfo bool) (*response.GetCoinResponse, error, int) {
+func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.GetCoinResponse, error, int) {
 	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
 	if err != nil {
 		return nil, err, statusCode
@@ -155,35 +154,103 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart, isWithCoingeckoInf
 	}
 	data.AssetPlatform = platform
 
-	if isWithCoingeckoInfo {
-		coingeckoInfo, err, statusCode := e.GetCoingeckoInfo(coinID)
-		if err != nil {
-			return nil, err, statusCode
-		}
-
-		data.CoingeckoInfo = coingeckoInfo
-	}
-
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoResponse, error, int) {
-	// find in db
-	coingeckoInfo, err := e.repo.CoingeckoInfo.GetOne(coinId)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err, http.StatusInternalServerError
+func (e *Entity) GetTokenInfo(query string) (*response.TokenInfoResponse, error) {
+	// // find in db
+	// coingeckoInfo, err := e.repo.CoingeckoInfo.GetOne(query)
+	// if err != nil && err != gorm.ErrRecordNotFound {
+	// 	return nil, err
+	// }
+
+	// if coingeckoInfo.Info != nil {
+	// 	res := &response.TokenInfoResponse{}
+	// 	if err := json.Unmarshal([]byte(coingeckoInfo.Info), res); err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	e.log.Infof("[entity.scrapeCoingeckoInfo] found in db: %s", query)
+	// 	return res, nil
+	// }
+
+	tokenInfo := &response.TokenInfoResponse{Name: query}
+	dat, err := e.getCoingeckoInfo(query)
+	if err != nil {
+		e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
 	}
 
-	if coingeckoInfo.Info != nil {
-		res := &response.CoinGeckoInfoResponse{}
-		if err := json.Unmarshal([]byte(coingeckoInfo.Info), res); err != nil {
-			return nil, err, http.StatusInternalServerError
+	if dat != nil {
+		tokenInfo = dat
+	}
+
+	err = e.getGeckoTerminalTokenInfo(tokenInfo, query)
+	if err != nil {
+		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
+	}
+
+	// upsert to db
+	// coingeckoInfoByte, err := json.Marshal(tokenInfo)
+	// if err != nil {
+	// 	return nil, &rod.ErrElementNotFound{}
+	// }
+
+	// coingeckoInfo.ID = query
+	// coingeckoInfo.Info.Scan(coingeckoInfoByte)
+
+	// if _, err := e.repo.CoingeckoInfo.Upsert(coingeckoInfo); err != nil {
+	// 	return nil, err
+	// }
+
+	// e.log.Infof("[entity.scrapeCoingeckoInfo] scraped and save token info %s", query)
+
+	return tokenInfo, nil
+}
+
+func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse, query string) error {
+	// find available pool on gecko terminal
+	search, err := e.svc.GeckoTerminal.Search(query)
+	if err != nil {
+		e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.Search() failed")
+		return nil
+	}
+
+	if search == nil {
+		return nil
+	}
+
+	for _, p := range search.Data.Attributes.Pools {
+		if p.Type == "pool" {
+			pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
+			if err != nil {
+				e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
+				return err
+			}
+
+			// poolPage, err := e.svc.GeckoTerminal.ScrapePool(*p.Network.Identifier, p.APIAddress)
+			// if err != nil {
+			// 	e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.ScrapePool() failed")
+			// 	return err
+			// }
+
+			tokenInfo.GeckoTerminalInfo = append(tokenInfo.GeckoTerminalInfo,
+				response.TokenInfoGeckoTerminalInfo{
+					PoolName:              pool.Data.Attributes.Name,
+					FullyDilutedValuation: pool.Data.Attributes.FullyDilutedValuation,
+					// Liquidity:             poolPage.Liquidity,
+					// Volume24h:             poolPage.Volume24h,
+					// MarketCap:             poolPage.MarketCap,
+					PriceInUSD:         pool.Data.Attributes.PriceInUsd,
+					PriceInTargetToken: pool.Data.Attributes.PriceInTargetToken,
+					PricePercentChange: pool.Data.Attributes.PricePercentChange,
+				})
 		}
-
-		e.log.Infof("[entity.scrapeCoingeckoInfo] found in db: %s", coinId)
-		return res, nil, http.StatusOK
 	}
 
+	return nil
+}
+
+func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, error) {
 	url := fmt.Sprintf("https://www.coingecko.com/en/coins/%s", coinId)
 
 	// browser
@@ -191,14 +258,27 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 	defer browser.MustClose()
 	page := stealth.MustPage(browser).MustNavigate(url)
 
+	// if page contains "The page you're looking for could not be found" -> return
+	if page.MustElement("body") == nil {
+		return nil, errors.New("error scraping coingecko")
+	}
+
+	if strings.Contains(page.MustElement("body").MustText(), "The page you're looking for could not be found") {
+		return nil, errors.New("error scraping coingecko")
+	}
+
+	if page.MustElement("[data-target='coins-information.mobileOptionalInfo']") == nil {
+		return nil, errors.New("no data found")
+	}
+
 	data := page.MustElement("[data-target='coins-information.mobileOptionalInfo']").MustElements(".coin-link-row")
 
 	if len(data) == 0 {
-		return nil, nil, http.StatusNotFound
+		return nil, errors.New("no data found")
 	}
 
-	getHrefMap := func(d *rod.Element) ([]response.CoinGeckoInfoKeyValue, error) {
-		dat := []response.CoinGeckoInfoKeyValue{}
+	getHrefMap := func(d *rod.Element) ([]response.TokenInfoKeyValue, error) {
+		dat := []response.TokenInfoKeyValue{}
 		// get text
 		for _, dd := range d.MustElements("a") {
 			text, err := dd.Text()
@@ -212,16 +292,22 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 				return nil, err
 			}
 
-			dat = append(dat, response.CoinGeckoInfoKeyValue{
+			// remove all spaces, newlines, etc.
+			val := strings.TrimSpace(href.String())
+			val = strings.ReplaceAll(val, "\n", "")
+			val = strings.ReplaceAll(val, "\t", "")
+			val = strings.ReplaceAll(val, "\r", "")
+
+			dat = append(dat, response.TokenInfoKeyValue{
 				Key:   text,
-				Value: href.String(),
+				Value: val,
 			})
 		}
 
 		return dat, nil
 	}
 
-	info := &response.CoinGeckoInfoResponse{}
+	info := &response.TokenInfoResponse{}
 
 	for _, d := range data {
 		if d == nil {
@@ -234,7 +320,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		case "Website":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err, http.StatusInternalServerError
+				return nil, err
 			}
 
 			info.Websites = dat
@@ -242,7 +328,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		case "Explorers":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err, http.StatusInternalServerError
+				return nil, err
 			}
 
 			info.Explorers = dat
@@ -250,7 +336,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		case "Wallets":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err, http.StatusInternalServerError
+				return nil, err
 			}
 
 			info.Wallets = dat
@@ -258,7 +344,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		case "Community":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err, http.StatusInternalServerError
+				return nil, err
 			}
 
 			info.Communities = dat
@@ -266,7 +352,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		case "Tags":
 			dat, err := getHrefMap(d)
 			if err != nil {
-				return nil, err, http.StatusInternalServerError
+				return nil, err
 			}
 
 			info.Tags = dat
@@ -285,22 +371,7 @@ func (e *Entity) GetCoingeckoInfo(coinId string) (*response.CoinGeckoInfoRespons
 		}
 	}
 
-	// upsert to db
-	coingeckoInfoByte, err := json.Marshal(info)
-	if err != nil {
-		return nil, err, http.StatusInternalServerError
-	}
-
-	coingeckoInfo.ID = coinId
-	coingeckoInfo.Info.Scan(coingeckoInfoByte)
-
-	if _, err := e.repo.CoingeckoInfo.Upsert(coingeckoInfo); err != nil {
-		return nil, err, http.StatusInternalServerError
-	}
-
-	e.log.Infof("[entity.scrapeCoingeckoInfo] scraped and save coingecko info %s", coinId)
-
-	return info, nil, http.StatusOK
+	return info, nil
 }
 
 func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *response.AssetPlatformResponseData, err error) {

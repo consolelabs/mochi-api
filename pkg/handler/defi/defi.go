@@ -134,9 +134,8 @@ func (h *Handler) GetCoin(c *gin.Context) {
 	}
 
 	isDominanceChart := strings.EqualFold(c.Query("is_dominance_chart"), "true")
-	isWithCoingeckoInfo := strings.EqualFold(c.Query("is_with_coingecko_info"), "true")
 
-	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart, isWithCoingeckoInfo)
+	data, err, statusCode := h.entities.GetCoinData(coinID, isDominanceChart)
 	if err != nil {
 		h.log.Error(err, "[handler.GetCoin] - failed to get coin data")
 		c.JSON(statusCode, gin.H{"error": err.Error()})
@@ -171,6 +170,34 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(tokens, nil, nil, nil))
+}
+
+// GetTokenInfo		 godoc
+// @Summary     Get token info
+// @Description Get token info
+// @Tags        Defi
+// @Tags        Public
+// @Accept      json
+// @Produce     json
+// @Param       query   query  string true  "token query"
+// @Success     200 {object} response.TokenInfoResponse
+// @Router      /defi/tokens/info [get]
+func (h *Handler) GetTokenInfo(c *gin.Context) {
+	query := c.Query("query")
+	if query == "" {
+		h.log.Info("[handler.GetTokenInfo] query is required")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
+		return
+	}
+
+	token, err := h.entities.GetTokenInfo(query)
+	if err != nil {
+		h.log.Error(err, "[handler.GetTokenInfo] entities.GetTokenInfo() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(token, nil, nil, nil))
 }
 
 // CompareToken     godoc
