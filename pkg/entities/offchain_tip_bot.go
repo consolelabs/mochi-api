@@ -23,22 +23,13 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := request.MochiPayTransferRequest{}
-	senderProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sender, true)
-	if err != nil {
-		return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
-	}
-
 	transferReq.From = &request.Wallet{
-		ProfileGlobalId: senderProfile.ID,
+		ProfileGlobalId: req.Sender,
 	}
 
-	for _, v := range req.Recipients {
-		profile, err := e.svc.MochiProfile.GetByDiscordID(v, true)
-		if err != nil {
-			return nil, errors.New(consts.OffchainTipBotFailReasonGetProfileFailed)
-		}
+	for _, r := range req.Recipients {
 		transferReq.Tos = append(transferReq.Tos, &request.Wallet{
-			ProfileGlobalId: profile.ID,
+			ProfileGlobalId: r,
 		})
 	}
 
@@ -57,7 +48,7 @@ func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.O
 	transferReq.Note = req.Message
 
 	// validate balance
-	senderBalance, err := e.svc.MochiPay.GetBalance(senderProfile.ID, req.Token, req.ChainID)
+	senderBalance, err := e.svc.MochiPay.GetBalance(req.Sender, req.Token, req.ChainID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferToken] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
 		return nil, err
