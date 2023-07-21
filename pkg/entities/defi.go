@@ -7,10 +7,12 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/gammazero/workerpool"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
@@ -219,33 +221,52 @@ func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse
 		return nil
 	}
 
+	wp := workerpool.New(5)
+
+	geckoterminalInfos := make([]response.TokenInfoGeckoTerminalInfo, 0)
+	geckoterminalInfosLock := sync.Mutex{}
+
 	for _, p := range search.Data.Attributes.Pools {
-		if p.Type == "pool" {
-			pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
-			if err != nil {
-				e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
-				return err
+		p := p
+		wp.Submit(func() {
+			if p.Type == "pool" {
+				pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
+				if err != nil {
+					e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
+					return
+				}
+
+				// poolPage, err := e.svc.GeckoTerminal.ScrapePool(*p.Network.Identifier, p.APIAddress)
+				// if err != nil {
+				// 	e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.ScrapePool() failed")
+				// 	return err
+				// }
+				geckoterminalInfosLock.Lock()
+				defer geckoterminalInfosLock.Unlock()
+
+				geckoterminalInfos = append(geckoterminalInfos,
+					response.TokenInfoGeckoTerminalInfo{
+						PoolName:              pool.Data.Attributes.Name,
+						FullyDilutedValuation: pool.Data.Attributes.FullyDilutedValuation,
+						// Liquidity:             poolPage.Liquidity,
+						// Volume24h:             poolPage.Volume24h,
+						// MarketCap:             poolPage.MarketCap,
+						PriceInUSD:         pool.Data.Attributes.PriceInUsd,
+						PriceInTargetToken: pool.Data.Attributes.PriceInTargetToken,
+						PricePercentChange: pool.Data.Attributes.PricePercentChange,
+					})
 			}
-
-			// poolPage, err := e.svc.GeckoTerminal.ScrapePool(*p.Network.Identifier, p.APIAddress)
-			// if err != nil {
-			// 	e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.ScrapePool() failed")
-			// 	return err
-			// }
-
-			tokenInfo.GeckoTerminalInfo = append(tokenInfo.GeckoTerminalInfo,
-				response.TokenInfoGeckoTerminalInfo{
-					PoolName:              pool.Data.Attributes.Name,
-					FullyDilutedValuation: pool.Data.Attributes.FullyDilutedValuation,
-					// Liquidity:             poolPage.Liquidity,
-					// Volume24h:             poolPage.Volume24h,
-					// MarketCap:             poolPage.MarketCap,
-					PriceInUSD:         pool.Data.Attributes.PriceInUsd,
-					PriceInTargetToken: pool.Data.Attributes.PriceInTargetToken,
-					PricePercentChange: pool.Data.Attributes.PricePercentChange,
-				})
-		}
+		})
 	}
+
+	wp.StopWait()
+
+	// sort by price
+	sort.Slice(geckoterminalInfos, func(i, j int) bool {
+		return geckoterminalInfos[i].PriceInUSD > geckoterminalInfos[j].PriceInUSD
+	})
+
+	tokenInfo.GeckoTerminalInfo = geckoterminalInfos
 
 	return nil
 }
