@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/discord"
+	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/krystal"
 	"github.com/defipod/mochi/pkg/service/mochipay"
@@ -54,6 +55,7 @@ type Service struct {
 	Skymavis      skymavis.Service
 	Ronin         ronin.Service
 	Krystal       krystal.Service
+	GeckoTerminal geckoterminal.Service
 }
 
 func NewService(
@@ -105,5 +107,6 @@ func NewService(
 		Skymavis:      skymavis.New(&cfg, cache),
 		Ronin:         roninSvc,
 		Krystal:       krystal.NewService(&cfg, log, cache),
+		GeckoTerminal: geckoterminal.NewService(&cfg),
 	}, nil
 }

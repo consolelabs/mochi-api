@@ -31,4 +31,5 @@ type IHandler interface {
 	TopGainerLoser(c *gin.Context)
 
 	FindTokenByContractAddress(c *gin.Context)
+	GetTokenInfo(c *gin.Context)
 }

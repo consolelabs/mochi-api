@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS dao_guideline_messages  (
     authority proposal_authority NOT NULL,
     message TEXT
 );
-CREATE UNIQUE INDEX authority_unique_idx on dao_guideline_messages (authority);
+-- CREATE UNIQUE INDEX authority_unique_idx on dao_guideline_messages (authority);
 
 -- +migrate Down
 -- drop enum if exists vote_choice;
