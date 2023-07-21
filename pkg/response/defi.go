@@ -93,27 +93,32 @@ type GetCoinResponse struct {
 }
 
 type TokenInfoResponse struct {
-	Name              string                       `json:"name"`
-	Icon              string                       `json:"icon"`
-	Contracts         []TokenInfoKeyValue          `json:"contracts"`
-	Websites          []TokenInfoKeyValue          `json:"websites"`
-	Explorers         []TokenInfoKeyValue          `json:"explorers"`
-	Wallets           []TokenInfoKeyValue          `json:"wallets"`
-	Communities       []TokenInfoKeyValue          `json:"communities"`
-	Tags              []TokenInfoKeyValue          `json:"tags"`
-	DescriptionLines  []string                     `json:"description_lines"`
-	GeckoTerminalInfo []TokenInfoGeckoTerminalInfo `json:"geckoterminal_info"`
+	Name             string              `json:"name"`
+	Icon             string              `json:"icon"`
+	Contracts        []TokenInfoKeyValue `json:"contracts"`
+	Websites         []TokenInfoKeyValue `json:"websites"`
+	Explorers        []TokenInfoKeyValue `json:"explorers"`
+	Wallets          []TokenInfoKeyValue `json:"wallets"`
+	Communities      []TokenInfoKeyValue `json:"communities"`
+	Tags             []TokenInfoKeyValue `json:"tags"`
+	DescriptionLines []string            `json:"description_lines"`
+	DexPools         []TokenInfoDexPool  `json:"dex_pools"`
 }
 
-type TokenInfoGeckoTerminalInfo struct {
-	PoolName              string `json:"pool_name"`
-	FullyDilutedValuation string `json:"fully_diluted_valuation"`
-	Liquidity             string `json:"liquidity"`
-	Volume24h             string `json:"volume_24h"`
-	MarketCap             string `json:"market_cap"`
-	PriceInUSD            string `json:"price_in_usd"`
-	PriceInTargetToken    string `json:"price_in_target_token"`
-	PricePercentChange    string `json:"price_percent_change"`
+type TokenInfoDexPool struct {
+	Name                     string `json:"name"`
+	Address                  string `json:"address"`
+	Dex                      string `json:"dex"`
+	FullyDilutedValuation    string `json:"fully_diluted_valuation"`
+	LiquidityUsd             string `json:"liquidity_usd"`
+	Volume24h                string `json:"volume_24h"`
+	MarketCap                string `json:"market_cap"`
+	BaseTokenPriceUsd        string `json:"base_token_price_usd"`
+	BaseTokenPriceNative     string `json:"base_token_price_native"`
+	QuoteTokenPriceUsd       string `json:"quote_token_price_usd"`
+	QuoteTokenPriceNative    string `json:"quote_token_price_native"`
+	PriceChangePercentage1H  string `json:"price_change_percentage_1h"`
+	PriceChangePercentage24H string `json:"price_change_percentage_24h"`
 }
 
 type TokenInfoKeyValue struct {
