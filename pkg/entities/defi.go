@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -160,52 +161,51 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 }
 
 func (e *Entity) GetTokenInfo(query string) (*response.TokenInfoResponse, error) {
-	// // find in db
-	// coingeckoInfo, err := e.repo.CoingeckoInfo.GetOne(query)
+	resp := &response.TokenInfoResponse{Name: query}
+	// find in db
+	// tokenInfo, err := e.repo.TokenInfo.GetOne(query)
 	// if err != nil && err != gorm.ErrRecordNotFound {
 	// 	return nil, err
 	// }
 
-	// if coingeckoInfo.Info != nil {
-	// 	res := &response.TokenInfoResponse{}
-	// 	if err := json.Unmarshal([]byte(coingeckoInfo.Info), res); err != nil {
-	// 		return nil, err
-	// 	}
+	tokenInfo := &model.TokenInfo{
+		Token: query,
+	}
 
-	// 	e.log.Infof("[entity.scrapeCoingeckoInfo] found in db: %s", query)
-	// 	return res, nil
-	// }
+	if tokenInfo != nil {
+		res := &response.TokenInfoResponse{}
+		if err := json.Unmarshal([]byte(tokenInfo.Data), res); err != nil {
+			e.log.Error(err, "[entity.GetTokenInfo] json.Unmarshal() failed")
+		}
+	}
 
-	tokenInfo := &response.TokenInfoResponse{Name: query}
-	// dat, err := e.getCoingeckoInfo(query)
-	// if err != nil {
-	// 	e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
-	// }
+	dat, err := e.getCoingeckoInfo(query)
+	if err != nil {
+		e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
+	}
 
-	// if dat != nil {
-	// 	tokenInfo = dat
-	// }
+	if dat != nil {
+		resp = dat
+	}
 
-	if err := e.getGeckoTerminalTokenInfo(tokenInfo, query); err != nil {
+	if err := e.getGeckoTerminalTokenInfo(resp, query); err != nil {
 		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
 	}
 
 	// upsert to db
-	// coingeckoInfoByte, err := json.Marshal(tokenInfo)
-	// if err != nil {
-	// 	return nil, &rod.ErrElementNotFound{}
-	// }
+	tokenInfoByte, err := json.Marshal(tokenInfo)
+	if err != nil {
+		return nil, &rod.ErrElementNotFound{}
+	}
 
-	// coingeckoInfo.ID = query
-	// coingeckoInfo.Info.Scan(coingeckoInfoByte)
+	tokenInfo.Token = query
+	tokenInfo.Data.Scan(tokenInfoByte)
 
-	// if _, err := e.repo.CoingeckoInfo.Upsert(coingeckoInfo); err != nil {
+	// if _, err := e.repo.TokenInfo.Upsert(*tokenInfo); err != nil {
 	// 	return nil, err
 	// }
 
-	// e.log.Infof("[entity.scrapeCoingeckoInfo] scraped and save token info %s", query)
-
-	return tokenInfo, nil
+	return resp, nil
 }
 
 func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse, query string) error {
@@ -332,7 +332,7 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 		return dat, nil
 	}
 
-	info := &response.TokenInfoResponse{}
+	info := &response.TokenInfoResponse{Name: coinId}
 
 	for _, d := range data {
 		if d == nil {
