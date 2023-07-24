@@ -11,4 +11,5 @@ type Store interface {
 	GetAllByCommand(command string, page int, size int) ([]model.UserFeedback, int64, error)
 	GetAllByDiscordID(id string, page int, size int) ([]model.UserFeedback, int64, error)
 	UpdateStatusByID(id string, status string) (*model.UserFeedback, error)
+	List(q FeedbackQuery) (feedbacks []model.UserFeedback, total int64, err error)
 }

@@ -13,6 +13,7 @@ type UserFeedback struct {
 	Command     string        `json:"command"`
 	Feedback    string        `json:"feedback"`
 	Status      string        `json:"status"`
+	ProfileId   string        `json:"profile_id"`
 	CreatedAt   time.Time     `json:"created_at"`
 	ConfirmedAt *time.Time    `json:"confirmed_at"`
 	CompletedAt *time.Time    `json:"completed_at"`
