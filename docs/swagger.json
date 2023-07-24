@@ -6771,6 +6771,9 @@
                 "message_id": {
                     "type": "string"
                 },
+                "profile_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -7938,6 +7941,9 @@
                     "type": "string"
                 },
                 "message_id": {
+                    "type": "string"
+                },
+                "profile_id": {
                     "type": "string"
                 },
                 "username": {

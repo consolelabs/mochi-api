@@ -96,13 +96,16 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // @Success     200 {object} response.UserFeedbackResponse
 // @Router      /community/feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {
-	filter := c.Query("filter")
-	value := c.Query("value")
-	page := c.Query("page")
-	size := c.Query("size")
-	data, err := h.entities.GetAllUserFeedback(filter, value, page, size)
+	var req request.GetUserFeedbackRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.GetAllUserFeedback] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetAllUserFeedback(req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"filter": filter, "value": value}).Error(err, "[handler.GetAllUserFeedback] - failed to get feedback")
+		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.GetAllUserFeedback] - failed to get feedback")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

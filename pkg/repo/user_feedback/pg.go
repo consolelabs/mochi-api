@@ -82,3 +82,36 @@ func (pg *pg) UpdateStatusByID(id string, status string) (*model.UserFeedback, e
 	fb := model.UserFeedback{ID: util.GetNullUUID(id)}
 	return &fb, pg.db.Table("user_feedbacks").Model(&fb).Clauses(clause.Returning{}).Where("id=?", id).Updates(map[string]interface{}{"status": status, fmt.Sprintf("%s_at", status): time.Now().UTC()}).Error
 }
+
+func (pg *pg) List(q FeedbackQuery) (feedbacks []model.UserFeedback, total int64, err error) {
+	db := pg.db.Table("user_feedbacks")
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
+	}
+
+	if q.DiscordId != "" {
+		db = db.Where("discord_id = ?", q.DiscordId)
+	}
+
+	if q.Status != "" {
+		db = db.Where("status = ?", q.Status)
+	}
+
+	if q.Command != "" {
+		db = db.Where("command = ?", q.Command)
+	}
+
+	if q.Sort != "" {
+		db = db.Order(q.Sort)
+	}
+
+	db.Count(&total)
+	if q.Offset != 0 {
+		db = db.Offset(int(q.Offset))
+	}
+	if q.Limit != 0 {
+		db = db.Limit(int(q.Limit))
+	}
+
+	return feedbacks, total, db.Find(&feedbacks).Error
+}

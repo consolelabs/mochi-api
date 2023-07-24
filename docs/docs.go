@@ -6779,6 +6779,9 @@ const docTemplate = `{
                 "message_id": {
                     "type": "string"
                 },
+                "profile_id": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -7946,6 +7949,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message_id": {
+                    "type": "string"
+                },
+                "profile_id": {
                     "type": "string"
                 },
                 "username": {
