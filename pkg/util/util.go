@@ -24,6 +24,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -779,4 +780,16 @@ func TokenEmoji(token string) string {
 	}
 	return "<:ftm:967285237686108212>"
 
+}
+
+func CheckKeyInMap(key string, m interface{}) bool {
+	v := reflect.ValueOf(m)
+	if v.Kind() == reflect.Map {
+		for _, k := range v.MapKeys() {
+			if k.String() == key {
+				return true
+			}
+		}
+	}
+	return false
 }

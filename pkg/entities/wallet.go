@@ -498,6 +498,18 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				tokenAddress = consts.SolAddress
 			}
 
+			// decimal from covalent seems wrong in some case, use coingecko first if error fallback to covalent
+			decimals := int64(item.ContractDecimals)
+			tokenInfo, err := e.svc.CoinGecko.GetCoinByContract(consts.SolChainType, item.ContractAddress)
+			if err != nil {
+				e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.CoinGecko.GetCoinByContract() failed")
+			}
+
+			if tokenInfo != nil && tokenInfo.DetailPlatforms != nil && util.CheckKeyInMap(consts.SolChainType, tokenInfo.DetailPlatforms) {
+				decimals = int64(tokenInfo.DetailPlatforms[consts.SolChainType].DecimalPlace)
+			}
+			item.ContractDecimals = int(decimals)
+
 			bal, _ := e.calculateTokenBalance(item, chainID)
 
 			tokenPrice, err := e.svc.Birdeye.GetTokenPrice(tokenAddress)
@@ -515,7 +527,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				Token: response.AssetToken{
 					Name:    item.ContractName,
 					Symbol:  item.ContractTickerSymbol,
-					Decimal: int64(item.ContractDecimals),
+					Decimal: decimals,
 					Price:   tokenPrice.Data.Value,
 					Native:  item.NativeToken,
 					Chain: response.AssetTokenChain{
@@ -523,7 +535,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 						ShortName: chain.ShortName,
 					},
 				},
-				Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
+				Amount: util.FloatToString(fmt.Sprint(bal), decimals),
 			})
 		}
 	}
