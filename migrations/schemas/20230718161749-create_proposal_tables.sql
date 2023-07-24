@@ -74,21 +74,21 @@ create table if not exists dao_vote (
     updated_at timestamptz default now()
 );
 
-CREATE VIEW view_dao_proposal AS (
-    SELECT
-        sum(
-            v.point),
-        v.choice,
-        v.proposal_id,
-        p.guild_id
-    FROM
-        dao_vote AS v
-        JOIN dao_proposal AS p ON p.id = v.proposal_id
-    GROUP BY
-        v.choice,
-        v.proposal_id,
-        p.guild_id
-);
+-- CREATE VIEW view_dao_proposal AS (
+--     SELECT
+--         sum(
+--             v.point),
+--         v.choice,
+--         v.proposal_id,
+--         p.guild_id
+--     FROM
+--         dao_vote AS v
+--         JOIN dao_proposal AS p ON p.id = v.proposal_id
+--     GROUP BY
+--         v.choice,
+--         v.proposal_id,
+--         p.guild_id
+-- );
 
 CREATE TABLE IF NOT EXISTS dao_guideline_messages  (
     id SERIAL NOT NULL PRIMARY KEY,

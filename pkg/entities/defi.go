@@ -1,16 +1,19 @@
 package entities
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/gammazero/workerpool"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
@@ -158,53 +161,51 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 }
 
 func (e *Entity) GetTokenInfo(query string) (*response.TokenInfoResponse, error) {
-	// // find in db
-	// coingeckoInfo, err := e.repo.CoingeckoInfo.GetOne(query)
+	resp := &response.TokenInfoResponse{Name: query}
+	// find in db
+	// tokenInfo, err := e.repo.TokenInfo.GetOne(query)
 	// if err != nil && err != gorm.ErrRecordNotFound {
 	// 	return nil, err
 	// }
 
-	// if coingeckoInfo.Info != nil {
-	// 	res := &response.TokenInfoResponse{}
-	// 	if err := json.Unmarshal([]byte(coingeckoInfo.Info), res); err != nil {
-	// 		return nil, err
-	// 	}
+	tokenInfo := &model.TokenInfo{
+		Token: query,
+	}
 
-	// 	e.log.Infof("[entity.scrapeCoingeckoInfo] found in db: %s", query)
-	// 	return res, nil
-	// }
+	if tokenInfo != nil {
+		res := &response.TokenInfoResponse{}
+		if err := json.Unmarshal([]byte(tokenInfo.Data), res); err != nil {
+			e.log.Error(err, "[entity.GetTokenInfo] json.Unmarshal() failed")
+		}
+	}
 
-	tokenInfo := &response.TokenInfoResponse{Name: query}
 	dat, err := e.getCoingeckoInfo(query)
 	if err != nil {
 		e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
 	}
 
 	if dat != nil {
-		tokenInfo = dat
+		resp = dat
 	}
 
-	err = e.getGeckoTerminalTokenInfo(tokenInfo, query)
-	if err != nil {
+	if err := e.getGeckoTerminalTokenInfo(resp, query); err != nil {
 		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
 	}
 
 	// upsert to db
-	// coingeckoInfoByte, err := json.Marshal(tokenInfo)
-	// if err != nil {
-	// 	return nil, &rod.ErrElementNotFound{}
-	// }
+	tokenInfoByte, err := json.Marshal(tokenInfo)
+	if err != nil {
+		return nil, &rod.ErrElementNotFound{}
+	}
 
-	// coingeckoInfo.ID = query
-	// coingeckoInfo.Info.Scan(coingeckoInfoByte)
+	tokenInfo.Token = query
+	tokenInfo.Data.Scan(tokenInfoByte)
 
-	// if _, err := e.repo.CoingeckoInfo.Upsert(coingeckoInfo); err != nil {
+	// if _, err := e.repo.TokenInfo.Upsert(*tokenInfo); err != nil {
 	// 	return nil, err
 	// }
 
-	// e.log.Infof("[entity.scrapeCoingeckoInfo] scraped and save token info %s", query)
-
-	return tokenInfo, nil
+	return resp, nil
 }
 
 func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse, query string) error {
@@ -219,33 +220,57 @@ func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse
 		return nil
 	}
 
+	wp := workerpool.New(5)
+
+	dexPools := make([]response.TokenInfoDexPool, 0)
+	dexPoolsMu := sync.Mutex{}
+
 	for _, p := range search.Data.Attributes.Pools {
-		if p.Type == "pool" {
-			pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
-			if err != nil {
-				e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
-				return err
+		p := p
+		wp.Submit(func() {
+			if p.Type == "pool" {
+				pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
+				if err != nil {
+					e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
+					return
+				}
+
+				dexPoolsMu.Lock()
+				defer dexPoolsMu.Unlock()
+
+				marketCap := ""
+				if pool.Data.Attributes.MarketCapUsd != nil {
+					marketCap = *pool.Data.Attributes.MarketCapUsd
+				}
+
+				dexPools = append(dexPools,
+					response.TokenInfoDexPool{
+						Name:                     pool.Data.Attributes.Name,
+						Address:                  pool.Data.Attributes.Address,
+						Dex:                      pool.Data.Relationships.Dex.Data.ID,
+						FullyDilutedValuation:    pool.Data.Attributes.FdvUsd,
+						LiquidityUsd:             pool.Data.Attributes.ReserveInUsd,
+						Volume24h:                pool.Data.Attributes.VolumeUsd.H24,
+						MarketCap:                marketCap,
+						BaseTokenPriceUsd:        pool.Data.Attributes.BaseTokenPriceUsd,
+						BaseTokenPriceNative:     pool.Data.Attributes.BaseTokenPriceNativeCurrency,
+						QuoteTokenPriceUsd:       pool.Data.Attributes.QuoteTokenPriceUsd,
+						QuoteTokenPriceNative:    pool.Data.Attributes.QuoteTokenPriceNativeCurrency,
+						PriceChangePercentage1H:  pool.Data.Attributes.PriceChangePercentage.H1,
+						PriceChangePercentage24H: pool.Data.Attributes.PriceChangePercentage.H24,
+					})
 			}
-
-			// poolPage, err := e.svc.GeckoTerminal.ScrapePool(*p.Network.Identifier, p.APIAddress)
-			// if err != nil {
-			// 	e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.ScrapePool() failed")
-			// 	return err
-			// }
-
-			tokenInfo.GeckoTerminalInfo = append(tokenInfo.GeckoTerminalInfo,
-				response.TokenInfoGeckoTerminalInfo{
-					PoolName:              pool.Data.Attributes.Name,
-					FullyDilutedValuation: pool.Data.Attributes.FullyDilutedValuation,
-					// Liquidity:             poolPage.Liquidity,
-					// Volume24h:             poolPage.Volume24h,
-					// MarketCap:             poolPage.MarketCap,
-					PriceInUSD:         pool.Data.Attributes.PriceInUsd,
-					PriceInTargetToken: pool.Data.Attributes.PriceInTargetToken,
-					PricePercentChange: pool.Data.Attributes.PricePercentChange,
-				})
-		}
+		})
 	}
+
+	wp.StopWait()
+
+	// sort by 24h volume
+	sort.Slice(dexPools, func(i, j int) bool {
+		return dexPools[i].Volume24h > dexPools[j].Volume24h
+	})
+
+	tokenInfo.DexPools = dexPools
 
 	return nil
 }
@@ -307,7 +332,7 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 		return dat, nil
 	}
 
-	info := &response.TokenInfoResponse{}
+	info := &response.TokenInfoResponse{Name: coinId}
 
 	for _, d := range data {
 		if d == nil {
