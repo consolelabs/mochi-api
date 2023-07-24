@@ -81,6 +81,7 @@ type GetCoinResponse struct {
 	SentimentVotesDownPercentage float64                           `json:"sentiment_votes_down_percentage"`
 	WatchlistUsers               int64                             `json:"watchlist_users"`
 	MarketCapRank                int64                             `json:"market_cap_rank"`
+	CoingeckoId                  string                            `json:"coingecko_id"`
 	CoingeckoRank                int64                             `json:"coingecko_rank"`
 	CoingeckoScore               float64                           `json:"coingecko_score"`
 	MarketData                   MarketData                        `json:"market_data"`
@@ -89,36 +90,23 @@ type GetCoinResponse struct {
 	Tickers                      []TickerData                      `json:"tickers"`
 	ContractAddress              string                            `json:"contract_address"`
 	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
-	CoingeckoInfo                *TokenInfoResponse                `json:"coingecko_info"`
+	// CoingeckoInfo                *TokenInfoResponse                `json:"coingecko_info"`
 }
 
 type TokenInfoResponse struct {
-	Name             string              `json:"name"`
-	Icon             string              `json:"icon"`
-	Contracts        []TokenInfoKeyValue `json:"contracts"`
-	Websites         []TokenInfoKeyValue `json:"websites"`
-	Explorers        []TokenInfoKeyValue `json:"explorers"`
-	Wallets          []TokenInfoKeyValue `json:"wallets"`
-	Communities      []TokenInfoKeyValue `json:"communities"`
-	Tags             []TokenInfoKeyValue `json:"tags"`
-	DescriptionLines []string            `json:"description_lines"`
-	DexPools         []TokenInfoDexPool  `json:"dex_pools"`
-}
-
-type TokenInfoDexPool struct {
-	Name                     string `json:"name"`
-	Address                  string `json:"address"`
-	Dex                      string `json:"dex"`
-	FullyDilutedValuation    string `json:"fully_diluted_valuation"`
-	LiquidityUsd             string `json:"liquidity_usd"`
-	Volume24h                string `json:"volume_24h"`
-	MarketCap                string `json:"market_cap"`
-	BaseTokenPriceUsd        string `json:"base_token_price_usd"`
-	BaseTokenPriceNative     string `json:"base_token_price_native"`
-	QuoteTokenPriceUsd       string `json:"quote_token_price_usd"`
-	QuoteTokenPriceNative    string `json:"quote_token_price_native"`
-	PriceChangePercentage1H  string `json:"price_change_percentage_1h"`
-	PriceChangePercentage24H string `json:"price_change_percentage_24h"`
+	ID               string                     `json:"id"`
+	CoingeckoId      string                     `json:"coingecko_id"`
+	Name             string                     `json:"name"`
+	Image            CoinImage                  `json:"image"`
+	MarketData       MarketData                 `json:"market_data"`
+	AssetPlatform    *AssetPlatformResponseData `json:"asset_platform"`
+	Contracts        []TokenInfoKeyValue        `json:"contracts"`
+	Websites         []TokenInfoKeyValue        `json:"websites"`
+	Explorers        []TokenInfoKeyValue        `json:"explorers"`
+	Wallets          []TokenInfoKeyValue        `json:"wallets"`
+	Communities      []TokenInfoKeyValue        `json:"communities"`
+	Tags             []TokenInfoKeyValue        `json:"tags"`
+	DescriptionLines []string                   `json:"description_lines"`
 }
 
 type TokenInfoKeyValue struct {
@@ -152,6 +140,7 @@ type MarketData struct {
 	High24h                                map[string]float64 `json:"high_24h"`
 	Low24h                                 map[string]float64 `json:"low_24h"`
 	PriceChange24h                         float64            `json:"price_change_24h"`
+	PriceChangePercentage1h                float64            `json:"price_change_percentage_1h"`
 	PriceChangePercentage24h               float64            `json:"price_change_percentage_24h"`
 	PriceChangePercentage7d                float64            `json:"price_change_percentage_7d"`
 	PriceChangePercentage14d               float64            `json:"price_change_percentage_14d"`
