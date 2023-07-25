@@ -8,12 +8,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/gammazero/workerpool"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
@@ -28,6 +26,7 @@ import (
 	usertokenwatchlistitem "github.com/defipod/mochi/pkg/repo/user_token_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -128,10 +127,35 @@ func (e *Entity) GetSupportedTokens(page, size string) (tokens []model.Token, pa
 }
 
 func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.GetCoinResponse, error, int) {
-	data, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
-	if err != nil {
-		return nil, err, statusCode
+	data := &response.GetCoinResponse{}
+
+	switch {
+	case strings.HasPrefix(coinID, "geckoterminal_"):
+		parts := strings.Split(coinID, "_")
+		if len(parts) != 3 {
+			return nil, errors.New("invalid geckoterminal coinID"), 400
+		}
+
+		nerwork := parts[1]
+		poolAddr := parts[2]
+
+		geckoterminalData, err := e.svc.GeckoTerminal.GetPool(nerwork, poolAddr)
+		if err != nil {
+			return nil, err, 500
+		}
+
+		data = geckoterminalData
+
+		return data, nil, http.StatusOK
+
+	default:
+		coingeckoData, err, statusCode := e.svc.CoinGecko.GetCoin(coinID)
+		if err != nil {
+			return nil, err, statusCode
+		}
+		data = coingeckoData
 	}
+
 	if isDominanceChart {
 		data.Name += " Dominance Chart"
 		globalData, err := e.svc.CoinGecko.GetGlobalData()
@@ -160,119 +184,72 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	return data, nil, http.StatusOK
 }
 
-func (e *Entity) GetTokenInfo(query string) (*response.TokenInfoResponse, error) {
-	resp := &response.TokenInfoResponse{Name: query}
-	// find in db
-	// tokenInfo, err := e.repo.TokenInfo.GetOne(query)
-	// if err != nil && err != gorm.ErrRecordNotFound {
-	// 	return nil, err
-	// }
-
-	tokenInfo := &model.TokenInfo{
-		Token: query,
+func (e *Entity) GetTokenInfo(tokenId string) (*response.TokenInfoResponse, error) {
+	// get coin data
+	coinData, err, status := e.GetCoinData(tokenId, false)
+	if err != nil {
+		return nil, err
 	}
 
-	if tokenInfo != nil {
-		res := &response.TokenInfoResponse{}
-		if err := json.Unmarshal([]byte(tokenInfo.Data), res); err != nil {
+	if status != http.StatusOK {
+		return nil, errors.New("no data found")
+	}
+
+	// find in db
+	tokenInfo, err := e.repo.TokenInfo.GetOne(tokenId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	if tokenInfo != nil && tokenInfo.Id != "" {
+		resp := &response.TokenInfoResponse{
+			MarketData:    coinData.MarketData,
+			Image:         coinData.Image,
+			AssetPlatform: coinData.AssetPlatform,
+		}
+		if err := json.Unmarshal([]byte(tokenInfo.Data), resp); err != nil {
 			e.log.Error(err, "[entity.GetTokenInfo] json.Unmarshal() failed")
 		}
+
+		return resp, nil
 	}
 
-	dat, err := e.getCoingeckoInfo(query)
-	if err != nil {
-		e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
+	data := &response.TokenInfoResponse{}
+	switch {
+	// case strings.HasPrefix(tokenId, "geckoterminal_"):
+	// 	if err := e.getGeckoTerminalTokenInfo(tokenId); err != nil {
+	// 		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
+	// 	}
+	default:
+		dat, err := e.getCoingeckoInfo(coinData.CoingeckoId)
+		if err != nil {
+			e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
+			return nil, err
+		}
+
+		data = dat
 	}
 
-	if dat != nil {
-		resp = dat
-	}
-
-	if err := e.getGeckoTerminalTokenInfo(resp, query); err != nil {
-		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
-	}
+	data.Image = coinData.Image
+	data.MarketData = coinData.MarketData
+	data.CoingeckoId = coinData.CoingeckoId
+	data.Name = coinData.Name
+	data.AssetPlatform = coinData.AssetPlatform
 
 	// upsert to db
-	tokenInfoByte, err := json.Marshal(tokenInfo)
+	tokenInfoByte, err := json.Marshal(data)
 	if err != nil {
-		return nil, &rod.ErrElementNotFound{}
+		return nil, err
 	}
 
-	tokenInfo.Token = query
+	tokenInfo.Id = tokenId
 	tokenInfo.Data.Scan(tokenInfoByte)
 
-	// if _, err := e.repo.TokenInfo.Upsert(*tokenInfo); err != nil {
-	// 	return nil, err
-	// }
-
-	return resp, nil
-}
-
-func (e *Entity) getGeckoTerminalTokenInfo(tokenInfo *response.TokenInfoResponse, query string) error {
-	// find available pool on gecko terminal
-	search, err := e.svc.GeckoTerminal.Search(query)
-	if err != nil {
-		e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.Search() failed")
-		return nil
+	if _, err := e.repo.TokenInfo.Upsert(tokenInfo); err != nil {
+		return nil, err
 	}
 
-	if search == nil {
-		return nil
-	}
-
-	wp := workerpool.New(5)
-
-	dexPools := make([]response.TokenInfoDexPool, 0)
-	dexPoolsMu := sync.Mutex{}
-
-	for _, p := range search.Data.Attributes.Pools {
-		p := p
-		wp.Submit(func() {
-			if p.Type == "pool" {
-				pool, err := e.svc.GeckoTerminal.GetPool(*p.Network.Identifier, p.APIAddress)
-				if err != nil {
-					e.log.Error(err, "[entity.getGeckoTerminalTokenInfo] svc.GeckoTerminal.GetPool() failed")
-					return
-				}
-
-				dexPoolsMu.Lock()
-				defer dexPoolsMu.Unlock()
-
-				marketCap := ""
-				if pool.Data.Attributes.MarketCapUsd != nil {
-					marketCap = *pool.Data.Attributes.MarketCapUsd
-				}
-
-				dexPools = append(dexPools,
-					response.TokenInfoDexPool{
-						Name:                     pool.Data.Attributes.Name,
-						Address:                  pool.Data.Attributes.Address,
-						Dex:                      pool.Data.Relationships.Dex.Data.ID,
-						FullyDilutedValuation:    pool.Data.Attributes.FdvUsd,
-						LiquidityUsd:             pool.Data.Attributes.ReserveInUsd,
-						Volume24h:                pool.Data.Attributes.VolumeUsd.H24,
-						MarketCap:                marketCap,
-						BaseTokenPriceUsd:        pool.Data.Attributes.BaseTokenPriceUsd,
-						BaseTokenPriceNative:     pool.Data.Attributes.BaseTokenPriceNativeCurrency,
-						QuoteTokenPriceUsd:       pool.Data.Attributes.QuoteTokenPriceUsd,
-						QuoteTokenPriceNative:    pool.Data.Attributes.QuoteTokenPriceNativeCurrency,
-						PriceChangePercentage1H:  pool.Data.Attributes.PriceChangePercentage.H1,
-						PriceChangePercentage24H: pool.Data.Attributes.PriceChangePercentage.H24,
-					})
-			}
-		})
-	}
-
-	wp.StopWait()
-
-	// sort by 24h volume
-	sort.Slice(dexPools, func(i, j int) bool {
-		return dexPools[i].Volume24h > dexPools[j].Volume24h
-	})
-
-	tokenInfo.DexPools = dexPools
-
-	return nil
+	return data, nil
 }
 
 func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, error) {
@@ -285,11 +262,11 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 
 	// if page contains "The page you're looking for could not be found" -> return
 	if page.MustElement("body") == nil {
-		return nil, errors.New("error scraping coingecko")
+		return nil, errors.New("no data found")
 	}
 
 	if strings.Contains(page.MustElement("body").MustText(), "The page you're looking for could not be found") {
-		return nil, errors.New("error scraping coingecko")
+		return nil, errors.New("no data found")
 	}
 
 	if page.MustElement("[data-target='coins-information.mobileOptionalInfo']") == nil {
@@ -332,7 +309,10 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 		return dat, nil
 	}
 
-	info := &response.TokenInfoResponse{Name: coinId}
+	info := &response.TokenInfoResponse{
+		ID:               coinId,
+		DescriptionLines: []string{},
+	}
 
 	for _, d := range data {
 		if d == nil {
@@ -340,7 +320,16 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 		}
 
 		// get span text
-		field := d.MustElement("span").MustText()
+		span, err := d.Element("span")
+		if err != nil {
+			return nil, err
+		}
+
+		field, err := span.Text()
+		if err != nil {
+			return nil, err
+		}
+
 		switch field {
 		case "Website":
 			dat, err := getHrefMap(d)
@@ -390,9 +379,11 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 	descSections := desc.MustElements(".coin-description")
 
 	if len(descSections) >= 2 {
-		p := descSections[1].MustElements("p")
-		for _, pp := range p {
-			info.DescriptionLines = append(info.DescriptionLines, pp.MustText())
+		if strings.Contains(descSections[1].MustText(), "What is") {
+			p := descSections[1].MustElements("p")
+			for _, pp := range p {
+				info.DescriptionLines = append(info.DescriptionLines, pp.MustText())
+			}
 		}
 	}
 
@@ -478,7 +469,41 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 	}
 
 	if len(tokens) == 0 {
-		return []model.CoingeckoSupportedTokens{}, nil
+
+		// find on gecktoterminal
+		search, err := e.svc.GeckoTerminal.Search(query)
+		if err != nil {
+			e.log.Error(err, "[entity.SearchCoins] svc.GeckoTerminal.Search() failed")
+			return nil, err
+		}
+
+		if search != nil {
+			for _, t := range search.Data.Attributes.Pools {
+				baseToken := geckoterminal.SearchToken{}
+
+				for _, tt := range t.Tokens {
+					if tt.IsBaseToken {
+						baseToken = tt
+						break
+					}
+				}
+
+				currentPrice, err := strconv.ParseFloat(t.PriceInUsd, 64)
+				if err != nil {
+					e.log.Error(err, "[entity.SearchCoins] strconv.ParseFloat() failed")
+					currentPrice = 0
+				}
+
+				tokens = append(tokens, model.CoingeckoSupportedTokens{
+					ID:           fmt.Sprintf("geckoterminal_%s_%s", t.Network.Identifier, t.APIAddress),
+					Symbol:       baseToken.Symbol,
+					Name:         baseToken.Name,
+					CurrentPrice: currentPrice,
+				})
+			}
+		}
+
+		return tokens, nil
 	}
 
 	// get default token

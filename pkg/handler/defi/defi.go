@@ -181,16 +181,16 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 // @Produce     json
 // @Param       query   query  string true  "token query"
 // @Success     200 {object} response.TokenInfoResponse
-// @Router      /defi/tokens/info [get]
+// @Router      /defi/tokens/info/{id} [get]
 func (h *Handler) GetTokenInfo(c *gin.Context) {
-	query := c.Query("query")
-	if query == "" {
+	id := c.Params.ByName("id")
+	if id == "" {
 		h.log.Info("[handler.GetTokenInfo] query is required")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
 		return
 	}
 
-	token, err := h.entities.GetTokenInfo(query)
+	token, err := h.entities.GetTokenInfo(id)
 	if err != nil {
 		h.log.Error(err, "[handler.GetTokenInfo] entities.GetTokenInfo() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

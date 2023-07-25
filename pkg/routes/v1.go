@@ -277,7 +277,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		defiGroup.GET("/market-data", h.Defi.GetCoinsMarketData)
 		defiGroup.GET("/trending", h.Defi.GetTrendingSearch)
 		defiGroup.GET("/top-gainer-loser", h.Defi.TopGainerLoser)
-		defiGroup.GET("/tokens/info", h.Defi.GetTokenInfo)
+		defiGroup.GET("/tokens/info/:id", h.Defi.GetTokenInfo)
 
 		priceAlertGroup := defiGroup.Group("/price-alert")
 		{
