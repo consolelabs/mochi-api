@@ -221,13 +221,15 @@ func (e *Entity) GetTokenInfo(tokenId string) (*response.TokenInfoResponse, erro
 	// 		e.log.Error(err, "[entity.GetTokenInfo] getGeckoTerminalTokenInfo() failed")
 	// 	}
 	default:
-		dat, err := e.getCoingeckoInfo(coinData.CoingeckoId)
-		if err != nil {
-			e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
-			return nil, err
-		}
+		if coinData.CoingeckoId != "" {
+			dat, err := e.getCoingeckoInfo(coinData.CoingeckoId)
+			if err != nil {
+				e.log.Error(err, "[entity.GetTokenInfo] getCoingeckoInfo() failed")
+				return nil, err
+			}
 
-		data = dat
+			data = dat
+		}
 	}
 
 	data.Image = coinData.Image
