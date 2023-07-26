@@ -1927,8 +1927,8 @@ definitions:
         items:
           type: string
         type: array
-      coingecko_info:
-        $ref: '#/definitions/response.TokenInfoResponse'
+      coingecko_id:
+        type: string
       coingecko_rank:
         type: integer
       coingecko_score:
@@ -2341,13 +2341,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_7d_change:
-        type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2964,16 +2964,18 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
       price_change_percentage_1y:
-        type: number
-      price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
@@ -3463,35 +3465,6 @@ definitions:
       vote_config:
         $ref: '#/definitions/model.DaoProposalVoteOption'
     type: object
-  response.TokenInfoDexPool:
-    properties:
-      address:
-        type: string
-      base_token_price_native:
-        type: string
-      base_token_price_usd:
-        type: string
-      dex:
-        type: string
-      fully_diluted_valuation:
-        type: string
-      liquidity_usd:
-        type: string
-      market_cap:
-        type: string
-      name:
-        type: string
-      price_change_percentage_1h:
-        type: string
-      price_change_percentage_24h:
-        type: string
-      quote_token_price_native:
-        type: string
-      quote_token_price_usd:
-        type: string
-      volume_24h:
-        type: string
-    type: object
   response.TokenInfoKeyValue:
     properties:
       key:
@@ -3501,6 +3474,10 @@ definitions:
     type: object
   response.TokenInfoResponse:
     properties:
+      asset_platform:
+        $ref: '#/definitions/response.AssetPlatformResponseData'
+      coingecko_id:
+        type: string
       communities:
         items:
           $ref: '#/definitions/response.TokenInfoKeyValue'
@@ -3513,16 +3490,16 @@ definitions:
         items:
           type: string
         type: array
-      dex_pools:
-        items:
-          $ref: '#/definitions/response.TokenInfoDexPool'
-        type: array
       explorers:
         items:
           $ref: '#/definitions/response.TokenInfoKeyValue'
         type: array
-      icon:
+      id:
         type: string
+      image:
+        $ref: '#/definitions/response.CoinImage'
+      market_data:
+        $ref: '#/definitions/response.MarketData'
       name:
         type: string
       tags:
@@ -3705,13 +3682,21 @@ paths:
       - application/json
       description: Get users' feedbacks
       parameters:
-      - description: filter by
+      - description: page
         in: query
-        name: filter
+        name: page
         type: string
-      - description: filtered value
+      - description: size
         in: query
-        name: value
+        name: size
+        type: string
+      - description: profile id
+        in: query
+        name: profile_id
+        type: string
+      - description: none, completed, confirmed
+        in: query
+        name: status
         type: string
       produces:
       - application/json
@@ -5692,7 +5677,7 @@ paths:
       summary: Get supported tokens
       tags:
       - Defi
-  /defi/tokens/info:
+  /defi/tokens/info/{id}:
     get:
       consumes:
       - application/json
