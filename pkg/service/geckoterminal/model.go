@@ -52,7 +52,7 @@ const (
 
 // Pool
 type Pool struct {
-	Data     PoolData   `json:"data"`
+	Data     PoolData       `json:"data"`
 	Included []PoolIncluded `json:"included"`
 }
 
@@ -60,7 +60,7 @@ type PoolData struct {
 	ID            string             `json:"id"`
 	Type          string             `json:"type"`
 	Attributes    PoolDataAttributes `json:"attributes"`
-	Relationships PoolRelationships      `json:"relationships"`
+	Relationships PoolRelationships  `json:"relationships"`
 }
 
 type PoolDataAttributes struct {
@@ -124,4 +124,42 @@ type PoolIncludedAttributes struct {
 	Name            string  `json:"name"`
 	Symbol          *string `json:"symbol,omitempty"`
 	CoingeckoCoinID *string `json:"coingecko_coin_id,omitempty"`
+}
+
+// PoolP1
+type PoolP1 struct {
+	Data     PoolP1Data       `json:"data"`
+}
+
+type PoolP1Data struct {
+	ID            string             `json:"id"`
+	Type          string             `json:"type"`
+	Relationships PoolP1Relationships      `json:"relationships"`
+}
+
+type PoolP1Relationships struct {
+	Pairs PoolP1Pairs `json:"pairs"`
+}
+
+type PoolP1Pairs struct {
+	Data []PoolP1Datum `json:"data"`
+}
+
+type PoolP1Datum struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
+}
+
+// Candlesticks
+type Candlesticks struct {
+	Data []Candlestick `json:"data"`
+}
+
+type Candlestick struct {
+	Dt string  `json:"dt"`
+	O  float64 `json:"o"`
+	H  float64 `json:"h"`
+	L  float64 `json:"l"`
+	C  float64 `json:"c"`
+	V  float64 `json:"v"`
 }

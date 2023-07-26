@@ -38,10 +38,37 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 		}
 		return data, nil, 200
 	}
-	resp, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req.CoinID, req.Currency, req.Days)
-	if err != nil {
-		return nil, err, statusCode
+
+	resp := &response.HistoricalMarketChartResponse{}
+
+	switch {
+	case strings.HasPrefix(req.CoinID, "geckoterminal_"):
+		parts := strings.Split(req.CoinID, "_")
+		if len(parts) != 3 {
+			return nil, errors.New("invalid geckoterminal coinID"), 400
+		}
+
+		nerwork := parts[1]
+		poolAddr := parts[2]
+
+		now := time.Now()
+		from := now.AddDate(0, 0, -req.Days)
+
+		data, err := e.svc.GeckoTerminal.GetHistoricalMarketData(nerwork, poolAddr, from.Unix(), now.Unix())
+		if err != nil {
+			return nil, err, 500
+		}
+
+		resp = data
+	default:
+		data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req.CoinID, req.Currency, req.Days)
+		if err != nil {
+			return nil, err, statusCode
+		}
+
+		resp = data
 	}
+
 	data := &response.CoinPriceHistoryResponse{}
 	for _, p := range resp.Prices {
 		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
