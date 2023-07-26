@@ -91,8 +91,10 @@ func (h *Handler) UpdateUserFeedback(c *gin.Context) {
 // @Tags        Community
 // @Accept      json
 // @Produce     json
-// @Param       filter query string false "filter by"
-// @Param       value query string false "filtered value"
+// @Param       page query string false "page"
+// @Param       size query string false "size"
+// @Param       profile_id query string false "profile id"
+// @Param       status query string false "none, completed, confirmed"
 // @Success     200 {object} response.UserFeedbackResponse
 // @Router      /community/feedback [get]
 func (h *Handler) GetAllUserFeedback(c *gin.Context) {

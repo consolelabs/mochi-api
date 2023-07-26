@@ -130,14 +130,26 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "filter by",
-                        "name": "filter",
+                        "description": "page",
+                        "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "filtered value",
-                        "name": "value",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile id",
+                        "name": "profile_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "none, completed, confirmed",
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -3142,7 +3154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/tokens/info": {
+        "/defi/tokens/info/{id}": {
             "get": {
                 "description": "Get token info",
                 "consumes": [
@@ -8610,8 +8622,8 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "coingecko_info": {
-                    "$ref": "#/definitions/response.TokenInfoResponse"
+                "coingecko_id": {
+                    "type": "string"
                 },
                 "coingecko_rank": {
                     "type": "integer"
@@ -10209,6 +10221,9 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
+                "price_change_percentage_1h": {
+                    "type": "number"
+                },
                 "price_change_percentage_1h_in_currency": {
                     "type": "object",
                     "additionalProperties": {
@@ -10965,50 +10980,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.TokenInfoDexPool": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "base_token_price_native": {
-                    "type": "string"
-                },
-                "base_token_price_usd": {
-                    "type": "string"
-                },
-                "dex": {
-                    "type": "string"
-                },
-                "fully_diluted_valuation": {
-                    "type": "string"
-                },
-                "liquidity_usd": {
-                    "type": "string"
-                },
-                "market_cap": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "price_change_percentage_1h": {
-                    "type": "string"
-                },
-                "price_change_percentage_24h": {
-                    "type": "string"
-                },
-                "quote_token_price_native": {
-                    "type": "string"
-                },
-                "quote_token_price_usd": {
-                    "type": "string"
-                },
-                "volume_24h": {
-                    "type": "string"
-                }
-            }
-        },
         "response.TokenInfoKeyValue": {
             "type": "object",
             "properties": {
@@ -11023,6 +10994,12 @@ const docTemplate = `{
         "response.TokenInfoResponse": {
             "type": "object",
             "properties": {
+                "asset_platform": {
+                    "$ref": "#/definitions/response.AssetPlatformResponseData"
+                },
+                "coingecko_id": {
+                    "type": "string"
+                },
                 "communities": {
                     "type": "array",
                     "items": {
@@ -11041,20 +11018,20 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "dex_pools": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.TokenInfoDexPool"
-                    }
-                },
                 "explorers": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/response.TokenInfoKeyValue"
                     }
                 },
-                "icon": {
+                "id": {
                     "type": "string"
+                },
+                "image": {
+                    "$ref": "#/definitions/response.CoinImage"
+                },
+                "market_data": {
+                    "$ref": "#/definitions/response.MarketData"
                 },
                 "name": {
                     "type": "string"
