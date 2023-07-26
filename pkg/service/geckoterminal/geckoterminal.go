@@ -107,15 +107,25 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 	}
 
 	coingeckoId := ""
-	if len(pool.Included) > 0 {
+	if len(pool.Included) > 0 && pool.Included[0].Attributes.CoingeckoCoinID != nil {
 		coingeckoId = *pool.Included[0].Attributes.CoingeckoCoinID
+	}
+
+	baseToken := SearchToken{}
+	if len(searchPool.Tokens) > 0 {
+		for _, token := range searchPool.Tokens {
+			if token.IsBaseToken {
+				baseToken = token
+				break
+			}
+		}
 	}
 
 	coinResp := &response.GetCoinResponse{
 		ID:              fmt.Sprintf("geckoterminal_%s", pool.Data.ID),
 		CoingeckoId:     coingeckoId,
-		Name:            pool.Data.Attributes.Name,
-		Symbol:          pool.Data.Attributes.Name,
+		Name:            baseToken.Name,
+		Symbol:          baseToken.Symbol,
 		AssetPlatformID: searchPool.Dex.Identifier,
 		AssetPlatform: &response.AssetPlatformResponseData{
 			ID:   searchPool.Dex.Identifier,
@@ -190,7 +200,7 @@ func (g *GeckoTerminal) GetPoolInfo(network, pool string) (*Pool, error) {
 	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
-	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(g.getPoolApi, network, pool))
+	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(g.getPoolPage, network, pool))
 	data := page.MustElement("body").MustText()
 
 	if err := json.Unmarshal([]byte(data), &poolResp); err != nil {

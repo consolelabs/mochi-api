@@ -322,7 +322,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
-		ProfileId:  receiverProfile.ID,
+		ProfileId:  requesterProfile.ID,
 		Amount:     amountBigIntStr,
 		To:         destination,
 		PrivateKey: privateKey,
