@@ -295,13 +295,19 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 			}
 
 			// remove all spaces, newlines, etc.
+
+			key := strings.TrimSpace(text)
+			key = strings.ReplaceAll(key, "\n", "")
+			key = strings.ReplaceAll(key, "\t", "")
+			key = strings.ReplaceAll(key, "\r", "")
+
 			val := strings.TrimSpace(href.String())
 			val = strings.ReplaceAll(val, "\n", "")
 			val = strings.ReplaceAll(val, "\t", "")
 			val = strings.ReplaceAll(val, "\r", "")
 
 			dat = append(dat, response.TokenInfoKeyValue{
-				Key:   text,
+				Key:   key,
 				Value: val,
 			})
 		}
@@ -367,6 +373,10 @@ func (e *Entity) getCoingeckoInfo(coinId string) (*response.TokenInfoResponse, e
 			dat, err := getHrefMap(d)
 			if err != nil {
 				return nil, err
+			}
+
+			for i, dd := range dat {
+				dat[i].Key = strings.TrimSpace(strings.ReplaceAll(dd.Key, "Ecosystem", ""))
 			}
 
 			info.Tags = dat
