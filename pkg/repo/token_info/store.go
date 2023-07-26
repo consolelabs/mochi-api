@@ -9,5 +9,5 @@ type ListQuery struct {
 
 type Store interface {
 	GetOne(token string) (*model.TokenInfo, error)
-	Upsert(token model.TokenInfo) (rowsAffected int64, err error)
+	Upsert(token *model.TokenInfo) (rowsAffected int64, err error)
 }

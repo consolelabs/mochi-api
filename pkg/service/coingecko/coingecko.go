@@ -66,6 +66,8 @@ func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, in
 		return nil, fmt.Errorf("failed to fetch coin data of %s: %v", coinID, err), statusCode
 	}
 
+	data.CoingeckoId = coinID
+
 	return data, nil, http.StatusOK
 }
 
