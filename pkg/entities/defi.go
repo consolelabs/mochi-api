@@ -169,8 +169,17 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 		if err != nil {
 			return nil, err, 500
 		}
-
 		data = geckoterminalData
+
+		// if coingecko id exists, get coingecko data
+		if geckoterminalData.CoingeckoId != "" {
+			coingeckoData, err, statusCode := e.svc.CoinGecko.GetCoin(geckoterminalData.CoingeckoId)
+			if err != nil {
+				return nil, err, statusCode
+			}
+			data = coingeckoData
+			data.ID = geckoterminalData.ID
+		}
 
 		return data, nil, http.StatusOK
 
