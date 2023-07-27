@@ -52,9 +52,8 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 		poolAddr := parts[2]
 
 		now := time.Now()
-		from := now.AddDate(0, 0, -req.Days)
 
-		data, err := e.svc.GeckoTerminal.GetHistoricalMarketData(nerwork, poolAddr, from.Unix(), now.Unix())
+		data, err := e.svc.GeckoTerminal.GetHistoricalMarketData(nerwork, poolAddr, now.Unix())
 		if err != nil {
 			return nil, err, 500
 		}
