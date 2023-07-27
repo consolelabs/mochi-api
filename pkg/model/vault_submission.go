@@ -8,6 +8,7 @@ type VaultSubmission struct {
 	GuildId            string       `json:"guild_id"`
 	RequestId          int64        `json:"request_id"`
 	SubmitterProfileId string       `json:"submitter_profile_id"`
+	Submitter          string       `json:"submitter"`
 	Status             string       `json:"status"`
 	MessageUrl         string       `json:"message_url"`
 	VaultRequest       VaultRequest `json:"vault_request" gorm:"foreignKey:RequestId;references:Id"`
