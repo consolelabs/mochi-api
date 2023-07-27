@@ -128,13 +128,13 @@ type PoolIncludedAttributes struct {
 
 // PoolP1
 type PoolP1 struct {
-	Data     PoolP1Data       `json:"data"`
+	Data PoolP1Data `json:"data"`
 }
 
 type PoolP1Data struct {
-	ID            string             `json:"id"`
-	Type          string             `json:"type"`
-	Relationships PoolP1Relationships      `json:"relationships"`
+	ID            string              `json:"id"`
+	Type          string              `json:"type"`
+	Relationships PoolP1Relationships `json:"relationships"`
 }
 
 type PoolP1Relationships struct {
@@ -152,14 +152,15 @@ type PoolP1Datum struct {
 
 // Candlesticks
 type Candlesticks struct {
-	Data []Candlestick `json:"data"`
+	Data CandlestickData `json:"data"`
 }
 
-type Candlestick struct {
-	Dt string  `json:"dt"`
-	O  float64 `json:"o"`
-	H  float64 `json:"h"`
-	L  float64 `json:"l"`
-	C  float64 `json:"c"`
-	V  float64 `json:"v"`
+type CandlestickData struct {
+	ID         string                `json:"id"`
+	Type       string                `json:"type"`
+	Attributes CandlestickAttributes `json:"attributes"`
+}
+
+type CandlestickAttributes struct {
+	OhlcvList [][]float64 `json:"ohlcv_list"`
 }
