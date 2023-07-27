@@ -48,15 +48,26 @@ func (g *GeckoTerminal) Search(query string) (*Search, error) {
 
 func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResponse, error) {
 	var pool *Pool
+	reqUrl := fmt.Sprintf(getPoolApi, network, poolAddr)
+
 	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
-	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(getPoolApi, network, poolAddr))
+	page := stealth.MustPage(browser).MustNavigate(reqUrl)
 	data := page.MustElement("body").MustText()
 
 	if err := json.Unmarshal([]byte(data), &pool); err != nil {
 		return nil, err
 	}
+
+	// status, err := util.FetchData(reqUrl, pool)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// if status != 200 {
+	// 	return nil, fmt.Errorf("status: %d", status)
+	// }
 
 	search, err := g.Search(poolAddr)
 	if err != nil {
