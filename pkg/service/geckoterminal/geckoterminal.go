@@ -128,10 +128,10 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 		CoingeckoId:     coingeckoId,
 		Name:            baseToken.Name,
 		Symbol:          baseToken.Symbol,
-		AssetPlatformID: searchPool.Dex.Identifier,
+		AssetPlatformID: searchPool.Network.Identifier,
 		AssetPlatform: &response.AssetPlatformResponseData{
-			ID:   searchPool.Dex.Identifier,
-			Name: fmt.Sprintf("%s (DEX)", searchPool.Dex.Name),
+			ID:   searchPool.Network.Identifier,
+			Name: searchPool.Network.Name,
 		},
 		Image: response.CoinImage{
 			Thumb: imageUrl,
