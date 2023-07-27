@@ -6,33 +6,28 @@ import (
 	"strings"
 
 	"github.com/consolelabs/mochi-typeset/typeset"
+
 	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfile, changerProfile *mochiprofile.GetProfileResponse, vault *model.Vault, treasurerSubmissions []model.VaultSubmission, treasurerReq *model.VaultRequest) (*message.VaultVoteTreasurer, map[string]string) {
+func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, resp *response.CreateTreasurerSubmissionResponse, submitterProfileId, changerProfileId string, vault *model.Vault, treasurerSubmissions []model.VaultSubmission, treasurerReq *model.VaultRequest) (*message.VaultVoteTreasurer, map[string]string) {
 	daoVaultTotalTreasurer := make(map[string]string)
 	daoVaultTotalTreasurerProposal := make(map[string]string)
 	for _, treasurerSubmission := range treasurerSubmissions {
-		treasurerProfileId, err := e.svc.MochiProfile.GetByDiscordID(treasurerSubmission.Submitter, true)
-		if err != nil {
-			continue
-		}
-
 		if treasurerSubmission.Status == "pending" {
 			treasurerSubmission.Status = "waiting"
 		}
 
 		// if for vote no need, proposal need
-		if treasurerSubmission.Submitter == req.Sumitter {
-			daoVaultTotalTreasurerProposal[treasurerProfileId.ID] = treasurerSubmission.Status
+		if treasurerSubmission.SubmitterProfileId == req.SumitterProfileId {
+			daoVaultTotalTreasurerProposal[treasurerSubmission.SubmitterProfileId] = treasurerSubmission.Status
 		} else {
-			daoVaultTotalTreasurerProposal[treasurerProfileId.ID] = treasurerSubmission.Status
-			daoVaultTotalTreasurer[treasurerProfileId.ID] = treasurerSubmission.Status
+			daoVaultTotalTreasurerProposal[treasurerSubmission.SubmitterProfileId] = treasurerSubmission.Status
+			daoVaultTotalTreasurer[treasurerSubmission.SubmitterProfileId] = treasurerSubmission.Status
 		}
 	}
 
@@ -41,7 +36,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 		return &message.VaultVoteTreasurer{
 			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
-				TreasurerProfileId:       submitterProfile.ID,
+				TreasurerProfileId:       submitterProfileId,
 				TreasurerVote:            req.Choice,
 				RequestId:                req.RequestId,
 				DaoThresholdInPercentage: resp.VoteResult.ThresholdNumber,
@@ -57,7 +52,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				Action: message.VaultAction{
 					Type: "change-treasurer",
 					VaultChangeTreasurerActionMetadata: message.VaultChangeTreasurerActionMetadata{
-						TreasurerProfileId: changerProfile.ID,
+						TreasurerProfileId: changerProfileId,
 						TreasurerAction:    "add",
 					},
 				},
@@ -67,7 +62,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 		return &message.VaultVoteTreasurer{
 			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
-				TreasurerProfileId:       submitterProfile.ID,
+				TreasurerProfileId:       submitterProfileId,
 				TreasurerVote:            req.Choice,
 				RequestId:                req.RequestId,
 				DaoThresholdInPercentage: resp.VoteResult.ThresholdNumber,
@@ -83,7 +78,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 				Action: message.VaultAction{
 					Type: "change-treasurer",
 					VaultChangeTreasurerActionMetadata: message.VaultChangeTreasurerActionMetadata{
-						TreasurerProfileId: submitterProfile.ID,
+						TreasurerProfileId: submitterProfileId,
 						TreasurerAction:    "remove",
 					},
 				},
@@ -100,7 +95,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 		return &message.VaultVoteTreasurer{
 			Type: typeset.NOTIFICATION_VAULT_VOTE,
 			VaultVoteMetadata: message.VaultVoteMetadata{
-				TreasurerProfileId:       submitterProfile.ID,
+				TreasurerProfileId:       submitterProfileId,
 				TreasurerVote:            req.Choice,
 				RequestId:                req.RequestId,
 				DaoThresholdInPercentage: resp.VoteResult.ThresholdNumber,
@@ -120,7 +115,7 @@ func (e *Entity) formatVoteVaultMessage(req *request.CreateTreasurerSubmission, 
 						TokenDecimal:       token.Decimal,
 						TokenAmountInUsd:   fmt.Sprint(token.Price * amountInNumber),
 						Token:              strings.ToUpper(treasurerReq.Token),
-						RecipientProfileId: changerProfile.ID,
+						RecipientProfileId: changerProfileId,
 					},
 				},
 			},

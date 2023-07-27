@@ -26,7 +26,7 @@ func (pg *pg) GetById(id int64) (treasurerReq *model.VaultRequest, err error) {
 }
 
 func (p *pg) Delete(treasurerReq *model.VaultRequest) error {
-	return p.db.Model(&model.VaultRequest{}).Where("guild_id = ? and vault_id = ? and user_discord_id = ?", treasurerReq.GuildId, treasurerReq.VaultId, treasurerReq.UserDiscordId).Update("deleted_at", time.Now()).Error
+	return p.db.Model(&model.VaultRequest{}).Where("guild_id = ? and vault_id = ? and user_profile_id = ?", treasurerReq.GuildId, treasurerReq.VaultId, treasurerReq.UserProfileId).Update("deleted_at", time.Now()).Error
 }
 
 func (p *pg) UpdateStatus(requestId int64, status bool) error {

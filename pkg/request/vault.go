@@ -22,14 +22,21 @@ type CreateConfigThresholdRequest struct {
 type AddTreasurerToVaultRequest struct {
 	GuildId       string `json:"guild_id" binding:"required"`
 	VaultId       int64  `json:"vault_id" binding:"required"`
-	UserDiscordID string `json:"user_discord_id" binding:"required"`
+	UserProfileID string `json:"user_profile_id" binding:"required"`
+	ChannelId     string `json:"channel_id" binding:"required"`
+}
+
+type RemoveTreasurerToVaultRequest struct {
+	GuildId       string `json:"guild_id" binding:"required"`
+	VaultId       int64  `json:"vault_id" binding:"required"`
+	UserProfileID string `json:"user_profile_id" binding:"required"`
 	ChannelId     string `json:"channel_id" binding:"required"`
 }
 
 type CreateTreasurerResultRequest struct {
 	GuildId       string `json:"guild_id" binding:"required"`
 	VaultId       int64  `json:"vault_id" binding:"required"`
-	UserDiscordID string `json:"user_discord_id"`
+	UserProfileID string `json:"user_profile_id"`
 	ChannelId     string `json:"channel_id" binding:"required"`
 	Type          string `json:"type" binding:"required"`
 	Status        string `json:"status" binding:"required"`
@@ -40,17 +47,17 @@ type CreateTreasurerResultRequest struct {
 }
 
 type CreateTreasurerRequest struct {
-	GuildId       string `json:"guild_id" binding:"required"`
-	Requester     string `json:"requester" binding:"required"`
-	VaultName     string `json:"vault_name" binding:"required"`
-	UserDiscordId string `json:"user_discord_id"`
-	Message       string `json:"message"`
-	Type          string `json:"type" binding:"required"`
-	Amount        string `json:"amount"`
-	Chain         string `json:"chain"`
-	Token         string `json:"token"`
-	Address       string `json:"address"`
-	MessageUrl    string `json:"message_url"`
+	GuildId            string `json:"guild_id" binding:"required"`
+	RequesterProfileId string `json:"requester_profile_id" binding:"required"`
+	VaultName          string `json:"vault_name" binding:"required"`
+	UserProfileId      string `json:"user_profile_id"`
+	Message            string `json:"message"`
+	Type               string `json:"type" binding:"required"`
+	Amount             string `json:"amount"`
+	Chain              string `json:"chain"`
+	Token              string `json:"token"`
+	Address            string `json:"address"`
+	MessageUrl         string `json:"message_url"`
 }
 
 type TransferVaultTokenRequest struct {
@@ -65,11 +72,11 @@ type TransferVaultTokenRequest struct {
 }
 
 type CreateTreasurerSubmission struct {
-	Type      string `json:"type" binding:"required"`
-	VaultId   int64  `json:"vault_id" binding:"required"`
-	RequestId int64  `json:"request_id" binding:"required"`
-	Sumitter  string `json:"submitter" binding:"required"`
-	Choice    string `json:"choice" binding:"required"`
+	Type              string `json:"type" binding:"required"`
+	VaultId           int64  `json:"vault_id" binding:"required"`
+	RequestId         int64  `json:"request_id" binding:"required"`
+	SumitterProfileId string `json:"submitter_profile_id" binding:"required"`
+	Choice            string `json:"choice" binding:"required"`
 }
 
 type MochiPayVaultRequest struct {
