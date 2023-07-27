@@ -47,8 +47,8 @@ func (pg *pg) List(q ListQuery) (vaults []model.Vault, err error) {
 	if q.GuildID != "" {
 		db = db.Where("vaults.guild_id = ?", q.GuildID)
 	}
-	if q.UserDiscordID != "" {
-		db = db.Joins("join vault_treasurers on vaults.id = vault_treasurers.vault_id").Where("vault_treasurers.user_discord_id = ?", q.UserDiscordID)
+	if q.UserProfileID != "" {
+		db = db.Joins("join vault_treasurers on vaults.id = vault_treasurers.vault_id").Where("vault_treasurers.user_profile_id = ?", q.UserProfileID)
 	}
 	if q.EvmWallet != "" {
 		db = db.Where("vaults.wallet_address = ?", q.EvmWallet)

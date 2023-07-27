@@ -23,7 +23,7 @@ func (pg *pg) GetByVaultId(vaultId int64) (treasurers []model.VaultTreasurer, er
 }
 
 func (pg *pg) Delete(treasurer *model.VaultTreasurer) (*model.VaultTreasurer, error) {
-	return treasurer, pg.db.Where("guild_id = ? and vault_id = ? and user_discord_id = ?", treasurer.GuildId, treasurer.VaultId, treasurer.UserDiscordId).Delete(treasurer).Error
+	return treasurer, pg.db.Where("guild_id = ? and vault_id = ? and user_profile_id = ?", treasurer.GuildId, treasurer.VaultId, treasurer.UserProfileId).Delete(treasurer).Error
 }
 
 func (pg *pg) GetByGuildIdAndVaultId(guildId string, vaultId int64) (treasurer []model.VaultTreasurer, err error) {

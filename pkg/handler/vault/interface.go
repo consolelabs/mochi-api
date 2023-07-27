@@ -12,7 +12,6 @@ type IHandler interface {
 	RemoveTreasurerFromVault(c *gin.Context)
 	CreateTreasurerRequest(c *gin.Context)
 	CreateTreasurerSubmission(c *gin.Context)
-	CreateTreasurerResult(c *gin.Context)
 	GetVaultDetail(c *gin.Context)
 	TransferVaultToken(c *gin.Context)
 	GetTreasurerRequest(c *gin.Context)
