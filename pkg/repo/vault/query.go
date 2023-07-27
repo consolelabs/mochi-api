@@ -2,7 +2,7 @@ package vault
 
 type ListQuery struct {
 	GuildID       string
-	UserDiscordID string
+	UserProfileID string
 	EvmWallet     string
 	SolanaWallet  string
 	Threshold     string

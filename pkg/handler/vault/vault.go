@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
@@ -147,7 +148,7 @@ func (h *Handler) CreateConfigThreshold(c *gin.Context) {
 func (h *Handler) CreateTreasurerRequest(c *gin.Context) {
 	var req request.CreateTreasurerRequest
 	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"guildID": req.GuildId, "userDiscordId": req.UserDiscordId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to read JSON")
+		h.log.Fields(logger.Fields{"guildID": req.GuildId, "userProfileId": req.UserProfileId, "vaultName": req.VaultName, "message": req.Message}).Error(err, "[handler.CreateAddTreasurerRequest] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -217,9 +218,9 @@ func (h *Handler) AddTreasurerToVault(c *gin.Context) {
 }
 
 func (h *Handler) RemoveTreasurerFromVault(c *gin.Context) {
-	var req request.AddTreasurerToVaultRequest
+	var req request.RemoveTreasurerToVaultRequest
 
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.ShouldBindBodyWith(&req, binding.JSON); err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.RemoveTreasurerFromVault] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
@@ -260,25 +261,6 @@ func (h *Handler) CreateTreasurerSubmission(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](treasurerSubmission, nil, nil, nil))
-}
-
-func (h *Handler) CreateTreasurerResult(c *gin.Context) {
-	var req request.CreateTreasurerResultRequest
-
-	if err := c.BindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - failed to read JSON")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	err := h.entities.CreateTreasurerResult(&req)
-	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.AddTreasurerToVault] - failed to add treasurer to vault")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse[any](gin.H{"message": "ok"}, nil, nil, nil))
 }
 
 func (h *Handler) GetVaultDetail(c *gin.Context) {

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/consolelabs/mochi-typeset/typeset"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
@@ -70,12 +69,26 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 		return nil, err
 	}
 
+	userDiscordID := ""
+	profile, err := e.svc.MochiProfile.GetByID(req.VaultCreator)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
+		return nil, err
+	}
+
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == mochiprofile.PlatformDiscord {
+			userDiscordID = acc.PlatformIdentifier
+		}
+	}
+
 	// default for vault creator will be added as treasurer
 	_, err = e.repo.VaultTreasurer.Create(&model.VaultTreasurer{
 		VaultId:       vault.Id,
 		GuildId:       req.GuildId,
-		UserDiscordId: req.VaultCreator,
 		Role:          consts.VaultCreatorRole,
+		UserProfileId: req.VaultCreator,
+		UserDiscordId: userDiscordID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateVault] - add treasurer failed")
@@ -87,25 +100,11 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 
 func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) {
 	listQuery := vault.ListQuery{
-		GuildID:      req.GuildID,
-		EvmWallet:    req.EvmAddress,
-		SolanaWallet: req.SolanaAddress,
-		Threshold:    req.Threshold,
-	}
-
-	// find discord ID by given profile ID
-	if req.ProfileID != "" {
-		profile, err := e.svc.MochiProfile.GetByID(req.ProfileID)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
-			return nil, err
-		}
-
-		for _, acc := range profile.AssociatedAccounts {
-			if acc.Platform == mochiprofile.PlatformDiscord {
-				listQuery.UserDiscordID = acc.PlatformIdentifier
-			}
-		}
+		GuildID:       req.GuildID,
+		EvmWallet:     req.EvmAddress,
+		SolanaWallet:  req.SolanaAddress,
+		Threshold:     req.Threshold,
+		UserProfileID: req.ProfileID,
 	}
 
 	// query db
@@ -197,10 +196,24 @@ func (e *Entity) CreateConfigThreshold(req *request.CreateConfigThresholdRequest
 }
 
 func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
+	userDiscordID := ""
+	profile, err := e.svc.MochiProfile.GetByID(req.UserProfileID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
+		return nil, err
+	}
+
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == mochiprofile.PlatformDiscord {
+			userDiscordID = acc.PlatformIdentifier
+		}
+	}
+
 	treasurer, err := e.repo.VaultTreasurer.Create(&model.VaultTreasurer{
 		GuildId:       req.GuildId,
 		VaultId:       req.VaultId,
-		UserDiscordId: req.UserDiscordID,
+		UserProfileId: req.UserProfileID,
+		UserDiscordId: userDiscordID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTreasurer.Create failed")
@@ -211,7 +224,7 @@ func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*
 		GuildId: req.GuildId,
 		VaultId: req.VaultId,
 		Action:  consts.TreasurerAddType,
-		Target:  req.UserDiscordID,
+		Target:  req.UserProfileID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
@@ -236,12 +249,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 
 	listNotify := []string{}
 	for _, t := range treasurer {
-		profileMember, err := e.svc.MochiProfile.GetByDiscordID(t.UserDiscordId, true)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
-			return err
-		}
-		listNotify = append(listNotify, profileMember.ID)
+		listNotify = append(listNotify, t.UserProfileId)
 	}
 
 	token, err := e.svc.MochiPay.GetToken(req.Token, req.Chain)
@@ -256,20 +264,8 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return err
 	}
 
-	receiverProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.UserDiscordId, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
-		return err
-	}
-
-	requesterProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerRequest.Requester, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.Profile.GetByDiscordId failed")
-		return err
-	}
-
-	if !slices.Contains(listNotify, receiverProfile.ID) {
-		listNotify = append(listNotify, receiverProfile.ID)
+	if !slices.Contains(listNotify, treasurerRequest.UserProfileId) {
+		listNotify = append(listNotify, treasurerRequest.UserProfileId)
 	}
 
 	amountBigIntStr := util.FloatToString(req.Amount, token.Decimal)
@@ -280,9 +276,9 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return fmt.Errorf("balance not enough")
 	}
 
-	recipientPay := receiverProfile.ID
+	recipientPay := treasurerRequest.UserProfileId
 	if recipientPay == "" {
-		recipientPay = requesterProfile.ID
+		recipientPay = treasurerRequest.RequesterProfileId
 	}
 
 	// address = "" aka destination addres = "", use mochi wallet instead
@@ -322,7 +318,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
-		ProfileId:  requesterProfile.ID,
+		ProfileId:  treasurerRequest.RequesterProfileId,
 		Amount:     amountBigIntStr,
 		To:         destination,
 		PrivateKey: privateKey,
@@ -346,8 +342,8 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		ToAddress: req.Address,
 		Amount:    req.Amount,
 		Token:     req.Token,
-		Sender:    requesterProfile.ID,
-		Target:    receiverProfile.ID,
+		Sender:    treasurerRequest.RequesterProfileId,
+		Target:    treasurerRequest.UserProfileId,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTransaction.Create failed")
@@ -474,97 +470,6 @@ func (e *Entity) AutoTransferVaultToken(req *model.AutoTransferVaultTokenRequest
 	return nil
 }
 
-func (e *Entity) CreateTreasurerResult(req *request.CreateTreasurerResultRequest) error {
-	vault, err := e.repo.Vault.GetById(req.VaultId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.Vault.GetById failed")
-		return err
-	}
-
-	action, thumbnail := prepareParamNotifyTreasurerResult(req.Type)
-
-	msg := prepareMessageNotifyTreasurerResult(req, action, vault.Name, thumbnail)
-
-	err = sendNotifyTreasurerResult(msg, req.ChannelId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - sendNotifyTreasurerResult failed")
-		return err
-	}
-
-	return nil
-}
-
-func prepareParamNotifyTreasurerResult(notifyType string) (action, thumbnail string) {
-	action = consts.TreasurerAddedAction
-	thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092703907911847976/image.png"
-	if notifyType == consts.TreasurerRemoveType {
-		action = consts.TreasurerRemovedAction
-		thumbnail = "https://cdn.discordapp.com/attachments/1090195482506174474/1092755046556516394/image.png"
-	} else if notifyType == consts.TreasurerTransferType {
-		action = consts.TreasurerTransferType
-		thumbnail = "https://cdn.discordapp.com/attachments/1003381172178530494/1105400697836556368/vault_open.gif"
-	}
-	return action, thumbnail
-}
-
-func prepareMessageNotifyTreasurerResult(req *request.CreateTreasurerResultRequest, action, vaultName, thumbnail string) (msg discordgo.MessageSend) {
-	destination := fmt.Sprintf("`%s`", util.ShortenAddress(req.Address))
-	if req.Address == "" {
-		destination = fmt.Sprintf("<@%s>", req.UserDiscordID)
-	}
-
-	if req.Status == consts.TreasurerStatusSuccess {
-		description := fmt.Sprintf("<@%s> has been %s to **%s vault**", req.UserDiscordID, action, vaultName)
-		title := fmt.Sprintf("<:check:1077631110047080478> VaultTreasurer was successfully %s", action)
-		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s %s has been sent to %s\nWe will notify you when all done.", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
-			title = "<:check:1077631110047080478> Transfer was successfullly submitted"
-		}
-
-		msg = discordgo.MessageSend{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       title,
-					Description: description,
-					Color:       0x5CD97D,
-					Timestamp:   time.Now().Format("2006-01-02T15:04:05Z"),
-					Footer: &discordgo.MessageEmbedFooter{
-						Text: "Type /feedback to report",
-					},
-				},
-			},
-		}
-	} else {
-		description := fmt.Sprintf("<@%s> has not been %s to **%s vault**", req.UserDiscordID, action, vaultName)
-		if action == consts.TreasurerTransferType {
-			description = fmt.Sprintf("%s %s %s has not been sent to %s", util.TokenEmoji(strings.ToUpper(req.Token)), req.Amount, strings.ToUpper(req.Token), destination)
-		}
-		msg = discordgo.MessageSend{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       fmt.Sprintf("<:revoke:1077631119073230970> VaultTreasurer was not %s", action),
-					Description: description,
-					Color:       0xD94F4F,
-					Timestamp:   time.Now().Format("2006-01-02T15:04:05Z"),
-					Footer: &discordgo.MessageEmbedFooter{
-						Text: "Type /feedback to report",
-					},
-				},
-			},
-		}
-	}
-	return msg
-}
-
-func sendNotifyTreasurerResult(msg discordgo.MessageSend, channelId string) error {
-	err := e.svc.Discord.SendMessage(channelId, msg)
-	if err != nil {
-		e.log.Fields(logger.Fields{"msg": msg, "channelId": channelId}).Errorf(err, "[entity.AddTreasurerToVault] - e.svc.Discord.SendMessage failed")
-		return err
-	}
-	return nil
-}
-
 func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*response.CreateTreasurerRequestResponse, error) {
 	// get vault from name and guild id
 	vault, err := e.repo.Vault.GetByNameAndGuildId(req.VaultName, req.GuildId)
@@ -597,7 +502,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	}
 
 	if req.Type == "remove" {
-		if !e.validateTreasurer(treasurers, req.UserDiscordId) {
+		if !e.validateTreasurer(treasurers, req.UserProfileId) {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerRequest] - user not in list treasurers")
 			return nil, fmt.Errorf("user not in list treasurers")
 		}
@@ -605,17 +510,17 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 
 	// create treasurer request
 	treasurerReq, err := e.repo.VaultRequest.Create(&model.VaultRequest{
-		GuildId:       req.GuildId,
-		VaultId:       vault.Id,
-		UserDiscordId: req.UserDiscordId,
-		Message:       req.Message,
-		Requester:     req.Requester,
-		Type:          req.Type,
-		Amount:        req.Amount,
-		Chain:         req.Chain,
-		Token:         req.Token,
-		Address:       req.Address,
-		MessageUrl:    req.MessageUrl,
+		GuildId:            req.GuildId,
+		VaultId:            vault.Id,
+		UserProfileId:      req.UserProfileId,
+		Message:            req.Message,
+		RequesterProfileId: req.RequesterProfileId,
+		Type:               req.Type,
+		Amount:             req.Amount,
+		Chain:              req.Chain,
+		Token:              req.Token,
+		Address:            req.Address,
+		MessageUrl:         req.MessageUrl,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.repo.VaultTreasurer.Create failed")
@@ -627,17 +532,17 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 
 	for _, treasurer := range treasurers {
 		status := consts.TreasurerSubmissionStatusPending
-		if treasurer.UserDiscordId == req.Requester {
+		if treasurer.UserProfileId == req.RequesterProfileId {
 			status = consts.TreasurerSubmissionStatusApproved
 		}
 
 		treasurerSubmission = append(treasurerSubmission, model.VaultSubmission{
-			VaultId:    vault.Id,
-			GuildId:    req.GuildId,
-			RequestId:  treasurerReq.Id,
-			Status:     status,
-			Submitter:  treasurer.UserDiscordId,
-			MessageUrl: req.MessageUrl,
+			VaultId:            vault.Id,
+			GuildId:            req.GuildId,
+			RequestId:          treasurerReq.Id,
+			Status:             status,
+			SubmitterProfileId: treasurer.UserProfileId,
+			MessageUrl:         req.MessageUrl,
 		})
 	}
 
@@ -674,17 +579,17 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 			_, err := e.AddTreasurerToVault(&request.AddTreasurerToVaultRequest{
 				GuildId:       req.GuildId,
 				VaultId:       vault.Id,
-				UserDiscordID: req.UserDiscordId,
+				UserProfileID: req.UserProfileId,
 			})
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.PostCreateTreasurerRequest] - e.AddTreasurerToVault failed")
 				return false, err
 			}
 		case "remove":
-			_, err := e.RemoveTreasurerFromVault(&request.AddTreasurerToVaultRequest{
+			_, err := e.RemoveTreasurerFromVault(&request.RemoveTreasurerToVaultRequest{
 				GuildId:       req.GuildId,
 				VaultId:       vault.Id,
-				UserDiscordID: req.UserDiscordId,
+				UserProfileID: req.UserProfileId,
 			})
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.PostCreateTreasurerRequest] - e.RemoveTreasurerFromVault failed")
@@ -699,7 +604,7 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 				Amount:    req.Amount,
 				Token:     req.Token,
 				Chain:     req.Chain,
-				Target:    req.UserDiscordId,
+				Target:    req.UserProfileId,
 			})
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.PostCreateTreasurerRequest] - e.TransferVaultToken failed")
@@ -708,11 +613,11 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 		}
 
 		_, err := e.CreateTreasurerSubmission(&request.CreateTreasurerSubmission{
-			Type:      req.Type,
-			VaultId:   vault.Id,
-			Sumitter:  req.Requester,
-			Choice:    consts.TreasurerSubmissionStatusApproved,
-			RequestId: treasurerRequest.Id,
+			Type:              req.Type,
+			VaultId:           vault.Id,
+			SumitterProfileId: req.RequesterProfileId,
+			Choice:            consts.TreasurerSubmissionStatusApproved,
+			RequestId:         treasurerRequest.Id,
 		})
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.PostCreateTreasurerRequest] - e.CreateTreasurerSubmission failed")
@@ -725,9 +630,9 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 	return false, nil
 }
 
-func (e *Entity) validateTreasurer(treasurers []model.VaultTreasurer, userDiscordId string) bool {
+func (e *Entity) validateTreasurer(treasurers []model.VaultTreasurer, userProfileId string) bool {
 	for _, treasurer := range treasurers {
-		if treasurer.UserDiscordId == userDiscordId {
+		if treasurer.UserProfileId == userProfileId {
 			return true
 		}
 	}
@@ -787,24 +692,11 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 		return nil, err
 	}
 
-	submitterProfile, err := e.svc.MochiProfile.GetByDiscordID(req.Sumitter, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Profile.GetByDiscordId failed")
-		return nil, err
-	}
-
-	// person who is added / removed/ transfered money to
-	changerProfile, err := e.svc.MochiProfile.GetByDiscordID(treasurerReq.UserDiscordId, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.repo.Profile.GetByDiscordId failed")
-		return nil, err
-	}
-
 	modelSubmission := model.VaultSubmission{
-		VaultId:   req.VaultId,
-		RequestId: req.RequestId,
-		Submitter: req.Sumitter,
-		Status:    req.Choice,
+		VaultId:            req.VaultId,
+		RequestId:          req.RequestId,
+		SubmitterProfileId: req.SumitterProfileId,
+		Status:             req.Choice,
 	}
 
 	// get pending submission
@@ -878,7 +770,7 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	}
 
 	// noti for this submission of treasurer
-	voteMessage, daoVaultTotalTreasurerProposal := e.formatVoteVaultMessage(req, resp, submitterProfile, changerProfile, vault, submissions, treasurerReq)
+	voteMessage, daoVaultTotalTreasurerProposal := e.formatVoteVaultMessage(req, resp, req.SumitterProfileId, treasurerReq.UserProfileId, vault, submissions, treasurerReq)
 	byteNotification, _ := json.Marshal(voteMessage)
 
 	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
@@ -921,11 +813,11 @@ func (e *Entity) CreateTreasurerSubmission(req *request.CreateTreasurerSubmissio
 	return resp, nil
 }
 
-func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
+func (e *Entity) RemoveTreasurerFromVault(req *request.RemoveTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
 	treasurer, err := e.repo.VaultTreasurer.Delete(&model.VaultTreasurer{
 		GuildId:       req.GuildId,
 		VaultId:       req.VaultId,
-		UserDiscordId: req.UserDiscordID,
+		UserProfileId: req.UserProfileID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.VaultTreasurer.Create failed")
@@ -936,7 +828,7 @@ func (e *Entity) RemoveTreasurerFromVault(req *request.AddTreasurerToVaultReques
 		GuildId: req.GuildId,
 		VaultId: req.VaultId,
 		Action:  consts.TreasurerRemoveType,
-		Target:  req.UserDiscordID,
+		Target:  req.UserProfileID,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.RemoveTreasurerFromVault] - e.repo.VaultTransaction.Create failed")
@@ -987,7 +879,7 @@ func (e *Entity) GetVaultDetail(vaultName, guildId string) (*response.VaultDetai
 			}
 		}
 		currentRequestResponse = append(currentRequestResponse, response.CurrentRequest{
-			Target:                  req.UserDiscordId,
+			Target:                  req.UserProfileId,
 			Action:                  util.Capitalize(req.Type),
 			Token:                   req.Token,
 			Amount:                  req.Amount,
