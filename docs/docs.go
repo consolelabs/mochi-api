@@ -4449,7 +4449,7 @@ const docTemplate = `{
         },
         "/onchain/invest-data": {
             "get": {
-                "description": "Get onchain invest data",
+                "description": "Get onchain invest unstake data",
                 "consumes": [
                     "application/json"
                 ],
@@ -4459,7 +4459,7 @@ const docTemplate = `{
                 "tags": [
                     "Invest"
                 ],
-                "summary": "Get onchain invest data",
+                "summary": "Get onchain invest unstake data",
                 "parameters": [
                     {
                         "type": "integer",

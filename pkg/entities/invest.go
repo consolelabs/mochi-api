@@ -60,7 +60,7 @@ func (e *Entity) GetInvestList(req *request.GetInvestListRequest) (*response.Get
 	}, nil
 }
 
-func (e *Entity) OnchainInvestData(req *request.OnchainInvestDataRequest) (*response.OnchainInvestDataResponse, error) {
+func (e *Entity) OnchainInvestStakeData(req *request.OnchainInvestStakeDataRequest) (*response.OnchainInvestDataResponse, error) {
 	resp, err := e.svc.Krystal.BuildStakeTx(krystal.BuildStakeTxReq{
 		Platform:     req.Platform,
 		ChainID:      req.ChainID,
@@ -70,7 +70,36 @@ func (e *Entity) OnchainInvestData(req *request.OnchainInvestDataRequest) (*resp
 		UserAddress:  req.UserAddress,
 	})
 	if err != nil {
-		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.OnchainInvestData] - svc.Krystal.BuildStakeTx failed")
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.OnchainInvestStakeData] - svc.Krystal.BuildStakeTx failed")
+		return nil, err
+	}
+
+	return &response.OnchainInvestDataResponse{
+		Data: response.OnchainInvestData{
+			TxObject: response.TxObject{
+				From:     resp.TxObject.From,
+				To:       resp.TxObject.To,
+				Value:    resp.TxObject.Value,
+				Data:     resp.TxObject.Data,
+				GasPrice: resp.TxObject.GasPrice,
+				Nonce:    resp.TxObject.Nonce,
+				GasLimit: resp.TxObject.GasLimit,
+			},
+		},
+	}, nil
+}
+
+func (e *Entity) OnchainInvestUnstakeData(req *request.OnchainInvestUnstakeDataRequest) (*response.OnchainInvestDataResponse, error) {
+	resp, err := e.svc.Krystal.BuildUnstakeTx(krystal.BuildUnstakeTxReq{
+		Platform:     req.Platform,
+		ChainID:      req.ChainID,
+		EarningType:  req.Type,
+		TokenAddress: req.TokenAddress,
+		TokenAmount:  req.TokenAmount,
+		UserAddress:  req.UserAddress,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.OnchainInvestUnstakeData] - svc.Krystal.BuildUnstakeTxReq failed")
 		return nil, err
 	}
 

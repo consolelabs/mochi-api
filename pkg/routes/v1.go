@@ -450,6 +450,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	onchainGroup := v1.Group("/onchain")
 	{
 		onchainGroup.GET("/swap-data", h.Swap.OnchainData)
-		onchainGroup.GET("/invest-data", h.Invest.OnchainInvestData)
+		onchainGroup.GET("/invest-stake-data", h.Invest.OnchainInvestStakeData)
+		onchainGroup.GET("/invest-unstake-data", h.Invest.OnchainInvestUnstakeData)
 	}
 }

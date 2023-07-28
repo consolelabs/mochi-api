@@ -2343,13 +2343,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -6564,7 +6564,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get onchain invest data
+      description: Get onchain invest unstake data
       parameters:
       - description: chain id
         in: query
@@ -6603,7 +6603,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.OnchainInvestDataResponse'
-      summary: Get onchain invest data
+      summary: Get onchain invest unstake data
       tags:
       - Invest
   /swap:

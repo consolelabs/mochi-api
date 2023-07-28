@@ -86,6 +86,15 @@ func (k *Krystal) BuildStakeTx(req BuildStakeTxReq) (*BuildTxResp, error) {
 	return res, nil
 }
 
+func (k *Krystal) BuildUnstakeTx(req BuildUnstakeTxReq) (*BuildTxResp, error) {
+	res, err := k.buildTx("buildUnstakeTx", req)
+	if err != nil {
+		k.logger.Fields(logger.Fields{"request": req}).Error(err, "[krystal.BuildUnstakeTx] k.buildTx() failed")
+		return nil, err
+	}
+	return res, nil
+}
+
 func (k *Krystal) doCache(address string) (string, error) {
 	return k.cache.GetString(fmt.Sprintf("%s-%s", tokenBalanceKey, strings.ToLower(address)))
 }

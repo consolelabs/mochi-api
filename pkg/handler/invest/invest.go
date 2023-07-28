@@ -54,9 +54,9 @@ func (h *Handler) GetInvestList(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse[any](resp.Data, nil, nil, nil))
 }
 
-// OnchainInvestData     godoc
-// @Summary     Get onchain invest data
-// @Description Get onchain invest data
+// OnchainInvestStakeData     godoc
+// @Summary     Get onchain invest stake data
+// @Description Get onchain invest stake data
 // @Tags        Invest
 // @Accept      json
 // @Produce     json
@@ -68,17 +68,49 @@ func (h *Handler) GetInvestList(c *gin.Context) {
 // @Param       tokenAmount   query  string true  "the token amount want to invest (in wei)"
 // @Success     200 {object} response.OnchainInvestDataResponse
 // @Router      /onchain/invest-data [get]
-func (h *Handler) OnchainInvestData(c *gin.Context) {
-	var req request.OnchainInvestDataRequest
+func (h *Handler) OnchainInvestStakeData(c *gin.Context) {
+	var req request.OnchainInvestStakeDataRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.OnchainInvestData] - c.ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	resp, err := h.entities.OnchainInvestData(&req)
+	resp, err := h.entities.OnchainInvestStakeData(&req)
 	if err != nil {
-		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.OnchainInvestData] - .entities.OnchainInvestData() failed")
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.OnchainInvestStakeData] - .entities.OnchainInvestStakeData() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](resp.Data, nil, nil, nil))
+}
+
+// OnchainInvestUnstakeData     godoc
+// @Summary     Get onchain invest unstake data
+// @Description Get onchain invest unstake data
+// @Tags        Invest
+// @Accept      json
+// @Produce     json
+// @Param       chainID   query  int true  "chain id"
+// @Param       platform   query  string true  "the earning platform (aave_v2, aave_v3)"
+// @Param       type   query  string true  "the earning type (stake, lend)"
+// @Param       tokenAddress   query  string true  "token address want to invest"
+// @Param       userAddress   query  string true  "the user address"
+// @Param       tokenAmount   query  string true  "the token amount want to invest (in wei)"
+// @Success     200 {object} response.OnchainInvestDataResponse
+// @Router      /onchain/invest-data [get]
+func (h *Handler) OnchainInvestUnstakeData(c *gin.Context) {
+	var req request.OnchainInvestUnstakeDataRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.OnchainInvestData] - c.ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	resp, err := h.entities.OnchainInvestUnstakeData(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.OnchainInvestUnstakeData] - .entities.OnchainInvestUnstakeData() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
