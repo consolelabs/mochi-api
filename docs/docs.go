@@ -3667,7 +3667,7 @@ const docTemplate = `{
         },
         "/invests": {
             "get": {
-                "description": "Get invest list",
+                "description": "Get onchain invest data",
                 "consumes": [
                     "application/json"
                 ],
@@ -3677,44 +3677,49 @@ const docTemplate = `{
                 "tags": [
                     "Invest"
                 ],
-                "summary": "Get invest list",
+                "summary": "Get onchain invest data",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "the filterd chain ids, split by comma",
-                        "name": "chainIds",
-                        "in": "query"
+                        "type": "integer",
+                        "description": "chain id",
+                        "name": "chainID",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "the filterd platforms (aave_v2, aave_v3), split by comma",
-                        "name": "platforms",
-                        "in": "query"
+                        "description": "the earning platform (aave_v2, aave_v3)",
+                        "name": "platform",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "the filterd types (stake, lend), split by comma",
-                        "name": "types",
-                        "in": "query"
+                        "description": "the earning type (stake, lend)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "the filtered token address",
-                        "name": "address",
-                        "in": "query"
+                        "description": "token address want to invest",
+                        "name": "tokenAddress",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "the filtered status (active, inactive)",
-                        "name": "status",
-                        "in": "query"
+                        "description": "the user address",
+                        "name": "userAddress",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetInvestListResponse"
+                            "$ref": "#/definitions/response.OnchainInvestDataResponse"
                         }
                     }
                 }
@@ -6970,6 +6975,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
+                    "type": "string"
+                },
+                "user_profile_id": {
                     "type": "string"
                 },
                 "vault": {
@@ -10648,6 +10656,22 @@ const docTemplate = `{
                 }
             }
         },
+        "response.OnchainInvestData": {
+            "type": "object",
+            "properties": {
+                "tx_object": {
+                    "$ref": "#/definitions/response.TxObject"
+                }
+            }
+        },
+        "response.OnchainInvestDataResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnchainInvestData"
+                }
+            }
+        },
         "response.PaginationResponse": {
             "type": "object",
             "properties": {
@@ -11099,6 +11123,32 @@ const docTemplate = `{
                 },
                 "metadata": {
                     "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
+        "response.TxObject": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "gas_limit": {
+                    "type": "string"
+                },
+                "gas_price": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },

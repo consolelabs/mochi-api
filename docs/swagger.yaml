@@ -846,6 +846,8 @@ definitions:
         type: string
       user_discord_id:
         type: string
+      user_profile_id:
+        type: string
       vault:
         $ref: '#/definitions/model.Vault'
       vault_id:
@@ -2964,27 +2966,27 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
-        type: number
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_7d:
         type: number
       price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h:
+        type: number
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3249,6 +3251,16 @@ definitions:
         items:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
+    type: object
+  response.OnchainInvestData:
+    properties:
+      tx_object:
+        $ref: '#/definitions/response.TxObject'
+    type: object
+  response.OnchainInvestDataResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.OnchainInvestData'
     type: object
   response.PaginationResponse:
     properties:
@@ -3544,6 +3556,23 @@ definitions:
         type: array
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
+    type: object
+  response.TxObject:
+    properties:
+      data:
+        type: string
+      from:
+        type: string
+      gas_limit:
+        type: string
+      gas_price:
+        type: string
+      nonce:
+        type: string
+      to:
+        type: string
+      value:
+        type: string
     type: object
   response.UnlinkBinance:
     properties:
@@ -6016,27 +6045,32 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get invest list
+      description: Get onchain invest data
       parameters:
-      - description: the filterd chain ids, split by comma
+      - description: chain id
         in: query
-        name: chainIds
+        name: chainID
+        required: true
+        type: integer
+      - description: the earning platform (aave_v2, aave_v3)
+        in: query
+        name: platform
+        required: true
         type: string
-      - description: the filterd platforms (aave_v2, aave_v3), split by comma
+      - description: the earning type (stake, lend)
         in: query
-        name: platforms
+        name: type
+        required: true
         type: string
-      - description: the filterd types (stake, lend), split by comma
+      - description: token address want to invest
         in: query
-        name: types
+        name: tokenAddress
+        required: true
         type: string
-      - description: the filtered token address
+      - description: the user address
         in: query
-        name: address
-        type: string
-      - description: the filtered status (active, inactive)
-        in: query
-        name: status
+        name: userAddress
+        required: true
         type: string
       produces:
       - application/json
@@ -6044,8 +6078,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetInvestListResponse'
-      summary: Get invest list
+            $ref: '#/definitions/response.OnchainInvestDataResponse'
+      summary: Get onchain invest data
       tags:
       - Invest
   /nfts:
