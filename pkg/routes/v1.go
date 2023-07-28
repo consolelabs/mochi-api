@@ -446,4 +446,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		}
 
 	}
+
+	onchainGroup := v1.Group("/onchain")
+	{
+		onchainGroup.GET("/swap-data", h.Swap.OnchainData)
+	}
 }
