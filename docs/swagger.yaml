@@ -2972,10 +2972,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -2988,8 +2986,10 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -6560,7 +6560,53 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
-  /onchain/invest-data:
+  /onchain/invest-stake-data:
+    get:
+      consumes:
+      - application/json
+      description: Get onchain invest stake data
+      parameters:
+      - description: chain id
+        in: query
+        name: chainID
+        required: true
+        type: integer
+      - description: the earning platform (aave_v2, aave_v3)
+        in: query
+        name: platform
+        required: true
+        type: string
+      - description: the earning type (stake, lend)
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: token address want to invest
+        in: query
+        name: tokenAddress
+        required: true
+        type: string
+      - description: the user address
+        in: query
+        name: userAddress
+        required: true
+        type: string
+      - description: the token amount want to invest (in wei)
+        in: query
+        name: tokenAmount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OnchainInvestDataResponse'
+      summary: Get onchain invest stake data
+      tags:
+      - Invest
+  /onchain/invest-unstake-data:
     get:
       consumes:
       - application/json
