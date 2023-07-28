@@ -4,6 +4,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/krystal"
 )
 
 func (e *Entity) GetInvestList(req *request.GetInvestListRequest) (*response.GetInvestListResponse, error) {
@@ -56,5 +57,34 @@ func (e *Entity) GetInvestList(req *request.GetInvestListRequest) (*response.Get
 
 	return &response.GetInvestListResponse{
 		Data: ivestItems,
+	}, nil
+}
+
+func (e *Entity) OnchainInvestData(req *request.OnchainInvestDataRequest) (*response.OnchainInvestDataResponse, error) {
+	resp, err := e.svc.Krystal.BuildStakeTx(krystal.BuildStakeTxReq{
+		Platform:     req.Platform,
+		ChainID:      req.ChainID,
+		EarningType:  req.Type,
+		TokenAddress: req.TokenAddress,
+		TokenAmount:  req.TokenAmount,
+		UserAddress:  req.UserAddress,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"request": req}).Error(err, "[entities.OnchainInvestData] - svc.Krystal.BuildStakeTx failed")
+		return nil, err
+	}
+
+	return &response.OnchainInvestDataResponse{
+		Data: response.OnchainInvestData{
+			TxObject: response.TxObject{
+				From:     resp.TxObject.From,
+				To:       resp.TxObject.To,
+				Value:    resp.TxObject.Value,
+				Data:     resp.TxObject.Data,
+				GasPrice: resp.TxObject.GasPrice,
+				Nonce:    resp.TxObject.Nonce,
+				GasLimit: resp.TxObject.GasLimit,
+			},
+		},
 	}, nil
 }

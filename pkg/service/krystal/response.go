@@ -73,3 +73,18 @@ type Platforms struct {
 	Tvl       float64 `json:"tvl"`
 	Type      string  `json:"type"`
 }
+
+type BuildTxResp struct {
+	Timestamp int      `json:"timestamp"`
+	TxObject  TxObject `json:"txObject"`
+}
+
+type TxObject struct {
+	Data     string `json:"data"`
+	From     string `json:"from"`
+	GasLimit string `json:"gasLimit"`
+	GasPrice string `json:"gasPrice"`
+	Nonce    string `json:"nonce"`
+	To       string `json:"to"`
+	Value    string `json:"value"`
+}

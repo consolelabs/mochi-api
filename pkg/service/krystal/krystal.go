@@ -1,6 +1,7 @@
 package krystal
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -76,6 +77,15 @@ func (k *Krystal) GetEarningOptions(platforms, chainIds, types, statuses, addres
 	return resp, nil
 }
 
+func (k *Krystal) BuildStakeTx(req BuildStakeTxReq) (*BuildTxResp, error) {
+	res, err := k.buildTx("buildStakeTx", req)
+	if err != nil {
+		k.logger.Fields(logger.Fields{"request": req}).Error(err, "[krystal.BuildStakeTx] k.buildTx() failed")
+		return nil, err
+	}
+	return res, nil
+}
+
 func (k *Krystal) doCache(address string) (string, error) {
 	return k.cache.GetString(fmt.Sprintf("%s-%s", tokenBalanceKey, strings.ToLower(address)))
 }
@@ -132,4 +142,32 @@ func (k *Krystal) doNetworkGeneric(req util.SendRequestQuery, response interface
 
 	return nil
 
+}
+
+func (k *Krystal) buildTx(path string, req interface{}) (*BuildTxResp, error) {
+	v, err := json.Marshal(req)
+	if err != nil {
+		k.logger.Fields(logger.Fields{"request": req}).Error(err, "[krystal.buildTx] json.Marshal() failed")
+		return nil, err
+	}
+	body := bytes.NewBuffer(v)
+	res := &BuildTxResp{}
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:    fmt.Sprintf("%s/all/v1/earning/%s", k.config.KrystalBaseUrl, path),
+		Method: "POST",
+		Headers: map[string]string{
+			"Accept":              "application/json",
+			"Content-Type":        "application/json",
+			"x-rate-access-token": k.config.KrystalApiKey,
+		},
+		Body:      body,
+		ParseForm: res,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("status code: %d", status)
+	}
+	return res, nil
 }
