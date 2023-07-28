@@ -39,11 +39,11 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Success     200 {object} response.SwapRouteResponseData
 // @Router      /swap/route [get]
 func (h *Handler) GetSwapRoutes(c *gin.Context) {
-	req := request.GetSwapRouteRequest{
-		From:      c.Query("from"),
-		To:        c.Query("to"),
-		Amount:    c.Query("amount"),
-		ProfileId: c.Query("profileId"),
+	var req request.GetSwapRouteRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.OnchainData] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
 	}
 
 	data, err := h.entities.GetSwapRoutes(&req)
@@ -85,4 +85,22 @@ func (h *Handler) ExecuteSwapRoutes(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
+
+func (h *Handler) OnchainData(c *gin.Context) {
+	var req request.GetSwapRouteRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.OnchainData] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.OnchainData(&req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"from": req.From, "to": req.To, "amount": req.Amount}).Error(err, "[handler.OnchainData] - cannot get data swap routes")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }

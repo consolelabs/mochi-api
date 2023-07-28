@@ -58,3 +58,7 @@ type OutputChange struct {
 	Percent int64  `json:"percent"`
 	Level   int64  `json:"level"`
 }
+
+type OnchainDataResponse struct {
+	SwapData string `json:"swapData"`
+}
