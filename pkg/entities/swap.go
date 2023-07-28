@@ -13,7 +13,7 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
-func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.SwapRouteResponse, error) {
+func (e *Entity) GetSwapRouteFromService(req *request.GetSwapRouteRequest) (*response.ProviderSwapRoutes, error) {
 	// step 1: we need to identify which token user want to swap
 	// e.g: user input "usdc" -> we need to parse it into any {token_address, chain_id} possibles
 
@@ -52,6 +52,16 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 		return nil, err
 	}
 
+	return r, nil
+}
+
+func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.SwapRouteResponse, error) {
+	r, err := e.GetSwapRouteFromService(req)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.GetSwapRouteFromService] - cannot get swap route from service")
+		return nil, err
+	}
+
 	toRoute := e.formatRouteSwap(req, r)
 
 	// step 4: enrich data token in mochi pay
@@ -63,6 +73,37 @@ func (e *Entity) GetSwapRoutes(req *request.GetSwapRouteRequest) (*response.Swap
 
 	return toRoute, nil
 
+}
+
+func (e *Entity) OnchainData(req *request.GetSwapRouteRequest) (*response.OnchainDataResponse, error) {
+	r, err := e.GetSwapRouteFromService(req)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.GetSwapRouteFromService] - cannot get swap route from service")
+		return nil, err
+	}
+
+	chainName := r.Data.TokenIn.ChainName
+	if r.Aggregator == "jupyter" {
+		chainName = "solana"
+	}
+	// build route
+	buildRouteResp, err := e.svc.Swap.BuildSwapRoutes(chainName, &request.BuildSwapRouteRequest{
+		Recipient:         req.Address,
+		Sender:            req.Address,
+		Source:            consts.ClientID,
+		SkipSimulateTx:    false,
+		SlippageTolerance: 500,
+		RouteSummary:      r.SwapData,
+		// SwapData:          req.SwapData,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[GetSwapRoutes.BuildSwapRoutes] - cannot build swap routes")
+		return nil, err
+	}
+
+	return &response.OnchainDataResponse{
+		SwapData: buildRouteResp.Data.Data,
+	}, nil
 }
 
 func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
