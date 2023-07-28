@@ -2343,13 +2343,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2966,20 +2966,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
@@ -2990,6 +2982,14 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -6045,32 +6045,27 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get onchain invest data
+      description: Get invest list
       parameters:
-      - description: chain id
+      - description: the filterd chain ids, split by comma
         in: query
-        name: chainID
-        required: true
-        type: integer
-      - description: the earning platform (aave_v2, aave_v3)
-        in: query
-        name: platform
-        required: true
+        name: chainIds
         type: string
-      - description: the earning type (stake, lend)
+      - description: the filterd platforms (aave_v2, aave_v3), split by comma
         in: query
-        name: type
-        required: true
+        name: platforms
         type: string
-      - description: token address want to invest
+      - description: the filterd types (stake, lend), split by comma
         in: query
-        name: tokenAddress
-        required: true
+        name: types
         type: string
-      - description: the user address
+      - description: the filtered token address
         in: query
-        name: userAddress
-        required: true
+        name: address
+        type: string
+      - description: the filtered status (active, inactive)
+        in: query
+        name: status
         type: string
       produces:
       - application/json
@@ -6078,8 +6073,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.OnchainInvestDataResponse'
-      summary: Get onchain invest data
+            $ref: '#/definitions/response.GetInvestListResponse'
+      summary: Get invest list
       tags:
       - Invest
   /nfts:
@@ -6565,6 +6560,52 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
+  /onchain/invest-data:
+    get:
+      consumes:
+      - application/json
+      description: Get onchain invest data
+      parameters:
+      - description: chain id
+        in: query
+        name: chainID
+        required: true
+        type: integer
+      - description: the earning platform (aave_v2, aave_v3)
+        in: query
+        name: platform
+        required: true
+        type: string
+      - description: the earning type (stake, lend)
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: token address want to invest
+        in: query
+        name: tokenAddress
+        required: true
+        type: string
+      - description: the user address
+        in: query
+        name: userAddress
+        required: true
+        type: string
+      - description: the token amount want to invest (in wei)
+        in: query
+        name: tokenAmount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OnchainInvestDataResponse'
+      summary: Get onchain invest data
+      tags:
+      - Invest
   /swap:
     post:
       consumes:

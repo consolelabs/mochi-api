@@ -3667,7 +3667,7 @@ const docTemplate = `{
         },
         "/invests": {
             "get": {
-                "description": "Get onchain invest data",
+                "description": "Get invest list",
                 "consumes": [
                     "application/json"
                 ],
@@ -3677,49 +3677,44 @@ const docTemplate = `{
                 "tags": [
                     "Invest"
                 ],
-                "summary": "Get onchain invest data",
+                "summary": "Get invest list",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "chain id",
-                        "name": "chainID",
-                        "in": "query",
-                        "required": true
+                        "type": "string",
+                        "description": "the filterd chain ids, split by comma",
+                        "name": "chainIds",
+                        "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "the earning platform (aave_v2, aave_v3)",
-                        "name": "platform",
-                        "in": "query",
-                        "required": true
+                        "description": "the filterd platforms (aave_v2, aave_v3), split by comma",
+                        "name": "platforms",
+                        "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "the earning type (stake, lend)",
-                        "name": "type",
-                        "in": "query",
-                        "required": true
+                        "description": "the filterd types (stake, lend), split by comma",
+                        "name": "types",
+                        "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "token address want to invest",
-                        "name": "tokenAddress",
-                        "in": "query",
-                        "required": true
+                        "description": "the filtered token address",
+                        "name": "address",
+                        "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "the user address",
-                        "name": "userAddress",
-                        "in": "query",
-                        "required": true
+                        "description": "the filtered status (active, inactive)",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.OnchainInvestDataResponse"
+                            "$ref": "#/definitions/response.GetInvestListResponse"
                         }
                     }
                 }
@@ -4447,6 +4442,73 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetNFTActivityResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/onchain/invest-data": {
+            "get": {
+                "description": "Get onchain invest data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Invest"
+                ],
+                "summary": "Get onchain invest data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "chain id",
+                        "name": "chainID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning platform (aave_v2, aave_v3)",
+                        "name": "platform",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning type (stake, lend)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token address want to invest",
+                        "name": "tokenAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user address",
+                        "name": "userAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the token amount want to invest (in wei)",
+                        "name": "tokenAmount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnchainInvestDataResponse"
                         }
                     }
                 }

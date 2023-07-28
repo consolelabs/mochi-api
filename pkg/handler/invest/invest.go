@@ -65,8 +65,9 @@ func (h *Handler) GetInvestList(c *gin.Context) {
 // @Param       type   query  string true  "the earning type (stake, lend)"
 // @Param       tokenAddress   query  string true  "token address want to invest"
 // @Param       userAddress   query  string true  "the user address"
+// @Param       tokenAmount   query  string true  "the token amount want to invest (in wei)"
 // @Success     200 {object} response.OnchainInvestDataResponse
-// @Router      /invests [get]
+// @Router      /onchain/invest-data [get]
 func (h *Handler) OnchainInvestData(c *gin.Context) {
 	var req request.OnchainInvestDataRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
