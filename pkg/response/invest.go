@@ -40,3 +40,21 @@ type InvestPlatforms struct {
 	Tvl       float64      `json:"tvl"`
 	Type      string       `json:"type"`
 }
+
+type OnchainInvestDataResponse struct {
+	Data OnchainInvestData `json:"data"`
+}
+
+type OnchainInvestData struct {
+	TxObject TxObject `json:"tx_object"`
+}
+
+type TxObject struct {
+	From     string `json:"from"`
+	To       string `json:"to"`
+	Value    string `json:"value"`
+	Data     string `json:"data"`
+	GasPrice string `json:"gas_price"`
+	Nonce    string `json:"nonce"`
+	GasLimit string `json:"gas_limit"`
+}

@@ -4447,6 +4447,140 @@ const docTemplate = `{
                 }
             }
         },
+        "/onchain/invest-stake-data": {
+            "get": {
+                "description": "Get onchain invest stake data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Invest"
+                ],
+                "summary": "Get onchain invest stake data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "chain id",
+                        "name": "chainID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning platform (aave_v2, aave_v3)",
+                        "name": "platform",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning type (stake, lend)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token address want to invest",
+                        "name": "tokenAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user address",
+                        "name": "userAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the token amount want to invest (in wei)",
+                        "name": "tokenAmount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnchainInvestDataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/onchain/invest-unstake-data": {
+            "get": {
+                "description": "Get onchain invest unstake data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Invest"
+                ],
+                "summary": "Get onchain invest unstake data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "chain id",
+                        "name": "chainID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning platform (aave_v2, aave_v3)",
+                        "name": "platform",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the earning type (stake, lend)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token address want to invest",
+                        "name": "tokenAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the user address",
+                        "name": "userAddress",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the token amount want to invest (in wei)",
+                        "name": "tokenAmount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnchainInvestDataResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/swap": {
             "post": {
                 "description": "Execute swap token",
@@ -6970,6 +7104,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
+                    "type": "string"
+                },
+                "user_profile_id": {
                     "type": "string"
                 },
                 "vault": {
@@ -10648,6 +10785,22 @@ const docTemplate = `{
                 }
             }
         },
+        "response.OnchainInvestData": {
+            "type": "object",
+            "properties": {
+                "tx_object": {
+                    "$ref": "#/definitions/response.TxObject"
+                }
+            }
+        },
+        "response.OnchainInvestDataResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnchainInvestData"
+                }
+            }
+        },
         "response.PaginationResponse": {
             "type": "object",
             "properties": {
@@ -11099,6 +11252,32 @@ const docTemplate = `{
                 },
                 "metadata": {
                     "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
+        "response.TxObject": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "gas_limit": {
+                    "type": "string"
+                },
+                "gas_price": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
                 }
             }
         },

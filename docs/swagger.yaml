@@ -846,6 +846,8 @@ definitions:
         type: string
       user_discord_id:
         type: string
+      user_profile_id:
+        type: string
       vault:
         $ref: '#/definitions/model.Vault'
       vault_id:
@@ -2964,7 +2966,15 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1y:
+        type: number
+      price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
@@ -2972,15 +2982,7 @@ definitions:
         type: object
       price_change_percentage_14d:
         type: number
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_7d:
-        type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3249,6 +3251,16 @@ definitions:
         items:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
+    type: object
+  response.OnchainInvestData:
+    properties:
+      tx_object:
+        $ref: '#/definitions/response.TxObject'
+    type: object
+  response.OnchainInvestDataResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.OnchainInvestData'
     type: object
   response.PaginationResponse:
     properties:
@@ -3544,6 +3556,23 @@ definitions:
         type: array
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
+    type: object
+  response.TxObject:
+    properties:
+      data:
+        type: string
+      from:
+        type: string
+      gas_limit:
+        type: string
+      gas_price:
+        type: string
+      nonce:
+        type: string
+      to:
+        type: string
+      value:
+        type: string
     type: object
   response.UnlinkBinance:
     properties:
@@ -6531,6 +6560,98 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
+  /onchain/invest-stake-data:
+    get:
+      consumes:
+      - application/json
+      description: Get onchain invest stake data
+      parameters:
+      - description: chain id
+        in: query
+        name: chainID
+        required: true
+        type: integer
+      - description: the earning platform (aave_v2, aave_v3)
+        in: query
+        name: platform
+        required: true
+        type: string
+      - description: the earning type (stake, lend)
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: token address want to invest
+        in: query
+        name: tokenAddress
+        required: true
+        type: string
+      - description: the user address
+        in: query
+        name: userAddress
+        required: true
+        type: string
+      - description: the token amount want to invest (in wei)
+        in: query
+        name: tokenAmount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OnchainInvestDataResponse'
+      summary: Get onchain invest stake data
+      tags:
+      - Invest
+  /onchain/invest-unstake-data:
+    get:
+      consumes:
+      - application/json
+      description: Get onchain invest unstake data
+      parameters:
+      - description: chain id
+        in: query
+        name: chainID
+        required: true
+        type: integer
+      - description: the earning platform (aave_v2, aave_v3)
+        in: query
+        name: platform
+        required: true
+        type: string
+      - description: the earning type (stake, lend)
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: token address want to invest
+        in: query
+        name: tokenAddress
+        required: true
+        type: string
+      - description: the user address
+        in: query
+        name: userAddress
+        required: true
+        type: string
+      - description: the token amount want to invest (in wei)
+        in: query
+        name: tokenAmount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OnchainInvestDataResponse'
+      summary: Get onchain invest unstake data
+      tags:
+      - Invest
   /swap:
     post:
       consumes:
