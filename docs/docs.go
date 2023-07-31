@@ -4622,7 +4622,7 @@ var doc = `{
         },
         "/swap/route": {
             "get": {
-                "description": "Get swap route for token pairs",
+                "description": "Get auto triggers",
                 "consumes": [
                     "application/json"
                 ],
@@ -4632,40 +4632,21 @@ var doc = `{
                 "tags": [
                     "Swap"
                 ],
-                "summary": "Get swap route for token pairs",
+                "summary": "Get auto triggers",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "from token symbol",
-                        "name": "from",
+                        "description": "user id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "to token symbol",
-                        "name": "to",
+                        "description": "guild id",
+                        "name": "guild_id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "from amount value",
-                        "name": "amount",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "chain name",
-                        "name": "chain_name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "chain id",
-                        "name": "chain_id",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4993,7 +4974,7 @@ var doc = `{
                 }
             }
         },
-        "/users/{id}/cexs/binance/futures": {
+        "/users/{id}/cexs/binance/position": {
             "get": {
                 "description": "Get user's future account balance",
                 "consumes": [

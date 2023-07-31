@@ -3027,18 +3027,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -3048,6 +3036,18 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -6740,30 +6740,17 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get swap route for token pairs
+      description: Get auto triggers
       parameters:
-      - description: from token symbol
+      - description: user id
         in: query
-        name: from
+        name: user_id
         required: true
         type: string
-      - description: to token symbol
+      - description: guild id
         in: query
-        name: to
+        name: guild_id
         required: true
-        type: string
-      - description: from amount value
-        in: query
-        name: amount
-        required: true
-        type: string
-      - description: chain name
-        in: query
-        name: chain_name
-        type: string
-      - description: chain id
-        in: query
-        name: chain_id
         type: string
       produces:
       - application/json
@@ -6772,7 +6759,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.SwapRouteResponseData'
-      summary: Get swap route for token pairs
+      summary: Get auto triggers
       tags:
       - Swap
   /tip/transfer:
@@ -6872,7 +6859,7 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
-  /users/{id}/cexs/binance/futures:
+  /users/{id}/cexs/binance/position:
     get:
       consumes:
       - application/json
