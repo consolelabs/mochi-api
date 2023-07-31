@@ -4958,7 +4958,7 @@
                 }
             }
         },
-        "/users/{id}/cexs/binance/position": {
+        "/users/{id}/cexs/binance/positions": {
             "get": {
                 "description": "Get user's future account balance",
                 "consumes": [
@@ -4984,7 +4984,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.BinanceFutureAcountPositionResponse"
+                            "$ref": "#/definitions/response.BinanceFutureAccountPositionResponse"
                         }
                     }
                 }
@@ -8220,7 +8220,7 @@
                 }
             }
         },
-        "response.BinanceFutureAcountPosition": {
+        "response.BinanceFutureAccountPosition": {
             "type": "object",
             "properties": {
                 "askNotional": {
@@ -8270,7 +8270,7 @@
                 }
             }
         },
-        "response.BinanceFutureAcountPositionResponse": {
+        "response.BinanceFutureAccountPositionResponse": {
             "type": "object",
             "properties": {
                 "data": {
@@ -8290,7 +8290,7 @@
                 "positions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.BinanceFutureAcountPosition"
+                        "$ref": "#/definitions/response.BinanceFutureAccountPosition"
                     }
                 }
             }

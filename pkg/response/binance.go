@@ -147,11 +147,11 @@ type BinanceFutureAccountBalanceResponse struct {
 }
 
 type BinanceFutureAccount struct {
-	Positions []BinanceFutureAcountPosition `json:"positions"`
-	Assets    []BinanceFutureAcountAsset    `json:"assets"`
+	Positions []BinanceFutureAccountPosition `json:"positions"`
+	Assets    []BinanceFutureAccountAsset    `json:"assets"`
 }
 
-type BinanceFutureAcountPosition struct {
+type BinanceFutureAccountPosition struct {
 	Symbol                 string `json:"symbol"`
 	InitialMargin          string `json:"initialMargin"`
 	MaintMargin            string `json:"maintMargin"`
@@ -170,15 +170,15 @@ type BinanceFutureAcountPosition struct {
 }
 
 type BinanceFuturePositionInformation struct {
-	Positions []BinanceFutureAcountPosition `json:"positions"`
-	ApiKey    string                        `json:"apiKey"`
+	Positions []BinanceFutureAccountPosition `json:"positions"`
+	ApiKey    string                         `json:"apiKey"`
 }
 
-type BinanceFutureAcountPositionResponse struct {
+type BinanceFutureAccountPositionResponse struct {
 	Data []BinanceFuturePositionInformation `json:"data"`
 }
 
-type BinanceFutureAcountAsset struct {
+type BinanceFutureAccountAsset struct {
 	Asset                  string `json:"asset"`
 	WalletBalance          string `json:"walletBalance"`
 	UnrealizedProfit       string `json:"unrealizedProfit"`
