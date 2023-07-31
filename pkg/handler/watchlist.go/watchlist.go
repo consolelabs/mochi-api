@@ -247,7 +247,7 @@ func (h *Handler) TrackToken(c *gin.Context) {
 		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // UntrackToken godoc
@@ -317,7 +317,7 @@ func (h *Handler) TrackNft(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
 
 // ListTrackingNfts     godoc
