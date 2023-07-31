@@ -1576,7 +1576,7 @@ definitions:
       shortname:
         type: string
     type: object
-  response.BinanceFutureAcountPosition:
+  response.BinanceFutureAccountPosition:
     properties:
       askNotional:
         type: string
@@ -1609,7 +1609,7 @@ definitions:
       updateTime:
         type: integer
     type: object
-  response.BinanceFutureAcountPositionResponse:
+  response.BinanceFutureAccountPositionResponse:
     properties:
       data:
         items:
@@ -1622,7 +1622,7 @@ definitions:
         type: string
       positions:
         items:
-          $ref: '#/definitions/response.BinanceFutureAcountPosition'
+          $ref: '#/definitions/response.BinanceFutureAccountPosition'
         type: array
     type: object
   response.ChainGasTrackerResponseData:
@@ -3027,27 +3027,27 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_7d:
         type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h:
-        type: number
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1y:
-        type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -6859,7 +6859,7 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
-  /users/{id}/cexs/binance/position:
+  /users/{id}/cexs/binance/positions:
     get:
       consumes:
       - application/json
@@ -6876,7 +6876,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.BinanceFutureAcountPositionResponse'
+            $ref: '#/definitions/response.BinanceFutureAccountPositionResponse'
       summary: Get user's future account balance
       tags:
       - Binance
