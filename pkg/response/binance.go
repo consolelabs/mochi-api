@@ -145,3 +145,47 @@ type BinanceFutureAccountBalance struct {
 type BinanceFutureAccountBalanceResponse struct {
 	Data []BinanceFutureAccountBalance `json:"data"`
 }
+
+type BinanceFutureAccount struct {
+	Positions []BinanceFutureAcountPosition `json:"positions"`
+	Assets    []BinanceFutureAcountAsset    `json:"assets"`
+}
+
+type BinanceFutureAcountPosition struct {
+	Symbol                 string `json:"symbol"`
+	InitialMargin          string `json:"initialMargin"`
+	MaintMargin            string `json:"maintMargin"`
+	UnrealizedProfit       string `json:"unrealizedProfit"`
+	PositionInitialMargin  string `json:"positionInitialMargin"`
+	OpenOrderInitialMargin string `json:"openOrderInitialMargin"`
+	Leverage               string `json:"leverage"`
+	Isolated               bool   `json:"isolated"`
+	EntryPrice             string `json:"entryPrice"`
+	MaxNotional            string `json:"maxNotional"`
+	BidNotional            string `json:"bidNotional"`
+	AskNotional            string `json:"askNotional"`
+	PositionSide           string `json:"positionSide"`
+	PositionAmt            string `json:"positionAmt"`
+	UpdateTime             int64  `json:"updateTime"`
+}
+
+type BinanceFutureAcountPositionResponse struct {
+	Data []BinanceFutureAcountPosition `json:"data"`
+}
+
+type BinanceFutureAcountAsset struct {
+	Asset                  string `json:"asset"`
+	WalletBalance          string `json:"walletBalance"`
+	UnrealizedProfit       string `json:"unrealizedProfit"`
+	MarginBalance          string `json:"marginBalance"`
+	MaintMargin            string `json:"maintMargin"`
+	InitialMargin          string `json:"initialMargin"`
+	PositionInitialMargin  string `json:"positionInitialMargin"`
+	OpenOrderInitialMargin string `json:"openOrderInitialMargin"`
+	CrossWalletBalance     string `json:"crossWalletBalance"`
+	CrossUnPnl             string `json:"crossUnPnl"`
+	AvailableBalance       string `json:"availableBalance"`
+	MaxWithdrawAmount      string `json:"maxWithdrawAmount"`
+	MarginAvailable        bool   `json:"marginAvailable"`
+	UpdateTime             int64  `json:"updateTime"`
+}

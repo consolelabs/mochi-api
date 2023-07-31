@@ -5019,7 +5019,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.BinanceFutureAccountBalanceResponse"
+                            "$ref": "#/definitions/response.BinanceFutureAcountPositionResponse"
                         }
                     }
                 }
@@ -8255,31 +8255,49 @@ var doc = `{
                 }
             }
         },
-        "response.BinanceFutureAccountBalance": {
+        "response.BinanceFutureAcountPosition": {
             "type": "object",
             "properties": {
-                "accountAlias": {
+                "askNotional": {
                     "type": "string"
                 },
-                "asset": {
+                "bidNotional": {
                     "type": "string"
                 },
-                "availableBalance": {
+                "entryPrice": {
                     "type": "string"
                 },
-                "balance": {
+                "initialMargin": {
                     "type": "string"
                 },
-                "crossUnPnl": {
-                    "type": "string"
-                },
-                "crossWalletBalance": {
-                    "type": "string"
-                },
-                "marginAvailable": {
+                "isolated": {
                     "type": "boolean"
                 },
-                "maxWithdrawAmount": {
+                "leverage": {
+                    "type": "string"
+                },
+                "maintMargin": {
+                    "type": "string"
+                },
+                "maxNotional": {
+                    "type": "string"
+                },
+                "openOrderInitialMargin": {
+                    "type": "string"
+                },
+                "positionAmt": {
+                    "type": "string"
+                },
+                "positionInitialMargin": {
+                    "type": "string"
+                },
+                "positionSide": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "unrealizedProfit": {
                     "type": "string"
                 },
                 "updateTime": {
@@ -8287,13 +8305,13 @@ var doc = `{
                 }
             }
         },
-        "response.BinanceFutureAccountBalanceResponse": {
+        "response.BinanceFutureAcountPositionResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.BinanceFutureAccountBalance"
+                        "$ref": "#/definitions/response.BinanceFutureAcountPosition"
                     }
                 }
             }
