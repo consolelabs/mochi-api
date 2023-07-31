@@ -70,8 +70,8 @@ func (h *Handler) GetBinanceAssets(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id   			path  string true  "profile ID"
-// @Success     200 {object} response.BinanceFutureAcountPositionResponse
-// @Router      /users/{id}/cexs/binance/position [get]
+// @Success     200 {object} response.BinanceFutureAccountPositionResponse
+// @Router      /users/{id}/cexs/binance/positions [get]
 func (h *Handler) GetBinanceFutures(c *gin.Context) {
 	req := request.GetBinanceFutureRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
