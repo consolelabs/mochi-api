@@ -169,8 +169,13 @@ type BinanceFutureAcountPosition struct {
 	UpdateTime             int64  `json:"updateTime"`
 }
 
+type BinanceFuturePositionInformation struct {
+	Positions []BinanceFutureAcountPosition `json:"positions"`
+	ApiKey    string                        `json:"apiKey"`
+}
+
 type BinanceFutureAcountPositionResponse struct {
-	Data []BinanceFutureAcountPosition `json:"data"`
+	Data []BinanceFuturePositionInformation `json:"data"`
 }
 
 type BinanceFutureAcountAsset struct {

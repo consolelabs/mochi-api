@@ -8311,6 +8311,20 @@ var doc = `{
                 "data": {
                     "type": "array",
                     "items": {
+                        "$ref": "#/definitions/response.BinanceFuturePositionInformation"
+                    }
+                }
+            }
+        },
+        "response.BinanceFuturePositionInformation": {
+            "type": "object",
+            "properties": {
+                "apiKey": {
+                    "type": "string"
+                },
+                "positions": {
+                    "type": "array",
+                    "items": {
                         "$ref": "#/definitions/response.BinanceFutureAcountPosition"
                     }
                 }
