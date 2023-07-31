@@ -129,3 +129,19 @@ type BinanceSimpleEarnAccount struct {
 	TotalLockedInBTC          string `json:"totalLockedInBTC"`
 	TotalLockedInUSDT         string `json:"totalLockedInUSDT"`
 }
+
+type BinanceFutureAccountBalance struct {
+	AccountAlias       string `json:"accountAlias"`
+	Asset              string `json:"asset"`
+	Balance            string `json:"balance"`
+	CrossWalletBalance string `json:"crossWalletBalance"`
+	CrossUnPnl         string `json:"crossUnPnl"`
+	AvailableBalance   string `json:"availableBalance"`
+	MaxWithdrawAmount  string `json:"maxWithdrawAmount"`
+	MarginAvailable    bool   `json:"marginAvailable"`
+	UpdateTime         int64  `json:"updateTime"`
+}
+
+type BinanceFutureAccountBalanceResponse struct {
+	Data []BinanceFutureAccountBalance `json:"data"`
+}

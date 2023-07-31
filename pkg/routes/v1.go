@@ -50,6 +50,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		cexGroup := userGroup.Group("/:id/cexs") // this is profile id
 		{
 			cexGroup.GET("/binance", h.Dex.SumarizeBinanceAsset)
+			cexGroup.GET("/binance/futures", h.Dex.GetBinanceFutures)
 			cexGroup.GET("/:platform/assets", h.Dex.GetBinanceAssets)
 		}
 

@@ -62,3 +62,29 @@ func (h *Handler) GetBinanceAssets(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
+
+// GetBinanceFutures godoc
+// @Summary     Get user's future account balance
+// @Description Get user's future account balance
+// @Tags        Binance
+// @Accept      json
+// @Produce     json
+// @Param       id   			path  string true  "profile ID"
+// @Success     200 {object} response.BinanceFutureAccountBalanceResponse
+// @Router      /users/{id}/cexs/binance/futures [get]
+func (h *Handler) GetBinanceFutures(c *gin.Context) {
+	req := request.GetBinanceFutureRequest{}
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.GetBinanceFutures] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.GetBinanceFutures(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetBinanceFutures] entity.GetBinanceFutures() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

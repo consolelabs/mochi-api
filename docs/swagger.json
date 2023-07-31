@@ -247,8 +247,7 @@
                         "in": "query",
                         "required": true
                     }
-                ],
-                "responses": {}
+                ]
             }
         },
         "/community/quests": {
@@ -3442,8 +3441,6 @@
                         "required": true
                     },
                     {
-                        "maximum": 365,
-                        "minimum": 7,
                         "type": "integer",
                         "name": "days",
                         "in": "query"
@@ -4975,6 +4972,38 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseMessage"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/cexs/binance/futures": {
+            "get": {
+                "description": "Get user's future account balance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Binance"
+                ],
+                "summary": "Get user's future account balance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BinanceFutureAccountBalanceResponse"
                         }
                     }
                 }
@@ -7808,8 +7837,12 @@
                 "chainName": {
                     "type": "string"
                 },
-                "routeSummary": {},
-                "swapData": {},
+                "routeSummary": {
+                    "type": "object"
+                },
+                "swapData": {
+                    "type": "object"
+                },
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -8203,6 +8236,49 @@
                 },
                 "shortname": {
                     "type": "string"
+                }
+            }
+        },
+        "response.BinanceFutureAccountBalance": {
+            "type": "object",
+            "properties": {
+                "accountAlias": {
+                    "type": "string"
+                },
+                "asset": {
+                    "type": "string"
+                },
+                "availableBalance": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "string"
+                },
+                "crossUnPnl": {
+                    "type": "string"
+                },
+                "crossWalletBalance": {
+                    "type": "string"
+                },
+                "marginAvailable": {
+                    "type": "boolean"
+                },
+                "maxWithdrawAmount": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.BinanceFutureAccountBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.BinanceFutureAccountBalance"
+                    }
                 }
             }
         },
@@ -8760,7 +8836,9 @@
                 "coingecko_score": {
                     "type": "number"
                 },
-                "community_data": {},
+                "community_data": {
+                    "type": "object"
+                },
                 "contract_address": {
                     "type": "string"
                 },
@@ -8776,16 +8854,24 @@
                         "$ref": "#/definitions/response.CoinPlatformDetailData"
                     }
                 },
-                "developer_data": {},
-                "genesis_date": {},
-                "hashing_algorithm": {},
+                "developer_data": {
+                    "type": "object"
+                },
+                "genesis_date": {
+                    "type": "object"
+                },
+                "hashing_algorithm": {
+                    "type": "object"
+                },
                 "id": {
                     "type": "string"
                 },
                 "image": {
                     "$ref": "#/definitions/response.CoinImage"
                 },
-                "links": {},
+                "links": {
+                    "type": "object"
+                },
                 "localization": {
                     "type": "object",
                     "additionalProperties": {
@@ -8801,7 +8887,9 @@
                 "name": {
                     "type": "string"
                 },
-                "platforms": {},
+                "platforms": {
+                    "type": "object"
+                },
                 "sentiment_votes_down_percentage": {
                     "type": "number"
                 },
@@ -9430,7 +9518,8 @@
                     }
                 },
                 "exchanges": {
-                    "description": "this field coingecko return empty"
+                    "description": "this field coingecko return empty",
+                    "type": "object"
                 }
             }
         },
@@ -10272,7 +10361,9 @@
                         "type": "number"
                     }
                 },
-                "ath_date": {},
+                "ath_date": {
+                    "type": "object"
+                },
                 "atl": {
                     "type": "object",
                     "additionalProperties": {
@@ -10288,7 +10379,9 @@
                         "type": "number"
                     }
                 },
-                "fdv_to_tvl_ratio": {},
+                "fdv_to_tvl_ratio": {
+                    "type": "object"
+                },
                 "fully_diluted_valuation": {
                     "type": "object",
                     "additionalProperties": {
@@ -10331,7 +10424,9 @@
                 "max_supply": {
                     "type": "number"
                 },
-                "mcap_to_tvl_ratio": {},
+                "mcap_to_tvl_ratio": {
+                    "type": "object"
+                },
                 "price_change_24h": {
                     "type": "number"
                 },
@@ -10413,7 +10508,9 @@
                         "type": "number"
                     }
                 },
-                "roi": {},
+                "roi": {
+                    "type": "object"
+                },
                 "total_market_cap": {
                     "type": "object",
                     "additionalProperties": {
@@ -10423,7 +10520,9 @@
                 "total_supply": {
                     "type": "number"
                 },
-                "total_value_locked": {},
+                "total_value_locked": {
+                    "type": "object"
+                },
                 "total_volume": {
                     "type": "object",
                     "additionalProperties": {
@@ -11011,11 +11110,15 @@
                 "aggregator": {
                     "type": "string"
                 },
-                "routeSummary": {},
+                "routeSummary": {
+                    "type": "object"
+                },
                 "routerAddress": {
                     "type": "string"
                 },
-                "swapData": {},
+                "swapData": {
+                    "type": "object"
+                },
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },
