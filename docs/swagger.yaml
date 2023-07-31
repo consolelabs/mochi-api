@@ -1613,6 +1613,15 @@ definitions:
     properties:
       data:
         items:
+          $ref: '#/definitions/response.BinanceFuturePositionInformation'
+        type: array
+    type: object
+  response.BinanceFuturePositionInformation:
+    properties:
+      apiKey:
+        type: string
+      positions:
+        items:
           $ref: '#/definitions/response.BinanceFutureAcountPosition'
         type: array
     type: object
@@ -2391,13 +2400,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
