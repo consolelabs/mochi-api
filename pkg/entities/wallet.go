@@ -1411,26 +1411,27 @@ func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionD
 	return nil
 }
 
-func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) ([]response.BinanceFutureAcountPosition, error) {
+func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) ([]response.BinanceFuturePositionInformation, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get profile")
 		return nil, err
 	}
 
-	apiKey, apiSecret := "", ""
+	res := make([]response.BinanceFuturePositionInformation, 0)
 	for _, acc := range profile.AssociatedAccounts {
 		if acc.Platform == consts.PlatformBinance {
-			apiKey = acc.PlatformIdentifier
-			apiSecret = acc.PlatformMetadata.ApiSecret
+			fAccount, err := e.svc.Binance.GetFutureAccount(acc.PlatformIdentifier, acc.PlatformMetadata.ApiSecret)
+			if err != nil {
+				e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get future account balance")
+				return nil, err
+			}
+			res = append(res, response.BinanceFuturePositionInformation{
+				ApiKey:    util.ShortenBinanceKey(acc.PlatformIdentifier),
+				Positions: fAccount.Positions,
+			})
 		}
 	}
 
-	fAccountBal, err := e.svc.Binance.GetFutureAccount(apiKey, apiSecret)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get future account balance")
-		return nil, err
-	}
-
-	return fAccountBal.Positions, nil
+	return res, nil
 }
