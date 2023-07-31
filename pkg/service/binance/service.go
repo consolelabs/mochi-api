@@ -15,4 +15,5 @@ type Service interface {
 	GetStakingProductPosition(apiKey, apiSecret string) ([]response.BinanceStakingProductPosition, error)
 	GetLendingAccount(apiKey, apiSecret string) (*response.BinanceLendingAccount, error)
 	GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimpleEarnAccount, error)
+	GetFutureAccountBalance(apiKey, apiSecret string) ([]response.BinanceFutureAccountBalance, error)
 }

@@ -324,3 +324,31 @@ func (b *Binance) GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimp
 
 	return res, nil
 }
+
+func (b *Binance) GetFutureAccountBalance(apiKey, apiSecret string) ([]response.BinanceFutureAccountBalance, error) {
+	b.logger.Debug("start binance.GetFutureAccountBalance()")
+	defer b.logger.Debug("end binance.GetFutureAccountBalance()")
+
+	res := []response.BinanceFutureAccountBalance{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-future-account-balance-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetFutureAccountBalance(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	// cache binance-future-account-balance-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
+}

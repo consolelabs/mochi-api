@@ -1410,3 +1410,27 @@ func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionD
 
 	return nil
 }
+
+func (e *Entity) GetBinanceFutures(req request.GetBinanceFutureRequest) ([]response.BinanceFutureAccountBalance, error) {
+	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFutures] Failed to get profile")
+		return nil, err
+	}
+
+	apiKey, apiSecret := "", ""
+	for _, acc := range profile.AssociatedAccounts {
+		if acc.Platform == consts.PlatformBinance {
+			apiKey = acc.PlatformIdentifier
+			apiSecret = acc.PlatformMetadata.ApiSecret
+		}
+	}
+
+	fAccountBal, err := e.svc.Binance.GetFutureAccountBalance(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFutures] Failed to get future account balance")
+		return nil, err
+	}
+
+	return fAccountBal, nil
+}
