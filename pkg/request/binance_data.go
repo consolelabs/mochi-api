@@ -20,3 +20,7 @@ type GetBinanceAssetsRequest struct {
 	Id       string `json:"id"`
 	Platform string `json:"platform"`
 }
+
+type GetBinanceFutureRequest struct {
+	Id string `uri:"id"`
+}

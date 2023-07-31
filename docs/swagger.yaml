@@ -1311,8 +1311,10 @@ definitions:
         type: string
       chainName:
         type: string
-      routeSummary: {}
-      swapData: {}
+      routeSummary:
+        type: object
+      swapData:
+        type: object
       userDiscordId:
         type: string
     required:
@@ -1573,6 +1575,34 @@ definitions:
         type: string
       shortname:
         type: string
+    type: object
+  response.BinanceFutureAccountBalance:
+    properties:
+      accountAlias:
+        type: string
+      asset:
+        type: string
+      availableBalance:
+        type: string
+      balance:
+        type: string
+      crossUnPnl:
+        type: string
+      crossWalletBalance:
+        type: string
+      marginAvailable:
+        type: boolean
+      maxWithdrawAmount:
+        type: string
+      updateTime:
+        type: integer
+    type: object
+  response.BinanceFutureAccountBalanceResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.BinanceFutureAccountBalance'
+        type: array
     type: object
   response.ChainGasTrackerResponseData:
     properties:
@@ -1935,7 +1965,8 @@ definitions:
         type: integer
       coingecko_score:
         type: number
-      community_data: {}
+      community_data:
+        type: object
       contract_address:
         type: string
       description:
@@ -1946,14 +1977,18 @@ definitions:
         additionalProperties:
           $ref: '#/definitions/response.CoinPlatformDetailData'
         type: object
-      developer_data: {}
-      genesis_date: {}
-      hashing_algorithm: {}
+      developer_data:
+        type: object
+      genesis_date:
+        type: object
+      hashing_algorithm:
+        type: object
       id:
         type: string
       image:
         $ref: '#/definitions/response.CoinImage'
-      links: {}
+      links:
+        type: object
       localization:
         additionalProperties:
           type: string
@@ -1964,7 +1999,8 @@ definitions:
         $ref: '#/definitions/response.MarketData'
       name:
         type: string
-      platforms: {}
+      platforms:
+        type: object
       sentiment_votes_down_percentage:
         type: number
       sentiment_votes_up_percentage:
@@ -2373,6 +2409,7 @@ definitions:
         type: array
       exchanges:
         description: this field coingecko return empty
+        type: object
     type: object
   response.GetTrendingSearchCoin:
     properties:
@@ -2919,7 +2956,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      ath_date: {}
+      ath_date:
+        type: object
       atl:
         additionalProperties:
           type: number
@@ -2930,7 +2968,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      fdv_to_tvl_ratio: {}
+      fdv_to_tvl_ratio:
+        type: object
       fully_diluted_valuation:
         additionalProperties:
           type: number
@@ -2959,7 +2998,8 @@ definitions:
         type: integer
       max_supply:
         type: number
-      mcap_to_tvl_ratio: {}
+      mcap_to_tvl_ratio:
+        type: object
       price_change_24h:
         type: number
       price_change_24h_in_currency:
@@ -2974,6 +3014,10 @@ definitions:
         type: object
       price_change_percentage_1y:
         type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -2983,10 +3027,6 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3014,14 +3054,16 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      roi: {}
+      roi:
+        type: object
       total_market_cap:
         additionalProperties:
           type: number
         type: object
       total_supply:
         type: number
-      total_value_locked: {}
+      total_value_locked:
+        type: object
       total_volume:
         additionalProperties:
           type: number
@@ -3403,10 +3445,12 @@ definitions:
     properties:
       aggregator:
         type: string
-      routeSummary: {}
+      routeSummary:
+        type: object
       routerAddress:
         type: string
-      swapData: {}
+      swapData:
+        type: object
       tokenIn:
         $ref: '#/definitions/response.RouteToken'
       tokenOut:
@@ -3797,7 +3841,6 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
       summary: Get invites
       tags:
       - Community
@@ -5897,8 +5940,6 @@ paths:
         required: true
         type: string
       - in: query
-        maximum: 365
-        minimum: 7
         name: days
         type: integer
       - in: query
@@ -6810,6 +6851,27 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
+  /users/{id}/cexs/binance/futures:
+    get:
+      consumes:
+      - application/json
+      description: Get user's future account balance
+      parameters:
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BinanceFutureAccountBalanceResponse'
+      summary: Get user's future account balance
+      tags:
+      - Binance
   /users/{id}/earns/airdrop-campaigns:
     get:
       consumes:
