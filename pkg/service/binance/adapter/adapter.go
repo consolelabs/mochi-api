@@ -235,3 +235,35 @@ func GetFutureAccountBalance(apiKey, apiSecret string) (fAccountBal []response.B
 
 	return fAccountBal, nil
 }
+
+func GetFutureAccount(apiKey, apiSecret string) (fAccountBal *response.BinanceFutureAccount, err error) {
+	q := map[string]string{
+		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", futureUrl+"/fapi/v2/account?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &fAccountBal)
+	if err != nil {
+		return nil, err
+	}
+
+	return fAccountBal, nil
+}

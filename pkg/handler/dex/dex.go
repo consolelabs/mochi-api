@@ -70,7 +70,7 @@ func (h *Handler) GetBinanceAssets(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id   			path  string true  "profile ID"
-// @Success     200 {object} response.BinanceFutureAccountBalanceResponse
+// @Success     200 {object} response.BinanceFutureAcountPositionResponse
 // @Router      /users/{id}/cexs/binance/futures [get]
 func (h *Handler) GetBinanceFutures(c *gin.Context) {
 	req := request.GetBinanceFutureRequest{}
@@ -80,7 +80,7 @@ func (h *Handler) GetBinanceFutures(c *gin.Context) {
 		return
 	}
 
-	res, err := h.entities.GetBinanceFutures(req)
+	res, err := h.entities.GetBinanceFuturePosition(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetBinanceFutures] entity.GetBinanceFutures() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

@@ -16,4 +16,5 @@ type Service interface {
 	GetLendingAccount(apiKey, apiSecret string) (*response.BinanceLendingAccount, error)
 	GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimpleEarnAccount, error)
 	GetFutureAccountBalance(apiKey, apiSecret string) ([]response.BinanceFutureAccountBalance, error)
+	GetFutureAccount(apiKey, apiSecret string) (*response.BinanceFutureAccount, error)
 }
