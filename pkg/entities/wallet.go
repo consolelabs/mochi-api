@@ -1427,7 +1427,7 @@ func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) (
 				return nil, err
 			}
 			res = append(res, response.BinanceFuturePositionInformation{
-				ApiKey:    acc.PlatformIdentifier,
+				ApiKey:    util.ShortenBinanceKey(acc.PlatformIdentifier),
 				Positions: fAccount.Positions,
 			})
 		}

@@ -63,3 +63,11 @@ func ShortenAddress(address string) string {
 
 	return string(address[0:4]) + "..." + string(address[len(address)-4:])
 }
+
+func ShortenBinanceKey(key string) string {
+	if key == "" {
+		return ""
+	}
+
+	return string(key[0:5]) + ".." + string(key[len(key)-5:])
+}
