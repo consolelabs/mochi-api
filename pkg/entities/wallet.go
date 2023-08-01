@@ -1421,14 +1421,14 @@ func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) (
 	res := make([]response.BinanceFuturePositionInformation, 0)
 	for _, acc := range profile.AssociatedAccounts {
 		if acc.Platform == consts.PlatformBinance {
-			fAccount, err := e.svc.Binance.GetFutureAccount(acc.PlatformIdentifier, acc.PlatformMetadata.ApiSecret)
+			fAccount, err := e.svc.Binance.GetFutureAccountInfo(acc.PlatformIdentifier, acc.PlatformMetadata.ApiSecret)
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get future account balance")
 				return nil, err
 			}
 			res = append(res, response.BinanceFuturePositionInformation{
 				ApiKey:    util.ShortenBinanceKey(acc.PlatformIdentifier),
-				Positions: fAccount.Positions,
+				Positions: fAccount,
 			})
 		}
 	}
