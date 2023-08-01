@@ -380,3 +380,31 @@ func (b *Binance) GetFutureAccount(apiKey, apiSecret string) (*response.BinanceF
 
 	return res, nil
 }
+
+func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.BinanceFuturePositionInfo, error) {
+	b.logger.Debug("start binance.GetFutureAccount()")
+	defer b.logger.Debug("end binance.GetFutureAccount()")
+
+	res := []response.BinanceFuturePositionInfo{}
+
+	// check if data cached
+	key := fmt.Sprintf("binance-future-account-info-apikey-%s", strings.ToLower(apiKey))
+	cached, err := b.cache.GetString(key)
+	if err == nil && cached != "" {
+		b.logger.Infof("hit cache data binance-service, key: %s", key)
+		return res, json.Unmarshal([]byte(cached), &res)
+	}
+
+	res, err = bapdater.GetFutureAccountInfo(apiKey, apiSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	// cache binance-future-account-info-apikey
+	// if error occurs -> ignore
+	bytes, _ := json.Marshal(res)
+	b.logger.Infof("cache data binance-service, key: %s", key)
+	b.cache.Set(key, string(bytes), 30*time.Minute)
+
+	return res, nil
+}

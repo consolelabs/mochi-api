@@ -2,7 +2,7 @@ package bapdater
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -61,7 +61,7 @@ func GetUserAsset(apiKey, apiSecret string) (assets []response.BinanceUserAssetR
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func GetFundingAsset(apiKey, apiSecret string) (assets []response.BinanceUserAss
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func GetStakingProductPosition(apiKey, apiSecret string) (pos []response.Binance
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func GetLendingAccount(apiKey, apiSecret string) (lendingAcc *response.BinanceLe
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +190,7 @@ func GetSimpleEarnAccount(apiKey, apiSecret string) (simpleEarn *response.Binanc
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +222,7 @@ func GetFutureAccountBalance(apiKey, apiSecret string) (fAccountBal []response.B
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -254,7 +254,39 @@ func GetFutureAccount(apiKey, apiSecret string) (fAccountBal *response.BinanceFu
 	}
 	defer resp.Body.Close()
 
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &fAccountBal)
+	if err != nil {
+		return nil, err
+	}
+
+	return fAccountBal, nil
+}
+
+func GetFutureAccountInfo(apiKey, apiSecret string) (fAccountBal []response.BinanceFuturePositionInfo, err error) {
+	q := map[string]string{
+		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", futureUrl+"/fapi/v2/positionRisk?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

@@ -170,8 +170,8 @@ type BinanceFutureAccountPosition struct {
 }
 
 type BinanceFuturePositionInformation struct {
-	Positions []BinanceFutureAccountPosition `json:"positions"`
-	ApiKey    string                         `json:"apiKey"`
+	Positions []BinanceFuturePositionInfo `json:"positions"`
+	ApiKey    string                      `json:"apiKey"`
 }
 
 type BinanceFutureAccountPositionResponse struct {
@@ -193,4 +193,22 @@ type BinanceFutureAccountAsset struct {
 	MaxWithdrawAmount      string `json:"maxWithdrawAmount"`
 	MarginAvailable        bool   `json:"marginAvailable"`
 	UpdateTime             int64  `json:"updateTime"`
+}
+
+type BinanceFuturePositionInfo struct {
+	EntryPrice       string `json:"entryPrice"`
+	MarginType       string `json:"marginType"`
+	IsAutoAddMargin  string `json:"isAutoAddMargin"`
+	IsolatedMargin   string `json:"isolatedMargin"`
+	Leverage         string `json:"leverage"`
+	LiquidationPrice string `json:"liquidationPrice"`
+	MarkPrice        string `json:"markPrice"`
+	MaxNotionalValue string `json:"maxNotionalValue"`
+	PositionAmt      string `json:"positionAmt"`
+	Notional         string `json:"notional"`
+	IsolatedWallet   string `json:"isolatedWallet"`
+	Symbol           string `json:"symbol"`
+	UnRealizedProfit string `json:"unRealizedProfit"`
+	PositionSide     string `json:"positionSide"`
+	UpdateTime       int64  `json:"updateTime"`
 }
