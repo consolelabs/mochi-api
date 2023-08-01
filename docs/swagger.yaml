@@ -1576,39 +1576,6 @@ definitions:
       shortname:
         type: string
     type: object
-  response.BinanceFutureAccountPosition:
-    properties:
-      askNotional:
-        type: string
-      bidNotional:
-        type: string
-      entryPrice:
-        type: string
-      initialMargin:
-        type: string
-      isolated:
-        type: boolean
-      leverage:
-        type: string
-      maintMargin:
-        type: string
-      maxNotional:
-        type: string
-      openOrderInitialMargin:
-        type: string
-      positionAmt:
-        type: string
-      positionInitialMargin:
-        type: string
-      positionSide:
-        type: string
-      symbol:
-        type: string
-      unrealizedProfit:
-        type: string
-      updateTime:
-        type: integer
-    type: object
   response.BinanceFutureAccountPositionResponse:
     properties:
       data:
@@ -1616,13 +1583,46 @@ definitions:
           $ref: '#/definitions/response.BinanceFuturePositionInformation'
         type: array
     type: object
+  response.BinanceFuturePositionInfo:
+    properties:
+      entryPrice:
+        type: string
+      isAutoAddMargin:
+        type: string
+      isolatedMargin:
+        type: string
+      isolatedWallet:
+        type: string
+      leverage:
+        type: string
+      liquidationPrice:
+        type: string
+      marginType:
+        type: string
+      markPrice:
+        type: string
+      maxNotionalValue:
+        type: string
+      notional:
+        type: string
+      positionAmt:
+        type: string
+      positionSide:
+        type: string
+      symbol:
+        type: string
+      unRealizedProfit:
+        type: string
+      updateTime:
+        type: integer
+    type: object
   response.BinanceFuturePositionInformation:
     properties:
       apiKey:
         type: string
       positions:
         items:
-          $ref: '#/definitions/response.BinanceFutureAccountPosition'
+          $ref: '#/definitions/response.BinanceFuturePositionInfo'
         type: array
     type: object
   response.ChainGasTrackerResponseData:
@@ -2400,13 +2400,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3027,26 +3027,26 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_7d:
-        type: number
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h:
+        type: number
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
@@ -6740,17 +6740,30 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get auto triggers
+      description: Get swap route for token pairs
       parameters:
-      - description: user id
+      - description: from token symbol
         in: query
-        name: user_id
+        name: from
         required: true
         type: string
-      - description: guild id
+      - description: to token symbol
         in: query
-        name: guild_id
+        name: to
         required: true
+        type: string
+      - description: from amount value
+        in: query
+        name: amount
+        required: true
+        type: string
+      - description: chain name
+        in: query
+        name: chain_name
+        type: string
+      - description: chain id
+        in: query
+        name: chain_id
         type: string
       produces:
       - application/json
@@ -6759,7 +6772,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.SwapRouteResponseData'
-      summary: Get auto triggers
+      summary: Get swap route for token pairs
       tags:
       - Swap
   /tip/transfer:

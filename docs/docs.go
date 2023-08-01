@@ -4622,7 +4622,7 @@ var doc = `{
         },
         "/swap/route": {
             "get": {
-                "description": "Get auto triggers",
+                "description": "Get swap route for token pairs",
                 "consumes": [
                     "application/json"
                 ],
@@ -4632,21 +4632,40 @@ var doc = `{
                 "tags": [
                     "Swap"
                 ],
-                "summary": "Get auto triggers",
+                "summary": "Get swap route for token pairs",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
-                        "name": "user_id",
+                        "description": "from token symbol",
+                        "name": "from",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "guild id",
-                        "name": "guild_id",
+                        "description": "to token symbol",
+                        "name": "to",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from amount value",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "chain name",
+                        "name": "chain_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "chain id",
+                        "name": "chain_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8236,56 +8255,6 @@ var doc = `{
                 }
             }
         },
-        "response.BinanceFutureAccountPosition": {
-            "type": "object",
-            "properties": {
-                "askNotional": {
-                    "type": "string"
-                },
-                "bidNotional": {
-                    "type": "string"
-                },
-                "entryPrice": {
-                    "type": "string"
-                },
-                "initialMargin": {
-                    "type": "string"
-                },
-                "isolated": {
-                    "type": "boolean"
-                },
-                "leverage": {
-                    "type": "string"
-                },
-                "maintMargin": {
-                    "type": "string"
-                },
-                "maxNotional": {
-                    "type": "string"
-                },
-                "openOrderInitialMargin": {
-                    "type": "string"
-                },
-                "positionAmt": {
-                    "type": "string"
-                },
-                "positionInitialMargin": {
-                    "type": "string"
-                },
-                "positionSide": {
-                    "type": "string"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "unrealizedProfit": {
-                    "type": "string"
-                },
-                "updateTime": {
-                    "type": "integer"
-                }
-            }
-        },
         "response.BinanceFutureAccountPositionResponse": {
             "type": "object",
             "properties": {
@@ -8294,6 +8263,56 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/response.BinanceFuturePositionInformation"
                     }
+                }
+            }
+        },
+        "response.BinanceFuturePositionInfo": {
+            "type": "object",
+            "properties": {
+                "entryPrice": {
+                    "type": "string"
+                },
+                "isAutoAddMargin": {
+                    "type": "string"
+                },
+                "isolatedMargin": {
+                    "type": "string"
+                },
+                "isolatedWallet": {
+                    "type": "string"
+                },
+                "leverage": {
+                    "type": "string"
+                },
+                "liquidationPrice": {
+                    "type": "string"
+                },
+                "marginType": {
+                    "type": "string"
+                },
+                "markPrice": {
+                    "type": "string"
+                },
+                "maxNotionalValue": {
+                    "type": "string"
+                },
+                "notional": {
+                    "type": "string"
+                },
+                "positionAmt": {
+                    "type": "string"
+                },
+                "positionSide": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                },
+                "unRealizedProfit": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "type": "integer"
                 }
             }
         },
@@ -8306,7 +8325,7 @@ var doc = `{
                 "positions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.BinanceFutureAccountPosition"
+                        "$ref": "#/definitions/response.BinanceFuturePositionInfo"
                     }
                 }
             }
