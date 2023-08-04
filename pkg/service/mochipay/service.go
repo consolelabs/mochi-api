@@ -16,4 +16,7 @@ type Service interface {
 	GetTokenByProperties(req TokenProperties) (*Token, error)
 	GetListBalances(profileId string) (*GetBalanceDataResponse, error)
 	GetListChains() (*GetChainDataResponse, error)
+
+	// TransferV2
+	TransferV2(req TransferV2Request) (*TransferV2Response, error)
 }

@@ -13,3 +13,8 @@ const (
 	OffchainTipBotTransferTypeTip                  = "tip"
 	OffchainTipBotTransferTypeAirdrop              = "airdrop"
 )
+
+// v2
+const (
+	TransferTypeTransfer = "transfer"
+)
