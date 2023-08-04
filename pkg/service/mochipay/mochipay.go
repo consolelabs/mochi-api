@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 var supportedPlatforms = []string{
@@ -472,4 +473,27 @@ func (m *MochiPay) GetTokenByProperties(req TokenProperties) (*Token, error) {
 	}
 
 	return res.Data, nil
+}
+
+func (m *MochiPay) TransferV2(req TransferV2Request) (*TransferV2Response, error) {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &TransferV2Response{}
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:       fmt.Sprintf("%s/api/v2/transfer", m.config.MochiPayServerHost),
+		Body:      bytes.NewBuffer(payload),
+		Method:    "POST",
+		ParseForm: res,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("transfer failed with status %d", status)
+	}
+
+	return res, nil
 }
