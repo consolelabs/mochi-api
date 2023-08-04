@@ -1243,8 +1243,6 @@ definitions:
         type: boolean
       amount:
         type: number
-      amount_string:
-        type: string
       chain_id:
         type: string
       channel_id:
@@ -1266,6 +1264,7 @@ definitions:
       sender:
         type: string
       token:
+        description: AmountString string   `json:"amount_string"`
         type: string
       transfer_type:
         type: string
@@ -1311,10 +1310,8 @@ definitions:
         type: string
       chainName:
         type: string
-      routeSummary:
-        type: object
-      swapData:
-        type: object
+      routeSummary: {}
+      swapData: {}
       userDiscordId:
         type: string
     required:
@@ -1341,6 +1338,34 @@ definitions:
     - address
     - chain_type
     - type
+    type: object
+  request.TransferV2Request:
+    properties:
+      all:
+        type: boolean
+      amount:
+        type: number
+      chain_id:
+        type: string
+      each:
+        type: boolean
+      guild_id:
+        type: string
+      message:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      platform:
+        type: string
+      recipients:
+        items:
+          type: string
+        type: array
+      sender:
+        type: string
+      token:
+        type: string
     type: object
   request.UnlinkBinance:
     properties:
@@ -1986,8 +2011,7 @@ definitions:
         type: integer
       coingecko_score:
         type: number
-      community_data:
-        type: object
+      community_data: {}
       contract_address:
         type: string
       description:
@@ -1998,18 +2022,14 @@ definitions:
         additionalProperties:
           $ref: '#/definitions/response.CoinPlatformDetailData'
         type: object
-      developer_data:
-        type: object
-      genesis_date:
-        type: object
-      hashing_algorithm:
-        type: object
+      developer_data: {}
+      genesis_date: {}
+      hashing_algorithm: {}
       id:
         type: string
       image:
         $ref: '#/definitions/response.CoinImage'
-      links:
-        type: object
+      links: {}
       localization:
         additionalProperties:
           type: string
@@ -2020,8 +2040,7 @@ definitions:
         $ref: '#/definitions/response.MarketData'
       name:
         type: string
-      platforms:
-        type: object
+      platforms: {}
       sentiment_votes_down_percentage:
         type: number
       sentiment_votes_up_percentage:
@@ -2400,13 +2419,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1h_change:
-        type: number
       usd_1y_change:
         type: number
       usd_7d_change:
         type: number
       usd_14d_change:
+        type: number
+      usd_1h_change:
         type: number
       usd_24h_change:
         type: number
@@ -2430,7 +2449,6 @@ definitions:
         type: array
       exchanges:
         description: this field coingecko return empty
-        type: object
     type: object
   response.GetTrendingSearchCoin:
     properties:
@@ -2977,8 +2995,7 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      ath_date:
-        type: object
+      ath_date: {}
       atl:
         additionalProperties:
           type: number
@@ -2989,8 +3006,7 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      fdv_to_tvl_ratio:
-        type: object
+      fdv_to_tvl_ratio: {}
       fully_diluted_valuation:
         additionalProperties:
           type: number
@@ -3019,8 +3035,7 @@ definitions:
         type: integer
       max_supply:
         type: number
-      mcap_to_tvl_ratio:
-        type: object
+      mcap_to_tvl_ratio: {}
       price_change_24h:
         type: number
       price_change_24h_in_currency:
@@ -3075,16 +3090,14 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      roi:
-        type: object
+      roi: {}
       total_market_cap:
         additionalProperties:
           type: number
         type: object
       total_supply:
         type: number
-      total_value_locked:
-        type: object
+      total_value_locked: {}
       total_volume:
         additionalProperties:
           type: number
@@ -3466,12 +3479,10 @@ definitions:
     properties:
       aggregator:
         type: string
-      routeSummary:
-        type: object
+      routeSummary: {}
       routerAddress:
         type: string
-      swapData:
-        type: object
+      swapData: {}
       tokenIn:
         $ref: '#/definitions/response.RouteToken'
       tokenOut:
@@ -3862,6 +3873,7 @@ paths:
         type: string
       produces:
       - application/json
+      responses: {}
       summary: Get invites
       tags:
       - Community
@@ -5961,6 +5973,8 @@ paths:
         required: true
         type: string
       - in: query
+        maximum: 365
+        minimum: 7
         name: days
         type: integer
       - in: query
@@ -6795,6 +6809,28 @@ paths:
           schema:
             $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
       summary: OffChain Tip Bot - Transfer token
+      tags:
+      - Tip
+  /tip/transfer-v2:
+    post:
+      consumes:
+      - application/json
+      description: API transfer token for tip, airdrop, ...
+      parameters:
+      - description: Transfer token request
+        in: body
+        name: Request
+        required: true
+        schema:
+          $ref: '#/definitions/request.TransferV2Request'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
+      summary: OffChain Tip Bot - Transfer token v2
       tags:
       - Tip
   /users:

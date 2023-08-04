@@ -247,7 +247,8 @@
                         "in": "query",
                         "required": true
                     }
-                ]
+                ],
+                "responses": {}
             }
         },
         "/community/quests": {
@@ -3441,6 +3442,8 @@
                         "required": true
                     },
                     {
+                        "maximum": 365,
+                        "minimum": 7,
                         "type": "integer",
                         "name": "days",
                         "in": "query"
@@ -4683,6 +4686,40 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/request.OffchainTransferRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OffchainTipBotTransferTokenResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tip/transfer-v2": {
+            "post": {
+                "description": "API transfer token for tip, airdrop, ...",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tip"
+                ],
+                "summary": "OffChain Tip Bot - Transfer token v2",
+                "parameters": [
+                    {
+                        "description": "Transfer token request",
+                        "name": "Request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.TransferV2Request"
                         }
                     }
                 ],
@@ -7729,9 +7766,6 @@
                 "amount": {
                     "type": "number"
                 },
-                "amount_string": {
-                    "type": "string"
-                },
                 "chain_id": {
                     "type": "string"
                 },
@@ -7763,6 +7797,7 @@
                     "type": "string"
                 },
                 "token": {
+                    "description": "AmountString string   `json:\"amount_string\"`",
                     "type": "string"
                 },
                 "transfer_type": {
@@ -7837,12 +7872,8 @@
                 "chainName": {
                     "type": "string"
                 },
-                "routeSummary": {
-                    "type": "object"
-                },
-                "swapData": {
-                    "type": "object"
-                },
+                "routeSummary": {},
+                "swapData": {},
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -7875,6 +7906,48 @@
                     "type": "string"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.TransferV2Request": {
+            "type": "object",
+            "properties": {
+                "all": {
+                    "type": "boolean"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "each": {
+                    "type": "boolean"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "recipients": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sender": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
@@ -8868,9 +8941,7 @@
                 "coingecko_score": {
                     "type": "number"
                 },
-                "community_data": {
-                    "type": "object"
-                },
+                "community_data": {},
                 "contract_address": {
                     "type": "string"
                 },
@@ -8886,24 +8957,16 @@
                         "$ref": "#/definitions/response.CoinPlatformDetailData"
                     }
                 },
-                "developer_data": {
-                    "type": "object"
-                },
-                "genesis_date": {
-                    "type": "object"
-                },
-                "hashing_algorithm": {
-                    "type": "object"
-                },
+                "developer_data": {},
+                "genesis_date": {},
+                "hashing_algorithm": {},
                 "id": {
                     "type": "string"
                 },
                 "image": {
                     "$ref": "#/definitions/response.CoinImage"
                 },
-                "links": {
-                    "type": "object"
-                },
+                "links": {},
                 "localization": {
                     "type": "object",
                     "additionalProperties": {
@@ -8919,9 +8982,7 @@
                 "name": {
                     "type": "string"
                 },
-                "platforms": {
-                    "type": "object"
-                },
+                "platforms": {},
                 "sentiment_votes_down_percentage": {
                     "type": "number"
                 },
@@ -9550,8 +9611,7 @@
                     }
                 },
                 "exchanges": {
-                    "description": "this field coingecko return empty",
-                    "type": "object"
+                    "description": "this field coingecko return empty"
                 }
             }
         },
@@ -10393,9 +10453,7 @@
                         "type": "number"
                     }
                 },
-                "ath_date": {
-                    "type": "object"
-                },
+                "ath_date": {},
                 "atl": {
                     "type": "object",
                     "additionalProperties": {
@@ -10411,9 +10469,7 @@
                         "type": "number"
                     }
                 },
-                "fdv_to_tvl_ratio": {
-                    "type": "object"
-                },
+                "fdv_to_tvl_ratio": {},
                 "fully_diluted_valuation": {
                     "type": "object",
                     "additionalProperties": {
@@ -10456,9 +10512,7 @@
                 "max_supply": {
                     "type": "number"
                 },
-                "mcap_to_tvl_ratio": {
-                    "type": "object"
-                },
+                "mcap_to_tvl_ratio": {},
                 "price_change_24h": {
                     "type": "number"
                 },
@@ -10540,9 +10594,7 @@
                         "type": "number"
                     }
                 },
-                "roi": {
-                    "type": "object"
-                },
+                "roi": {},
                 "total_market_cap": {
                     "type": "object",
                     "additionalProperties": {
@@ -10552,9 +10604,7 @@
                 "total_supply": {
                     "type": "number"
                 },
-                "total_value_locked": {
-                    "type": "object"
-                },
+                "total_value_locked": {},
                 "total_volume": {
                     "type": "object",
                     "additionalProperties": {
@@ -11142,15 +11192,11 @@
                 "aggregator": {
                     "type": "string"
                 },
-                "routeSummary": {
-                    "type": "object"
-                },
+                "routeSummary": {},
                 "routerAddress": {
                     "type": "string"
                 },
-                "swapData": {
-                    "type": "object"
-                },
+                "swapData": {},
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },

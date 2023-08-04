@@ -1,6 +1,10 @@
 package mochipay
 
-import "time"
+import (
+	"time"
+
+	"github.com/consolelabs/mochi-typeset/mochi-pay/typeset"
+)
 
 type Platform string
 
@@ -105,4 +109,30 @@ type TipDataResponse struct {
 	CreatedAt      string      `json:"created_at"`
 	UpdatedAt      string      `json:"updated_at"`
 	Token          interface{} `json:"token"`
+}
+
+type TransferV2Response struct {
+	Data []TransferV2TransactionData `json:"data"`
+}
+
+type TransferV2TransactionData struct {
+	ID                 string                    `json:"id"`
+	FromProfileId      string                    `json:"from_profile_id"`
+	OtherProfileId     string                    `json:"other_profile_id"`
+	FromProfileSource  string                    `json:"from_profile_source"`
+	OtherProfileSource string                    `json:"other_profile_source"`
+	SourcePlatform     string                    `json:"source_platform"`
+	Amount             string                    `json:"amount"`
+	TokenId            string                    `json:"token_id"`
+	ChainId            string                    `json:"chain_id"`
+	InternalId         int64                     `json:"internal_id"`
+	ExternalId         string                    `json:"external_id"`
+	Type               string                    `json:"type"`
+	Action             typeset.TransactionAction `json:"action"`
+	Status             string                    `json:"status"`
+	Metadata           map[string]interface{}    `json:"metadata"`
+	CreatedAt          time.Time                 `json:"created_at"`
+	UpdatedAt          time.Time                 `json:"updated_at"`
+	ExpiredAt          *time.Time                `json:"expired_at"`
+	Token              *Token                    `json:"token"`
 }

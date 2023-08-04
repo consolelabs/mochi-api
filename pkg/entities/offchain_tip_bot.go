@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/consolelabs/mochi-typeset/mochi-pay/typeset"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -15,10 +16,10 @@ import (
 	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
 )
 
-// TODO@anhnh: define error codes
 func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.OffchainTipBotTransferToken, error) {
 	e.log.Fields(logger.Fields{"req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
@@ -166,4 +167,151 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 			e.log.Fields(logger.Fields{"channel_id": configNotifyChannel.ChannelId}).Error(err, "[entity.sendLogNotify] discord.ChannelMessageSendEmbed() failed")
 		}
 	}
+}
+
+func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Response, error) {
+	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
+	// get senderProfile, recipientProfiles by discordID
+	transferReq := mochipay.TransferV2Request{
+		From: &mochipay.Wallet{
+			ProfileGlobalId: req.Sender,
+		},
+		Platform: req.Platform,
+		Metadata: req.Metadata,
+		Action:   typeset.TRANSACTION_ACTION_TRANSFER,
+	}
+
+	for _, r := range req.Recipients {
+		transferReq.Tos = append(transferReq.Tos, &mochipay.Wallet{
+			ProfileGlobalId: r,
+		})
+	}
+
+	// validate token
+	token, err := e.svc.MochiPay.GetToken(req.Token, req.ChainID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": req.Token}).Error(err, "[entity.TransferTokenV2] svc.MochiPay.GetToken() failed")
+		return nil, err
+	}
+	transferReq.TokenId = token.Id
+
+	// validate amount
+	amount := util.FloatToBigInt(req.Amount, token.Decimal)
+	if !req.All && amount.Cmp(big.NewInt(0)) != 1 {
+		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
+	}
+
+	// validate balance
+	senderBalance, err := e.svc.MochiPay.GetBalance(req.Sender, req.Token, req.ChainID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferTokenV2] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
+		return nil, err
+	}
+
+	if len(senderBalance.Data) == 0 {
+		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+	}
+
+	bal, err := util.StringToBigInt(senderBalance.Data[0].Amount)
+	if err != nil {
+		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
+	}
+
+	if bal.Cmp(amount) != 1 {
+		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
+	}
+
+	// calculate transferred amount for each recipient
+	// var amountEach float64
+	// if req.Each && !req.All {
+	// 	amountEach = req.Amount
+	// } else {
+	// 	amountEach = req.Amount / float64(len(req.Recipients))
+	// }
+	// amountEachStr := strconv.FormatFloat(amountEach, 'f', -1, 64)
+
+	// transferReq.Amount = make([]string, len(req.Recipients))
+	// for i := range transferReq.Amount {
+	// 	transferReq.Amount[i] = amountEachStr
+	// }
+	amountEach := new(big.Int)
+	if req.Each && !req.All {
+		amountEach = amount
+	} else {
+		amountEach.Quo(amount, big.NewInt(int64(len(req.Recipients))))
+	}
+	amountEachF := util.BigIntToFloat(amountEach, int(token.Decimal))
+
+	transferReq.Amount = make([]string, len(req.Recipients))
+	for i := range transferReq.Amount {
+		transferReq.Amount[i] = fmt.Sprintf("%v", amountEach.Int64())
+	}
+
+	//validate tip range
+	err = e.validateTipRange(req.GuildID, token.CoinGeckoId, amountEachF)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TransferTokenV2] validateTipRange() failed")
+		return nil, err
+	}
+
+	res, err := e.svc.MochiPay.TransferV2(transferReq)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.TransferTokenV2] svc.MochiPay.TransferV2() failed")
+		return nil, errors.New(consts.OffchainTipBotFailReasonMochiPayTransferFailed)
+	}
+
+	// notify tip to channel
+	// e.sendLogNotify(req, int(token.Decimal), amountEachStr)
+
+	if len(res.Data) == 0 {
+		e.log.Error(err, "[entity.TransferTokenV2] no transfer response")
+		return nil, errors.New(consts.OffchainTipBotFailReasonMochiPayTransferFailed)
+	}
+
+	internalId := res.Data[0].InternalId
+	id := res.Data[0].ID
+
+	return &response.TransferTokenV2Response{
+		Data: &response.TransferTokenV2Data{
+			Id:          id,
+			AmountEach:  amountEachF,
+			TotalAmount: req.Amount,
+			TxId:        internalId,
+		},
+	}, nil
+}
+
+func (e *Entity) validateTipRange(guildID, coinGeckoID string, amount float64) error {
+	//validate tip range
+	tipRangeConfig, err := e.repo.GuildConfigTipRange.GetByGuildID(guildID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"guild_id": guildID}).Error(err, "[entity.TransferToken] repo.GuildConfigTipRange.GetByGuildID() failed")
+		return errors.New("failed to get tip range config")
+	}
+
+	// no tip range restriction -> ignore
+	if tipRangeConfig == nil {
+		return nil
+	}
+
+	tokenPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{coinGeckoID}, "usd")
+	if err != nil {
+		e.log.Fields(logger.Fields{"token": coinGeckoID}).Error(err, "[entity.TransferToken] svc.CoinGecko.GetCoinPrice() failed")
+		return err
+	}
+
+	// if no token price data -> ignore
+	if tokenPrice[coinGeckoID] == 0 {
+		return nil
+	}
+
+	usdAmount := tokenPrice[coinGeckoID] * amount
+	if tipRangeConfig.Min != nil && usdAmount < *tipRangeConfig.Min {
+		return errors.New("tip amount < min tip range")
+	}
+	if tipRangeConfig.Max != nil && usdAmount > *tipRangeConfig.Max {
+		return errors.New("tip amount > max tip range")
+	}
+
+	return nil
 }
