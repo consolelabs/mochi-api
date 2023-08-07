@@ -655,6 +655,9 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	if err == nil {
 		coin, err, code := e.svc.CoinGecko.GetCoin(config.DefaultTicker)
 		if err != nil {
+			if code == http.StatusNotFound {
+				return nil, nil, baseerrs.ErrRecordNotFound
+			}
 			e.log.Fields(logger.Fields{"default_ticker": config.DefaultTicker, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
 			return nil, nil, err
 		}
@@ -675,6 +678,9 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	case 1:
 		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
 		if err != nil {
+			if code == http.StatusNotFound {
+				return nil, nil, baseerrs.ErrRecordNotFound
+			}
 			e.log.Fields(logger.Fields{"coind_id": searchResult[0].ID, "code": code}).Error(err, "[entity.queryCoins] svc.CoinGecko.GetCoin failed")
 			return nil, nil, err
 		}
