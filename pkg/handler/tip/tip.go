@@ -62,7 +62,7 @@ func (h *Handler) TransferToken(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       Request  body request.TransferV2Request true "Transfer token request"
-// @Success     200 {object} response.OffchainTipBotTransferTokenResponse
+// @Success     200 {object} response.TransferTokenV2Response
 // @Router      /tip/transfer-v2 [post]
 func (h *Handler) TransferTokenV2(c *gin.Context) {
 	req := request.TransferV2Request{}
