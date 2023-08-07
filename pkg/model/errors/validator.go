@@ -34,4 +34,5 @@ var (
 	ErrCoingeckoNotSupported                  = NewStringError("Token not supported", 400)
 	ErrKyberRouteNotFound                     = NewStringError("Kyber route not found", 400)
 	ErrAliasAlreadyExisted                    = NewStringError("Alias already existed", 409)
+	ErrInvalidCoingeckoSvcParam               = NewStringError("Invalid parameter", 400)
 )
