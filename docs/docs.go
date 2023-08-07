@@ -4735,7 +4735,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.OffchainTipBotTransferTokenResponse"
+                            "$ref": "#/definitions/response.TransferTokenV2Response"
                         }
                     }
                 }
@@ -11433,6 +11433,32 @@ const docTemplate = `{
                 },
                 "metadata": {
                     "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
+        "response.TransferTokenV2Data": {
+            "type": "object",
+            "properties": {
+                "amount_each": {
+                    "type": "number"
+                },
+                "id": {
+                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
+                    "type": "string"
+                },
+                "total_amount": {
+                    "type": "number"
+                },
+                "tx_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "response.TransferTokenV2Response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.TransferTokenV2Data"
                 }
             }
         },

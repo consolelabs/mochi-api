@@ -2419,13 +2419,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1y_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
+        type: number
+      usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3042,6 +3042,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3057,12 +3063,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3632,6 +3632,25 @@ definitions:
         type: array
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
+    type: object
+  response.TransferTokenV2Data:
+    properties:
+      amount_each:
+        type: number
+      id:
+        description: |-
+          SenderID    string  `json:"sender_id"`
+          Recipients  string  `json:"recipient_id"`
+        type: string
+      total_amount:
+        type: number
+      tx_id:
+        type: integer
+    type: object
+  response.TransferTokenV2Response:
+    properties:
+      data:
+        $ref: '#/definitions/response.TransferTokenV2Data'
     type: object
   response.TxObject:
     properties:
@@ -6829,7 +6848,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.OffchainTipBotTransferTokenResponse'
+            $ref: '#/definitions/response.TransferTokenV2Response'
       summary: OffChain Tip Bot - Transfer token v2
       tags:
       - Tip
