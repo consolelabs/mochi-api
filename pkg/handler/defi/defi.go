@@ -238,7 +238,7 @@ func (h *Handler) CompareToken(c *gin.Context) {
 	res, err := h.entities.CompareToken(base, target, interval, guildID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"base": base, "target": target}).Error(err, "[handler.CompareToken] entity.CompareToken failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
 
