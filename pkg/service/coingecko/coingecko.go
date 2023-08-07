@@ -111,10 +111,14 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [
 }
 
 func (c *CoinGecko) GetCoinsMarketData(ids []string, sparkline bool, page, pageSize string) ([]response.CoinMarketItemData, error, int) {
-	var res []response.CoinMarketItemData
-	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ","), pageSize, page, sparkline), &res)
+	res := make([]response.CoinMarketItemData, 0)
+	var resTmp []response.CoinMarketItemDataRes
+	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ","), pageSize, page, sparkline), &resTmp)
 	if err != nil {
 		return nil, err, statusCode
+	}
+	for _, r := range resTmp {
+		res = append(res, r.ToCoinMarketItemData())
 	}
 	return res, nil, http.StatusOK
 }
