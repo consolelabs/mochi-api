@@ -869,6 +869,10 @@ func (e *Entity) parseCovalentTxData(tx covalent.TransactionItemData, res *respo
 }
 
 func (*Entity) handleErc20Transfer(address string, ev covalent.LogEvent, action *response.WalletTransactionAction) {
+	// there's some case covalent response is null for ev.Decoded.Params
+	if ev.Decoded.Params == nil || len(ev.Decoded.Params) == 0 {
+		return
+	}
 	action.From = ev.Decoded.Params[0].Value.(string)
 	action.To = ev.Decoded.Params[1].Value.(string)
 	value, _ := new(big.Float).SetString(ev.Decoded.Params[2].Value.(string))
