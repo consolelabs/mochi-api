@@ -169,7 +169,7 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 	}
 }
 
-func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Response, error) {
+func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
 	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := mochipay.TransferV2Request{
@@ -271,13 +271,11 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	internalId := res.Data[0].InternalId
 	id := res.Data[0].ID
 
-	return &response.TransferTokenV2Response{
-		Data: &response.TransferTokenV2Data{
-			Id:          id,
-			AmountEach:  amountEachF,
-			TotalAmount: req.Amount,
-			TxId:        internalId,
-		},
+	return &response.TransferTokenV2Data{
+		Id:          id,
+		AmountEach:  amountEachF,
+		TotalAmount: req.Amount,
+		TxId:        internalId,
 	}, nil
 }
 
