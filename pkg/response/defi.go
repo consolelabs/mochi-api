@@ -2,6 +2,7 @@ package response
 
 import (
 	"math/big"
+	"strconv"
 	"time"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -253,6 +254,25 @@ type CoinMarketItemData struct {
 	IsDefault                          bool    `json:"is_default"`
 }
 
+type CoinMarketItemDataRes struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	Symbol        string  `json:"symbol"`
+	CurrentPrice  float64 `json:"current_price"`
+	Image         string  `json:"image"`
+	MarketCap     float64 `json:"market_cap"`
+	MarketCapRank int64   `json:"market_cap_rank"`
+	SparkLineIn7d struct {
+		Price []float64 `json:"price"`
+	} `json:"sparkline_in_7d"`
+	PriceChangePercentage24h           float64 `json:"price_change_percentage_24h"`
+	PriceChangePercentage7dInCurrency  string  `json:"price_change_percentage_7d_in_currency"`
+	PriceChangePercentage1hInCurrency  float64 `json:"price_change_percentage_1h_in_currency"`
+	PriceChangePercentage24hInCurrency float64 `json:"price_change_percentage_24h_in_currency"`
+	IsPair                             bool    `json:"is_pair"`
+	IsDefault                          bool    `json:"is_default"`
+}
+
 type GetWatchlistResponse struct {
 	Pagination *PaginationResponse  `json:"metadata"`
 	Data       []CoinMarketItemData `json:"data"`
@@ -409,4 +429,27 @@ type GetGlobalDataResponse struct {
 }
 type GetGlobalData struct {
 	TotalMarketCap map[string]float64 `json:"total_market_cap"`
+}
+
+func (t CoinMarketItemDataRes) ToCoinMarketItemData() CoinMarketItemData {
+	priceChangePercentage7dInCurrency, err := strconv.ParseFloat(t.PriceChangePercentage7dInCurrency, 64)
+	if err != nil {
+		priceChangePercentage7dInCurrency = 0
+	}
+	return CoinMarketItemData{
+		ID:                                 t.ID,
+		Name:                               t.Name,
+		Symbol:                             t.Symbol,
+		CurrentPrice:                       t.CurrentPrice,
+		Image:                              t.Image,
+		MarketCap:                          t.MarketCap,
+		MarketCapRank:                      t.MarketCapRank,
+		SparkLineIn7d:                      t.SparkLineIn7d,
+		PriceChangePercentage24h:           t.PriceChangePercentage24h,
+		PriceChangePercentage7dInCurrency:  priceChangePercentage7dInCurrency,
+		PriceChangePercentage1hInCurrency:  t.PriceChangePercentage1hInCurrency,
+		PriceChangePercentage24hInCurrency: t.PriceChangePercentage24hInCurrency,
+		IsPair:                             t.IsPair,
+		IsDefault:                          t.IsDefault,
+	}
 }
