@@ -157,8 +157,8 @@ func (h *Handler) handleCreateEVMCollection(c *gin.Context, req request.CreateNF
 			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 			return nil
 		}
-		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Error(err, "[handler.CreateNFTCollection] - failed to create NFT collection")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		h.log.Fields(logger.Fields{"address": req.Address, "chain": req.Chain, "chainID": req.ChainID, "author": req.Author}).Info("[handler.CreateNFTCollection] - failed to create record")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return nil
 	}
 	return data
