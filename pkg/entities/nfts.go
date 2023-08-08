@@ -530,6 +530,9 @@ func (e *Entity) CreateEVMNFTCollection(req request.CreateNFTCollectionRequest) 
 	name, symbol, err := e.abi.GetNameAndSymbol(req.Address, int64(chainID))
 	if err != nil {
 		e.log.Errorf(err, "[GetNameAndSymbol] cannot get name and symbol of contract: %s | chainId %d", req.Address, chainID)
+		if strings.Contains(err.Error(), "no contract code at given address") {
+			return nil, baseerrs.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("Cannot get name and symbol of contract: %v", err)
 	}
 	// check if collection not found in paintswap then skip get from paintswap
