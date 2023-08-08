@@ -7,6 +7,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -168,6 +169,9 @@ func (c *CoinGecko) GetTopLoserGainer(req request.TopGainerLoserRequest) (*respo
 	url := fmt.Sprintf(c.getTopGainerLoser, req.Duration)
 	status, err := util.FetchData(url, &res)
 	if err != nil || status != http.StatusOK {
+		if status == http.StatusBadRequest {
+			return nil, errs.ErrInvalidCoingeckoSvcParam
+		}
 		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}
 	return &res, nil

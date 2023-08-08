@@ -43,6 +43,7 @@ func GetStatusCode(err error) int {
 		ErrProfileNotLinkBinance,
 		ErrProfile,
 		ErrCoingeckoNotSupported,
+		ErrInvalidCoingeckoSvcParam,
 		ErrKyberRouteNotFound:
 		code = http.StatusBadRequest
 	case
