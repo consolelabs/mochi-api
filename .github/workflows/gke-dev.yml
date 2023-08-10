@@ -1,9 +1,8 @@
-name: Build and Deploy to GKE Dev
+name: Build and Deploy to GKE Preview
 
 on:
   push:
     branches:
-      - cicd
       - develop
 
 # Environment variables available to all jobs and steps in this workflow
@@ -12,7 +11,7 @@ env:
   REGISTRY_HOSTNAME: gcr.io
   GKE_PROJECT: console-labs-prod
   IMAGE: consolelabs/mochi-api
-  K8S_ENVIRONMENT: dev
+  K8S_ENVIRONMENT: preview
 
 jobs:
   setup-build-publish-deploy:
