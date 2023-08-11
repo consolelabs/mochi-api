@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/consolelabs/mochi-typeset/mochi-pay/typeset"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/consts"
@@ -178,7 +177,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		},
 		Platform: req.Platform,
 		Metadata: req.Metadata,
-		Action:   typeset.TRANSACTION_ACTION_TRANSFER,
+		Action:   req.TransferType,
 	}
 
 	for _, r := range req.Recipients {
