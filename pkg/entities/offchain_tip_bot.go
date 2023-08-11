@@ -220,19 +220,6 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
-	// calculate transferred amount for each recipient
-	// var amountEach float64
-	// if req.Each && !req.All {
-	// 	amountEach = req.Amount
-	// } else {
-	// 	amountEach = req.Amount / float64(len(req.Recipients))
-	// }
-	// amountEachStr := strconv.FormatFloat(amountEach, 'f', -1, 64)
-
-	// transferReq.Amount = make([]string, len(req.Recipients))
-	// for i := range transferReq.Amount {
-	// 	transferReq.Amount[i] = amountEachStr
-	// }
 	amountEach := new(big.Int)
 	if req.Each && !req.All {
 		amountEach = amount
@@ -243,7 +230,8 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 
 	transferReq.Amount = make([]string, len(req.Recipients))
 	for i := range transferReq.Amount {
-		transferReq.Amount[i] = fmt.Sprintf("%v", amountEach.Int64())
+		amt, _ := new(big.Float).SetInt(amountEach).Float64()
+		transferReq.Amount[i] = fmt.Sprintf("%v", strconv.FormatFloat(amt, 'f', -1, 64))
 	}
 
 	//validate tip range
