@@ -30,6 +30,7 @@ type TransferTokenV2Data struct {
 	AmountEach  float64 `json:"amount_each"`
 	TotalAmount float64 `json:"total_amount"`
 	TxId        int64   `json:"tx_id"`
+	ExternalId  string  `json:"external_id"`
 }
 
 type TransferTokenV2Response struct {
