@@ -58,6 +58,7 @@ type CreateTreasurerRequest struct {
 	Token              string `json:"token"`
 	Address            string `json:"address"`
 	MessageUrl         string `json:"message_url"`
+	Platform           string `json:"platform"`
 }
 
 type TransferVaultTokenRequest struct {
@@ -69,6 +70,7 @@ type TransferVaultTokenRequest struct {
 	Token     string `json:"token" binding:"required"`
 	Chain     string `json:"chain" binding:"required"`
 	Target    string `json:"target"`
+	Platform  string `json:"platform"`
 }
 
 type CreateTreasurerSubmission struct {
@@ -87,10 +89,12 @@ type MochiPayVaultRequest struct {
 	Token      string   `json:"token"`
 	Chain      string   `json:"chain"`
 	Name       string   `json:"name"`
+	VaultId    int64    `json:"vault_id"`
 	Reciever   string   `json:"receiver"`
 	Message    string   `json:"message"`
 	ListNotify []string `json:"list_notify"`
 	RequestId  int64    `json:"request_id"`
+	Platform   string   `json:"platform"`
 }
 
 type GetVaultsRequest struct {
