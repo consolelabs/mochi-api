@@ -223,6 +223,12 @@ func (e *Entity) GetTokenInfo(tokenId string) (*response.TokenInfoResponse, erro
 	// get coin data
 	coinData, err, status := e.GetCoinData(tokenId, false)
 	if err != nil {
+		if status == http.StatusBadRequest {
+			return nil, baseerrs.ErrCoingeckoNotSupported
+		}
+		if status == http.StatusNotFound {
+			return nil, baseerrs.ErrRecordNotFound
+		}
 		return nil, err
 	}
 
