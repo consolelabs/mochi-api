@@ -1,10 +1,10 @@
 package request
 
 type GetSwapRouteRequest struct {
-	From      string `form:"from"`
-	To        string `form:"to"`
-	Amount    string `form:"amount"`
-	ProfileId string `form:"profileId"`
+	From      string `form:"from" binding:"required"`
+	To        string `form:"to" binding:"required"`
+	Amount    string `form:"amount" binding:"required"`
+	ProfileId string `form:"profileId" binding:"required"`
 	Address   string `form:"address"`
 }
 

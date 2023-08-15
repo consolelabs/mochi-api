@@ -4581,6 +4581,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/product-metadata/commands": {
+            "get": {
+                "description": "Get product bot commands",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product bot commands",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "scope",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductBotCommand"
+                        }
+                    }
+                }
+            }
+        },
         "/swap": {
             "post": {
                 "description": "Execute swap token",
@@ -4652,14 +4687,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "chain name",
-                        "name": "chain_name",
-                        "in": "query"
+                        "description": "profile ID",
+                        "name": "profileId",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "chain id",
-                        "name": "chain_id",
+                        "description": "address",
+                        "name": "address",
                         "in": "query"
                     }
                 ],
@@ -6724,6 +6760,35 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProductBotCommand": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discord_command": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "scope": {
+                    "type": "integer"
+                },
+                "telegram_command": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ProductMetadataEmojis": {
             "type": "object",
             "properties": {
@@ -7957,6 +8022,13 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string",
+                    "enum": [
+                        "transfer",
+                        "airdrop"
+                    ]
                 }
             }
         },
@@ -10944,7 +11016,6 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "id": {
-                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
                     "type": "string"
                 },
                 "total_amount": {
@@ -10995,6 +11066,17 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "response.ProductBotCommand": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductBotCommand"
+                    }
                 }
             }
         },
@@ -11442,8 +11524,10 @@ const docTemplate = `{
                 "amount_each": {
                     "type": "number"
                 },
+                "external_id": {
+                    "type": "string"
+                },
                 "id": {
-                    "description": "SenderID    string  ` + "`" + `json:\"sender_id\"` + "`" + `\nRecipients  string  ` + "`" + `json:\"recipient_id\"` + "`" + `",
                     "type": "string"
                 },
                 "total_amount": {
