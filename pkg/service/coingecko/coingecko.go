@@ -105,6 +105,12 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [][]float64, err error, statusCode int) {
 	statusCode, err = util.FetchData(fmt.Sprintf(c.getCoinOhlc, sourceSymbol, days), &resp)
 	if err != nil || statusCode != http.StatusOK {
+		if statusCode == http.StatusBadRequest {
+			return nil, errs.ErrCoingeckoNotSupported, statusCode
+		}
+		if statusCode == http.StatusNotFound {
+			return nil, errs.ErrRecordNotFound, statusCode
+		}
 		return nil, err, statusCode
 	}
 
