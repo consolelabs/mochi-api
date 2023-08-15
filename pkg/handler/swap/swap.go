@@ -34,8 +34,8 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Param       from   query  string true  "from token symbol"
 // @Param       to   query  string true  "to token symbol"
 // @Param       amount   query  string true  "from amount value"
-// @Param       chain_name   query  string false  "chain name"
-// @Param       chain_id   query  string false  "chain id"
+// @Param       profileId   query  string true  "profile ID"
+// @Param       address   query  string false  "address"
 // @Success     200 {object} response.SwapRouteResponseData
 // @Router      /swap/route [get]
 func (h *Handler) GetSwapRoutes(c *gin.Context) {
