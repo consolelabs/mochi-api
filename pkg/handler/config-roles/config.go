@@ -84,6 +84,10 @@ func (h *Handler) AddReactionRoleConfig(c *gin.Context) {
 	config, err := h.entities.UpdateConfigByMessageID(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"body": req}).Error(err, "[handler.AddReactionRoleConfig] - failed to update config my message id")
+		if strings.Contains(err.Error(), "role has been used") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -399,6 +403,10 @@ func (h *Handler) ConfigLevelRole(c *gin.Context) {
 
 	if err := h.entities.ConfigLevelRole(req); err != nil {
 		h.log.Fields(logger.Fields{"guildID": req.GuildID, "roleID": req.RoleID, "level": req.Level}).Error(err, "[handler.ConfigLevelRole] - failed to config level role")
+		if strings.Contains(err.Error(), "role has been used") {
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
