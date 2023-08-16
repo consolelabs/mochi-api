@@ -58,3 +58,22 @@ jobs:
           /tmp/kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE=$REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_REF_NAME}
           git commit -am "[skip ci] mochi-api ${K8S_ENVIRONMENT} image update"
           git push origin main
+
+  notify-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify changelog
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://chglg.fly.dev/v1/changelog'
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json", "Authorization": "Bearer ${{ secrets.CHANGELOG_API_KEY }}"}'
+          timeout: 30000
+          escapeData: 'true'
+          data: >-
+            {   
+              "app_name": "Mochi API", 
+              "icon_url": "https://storage.googleapis.com/dwarvesf-assets/jigsaw.png", 
+              "repo": "https://github.com/${{ github.repository }}", 
+              "tag": "${{ github.ref }}"
+            }
