@@ -124,3 +124,18 @@ gen-swagger:
 
 pprof:
 	rm -f torch.svg && docker run uber/go-torch -u http://host.docker.internal:8200/debug/pprof -p -t=30 > torch.svg
+
+
+RELEASE_BRANCH=master
+BETA_BRANCH=develop
+DEVELOP_BRANCH=develop
+
+.PHONY: release
+release:
+	git checkout $(BETA_BRANCH) && git pull origin $(BETA_BRANCH) && \
+		git checkout $(RELEASE_BRANCH) && git pull origin $(RELEASE_BRANCH) && \
+		git merge $(BETA_BRANCH) --no-edit --no-ff && \
+		git push origin $(RELEASE_BRANCH) && \
+		git checkout $(BETA_BRANCH) && git merge $(RELEASE_BRANCH) --no-edit --no-ff && \
+		git push origin $(BETA_BRANCH) 
+		
