@@ -74,6 +74,7 @@ jobs:
             {   
               "app_name": "Mochi API", 
               "icon_url": "https://storage.googleapis.com/dwarvesf-assets/jigsaw.png", 
+              "webhook": "${{secrets.DISCORD_WEBHOOK_URL}}",
               "repo": "https://github.com/${{ github.repository }}", 
               "tag": "${{ github.ref }}"
             }
