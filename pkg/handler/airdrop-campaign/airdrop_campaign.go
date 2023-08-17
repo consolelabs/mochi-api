@@ -1,6 +1,7 @@
 package airdropcampaign
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -189,6 +191,13 @@ func (h *Handler) CreateProfileAirdropCampaign(c *gin.Context) {
 
 	req.ProfileId = c.Param("id")
 
+	if !util.ValidateNumberSeries(req.ProfileId) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.CreateProfileAirdropCampaign] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	if err := req.Validate(); err != nil {
 		h.log.Error(err, "[handler.CreateProfileAirdropCampaign] validate request failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -229,6 +238,13 @@ func (h *Handler) GetProfileAirdropCampaigns(c *gin.Context) {
 
 	req.ProfileId = c.Param("id")
 
+	if !util.ValidateNumberSeries(req.ProfileId) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetProfileAirdropCampaigns] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	if err := req.Validate(); err != nil {
 		h.log.Error(err, "[handler.GetProfileAirdropCampaigns] validate request failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -260,6 +276,13 @@ func (h *Handler) DeleteProfileAirdropCampaign(c *gin.Context) {
 	req := request.DeleteProfileAirdropCampaignRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
 		h.log.Error(err, "[handler.DeleteProfileAirdropCampaign] BindUri() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.ProfileId) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.DeleteProfileAirdropCampaign] validate profile id failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

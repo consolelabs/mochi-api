@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/invest"
 	"github.com/defipod/mochi/pkg/handler/nft"
 	pkpass "github.com/defipod/mochi/pkg/handler/pk-pass"
+	productdata "github.com/defipod/mochi/pkg/handler/product-data"
 	"github.com/defipod/mochi/pkg/handler/swap"
 	"github.com/defipod/mochi/pkg/handler/tip"
 	"github.com/defipod/mochi/pkg/handler/user"
@@ -56,6 +57,7 @@ type Handler struct {
 	AirdropCampaign airdropcampaign.IHandler
 	Watchlist       watchlist.IHandler
 	Invest          invest.IHandler
+	ProductData     productdata.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -85,5 +87,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Watchlist:       watchlist.New(entities, logger),
 		Invest:          invest.New(entities, logger),
 		DaoVoting:       daovoting.New(entities, logger),
+		ProductData:     productdata.New(entities, logger),
 	}
 }

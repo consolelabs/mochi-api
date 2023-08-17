@@ -193,7 +193,7 @@ func (h *Handler) GetTokenInfo(c *gin.Context) {
 	token, err := h.entities.GetTokenInfo(id)
 	if err != nil {
 		h.log.Error(err, "[handler.GetTokenInfo] entities.GetTokenInfo() failed")
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(baseerrs.GetStatusCode(err), gin.H{"error": err.Error()})
 		return
 	}
 

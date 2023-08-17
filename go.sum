@@ -170,6 +170,8 @@ github.com/consolelabs/mochi-typeset v0.0.0-20230710093529-da67331efb36 h1:HImEW
 github.com/consolelabs/mochi-typeset v0.0.0-20230710093529-da67331efb36/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
 github.com/consolelabs/mochi-typeset v0.0.0-20230802111402-4a4b92e208db h1:MxmgZlxVHFIgfeQkoZIsirGhsXIHsJIuEmPatY2K2JE=
 github.com/consolelabs/mochi-typeset v0.0.0-20230802111402-4a4b92e208db/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
+github.com/consolelabs/mochi-typeset v0.0.0-20230814034025-6e2f5371a41f h1:OKUmIuggUW1en8smCz6wchpeNR+SNnkppsoYibRlmu0=
+github.com/consolelabs/mochi-typeset v0.0.0-20230814034025-6e2f5371a41f/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=

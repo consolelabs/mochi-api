@@ -325,10 +325,12 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Token:      token.Symbol,
 		Chain:      token.Chain.ChainId,
 		Name:       vault.Name,
+		VaultId:    vault.Id,
 		Reciever:   recipientPay,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
 		RequestId:  treasurerRequest.Id,
+		Platform:   req.Platform,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
@@ -605,6 +607,7 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 				Token:     req.Token,
 				Chain:     req.Chain,
 				Target:    req.UserProfileId,
+				Platform:  req.Platform,
 			})
 			if err != nil {
 				e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.PostCreateTreasurerRequest] - e.TransferVaultToken failed")

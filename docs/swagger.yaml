@@ -552,6 +552,25 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProductBotCommand:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      discord_command:
+        type: string
+      id:
+        type: integer
+      scope:
+        type: integer
+      telegram_command:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.ProductMetadataEmojis:
     properties:
       code:
@@ -1365,6 +1384,11 @@ definitions:
       sender:
         type: string
       token:
+        type: string
+      transfer_type:
+        enum:
+        - transfer
+        - airdrop
         type: string
     type: object
   request.UnlinkBinance:
@@ -2419,13 +2443,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3042,12 +3066,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3063,6 +3081,12 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3312,9 +3336,6 @@ definitions:
       amount_each:
         type: number
       id:
-        description: |-
-          SenderID    string  `json:"sender_id"`
-          Recipients  string  `json:"recipient_id"`
         type: string
       total_amount:
         type: number
@@ -3348,6 +3369,13 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  response.ProductBotCommand:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.ProductBotCommand'
+        type: array
     type: object
   response.ProfileAirdropCampaignResponse:
     properties:
@@ -3637,10 +3665,9 @@ definitions:
     properties:
       amount_each:
         type: number
+      external_id:
+        type: string
       id:
-        description: |-
-          SenderID    string  `json:"sender_id"`
-          Recipients  string  `json:"recipient_id"`
         type: string
       total_amount:
         type: number
@@ -6747,6 +6774,28 @@ paths:
       summary: Get onchain invest unstake data
       tags:
       - Invest
+  /product-metadata/commands:
+    get:
+      consumes:
+      - application/json
+      description: Get product bot commands
+      parameters:
+      - in: query
+        name: code
+        type: string
+      - in: query
+        name: scope
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductBotCommand'
+      summary: Get product bot commands
+      tags:
+      - ProductMetadata
   /swap:
     post:
       consumes:
@@ -6790,13 +6839,14 @@ paths:
         name: amount
         required: true
         type: string
-      - description: chain name
+      - description: profile ID
         in: query
-        name: chain_name
+        name: profileId
+        required: true
         type: string
-      - description: chain id
+      - description: address
         in: query
-        name: chain_id
+        name: address
         type: string
       produces:
       - application/json

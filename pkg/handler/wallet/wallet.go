@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -42,6 +43,14 @@ func (h *Handler) ListOwnedWallets(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListOwnedWallets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	req.GuildID = c.Query("guild_id")
 	if req.GuildID == "" {
 		err := errors.New("guild_id is required")
@@ -76,6 +85,14 @@ func (h *Handler) GetOne(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListOwnedWallets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	items, err := h.entities.GetOneWallet(req)
 	if err != nil {
 		code := http.StatusInternalServerError
@@ -96,6 +113,14 @@ func (h *Handler) ListAssets(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListAssets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	items, pnl, latestSnapshotBal, err := h.entities.ListWalletAssets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListAssets] entity.ListWalletAssets() failed")
@@ -146,6 +171,14 @@ func (h *Handler) ListTransactions(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListTransactions] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	items, err := h.entities.ListWalletTxns(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTransactions] entity.ListWalletTxns() failed")

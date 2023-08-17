@@ -11,6 +11,7 @@ import (
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -130,6 +131,13 @@ func (h *Handler) GetTopUsers(c *gin.Context) {
 		return
 	}
 
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetTopUsers] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	data, err := h.entities.GetTopUsers(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetTopUsers] entity.GetTopUsers() failed")
@@ -154,6 +162,13 @@ func (h *Handler) GetUserProfile(c *gin.Context) {
 	if err := c.BindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetUserProfile] BindQuery() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetUserProfile] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -220,6 +235,14 @@ func (h *Handler) SendUserXP(c *gin.Context) {
 
 func (h *Handler) GetUserBalance(c *gin.Context) {
 	userID := c.Param("id")
+
+	if !util.ValidateNumberSeries(userID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetUserBalance] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	balance, err := h.entities.GetUserBalance(userID)
 	if err != nil {
 		h.log.Fields(logger.Fields{"userID": userID}).Error(err, "[handler.GetUserBalance] - entities.GetUserBalance failed")

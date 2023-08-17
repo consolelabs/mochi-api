@@ -256,6 +256,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	}
 
 	internalId := res.Data[0].InternalId
+	externalId := res.Data[0].ExternalId
 	id := res.Data[0].ID
 
 	return &response.TransferTokenV2Data{
@@ -263,6 +264,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		AmountEach:  amountEachF,
 		TotalAmount: req.Amount,
 		TxId:        internalId,
+		ExternalId:  externalId,
 	}, nil
 }
 
