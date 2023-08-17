@@ -59,22 +59,25 @@ jobs:
           git commit -am "[skip ci] mochi-api ${K8S_ENVIRONMENT} image update"
           git push origin main
 
-  notify-discord:
-    runs-on: ubuntu-latest
-    steps:
       - name: Notify changelog
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://chglg.fly.dev/v1/changelog'
           method: 'POST'
-          customHeaders: '{"Content-Type": "application/json", "Authorization": "Bearer ${{ secrets.CHANGELOG_API_KEY }}"}'
+          customHeaders: '{"Content-Type": "application/json"}'
           timeout: 30000
           escapeData: 'true'
           data: >-
             {   
-              "app_name": "Mochi API", 
-              "icon_url": "https://storage.googleapis.com/dwarvesf-assets/jigsaw.png", 
-              "webhook": "${{secrets.DISCORD_WEBHOOK_URL}}",
               "repo": "https://github.com/${{ github.repository }}", 
-              "tag": "${{ github.ref }}"
+              "tag": "${{ github.ref }}",
+              "access_token": "${{ secrets.GH_PAT }}",
+              "app_name": "Mochi API", 
+              "discord": {
+                "webhook": "${{ secrets.DISCORD_WEBHOOK }}",
+                "footer": {
+                  "icon_url": "https://storage.googleapis.com/dwarvesf-assets/jigsaw.png"
+                }
+              }
             }
+  
