@@ -1,6 +1,7 @@
 package tip
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -70,6 +72,22 @@ func (h *Handler) TransferTokenV2(c *gin.Context) {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferToken] - failed to read JSON")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
+	}
+
+	if !util.ValidateNumberSeries(req.Sender) {
+		err := errors.New("sender is invalid")
+		h.log.Error(err, "[handler.TransferTokenV2] validate sender failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	for _, recipient := range req.Recipients {
+		if !util.ValidateNumberSeries(recipient) {
+			err := errors.New("recipient is invalid")
+			h.log.Error(err, "[handler.TransferTokenV2] validate recipient failed")
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
 	}
 
 	transferHistories, err := h.entities.TransferTokenV2(req)
