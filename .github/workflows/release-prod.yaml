@@ -3,7 +3,7 @@ name: Release Prod
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read # for checkout
