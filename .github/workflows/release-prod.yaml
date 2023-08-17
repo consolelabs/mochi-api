@@ -3,6 +3,7 @@ name: Release Prod
 on:
   push:
     branches:
+      - cicd
       - master
 
 permissions:
