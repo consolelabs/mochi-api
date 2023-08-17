@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -33,6 +34,13 @@ func (h *Handler) SumarizeBinanceAsset(c *gin.Context) {
 	}
 	req.Id = c.Param("id")
 
+	if !util.ValidateNumberSeries(req.Id) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.SumarizeBinanceAsset] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	res, err := h.entities.SumarizeBinanceAsset(req)
 	if err != nil {
 		h.log.Error(err, "[handler.SumarizeBinanceAsset] entity.SumarizeBinanceAsset() failed")
@@ -51,6 +59,13 @@ func (h *Handler) GetBinanceAssets(c *gin.Context) {
 
 	if req.Platform != "binance" {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("Unsupported dex"), nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.Id) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetBinanceAssets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
@@ -76,6 +91,13 @@ func (h *Handler) GetBinanceFutures(c *gin.Context) {
 	req := request.GetBinanceFutureRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
 		h.log.Error(err, "[handler.GetBinanceFutures] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.Id) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetBinanceFutures] validate profile id failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}

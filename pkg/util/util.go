@@ -793,3 +793,16 @@ func CheckKeyInMap(key string, m interface{}) bool {
 	}
 	return false
 }
+
+func ValidateNumberSeries(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	matched, err := regexp.MatchString("^[0-9]*$", s)
+	if err != nil {
+		return false
+	}
+
+	return matched
+}

@@ -12,6 +12,7 @@ import (
 	baseerr "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -47,6 +48,14 @@ func (h *Handler) ListUserTrackingWallets(c *gin.Context) {
 		ProfileID:   base.ProfileID,
 		WithBalance: true,
 	}
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListUserTrackingWallets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")
@@ -81,6 +90,13 @@ func (h *Handler) UpdateTrackingWalletInfo(c *gin.Context) {
 		return
 	}
 
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.UpdateTrackingWalletInfo] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	wallet, err := h.entities.UpdateTrackingInfo(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.UpdateTrackingInfo] entity.UpdateTrackingInfo() failed")
@@ -105,6 +121,13 @@ func (h *Handler) TrackWallet(c *gin.Context) {
 	req, err := extractTrackRequestFromCtx(c)
 	if err != nil {
 		h.log.Error(err, "[handler.TrackWallet] extractTrackRequestFromCtx() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.TrackWallet] validate profile id failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -173,6 +196,13 @@ func (h *Handler) UntrackWallet(c *gin.Context) {
 		return
 	}
 
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.UntrackWallet] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	err := h.entities.UntrackWallet(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.Untrack] entity.UntrackWallet() failed")
@@ -209,6 +239,13 @@ func (h *Handler) ListTrackingTokens(c *gin.Context) {
 	}
 	req.ProfileID = base.ProfileID
 
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListTrackingTokens] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	res, err := h.entities.GetUserWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.ListTrackingTokens] entity.GetUserWatchlist() failed")
@@ -241,6 +278,14 @@ func (h *Handler) TrackToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.TrackToken] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	res, err := h.entities.AddToWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.TrackToken] entity.AddToWatchlist() failed")
@@ -269,6 +314,13 @@ func (h *Handler) UntrackToken(c *gin.Context) {
 
 	if err := c.BindJSON(&req); err != nil {
 		h.log.Error(err, "[handler.UntrackToken] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.UntrackToken] validate profile id failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -310,6 +362,13 @@ func (h *Handler) TrackNft(c *gin.Context) {
 		return
 	}
 
+	if !util.ValidateNumberSeries(req.WatchlistBaseRequest.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.TrackNft] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	res, err := h.entities.AddNftWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.TrackNft] - failed to add watchlist")
@@ -346,6 +405,13 @@ func (h *Handler) ListTrackingNfts(c *gin.Context) {
 	}
 	req.ProfileID = base.ProfileID
 
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListTrackingNfts] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	data, err := h.entities.GetNftWatchlist(&req)
 	if err != nil {
 		h.log.Error(err, "[handler.ListTrackingNfts] - failed to get watchlist")
@@ -381,6 +447,13 @@ func (h *Handler) UntrackNft(c *gin.Context) {
 		return
 	}
 	req.ProfileID = base.ProfileID
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.UntrackNft] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
 	err := h.entities.DeleteNftWatchlist(req)
 	if err != nil {
@@ -419,6 +492,13 @@ func (h *Handler) ListTrackingWallets(c *gin.Context) {
 	}
 
 	req.Address = c.Query("address")
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.ListTrackingWallets] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
