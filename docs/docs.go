@@ -3241,6 +3241,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/dexes/search": {
+            "get": {
+                "description": "Search dex pair",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dex"
+                ],
+                "summary": "Search dex pair",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "dex query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SearchDexPairResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/earns/airdrop-campaigns": {
             "get": {
                 "description": "Get Airdrop Campaign List",
@@ -8856,6 +8888,108 @@ const docTemplate = `{
                 }
             }
         },
+        "response.DexPair": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "base_token": {
+                    "$ref": "#/definitions/response.DexToken"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "integer"
+                },
+                "dex_id": {
+                    "type": "string"
+                },
+                "fdv": {
+                    "type": "number"
+                },
+                "holders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DexTokenHolder"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "liquidity_usd": {
+                    "type": "number"
+                },
+                "market_cap_usd": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "price_percent_change_24h": {
+                    "type": "number"
+                },
+                "price_usd": {
+                    "type": "number"
+                },
+                "quote_token": {
+                    "$ref": "#/definitions/response.DexToken"
+                },
+                "txn_24h_buy": {
+                    "type": "integer"
+                },
+                "txn_24h_sell": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "volume_usd_24h": {
+                    "type": "number"
+                }
+            }
+        },
+        "response.DexToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DexTokenHolder": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "alias": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "percent": {
+                    "type": "number"
+                }
+            }
+        },
         "response.DiscordGuildResponse": {
             "type": "object",
             "properties": {
@@ -11261,6 +11395,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.CoingeckoSupportedTokens"
+                    }
+                }
+            }
+        },
+        "response.SearchDexPairResponse": {
+            "type": "object",
+            "properties": {
+                "pairs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.DexPair"
                     }
                 }
             }
