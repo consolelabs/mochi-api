@@ -137,6 +137,38 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 	return vaults, nil
 }
 
+func (e *Entity) GetVault(req request.GetVaultRequest) (*model.Vault, error) {
+	idInt, _ := strconv.Atoi(req.VaultId)
+	// query db
+	vault, err := e.repo.Vault.GetById(int64(idInt))
+	if err != nil {
+		e.log.Fields(logger.Fields{"query": idInt}).Errorf(err, "[entity.GetVaults] repo.Vault.GetById() failed")
+		return nil, err
+	}
+
+	if req.NoFetchAmount != "true" {
+
+		walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "eth", Address: vault.WalletAddress})
+		if err != nil {
+			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
+			return nil, err
+		}
+		vault.TotalAmountEVM = fmt.Sprintf("%.4f", sumBal(walletAssetsEVM))
+
+		walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
+		if err != nil {
+			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
+			vault.TotalAmountSolana = "0"
+		}
+		if len(walletAssetsSolana) > 0 {
+			vault.TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+		}
+
+	}
+
+	return vault, nil
+}
+
 func sumBal(walletAssets []response.WalletAssetData) (sum float64) {
 	for _, asset := range walletAssets {
 		sum += asset.UsdBalance

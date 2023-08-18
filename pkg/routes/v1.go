@@ -362,6 +362,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	vaultGroup := v1.Group("/vault")
 	{
 		vaultGroup.GET("", h.Vault.GetVaults)
+		vaultGroup.GET("/:vault_id", h.Vault.GetVault)
 		vaultGroup.POST("", h.Vault.CreateVault)
 		vaultGroup.POST("/config/channel", h.Vault.CreateConfigChannel)
 		vaultGroup.GET("/config/channel", h.Vault.GetVaultConfigChannel)

@@ -70,11 +70,11 @@ func Init(cfg config.Config, log logger.Logger) error {
 	setDiscordIntents(discord)
 	log.Infof("discord intents: %d", discord.Identify.Intents)
 
-	u, err := discord.User("@me")
-	if err != nil {
-		log.Fatal(err, "failed to get discord bot user")
-	}
-	log.Infof("Connected to discord: %s", u.Username)
+	// u, err := discord.User("@me")
+	// if err != nil {
+	// 	log.Fatal(err, "failed to get discord bot user")
+	// }
+	// log.Infof("Connected to discord: %s", u.Username)
 
 	// *** cache ***
 	redisOpt, err := redis.ParseURL(cfg.RedisURL)
