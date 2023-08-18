@@ -59,6 +59,11 @@ jobs:
           git commit -am "[skip ci] mochi-api ${K8S_ENVIRONMENT} image update"
           git push origin main
 
+  notify:
+    name: Notify
+    needs: setup-build-publish-deploy
+    runs-on: ubuntu-latest
+    steps:
       - name: Notify changelog
         uses: fjogeleit/http-request-action@v1
         with:
