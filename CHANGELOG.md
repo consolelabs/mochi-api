@@ -1,3 +1,10 @@
+# [6.7.0](https://github.com/consolelabs/mochi-api/compare/v6.6.0...v6.7.0) (2023-08-18)
+
+
+### Features
+
+* remove validate profile id ([64b196b](https://github.com/consolelabs/mochi-api/commit/64b196ba0213b37c12a98d42a46baade118710d7))
+
 # [6.6.0](https://github.com/consolelabs/mochi-api/compare/v6.5.10...v6.6.0) (2023-08-17)
 
 
