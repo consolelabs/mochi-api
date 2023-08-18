@@ -493,13 +493,6 @@ func (h *Handler) ListTrackingWallets(c *gin.Context) {
 
 	req.Address = c.Query("address")
 
-	if !util.ValidateNumberSeries(req.ProfileID) {
-		err := errors.New("profile Id is invalid")
-		h.log.Error(err, "[handler.ListTrackingWallets] validate profile id failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
 	items, err := h.entities.GetTrackingWallets(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Wallet.ListTracking] entity.GetTrackingWallets() failed")
