@@ -44,13 +44,6 @@ func (h *Handler) ListOwnedWallets(c *gin.Context) {
 		return
 	}
 
-	if !util.ValidateNumberSeries(req.ProfileID) {
-		err := errors.New("profile Id is invalid")
-		h.log.Error(err, "[handler.ListOwnedWallets] validate profile id failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
 	req.GuildID = c.Query("guild_id")
 	if req.GuildID == "" {
 		err := errors.New("guild_id is required")
