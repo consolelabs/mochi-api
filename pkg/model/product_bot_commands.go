@@ -13,6 +13,8 @@ type ProductBotCommand struct {
 	TelegramCommand string                         `json:"telegram_command"`
 	Scope           typeset.ProductBotCommandScope `json:"scope"`
 	Description     string                         `json:"description"`
+	DiscordAlias    string                         `json:"discord_alias"`
+	TelegramAlias   string                         `json:"telegram_alias"`
 	CreatedAt       time.Time                      `json:"created_at"`
 	UpdatedAt       time.Time                      `json:"updated_at"`
 }
