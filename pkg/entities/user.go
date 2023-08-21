@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"sort"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
@@ -225,37 +226,74 @@ func (e *Entity) GetTopUsers(req request.GetTopUsersRequest) (*response.TopUser,
 		return nil, err
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(leaderboard))
 	for i := range leaderboard {
-		item := &leaderboard[i]
+		go func(i int) {
+			defer wg.Done()
+			item := &leaderboard[i]
 
-		if item.User != nil && len(item.User.GuildUsers) > 0 {
-			memberInfo := item.User.GuildUsers[0]
+			if item.User == nil {
+				profile, err := e.svc.MochiProfile.GetByID(item.ProfileID)
+				if err != nil {
+					return
+				}
+				for _, acc := range profile.AssociatedAccounts {
+					if acc.Platform != "discord" {
 
-			rolesByte := memberInfo.Roles
+						continue
+					}
+					username := acc.PlatformMetadata.Username
 
-			roles := make([]string, 0)
+					// this is a workaround for the case that the user has not logged in to discord yet,
+					// this should be processed by profile-api that will fetch the username from discord and update into the db
+					if username == "" {
+						u, err := e.discord.User(acc.PlatformIdentifier)
+						if err != nil {
+							username = "Unknown"
+						} else {
+							username = u.Username
+						}
+					}
 
-			if err := json.Unmarshal(rolesByte, &roles); err != nil {
-				return nil, err
+					item.User = &model.User{
+						ID:       acc.PlatformIdentifier,
+						Username: username,
+					}
+					break
+				}
 			}
 
-			item.User.GuildUsers[0].RoleSlice = roles
-		}
+			if item.User != nil && len(item.User.GuildUsers) > 0 {
+				memberInfo := item.User.GuildUsers[0]
 
-		currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, false)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			return nil, err
-		}
+				rolesByte := memberInfo.Roles
 
-		nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, true)
-		if err != nil && err != gorm.ErrRecordNotFound {
-			return nil, err
-		}
-		item.Progress = math.Min(float64(item.TotalXP-currentLevel.MinXP)/float64(nextLevel.MinXP-currentLevel.MinXP), 1)
-		if nextLevel.Level == 0 {
-			item.Progress = 1
-		}
+				roles := make([]string, 0)
+
+				if err := json.Unmarshal(rolesByte, &roles); err != nil {
+					return
+				}
+
+				item.User.GuildUsers[0].RoleSlice = roles
+			}
+
+			currentLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, false)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				return
+			}
+
+			nextLevel, err := e.repo.ConfigXPLevel.GetNextLevel(item.TotalXP, true)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				return
+			}
+			item.Progress = math.Min(float64(item.TotalXP-currentLevel.MinXP)/float64(nextLevel.MinXP-currentLevel.MinXP), 1)
+			if nextLevel.Level == 0 {
+				item.Progress = 1
+			}
+		}(i)
 	}
+	wg.Wait()
 
 	author, err := e.repo.GuildUserXP.GetOne(guild_user_xp.GetOneQuery{GuildID: req.GuildID, ProfileID: req.ProfileID})
 	if err != nil && err != gorm.ErrRecordNotFound {
