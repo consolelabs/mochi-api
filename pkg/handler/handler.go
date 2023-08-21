@@ -13,6 +13,7 @@ import (
 	daovoting "github.com/defipod/mochi/pkg/handler/dao-voting"
 	"github.com/defipod/mochi/pkg/handler/defi"
 	"github.com/defipod/mochi/pkg/handler/dex"
+	"github.com/defipod/mochi/pkg/handler/dexes"
 	"github.com/defipod/mochi/pkg/handler/emojis"
 	"github.com/defipod/mochi/pkg/handler/guild"
 	"github.com/defipod/mochi/pkg/handler/healthz"
@@ -58,6 +59,7 @@ type Handler struct {
 	Watchlist       watchlist.IHandler
 	Invest          invest.IHandler
 	ProductData     productdata.IHandler
+	Dexes           dexes.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -88,5 +90,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		Invest:          invest.New(entities, logger),
 		DaoVoting:       daovoting.New(entities, logger),
 		ProductData:     productdata.New(entities, logger),
+		Dexes:           dexes.New(entities, logger),
 	}
 }

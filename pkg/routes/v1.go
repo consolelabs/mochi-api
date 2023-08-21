@@ -457,4 +457,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		onchainGroup.GET("/invest-stake-data", h.Invest.OnchainInvestStakeData)
 		onchainGroup.GET("/invest-unstake-data", h.Invest.OnchainInvestUnstakeData)
 	}
+
+	dexesGroup := v1.Group("/dexes")
+	{
+		dexesGroup.GET("/search", h.Dexes.SearchDexPair)
+	}
 }

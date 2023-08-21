@@ -151,7 +151,6 @@ require (
 
 require (
 	cloud.google.com/go/storage v1.28.1
-	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
 	github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
 )

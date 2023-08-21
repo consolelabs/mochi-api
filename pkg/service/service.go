@@ -18,6 +18,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/cloud"
 	"github.com/defipod/mochi/pkg/service/coingecko"
 	"github.com/defipod/mochi/pkg/service/covalent"
+	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -56,6 +57,7 @@ type Service struct {
 	Ronin         ronin.Service
 	Krystal       krystal.Service
 	GeckoTerminal geckoterminal.Service
+	DexScreener   dexscreener.Service
 }
 
 func NewService(
@@ -108,5 +110,6 @@ func NewService(
 		Ronin:         roninSvc,
 		Krystal:       krystal.NewService(&cfg, log, cache),
 		GeckoTerminal: geckoterminal.NewService(&cfg),
+		DexScreener:   dexscreener.NewService(),
 	}, nil
 }

@@ -1927,6 +1927,73 @@ definitions:
       data:
         $ref: '#/definitions/response.DefaultRole'
     type: object
+  response.DexPair:
+    properties:
+      address:
+        type: string
+      base_token:
+        $ref: '#/definitions/response.DexToken'
+      chain_id:
+        type: string
+      created_at:
+        type: integer
+      dex_id:
+        type: string
+      fdv:
+        type: number
+      holders:
+        items:
+          $ref: '#/definitions/response.DexTokenHolder'
+        type: array
+      id:
+        type: string
+      liquidity_usd:
+        type: number
+      market_cap_usd:
+        type: number
+      name:
+        type: string
+      owner:
+        type: string
+      price:
+        type: number
+      price_percent_change_24h:
+        type: number
+      price_usd:
+        type: number
+      quote_token:
+        $ref: '#/definitions/response.DexToken'
+      txn_24h_buy:
+        type: integer
+      txn_24h_sell:
+        type: integer
+      url:
+        additionalProperties:
+          type: string
+        type: object
+      volume_usd_24h:
+        type: number
+    type: object
+  response.DexToken:
+    properties:
+      address:
+        type: string
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  response.DexTokenHolder:
+    properties:
+      address:
+        type: string
+      alias:
+        type: string
+      balance:
+        type: number
+      percent:
+        type: number
+    type: object
   response.DiscordGuildResponse:
     properties:
       bot_addable:
@@ -2443,13 +2510,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3494,6 +3561,13 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.CoingeckoSupportedTokens'
+        type: array
+    type: object
+  response.SearchDexPairResponse:
+    properties:
+      pairs:
+        items:
+          $ref: '#/definitions/response.DexPair'
         type: array
     type: object
   response.SparkLineIn7d:
@@ -5885,6 +5959,27 @@ paths:
       summary: Get trending search of coins
       tags:
       - Defi
+  /dexes/search:
+    get:
+      consumes:
+      - application/json
+      description: Search dex pair
+      parameters:
+      - description: dex query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SearchDexPairResponse'
+      summary: Search dex pair
+      tags:
+      - Dex
   /earns/airdrop-campaigns:
     get:
       consumes:
