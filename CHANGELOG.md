@@ -1,3 +1,10 @@
+## [6.7.1](https://github.com/consolelabs/mochi-api/compare/v6.7.0...v6.7.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* top cmd does not display some unknown users ([#1142](https://github.com/consolelabs/mochi-api/issues/1142)) ([43c0d82](https://github.com/consolelabs/mochi-api/commit/43c0d824e178bc918c8072209dc3da4d394f9efc))
+
 # [6.7.0](https://github.com/consolelabs/mochi-api/compare/v6.6.0...v6.7.0) (2023-08-18)
 
 
