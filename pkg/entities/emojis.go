@@ -33,9 +33,8 @@ func (e *Entity) GetListEmojis(codes []string) ([]*model.EmojiData, error) {
 		}
 
 		var emojiUrl string
-
-		// 2.1 get id of emoji -> regex number which has length >= 19
-		re := regexp.MustCompile("[0-9]{19,}")
+		// 2.1 get id of emoji -> regex number which has length >= 15
+		re := regexp.MustCompile("[0-9]{15,}")
 		matchList := re.FindAllString(*emoji.DiscordId, -1)
 		if len(matchList) > 0 {
 			id := matchList[0]
