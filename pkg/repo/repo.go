@@ -52,6 +52,7 @@ import (
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
+	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -163,4 +164,5 @@ type Repo struct {
 	DaoGuidelineMessages                 daoguidelinemessages.Store
 	TokenInfo                            tokeninfo.Store
 	ProductBotCommand                    productbotcommand.Store
+	ProductChangelogs                    productchangelogs.Store
 }

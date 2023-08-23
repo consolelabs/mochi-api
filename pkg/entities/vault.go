@@ -308,11 +308,6 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		return fmt.Errorf("balance not enough")
 	}
 
-	recipientPay := treasurerRequest.UserProfileId
-	if recipientPay == "" {
-		recipientPay = treasurerRequest.RequesterProfileId
-	}
-
 	// address = "" aka destination addres = "", use mochi wallet instead
 	privateKey, destination := "", ""
 	if token.Chain.ChainId == "999" {
@@ -358,7 +353,7 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		Chain:      token.Chain.ChainId,
 		Name:       vault.Name,
 		VaultId:    vault.Id,
-		Reciever:   recipientPay,
+		Reciever:   treasurerRequest.UserProfileId,
 		Message:    treasurerRequest.Message,
 		ListNotify: listNotify,
 		RequestId:  treasurerRequest.Id,

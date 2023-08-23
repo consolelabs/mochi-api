@@ -410,6 +410,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		productMetaData.GET("/emoji", h.Emojis.ListEmojis)
 		productMetaData.GET("/copy/:type", h.Content.GetTypeContent)
 		productMetaData.GET("/commands", h.ProductData.ProductBotCommand)
+		productMetaData.GET("/changelogs", h.ProductData.ProductChangelogs)
 	}
 
 	// api/v1/earns
