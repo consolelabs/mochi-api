@@ -136,3 +136,7 @@ type TransferV2TransactionData struct {
 	ExpiredAt          *time.Time                `json:"expired_at"`
 	Token              *Token                    `json:"token"`
 }
+
+type ApplicationTransferResponse struct {
+	Data []TransferV2TransactionData `json:"data"`
+}

@@ -4479,6 +4479,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/onboarding/start": {
+            "post": {
+                "description": "User did start onboarding",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "User did start onboarding",
+                "parameters": [
+                    {
+                        "description": "onboarding start request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OnboardingStartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnboardingStartResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/onchain/invest-stake-data": {
             "get": {
                 "description": "Get onchain invest stake data",
@@ -5693,7 +5727,7 @@ const docTemplate = `{
         },
         "/vault": {
             "get": {
-                "description": "Get vaults",
+                "description": "Get vault",
                 "consumes": [
                     "application/json"
                 ],
@@ -5703,18 +5737,8 @@ const docTemplate = `{
                 "tags": [
                     "Vault"
                 ],
-                "summary": "Get vaults",
+                "summary": "Get vault",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "name": "evmAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "guildID",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "default": "false",
@@ -5723,17 +5747,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "profileID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "solanaAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "threshold",
+                        "name": "vaultId",
                         "in": "query"
                     }
                 ],
@@ -5741,7 +5755,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVaultsResponse"
+                            "$ref": "#/definitions/response.GetVaultResponse"
                         }
                     }
                 }
@@ -6804,6 +6818,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "discord_alias": {
+                    "type": "string"
+                },
                 "discord_command": {
                     "type": "string"
                 },
@@ -6812,6 +6829,9 @@ const docTemplate = `{
                 },
                 "scope": {
                     "type": "integer"
+                },
+                "telegram_alias": {
+                    "type": "string"
                 },
                 "telegram_command": {
                     "type": "string"
@@ -7906,6 +7926,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.OnboardingStartRequest": {
+            "type": "object",
+            "required": [
+                "platform",
+                "profile_id"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string",
+                    "enum": [
+                        "discord",
+                        "telegram"
+                    ]
+                },
+                "profile_id": {
                     "type": "string"
                 }
             }
@@ -9890,6 +9929,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetVaultResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.Vault"
+                }
+            }
+        },
         "response.GetVaultsResponse": {
             "type": "object",
             "properties": {
@@ -11168,6 +11215,25 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.OffchainTipBotTransferToken"
                     }
+                }
+            }
+        },
+        "response.OnboardingStartData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "userDidStartOnboarding": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.OnboardingStartResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnboardingStartData"
                 }
             }
         },

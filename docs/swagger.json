@@ -4471,6 +4471,40 @@
                 }
             }
         },
+        "/onboarding/start": {
+            "post": {
+                "description": "User did start onboarding",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "User did start onboarding",
+                "parameters": [
+                    {
+                        "description": "onboarding start request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OnboardingStartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnboardingStartResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/onchain/invest-stake-data": {
             "get": {
                 "description": "Get onchain invest stake data",
@@ -5685,7 +5719,7 @@
         },
         "/vault": {
             "get": {
-                "description": "Get vaults",
+                "description": "Get vault",
                 "consumes": [
                     "application/json"
                 ],
@@ -5695,18 +5729,8 @@
                 "tags": [
                     "Vault"
                 ],
-                "summary": "Get vaults",
+                "summary": "Get vault",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "name": "evmAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "guildID",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "default": "false",
@@ -5715,17 +5739,7 @@
                     },
                     {
                         "type": "string",
-                        "name": "profileID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "solanaAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "threshold",
+                        "name": "vaultId",
                         "in": "query"
                     }
                 ],
@@ -5733,7 +5747,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVaultsResponse"
+                            "$ref": "#/definitions/response.GetVaultResponse"
                         }
                     }
                 }
@@ -6796,6 +6810,9 @@
                 "description": {
                     "type": "string"
                 },
+                "discord_alias": {
+                    "type": "string"
+                },
                 "discord_command": {
                     "type": "string"
                 },
@@ -6804,6 +6821,9 @@
                 },
                 "scope": {
                     "type": "integer"
+                },
+                "telegram_alias": {
+                    "type": "string"
                 },
                 "telegram_command": {
                     "type": "string"
@@ -7898,6 +7918,25 @@
                     "type": "string"
                 },
                 "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.OnboardingStartRequest": {
+            "type": "object",
+            "required": [
+                "platform",
+                "profile_id"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string",
+                    "enum": [
+                        "discord",
+                        "telegram"
+                    ]
+                },
+                "profile_id": {
                     "type": "string"
                 }
             }
@@ -9882,6 +9921,14 @@
                 }
             }
         },
+        "response.GetVaultResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.Vault"
+                }
+            }
+        },
         "response.GetVaultsResponse": {
             "type": "object",
             "properties": {
@@ -11160,6 +11207,25 @@
                     "items": {
                         "$ref": "#/definitions/response.OffchainTipBotTransferToken"
                     }
+                }
+            }
+        },
+        "response.OnboardingStartData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "userDidStartOnboarding": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.OnboardingStartResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnboardingStartData"
                 }
             }
         },

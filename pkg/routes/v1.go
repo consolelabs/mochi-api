@@ -462,4 +462,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		dexesGroup.GET("/search", h.Dexes.SearchDexPair)
 	}
+
+	onboardingGroup := v1.Group("/onboarding")
+	{
+		onboardingGroup.POST("/start", h.Onboarding.Start)
+	}
 }

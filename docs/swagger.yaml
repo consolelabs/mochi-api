@@ -560,12 +560,16 @@ definitions:
         type: string
       description:
         type: string
+      discord_alias:
+        type: string
       discord_command:
         type: string
       id:
         type: integer
       scope:
         type: integer
+      telegram_alias:
+        type: string
       telegram_command:
         type: string
       updated_at:
@@ -1287,6 +1291,19 @@ definitions:
         type: string
       transfer_type:
         type: string
+    type: object
+  request.OnboardingStartRequest:
+    properties:
+      platform:
+        enum:
+        - discord
+        - telegram
+        type: string
+      profile_id:
+        type: string
+    required:
+    - platform
+    - profile_id
     type: object
   request.RoleReactionRequest:
     properties:
@@ -2580,6 +2597,11 @@ definitions:
       data:
         $ref: '#/definitions/response.User'
     type: object
+  response.GetVaultResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Vault'
+    type: object
   response.GetVaultsResponse:
     properties:
       data:
@@ -3415,6 +3437,18 @@ definitions:
         items:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
+    type: object
+  response.OnboardingStartData:
+    properties:
+      message:
+        type: string
+      userDidStartOnboarding:
+        type: boolean
+    type: object
+  response.OnboardingStartResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.OnboardingStartData'
     type: object
   response.OnchainInvestData:
     properties:
@@ -6777,6 +6811,28 @@ paths:
       summary: Get NFT trading volume
       tags:
       - NFT
+  /onboarding/start:
+    post:
+      consumes:
+      - application/json
+      description: User did start onboarding
+      parameters:
+      - description: onboarding start request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.OnboardingStartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.OnboardingStartResponse'
+      summary: User did start onboarding
+      tags:
+      - Defi
   /onchain/invest-stake-data:
     get:
       consumes:
@@ -7576,26 +7632,14 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get vaults
+      description: Get vault
       parameters:
-      - in: query
-        name: evmAddress
-        type: string
-      - in: query
-        name: guildID
-        type: string
       - default: "false"
         in: query
         name: noFetchAmount
         type: string
       - in: query
-        name: profileID
-        type: string
-      - in: query
-        name: solanaAddress
-        type: string
-      - in: query
-        name: threshold
+        name: vaultId
         type: string
       produces:
       - application/json
@@ -7603,8 +7647,8 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.GetVaultsResponse'
-      summary: Get vaults
+            $ref: '#/definitions/response.GetVaultResponse'
+      summary: Get vault
       tags:
       - Vault
   /verify/assign-role:
