@@ -55,6 +55,7 @@ func (input *CreateNFTCollectionRequest) Bind(c *gin.Context) error {
 		"paintswap":  "ftm",
 		"opensea":    "eth",
 		"quixotic":   "op",
+		"8453":       "base",
 	}
 	if c, exist := mapChainChainId[strings.ToLower(input.ChainID)]; exist {
 		input.Chain = c

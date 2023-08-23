@@ -32,6 +32,8 @@ func ConvertChainToChainId(chain string) string {
 		return "1975"
 	case "sui":
 		return "9996"
+	case "base":
+		return "8453"
 	default:
 		return chain
 	}
@@ -61,6 +63,8 @@ func ConvertChainIDToChain(chain string) string {
 		return "apt"
 	case "9996":
 		return "sui"
+	case "8453":
+		return "base"
 	default:
 		return chain
 	}
@@ -112,6 +116,7 @@ func ConvertInputToChainId(input string) string {
 		"paintswap":  "ftm",
 		"opensea":    "eth",
 		"quixotic":   "op",
+		"8453":       "base",
 	}
 	chainId := ""
 	if _, exist := mapChainIdChain[strings.ToLower(input)]; exist {
@@ -155,6 +160,8 @@ func ConvertChainIdToChainName(chainId int64) string {
 		return "aurora"
 	case 999:
 		return "solana"
+	case 8453:
+		return "base"
 	default:
 		return "ethereum"
 	}
@@ -188,11 +195,14 @@ func ConvertChainNameToChainId(chainName string) int64 {
 		return 1313161554
 	case "solana":
 		return 999
+	case "base":
+		return 8453
 	default:
 		return 1
 	}
 }
 
+// TODO: not used anymore
 func ConvertCoingeckoChain(chainName string) int64 {
 	switch chainName {
 	case "ethereum":
@@ -221,6 +231,8 @@ func ConvertCoingeckoChain(chainName string) int64 {
 		return 1313161554
 	case "solana":
 		return 999
+	case "base":
+		return 8453
 	default:
 		return 0
 	}
