@@ -49,3 +49,29 @@ func (h *Handler) ProductBotCommand(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](commands, nil, nil, nil))
 }
+
+// ProductChangelogs     godoc
+// @Summary     Get product changelogs
+// @Description Get product changelogs
+// @Tags        ProductMetadata
+// @Accept      json
+// @Produce     json
+// @Param       req   query  request.ProductChangelogsRequest false  "request"
+// @Success     200 {object} response.ProductChangelogs
+// @Router      /product-metadata/changelogs [get]
+func (h *Handler) ProductChangelogs(c *gin.Context) {
+	req := request.ProductChangelogsRequest{}
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.ProductChangelogs] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	productChangelogs, err := h.entities.ProductChangelogs(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(productChangelogs, nil, nil, nil))
+}
