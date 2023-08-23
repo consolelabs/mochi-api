@@ -27,7 +27,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // Start     godoc
 // @Summary     User did start onboarding
 // @Description User did start onboarding
-// @Tags        Defi
+// @Tags        Onboarding
 // @Accept      json
 // @Produce     json
 // @Param       req body request.OnboardingStartRequest true "onboarding start request"

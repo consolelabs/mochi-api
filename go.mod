@@ -7,7 +7,7 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/bwmarrin/discordgo v0.26.1
 	github.com/confluentinc/confluent-kafka-go v1.9.2
-	github.com/consolelabs/mochi-typeset v0.0.0-20230823042741-8cdc64c01573
+	github.com/consolelabs/mochi-typeset v0.0.0-20230823081345-e192d01ca34f
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/pprof v1.4.0

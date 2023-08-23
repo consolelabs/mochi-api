@@ -163,8 +163,8 @@ github.com/consensys/bavard v0.1.8-0.20210406032232-f3452dc9b572/go.mod h1:Bpd0/
 github.com/consensys/gnark-crypto v0.4.1-0.20210426202927-39ac3d4b3f1f/go.mod h1:815PAHg3wvysy0SyIqanF8gZ0Y1wjk/hrDHD/iT88+Q=
 github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905 h1:n5JZF1xv7w+UoOjtx2VrROuqUYAFm9uDRwPeSgmxV+M=
 github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905/go.mod h1:ZShtpSO6HNmj+G2W/vFDi28BneoLis6AWYnRIAnfIxU=
-github.com/consolelabs/mochi-typeset v0.0.0-20230823042741-8cdc64c01573 h1:lDzeYUew4MNfFXwpEJeF6q5tN5fVm5G2Dhnkp6ie3mk=
-github.com/consolelabs/mochi-typeset v0.0.0-20230823042741-8cdc64c01573/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
+github.com/consolelabs/mochi-typeset v0.0.0-20230823081345-e192d01ca34f h1:eJ+39cmbuqCY7eI8TF1LgAtjTjuOBY/LhOmsTHSVKw4=
+github.com/consolelabs/mochi-typeset v0.0.0-20230823081345-e192d01ca34f/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=

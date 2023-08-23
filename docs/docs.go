@@ -4489,7 +4489,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Defi"
+                    "Onboarding"
                 ],
                 "summary": "User did start onboarding",
                 "parameters": [
@@ -4507,7 +4507,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.OnboardingStartResponse"
+                            "$ref": "#/definitions/response.ResponseDataMessage"
                         }
                     }
                 }
@@ -4642,6 +4642,41 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.OnchainInvestDataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product-metadata/changelogs": {
+            "get": {
+                "description": "Get product changelogs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelogs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "product",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogs"
                         }
                     }
                 }
@@ -6834,6 +6869,35 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "telegram_command": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProductChangelogs": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "github_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product": {
+                    "type": "integer"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -11218,25 +11282,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.OnboardingStartData": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "userDidStartOnboarding": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "response.OnboardingStartResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.OnboardingStartData"
-                }
-            }
-        },
         "response.OnchainInvestData": {
             "type": "object",
             "properties": {
@@ -11276,6 +11321,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.ProductBotCommand"
+                    }
+                }
+            }
+        },
+        "response.ProductChangelogs": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductChangelogs"
                     }
                 }
             }

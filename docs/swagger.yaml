@@ -575,6 +575,25 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProductChangelogs:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      github_url:
+        type: string
+      id:
+        type: integer
+      product:
+        type: integer
+      thumbnail_url:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
   model.ProductMetadataEmojis:
     properties:
       code:
@@ -2527,13 +2546,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_7d_change:
+        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
-        type: number
-      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3155,6 +3174,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3170,12 +3195,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3438,18 +3457,6 @@ definitions:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
     type: object
-  response.OnboardingStartData:
-    properties:
-      message:
-        type: string
-      userDidStartOnboarding:
-        type: boolean
-    type: object
-  response.OnboardingStartResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.OnboardingStartData'
-    type: object
   response.OnchainInvestData:
     properties:
       tx_object:
@@ -3476,6 +3483,13 @@ definitions:
       data:
         items:
           $ref: '#/definitions/model.ProductBotCommand'
+        type: array
+    type: object
+  response.ProductChangelogs:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.ProductChangelogs'
         type: array
     type: object
   response.ProfileAirdropCampaignResponse:
@@ -6829,10 +6843,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.OnboardingStartResponse'
+            $ref: '#/definitions/response.ResponseDataMessage'
       summary: User did start onboarding
       tags:
-      - Defi
+      - Onboarding
   /onchain/invest-stake-data:
     get:
       consumes:
@@ -6925,6 +6939,28 @@ paths:
       summary: Get onchain invest unstake data
       tags:
       - Invest
+  /product-metadata/changelogs:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelogs
+      parameters:
+      - in: query
+        name: product
+        type: string
+      - in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductChangelogs'
+      summary: Get product changelogs
+      tags:
+      - ProductMetadata
   /product-metadata/commands:
     get:
       consumes:

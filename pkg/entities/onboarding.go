@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 	"math/big"
 
+	"github.com/consolelabs/mochi-typeset/typeset"
 	"github.com/ethereum/go-ethereum/common/math"
 
+	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service/mochipay"
@@ -89,7 +91,8 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 	}
 
 	// Send notification to user
-	if err := e.sendOnboardingStartNotification(); err != nil {
+	if err := e.sendOnboardingStartNotification(req.ProfileId, symbol, amount, kekkToken.Decimal); err != nil {
+		// just log if send notification failed
 		e.log.
 			Fields(logger.Fields{"profileId": req.ProfileId}).
 			Error(err, "[Entity.OnboardingStart] e.sendOnboardingStartNotification() failed")
@@ -99,11 +102,19 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 	return nil
 }
 
-func (e *Entity) sendOnboardingStartNotification() error {
-	msg := struct{ Message string }{Message: "Hello"}
+func (e *Entity) sendOnboardingStartNotification(profileId, tokenSymbol, tokenAmount string, tokenDecimal int64) error {
+	msg := message.OnboardingStart{
+		Type: typeset.NOTIFICATION_ONBOARDING_START,
+		OnboardingStartMetadata: message.OnboardingStartMetadata{
+			UserProfileID: profileId,
+			Token:         tokenSymbol,
+			Amount:        tokenAmount,
+			Decimal:       tokenDecimal,
+		},
+	}
 	byteNotification, _ := json.Marshal(msg)
 	if err := e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification); err != nil {
-		e.log.Fields(logger.Fields{"req": ""}).Error(err, "[entity.sendOnboardingStartNotification] - e.kafka.Produce failed")
+		e.log.Fields(logger.Fields{"msg": msg}).Error(err, "[entity.sendOnboardingStartNotification] - e.kafka.Produce failed")
 		return err
 	}
 	return nil
