@@ -84,6 +84,33 @@ func (h *Handler) GetVaults(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse[any](vault, nil, nil, nil))
 }
 
+// GetVault     godoc
+// @Summary     Get vault
+// @Description Get vault
+// @Tags        Vault
+// @Accept      json
+// @Produce     json
+// @Param       req   query  request.GetVaultRequest true  "get vault request"
+// @Success     200 {object} response.GetVaultResponse
+// @Router      /vault [get]
+func (h *Handler) GetVault(c *gin.Context) {
+	var req request.GetVaultRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.GetVault] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, nil, nil))
+		return
+	}
+
+	vault, err := h.entities.GetVault(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetVault] entity.GetVault() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](vault, nil, nil, nil))
+}
+
 func (h *Handler) GetVaultConfigChannel(c *gin.Context) {
 	guildId := c.Query("guild_id")
 	if guildId == "" {

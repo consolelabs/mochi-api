@@ -105,3 +105,8 @@ type GetVaultsRequest struct {
 	Threshold     string `form:"threshold"`
 	NoFetchAmount string `form:"no_fetch_amount" default:"false"`
 }
+
+type GetVaultRequest struct {
+	VaultId       string `uri:"vault_id"`
+	NoFetchAmount string `form:"no_fetch_amount" default:"false"`
+}

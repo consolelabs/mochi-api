@@ -362,6 +362,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	vaultGroup := v1.Group("/vault")
 	{
 		vaultGroup.GET("", h.Vault.GetVaults)
+		vaultGroup.GET("/:vault_id", h.Vault.GetVault)
 		vaultGroup.POST("", h.Vault.CreateVault)
 		vaultGroup.POST("/config/channel", h.Vault.CreateConfigChannel)
 		vaultGroup.GET("/config/channel", h.Vault.GetVaultConfigChannel)
@@ -409,6 +410,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		productMetaData.GET("/emoji", h.Emojis.ListEmojis)
 		productMetaData.GET("/copy/:type", h.Content.GetTypeContent)
 		productMetaData.GET("/commands", h.ProductData.ProductBotCommand)
+		productMetaData.GET("/changelogs", h.ProductData.ProductChangelogs)
 	}
 
 	// api/v1/earns
@@ -455,5 +457,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		onchainGroup.GET("/swap-data", h.Swap.OnchainData)
 		onchainGroup.GET("/invest-stake-data", h.Invest.OnchainInvestStakeData)
 		onchainGroup.GET("/invest-unstake-data", h.Invest.OnchainInvestUnstakeData)
+	}
+
+	dexesGroup := v1.Group("/dexes")
+	{
+		dexesGroup.GET("/search", h.Dexes.SearchDexPair)
 	}
 }

@@ -84,3 +84,7 @@ type Nft struct {
 type GetVaultsResponse struct {
 	Data []model.Vault `json:"data"`
 }
+
+type GetVaultResponse struct {
+	Data model.Vault `json:"data"`
+}
