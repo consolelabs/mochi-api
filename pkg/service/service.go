@@ -3,6 +3,8 @@ package service
 import (
 	"fmt"
 
+	"github.com/defipod/mochi/pkg/service/github"
+
 	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
@@ -58,6 +60,7 @@ type Service struct {
 	Krystal       krystal.Service
 	GeckoTerminal geckoterminal.Service
 	DexScreener   dexscreener.Service
+	Github        github.Service
 }
 
 func NewService(
@@ -111,5 +114,6 @@ func NewService(
 		Krystal:       krystal.NewService(&cfg, log, cache),
 		GeckoTerminal: geckoterminal.NewService(&cfg),
 		DexScreener:   dexscreener.NewService(),
+		Github:        github.NewService(&cfg, log),
 	}, nil
 }

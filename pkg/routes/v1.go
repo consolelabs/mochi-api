@@ -411,6 +411,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		productMetaData.GET("/copy/:type", h.Content.GetTypeContent)
 		productMetaData.GET("/commands", h.ProductData.ProductBotCommand)
 		productMetaData.GET("/changelogs", h.ProductData.ProductChangelogs)
+		productMetaData.GET("/crawl-changelogs", h.ProductData.CrawlChangelogs)
 	}
 
 	// api/v1/earns

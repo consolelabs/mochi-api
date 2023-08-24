@@ -20,12 +20,11 @@ type ProductBotCommand struct {
 }
 
 type ProductChangelogs struct {
-	Id           int64                     `json:"id"`
-	Product      typeset.ProductChangeLogs `json:"product"`
-	Title        string                    `json:"title"`
-	Content      string                    `json:"content"`
-	GithubUrl    string                    `json:"github_url"`
-	ThumbnailUrl string                    `json:"thumbnail_url"`
-	CreatedAt    time.Time                 `json:"created_at"`
-	UpdatedAt    time.Time                 `json:"updated_at"`
+	Product      string    `json:"product"`
+	Title        string    `json:"title"`
+	Content      string    `json:"content"`
+	GithubUrl    string    `json:"github_url"`
+	ThumbnailUrl string    `json:"thumbnail_url"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
