@@ -31,7 +31,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Accept      json
 // @Produce     json
 // @Param       req body request.OnboardingStartRequest true "onboarding start request"
-// @Success     200 {object} response.ResponseDataMessage
+// @Success     200 {object} response.OnboardingStartResponse
 // @Router      /onboarding/start [post]
 func (h *Handler) Start(c *gin.Context) {
 	var req request.OnboardingStartRequest
@@ -40,10 +40,11 @@ func (h *Handler) Start(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	if err := h.entities.OnboardingStart(req); err != nil {
+	data, err := h.entities.OnboardingStart(req)
+	if err != nil {
 		h.log.Error(err, "[handler.Start] entity.OnboardingStart() failed")
 		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
-	c.JSON(http.StatusOK, response.CreateResponse[any](response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }

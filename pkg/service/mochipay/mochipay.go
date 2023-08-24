@@ -506,7 +506,7 @@ func (m *MochiPay) ApplicationTransfer(req ApplicationTransferRequest) (*Applica
 
 	res := &ApplicationTransferResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/api/v2/applications/%s/transfer", m.config.MochiPayServerHost, req.AppId),
+		URL:       fmt.Sprintf("%s/api/v1/applications/%s/transfer", m.config.MochiPayServerHost, req.AppId),
 		Body:      bytes.NewBuffer(payload),
 		Method:    "POST",
 		ParseForm: res,

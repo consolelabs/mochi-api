@@ -4507,7 +4507,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseDataMessage"
+                            "$ref": "#/definitions/response.OnboardingStartResponse"
                         }
                     }
                 }
@@ -11279,6 +11279,36 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.OffchainTipBotTransferToken"
                     }
+                }
+            }
+        },
+        "response.OnboardingStartData": {
+            "type": "object",
+            "properties": {
+                "reward": {
+                    "$ref": "#/definitions/response.OnboardingStartReward"
+                },
+                "user_already_started": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.OnboardingStartResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnboardingStartData"
+                }
+            }
+        },
+        "response.OnboardingStartReward": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
                 }
             }
         },

@@ -3,28 +3,27 @@ package entities
 import (
 	"crypto/ed25519"
 	"encoding/hex"
-	"encoding/json"
-	"math/big"
+	"strconv"
+	"time"
 
-	"github.com/consolelabs/mochi-typeset/typeset"
-	"github.com/ethereum/go-ethereum/common/math"
-
-	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochipay"
 )
 
-func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
+func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) (*response.OnboardingStartData, error) {
 	// Check onboarding status
 	onboardingStatus, err := e.svc.MochiProfile.GetOnboardingStatus(req.ProfileId)
 	if err != nil {
 		e.log.Fields(logger.Fields{"profileId": req.ProfileId}).Error(err, "[Entity.OnboardingStart] svc.MochiProfile.GetOnboardingStatus() failed")
-		return err
+		return nil, err
 	}
 	if onboardingStatus.DidOnboarding {
-		// if user already start onboarding, just return
-		return nil
+		return &response.OnboardingStartData{
+			UserAlreadyStarted: true,
+			Reward:             nil,
+		}, nil
 	}
 
 	// Get reward token info
@@ -37,27 +36,25 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 		e.log.
 			Fields(logger.Fields{"symbol": symbol, "chainId": chainId}).
 			Error(err, "[Entity.OnboardingStart] svc.MochiPay.GetToken() failed")
-		return err
+		return nil, err
 	}
-	decimal := math.BigPow(10, kekkToken.Decimal)
-	rewardAmount := 10
-	amount := new(big.Int).Mul(big.NewInt(int64(rewardAmount)), decimal).String()
 
 	// Prepare application auth
 	privateKey, err := hex.DecodeString(e.cfg.MochiAppPrivateKey)
 	if err != nil {
 		e.log.Error(err, "[Entity.OnboardingStart] hex.DecodeString() failed")
-		return err
+		return nil, err
 	}
-	message := "ApplicationTransfer"
+	message := strconv.FormatInt(time.Now().Unix(), 10)
 	signature := ed25519.Sign(privateKey, []byte(message))
 	sigStr := hex.EncodeToString(signature)
 	if err != nil {
 		e.log.Error(err, "[Entity.OnboardingStart] hex.EncodeString() failed")
-		return err
+		return nil, err
 	}
 
 	// Transfer reward token
+	rewardAmount := "10"
 	appTransferReq := mochipay.ApplicationTransferRequest{
 		AppId: "35",
 		Header: mochipay.ApplicationBaseHeaderRequest{
@@ -67,7 +64,7 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 		},
 		Metadata: mochipay.ApplicationTransferMetadata{
 			RecipientIds: []string{req.ProfileId},
-			Amounts:      []string{amount},
+			Amounts:      []string{rewardAmount},
 			TokenId:      kekkToken.Id,
 			References:   "",
 			Description:  "User onboarding reward",
@@ -79,7 +76,7 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 		e.log.
 			Fields(logger.Fields{"appTransferRequest": appTransferReq}).
 			Error(err, "[Entity.OnboardingStart] svc.MochiPay.ApplicationTransfer() failed")
-		return err
+		return nil, err
 	}
 
 	// Mark user already started onboarding
@@ -87,35 +84,14 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) error {
 		e.log.
 			Fields(logger.Fields{"profileId": req.ProfileId}).
 			Error(err, "[Entity.OnboardingStart] svc.MochiProfile.MarkUserDidOnboarding() failed")
-		return err
+		return nil, err
 	}
 
-	// Send notification to user
-	if err := e.sendOnboardingStartNotification(req.ProfileId, symbol, amount, kekkToken.Decimal); err != nil {
-		// just log if send notification failed
-		e.log.
-			Fields(logger.Fields{"profileId": req.ProfileId}).
-			Error(err, "[Entity.OnboardingStart] e.sendOnboardingStartNotification() failed")
-		return nil
-	}
-
-	return nil
-}
-
-func (e *Entity) sendOnboardingStartNotification(profileId, tokenSymbol, tokenAmount string, tokenDecimal int64) error {
-	msg := message.OnboardingStart{
-		Type: typeset.NOTIFICATION_ONBOARDING_START,
-		OnboardingStartMetadata: message.OnboardingStartMetadata{
-			UserProfileID: profileId,
-			Token:         tokenSymbol,
-			Amount:        tokenAmount,
-			Decimal:       tokenDecimal,
+	return &response.OnboardingStartData{
+		UserAlreadyStarted: false,
+		Reward: &response.OnboardingStartReward{
+			Token:  kekkToken.Symbol,
+			Amount: rewardAmount,
 		},
-	}
-	byteNotification, _ := json.Marshal(msg)
-	if err := e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification); err != nil {
-		e.log.Fields(logger.Fields{"msg": msg}).Error(err, "[entity.sendOnboardingStartNotification] - e.kafka.Produce failed")
-		return err
-	}
-	return nil
+	}, nil
 }

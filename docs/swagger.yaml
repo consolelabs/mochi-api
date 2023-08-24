@@ -2546,11 +2546,11 @@ definitions:
         type: string
       usd:
         type: number
+      usd_1h_change:
+        type: number
       usd_7d_change:
         type: number
       usd_14d_change:
-        type: number
-      usd_1h_change:
         type: number
       usd_1y_change:
         type: number
@@ -3174,12 +3174,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3195,6 +3189,12 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3456,6 +3456,25 @@ definitions:
         items:
           $ref: '#/definitions/response.OffchainTipBotTransferToken'
         type: array
+    type: object
+  response.OnboardingStartData:
+    properties:
+      reward:
+        $ref: '#/definitions/response.OnboardingStartReward'
+      user_already_started:
+        type: boolean
+    type: object
+  response.OnboardingStartResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.OnboardingStartData'
+    type: object
+  response.OnboardingStartReward:
+    properties:
+      amount:
+        type: string
+      token:
+        type: string
     type: object
   response.OnchainInvestData:
     properties:
@@ -6843,7 +6862,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseDataMessage'
+            $ref: '#/definitions/response.OnboardingStartResponse'
       summary: User did start onboarding
       tags:
       - Onboarding
