@@ -1,7 +1,9 @@
 ## What's this PR does ?
 
+e.g: Update API get balances
 ## Which UI commands affect by this change ?
 
+e.g: /balances
 ## DoD
 
 - [ ] Is it public API in [documentation](https://docs.mochi.gg)? Any docs update required ?
