@@ -806,3 +806,16 @@ func ValidateNumberSeries(s string) bool {
 
 	return matched
 }
+
+func ValidateFileMarkdown(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	matched, err := regexp.MatchString(".*?.md", s)
+	if err != nil {
+		return false
+	}
+
+	return matched
+}

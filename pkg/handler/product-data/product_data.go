@@ -75,3 +75,8 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(productChangelogs, nil, nil, nil))
 }
+
+func (h *Handler) CrawlChangelogs(c *gin.Context) {
+	go h.entities.CrawlChangelogs()
+	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
+}
