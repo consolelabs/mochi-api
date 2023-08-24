@@ -58,3 +58,7 @@ type EvmAssociatedAccount struct {
 	CreatedAt          time.Time        `json:"created_at"`
 	UpdatedAt          time.Time        `json:"updated_at"`
 }
+
+type OnboardingStatusResponse struct {
+	DidOnboarding bool `json:"did_onboarding"`
+}

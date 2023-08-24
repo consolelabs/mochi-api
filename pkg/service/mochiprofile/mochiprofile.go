@@ -259,3 +259,40 @@ func (m *MochiProfile) UnlinkDex(profileId, platform string) error {
 
 	return nil
 }
+
+func (m *MochiProfile) GetOnboardingStatus(profileId string) (res *OnboardingStatusResponse, err error) {
+	url := fmt.Sprintf("%s/api/v1/profiles/%s/onboarding-status", m.config.MochiProfileServerHost, profileId)
+	req := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: &res,
+		Headers:   map[string]string{"Content-Type": "application/json"},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("[mochiprofile.GetOnboardingStatus] util.SendRequest() failed: %v", err)
+	}
+	return res, nil
+}
+
+func (m *MochiProfile) MarkUserDidOnboarding(profileId string) error {
+	url := fmt.Sprintf("%s/api/v1/profiles/%s/onboarding-status", m.config.MochiProfileServerHost, profileId)
+	request, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return errors.ErrProfile
+	}
+
+	return nil
+}

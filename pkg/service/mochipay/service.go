@@ -19,4 +19,5 @@ type Service interface {
 
 	// TransferV2
 	TransferV2(req TransferV2Request) (*TransferV2Response, error)
+	ApplicationTransfer(req ApplicationTransferRequest) (*ApplicationTransferResponse, error)
 }

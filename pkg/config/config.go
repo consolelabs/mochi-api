@@ -132,6 +132,8 @@ type Config struct {
 
 	KrystalBaseUrl string
 	KrystalApiKey  string
+
+	MochiAppPrivateKey string
 }
 
 type MarketplaceBaseUrl struct {
@@ -355,6 +357,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		KrystalBaseUrl: v.GetString("KRYSTAL_BASE_URL"),
 		KrystalApiKey:  v.GetString("KRYSTAL_API_KEY"),
+
+		MochiAppPrivateKey: v.GetString("MOCHI_APP_PRIVATE_KEY"),
 	}
 }
 

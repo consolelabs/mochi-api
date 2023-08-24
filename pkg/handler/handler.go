@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/handler/healthz"
 	"github.com/defipod/mochi/pkg/handler/invest"
 	"github.com/defipod/mochi/pkg/handler/nft"
+	"github.com/defipod/mochi/pkg/handler/onboarding"
 	pkpass "github.com/defipod/mochi/pkg/handler/pk-pass"
 	productdata "github.com/defipod/mochi/pkg/handler/product-data"
 	"github.com/defipod/mochi/pkg/handler/swap"
@@ -60,6 +61,7 @@ type Handler struct {
 	Invest          invest.IHandler
 	ProductData     productdata.IHandler
 	Dexes           dexes.IHandler
+	Onboarding      onboarding.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -91,5 +93,6 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		DaoVoting:       daovoting.New(entities, logger),
 		ProductData:     productdata.New(entities, logger),
 		Dexes:           dexes.New(entities, logger),
+		Onboarding:      onboarding.New(entities, logger),
 	}
 }
