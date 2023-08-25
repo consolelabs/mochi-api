@@ -276,7 +276,7 @@ func (m *MochiProfile) GetOnboardingStatus(profileId string) (res *OnboardingSta
 
 func (m *MochiProfile) MarkUserDidOnboarding(profileId string) error {
 	url := fmt.Sprintf("%s/api/v1/profiles/%s/onboarding-status", m.config.MochiProfileServerHost, profileId)
-	request, err := http.NewRequest("POST", url, nil)
+	request, err := http.NewRequest("PUT", url, nil)
 	if err != nil {
 		return err
 	}
