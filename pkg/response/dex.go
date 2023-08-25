@@ -1,5 +1,7 @@
 package response
 
+import "strings"
+
 type SearchDexPairResponse struct {
 	Pairs []DexPair `json:"pairs"`
 }
@@ -42,4 +44,10 @@ type DexToken struct {
 	Address string `json:"address"`
 	Name    string `json:"name"`
 	Symbol  string `json:"symbol"`
+}
+
+func (p DexPair) IsEth() bool {
+	c := strings.ToLower(p.ChainId)
+
+	return c == "eth" || c == "ethereum"
 }

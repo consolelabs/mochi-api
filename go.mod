@@ -89,6 +89,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/fullsailor/pkcs7 v0.0.0-20190404230743-d7302db945fa // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/gammazero/deque v0.2.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -152,5 +153,6 @@ require (
 require (
 	cloud.google.com/go/storage v1.28.1
 	github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905
+	github.com/gammazero/workerpool v1.1.3
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
 )

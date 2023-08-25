@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/defipod/mochi/pkg/service/ethplorer"
 	"github.com/defipod/mochi/pkg/service/github"
 
 	"github.com/go-redis/redis/v8"
@@ -61,6 +62,7 @@ type Service struct {
 	GeckoTerminal geckoterminal.Service
 	DexScreener   dexscreener.Service
 	Github        github.Service
+	Ethplorer     ethplorer.Service
 }
 
 func NewService(
@@ -115,5 +117,6 @@ func NewService(
 		GeckoTerminal: geckoterminal.NewService(&cfg),
 		DexScreener:   dexscreener.NewService(),
 		Github:        github.NewService(&cfg, log),
+		Ethplorer:     ethplorer.NewService(),
 	}, nil
 }
