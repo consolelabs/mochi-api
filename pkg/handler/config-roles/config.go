@@ -314,12 +314,15 @@ func (h *Handler) NewGuildGroupNFTRole(c *gin.Context) {
 
 	// update user roles in the background after the request is done
 	defer func() {
-		h.log.Fields(logger.Fields{"request": req}).Info("[handler.NewGuildGroupNFTRole] - start to updateUserRoles...")
-		if err = job.NewUpdateUserRolesJob(h.entities, &model.UpdateUserRolesOptions{
-			GuildID: req.GuildID,
-		}).Run(); err != nil {
-			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to run job NewUpdateUserRolesJob")
-		}
+		go func() {
+			h.log.Fields(logger.Fields{"request": req}).Info("[handler.NewGuildGroupNFTRole] - start to updateUserRoles...")
+			if err = job.NewUpdateUserRolesJob(h.entities, &model.UpdateUserRolesOptions{
+				GuildID: req.GuildID,
+			}).Run(); err != nil {
+				h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.NewGuildGroupNFTRole] - failed to run job NewUpdateUserRolesJob")
+			}
+			h.log.Fields(logger.Fields{"request": req}).Info("[handler.NewGuildGroupNFTRole] - updateUserRoles done")
+		}()
 	}()
 
 	c.JSON(http.StatusOK, response.CreateResponse(newRole, nil, nil, nil))
@@ -513,12 +516,15 @@ func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
 
 	// update user roles in the background after the request is done
 	defer func() {
-		h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - start to updateUserRoles...")
-		if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
-			GuildID: req.GuildID,
-		}).Run(); err != nil {
-			h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
-		}
+		go func() {
+			h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - start to updateUserRoles...")
+			if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+				GuildID: req.GuildID,
+			}).Run(); err != nil {
+				h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
+			}
+			h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - updateUserRoles done")
+		}()
 	}()
 
 	// check if the role already exists, if so, update it
@@ -626,13 +632,16 @@ func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
 
 	// update user roles in the background after the request is done
 	defer func() {
-		h.log.Fields(logger.Fields{"id": id, "guild_id": tr.GuildID}).Info("[handler.RemoveGuildTokenRole] - start to updateUserRoles...")
-		if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
-			GuildID:       tr.GuildID,
-			RolesToRemove: []string{tr.RoleID},
-		}).Run(); err != nil {
-			h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
-		}
+		go func() {
+			h.log.Fields(logger.Fields{"id": id, "guild_id": tr.GuildID}).Info("[handler.RemoveGuildTokenRole] - start to updateUserRoles...")
+			if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+				GuildID:       tr.GuildID,
+				RolesToRemove: []string{tr.RoleID},
+			}).Run(); err != nil {
+				h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.RemoveGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
+			}
+			h.log.Fields(logger.Fields{"id": id, "guild_id": tr.GuildID}).Info("[handler.RemoveGuildTokenRole] - updateUserRoles done")
+		}()
 	}()
 
 	if err := h.entities.RemoveGuildTokenRole(id); err != nil {
