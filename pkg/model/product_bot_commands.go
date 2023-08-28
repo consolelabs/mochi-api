@@ -25,6 +25,15 @@ type ProductChangelogs struct {
 	Content      string    `json:"content"`
 	GithubUrl    string    `json:"github_url"`
 	ThumbnailUrl string    `json:"thumbnail_url"`
+	FileName     string    `json:"file_name"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+type ProductChangelogView struct {
+	Key           string    `json:"key"`
+	ChangelogName string    `json:"changelog_name"`
+	Metadata      *[]byte   `json:"metadata" gorm:"metadata type:jsonb;default:'[]';not null"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }

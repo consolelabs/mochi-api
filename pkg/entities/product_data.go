@@ -9,6 +9,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
+	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -24,6 +25,23 @@ func (e *Entity) ProductChangelogs(req request.ProductChangelogsRequest) ([]mode
 	return e.repo.ProductChangelogs.List(productchangelogs.ListQuery{
 		Product: req.Product,
 		Size:    req.Size,
+	})
+}
+
+func (e *Entity) CreateProductChangelogsView(req request.CreateProductChangelogsViewRequest) (*model.ProductChangelogView, error) {
+	productchangelogsview := &model.ProductChangelogView{
+		Key:           req.Key,
+		ChangelogName: req.ChangelogName,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+	}
+	return productchangelogsview, e.repo.ProductChangelogsView.Create(productchangelogsview)
+}
+
+func (e *Entity) GetProductChangelogsView(req request.GetProductChangelogsViewRequest) ([]model.ProductChangelogView, error) {
+	return e.repo.ProductChangelogsView.List(productchangelogsview.ListQuery{
+		Key:           req.Key,
+		ChangelogName: req.ChangelogName,
 	})
 }
 
@@ -61,6 +79,7 @@ func (e *Entity) CrawlChangelogs() {
 			continue
 		}
 		changelogs.GithubUrl = repo.HTMLURL
+		changelogs.FileName = repo.Name
 
 		// 5. store changelogs
 		err = e.repo.ProductChangelogs.Create(changelogs)
