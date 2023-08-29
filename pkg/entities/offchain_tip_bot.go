@@ -221,7 +221,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
 	}
 
-	if bal.Cmp(amount) != 1 {
+	if bal.Cmp(amount) < 0 {
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
