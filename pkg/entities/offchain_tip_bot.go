@@ -172,6 +172,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
 	req.Metadata = map[string]interface{}{
 		"message": req.Message,
+		"moniker": req.Moniker,
 	}
 
 	// get senderProfile, recipientProfiles by discordID
