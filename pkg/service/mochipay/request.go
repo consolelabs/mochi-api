@@ -39,3 +39,24 @@ type TransferV2Request struct {
 	Action   string                 `json:"action" binding:"required"`
 	Metadata map[string]interface{} `json:"metadata"`
 }
+
+type ApplicationBaseHeaderRequest struct {
+	Application string `header:"x-application"`
+	Message     string `header:"x-message"`
+	Signature   string `header:"x-signature"`
+}
+
+type ApplicationTransferRequest struct {
+	AppId    string                       `json:"appId"`
+	Metadata ApplicationTransferMetadata  `json:"metadata"`
+	Header   ApplicationBaseHeaderRequest `json:"header"`
+}
+
+type ApplicationTransferMetadata struct {
+	RecipientIds []string `json:"recipient_ids"`
+	Amounts      []string `json:"amounts"`
+	TokenId      string   `json:"token_id" `
+	References   string   `json:"references"`
+	Description  string   `json:"description"`
+	Platform     string   `json:"platform"`
+}

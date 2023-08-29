@@ -4479,6 +4479,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/onboarding/start": {
+            "post": {
+                "description": "User did start onboarding",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Onboarding"
+                ],
+                "summary": "User did start onboarding",
+                "parameters": [
+                    {
+                        "description": "onboarding start request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.OnboardingStartRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.OnboardingStartResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/onchain/invest-stake-data": {
             "get": {
                 "description": "Get onchain invest stake data",
@@ -4608,6 +4642,41 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.OnchainInvestDataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/product-metadata/changelogs": {
+            "get": {
+                "description": "Get product changelogs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelogs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "product",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogs"
                         }
                     }
                 }
@@ -5693,7 +5762,7 @@ const docTemplate = `{
         },
         "/vault": {
             "get": {
-                "description": "Get vaults",
+                "description": "Get vault",
                 "consumes": [
                     "application/json"
                 ],
@@ -5703,18 +5772,8 @@ const docTemplate = `{
                 "tags": [
                     "Vault"
                 ],
-                "summary": "Get vaults",
+                "summary": "Get vault",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "name": "evmAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "guildID",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "default": "false",
@@ -5723,17 +5782,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "profileID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "solanaAddress",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "threshold",
+                        "name": "vaultId",
                         "in": "query"
                     }
                 ],
@@ -5741,7 +5790,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.GetVaultsResponse"
+                            "$ref": "#/definitions/response.GetVaultResponse"
                         }
                     }
                 }
@@ -6804,6 +6853,9 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "discord_alias": {
+                    "type": "string"
+                },
                 "discord_command": {
                     "type": "string"
                 },
@@ -6813,7 +6865,39 @@ const docTemplate = `{
                 "scope": {
                     "type": "integer"
                 },
+                "telegram_alias": {
+                    "type": "string"
+                },
                 "telegram_command": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProductChangelogs": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "github_url": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "product": {
+                    "type": "integer"
+                },
+                "thumbnail_url": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 },
                 "updated_at": {
@@ -7906,6 +7990,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "transfer_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.OnboardingStartRequest": {
+            "type": "object",
+            "required": [
+                "platform",
+                "profile_id"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string",
+                    "enum": [
+                        "discord",
+                        "telegram"
+                    ]
+                },
+                "profile_id": {
                     "type": "string"
                 }
             }
@@ -9890,6 +9993,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetVaultResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.Vault"
+                }
+            }
+        },
         "response.GetVaultsResponse": {
             "type": "object",
             "properties": {
@@ -11171,6 +11282,36 @@ const docTemplate = `{
                 }
             }
         },
+        "response.OnboardingStartData": {
+            "type": "object",
+            "properties": {
+                "reward": {
+                    "$ref": "#/definitions/response.OnboardingStartReward"
+                },
+                "user_already_started": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.OnboardingStartResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.OnboardingStartData"
+                }
+            }
+        },
+        "response.OnboardingStartReward": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "response.OnchainInvestData": {
             "type": "object",
             "properties": {
@@ -11210,6 +11351,17 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.ProductBotCommand"
+                    }
+                }
+            }
+        },
+        "response.ProductChangelogs": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductChangelogs"
                     }
                 }
             }

@@ -497,3 +497,31 @@ func (m *MochiPay) TransferV2(req TransferV2Request) (*TransferV2Response, error
 
 	return res, nil
 }
+
+func (m *MochiPay) ApplicationTransfer(req ApplicationTransferRequest) (*ApplicationTransferResponse, error) {
+	payload, err := json.Marshal(req.Metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &ApplicationTransferResponse{}
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:       fmt.Sprintf("%s/api/v1/applications/%s/transfer", m.config.MochiPayServerHost, req.AppId),
+		Body:      bytes.NewBuffer(payload),
+		Method:    "POST",
+		ParseForm: res,
+		Headers: map[string]string{
+			"x-application": req.Header.Application,
+			"x-message":     req.Header.Message,
+			"x-signature":   req.Header.Signature,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("transfer failed with status %d", status)
+	}
+
+	return res, nil
+}

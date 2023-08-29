@@ -30,4 +30,5 @@ type TransferV2Request struct {
 	Message      string                 `json:"message"`
 	ChainID      string                 `json:"chain_id"`
 	Metadata     map[string]interface{} `json:"metadata"`
+	Moniker      string                 `json:"moniker"`
 }

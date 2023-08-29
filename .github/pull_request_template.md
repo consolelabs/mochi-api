@@ -1,16 +1,12 @@
-**What does this PR do?**
+## What's this PR does ?
 
--   [x] My bugfix
+e.g: Update API get balances
+## Which UI commands affect by this change ?
 
-**How to test**
+e.g: /balances
+## DoD
 
--   Create a detailed description of what you need to do to set this PR up. ie: Does it need migrations? Do you need to install something?
--   Create a step by step list of what the engineer needs to do to test.
-
-**Edge cases**
-
--   What are the edge cases that you might see in this PR?
-
-**Media (Loom or gif)**
-
--   Insert media here (if applicable)
+- [ ] Is it public API in [documentation](https://docs.mochi.gg)? Any docs update required ?
+- [ ] Does it change the response data shape ?
+- [ ] Is it require to update the mock data in [preview](https://github.com/consolelabs/data-mock) ?
+- [ ] Include the sample call / example in this PR

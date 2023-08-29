@@ -9,3 +9,11 @@ type ProductBotCommand struct {
 type ProductChangelogs struct {
 	Data []model.ProductChangelogs `json:"data"`
 }
+
+type CreateProductChangelogsViewed struct {
+	Data model.ProductChangelogView `json:"data"`
+}
+
+type GetProductChangelogsViewed struct {
+	Data []model.ProductChangelogView `json:"data"`
+}

@@ -56,6 +56,7 @@ import (
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
+	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -170,5 +171,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		TokenInfo:                            tokeninfo.NewPG(db),
 		ProductBotCommand:                    productbotcommand.NewPG(db),
 		ProductChangelogs:                    productchangelogs.NewPG(db),
+		ProductChangelogsView:                productchangelogsview.NewPG(db),
 	}
 }

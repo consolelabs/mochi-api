@@ -8,4 +8,6 @@ type Service interface {
 	GetAllEvmAccount() ([]*EvmAssociatedAccount, error)
 	AssociateDex(profileId, platform, apiKey, apiSecret string) error
 	UnlinkDex(profileId, platform string) error
+	GetOnboardingStatus(profileId string) (res *OnboardingStatusResponse, err error)
+	MarkUserDidOnboarding(profileId string) error
 }

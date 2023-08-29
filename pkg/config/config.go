@@ -107,6 +107,8 @@ type Config struct {
 	SolanaCentralizedWalletPrivateKey string
 	SolanaPKSecretKey                 string
 
+	GithubToken string
+
 	APILayerAPIKey string
 
 	Kafka         Kafka
@@ -130,6 +132,8 @@ type Config struct {
 
 	KrystalBaseUrl string
 	KrystalApiKey  string
+
+	MochiAppPrivateKey string
 }
 
 type MarketplaceBaseUrl struct {
@@ -315,6 +319,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		SolanaCentralizedWalletPrivateKey: v.GetString("SOLANA_CENTRALIZED_WALLET_PK"),
 		SolanaPKSecretKey:                 v.GetString("SOLANA_PK_SECRET_KEY"),
 
+		GithubToken: v.GetString("GITHUB_TOKEN"),
+
 		APILayerAPIKey: v.GetString("API_LAYER_API_KEY"),
 		Kafka: Kafka{
 			Brokers:           v.GetString("KAFKA_BROKERS"),
@@ -351,6 +357,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		KrystalBaseUrl: v.GetString("KRYSTAL_BASE_URL"),
 		KrystalApiKey:  v.GetString("KRYSTAL_API_KEY"),
+
+		MochiAppPrivateKey: v.GetString("MOCHI_APP_PRIVATE_KEY"),
 	}
 }
 

@@ -170,6 +170,11 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 
 func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
 	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
+	req.Metadata = map[string]interface{}{
+		"message": req.Message,
+		"moniker": req.Moniker,
+	}
+
 	// get senderProfile, recipientProfiles by discordID
 	transferReq := mochipay.TransferV2Request{
 		From: &mochipay.Wallet{
@@ -216,7 +221,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		return nil, errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
 	}
 
-	if bal.Cmp(amount) != 1 {
+	if bal.Cmp(amount) < 0 {
 		return nil, errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
