@@ -1,3 +1,23 @@
+# [6.9.0](https://github.com/consolelabs/mochi-api/compare/v6.8.0...v6.9.0) (2023-08-29)
+
+
+### Bug Fixes
+
+* allow tip equal bal ([#1159](https://github.com/consolelabs/mochi-api/issues/1159)) ([8e008f0](https://github.com/consolelabs/mochi-api/commit/8e008f0b101313cb99c52440af0abf9a6511de7c))
+* send more params tip moniker ([#1158](https://github.com/consolelabs/mochi-api/issues/1158)) ([97fcc13](https://github.com/consolelabs/mochi-api/commit/97fcc13ca0122d103405be6036f54c03f853872b))
+* store message transfer token ([#1157](https://github.com/consolelabs/mochi-api/issues/1157)) ([8b70d6f](https://github.com/consolelabs/mochi-api/commit/8b70d6f0812fe4b804e910868366b7ce59dc517a))
+* update checkbox template pr ([#1150](https://github.com/consolelabs/mochi-api/issues/1150)) ([2a8f15e](https://github.com/consolelabs/mochi-api/commit/2a8f15e4171ec6bf7f097680b4864bbaea1736ce))
+* update content template pr ([#1151](https://github.com/consolelabs/mochi-api/issues/1151)) ([19f9b5a](https://github.com/consolelabs/mochi-api/commit/19f9b5a035019b971c4a1e6150bc7d296b9da9f9))
+* update template pr ([#1149](https://github.com/consolelabs/mochi-api/issues/1149)) ([33bdad9](https://github.com/consolelabs/mochi-api/commit/33bdad97579ce7601128a7f57426f99a2ce0fb28))
+
+
+### Features
+
+* add product changelogs view ([a6c8a22](https://github.com/consolelabs/mochi-api/commit/a6c8a22b883222471ee0827f5853754e556db4bf))
+* get changelog from github ([5927e4b](https://github.com/consolelabs/mochi-api/commit/5927e4b9b8f2df73082691d0475429e5f66237dc))
+* onboarding start ([#1148](https://github.com/consolelabs/mochi-api/issues/1148)) ([86c4c62](https://github.com/consolelabs/mochi-api/commit/86c4c62da52c75f10db5651dfb1af1a097af37b1))
+* token verbose add ethploer data ([ca7da53](https://github.com/consolelabs/mochi-api/commit/ca7da530c8fdb55f19cf9a6b0efec80fff1f63fb))
+
 # [6.8.0](https://github.com/consolelabs/mochi-api/compare/v6.7.1...v6.8.0) (2023-08-23)
 
 
