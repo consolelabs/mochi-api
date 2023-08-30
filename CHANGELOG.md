@@ -1,3 +1,10 @@
+# [6.10.0](https://github.com/consolelabs/mochi-api/compare/v6.9.0...v6.10.0) (2023-08-30)
+
+
+### Features
+
+* asset base chain ([#1160](https://github.com/consolelabs/mochi-api/issues/1160)) ([4e7ca22](https://github.com/consolelabs/mochi-api/commit/4e7ca2212d1b79af762e687d236e936c8ef66083))
+
 # [6.9.0](https://github.com/consolelabs/mochi-api/compare/v6.8.0...v6.9.0) (2023-08-29)
 
 
