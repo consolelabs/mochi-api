@@ -416,6 +416,14 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		}
 	}
 
+	baseAsset, err := e.listBaseWalletAssets(req)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] entity.listBaseWalletAssets() failed")
+		return nil, "", "", err
+	}
+
+	assets = append(assets, baseAsset...)
+
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(address, true, assets)
 	if err != nil {
@@ -548,6 +556,52 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	return assets, pnl, latestSnapshotBal, nil
+}
+
+func (e *Entity) listBaseWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, error) {
+	chainID := 8453
+	assets := make([]response.WalletAssetData, 0)
+	res, err := e.svc.Covalent.GetTokenBalances(chainID, req.Address, 3)
+	if err != nil {
+		e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
+		return nil, err
+	}
+	if res.Data.Items == nil || len(res.Data.Items) == 0 {
+		return nil, nil
+	}
+
+	for _, item := range res.Data.Items {
+		if item.Type != "cryptocurrency" {
+			continue
+		}
+		bal, quote := e.calculateTokenBalance(item, chainID)
+		// filter out dusty tokens
+		if quote < 0.001 {
+			continue
+		}
+
+		assets = append(assets, response.WalletAssetData{
+			ChainID:        chainID,
+			ContractName:   item.ContractName,
+			ContractSymbol: item.ContractTickerSymbol,
+			AssetBalance:   bal,
+			UsdBalance:     quote,
+			Token: response.AssetToken{
+				Name:    item.ContractName,
+				Symbol:  item.ContractTickerSymbol,
+				Decimal: int64(item.ContractDecimals),
+				Price:   item.QuoteRate,
+				Native:  item.NativeToken,
+				Chain: response.AssetTokenChain{
+					Name:      res.Data.ChainName,
+					ShortName: "BASE",
+				},
+			},
+			Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
+		})
+	}
+
+	return assets, nil
 }
 
 func (e *Entity) listSuiWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {

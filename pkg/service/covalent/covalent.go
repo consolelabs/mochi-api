@@ -19,6 +19,7 @@ var networks = map[int]string{
 	250:   "fantom-mainnet",
 	999:   "solana-mainnet",
 	42161: "arbitrum-mainnet",
+	8453:  "base-mainnet",
 }
 
 var (
