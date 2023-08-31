@@ -1,3 +1,11 @@
+## [6.10.1](https://github.com/consolelabs/mochi-api/compare/v6.10.0...v6.10.1) (2023-08-31)
+
+
+### Bug Fixes
+
+* improve performance profile sol ([#1161](https://github.com/consolelabs/mochi-api/issues/1161)) ([8f4c8fa](https://github.com/consolelabs/mochi-api/commit/8f4c8fa2919b191f312671dad2e8facd45a2a2f4))
+* rm retry query coingecko sol token ([#1162](https://github.com/consolelabs/mochi-api/issues/1162)) ([c74efc1](https://github.com/consolelabs/mochi-api/commit/c74efc16b4d82b795296c4391de8e058c60a7412))
+
 # [6.10.0](https://github.com/consolelabs/mochi-api/compare/v6.9.0...v6.10.0) (2023-08-30)
 
 
