@@ -502,7 +502,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 
 		// decimal from covalent seems wrong in some case, use coingecko first if error fallback to covalent
 		decimals := int64(item.ContractDecimals)
-		tokenInfo, err := e.svc.CoinGecko.GetCoinByContract(consts.SolChainType, item.ContractAddress, 1)
+		tokenInfo, err := e.svc.CoinGecko.GetCoinByContract(consts.SolChainType, item.ContractAddress, 0)
 		if err != nil {
 			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.CoinGecko.GetCoinByContract() failed")
 		}
