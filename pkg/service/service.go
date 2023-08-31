@@ -3,9 +3,6 @@ package service
 import (
 	"fmt"
 
-	"github.com/defipod/mochi/pkg/service/ethplorer"
-	"github.com/defipod/mochi/pkg/service/github"
-
 	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
@@ -23,7 +20,9 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/discord"
+	"github.com/defipod/mochi/pkg/service/ethplorer"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
+	"github.com/defipod/mochi/pkg/service/github"
 	"github.com/defipod/mochi/pkg/service/indexer"
 	"github.com/defipod/mochi/pkg/service/krystal"
 	"github.com/defipod/mochi/pkg/service/mochipay"
@@ -93,7 +92,7 @@ func NewService(
 	}
 
 	return &Service{
-		CoinGecko:     coingecko.NewService(&cfg),
+		CoinGecko:     coingecko.NewService(&cfg, cache),
 		Covalent:      covalent.NewService(&cfg, log, cache),
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),

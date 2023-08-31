@@ -1,10 +1,12 @@
 package coingecko
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/model"
 	errs "github.com/defipod/mochi/pkg/model/errors"
@@ -28,9 +30,10 @@ type CoinGecko struct {
 	getHistoricalGlobalMarketChartURL string
 	geckoTerminalSearchURL            string
 	getGlobalCryptoDataURL            string
+	cache                             cache.Cache
 }
 
-func NewService(cfg *config.Config) Service {
+func NewService(cfg *config.Config, cache cache.Cache) Service {
 	apiKey := cfg.CoinGeckoAPIKey
 
 	return &CoinGecko{
@@ -48,8 +51,13 @@ func NewService(cfg *config.Config) Service {
 		getHistoricalGlobalMarketChartURL: "https://pro-api.coingecko.com/api/v3/global/market_cap_chart?days=%d&x_cg_pro_api_key=" + apiKey,
 		getGlobalCryptoDataURL:            "https://pro-api.coingecko.com/api/v3/global?x_cg_pro_api_key=" + apiKey,
 		geckoTerminalSearchURL:            "https://app.geckoterminal.com/api/p1/search",
+		cache:                             cache,
 	}
 }
+
+var (
+	coingeckoGetTokenByContractKey = "coingecko-token-contract-key"
+)
 
 func (c *CoinGecko) GetHistoricalMarketData(coinID, currency string, days int) (*response.HistoricalMarketChartResponse, error, int) {
 	resp := &response.HistoricalMarketChartResponse{}
@@ -151,14 +159,17 @@ func (c *CoinGecko) GetAssetPlatforms() ([]*response.AssetPlatformResponseData, 
 	return res, nil
 }
 
-func (c *CoinGecko) GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error) {
-	var res response.GetCoinByContractResponseData
-	url := fmt.Sprintf(c.getCoinByContract, platformId, contractAddress)
-	status, err := util.FetchData(url, &res)
-	if err != nil || status != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch asset platforms with status %d: %v", status, err)
+func (c *CoinGecko) GetCoinByContract(platformId, contractAddress string, retry int) (*response.GetCoinByContractResponseData, error) {
+	var data response.GetCoinByContractResponseData
+	// check if data cached
+	cached, err := c.doCacheCoinByContract(platformId, contractAddress)
+	if err == nil && cached != "" {
+		go c.doNetworkCoinByContract(platformId, contractAddress, retry)
+		return &data, json.Unmarshal([]byte(cached), &data)
 	}
-	return &res, nil
+
+	// call network
+	return c.doNetworkCoinByContract(platformId, contractAddress, retry)
 }
 
 func (c *CoinGecko) GetTrendingSearch() (*response.GetTrendingSearch, error) {
