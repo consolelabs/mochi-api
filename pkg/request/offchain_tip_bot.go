@@ -31,4 +31,5 @@ type TransferV2Request struct {
 	ChainID      string                 `json:"chain_id"`
 	Metadata     map[string]interface{} `json:"metadata"`
 	Moniker      string                 `json:"moniker"`
+	OriginalTxId string                 `json:"original_tx_id"`
 }

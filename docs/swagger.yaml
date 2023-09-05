@@ -581,12 +581,12 @@ definitions:
         type: string
       created_at:
         type: string
+      file_name:
+        type: string
       github_url:
         type: string
-      id:
-        type: integer
       product:
-        type: integer
+        type: string
       thumbnail_url:
         type: string
       title:
@@ -1314,9 +1314,6 @@ definitions:
   request.OnboardingStartRequest:
     properties:
       platform:
-        enum:
-        - discord
-        - telegram
         type: string
       profile_id:
         type: string
@@ -1365,8 +1362,10 @@ definitions:
         type: string
       chainName:
         type: string
-      routeSummary: {}
-      swapData: {}
+      routeSummary:
+        type: object
+      swapData:
+        type: object
       userDiscordId:
         type: string
     required:
@@ -1411,6 +1410,10 @@ definitions:
       metadata:
         additionalProperties: true
         type: object
+      moniker:
+        type: string
+      original_tx_id:
+        type: string
       platform:
         type: string
       recipients:
@@ -2138,7 +2141,8 @@ definitions:
         type: integer
       coingecko_score:
         type: number
-      community_data: {}
+      community_data:
+        type: object
       contract_address:
         type: string
       description:
@@ -2149,14 +2153,18 @@ definitions:
         additionalProperties:
           $ref: '#/definitions/response.CoinPlatformDetailData'
         type: object
-      developer_data: {}
-      genesis_date: {}
-      hashing_algorithm: {}
+      developer_data:
+        type: object
+      genesis_date:
+        type: object
+      hashing_algorithm:
+        type: object
       id:
         type: string
       image:
         $ref: '#/definitions/response.CoinImage'
-      links: {}
+      links:
+        type: object
       localization:
         additionalProperties:
           type: string
@@ -2167,7 +2175,8 @@ definitions:
         $ref: '#/definitions/response.MarketData'
       name:
         type: string
-      platforms: {}
+      platforms:
+        type: object
       sentiment_votes_down_percentage:
         type: number
       sentiment_votes_up_percentage:
@@ -2546,13 +2555,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1h_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
+      usd_1h_change:
+        type: number
       usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -2576,6 +2585,7 @@ definitions:
         type: array
       exchanges:
         description: this field coingecko return empty
+        type: object
     type: object
   response.GetTrendingSearchCoin:
     properties:
@@ -3127,7 +3137,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      ath_date: {}
+      ath_date:
+        type: object
       atl:
         additionalProperties:
           type: number
@@ -3138,7 +3149,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      fdv_to_tvl_ratio: {}
+      fdv_to_tvl_ratio:
+        type: object
       fully_diluted_valuation:
         additionalProperties:
           type: number
@@ -3167,10 +3179,17 @@ definitions:
         type: integer
       max_supply:
         type: number
-      mcap_to_tvl_ratio: {}
+      mcap_to_tvl_ratio:
+        type: object
       price_change_24h:
         type: number
       price_change_24h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3189,12 +3208,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3222,14 +3235,16 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      roi: {}
+      roi:
+        type: object
       total_market_cap:
         additionalProperties:
           type: number
         type: object
       total_supply:
         type: number
-      total_value_locked: {}
+      total_value_locked:
+        type: object
       total_volume:
         additionalProperties:
           type: number
@@ -3648,10 +3663,12 @@ definitions:
     properties:
       aggregator:
         type: string
-      routeSummary: {}
+      routeSummary:
+        type: object
       routerAddress:
         type: string
-      swapData: {}
+      swapData:
+        type: object
       tokenIn:
         $ref: '#/definitions/response.RouteToken'
       tokenOut:
@@ -4060,7 +4077,6 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
       summary: Get invites
       tags:
       - Community
@@ -6181,8 +6197,6 @@ paths:
         required: true
         type: string
       - in: query
-        maximum: 365
-        minimum: 7
         name: days
         type: integer
       - in: query
@@ -7028,31 +7042,17 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get swap route for token pairs
+      description: Get auto triggers
       parameters:
-      - description: from token symbol
+      - description: user id
         in: query
-        name: from
+        name: user_id
         required: true
         type: string
-      - description: to token symbol
+      - description: guild id
         in: query
-        name: to
+        name: guild_id
         required: true
-        type: string
-      - description: from amount value
-        in: query
-        name: amount
-        required: true
-        type: string
-      - description: profile ID
-        in: query
-        name: profileId
-        required: true
-        type: string
-      - description: address
-        in: query
-        name: address
         type: string
       produces:
       - application/json
@@ -7061,7 +7061,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.SwapRouteResponseData'
-      summary: Get swap route for token pairs
+      summary: Get auto triggers
       tags:
       - Swap
   /tip/transfer:
