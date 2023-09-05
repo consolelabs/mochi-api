@@ -33,7 +33,7 @@ func NewService(cfg *config.Config, l logger.Logger) Service {
 }
 
 func (m *MochiProfile) GetByDiscordID(discordID string, noFetchAmount bool) (*GetProfileResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/profiles/get-by-discord/%s?no-fetch-amount=%v", m.config.MochiProfileServerHost, discordID, noFetchAmount)
+	url := fmt.Sprintf("%s/api/v1/profiles/get-by-discord/%s?no_fetch_amount=%v", m.config.MochiProfileServerHost, discordID, noFetchAmount)
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
