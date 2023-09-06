@@ -255,8 +255,7 @@ const docTemplate = `{
                         "in": "query",
                         "required": true
                     }
-                ],
-                "responses": {}
+                ]
             }
         },
         "/community/quests": {
@@ -3482,8 +3481,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "maximum": 365,
-                        "minimum": 7,
                         "type": "integer",
                         "name": "days",
                         "in": "query"
@@ -4753,7 +4750,7 @@ const docTemplate = `{
         },
         "/swap/route": {
             "get": {
-                "description": "Get swap route for token pairs",
+                "description": "Get auto triggers",
                 "consumes": [
                     "application/json"
                 ],
@@ -4763,41 +4760,21 @@ const docTemplate = `{
                 "tags": [
                     "Swap"
                 ],
-                "summary": "Get swap route for token pairs",
+                "summary": "Get auto triggers",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "from token symbol",
-                        "name": "from",
+                        "description": "user id",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "to token symbol",
-                        "name": "to",
+                        "description": "guild id",
+                        "name": "guild_id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "from amount value",
-                        "name": "amount",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "profile ID",
-                        "name": "profileId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "address",
-                        "name": "address",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -6885,14 +6862,14 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "file_name": {
+                    "type": "string"
+                },
                 "github_url": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "product": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "thumbnail_url": {
                     "type": "string"
@@ -8002,11 +7979,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "platform": {
-                    "type": "string",
-                    "enum": [
-                        "discord",
-                        "telegram"
-                    ]
+                    "type": "string"
                 },
                 "profile_id": {
                     "type": "string"
@@ -8080,8 +8053,12 @@ const docTemplate = `{
                 "chainName": {
                     "type": "string"
                 },
-                "routeSummary": {},
-                "swapData": {},
+                "routeSummary": {
+                    "type": "object"
+                },
+                "swapData": {
+                    "type": "object"
+                },
                 "userDiscordId": {
                     "type": "string"
                 }
@@ -8142,6 +8119,12 @@ const docTemplate = `{
                 "metadata": {
                     "type": "object",
                     "additionalProperties": true
+                },
+                "moniker": {
+                    "type": "string"
+                },
+                "original_tx_id": {
+                    "type": "string"
                 },
                 "platform": {
                     "type": "string"
@@ -9258,7 +9241,9 @@ const docTemplate = `{
                 "coingecko_score": {
                     "type": "number"
                 },
-                "community_data": {},
+                "community_data": {
+                    "type": "object"
+                },
                 "contract_address": {
                     "type": "string"
                 },
@@ -9274,16 +9259,24 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.CoinPlatformDetailData"
                     }
                 },
-                "developer_data": {},
-                "genesis_date": {},
-                "hashing_algorithm": {},
+                "developer_data": {
+                    "type": "object"
+                },
+                "genesis_date": {
+                    "type": "object"
+                },
+                "hashing_algorithm": {
+                    "type": "object"
+                },
                 "id": {
                     "type": "string"
                 },
                 "image": {
                     "$ref": "#/definitions/response.CoinImage"
                 },
-                "links": {},
+                "links": {
+                    "type": "object"
+                },
                 "localization": {
                     "type": "object",
                     "additionalProperties": {
@@ -9299,7 +9292,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "platforms": {},
+                "platforms": {
+                    "type": "object"
+                },
                 "sentiment_votes_down_percentage": {
                     "type": "number"
                 },
@@ -9928,7 +9923,8 @@ const docTemplate = `{
                     }
                 },
                 "exchanges": {
-                    "description": "this field coingecko return empty"
+                    "description": "this field coingecko return empty",
+                    "type": "object"
                 }
             }
         },
@@ -10778,7 +10774,9 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "ath_date": {},
+                "ath_date": {
+                    "type": "object"
+                },
                 "atl": {
                     "type": "object",
                     "additionalProperties": {
@@ -10794,7 +10792,9 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "fdv_to_tvl_ratio": {},
+                "fdv_to_tvl_ratio": {
+                    "type": "object"
+                },
                 "fully_diluted_valuation": {
                     "type": "object",
                     "additionalProperties": {
@@ -10837,7 +10837,9 @@ const docTemplate = `{
                 "max_supply": {
                     "type": "number"
                 },
-                "mcap_to_tvl_ratio": {},
+                "mcap_to_tvl_ratio": {
+                    "type": "object"
+                },
                 "price_change_24h": {
                     "type": "number"
                 },
@@ -10919,7 +10921,9 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "roi": {},
+                "roi": {
+                    "type": "object"
+                },
                 "total_market_cap": {
                     "type": "object",
                     "additionalProperties": {
@@ -10929,7 +10933,9 @@ const docTemplate = `{
                 "total_supply": {
                     "type": "number"
                 },
-                "total_value_locked": {},
+                "total_value_locked": {
+                    "type": "object"
+                },
                 "total_volume": {
                     "type": "object",
                     "additionalProperties": {
@@ -11579,11 +11585,15 @@ const docTemplate = `{
                 "aggregator": {
                     "type": "string"
                 },
-                "routeSummary": {},
+                "routeSummary": {
+                    "type": "object"
+                },
                 "routerAddress": {
                     "type": "string"
                 },
-                "swapData": {},
+                "swapData": {
+                    "type": "object"
+                },
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },
