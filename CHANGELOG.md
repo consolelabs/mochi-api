@@ -1,3 +1,17 @@
+# [6.11.0](https://github.com/consolelabs/mochi-api/compare/v6.10.1...v6.11.0) (2023-09-06)
+
+
+### Bug Fixes
+
+* request take to long for 1st time using token roles in discord ([17ae056](https://github.com/consolelabs/mochi-api/commit/17ae056f4b9cc6d16235f469d2e681ed3ec034db))
+* update ci test ([de5ebfc](https://github.com/consolelabs/mochi-api/commit/de5ebfcf20a3a2185a8abc34b9b35d046b80874a))
+* update function names to match convention ([8d362ff](https://github.com/consolelabs/mochi-api/commit/8d362fffd0930571fe02a97515df5d857dd06c13))
+
+
+### Features
+
+* tip with original tx id ([#1164](https://github.com/consolelabs/mochi-api/issues/1164)) ([c9a69ac](https://github.com/consolelabs/mochi-api/commit/c9a69acc63b2e3ded10b6ca6386165aebe62edc5))
+
 ## [6.10.1](https://github.com/consolelabs/mochi-api/compare/v6.10.0...v6.10.1) (2023-08-31)
 
 
