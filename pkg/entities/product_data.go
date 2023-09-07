@@ -80,6 +80,7 @@ func (e *Entity) CrawlChangelogs() {
 		}
 		changelogs.GithubUrl = repo.HTMLURL
 		changelogs.FileName = repo.Name
+		changelogs.IsExpired = false
 
 		// 5. store changelogs
 		err = e.repo.ProductChangelogs.Create(changelogs)
