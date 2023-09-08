@@ -1,3 +1,11 @@
+# [6.12.0](https://github.com/consolelabs/mochi-api/compare/v6.11.0...v6.12.0) (2023-09-08)
+
+
+### Features
+
+* add command table ([bf2cbf6](https://github.com/consolelabs/mochi-api/commit/bf2cbf6be11ccbcde1a885d803e16aaa504879e4))
+* alter field for product changelogs ([3dfca7c](https://github.com/consolelabs/mochi-api/commit/3dfca7c1ef95ee3046b6c978a8aac9b2e434b924))
+
 # [6.11.0](https://github.com/consolelabs/mochi-api/compare/v6.10.1...v6.11.0) (2023-09-06)
 
 
