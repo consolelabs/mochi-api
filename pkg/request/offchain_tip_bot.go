@@ -18,18 +18,19 @@ type OffchainTransferRequest struct {
 }
 
 type TransferV2Request struct {
-	Sender       string                 `json:"sender"`
-	Recipients   []string               `json:"recipients"`
-	Platform     string                 `json:"platform"`
-	GuildID      string                 `json:"guild_id"`
-	Amount       float64                `json:"amount"`
-	Token        string                 `json:"token"`
-	Each         bool                   `json:"each"`
-	All          bool                   `json:"all"`
-	TransferType string                 `json:"transfer_type" enums:"transfer,airdrop"`
-	Message      string                 `json:"message"`
-	ChainID      string                 `json:"chain_id"`
-	Metadata     map[string]interface{} `json:"metadata"`
-	Moniker      string                 `json:"moniker"`
-	OriginalTxId string                 `json:"original_tx_id"`
+	Sender         string                 `json:"sender"`
+	Recipients     []string               `json:"recipients"`
+	Platform       string                 `json:"platform"`
+	GuildID        string                 `json:"guild_id"`
+	Amount         float64                `json:"amount"`
+	Token          string                 `json:"token"`
+	Each           bool                   `json:"each"`
+	All            bool                   `json:"all"`
+	TransferType   string                 `json:"transfer_type" enums:"transfer,airdrop"`
+	Message        string                 `json:"message"`
+	ChainID        string                 `json:"chain_id"`
+	Metadata       map[string]interface{} `json:"metadata"`
+	Moniker        string                 `json:"moniker"`
+	OriginalTxId   string                 `json:"original_tx_id"`
+	OriginalAmount float64                `json:"original_amount"`
 }
