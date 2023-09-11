@@ -175,6 +175,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		"moniker":         req.Moniker,
 		"original_tx_id":  req.OriginalTxId,
 		"original_amount": req.OriginalAmount,
+		"channel":         req.ChannelId,
 	}
 
 	// get senderProfile, recipientProfiles by discordID
