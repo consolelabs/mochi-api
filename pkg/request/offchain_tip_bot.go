@@ -33,4 +33,5 @@ type TransferV2Request struct {
 	Moniker        string                 `json:"moniker"`
 	OriginalTxId   string                 `json:"original_tx_id"`
 	OriginalAmount float64                `json:"original_amount"`
+	ChannelId      string                 `json:"channel_id"`
 }
