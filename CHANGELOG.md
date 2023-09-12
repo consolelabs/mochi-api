@@ -1,3 +1,12 @@
+## [6.12.1](https://github.com/consolelabs/mochi-api/compare/v6.12.0...v6.12.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* store original tip amount ([#1168](https://github.com/consolelabs/mochi-api/issues/1168)) ([b38e787](https://github.com/consolelabs/mochi-api/commit/b38e787c26736adea203cca94acb93cb5fc7c239))
+* **tip:** include channel id to notification payload ([#1170](https://github.com/consolelabs/mochi-api/issues/1170)) ([d671040](https://github.com/consolelabs/mochi-api/commit/d671040611c68fa04447b67b0e4a87848ca15f1c))
+* update response get onboarding status ([#1171](https://github.com/consolelabs/mochi-api/issues/1171)) ([e6eb3ad](https://github.com/consolelabs/mochi-api/commit/e6eb3addf487664b95556543eba0a0e0e53b1bca))
+
 # [6.12.0](https://github.com/consolelabs/mochi-api/compare/v6.11.0...v6.12.0) (2023-09-08)
 
 
