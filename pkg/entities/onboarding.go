@@ -19,7 +19,7 @@ func (e *Entity) OnboardingStart(req request.OnboardingStartRequest) (*response.
 		e.log.Fields(logger.Fields{"profileId": req.ProfileId}).Error(err, "[Entity.OnboardingStart] svc.MochiProfile.GetOnboardingStatus() failed")
 		return nil, err
 	}
-	if onboardingStatus.DidOnboarding {
+	if onboardingStatus.DidOnboardingTelegram {
 		return &response.OnboardingStartData{
 			UserAlreadyStarted: true,
 			Reward:             nil,
