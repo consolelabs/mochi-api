@@ -60,5 +60,5 @@ type EvmAssociatedAccount struct {
 }
 
 type OnboardingStatusResponse struct {
-	DidOnboarding bool `json:"did_onboarding"`
+	DidOnboardingTelegram bool `json:"did_onboarding_telegram"`
 }
