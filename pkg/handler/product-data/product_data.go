@@ -83,7 +83,7 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       req   body  request.CreateProductChangelogsViewRequest true  "create product changelogs viewed request"
-// @Success     200 {object} response.CreateProductChangelogsView
+// @Success     200 {object} response.CreateProductChangelogsViewed
 // @Router      /product-metadata/changelogs/view [post]
 func (h *Handler) CreateProductChangelogsView(c *gin.Context) {
 	req := request.CreateProductChangelogsViewRequest{}
@@ -108,7 +108,7 @@ func (h *Handler) CreateProductChangelogsView(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       req   query  request.GetProductChangelogsViewRequest  false  "get product changelogs viewed request"
-// @Success     200 {object} response.GetProductChangelogsView
+// @Success     200 {object} response.GetProductChangelogsViewed
 // @Router      /product-metadata/changelogs/view [get]
 func (h *Handler) GetProductChangelogsView(c *gin.Context) {
 	req := request.GetProductChangelogsViewRequest{}

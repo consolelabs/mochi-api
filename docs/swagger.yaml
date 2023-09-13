@@ -575,6 +575,21 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.ProductChangelogView:
+    properties:
+      changelog_name:
+        type: string
+      created_at:
+        type: string
+      key:
+        type: string
+      metadata:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+    type: object
   model.ProductChangelogs:
     properties:
       content:
@@ -585,6 +600,8 @@ definitions:
         type: string
       github_url:
         type: string
+      is_expired:
+        type: boolean
       product:
         type: string
       thumbnail_url:
@@ -1100,6 +1117,13 @@ definitions:
       priority_flag:
         type: boolean
     type: object
+  request.CreateProductChangelogsViewRequest:
+    properties:
+      changelog_name:
+        type: string
+      key:
+        type: string
+    type: object
   request.CreateProfileAirdropCampaignRequest:
     properties:
       airdrop_campaign_id:
@@ -1314,6 +1338,9 @@ definitions:
   request.OnboardingStartRequest:
     properties:
       platform:
+        enum:
+        - discord
+        - telegram
         type: string
       profile_id:
         type: string
@@ -1362,15 +1389,27 @@ definitions:
         type: string
       chainName:
         type: string
-      routeSummary:
-        type: object
-      swapData:
-        type: object
+      routeSummary: {}
+      swapData: {}
       userDiscordId:
         type: string
     required:
     - chainName
     - userDiscordId
+    type: object
+  request.TrackFriendTechKeyRequest:
+    properties:
+      decrease_alert_at:
+        type: integer
+      increase_alert_at:
+        type: integer
+      key_address:
+        type: string
+      profile_id:
+        type: string
+    required:
+    - key_address
+    - profile_id
     type: object
   request.TrackWalletRequest:
     properties:
@@ -1401,6 +1440,8 @@ definitions:
         type: number
       chain_id:
         type: string
+      channel_id:
+        type: string
       each:
         type: boolean
       guild_id:
@@ -1412,6 +1453,8 @@ definitions:
         type: object
       moniker:
         type: string
+      original_amount:
+        type: number
       original_tx_id:
         type: string
       platform:
@@ -1444,6 +1487,13 @@ definitions:
     required:
     - choice
     - user_id
+    type: object
+  request.UpdateFriendTechKeyTrackRequest:
+    properties:
+      decrease_alert_at:
+        type: integer
+      increase_alert_at:
+        type: integer
     type: object
   request.UpdateGuildRequest:
     properties:
@@ -1918,6 +1968,11 @@ definitions:
       data:
         $ref: '#/definitions/model.NFTCollection'
     type: object
+  response.CreateProductChangelogsViewed:
+    properties:
+      data:
+        $ref: '#/definitions/model.ProductChangelogView'
+    type: object
   response.CreateProposalChannelConfigResponse:
     properties:
       data:
@@ -2083,6 +2138,55 @@ definitions:
       data:
         $ref: '#/definitions/response.Token'
     type: object
+  response.FriendTechKey:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      holders:
+        type: integer
+      id:
+        type: integer
+      price:
+        type: number
+      profileChecked:
+        type: boolean
+      supply:
+        type: integer
+      twitterPfpUrl:
+        type: string
+      twitterUsername:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  response.FriendTechKeyWatchlistItemRespose:
+    properties:
+      created_at:
+        type: string
+      decrease_alert_at:
+        type: integer
+      id:
+        type: integer
+      increase_alert_at:
+        type: integer
+      key_address:
+        type: string
+      metadata:
+        $ref: '#/definitions/response.FriendTechKey'
+      profile_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.FriendTechKeysResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/response.FriendTechKey'
+        type: array
+    type: object
   response.GasTrackerResponse:
     properties:
       chain:
@@ -2141,8 +2245,7 @@ definitions:
         type: integer
       coingecko_score:
         type: number
-      community_data:
-        type: object
+      community_data: {}
       contract_address:
         type: string
       description:
@@ -2153,18 +2256,14 @@ definitions:
         additionalProperties:
           $ref: '#/definitions/response.CoinPlatformDetailData'
         type: object
-      developer_data:
-        type: object
-      genesis_date:
-        type: object
-      hashing_algorithm:
-        type: object
+      developer_data: {}
+      genesis_date: {}
+      hashing_algorithm: {}
       id:
         type: string
       image:
         $ref: '#/definitions/response.CoinImage'
-      links:
-        type: object
+      links: {}
       localization:
         additionalProperties:
           type: string
@@ -2175,8 +2274,7 @@ definitions:
         $ref: '#/definitions/response.MarketData'
       name:
         type: string
-      platforms:
-        type: object
+      platforms: {}
       sentiment_votes_down_percentage:
         type: number
       sentiment_votes_up_percentage:
@@ -2497,6 +2595,13 @@ definitions:
       data:
         $ref: '#/definitions/model.UserWalletWatchlistItem'
     type: object
+  response.GetProductChangelogsViewed:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.ProductChangelogView'
+        type: array
+    type: object
   response.GetSalesTrackerConfigResponse:
     properties:
       data:
@@ -2555,13 +2660,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
-      usd_1y_change:
-        type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
+        type: number
+      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -2585,7 +2690,6 @@ definitions:
         type: array
       exchanges:
         description: this field coingecko return empty
-        type: object
     type: object
   response.GetTrendingSearchCoin:
     properties:
@@ -3137,8 +3241,7 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      ath_date:
-        type: object
+      ath_date: {}
       atl:
         additionalProperties:
           type: number
@@ -3149,8 +3252,7 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      fdv_to_tvl_ratio:
-        type: object
+      fdv_to_tvl_ratio: {}
       fully_diluted_valuation:
         additionalProperties:
           type: number
@@ -3179,17 +3281,10 @@ definitions:
         type: integer
       max_supply:
         type: number
-      mcap_to_tvl_ratio:
-        type: object
+      mcap_to_tvl_ratio: {}
       price_change_24h:
         type: number
       price_change_24h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3208,6 +3303,12 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3235,16 +3336,14 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      roi:
-        type: object
+      roi: {}
       total_market_cap:
         additionalProperties:
           type: number
         type: object
       total_supply:
         type: number
-      total_value_locked:
-        type: object
+      total_value_locked: {}
       total_volume:
         additionalProperties:
           type: number
@@ -3663,12 +3762,10 @@ definitions:
     properties:
       aggregator:
         type: string
-      routeSummary:
-        type: object
+      routeSummary: {}
       routerAddress:
         type: string
-      swapData:
-        type: object
+      swapData: {}
       tokenIn:
         $ref: '#/definitions/response.RouteToken'
       tokenOut:
@@ -3818,6 +3915,11 @@ definitions:
         type: array
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
+    type: object
+  response.TrackFriendTechKeyResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.FriendTechKeyWatchlistItemRespose'
     type: object
   response.TransferTokenV2Data:
     properties:
@@ -4077,6 +4179,7 @@ paths:
         type: string
       produces:
       - application/json
+      responses: {}
       summary: Get invites
       tags:
       - Community
@@ -5738,6 +5841,27 @@ paths:
       summary: Get gas tracker of one chain
       tags:
       - Defi
+  /defi/keys:
+    get:
+      consumes:
+      - application/json
+      description: Search coin
+      parameters:
+      - description: coin query
+        in: query
+        name: query
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.FriendTechKeysResponse'
+      summary: Search coin
+      tags:
+      - Defi
   /defi/market-chart:
     get:
       consumes:
@@ -6027,6 +6151,95 @@ paths:
       summary: Get top 300 gainer and loser
       tags:
       - Defi
+  /defi/tracking-keys:
+    get:
+      consumes:
+      - application/json
+      description: Get user's friend tech key watchlist
+      parameters:
+      - description: profile_id
+        in: query
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
+      summary: Get user's friend tech key watchlist
+      tags:
+      - Defi
+    post:
+      consumes:
+      - application/json
+      description: Track a specific friend tech key by adding to user's watchlist
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.TrackFriendTechKeyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
+      summary: Track a specific friend tech key by adding to user's watchlist
+      tags:
+      - Defi
+  /defi/tracking-keys/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Untrack a specific friend tech key by removing from user's watchlist
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Untrack a specific friend tech key by removing from user's watchlist
+      tags:
+      - Defi
+    put:
+      consumes:
+      - application/json
+      description: Update friend tech key track config
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateFriendTechKeyTrackRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
+      summary: Update friend tech key track config
+      tags:
+      - Defi
   /defi/trending:
     get:
       consumes:
@@ -6197,6 +6410,8 @@ paths:
         required: true
         type: string
       - in: query
+        maximum: 365
+        minimum: 7
         name: days
         type: integer
       - in: query
@@ -6994,6 +7209,49 @@ paths:
       summary: Get product changelogs
       tags:
       - ProductMetadata
+  /product-metadata/changelogs/view:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelogs viewed
+      parameters:
+      - in: query
+        name: changelogName
+        type: string
+      - in: query
+        name: key
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetProductChangelogsViewed'
+      summary: Get product changelogs viewed
+      tags:
+      - ProductMetadata
+    post:
+      consumes:
+      - application/json
+      description: Created product changelogs viewed
+      parameters:
+      - description: create product changelogs viewed request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateProductChangelogsViewRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CreateProductChangelogsViewed'
+      summary: Created product changelogs viewed
+      tags:
+      - ProductMetadata
   /product-metadata/commands:
     get:
       consumes:
@@ -7042,17 +7300,31 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get auto triggers
+      description: Get swap route for token pairs
       parameters:
-      - description: user id
+      - description: from token symbol
         in: query
-        name: user_id
+        name: from
         required: true
         type: string
-      - description: guild id
+      - description: to token symbol
         in: query
-        name: guild_id
+        name: to
         required: true
+        type: string
+      - description: from amount value
+        in: query
+        name: amount
+        required: true
+        type: string
+      - description: profile ID
+        in: query
+        name: profileId
+        required: true
+        type: string
+      - description: address
+        in: query
+        name: address
         type: string
       produces:
       - application/json
@@ -7061,7 +7333,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.SwapRouteResponseData'
-      summary: Get auto triggers
+      summary: Get swap route for token pairs
       tags:
       - Swap
   /tip/transfer:

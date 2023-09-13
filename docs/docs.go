@@ -255,7 +255,8 @@ const docTemplate = `{
                         "in": "query",
                         "required": true
                     }
-                ]
+                ],
+                "responses": {}
             }
         },
         "/community/quests": {
@@ -2780,6 +2781,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/keys": {
+            "get": {
+                "description": "Search coin",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Search coin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "coin query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.FriendTechKeysResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/market-chart": {
             "get": {
                 "description": "Get historical market chart",
@@ -3217,6 +3250,141 @@ const docTemplate = `{
                 }
             }
         },
+        "/defi/tracking-keys": {
+            "get": {
+                "description": "Get user's friend tech key watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Get user's friend tech key watchlist",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile_id",
+                        "name": "profile_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Track a specific friend tech key by adding to user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Track a specific friend tech key by adding to user's watchlist",
+                "parameters": [
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.TrackFriendTechKeyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/defi/tracking-keys/{id}": {
+            "put": {
+                "description": "Update friend tech key track config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Update friend tech key track config",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateFriendTechKeyTrackRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Untrack a specific friend tech key by removing from user's watchlist",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Defi"
+                ],
+                "summary": "Untrack a specific friend tech key by removing from user's watchlist",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/defi/trending": {
             "get": {
                 "description": "Get trending search of coins",
@@ -3481,6 +3649,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "maximum": 365,
+                        "minimum": 7,
                         "type": "integer",
                         "name": "days",
                         "in": "query"
@@ -4679,6 +4849,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/product-metadata/changelogs/view": {
+            "get": {
+                "description": "Get product changelogs viewed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelogs viewed",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "changelogName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "key",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetProductChangelogsViewed"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Created product changelogs viewed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Created product changelogs viewed",
+                "parameters": [
+                    {
+                        "description": "create product changelogs viewed request",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateProductChangelogsViewRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateProductChangelogsViewed"
+                        }
+                    }
+                }
+            }
+        },
         "/product-metadata/commands": {
             "get": {
                 "description": "Get product bot commands",
@@ -4750,7 +4987,7 @@ const docTemplate = `{
         },
         "/swap/route": {
             "get": {
-                "description": "Get auto triggers",
+                "description": "Get swap route for token pairs",
                 "consumes": [
                     "application/json"
                 ],
@@ -4760,21 +4997,41 @@ const docTemplate = `{
                 "tags": [
                     "Swap"
                 ],
-                "summary": "Get auto triggers",
+                "summary": "Get swap route for token pairs",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
-                        "name": "user_id",
+                        "description": "from token symbol",
+                        "name": "from",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "guild id",
-                        "name": "guild_id",
+                        "description": "to token symbol",
+                        "name": "to",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "from amount value",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profileId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -6853,6 +7110,29 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProductChangelogView": {
+            "type": "object",
+            "properties": {
+                "changelog_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ProductChangelogs": {
             "type": "object",
             "properties": {
@@ -6867,6 +7147,9 @@ const docTemplate = `{
                 },
                 "github_url": {
                     "type": "string"
+                },
+                "is_expired": {
+                    "type": "boolean"
                 },
                 "product": {
                     "type": "string"
@@ -7652,6 +7935,17 @@ const docTemplate = `{
                 }
             }
         },
+        "request.CreateProductChangelogsViewRequest": {
+            "type": "object",
+            "properties": {
+                "changelog_name": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
         "request.CreateProfileAirdropCampaignRequest": {
             "type": "object",
             "properties": {
@@ -7979,7 +8273,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "platform": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "discord",
+                        "telegram"
+                    ]
                 },
                 "profile_id": {
                     "type": "string"
@@ -8053,13 +8351,30 @@ const docTemplate = `{
                 "chainName": {
                     "type": "string"
                 },
-                "routeSummary": {
-                    "type": "object"
-                },
-                "swapData": {
-                    "type": "object"
-                },
+                "routeSummary": {},
+                "swapData": {},
                 "userDiscordId": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.TrackFriendTechKeyRequest": {
+            "type": "object",
+            "required": [
+                "key_address",
+                "profile_id"
+            ],
+            "properties": {
+                "decrease_alert_at": {
+                    "type": "integer"
+                },
+                "increase_alert_at": {
+                    "type": "integer"
+                },
+                "key_address": {
+                    "type": "string"
+                },
+                "profile_id": {
                     "type": "string"
                 }
             }
@@ -8107,6 +8422,9 @@ const docTemplate = `{
                 "chain_id": {
                     "type": "string"
                 },
+                "channel_id": {
+                    "type": "string"
+                },
                 "each": {
                     "type": "boolean"
                 },
@@ -8122,6 +8440,9 @@ const docTemplate = `{
                 },
                 "moniker": {
                     "type": "string"
+                },
+                "original_amount": {
+                    "type": "number"
                 },
                 "original_tx_id": {
                     "type": "string"
@@ -8170,6 +8491,17 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.UpdateFriendTechKeyTrackRequest": {
+            "type": "object",
+            "properties": {
+                "decrease_alert_at": {
+                    "type": "integer"
+                },
+                "increase_alert_at": {
+                    "type": "integer"
                 }
             }
         },
@@ -8901,6 +9233,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.CreateProductChangelogsViewed": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.ProductChangelogView"
+                }
+            }
+        },
         "response.CreateProposalChannelConfigResponse": {
             "type": "object",
             "properties": {
@@ -9152,6 +9492,81 @@ const docTemplate = `{
                 }
             }
         },
+        "response.FriendTechKey": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "holders": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "profileChecked": {
+                    "type": "boolean"
+                },
+                "supply": {
+                    "type": "integer"
+                },
+                "twitterPfpUrl": {
+                    "type": "string"
+                },
+                "twitterUsername": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.FriendTechKeyWatchlistItemRespose": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "decrease_alert_at": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "increase_alert_at": {
+                    "type": "integer"
+                },
+                "key_address": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/response.FriendTechKey"
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.FriendTechKeysResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.FriendTechKey"
+                    }
+                }
+            }
+        },
         "response.GasTrackerResponse": {
             "type": "object",
             "properties": {
@@ -9241,9 +9656,7 @@ const docTemplate = `{
                 "coingecko_score": {
                     "type": "number"
                 },
-                "community_data": {
-                    "type": "object"
-                },
+                "community_data": {},
                 "contract_address": {
                     "type": "string"
                 },
@@ -9259,24 +9672,16 @@ const docTemplate = `{
                         "$ref": "#/definitions/response.CoinPlatformDetailData"
                     }
                 },
-                "developer_data": {
-                    "type": "object"
-                },
-                "genesis_date": {
-                    "type": "object"
-                },
-                "hashing_algorithm": {
-                    "type": "object"
-                },
+                "developer_data": {},
+                "genesis_date": {},
+                "hashing_algorithm": {},
                 "id": {
                     "type": "string"
                 },
                 "image": {
                     "$ref": "#/definitions/response.CoinImage"
                 },
-                "links": {
-                    "type": "object"
-                },
+                "links": {},
                 "localization": {
                     "type": "object",
                     "additionalProperties": {
@@ -9292,9 +9697,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "platforms": {
-                    "type": "object"
-                },
+                "platforms": {},
                 "sentiment_votes_down_percentage": {
                     "type": "number"
                 },
@@ -9789,6 +10192,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetProductChangelogsViewed": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ProductChangelogView"
+                    }
+                }
+            }
+        },
         "response.GetSalesTrackerConfigResponse": {
             "type": "object",
             "properties": {
@@ -9923,8 +10337,7 @@ const docTemplate = `{
                     }
                 },
                 "exchanges": {
-                    "description": "this field coingecko return empty",
-                    "type": "object"
+                    "description": "this field coingecko return empty"
                 }
             }
         },
@@ -10774,9 +11187,7 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "ath_date": {
-                    "type": "object"
-                },
+                "ath_date": {},
                 "atl": {
                     "type": "object",
                     "additionalProperties": {
@@ -10792,9 +11203,7 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "fdv_to_tvl_ratio": {
-                    "type": "object"
-                },
+                "fdv_to_tvl_ratio": {},
                 "fully_diluted_valuation": {
                     "type": "object",
                     "additionalProperties": {
@@ -10837,9 +11246,7 @@ const docTemplate = `{
                 "max_supply": {
                     "type": "number"
                 },
-                "mcap_to_tvl_ratio": {
-                    "type": "object"
-                },
+                "mcap_to_tvl_ratio": {},
                 "price_change_24h": {
                     "type": "number"
                 },
@@ -10921,9 +11328,7 @@ const docTemplate = `{
                         "type": "number"
                     }
                 },
-                "roi": {
-                    "type": "object"
-                },
+                "roi": {},
                 "total_market_cap": {
                     "type": "object",
                     "additionalProperties": {
@@ -10933,9 +11338,7 @@ const docTemplate = `{
                 "total_supply": {
                     "type": "number"
                 },
-                "total_value_locked": {
-                    "type": "object"
-                },
+                "total_value_locked": {},
                 "total_volume": {
                     "type": "object",
                     "additionalProperties": {
@@ -11585,15 +11988,11 @@ const docTemplate = `{
                 "aggregator": {
                     "type": "string"
                 },
-                "routeSummary": {
-                    "type": "object"
-                },
+                "routeSummary": {},
                 "routerAddress": {
                     "type": "string"
                 },
-                "swapData": {
-                    "type": "object"
-                },
+                "swapData": {},
                 "tokenIn": {
                     "$ref": "#/definitions/response.RouteToken"
                 },
@@ -11822,6 +12221,14 @@ const docTemplate = `{
                 },
                 "metadata": {
                     "$ref": "#/definitions/response.PaginationResponse"
+                }
+            }
+        },
+        "response.TrackFriendTechKeyResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.FriendTechKeyWatchlistItemRespose"
                 }
             }
         },
