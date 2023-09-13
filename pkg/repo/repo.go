@@ -55,6 +55,7 @@ import (
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
+	producthashtag "github.com/defipod/mochi/pkg/repo/product_hashtag"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -169,4 +170,5 @@ type Repo struct {
 	ProductChangelogs                    productchangelogs.Store
 	ProductChangelogsView                productchangelogsview.Store
 	FriendTechKeyWatchlistItem           friendtechkeywatchlistitem.Store
+	ProductHashtag                       producthashtag.Store
 }

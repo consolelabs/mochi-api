@@ -130,3 +130,19 @@ func (h *Handler) CrawlChangelogs(c *gin.Context) {
 	go h.entities.CrawlChangelogs()
 	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
 }
+
+func (h *Handler) GetProductHashtag(c *gin.Context) {
+	req := request.GetProductHashtagRequest{}
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetProductHashtag] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	productHashtag, err := h.entities.GetProductHashtag(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(productHashtag, nil, nil, nil))
+}
