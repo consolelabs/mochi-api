@@ -7,7 +7,7 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/bwmarrin/discordgo v0.26.1
 	github.com/confluentinc/confluent-kafka-go v1.9.2
-	github.com/consolelabs/mochi-typeset v0.0.0-20230912025722-3537f98b4194
+	github.com/consolelabs/mochi-typeset v0.0.0-20230913152702-c07f703fb6cc
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/pprof v1.4.0
@@ -154,5 +154,6 @@ require (
 	cloud.google.com/go/storage v1.28.1
 	github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905
 	github.com/gammazero/workerpool v1.1.3
+	github.com/shopspring/decimal v1.2.0
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
 )

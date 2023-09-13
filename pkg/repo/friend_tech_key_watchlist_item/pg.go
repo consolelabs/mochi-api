@@ -53,3 +53,8 @@ func (pg *pg) Get(id int) (*model.FriendTechKeyWatchlistItem, error) {
 	var item model.FriendTechKeyWatchlistItem
 	return &item, pg.db.First(&item, "id = ?", id).Error
 }
+
+func (pg *pg) List() ([]model.FriendTechKeyWatchlistItem, error) {
+	var items []model.FriendTechKeyWatchlistItem
+	return items, pg.db.Find(&items).Error
+}

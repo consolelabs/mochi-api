@@ -36,3 +36,19 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 	}
 	return &data, nil
 }
+
+func (n *FriendTech) GetHistory(accountAddress, interval string) (*response.FriendTechKeyPriceHistoryResponse, error) {
+	url := n.baseUrl + fmt.Sprintf("/api/accounts/%v/historical?interval=%v", accountAddress, interval)
+	data := response.FriendTechKeyPriceHistoryResponse{}
+	req := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: &data,
+		Headers:   map[string]string{"Content-Type": "application/json", "Accept": "application/json"},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return &response.FriendTechKeyPriceHistoryResponse{}, nil
+	}
+
+	return &data, nil
+}

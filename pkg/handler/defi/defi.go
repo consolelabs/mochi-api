@@ -826,7 +826,7 @@ func (h *Handler) GetUserFriendTechKeyWatchlist(c *gin.Context) {
 		return
 	}
 
-	resp := make([]response.FriendTechKeyWatchlistItemRespose, 0)
+	resp := make([]response.FriendTechKeyWatchlistItemResponse, 0)
 	for _, trackingKey := range watchlist {
 		searchKeyResult, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
 			Query: trackingKey.KeyAddress,
