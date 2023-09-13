@@ -3,11 +3,13 @@ package entities
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/consolelabs/mochi-typeset/typeset"
-	"github.com/defipod/mochi/pkg/kafka/message"
 	"strings"
 	"time"
 
+	"github.com/consolelabs/mochi-typeset/typeset"
+	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
@@ -187,4 +189,16 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 	changlogs.Content = strings.TrimSpace(contentSplit[2])
 
 	return &changlogs
+}
+
+func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model.ProductHashtagAlias, error) {
+	data, err := e.repo.ProductHashtag.GetByAlias(req.Alias)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return data, nil
 }
