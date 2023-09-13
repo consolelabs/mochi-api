@@ -482,7 +482,7 @@ func TestHandler_ConfigLevelRole(t *testing.T) {
 				RoleID:  "1003862842707017729",
 				Level:   6,
 			},
-			wantCode:         http.StatusInternalServerError,
+			wantCode:         http.StatusBadRequest,
 			wantResponsePath: "testdata/config/500_role_has_been_used_for_level_role.json",
 		},
 		{

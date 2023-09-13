@@ -34,4 +34,8 @@ type IHandler interface {
 	GetTokenInfo(c *gin.Context)
 
 	SearchKeys(c *gin.Context)
+	TrackFriendTechKey(c *gin.Context)
+	UntrackFriendTechKey(c *gin.Context)
+	UpdateFriendTechKeyTrack(c *gin.Context)
+	GetUserFriendTechKeyWatchlist(c *gin.Context)
 }
