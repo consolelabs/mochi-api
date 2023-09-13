@@ -67,18 +67,18 @@ func (mr *MockServiceMockRecorder) GetCoin(coinID interface{}) *gomock.Call {
 }
 
 // GetCoinByContract mocks base method.
-func (m *MockService) GetCoinByContract(platformId, contractAddress string) (*response.GetCoinByContractResponseData, error) {
+func (m *MockService) GetCoinByContract(platformId, contractAddress string, retry int) (*response.GetCoinByContractResponseData, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCoinByContract", platformId, contractAddress)
+	ret := m.ctrl.Call(m, "GetCoinByContract", platformId, contractAddress, retry)
 	ret0, _ := ret[0].(*response.GetCoinByContractResponseData)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCoinByContract indicates an expected call of GetCoinByContract.
-func (mr *MockServiceMockRecorder) GetCoinByContract(platformId, contractAddress interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetCoinByContract(platformId, contractAddress, retry interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinByContract", reflect.TypeOf((*MockService)(nil).GetCoinByContract), platformId, contractAddress)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCoinByContract", reflect.TypeOf((*MockService)(nil).GetCoinByContract), platformId, contractAddress, retry)
 }
 
 // GetCoinPrice mocks base method.
