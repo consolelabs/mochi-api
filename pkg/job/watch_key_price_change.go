@@ -1,14 +1,15 @@
 package job
 
 import (
-	"github.com/consolelabs/mochi-typeset/typeset"
 	"time"
 
+	"github.com/consolelabs/mochi-typeset/typeset"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/shopspring/decimal"
 )
 
@@ -56,6 +57,20 @@ func (job *watchKeyPriceChanges) Run() error {
 	yesterdayClosedPrice := decimal.NewFromInt(0)
 	priceChangePercentage := decimal.NewFromInt(0)
 	for k, items := range keyAddressMap {
+		keyAddress, err := job.entity.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
+			Query: k,
+			Limit: 1,
+		})
+		if err != nil {
+			job.log.Error(err, "[watchKeyPriceChanges.Run] entity.SearchFriendTechKeys failed")
+			continue
+		}
+
+		if len(keyAddress.Data) == 0 {
+			job.log.Error(err, "[watchKeyPriceChanges.Run] not found key address")
+			continue
+		}
+
 		priceHistories, err := job.entity.GetFriendTechKeyPriceHistory(k, defaultInterval)
 		if err != nil {
 			job.log.Error(err, "[watchKeyPriceChanges.Run] entity.GetFriendTechKeyPriceHistory failed")
@@ -86,8 +101,23 @@ func (job *watchKeyPriceChanges) Run() error {
 			}
 
 			if addAlert {
+				addr := model.FriendTechKey{
+					ID:              keyAddress.Data[0].ID,
+					CreatedAt:       keyAddress.Data[0].CreatedAt,
+					UpdatedAt:       keyAddress.Data[0].UpdatedAt,
+					Address:         keyAddress.Data[0].Address,
+					TwitterUsername: keyAddress.Data[0].TwitterUsername,
+					TwitterPfpUrl:   keyAddress.Data[0].TwitterPfpUrl,
+					ProfileChecked:  keyAddress.Data[0].ProfileChecked,
+					Price:           keyAddress.Data[0].Price,
+					Supply:          keyAddress.Data[0].Supply,
+					Holders:         keyAddress.Data[0].Holders,
+				}
+
 				profileIDAlertMap[item.ProfileId] = append(profileIDAlertMap[item.ProfileId], model.FriendTechKeyPriceChangeAlertItem{
+					Timestamp:      time.Now().UTC(),
 					KeyAddressID:   item.KeyAddress,
+					KeyAddress:     addr,
 					Change:         priceChangePercentage,
 					CurrentPrice:   currentPrice,
 					YesterdayPrice: yesterdayClosedPrice,
@@ -111,11 +141,25 @@ func (job *watchKeyPriceChanges) publishMessage(in map[string][]model.FriendTech
 	messages := make([]message.KeyPriceChangeAlertMessage, 0)
 	for profileID, pc := range in {
 		for _, itm := range pc {
+			addr := message.FriendTechKey{
+				ID:              itm.KeyAddress.ID,
+				CreatedAt:       itm.KeyAddress.CreatedAt,
+				UpdatedAt:       itm.KeyAddress.UpdatedAt,
+				Address:         itm.KeyAddress.Address,
+				TwitterUsername: itm.KeyAddress.TwitterUsername,
+				TwitterPfpUrl:   itm.KeyAddress.TwitterPfpUrl,
+				ProfileChecked:  itm.KeyAddress.ProfileChecked,
+				Price:           decimal.NewFromFloat(itm.KeyAddress.Price),
+				Supply:          itm.KeyAddress.Supply,
+				Holders:         itm.KeyAddress.Holders,
+			}
 			messages = append(messages, message.KeyPriceChangeAlertMessage{
 				Type: typeset.NOTIFICATION_KEY_PRICE_CHANGE,
 				KeyPriceChangeAlertMetadata: message.KeyPriceChangeAlertMetadata{
+					Timestamp:      itm.Timestamp,
 					ProfileID:      profileID,
 					KeyAddressID:   itm.KeyAddressID,
+					KeyAddress:     addr,
 					Change:         itm.Change,
 					CurrentPrice:   itm.CurrentPrice,
 					YesterdayPrice: itm.YesterdayPrice,
