@@ -41,3 +41,21 @@ func (pg *pg) DeleteAll() error {
 	db := pg.db
 	return db.Where("title != ''").Delete(model.ProductChangelogs{}).Error
 }
+
+func (pg *pg) GetNewChangelog() (changeLogs []model.ProductChangelogs, err error) {
+	db := pg.db
+	tx := db.Begin()
+	if err := tx.Error; err != nil {
+		return changeLogs, err
+	}
+	tx.Raw(`Select * from product_changelogs as pc 
+    				left join product_changelog_snapshots as pcs 
+    				on pc.file_name = pcs.filename 
+         			where pcs.filename is null`).Scan(&changeLogs)
+	return changeLogs, nil
+}
+
+func (pg *pg) InsertBulkProductChangelogSnapshot(changelogSnapshot []model.ProductChangelogSnapshot) error {
+	db := pg.db
+	return db.Create(changelogSnapshot).Error
+}

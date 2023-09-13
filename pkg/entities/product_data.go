@@ -2,9 +2,14 @@ package entities
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"strings"
 	"time"
 
+	"github.com/consolelabs/mochi-typeset/typeset"
+	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
@@ -52,27 +57,28 @@ func (e *Entity) CrawlChangelogs() {
 		e.log.Error(err, "[entity.CrawlChangelogs()] - cannot delete all")
 		return
 	}
+	// 1. crawl changelog
 	for _, repo := range repos {
-		// 1. validate file markdown
+		// 1.1 validate file markdown
 		if !util.ValidateFileMarkdown(repo.Name) {
 			continue
 		}
 
-		// 2. get detail content of repo
+		// 1.2 get detail content of repo
 		repoDetail, err := e.svc.Github.GetContentByPath(repo.URL)
 		if err != nil || repoDetail == nil {
 			e.log.Fields(logger.Fields{"title": repo.Name}).Error(err, "[entity.CrawlChangelogs()] - cannot get content of repo")
 			continue
 		}
 
-		// 3. parse content from base64 to string
+		// 1.3 parse content from base64 to string
 		rawDecodedText, err := base64.StdEncoding.DecodeString(repoDetail.Content)
 		if err != nil {
 			e.log.Fields(logger.Fields{"title": repo.Name}).Error(err, "[entity.CrawlChangelogs()] - cannot decode content of repo")
 			continue
 		}
 
-		// 4. convert content string to model.ProductChangelogs
+		// 1.4 convert content string to model.ProductChangelogs
 		changelogs := e.parseChangelogsContent(string(rawDecodedText))
 		if changelogs == nil {
 			e.log.Fields(logger.Fields{"title": repo.Name}).Error(err, "[entity.CrawlChangelogs()] - cannot parse content of repo")
@@ -82,13 +88,66 @@ func (e *Entity) CrawlChangelogs() {
 		changelogs.FileName = repo.Name
 		changelogs.IsExpired = false
 
-		// 5. store changelogs
+		// 1.5 store changelogs
 		err = e.repo.ProductChangelogs.Create(changelogs)
 		if err != nil {
 			e.log.Fields(logger.Fields{"title": repo.Name}).Error(err, "[entity.CrawlChangelogs()] - cannot store repo")
 			continue
 		}
 	}
+
+	// 2. find new changelog
+	newChangelogs, err := e.repo.ProductChangelogs.GetNewChangelog()
+	if err != nil {
+		e.log.Error(err, "[entity.CrawlChangelogs()] - cannot find new changelog")
+		return
+	}
+
+	var productChangelogSnapshots []model.ProductChangelogSnapshot
+	var newChangelogMessages []message.NewChangelog
+	for _, pc := range newChangelogs {
+		newChangelogMessages = append(newChangelogMessages, message.NewChangelog{
+			Type: typeset.NOTIFICATION_NEW_CHANGELOG,
+			NewChangelogMetadata: message.NewChangelogMetadata{
+				Product:      pc.Product,
+				Title:        pc.Title,
+				Content:      pc.Content,
+				FileName:     pc.FileName,
+				GithubUrl:    pc.GithubUrl,
+				ThumbnailUrl: pc.ThumbnailUrl,
+				IsExpired:    pc.IsExpired,
+				CreatedAt:    pc.CreatedAt,
+				UpdatedAt:    pc.UpdatedAt,
+			},
+		})
+		productChangelogSnapshots = append(productChangelogSnapshots, model.ProductChangelogSnapshot{
+			Filename:  pc.FileName,
+			CreatedAt: pc.CreatedAt,
+			UpdatedAt: pc.UpdatedAt,
+		})
+	}
+
+	// 3. push notification for new changelogs
+	// TODO. implement push notification
+	for _, message := range newChangelogMessages {
+		byteNotification, _ := json.Marshal(message)
+
+		err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+		if err != nil {
+			e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
+			return
+		}
+	}
+
+	// 4. update product changelog snapshot
+	if len(productChangelogSnapshots) > 0 {
+		err = e.repo.ProductChangelogs.InsertBulkProductChangelogSnapshot(productChangelogSnapshots)
+		if err != nil {
+			e.log.Error(err, "[entity.CrawlChangelogs()] - cannot insert bulk product changelog snapshot")
+			return
+		}
+	}
+
 }
 
 func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs {
@@ -130,4 +189,16 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 	changlogs.Content = strings.TrimSpace(contentSplit[2])
 
 	return &changlogs
+}
+
+func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model.ProductHashtagAlias, error) {
+	data, err := e.repo.ProductHashtag.GetByAlias(req.Alias)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return data, nil
 }

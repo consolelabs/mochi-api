@@ -8,4 +8,5 @@ type IHandler interface {
 	CrawlChangelogs(c *gin.Context)
 	CreateProductChangelogsView(c *gin.Context)
 	GetProductChangelogsView(c *gin.Context)
+	GetProductHashtag(c *gin.Context)
 }

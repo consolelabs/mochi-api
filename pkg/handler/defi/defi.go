@@ -645,3 +645,206 @@ func (h *Handler) TopGainerLoser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// SearchKeys     godoc
+// @Summary     Search coin
+// @Description Search coin
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       query   query  string true  "coin query"
+// @Success     200 {object} response.FriendTechKeysResponse
+// @Router      /defi/keys [get]
+func (h *Handler) SearchKeys(c *gin.Context) {
+	req := request.SearchFriendTechKeysRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.SearchKeys] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	tokens, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{Query: req.Query, Limit: req.Limit})
+	if err != nil {
+		h.log.Error(err, "[handler.SearchKeys] entities.SearchFriendTechKeys() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(tokens.Data, nil, nil, nil))
+}
+
+// TrackFriendTechKey     godoc
+// @Summary     Track a specific friend tech key by adding to user's watchlist
+// @Description Track a specific friend tech key by adding to user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       req body request.TrackFriendTechKeyRequest true "request"
+// @Success     200 {object} response.TrackFriendTechKeyResponse
+// @Router      /defi/tracking-keys [post]
+func (h *Handler) TrackFriendTechKey(c *gin.Context) {
+	req := request.TrackFriendTechKeyRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.TrackFriendTechKey] - c.ShouldBindQuery() - cannot parse query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf(err.Error()), nil))
+		return
+	}
+
+	data, err := h.entities.TrackFriendTechKey(req.ProfileId, req.KeyAddress, req.IncreaseAlertAt, req.DecreaseAlertAt)
+	if err != nil {
+		h.log.Error(err, "[handler.TrackFriendTechKey] entity.TrackFriendTechKey() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	searchKeyResult, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
+		Query: data.KeyAddress,
+		Limit: 1,
+	})
+	if err != nil {
+		h.log.Error(err, "[handler.TrackFriendTechKey] entities.SearchFriendTechKeys() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var keyMetadata *response.FriendTechKey
+	if len(searchKeyResult.Data) > 0 && strings.EqualFold(searchKeyResult.Data[0].Address, data.KeyAddress) {
+		keyMetadata = &searchKeyResult.Data[0]
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.TrackingFriendTechKeyModelToResponse(
+		*data,
+		keyMetadata,
+	), nil, nil, nil))
+}
+
+// UntrackFriendTechKey     godoc
+// @Summary     Untrack a specific friend tech key by removing from user's watchlist
+// @Description Untrack a specific friend tech key by removing from user's watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "id"
+// @Success     200 {string} string "ok"
+// @Router      /defi/tracking-keys/{id} [delete]
+func (h *Handler) UntrackFriendTechKey(c *gin.Context) {
+	// id from path
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.UntrackFriendTechKey] - invalid id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("invalid request id"), nil))
+		return
+	}
+
+	if err = h.entities.UnTrackFriendTechKey(id); err != nil {
+		h.log.Error(err, "[handler.UntrackFriendTechKey] entity.UnTrackFriendTechKey() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse("ok", nil, nil, nil))
+}
+
+// UpdateFriendTechKeyTrack     godoc
+// @Summary     Update friend tech key track config
+// @Description Update friend tech key track config
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "id"
+// @Param       req body request.UpdateFriendTechKeyTrackRequest true "request"
+// @Success     200 {object} response.TrackFriendTechKeyResponse
+// @Router      /defi/tracking-keys/{id} [put]
+func (h *Handler) UpdateFriendTechKeyTrack(c *gin.Context) {
+	// id from path
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.log.Fields(logger.Fields{"id": id}).Error(err, "[handler.UpdateFriendTechKeyTrack] - invalid id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("invalid request id"), nil))
+		return
+	}
+
+	req := request.UpdateFriendTechKeyTrackRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.UpdateFriendTechKeyTrack] c.ShouldBindJSON() - cannot parse query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf(err.Error()), nil))
+		return
+	}
+
+	updatedTrack, err := h.entities.UpdateFriendTechKeyTrack(id, req.IncreaseAlertAt, req.DecreaseAlertAt)
+	if err != nil {
+		h.log.Error(err, "[handler.UpdateFriendTechKeyTrack] entity.UpdateFriendTechKeyTrack() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	searchKeyResult, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
+		Query: updatedTrack.KeyAddress,
+		Limit: 1,
+	})
+	if err != nil {
+		h.log.Error(err, "[handler.TrackFriendTechKey] entities.SearchFriendTechKeys() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var keyMetadata *response.FriendTechKey
+	if len(searchKeyResult.Data) > 0 && strings.EqualFold(searchKeyResult.Data[0].Address, updatedTrack.KeyAddress) {
+		keyMetadata = &searchKeyResult.Data[0]
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.TrackingFriendTechKeyModelToResponse(
+		*updatedTrack,
+		keyMetadata,
+	), nil, nil, nil))
+}
+
+// GetUserFriendTechKeyWatchlist     godoc
+// @Summary     Get user's friend tech key watchlist
+// @Description Get user's friend tech key watchlist
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       profile_id query string true "profile_id"
+// @Success     200 {object} response.TrackFriendTechKeyResponse
+// @Router      /defi/tracking-keys [get]
+func (h *Handler) GetUserFriendTechKeyWatchlist(c *gin.Context) {
+	// user profile id from query param
+	profileIdStr := c.Query("profile_id")
+	if profileIdStr == "" {
+		h.log.Fields(logger.Fields{"profile_id": profileIdStr}).Error(fmt.Errorf("profile_id is empty"), "[handler.GetUserFriendTechKeyWatchlist] - invalid profile_id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, fmt.Errorf("invalid profile_id"), nil))
+		return
+	}
+
+	watchlist, err := h.entities.GetUserFriendTechKeyWatchlist(profileIdStr)
+	if err != nil {
+		h.log.Error(err, "[handler.GetUserFriendTechKeyWatchlist] entity.GetUserFriendTechKeyWatchlist() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	resp := make([]response.FriendTechKeyWatchlistItemRespose, 0)
+	for _, trackingKey := range watchlist {
+		searchKeyResult, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
+			Query: trackingKey.KeyAddress,
+			Limit: 1,
+		})
+		if err != nil {
+			h.log.Error(err, "[handler.TrackFriendTechKey] entities.SearchFriendTechKeys() failed")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		var keyMetadata *response.FriendTechKey
+		if len(searchKeyResult.Data) > 0 && strings.EqualFold(searchKeyResult.Data[0].Address, trackingKey.KeyAddress) {
+			keyMetadata = &searchKeyResult.Data[0]
+		}
+
+		resp = append(resp, *response.TrackingFriendTechKeyModelToResponse(trackingKey, keyMetadata))
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+}

@@ -21,6 +21,7 @@ import (
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
+	friendfechkeywatchlistitem "github.com/defipod/mochi/pkg/repo/friend_tech_key_watchlist_item"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
@@ -57,6 +58,7 @@ import (
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
+	producthashtag "github.com/defipod/mochi/pkg/repo/product_hashtag"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
@@ -172,5 +174,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProductBotCommand:                    productbotcommand.NewPG(db),
 		ProductChangelogs:                    productchangelogs.NewPG(db),
 		ProductChangelogsView:                productchangelogsview.NewPG(db),
+		FriendTechKeyWatchlistItem:           friendfechkeywatchlistitem.NewPG(db),
+		ProductHashtag:                       producthashtag.NewPG(db),
 	}
 }

@@ -60,6 +60,7 @@
       "price_change_percentage_200d": 0,
       "price_change_percentage_1y": 0,
       "price_change_24h_in_currency": null,
+      "price_change_percentage_1h":0,
       "price_change_percentage_1h_in_currency": {
         "usd": -0.50332,
         "vef": -0.50332,
@@ -113,6 +114,6 @@
     ],
     "contract_address": "",
     "detail_platforms": null,
-    "coingecko_info": null
+    "coingecko_id":""
   }
 }

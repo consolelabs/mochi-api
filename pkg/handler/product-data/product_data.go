@@ -83,7 +83,7 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       req   body  request.CreateProductChangelogsViewRequest true  "create product changelogs viewed request"
-// @Success     200 {object} response.CreateProductChangelogsView
+// @Success     200 {object} response.CreateProductChangelogsViewed
 // @Router      /product-metadata/changelogs/view [post]
 func (h *Handler) CreateProductChangelogsView(c *gin.Context) {
 	req := request.CreateProductChangelogsViewRequest{}
@@ -108,7 +108,7 @@ func (h *Handler) CreateProductChangelogsView(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       req   query  request.GetProductChangelogsViewRequest  false  "get product changelogs viewed request"
-// @Success     200 {object} response.GetProductChangelogsView
+// @Success     200 {object} response.GetProductChangelogsViewed
 // @Router      /product-metadata/changelogs/view [get]
 func (h *Handler) GetProductChangelogsView(c *gin.Context) {
 	req := request.GetProductChangelogsViewRequest{}
@@ -129,4 +129,20 @@ func (h *Handler) GetProductChangelogsView(c *gin.Context) {
 func (h *Handler) CrawlChangelogs(c *gin.Context) {
 	go h.entities.CrawlChangelogs()
 	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
+}
+
+func (h *Handler) GetProductHashtag(c *gin.Context) {
+	req := request.GetProductHashtagRequest{}
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetProductHashtag] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	productHashtag, err := h.entities.GetProductHashtag(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(productHashtag, nil, nil, nil))
 }

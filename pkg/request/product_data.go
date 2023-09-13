@@ -19,3 +19,7 @@ type GetProductChangelogsViewRequest struct {
 	Key           string `form:"key"`
 	ChangelogName string `form:"changelog_name"`
 }
+
+type GetProductHashtagRequest struct {
+	Alias string `form:"alias"`
+}

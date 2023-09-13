@@ -35,4 +35,6 @@ var (
 	ErrKyberRouteNotFound                     = NewStringError("Kyber route not found", 400)
 	ErrAliasAlreadyExisted                    = NewStringError("Alias already existed", 409)
 	ErrInvalidCoingeckoSvcParam               = NewStringError("Invalid parameter", 400)
+	ErrFriendTechKeyAlreadyTracked            = NewStringError("Friend tech key already tracked", 409)
+	ErrFriendTechKeyNotTrackedYet             = NewStringError("Friend tech key not tracked yet", 409)
 )
