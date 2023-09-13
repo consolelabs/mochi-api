@@ -645,3 +645,30 @@ func (h *Handler) TopGainerLoser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+// SearchKeys     godoc
+// @Summary     Search coin
+// @Description Search coin
+// @Tags        Defi
+// @Accept      json
+// @Produce     json
+// @Param       query   query  string true  "coin query"
+// @Success     200 {object} response.FriendTechKeysResponse
+// @Router      /defi/keys [get]
+func (h *Handler) SearchKeys(c *gin.Context) {
+	req := request.SearchFriendTechKeysRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.SearchKeys] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	tokens, err := h.entities.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{Query: req.Query, Limit: req.Limit})
+	if err != nil {
+		h.log.Error(err, "[handler.SearchKeys] entities.SearchFriendTechKeys() failed")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(tokens.Data, nil, nil, nil))
+}

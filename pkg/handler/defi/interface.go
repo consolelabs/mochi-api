@@ -32,4 +32,6 @@ type IHandler interface {
 
 	FindTokenByContractAddress(c *gin.Context)
 	GetTokenInfo(c *gin.Context)
+
+	SearchKeys(c *gin.Context)
 }

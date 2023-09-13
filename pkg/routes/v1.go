@@ -293,6 +293,8 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			gasTrackerGroup.GET("", h.Defi.GetGasTracker)
 			gasTrackerGroup.GET("/:chain", h.Defi.GetChainGasTracker)
 		}
+
+		defiGroup.GET("/keys", h.Defi.SearchKeys)
 	}
 
 	verifyGroup := v1.Group("/verify")
