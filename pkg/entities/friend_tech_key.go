@@ -2,22 +2,28 @@ package entities
 
 import (
 	"encoding/json"
-	"github.com/defipod/mochi/pkg/kafka/message"
-	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/request"
-	"github.com/defipod/mochi/pkg/response"
 	"time"
 
+	queuetypes "github.com/consolelabs/mochi-typeset/queue/notification/typeset"
+	"gorm.io/gorm"
+
+	"github.com/defipod/mochi/pkg/kafka/message"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
-	"gorm.io/gorm"
+	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/response"
 )
 
-func (e *Entity) GetUserFriendTechKeyWatchlist(profileID string) ([]model.FriendTechKeyWatchlistItem, error) {
+func (e *Entity) GetUserFriendTechKeyWatchlist(profileId string) ([]model.FriendTechKeyWatchlistItem, error) {
 	// 1. get list tracking keys from db
-	trackingKeys, err := e.repo.FriendTechKeyWatchlistItem.ListByProfileId(profileID)
+	trackingKeys, err := e.repo.FriendTechKeyWatchlistItem.List(
+		model.ListFriendTechKeysFilter{
+			ProfileId: profileId,
+		},
+	)
 	if err != nil {
-		e.log.Error(err, "[entity.GetUserFriendTechKeyWatchlist] repo.FriendTechKeyWatchlistItem.ListByProfileId failed")
+		e.log.Error(err, "[entity.GetUserFriendTechKeyWatchlist] repo.FriendTechKeyWatchlistItem.List failed")
 		if err == gorm.ErrRecordNotFound {
 			return nil, errors.ErrRecordNotFound
 		}
@@ -29,7 +35,9 @@ func (e *Entity) GetUserFriendTechKeyWatchlist(profileID string) ([]model.Friend
 }
 
 func (e *Entity) GetFriendTechKeyWatchlist() ([]model.FriendTechKeyWatchlistItem, error) {
-	trackingKeys, err := e.repo.FriendTechKeyWatchlistItem.List()
+	trackingKeys, err := e.repo.FriendTechKeyWatchlistItem.List(
+		model.ListFriendTechKeysFilter{},
+	)
 	if err != nil {
 		e.log.Error(err, "[entity.GetUserFriendTechKeyWatchlist] repo.FriendTechKeyWatchlistItem.List failed")
 		return nil, err
@@ -122,6 +130,27 @@ func (e *Entity) GetFriendTechKeyPriceHistory(keyAddressID, interval string) (*r
 }
 
 func (e *Entity) PublishKeyPriceChangeMessage(messages []message.KeyPriceChangeAlertMessage) {
+	for _, msg := range messages {
+		byteNotification, _ := json.Marshal(msg)
+		err := e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+		if err != nil {
+			e.log.Errorf(err, "[watchKeyPriceChanges.publishMessage] - e.kafka.ProduceNotification failed")
+			return
+		}
+	}
+}
+
+func (e *Entity) GetFriendTechKeyTransactions(keyAddress string, limit int) (*response.FriendTechKeyTransactionsResponse, error) {
+	data, err := e.svc.FriendTech.GetTransactions(keyAddress, limit)
+	if err != nil {
+		e.log.Fields(logger.Fields{"keyAddress": keyAddress, "limit": limit}).Error(err, "[entity.GetFriendTechKeyTransactions] svc.FriendTech.GetTransactions() failed")
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (e *Entity) PublishKeyRelatedNotification(messages []queuetypes.NotifierMessage) {
 	for _, msg := range messages {
 		byteNotification, _ := json.Marshal(msg)
 		err := e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)

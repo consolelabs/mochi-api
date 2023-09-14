@@ -7,8 +7,7 @@ type Store interface {
 	Update(item model.FriendTechKeyWatchlistItem) error
 	Delete(id int) error
 	DeleteByAddressAndProfileId(address string, profileId string) error
-	ListByProfileId(profileId string) ([]model.FriendTechKeyWatchlistItem, error)
-	List() ([]model.FriendTechKeyWatchlistItem, error)
+	List(filter model.ListFriendTechKeysFilter) ([]model.FriendTechKeyWatchlistItem, error)
 	Exist(id int, address string, profileId string) (bool, error)
 	Get(id int) (*model.FriendTechKeyWatchlistItem, error)
 }

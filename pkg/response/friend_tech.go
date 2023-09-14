@@ -3,6 +3,7 @@ package response
 import (
 	"time"
 
+	friendtechtypes "github.com/consolelabs/mochi-typeset/common/transaction/friendtech/typeset"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/shopspring/decimal"
 )
@@ -65,4 +66,8 @@ type FriendTechKeyPrice struct {
 	Supply int             `json:"supply"`
 	Holder int             `json:"holder"`
 	Price  decimal.Decimal `json:"price"`
+}
+
+type FriendTechKeyTransactionsResponse struct {
+	Data []friendtechtypes.FriendTechKeyTransaction `json:"data"`
 }

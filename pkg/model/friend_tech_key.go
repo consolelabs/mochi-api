@@ -37,3 +37,7 @@ type FriendTechKey struct {
 	Supply          int       `json:"supply"`
 	Holders         int       `json:"holders"`
 }
+
+type ListFriendTechKeysFilter struct {
+	ProfileId string
+}

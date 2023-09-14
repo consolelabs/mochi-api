@@ -39,9 +39,15 @@ func (pg *pg) DeleteByAddressAndProfileId(address string, profileId string) erro
 	return pg.db.Delete(&model.FriendTechKeyWatchlistItem{}, "key_address = ? AND profile_id = ?", address, profileId).Error
 }
 
-func (pg *pg) ListByProfileId(profileId string) ([]model.FriendTechKeyWatchlistItem, error) {
+func (pg *pg) List(filter model.ListFriendTechKeysFilter) ([]model.FriendTechKeyWatchlistItem, error) {
 	var items []model.FriendTechKeyWatchlistItem
-	return items, pg.db.Where("profile_id = ?", profileId).Find(&items).Error
+
+	db := pg.db
+	if filter.ProfileId != "" {
+		db = db.Where("profile_id = ?", filter.ProfileId)
+	}
+
+	return items, db.Find(&items).Error
 }
 
 func (pg *pg) Exist(id int, address string, profileId string) (bool, error) {
@@ -52,9 +58,4 @@ func (pg *pg) Exist(id int, address string, profileId string) (bool, error) {
 func (pg *pg) Get(id int) (*model.FriendTechKeyWatchlistItem, error) {
 	var item model.FriendTechKeyWatchlistItem
 	return &item, pg.db.First(&item, "id = ?", id).Error
-}
-
-func (pg *pg) List() ([]model.FriendTechKeyWatchlistItem, error) {
-	var items []model.FriendTechKeyWatchlistItem
-	return items, pg.db.Find(&items).Error
 }

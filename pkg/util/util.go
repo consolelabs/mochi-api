@@ -665,7 +665,7 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	defer res.Body.Close()
 
 	statusCode := res.StatusCode
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return statusCode, err
 	}
