@@ -14,6 +14,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/repo"
+	"github.com/defipod/mochi/pkg/repo/emojis"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -225,43 +226,61 @@ func (d *Discord) SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel,
 }
 
 func (d *Discord) formatLevelUpMessage(uActivity *response.HandleUserActivityResponse, dcUser *discordgo.User, role, randomTip string, levelRoleLevel int) *discordgo.MessageEmbed {
-	starEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_STAR"})
+	starEmoji, _, err := d.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: []string{"ANIMATED_STAR"},
+	})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get star emoji")
 		return nil
 	}
 
-	xpEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_XP"})
+	xpEmoji, _, err := d.repo.Emojis.ListEmojis(
+		emojis.Query{
+			Codes: []string{"ANIMATED_XP"},
+		},
+	)
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get xp emoji")
 		return nil
 	}
 
-	gemEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_GEM"})
+	gemEmoji, _, err := d.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: []string{"ANIMATED_GEM"},
+	})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get gem emoji")
 		return nil
 	}
 
-	badgeEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_BADGE_1"})
+	badgeEmoji, _, err := d.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: []string{"ANIMATED_BADGE"},
+	})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get badge emoji")
 		return nil
 	}
 
-	pointRightEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_POINTING_RIGHT"})
+	pointRightEmoji, _, err := d.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: []string{"ANIMATED_POINT_RIGHT"},
+	})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get point right emoji")
 		return nil
 	}
 
-	trophyEmoji, err := d.repo.Emojis.ListEmojis([]string{"ANIMATED_TROPHY"})
+	trophyEmoji, _, err := d.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: []string{"TROPHY"},
+	})
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get trophy emoji")
 		return nil
 	}
 
-	lineEmoji, err := d.repo.Emojis.ListEmojis([]string{"LINE"})
+	lineEmoji, _, err := d.repo.Emojis.ListEmojis(
+		emojis.Query{
+			Codes: []string{"LINE"},
+		},
+	)
 	if err != nil {
 		d.log.Errorf(err, "formatLevelUpMessage - failed to get line emoji")
 		return nil

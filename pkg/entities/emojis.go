@@ -8,18 +8,24 @@ import (
 
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/repo/emojis"
+	"github.com/defipod/mochi/pkg/request"
 )
 
-func (e *Entity) GetListEmojis(codes []string) ([]*model.EmojiData, error) {
+func (e *Entity) GetListEmojis(req request.GetListEmojiRequest) ([]*model.EmojiData, int64, error) {
 	// 1. get list emojis from db
-	emojis, err := e.repo.Emojis.ListEmojis(codes)
+	emojis, total, err := e.repo.Emojis.ListEmojis(emojis.Query{
+		Codes: req.ListCode,
+		Size:  int(req.Size),
+		Page:  int(req.Page),
+	})
 	if err != nil {
 		e.log.Error(err, "[entity.GetListEmojis] repo.emojis.GetListEmojis failed")
 		if err == gorm.ErrRecordNotFound {
-			return nil, errors.ErrRecordNotFound
+			return nil, 0, errors.ErrRecordNotFound
 		}
 
-		return nil, err
+		return nil, 0, err
 	}
 
 	// 2. convert to emojiData struct
@@ -48,5 +54,5 @@ func (e *Entity) GetListEmojis(codes []string) ([]*model.EmojiData, error) {
 		})
 	}
 
-	return emojiDatas, nil
+	return emojiDatas, total, nil
 }
