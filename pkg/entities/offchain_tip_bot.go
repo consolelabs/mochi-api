@@ -189,7 +189,8 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		"moniker":         req.Moniker,
 		"original_tx_id":  req.OriginalTxId,
 		"original_amount": req.OriginalAmount,
-		"channel":         req.ChannelId,
+		"channel_id":      req.ChannelId,
+		"channel_name":    req.ChannelName,
 		"template":        template,
 	}
 
