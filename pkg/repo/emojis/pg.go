@@ -14,10 +14,17 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) ListEmojis(codes []string) (model []*model.ProductMetadataEmojis, err error) {
-	db := pg.db
-	if len(codes) > 0 {
-		db = db.Where("code in (?)", codes)
+func (pg *pg) ListEmojis(q Query) (model []*model.ProductMetadataEmojis, total int64, err error) {
+	db := pg.db.Model(model).Order("id ASC")
+	db.Count(&total)
+	if len(q.Codes) > 0 {
+		db = db.Where("code in (?)", q.Codes)
 	}
-	return model, db.Find(&model).Error
+	if q.Size > 0 {
+		db = db.Limit(q.Size)
+	}
+	if q.Page > 0 {
+		db = db.Offset(q.Page * q.Size)
+	}
+	return model, total, db.Find(&model).Error
 }
