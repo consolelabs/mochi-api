@@ -71,7 +71,8 @@ func (c *trackFriendTechKeys) Run() error {
 		}
 
 		// check if there is any new transaction
-		for _, tx := range txs.Data {
+		for i := len(txs.Data) - 1; i >= 0; i-- {
+			tx := txs.Data[i]
 			if time.Now().Unix()-jobInterval <= int64(tx.Timestamp) {
 				messages = append(messages, queuetypes.NotifierMessage{
 					Type: typeset.NOTIFICATION_KEY_NEW_TRANSACTION,
