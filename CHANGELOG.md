@@ -1,3 +1,10 @@
+## [6.14.1](https://github.com/consolelabs/mochi-api/compare/v6.14.0...v6.14.1) (2023-09-15)
+
+
+### Bug Fixes
+
+* support insensitive hashtag template ([#1190](https://github.com/consolelabs/mochi-api/issues/1190)) ([c700b48](https://github.com/consolelabs/mochi-api/commit/c700b4887b35e8d0fa6311df5288a297680e5f38))
+
 # [6.14.0](https://github.com/consolelabs/mochi-api/compare/v6.13.0...v6.14.0) (2023-09-15)
 
 
