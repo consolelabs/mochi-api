@@ -22,6 +22,22 @@ jobs:
           --health-retries 5
         ports:
           - 25433:5432      
+      # Label used to access the service container
+      postgres_local:
+        # Docker Hub image
+        image: postgres:15
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mochi_local
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5434:5432      
           
       redis:
         image: redis:6
