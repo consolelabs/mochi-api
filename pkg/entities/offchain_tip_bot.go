@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -170,12 +171,27 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 
 func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
 	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
+	// parse hashtag in message and store hashtag template in metadata
+	hashtags := regexp.MustCompile(`#[a-z0-9_]+`).FindAll([]byte(req.Message), -1)
+	var template interface{}
+	for _, hashtag := range hashtags {
+		productHashtag, err := e.GetProductHashtag(request.GetProductHashtagRequest{Alias: string(hashtag)[1:]})
+		if err != nil || productHashtag == nil {
+			e.log.Fields(logger.Fields{"hashtag": string(hashtag)}).Error(err, "[entity.TransferTokenV2] GetProductHashtag() failed")
+			continue
+		}
+		template = productHashtag.ProductHashtag
+		break
+	}
+
 	req.Metadata = map[string]interface{}{
 		"message":         req.Message,
 		"moniker":         req.Moniker,
 		"original_tx_id":  req.OriginalTxId,
 		"original_amount": req.OriginalAmount,
-		"channel":         req.ChannelId,
+		"channel_id":      req.ChannelId,
+		"channel_name":    req.ChannelName,
+		"template":        template,
 	}
 
 	// get senderProfile, recipientProfiles by discordID

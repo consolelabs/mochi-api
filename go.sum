@@ -163,10 +163,8 @@ github.com/consensys/bavard v0.1.8-0.20210406032232-f3452dc9b572/go.mod h1:Bpd0/
 github.com/consensys/gnark-crypto v0.4.1-0.20210426202927-39ac3d4b3f1f/go.mod h1:815PAHg3wvysy0SyIqanF8gZ0Y1wjk/hrDHD/iT88+Q=
 github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905 h1:n5JZF1xv7w+UoOjtx2VrROuqUYAFm9uDRwPeSgmxV+M=
 github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905/go.mod h1:ZShtpSO6HNmj+G2W/vFDi28BneoLis6AWYnRIAnfIxU=
-github.com/consolelabs/mochi-typeset v0.0.0-20230823081345-e192d01ca34f h1:eJ+39cmbuqCY7eI8TF1LgAtjTjuOBY/LhOmsTHSVKw4=
-github.com/consolelabs/mochi-typeset v0.0.0-20230823081345-e192d01ca34f/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
-github.com/consolelabs/mochi-typeset v0.0.0-20230912025722-3537f98b4194 h1:bJ3eOlxtkilRLuIOCPu1JU9cF06mQzWckAPquBPmiXM=
-github.com/consolelabs/mochi-typeset v0.0.0-20230912025722-3537f98b4194/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
+github.com/consolelabs/mochi-typeset v0.0.0-20230913195508-ff7f4f4c725c h1:y4flqwiIQclJzgjgOEA7/rnNKzRWG8cfyww3ROe4AZ0=
+github.com/consolelabs/mochi-typeset v0.0.0-20230913195508-ff7f4f4c725c/go.mod h1:HSKMB2HqQKHgeVpG/QZAs2nHulZbLA8PreLeujm2Ups=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
@@ -719,6 +717,7 @@ github.com/sergi/go-diff v1.0.0/go.mod h1:0CfEIISq7TuYL3j771MWULgwwjU+GofnZX9QAm
 github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible h1:Bn1aCHHRnjv4Bl16T8rcaFjYSrGrIZvpiGO6P3Q4GpU=
 github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24/go.mod h1:M+9NzErvs504Cn4c5DxATwIqPbtswREoFCre64PpcG4=
+github.com/shopspring/decimal v1.2.0 h1:abSATXmQEYyShuxI4/vyW3tV1MrKAJzCZ/0zLUXYbsQ=
 github.com/shopspring/decimal v1.2.0/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=

@@ -1456,13 +1456,3 @@ func (e *Entity) GetTokenPrice(symbol string, tokenName string) (*float64, error
 	}
 	return &price, nil
 }
-
-// SearchFriendTechKeys search friend scan account
-func (e *Entity) SearchFriendTechKeys(req request.SearchFriendTechKeysRequest) (*response.FriendTechKeysResponse, error) {
-	data, err := e.svc.FriendTech.Search(req.Query, req.Limit)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.SearchFriendTechKeys] svc.FriendTech.Search() failed")
-		return nil, err
-	}
-	return data, nil
-}

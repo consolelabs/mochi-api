@@ -134,6 +134,8 @@ type Config struct {
 	KrystalApiKey  string
 
 	MochiAppPrivateKey string
+
+	FriendScanAPI string
 }
 
 type MarketplaceBaseUrl struct {
@@ -434,6 +436,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
 	v.SetDefault("SUI_JSON_RPC", "https://fullnode.mainnet.sui.io")
 	v.SetDefault("SKY_MAVIS_API_BASE_URL", "https://api-gateway.skymavis.com")
+	v.SetDefault("FRIEND_SCAN_API", "https://api.friendscan.tech")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)

@@ -34,4 +34,5 @@ type TransferV2Request struct {
 	OriginalTxId   string                 `json:"original_tx_id"`
 	OriginalAmount float64                `json:"original_amount"`
 	ChannelId      string                 `json:"channel_id"`
+	ChannelName    string                 `json:"channel_name"`
 }

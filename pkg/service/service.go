@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/defipod/mochi/pkg/service/friendtech"
 
 	"github.com/go-redis/redis/v8"
@@ -119,6 +120,6 @@ func NewService(
 		DexScreener:   dexscreener.NewService(),
 		Github:        github.NewService(&cfg, log),
 		Ethplorer:     ethplorer.NewService(),
-		FriendTech:    friendtech.NewService(),
+		FriendTech:    friendtech.NewService(&cfg),
 	}, nil
 }

@@ -23,3 +23,10 @@ type GetProductChangelogsViewRequest struct {
 type GetProductHashtagRequest struct {
 	Alias string `form:"alias"`
 }
+
+type GetListEmojiRequest struct {
+	Size     int64  `form:"size" default:"10"`
+	Page     int64  `form:"page" default:"0"`
+	Codes    string `form:"codes"`
+	ListCode []string
+}
