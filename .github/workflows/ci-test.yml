@@ -59,5 +59,7 @@ jobs:
           go-version-file: go.mod
       - name: Install
         run: go install github.com/rubenv/sql-migrate/sql-migrate@latest
+      - name: Migrate pg local
+        run: make migrate-up
       - name: Run Test cases
         run: make test
