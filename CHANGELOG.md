@@ -1,3 +1,23 @@
+# [6.14.0](https://github.com/consolelabs/mochi-api/compare/v6.13.0...v6.14.0) (2023-09-15)
+
+
+### Bug Fixes
+
+* change friend scan api ([b161773](https://github.com/consolelabs/mochi-api/commit/b161773463547f5a385462342295758a61b509c6))
+* count total emojis in pagination ([#1183](https://github.com/consolelabs/mochi-api/issues/1183)) ([eaabbdf](https://github.com/consolelabs/mochi-api/commit/eaabbdf39c7805cf41da9f82928aaab6006127a3))
+* handle not found hashtag etmplate ([#1187](https://github.com/consolelabs/mochi-api/issues/1187)) ([d80bda8](https://github.com/consolelabs/mochi-api/commit/d80bda8a14b01806e9e214a032f0019f1a815b8a))
+* order list tx by time asc ([43e4703](https://github.com/consolelabs/mochi-api/commit/43e4703779caf2a85a62118510738b388f46a3c9))
+* produce kafka message using buildin utility ([#1181](https://github.com/consolelabs/mochi-api/issues/1181)) ([3c28fec](https://github.com/consolelabs/mochi-api/commit/3c28fecc2ffa31387051a406668a5c3457afb392))
+* store hashtag template in metadata ([#1178](https://github.com/consolelabs/mochi-api/issues/1178)) ([02a997d](https://github.com/consolelabs/mochi-api/commit/02a997dde3c4db7e2a8268ef75913bbdd3b4e5ef))
+* **tip:** add channel name for tip notification ([#1185](https://github.com/consolelabs/mochi-api/issues/1185)) ([3d3424a](https://github.com/consolelabs/mochi-api/commit/3d3424a0066cb69572b443ce91449d56302047cb))
+
+
+### Features
+
+* job to track friend tech keys new txs come ([893010c](https://github.com/consolelabs/mochi-api/commit/893010c739e23c45e3bb59df35c6e20e6efa3bd5))
+* paginate emojis ([#1182](https://github.com/consolelabs/mochi-api/issues/1182)) ([7df5247](https://github.com/consolelabs/mochi-api/commit/7df5247c4d3b88966bfba3eeca1579b3308b0505))
+* push key price change alert to ([52ba788](https://github.com/consolelabs/mochi-api/commit/52ba7880add43338394b813e105891d82783cd2d))
+
 # [6.13.0](https://github.com/consolelabs/mochi-api/compare/v6.12.1...v6.13.0) (2023-09-13)
 
 
