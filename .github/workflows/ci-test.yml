@@ -6,7 +6,7 @@ jobs:
     
     # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
+      # pg test
       postgres:
         # Docker Hub image
         image: postgres:15
@@ -22,7 +22,7 @@ jobs:
           --health-retries 5
         ports:
           - 25433:5432      
-      # Label used to access the service container
+      # pg local
       postgres_local:
         # Docker Hub image
         image: postgres:15
@@ -38,7 +38,13 @@ jobs:
           --health-retries 5
         ports:
           - 5434:5432      
-          
+      # chrome
+      chrome:
+        # Docker Hub image
+        image: browserless/chrome
+        ports:
+          - 3000:3000
+      # redis
       redis:
         image: redis:6
         ports:
