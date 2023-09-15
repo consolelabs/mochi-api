@@ -1,3 +1,13 @@
+# [6.13.0](https://github.com/consolelabs/mochi-api/compare/v6.12.1...v6.13.0) (2023-09-13)
+
+
+### Features
+
+* check new changelog ([298fa63](https://github.com/consolelabs/mochi-api/commit/298fa63c98b45e4af1c40b98c108ca226227c515))
+* data hashtag and api render ([#1174](https://github.com/consolelabs/mochi-api/issues/1174)) ([cabf66b](https://github.com/consolelabs/mochi-api/commit/cabf66b76ad0b28e873f551aaf4937d64bd585a2))
+* friend tech key tracking apis ([#1173](https://github.com/consolelabs/mochi-api/issues/1173)) ([efad45b](https://github.com/consolelabs/mochi-api/commit/efad45b029b309adb091429160923edc9aa8801e))
+* simple search for friend scan keys ([#1172](https://github.com/consolelabs/mochi-api/issues/1172)) ([35395f1](https://github.com/consolelabs/mochi-api/commit/35395f125492fd05900d527b5a12808caf0713f1))
+
 ## [6.12.1](https://github.com/consolelabs/mochi-api/compare/v6.12.0...v6.12.1) (2023-09-12)
 
 
