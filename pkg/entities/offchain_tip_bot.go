@@ -172,7 +172,7 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
 	e.log.Fields(logger.Fields{"component": "TransferV2", "req": req}).Info("receive new transfer request")
 	// parse hashtag in message and store hashtag template in metadata
-	hashtags := regexp.MustCompile(`#[a-z0-9_]+`).FindAll([]byte(req.Message), -1)
+	hashtags := regexp.MustCompile(`#[a-zA-Z0-9_]+`).FindAll([]byte(req.Message), -1)
 	var template interface{}
 	for _, hashtag := range hashtags {
 		productHashtag, err := e.GetProductHashtag(request.GetProductHashtagRequest{Alias: string(hashtag)[1:]})
