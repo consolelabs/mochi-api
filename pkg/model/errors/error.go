@@ -25,7 +25,9 @@ func GetStatusCode(err error) int {
 	case
 		ErrConflict,
 		ErrTokenRequestExisted,
-		ErrAliasAlreadyExisted:
+		ErrAliasAlreadyExisted,
+		ErrFriendTechKeyAlreadyTracked,
+		ErrFriendTechKeyNotTrackedYet:
 		code = http.StatusConflict
 	case
 		ErrInvalidChain,
