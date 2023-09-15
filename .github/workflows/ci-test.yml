@@ -6,7 +6,7 @@ jobs:
     
     # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
+      # pg test
       postgres:
         # Docker Hub image
         image: postgres:15
@@ -22,7 +22,29 @@ jobs:
           --health-retries 5
         ports:
           - 25433:5432      
-          
+      # pg local
+      postgres_local:
+        # Docker Hub image
+        image: postgres:15
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mochi_local
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5434:5432      
+      # chrome
+      chrome:
+        # Docker Hub image
+        image: browserless/chrome
+        ports:
+          - 3000:3000
+      # redis
       redis:
         image: redis:6
         ports:
@@ -37,5 +59,7 @@ jobs:
           go-version-file: go.mod
       - name: Install
         run: go install github.com/rubenv/sql-migrate/sql-migrate@latest
+      - name: Migrate pg local
+        run: make migrate-up
       - name: Run Test cases
         run: make test
