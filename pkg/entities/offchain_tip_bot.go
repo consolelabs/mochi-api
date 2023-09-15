@@ -176,7 +176,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	var template interface{}
 	for _, hashtag := range hashtags {
 		productHashtag, err := e.GetProductHashtag(request.GetProductHashtagRequest{Alias: string(hashtag)[1:]})
-		if err != nil {
+		if err != nil || productHashtag == nil {
 			e.log.Fields(logger.Fields{"hashtag": string(hashtag)}).Error(err, "[entity.TransferTokenV2] GetProductHashtag() failed")
 			continue
 		}
