@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -13,9 +14,14 @@ type FriendTech struct {
 	baseUrl string
 }
 
-func NewService() Service {
+func NewService(cfg *config.Config) Service {
+	baseUrl := cfg.FriendScanAPI
+	if baseUrl == "" {
+		baseUrl = "https://api.friendscan.tech"
+	}
+
 	return &FriendTech{
-		baseUrl: "https://friendscan-api.caliber.build",
+		baseUrl: baseUrl,
 	}
 }
 
@@ -24,7 +30,7 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 		limit = 200
 	}
 
-	url := n.baseUrl + fmt.Sprintf("/api/accounts?q=%v&limit=%v", query, limit)
+	url := n.baseUrl + fmt.Sprintf("/accounts?q=%v&limit=%v", query, limit)
 	data := response.FriendTechKeysResponse{}
 	req := util.SendRequestQuery{
 		URL:       url,
@@ -39,7 +45,7 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 }
 
 func (n *FriendTech) GetHistory(accountAddress, interval string) (*response.FriendTechKeyPriceHistoryResponse, error) {
-	url := n.baseUrl + fmt.Sprintf("/api/accounts/%v/historical?interval=%v", accountAddress, interval)
+	url := n.baseUrl + fmt.Sprintf("/accounts/%v/historical?interval=%v", accountAddress, interval)
 	data := response.FriendTechKeyPriceHistoryResponse{}
 	req := util.SendRequestQuery{
 		URL:       url,
@@ -59,7 +65,7 @@ func (n *FriendTech) GetTransactions(subjectAddress string, limit int) (*respons
 		limit = 50
 	}
 
-	url := n.baseUrl + fmt.Sprintf("/api/transactions?subjectAddress=%s&limit=%v", subjectAddress, limit)
+	url := n.baseUrl + fmt.Sprintf("/transactions?subjectAddress=%s&limit=%v", subjectAddress, limit)
 	data := response.FriendTechKeyTransactionsResponse{}
 	req := util.SendRequestQuery{
 		URL:       url,
