@@ -2,6 +2,7 @@ package coingecko
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -19,9 +20,14 @@ func (c *CoinGecko) doNetworkCoinByContract(platformId, contractAddress string, 
 	endpoint := fmt.Sprintf(c.getCoinByContract, platformId, contractAddress)
 	res := &response.GetCoinByContractResponseData{}
 	status, err := util.FetchData(endpoint, &res)
+	if status == http.StatusNotFound {
+		bytes, _ := json.Marshal("404")
+		c.cache.Set(fmt.Sprintf("%s-%s-%s", coingeckoGetTokenByContractKey, platformId, strings.ToLower(contractAddress)), string(bytes), 7*24*time.Hour)
+		return nil, errors.New("404 contract not found")
+	}
 	if err != nil || status != http.StatusOK {
 		if retry == 0 {
-			return nil, fmt.Errorf("%d - %s", status, err)
+			return nil, fmt.Errorf("%d - %v", status, err)
 		} else {
 			return c.GetCoinByContract(platformId, contractAddress, retry-1)
 		}
