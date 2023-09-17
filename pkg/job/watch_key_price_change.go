@@ -1,15 +1,20 @@
 package job
 
 import (
+	"fmt"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/consolelabs/mochi-typeset/typeset"
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/go-redis/redis/v8"
 	"github.com/shopspring/decimal"
 )
 
@@ -17,6 +22,7 @@ type watchKeyPriceChanges struct {
 	entity *entities.Entity
 	log    logger.Logger
 	cfg    config.Config
+	cache  cache.Cache
 }
 
 const (
@@ -26,10 +32,21 @@ const (
 func NewWatchKeyPriceChange(e *entities.Entity, l logger.Logger) Job {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 
+	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	if err != nil {
+		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis")
+	}
+
+	c, err := cache.NewRedisCache(redisOpt)
+	if err != nil {
+		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis cache")
+	}
+
 	return &watchKeyPriceChanges{
 		entity: e,
 		log:    l,
 		cfg:    cfg,
+		cache:  c,
 	}
 }
 
@@ -52,10 +69,10 @@ func (job *watchKeyPriceChanges) Run() error {
 		keyAddressMap[item.KeyAddress] = append(keyAddressMap[item.KeyAddress], item)
 	}
 
-	currentDay := time.Now().UTC().Day()
+	now := time.Now().UTC()
+	currentDay := now.Day()
 	currentPrice := decimal.NewFromInt(0)
 	yesterdayClosedPrice := decimal.NewFromInt(0)
-	priceChangePercentage := decimal.NewFromInt(0)
 	for k, items := range keyAddressMap {
 		keyAddress, err := job.entity.SearchFriendTechKeys(request.SearchFriendTechKeysRequest{
 			Query: k,
@@ -77,6 +94,11 @@ func (job *watchKeyPriceChanges) Run() error {
 			continue
 		}
 
+		if priceHistories != nil && len(priceHistories.Data) == 0 {
+			job.log.Error(err, "[watchKeyPriceChanges.Run] not found price history")
+			continue
+		}
+
 		currentPrice = priceHistories.Data[len(priceHistories.Data)-1].Price
 
 		for i := len(priceHistories.Data) - 1; i >= 0; i-- {
@@ -86,7 +108,28 @@ func (job *watchKeyPriceChanges) Run() error {
 			}
 		}
 
-		priceChangePercentage = calculatePercentageChange(yesterdayClosedPrice, currentPrice)
+		priceChangePercentage := calculatePercentageChange(yesterdayClosedPrice, currentPrice)
+
+		key := fmt.Sprintf("key-price-alert-%s-%v", strings.ToLower(k), currentDay)
+		val := fmt.Sprintf("%v-%v", currentPrice, yesterdayClosedPrice)
+
+		zValue, err := job.cache.GetString(key)
+		if err != nil {
+			job.log.Error(err, "[watchKeyPriceChanges.Run] cache.GetString failed")
+			continue
+		}
+
+		if zValue == val {
+			continue
+		}
+
+		expTime := time.Duration(24-now.Hour()) * time.Hour
+		err = job.cache.Set(key, val, expTime)
+		if err != nil {
+			job.log.Error(err, "[watchKeyPriceChanges.Run] cache.Set failed")
+			continue
+		}
+
 		for _, item := range items {
 			increaseAlertAt := decimal.NewFromInt(int64(item.IncreaseAlertAt))
 			decreaseAlertAt := decimal.NewFromInt(int64(item.DecreaseAlertAt))
@@ -125,7 +168,6 @@ func (job *watchKeyPriceChanges) Run() error {
 			}
 		}
 	}
-
 	job.publishMessage(profileIDAlertMap)
 	return nil
 }
