@@ -2,9 +2,11 @@ package entities
 
 import (
 	"encoding/json"
+	"math"
 	"time"
 
 	queuetypes "github.com/consolelabs/mochi-typeset/queue/notification/typeset"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/kafka/message"
@@ -159,4 +161,44 @@ func (e *Entity) PublishKeyRelatedNotification(messages []queuetypes.NotifierMes
 			return
 		}
 	}
+}
+
+func (e *Entity) CalculateFriendTechKeyPriceChangePercentage(keyAddress string) (float64, error) {
+	priceHistories, err := e.svc.FriendTech.GetHistory(keyAddress, "hour")
+	if err != nil {
+		e.log.Fields(logger.Fields{"keyAddressID": keyAddress, "interval": "hour"}).Error(err, "[entity.CalculateFriendTechKeyPriceChangePercentage] svc.FriendTech.GetHistory() failed")
+		return 0, err
+	}
+
+	currentDay := time.Now().UTC().Day()
+	yesterdayClosedPrice := decimal.NewFromInt(0)
+	currentPrice := priceHistories.Data[len(priceHistories.Data)-1].Price
+
+	for i := len(priceHistories.Data) - 1; i >= 0; i-- {
+		if priceHistories.Data[i].Time.Day() != currentDay {
+			yesterdayClosedPrice = priceHistories.Data[i].Price
+			break
+		}
+	}
+
+	for i := len(priceHistories.Data) - 1; i >= 0; i-- {
+		if priceHistories.Data[i].Time.Day() != currentDay {
+			yesterdayClosedPrice = priceHistories.Data[i].Price
+			break
+		}
+	}
+
+	priceChangePercentage := calculatePercentageChange(yesterdayClosedPrice, currentPrice)
+
+	priceChangeInFloat, _ := priceChangePercentage.Float64()
+
+	// round to nearest
+	return math.Round(priceChangeInFloat*100) / 100, nil
+}
+
+func calculatePercentageChange(yesterdayPrice, todayPrice decimal.Decimal) decimal.Decimal {
+	if yesterdayPrice.IsZero() {
+		return decimal.Zero
+	}
+	return ((todayPrice.Sub(yesterdayPrice)).Div(yesterdayPrice)).Mul(decimal.NewFromInt(100))
 }
