@@ -14,8 +14,8 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) GetByAlias(alias string) (p *model.ProductHashtagAlias, err error) {
-	db := pg.db.Table("product_hashtag_alias")
+func (pg *pg) GetByAlias(alias string) (p *model.ProductHashtag, err error) {
+	db := pg.db.Table("product_hashtags")
 
-	return p, db.Where("lower(alias) = lower(?)", alias).Preload("ProductHashtag").First(&p).Error
+	return p, db.Where("lower(?)=ANY(alias)", alias).First(&p).Error
 }
