@@ -8,7 +8,6 @@ type MochiPayTransferRequest struct {
 	Amount    []string   `json:"amount"`
 	TokenId   string     `json:"token_id"`
 	Note      string     `json:"note"`
-	Action    string     `json:"action"`
 	CreatedAt *time.Time `json:"created_at"`
 }
 
