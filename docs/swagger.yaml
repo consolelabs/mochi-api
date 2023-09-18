@@ -1442,6 +1442,8 @@ definitions:
         type: string
       channel_id:
         type: string
+      channel_name:
+        type: string
       each:
         type: boolean
       guild_id:
@@ -2142,7 +2144,7 @@ definitions:
     properties:
       address:
         type: string
-      createdAt:
+      created_at:
         type: string
       holders:
         type: integer
@@ -2150,18 +2152,20 @@ definitions:
         type: integer
       price:
         type: number
-      profileChecked:
+      price_change_percentage:
+        type: number
+      profile_checked:
         type: boolean
       supply:
         type: integer
-      twitterPfpUrl:
+      twitter_pfp_url:
         type: string
-      twitterUsername:
+      twitter_username:
         type: string
-      updatedAt:
+      updated_at:
         type: string
     type: object
-  response.FriendTechKeyWatchlistItemRespose:
+  response.FriendTechKeyWatchlistItemResponse:
     properties:
       created_at:
         type: string
@@ -2660,13 +2664,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3288,6 +3292,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3303,12 +3313,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3919,7 +3923,7 @@ definitions:
   response.TrackFriendTechKeyResponse:
     properties:
       data:
-        $ref: '#/definitions/response.FriendTechKeyWatchlistItemRespose'
+        $ref: '#/definitions/response.FriendTechKeyWatchlistItemResponse'
     type: object
   response.TransferTokenV2Data:
     properties:
