@@ -3,12 +3,12 @@ package request
 import "time"
 
 type MochiPayTransferRequest struct {
-	From    *Wallet   `json:"from"`
-	Tos     []*Wallet `json:"tos"`
-	Amount  []string  `json:"amount"`
-	TokenId string    `json:"token_id"`
-	Note    string    `json:"note"`
-
+	From      *Wallet    `json:"from"`
+	Tos       []*Wallet  `json:"tos"`
+	Amount    []string   `json:"amount"`
+	TokenId   string     `json:"token_id"`
+	Note      string     `json:"note"`
+	Action    string     `json:"action"`
 	CreatedAt *time.Time `json:"created_at"`
 }
 
