@@ -10,4 +10,6 @@ type Service interface {
 	UnlinkDex(profileId, platform string) error
 	GetOnboardingStatus(profileId string) (res *OnboardingStatusResponse, err error)
 	MarkUserDidOnboarding(profileId string) error
+	GetByTelegramID(telegramID string, noFetchAmount bool) (*GetProfileResponse, error)
+	GetProfileActivities(profileID string) (any, error)
 }

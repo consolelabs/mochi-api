@@ -135,6 +135,9 @@ func (e *Entity) GetLogger() logger.Logger {
 func (e *Entity) GetKafka() *kafka.Kafka {
 	return &e.kafka
 }
+func (e *Entity) GetRepo() *repo.Repo {
+	return e.repo
+}
 
 func Shutdown() error {
 	e.store.Shutdown()
