@@ -63,3 +63,7 @@ func (pg *pg) UpsertMany(guildUsers []model.GuildUser) error {
 	}
 	return tx.Commit().Error
 }
+
+func (pg *pg) GetUsersOfGuild(ids []string, guildId string) (res []model.GuildUser, err error) {
+	return res, pg.db.Where("guild_id = ? AND user_id IN ?", guildId, ids).Find(&res).Error
+}

@@ -9,4 +9,5 @@ type Store interface {
 	FirstOrCreate(guildUser *model.GuildUser) error
 	Create(guildUser *model.GuildUser) error
 	UpsertMany(guildUsers []model.GuildUser) error
+	GetUsersOfGuild(ids []string, guildId string) (res []model.GuildUser, err error)
 }

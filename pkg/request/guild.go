@@ -20,3 +20,8 @@ type HandleGuildDeleteRequest struct {
 	GuildName string `json:"guild_name"`
 	IconURL   string `json:"icon_url"`
 }
+
+type ValidateUserRequest struct {
+	Ids     string `form:"ids"`
+	GuildId string `form:"guild_id"`
+}
