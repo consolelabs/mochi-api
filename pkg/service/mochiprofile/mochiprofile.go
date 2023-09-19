@@ -296,3 +296,63 @@ func (m *MochiProfile) MarkUserDidOnboarding(profileId string) error {
 
 	return nil
 }
+
+func (m *MochiProfile) GetByTelegramID(telegramID string, noFetchAmount bool) (*GetProfileResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/profiles/get-by-telegram/%s?no_fetch_amount=%v", m.config.MochiProfileServerHost, telegramID, noFetchAmount)
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			return nil, err
+		}
+
+		errResponse := &ErrorResponse{}
+		err = json.Unmarshal(errBody, &errResponse)
+		if err != nil {
+			return nil, err
+		}
+
+		err = fmt.Errorf(errResponse.Msg)
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &GetProfileResponse{}
+	err = json.Unmarshal(body, res)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return res, nil
+}
+
+func (m *MochiProfile) GetProfileActivities(profileID string) (any, error) {
+	url := fmt.Sprintf("%s/api/v1/profiles/%s/activities?actions=9|10&page=0&size=12&status=new", m.config.MochiProfileServerHost, profileID)
+
+	res := GetProfileResponse{}
+	req := util.SendRequestQuery{
+		URL:     url,
+		Headers: map[string]string{"Content-Type": "application/json"},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("util.SendRequest() failed: %v", err)
+	}
+	return &res, nil
+}

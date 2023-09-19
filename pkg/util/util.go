@@ -665,12 +665,18 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	defer res.Body.Close()
 
 	statusCode := res.StatusCode
-	bytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return statusCode, err
+	if q.ParseForm != nil {
+		bytes, err := io.ReadAll(res.Body)
+		if err != nil {
+			return statusCode, err
+		}
+		if err := json.Unmarshal(bytes, q.ParseForm); err != nil {
+			return statusCode, err
+		}
+		return statusCode, nil
 	}
 
-	return statusCode, json.Unmarshal(bytes, q.ParseForm)
+	return statusCode, nil
 }
 
 func ParseSnapshotURL(url string) string {

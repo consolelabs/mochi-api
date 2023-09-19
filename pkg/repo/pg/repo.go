@@ -60,6 +60,7 @@ import (
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
 	producthashtag "github.com/defipod/mochi/pkg/repo/product_hashtag"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
+	profilecommandusage "github.com/defipod/mochi/pkg/repo/profile_command_usage"
 	"github.com/defipod/mochi/pkg/repo/quest"
 	questpass "github.com/defipod/mochi/pkg/repo/quest_pass"
 	questreward "github.com/defipod/mochi/pkg/repo/quest_reward"
@@ -176,5 +177,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProductChangelogsView:                productchangelogsview.NewPG(db),
 		FriendTechKeyWatchlistItem:           friendfechkeywatchlistitem.NewPG(db),
 		ProductHashtag:                       producthashtag.NewPG(db),
+		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
 	}
 }
