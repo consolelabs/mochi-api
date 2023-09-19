@@ -3,6 +3,7 @@ package guild
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -164,4 +165,24 @@ func (h *Handler) GetGuildRoles(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(roles, nil, nil, nil))
+}
+
+func (h *Handler) ValidateUser(c *gin.Context) {
+	var req request.ValidateUserRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ValidateUser] - failed to read query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("global_xp is required"), nil))
+		return
+	}
+
+	ids := strings.Split(req.Ids, ",")
+
+	resp, err := h.entities.ValidateUser(ids, req.GuildId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.ValidateUser] - failed to validate user")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
