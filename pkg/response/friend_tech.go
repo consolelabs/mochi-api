@@ -13,16 +13,17 @@ type FriendTechKeysResponse struct {
 }
 
 type FriendTechKey struct {
-	ID              int64     `json:"id"`
-	CreatedAt       time.Time `json:"createdAt"`
-	UpdatedAt       time.Time `json:"updatedAt"`
-	Address         string    `json:"address"`
-	TwitterUsername string    `json:"twitterUsername"`
-	TwitterPfpUrl   string    `json:"twitterPfpUrl"`
-	ProfileChecked  bool      `json:"profileChecked"`
-	Price           float64   `json:"price"`
-	Supply          int       `json:"supply"`
-	Holders         int       `json:"holders"`
+	ID                    int64     `json:"id"`
+	CreatedAt             time.Time `json:"created_at"`
+	UpdatedAt             time.Time `json:"updated_at"`
+	Address               string    `json:"address"`
+	TwitterUsername       string    `json:"twitter_username"`
+	TwitterPfpUrl         string    `json:"twitter_pfp_url"`
+	ProfileChecked        bool      `json:"profile_checked"`
+	Price                 float64   `json:"price"`
+	Supply                int       `json:"supply"`
+	Holders               int       `json:"holders"`
+	PriceChangePercentage float64   `json:"price_change_percentage"`
 }
 
 type GetUserFriendTechKeyWatchlistResponse struct {

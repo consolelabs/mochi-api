@@ -200,5 +200,9 @@ func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model
 		return nil, err
 	}
 
-	return data, nil
+	return &model.ProductHashtagAlias{
+		ProductHashtag:   data,
+		ProductHashtagId: data.Id,
+		Alias:            strings.ToLower(req.Alias),
+	}, nil
 }

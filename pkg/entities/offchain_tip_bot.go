@@ -191,6 +191,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		"original_amount": req.OriginalAmount,
 		"channel_id":      req.ChannelId,
 		"channel_name":    req.ChannelName,
+		"channel_url":     req.ChannelUrl,
 		"template":        template,
 	}
 

@@ -8425,6 +8425,9 @@ const docTemplate = `{
                 "channel_id": {
                     "type": "string"
                 },
+                "channel_name": {
+                    "type": "string"
+                },
                 "each": {
                     "type": "boolean"
                 },
@@ -9498,7 +9501,7 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "holders": {
@@ -9510,24 +9513,27 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
-                "profileChecked": {
+                "price_change_percentage": {
+                    "type": "number"
+                },
+                "profile_checked": {
                     "type": "boolean"
                 },
                 "supply": {
                     "type": "integer"
                 },
-                "twitterPfpUrl": {
+                "twitter_pfp_url": {
                     "type": "string"
                 },
-                "twitterUsername": {
+                "twitter_username": {
                     "type": "string"
                 },
-                "updatedAt": {
+                "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "response.FriendTechKeyWatchlistItemRespose": {
+        "response.FriendTechKeyWatchlistItemResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -12228,7 +12234,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.FriendTechKeyWatchlistItemRespose"
+                    "$ref": "#/definitions/response.FriendTechKeyWatchlistItemResponse"
                 }
             }
         },

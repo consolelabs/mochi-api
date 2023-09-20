@@ -8,4 +8,5 @@ type IHandler interface {
 	ListMyGuilds(c *gin.Context)
 	UpdateGuild(c *gin.Context)
 	GetGuildRoles(c *gin.Context)
+	ValidateUser(c *gin.Context)
 }

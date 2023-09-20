@@ -327,3 +327,18 @@ func (e *Entity) CreateGuildIfNotExists(guildID string) error {
 
 	return nil
 }
+
+func (e *Entity) ValidateUser(ids []string, guildId string) ([]string, error) {
+	members, err := e.repo.GuildUsers.GetUsersOfGuild(ids, guildId)
+	if err != nil {
+		e.log.Errorf(err, "[entity.ValidateUser] failed to get users of guild")
+		return nil, nil
+	}
+
+	res := make([]string, 0)
+	for _, member := range members {
+		res = append(res, member.UserID)
+	}
+
+	return res, nil
+}

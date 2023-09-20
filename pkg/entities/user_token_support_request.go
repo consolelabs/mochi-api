@@ -115,7 +115,7 @@ func (e *Entity) FindTokenByContractAddress(chainID int, address string) (*respo
 	}
 
 	// find with coingecko first
-	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, address, 5)
+	coin, err := e.svc.CoinGecko.GetCoinByContract(platformID, address, 3)
 	// if found, return
 	if err == nil {
 		platformDetail, ok := coin.DetailPlatforms[platformID]

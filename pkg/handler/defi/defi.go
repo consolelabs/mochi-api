@@ -712,6 +712,15 @@ func (h *Handler) TrackFriendTechKey(c *gin.Context) {
 		keyMetadata = &searchKeyResult.Data[0]
 	}
 
+	if keyMetadata != nil {
+		keyMetadata.PriceChangePercentage, err = h.entities.CalculateFriendTechKeyPriceChangePercentage(data.KeyAddress)
+		if err != nil {
+			h.log.Error(err, "[handler.TrackFriendTechKey] entities.CalculateFriendTechKeyPriceChangePercentage() failed")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse(response.TrackingFriendTechKeyModelToResponse(
 		*data,
 		keyMetadata,
@@ -795,6 +804,15 @@ func (h *Handler) UpdateFriendTechKeyTrack(c *gin.Context) {
 		keyMetadata = &searchKeyResult.Data[0]
 	}
 
+	if keyMetadata != nil {
+		keyMetadata.PriceChangePercentage, err = h.entities.CalculateFriendTechKeyPriceChangePercentage(updatedTrack.KeyAddress)
+		if err != nil {
+			h.log.Error(err, "[handler.UpdateFriendTechKeyTrack] entities.CalculateFriendTechKeyPriceChangePercentage() failed")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse(response.TrackingFriendTechKeyModelToResponse(
 		*updatedTrack,
 		keyMetadata,
@@ -841,6 +859,15 @@ func (h *Handler) GetUserFriendTechKeyWatchlist(c *gin.Context) {
 		var keyMetadata *response.FriendTechKey
 		if len(searchKeyResult.Data) > 0 && strings.EqualFold(searchKeyResult.Data[0].Address, trackingKey.KeyAddress) {
 			keyMetadata = &searchKeyResult.Data[0]
+		}
+
+		if keyMetadata != nil {
+			keyMetadata.PriceChangePercentage, err = h.entities.CalculateFriendTechKeyPriceChangePercentage(trackingKey.KeyAddress)
+			if err != nil {
+				h.log.Error(err, "[handler.TrackFriendTechKey] entities.CalculateFriendTechKeyPriceChangePercentage() failed")
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
 		}
 
 		resp = append(resp, *response.TrackingFriendTechKeyModelToResponse(trackingKey, keyMetadata))

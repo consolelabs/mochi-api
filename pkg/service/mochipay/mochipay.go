@@ -525,3 +525,34 @@ func (m *MochiPay) ApplicationTransfer(req ApplicationTransferRequest) (*Applica
 
 	return res, nil
 }
+
+func (m *MochiPay) GetProfileCustodialWallets(profileID string) (any, error) {
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:    fmt.Sprintf("%s/api/v1/in-app-wallets/get-by-profile/%s", m.config.MochiPayServerHost, profileID),
+		Method: "POST",
+		// ParseForm: res,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("util.SendRequest() failed with status %d", status)
+	}
+
+	return nil, nil
+}
+
+func (m *MochiPay) GetProfileKrystalEarnBalances(profileID string) (any, error) {
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL: fmt.Sprintf("%s/api/v1/earns/krystal/earn-balances?profile_id=%s", m.config.MochiPayServerHost, profileID),
+		// ParseForm: res,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("util.SendRequest() failed with status %d", status)
+	}
+
+	return nil, nil
+}
