@@ -16,4 +16,5 @@ type CommandUsageCounter struct {
 	TotalUsage     int64
 	ProfileId      string
 	UserPlatformId string
+	Platform       string
 }
