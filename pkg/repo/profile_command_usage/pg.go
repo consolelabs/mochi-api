@@ -15,10 +15,10 @@ func NewPG(db *gorm.DB) Store {
 }
 
 func (pg *pg) GetTopProfileUsage(top int) ([]model.CommandUsageCounter, error) {
-	q1 := pg.db.Table("profile_command_usages").Select("user_platform_id, profile_id, count(*) as usage").Where("command = '/profile' AND params = ''").Group("user_platform_id, profile_id")
-	q2 := pg.db.Table("profile_command_usages").Select("replace(params, 'user:', '') as user_platform_id, count(*) as usage").Where("command = '/profile' AND params != ''").Group("params")
+	q1 := pg.db.Table("profile_command_usages").Select("user_platform_id, profile_id, platform, count(*) as usage").Where("command = '/profile' AND params = ''").Group("user_platform_id, profile_id, platform")
+	q2 := pg.db.Table("profile_command_usages").Select("replace(params, 'user:', '') as user_platform_id, platform, count(*) as usage").Where("command = '/profile' AND params != ''").Group("params, platform")
 
-	rows, err := pg.db.Raw("WITH t1 AS (?), t2 AS (?) SELECT t1.usage + coalesce(t2.usage, 0) as total_usage, t1.user_platform_id, t1.profile_id FROM t1 left join t2 on t1.user_platform_id = t2.user_platform_id ORDER BY total_usage DESC LIMIT ?", q1, q2, top).Rows()
+	rows, err := pg.db.Raw("WITH t1 AS (?), t2 AS (?) SELECT t1.usage + coalesce(t2.usage, 0) as total_usage, t1.user_platform_id, t1.profile_id, t1.platform FROM t1 left join t2 on t1.user_platform_id = t2.user_platform_id and t1.platform = t2.platform ORDER BY total_usage DESC LIMIT ?", q1, q2, top).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (pg *pg) GetTopProfileUsage(top int) ([]model.CommandUsageCounter, error) {
 	var list []model.CommandUsageCounter
 	for rows.Next() {
 		var r model.CommandUsageCounter
-		if err := rows.Scan(&r.TotalUsage, &r.UserPlatformId, &r.ProfileId); err != nil {
+		if err := rows.Scan(&r.TotalUsage, &r.UserPlatformId, &r.ProfileId, &r.Platform); err != nil {
 			return nil, err
 		}
 		list = append(list, r)
