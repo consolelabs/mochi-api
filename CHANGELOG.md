@@ -1,3 +1,21 @@
+# [6.15.0](https://github.com/consolelabs/mochi-api/compare/v6.14.1...v6.15.0) (2023-09-20)
+
+
+### Bug Fixes
+
+* cache - find by contract ([d347262](https://github.com/consolelabs/mochi-api/commit/d347262a9b57cca2cd6f8cf622caf422b0674a17))
+* **tip:** add channel url to transferv2 payload ([#1196](https://github.com/consolelabs/mochi-api/issues/1196)) ([b0796eb](https://github.com/consolelabs/mochi-api/commit/b0796ebf40d381d54958b2e1213459c0691e61b6))
+* update key price alert cache ([#1191](https://github.com/consolelabs/mochi-api/issues/1191)) ([8d9a7d6](https://github.com/consolelabs/mochi-api/commit/8d9a7d60dde50fefc7b07127da52268534123b21))
+* use snake_case in friend metadata response ([44def76](https://github.com/consolelabs/mochi-api/commit/44def767a42b6b5b5c554bcbdb024083ba727c6a))
+
+
+### Features
+
+* add tracking key price change percentage ([03d955c](https://github.com/consolelabs/mochi-api/commit/03d955cfb24a2e4e2e6b7148f40d56d2e035e64f))
+* job - cache top profile cmd usage ([b8f832b](https://github.com/consolelabs/mochi-api/commit/b8f832be62fe0342431cd2218945ff3f66159034))
+* support hashtag with dictionary ([#1195](https://github.com/consolelabs/mochi-api/issues/1195)) ([48ccc09](https://github.com/consolelabs/mochi-api/commit/48ccc099d03f253e066f9c79f2b9f5dcb0441183))
+* validate profile is member of server ([#1197](https://github.com/consolelabs/mochi-api/issues/1197)) ([6667f2e](https://github.com/consolelabs/mochi-api/commit/6667f2e0edac58a1166325ebd589697d0cc0b52d))
+
 ## [6.14.1](https://github.com/consolelabs/mochi-api/compare/v6.14.0...v6.14.1) (2023-09-15)
 
 
