@@ -52,6 +52,14 @@ func (h *Handler) ListEmojis(c *gin.Context) {
 	}
 	req.ListCode = codes
 
+	if req.Codes == "" {
+		req.IsQueryAll = true
+	}
+
+	if req.Size <= 0 {
+		req.Size = 10
+	}
+
 	emojis, total, err := h.entities.GetListEmojis(req)
 	if err != nil {
 		h.log.Error(err, "[handler.ListEmojis] - failed to get list emojis")
