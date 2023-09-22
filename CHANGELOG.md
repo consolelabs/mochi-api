@@ -1,3 +1,16 @@
+# [6.16.0](https://github.com/consolelabs/mochi-api/compare/v6.15.0...v6.16.0) (2023-09-22)
+
+
+### Bug Fixes
+
+* cache profile cmd - grouped by platform ([323ffff](https://github.com/consolelabs/mochi-api/commit/323ffff263525f51ea97dd6485252c267b35da85))
+* convert friend tech key from camelCase to snake_case ([9affaac](https://github.com/consolelabs/mochi-api/commit/9affaacb10ca6821a945876e921467b85c61bcb3))
+
+
+### Features
+
+* support emoji query native token ([#1200](https://github.com/consolelabs/mochi-api/issues/1200)) ([b84de28](https://github.com/consolelabs/mochi-api/commit/b84de289335d988db3b4fb1ab0a112e20be987be))
+
 # [6.15.0](https://github.com/consolelabs/mochi-api/compare/v6.14.1...v6.15.0) (2023-09-20)
 
 
