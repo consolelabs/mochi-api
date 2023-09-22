@@ -12,7 +12,23 @@ type FriendTechKeysResponse struct {
 	Data []FriendTechKey `json:"data"`
 }
 
+// FriendTechKey camelCase, to handle response from FriendTech API
 type FriendTechKey struct {
+	ID                    int64     `json:"id"`
+	CreatedAt             time.Time `json:"createdAt"`
+	UpdatedAt             time.Time `json:"updatedAt"`
+	Address               string    `json:"address"`
+	TwitterUsername       string    `json:"twitterUsername"`
+	TwitterPfpUrl         string    `json:"twitterPfpUrl"`
+	ProfileChecked        bool      `json:"profileChecked"`
+	Price                 float64   `json:"price"`
+	Supply                int       `json:"supply"`
+	Holders               int       `json:"holders"`
+	PriceChangePercentage float64   `json:"priceChangePercentage"`
+}
+
+// Also FriendTechKey but snake_case, to return to Mochi client
+type TrackedFriendTechKey struct {
 	ID                    int64     `json:"id"`
 	CreatedAt             time.Time `json:"created_at"`
 	UpdatedAt             time.Time `json:"updated_at"`
@@ -26,6 +42,22 @@ type FriendTechKey struct {
 	PriceChangePercentage float64   `json:"price_change_percentage"`
 }
 
+func CamelCaseToSnakeCaseFriendTechKey(f *FriendTechKey) *TrackedFriendTechKey {
+	return &TrackedFriendTechKey{
+		ID:                    f.ID,
+		CreatedAt:             f.CreatedAt,
+		UpdatedAt:             f.UpdatedAt,
+		Address:               f.Address,
+		TwitterUsername:       f.TwitterUsername,
+		TwitterPfpUrl:         f.TwitterPfpUrl,
+		ProfileChecked:        f.ProfileChecked,
+		Price:                 f.Price,
+		Supply:                f.Supply,
+		Holders:               f.Holders,
+		PriceChangePercentage: f.PriceChangePercentage,
+	}
+}
+
 type GetUserFriendTechKeyWatchlistResponse struct {
 	Data []FriendTechKeyWatchlistItemResponse `json:"data"`
 }
@@ -35,14 +67,14 @@ type TrackFriendTechKeyResponse struct {
 }
 
 type FriendTechKeyWatchlistItemResponse struct {
-	Id              int            `json:"id"`
-	KeyAddress      string         `json:"key_address"`
-	ProfileId       string         `json:"profile_id"`
-	IncreaseAlertAt int            `json:"increase_alert_at"`
-	DecreaseAlertAt int            `json:"decrease_alert_at"`
-	CreatedAt       time.Time      `json:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at"`
-	Metadata        *FriendTechKey `json:"metadata"`
+	Id              int                   `json:"id"`
+	KeyAddress      string                `json:"key_address"`
+	ProfileId       string                `json:"profile_id"`
+	IncreaseAlertAt int                   `json:"increase_alert_at"`
+	DecreaseAlertAt int                   `json:"decrease_alert_at"`
+	CreatedAt       time.Time             `json:"created_at"`
+	UpdatedAt       time.Time             `json:"updated_at"`
+	Metadata        *TrackedFriendTechKey `json:"metadata"`
 }
 
 func TrackingFriendTechKeyModelToResponse(m model.FriendTechKeyWatchlistItem, metadata *FriendTechKey) *FriendTechKeyWatchlistItemResponse {
@@ -54,7 +86,7 @@ func TrackingFriendTechKeyModelToResponse(m model.FriendTechKeyWatchlistItem, me
 		DecreaseAlertAt: m.DecreaseAlertAt,
 		CreatedAt:       m.CreatedAt,
 		UpdatedAt:       m.UpdatedAt,
-		Metadata:        metadata,
+		Metadata:        CamelCaseToSnakeCaseFriendTechKey(metadata),
 	}
 }
 
