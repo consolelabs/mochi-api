@@ -38,26 +38,31 @@ func (j *cacheProfileCommands) Run() error {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(7 * len(list))
+	wg.Add(6 * len(list))
 
 	for _, u := range list {
-		l := j.logger.Fields(logger.Fields{"profile_id": u.ProfileId})
+		l := j.logger.Fields(logger.Fields{"profile_id": u.ProfileId, "platform_id": u.UserPlatformId, "platform": u.Platform})
+		l.Info("start caching /profile data")
 
-		go func(u model.CommandUsageCounter) {
-			_, err = j.entity.GetSvc().MochiProfile.GetByDiscordID(u.UserPlatformId, false)
-			if err != nil {
-				l.Error(err, "svc.MochiProfile.GetByDiscordID() failed")
-			}
+		if u.Platform == "discord" {
+			go func(u model.CommandUsageCounter) {
+				_, err = j.entity.GetSvc().MochiProfile.GetByDiscordID(u.UserPlatformId, false)
+				if err != nil {
+					l.Error(err, "svc.MochiProfile.GetByDiscordID() failed")
+				}
+				wg.Done()
+			}(u)
+		} else if u.Platform == "telegram" {
+			go func(u model.CommandUsageCounter) {
+				_, err = j.entity.GetSvc().MochiProfile.GetByTelegramID(u.UserPlatformId, false)
+				if err != nil {
+					l.Error(err, "svc.MochiProfile.GetByTelegramID() failed")
+				}
+				wg.Done()
+			}(u)
+		} else {
 			wg.Done()
-		}(u)
-
-		go func(u model.CommandUsageCounter) {
-			_, err = j.entity.GetSvc().MochiProfile.GetByTelegramID(u.UserPlatformId, false)
-			if err != nil {
-				l.Error(err, "svc.MochiProfile.GetByTelegramID() failed")
-			}
-			wg.Done()
-		}(u)
+		}
 
 		go func(u model.CommandUsageCounter) {
 			_, err = j.entity.GetSvc().MochiProfile.GetProfileActivities(u.ProfileId)
