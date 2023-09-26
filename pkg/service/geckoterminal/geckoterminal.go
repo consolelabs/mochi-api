@@ -6,11 +6,13 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/response"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
+
+	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 const (
@@ -234,6 +236,10 @@ func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before
 
 	if err := json.Unmarshal([]byte(data), &candlesticks); err != nil {
 		return nil, err
+	}
+
+	if len(candlesticks.Data.Attributes.OhlcvList) == 0 {
+		return nil, errors.ErrTokenNotSupportedYet
 	}
 
 	prices := [][]float64{}

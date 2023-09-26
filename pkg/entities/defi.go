@@ -55,13 +55,17 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 
 		data, err := e.svc.GeckoTerminal.GetHistoricalMarketData(nerwork, poolAddr, now.Unix())
 		if err != nil {
-			return nil, err, 500
+			if errors.Is(err, baseerrs.ErrTokenNotSupportedYet) {
+				return nil, err, http.StatusUnprocessableEntity
+			}
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetHistoricalMarketChart] svc.GeckoTerminal.GetHistoricalMarketData() failed")
+			return nil, err, http.StatusInternalServerError
 		}
-
 		resp = data
 	default:
 		data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req.CoinID, req.Currency, req.Days)
 		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetHistoricalMarketChart] svc.CoinGecko.GetHistoricalMarketData() failed")
 			return nil, err, statusCode
 		}
 
@@ -69,6 +73,11 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 	}
 
 	data := &response.CoinPriceHistoryResponse{}
+
+	if len(resp.Prices) == 0 {
+		return data, nil, http.StatusOK
+	}
+
 	for _, p := range resp.Prices {
 		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
 		data.Times = append(data.Times, timestamp)

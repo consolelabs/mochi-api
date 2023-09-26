@@ -37,4 +37,5 @@ var (
 	ErrInvalidCoingeckoSvcParam               = NewStringError("Invalid parameter", 400)
 	ErrFriendTechKeyAlreadyTracked            = NewStringError("Friend tech key already tracked", 409)
 	ErrFriendTechKeyNotTrackedYet             = NewStringError("Friend tech key not tracked yet", 409)
+	ErrTokenNotSupportedYet                   = NewStringError("Token not supported yet", 422)
 )
