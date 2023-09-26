@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"time"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
@@ -39,8 +38,7 @@ func init() {
 }
 
 func (g *GeckoTerminal) Search(query string) (*Search, error) {
-	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
-	browser := rod.New().Timeout(time.Minute).MustConnect()
+	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(searchApi, query))
 
@@ -58,8 +56,7 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 	var pool *Pool
 	reqUrl := fmt.Sprintf(getPoolApi, network, poolAddr)
 
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
 	page := stealth.MustPage(browser).MustNavigate(reqUrl)
@@ -218,8 +215,7 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 }
 
 func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before int64) (*response.HistoricalMarketChartResponse, error) {
-	browser := rod.New().Timeout(time.Minute).MustConnect()
-	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
 	// page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(getPoolApiP1, network, poolAddr))
@@ -238,7 +234,6 @@ func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before
 	// quoteToken := pool.Data.Relationships.Pairs.Data[0].ID
 
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(getCandlestickApi, network, poolAddr, before))
-	fmt.Println("PAGEEE: ", fmt.Sprintf(getCandlestickApi, network, poolAddr, before))
 	data := page.MustElement("body").MustText()
 
 	candlesticks := &Candlesticks{}
