@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"time"
 
-	"github.com/defipod/mochi/pkg/config"
-	"github.com/defipod/mochi/pkg/response"
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
+
+	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/response"
 )
 
 const (
@@ -31,8 +34,13 @@ func NewService(cfg *config.Config) Service {
 	}
 }
 
+func init() {
+	launcher.NewBrowser().MustGet()
+}
+
 func (g *GeckoTerminal) Search(query string) (*Search, error) {
-	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().Timeout(time.Minute).MustConnect()
 	defer browser.MustClose()
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(searchApi, query))
 
@@ -50,7 +58,8 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 	var pool *Pool
 	reqUrl := fmt.Sprintf(getPoolApi, network, poolAddr)
 
-	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
 	page := stealth.MustPage(browser).MustNavigate(reqUrl)
@@ -209,7 +218,8 @@ func (g *GeckoTerminal) GetPool(network, poolAddr string) (*response.GetCoinResp
 }
 
 func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before int64) (*response.HistoricalMarketChartResponse, error) {
-	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().Timeout(time.Minute).MustConnect()
+	// browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
 
 	// page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(getPoolApiP1, network, poolAddr))
@@ -228,12 +238,17 @@ func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before
 	// quoteToken := pool.Data.Relationships.Pairs.Data[0].ID
 
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(getCandlestickApi, network, poolAddr, before))
+	fmt.Println("PAGEEE: ", fmt.Sprintf(getCandlestickApi, network, poolAddr, before))
 	data := page.MustElement("body").MustText()
 
 	candlesticks := &Candlesticks{}
 
 	if err := json.Unmarshal([]byte(data), &candlesticks); err != nil {
 		return nil, err
+	}
+
+	if len(candlesticks.Data.Attributes.OhlcvList) == 0 {
+		return nil, errors.ErrTokenNotSupportedYet
 	}
 
 	prices := [][]float64{}

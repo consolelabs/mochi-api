@@ -164,3 +164,12 @@ type CandlestickData struct {
 type CandlestickAttributes struct {
 	OhlcvList [][]float64 `json:"ohlcv_list"`
 }
+
+type ErrorResp struct {
+	Errors []Error `json:"errors"`
+}
+
+type Error struct {
+	Status string `json:"status"`
+	Title  string `json:"title"`
+}
