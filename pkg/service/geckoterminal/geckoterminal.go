@@ -33,10 +33,6 @@ func NewService(cfg *config.Config) Service {
 	}
 }
 
-func init() {
-	launcher.NewBrowser().MustGet()
-}
-
 func (g *GeckoTerminal) Search(query string) (*Search, error) {
 	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
