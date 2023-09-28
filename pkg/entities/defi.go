@@ -689,7 +689,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	switch len(searchResult) {
 	case 0:
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no data found")
-		return nil, nil, fmt.Errorf("coin %s not found", query)
+		return nil, nil, baseerrs.ErrRecordNotFound
 	case 1:
 		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
 		if err != nil {
@@ -709,6 +709,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 func (e *Entity) CompareToken(base, target, interval, guildID string) (*response.CompareTokenReponseData, error) {
 	baseSearch, baseCoin, err := e.queryCoins(guildID, base)
 	if err != nil {
+		// if
 		e.log.Fields(logger.Fields{"guild_id": guildID, "base": base}).Error(err, "[entity.CompareToken] queryCoins failed")
 		return nil, err
 	}
