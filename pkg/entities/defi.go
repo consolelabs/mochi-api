@@ -1327,6 +1327,9 @@ func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
 		chain, err := e.repo.Chain.GetByShortName(chainSp)
 		if err != nil {
 			e.log.Fields(logger.Fields{"chain": chain}).Error(err, "[entity.GetGasTracker] repo.Chain.GetByShortName() failed")
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, baseerrs.ErrRecordNotFound
+			}
 			return nil, err
 		}
 		listChain = append(listChain, *chain)
@@ -1345,6 +1348,9 @@ func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse,
 	chainModel, err := e.repo.Chain.GetByShortName(chain)
 	if err != nil {
 		e.log.Error(err, "[entity.GetChainGasTracker] repo.Chain.GetByShortName() failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, baseerrs.ErrRecordNotFound
+		}
 		return nil, err
 	}
 
