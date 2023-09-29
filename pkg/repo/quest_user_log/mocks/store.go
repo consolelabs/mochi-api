@@ -5,36 +5,35 @@
 package mock_questuserlog
 
 import (
-	reflect "reflect"
-
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface.
+// MockStore is a mock of Store interface
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore.
+// MockStoreMockRecorder is the mock recorder for MockStore
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance.
+// NewMockStore creates a new mock instance
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// CreateOne mocks base method.
+// CreateOne mocks base method
 func (m *MockStore) CreateOne(log *model.QuestUserLog) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOne", log)
@@ -42,7 +41,7 @@ func (m *MockStore) CreateOne(log *model.QuestUserLog) error {
 	return ret0
 }
 
-// CreateOne indicates an expected call of CreateOne.
+// CreateOne indicates an expected call of CreateOne
 func (mr *MockStoreMockRecorder) CreateOne(log interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), log)

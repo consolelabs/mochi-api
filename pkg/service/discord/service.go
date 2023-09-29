@@ -46,4 +46,7 @@ type Service interface {
 	// User
 	GetUser(userID string) (*discordgo.User, error)
 	CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error)
+
+	// Emoji
+	GetGuildEmojis() ([]*discordgo.Emoji, error)
 }
