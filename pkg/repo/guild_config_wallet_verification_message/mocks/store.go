@@ -5,50 +5,35 @@
 package mock_guildconfigwalletverificationmessage
 
 import (
-	reflect "reflect"
-
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface.
+// MockStore is a mock of Store interface
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore.
+// MockStoreMockRecorder is the mock recorder for MockStore
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance.
+// NewMockStore creates a new mock instance
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// DeleteOne mocks base method.
-func (m *MockStore) DeleteOne(guildID string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteOne", guildID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteOne indicates an expected call of DeleteOne.
-func (mr *MockStoreMockRecorder) DeleteOne(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOne", reflect.TypeOf((*MockStore)(nil).DeleteOne), guildID)
-}
-
-// GetOne mocks base method.
+// GetOne mocks base method
 func (m *MockStore) GetOne(guildID string) (*model.GuildConfigWalletVerificationMessage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOne", guildID)
@@ -57,13 +42,13 @@ func (m *MockStore) GetOne(guildID string) (*model.GuildConfigWalletVerification
 	return ret0, ret1
 }
 
-// GetOne indicates an expected call of GetOne.
+// GetOne indicates an expected call of GetOne
 func (mr *MockStoreMockRecorder) GetOne(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOne", reflect.TypeOf((*MockStore)(nil).GetOne), guildID)
 }
 
-// UpsertOne mocks base method.
+// UpsertOne mocks base method
 func (m *MockStore) UpsertOne(gcv model.GuildConfigWalletVerificationMessage) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpsertOne", gcv)
@@ -71,8 +56,22 @@ func (m *MockStore) UpsertOne(gcv model.GuildConfigWalletVerificationMessage) er
 	return ret0
 }
 
-// UpsertOne indicates an expected call of UpsertOne.
+// UpsertOne indicates an expected call of UpsertOne
 func (mr *MockStoreMockRecorder) UpsertOne(gcv interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), gcv)
+}
+
+// DeleteOne mocks base method
+func (m *MockStore) DeleteOne(guildID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteOne", guildID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteOne indicates an expected call of DeleteOne
+func (mr *MockStoreMockRecorder) DeleteOne(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOne", reflect.TypeOf((*MockStore)(nil).DeleteOne), guildID)
 }
