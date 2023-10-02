@@ -71,7 +71,7 @@ func (j *checkInvalidateEmoji) Run() error {
 		for i := range invalidateEmojis {
 			e := invalidateEmojis[i]
 
-			content += fmt.Sprintf("・code: %s - [image](%s)\n", e.Code, e.EmojiUrl)
+			content += fmt.Sprintf("・code: %s\n", e.Code)
 		}
 
 		msg := discordgo.MessageSend{
