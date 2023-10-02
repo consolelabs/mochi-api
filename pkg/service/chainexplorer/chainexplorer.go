@@ -3,30 +3,30 @@ package chainexplorer
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"time"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 type chainExplorer struct {
-	cfg config.Config
-	log logger.Logger
+	cfg   config.Config
+	log   logger.Logger
+	cache cache.Cache
 }
 
-func NewService(cfg config.Config, log logger.Logger) Service {
+func NewService(cfg config.Config, log logger.Logger, cache cache.Cache) Service {
 	return &chainExplorer{
-		cfg: cfg,
-		log: log,
+		cfg:   cfg,
+		log:   log,
+		cache: cache,
 	}
 }
-
-var (
-	listChainSupportGasTracker = []string{"ftm", "bsc", "eth", "polygon"}
-)
 
 func (c *chainExplorer) GetGasTracker(listChain []model.Chain) ([]response.GasTrackerResponse, error) {
 	apiKey := ""
@@ -34,7 +34,8 @@ func (c *chainExplorer) GetGasTracker(listChain []model.Chain) ([]response.GasTr
 	for _, chain := range listChain {
 		apiKey = c.getChainApiKey(chain.ShortName)
 
-		gasTracker, err := c.executeGetGasTracker(chain.APIBaseURL, apiKey)
+		url := fmt.Sprintf("%smodule=gastracker&action=gasoracle&apikey=%s", chain.APIBaseURL, apiKey)
+		gasTracker, err := c.executeGetGasTracker(url)
 		if err != nil {
 			c.log.Fields(logger.Fields{"chain": chain}).Error(err, "failed to get gas tracker")
 			return nil, err
@@ -67,28 +68,44 @@ func (c *chainExplorer) getChainApiKey(chain string) string {
 		return ""
 	}
 }
-func (c *chainExplorer) executeGetGasTracker(url, apiKey string) (*response.ChainExplorerGasTracker, error) {
-	var client = &http.Client{}
-	request, err := http.NewRequest("GET", fmt.Sprintf("%smodule=gastracker&action=gasoracle&apikey=%s", url, apiKey), nil)
-	if err != nil {
+
+func (c *chainExplorer) executeGetGasTracker(url string) (*response.ChainExplorerGasTracker, error) {
+	resp := &response.ChainExplorerGasTracker{}
+	cached, err := c.doCacheGasTracker(url)
+	if err == nil && cached != "" {
+		go c.doNetworkGetGasTracker(url, resp)
+		return resp, json.Unmarshal([]byte(cached), resp)
+	}
+
+	if err := c.doNetworkGetGasTracker(url, resp); err != nil {
+		c.log.Error(err, "[chainexplorer.executeGasTracker] c.doNetworkGetGastracker() failed")
 		return nil, err
 	}
 
-	responseURL, err := client.Do(request)
+	return resp, nil
+}
+
+func (c *chainExplorer) doNetworkGetGasTracker(url string, resp interface{}) error {
+	query := util.SendRequestQuery{
+		URL:       url,
+		ParseForm: resp,
+	}
+	statusCode, err := util.SendRequest(query)
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("send request failed: %v", err)
 	}
 
-	defer responseURL.Body.Close()
-	resBody, err := ioutil.ReadAll(responseURL.Body)
-	if err != nil {
-		return nil, err
+	if statusCode != http.StatusOK {
+		return fmt.Errorf("get gas tracker from explorer failed, status code: %d", statusCode)
 	}
 
-	res := &response.ChainExplorerGasTracker{}
-	err = json.Unmarshal(resBody, res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	// cache data
+	bytes, _ := json.Marshal(resp)
+	c.cache.Set(url, string(bytes), 1*time.Hour)
+
+	return nil
+}
+
+func (c *chainExplorer) doCacheGasTracker(url string) (string, error) {
+	return c.cache.GetString(url)
 }

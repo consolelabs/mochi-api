@@ -55,13 +55,17 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 
 		data, err := e.svc.GeckoTerminal.GetHistoricalMarketData(nerwork, poolAddr, now.Unix())
 		if err != nil {
-			return nil, err, 500
+			if errors.Is(err, baseerrs.ErrTokenNotSupportedYet) {
+				return nil, err, http.StatusUnprocessableEntity
+			}
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetHistoricalMarketChart] svc.GeckoTerminal.GetHistoricalMarketData() failed")
+			return nil, err, http.StatusInternalServerError
 		}
-
 		resp = data
 	default:
 		data, err, statusCode := e.svc.CoinGecko.GetHistoricalMarketData(req.CoinID, req.Currency, req.Days)
 		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetHistoricalMarketChart] svc.CoinGecko.GetHistoricalMarketData() failed")
 			return nil, err, statusCode
 		}
 
@@ -69,6 +73,11 @@ func (e *Entity) GetHistoricalMarketChart(req *request.GetMarketChartRequest) (*
 	}
 
 	data := &response.CoinPriceHistoryResponse{}
+
+	if len(resp.Prices) == 0 {
+		return data, nil, http.StatusOK
+	}
+
 	for _, p := range resp.Prices {
 		timestamp := time.UnixMilli(int64(p[0])).Format("01-02")
 		data.Times = append(data.Times, timestamp)
@@ -680,7 +689,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	switch len(searchResult) {
 	case 0:
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins - no data found")
-		return nil, nil, fmt.Errorf("coin %s not found", query)
+		return nil, nil, baseerrs.ErrRecordNotFound
 	case 1:
 		coin, err, code := e.svc.CoinGecko.GetCoin(searchResult[0].ID)
 		if err != nil {
@@ -700,6 +709,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 func (e *Entity) CompareToken(base, target, interval, guildID string) (*response.CompareTokenReponseData, error) {
 	baseSearch, baseCoin, err := e.queryCoins(guildID, base)
 	if err != nil {
+		// if
 		e.log.Fields(logger.Fields{"guild_id": guildID, "base": base}).Error(err, "[entity.CompareToken] queryCoins failed")
 		return nil, err
 	}
@@ -1317,6 +1327,9 @@ func (e *Entity) GetGasTracker() ([]response.GasTrackerResponse, error) {
 		chain, err := e.repo.Chain.GetByShortName(chainSp)
 		if err != nil {
 			e.log.Fields(logger.Fields{"chain": chain}).Error(err, "[entity.GetGasTracker] repo.Chain.GetByShortName() failed")
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, baseerrs.ErrRecordNotFound
+			}
 			return nil, err
 		}
 		listChain = append(listChain, *chain)
@@ -1335,6 +1348,9 @@ func (e *Entity) GetChainGasTracker(chain string) (*response.GasTrackerResponse,
 	chainModel, err := e.repo.Chain.GetByShortName(chain)
 	if err != nil {
 		e.log.Error(err, "[entity.GetChainGasTracker] repo.Chain.GetByShortName() failed")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, baseerrs.ErrRecordNotFound
+		}
 		return nil, err
 	}
 

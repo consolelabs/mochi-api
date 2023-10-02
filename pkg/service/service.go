@@ -3,8 +3,6 @@ package service
 import (
 	"fmt"
 
-	"github.com/defipod/mochi/pkg/service/friendtech"
-
 	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
@@ -23,6 +21,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/ethplorer"
+	"github.com/defipod/mochi/pkg/service/friendtech"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/service/github"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -109,7 +108,7 @@ func NewService(
 		Bluemove:      bluemove.New(&cfg, log),
 		MochiProfile:  mochiprofile.NewService(&cfg, log),
 		MochiPay:      mochipay.NewService(&cfg, log),
-		ChainExplorer: chainexplorer.NewService(cfg, log),
+		ChainExplorer: chainexplorer.NewService(cfg, log, cache),
 		Sui:           sui.New(&cfg, log, cache),
 		Birdeye:       birdeye.NewService(&cfg, log, cache),
 		Swap:          swap.New(&cfg, log),
