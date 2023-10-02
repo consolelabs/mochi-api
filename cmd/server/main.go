@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 
 	mdwgin "github.com/consolelabs/mochi-toolkit/http/middleware/gin"
@@ -136,23 +135,8 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 
 	h := handler.New(e, l)
 
-	corsOrigins := cfg.GetCORS()
 	r.Use(func(c *gin.Context) {
-		origin := c.Request.Header.Get("Origin")
-		allowOrigins := corsOrigins
-
-		// allow all localhosts and all GET method
-		if origin != "" && (strings.Contains(origin, "http://localhost") || c.Request.Method == "GET") {
-			allowOrigins = []string{origin}
-		} else {
-			// suport wildcard cors: https://*.domain.com
-			for _, url := range allowOrigins {
-				if strings.Contains(origin, strings.Replace(url, "https://*", "", 1)) {
-					allowOrigins = []string{origin}
-					break
-				}
-			}
-		}
+		allowOrigins := []string{"*"}
 
 		cors.New(
 			cors.Config{
