@@ -1,3 +1,10 @@
+# [6.17.0](https://github.com/consolelabs/mochi-api/compare/v6.16.1...v6.17.0) (2023-10-02)
+
+
+### Features
+
+* alert invalidate emoji ([baae8a1](https://github.com/consolelabs/mochi-api/commit/baae8a1576ebd076f4e81892fe0223383b883315))
+
 ## [6.16.1](https://github.com/consolelabs/mochi-api/compare/v6.16.0...v6.16.1) (2023-10-02)
 
 

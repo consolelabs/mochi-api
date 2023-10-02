@@ -62,11 +62,26 @@ func NewService(
 
 // GetGuildEmojis implements Service.
 func (d *Discord) GetGuildEmojis() ([]*discordgo.Emoji, error) {
-	guildID := "842031384410456115"
-	emojis, err := d.session.GuildEmojis(guildID)
-	if err != nil {
-		d.log.Errorf(err, "[discord.NotifyNewGuild] - failed to get guild emoji: %s", guildID)
-		return nil, fmt.Errorf("failed to get guild emoji: %w", err)
+	emojis := []*discordgo.Emoji{}
+	guildIDs := []string{
+		"1086934972897701898",
+		"1113004631811948556",
+		"1113118584328159283",
+		"1121653397368614932",
+		"1150599698957205585",
+		"882287783169896468",
+		"962589711841525780",
+		"891310117658705931",
+		"462663954813157376",
+	}
+
+	for _, guildID := range guildIDs {
+		guildEmojis, err := d.session.GuildEmojis(guildID)
+		if err != nil {
+			d.log.Errorf(err, "[discord.NotifyNewGuild] - failed to get guild emoji: %s", guildID)
+			return nil, fmt.Errorf("failed to get guild emoji: %w", err)
+		}
+		emojis = append(emojis, guildEmojis...)
 	}
 
 	return emojis, nil
