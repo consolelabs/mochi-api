@@ -161,7 +161,7 @@ func setupRouter(cfg config.Config, l logger.Logger, e *entities.Entity) *gin.En
 				AllowHeaders: []string{"Origin", "Host",
 					"Content-Type", "Content-Length",
 					"Accept-Encoding", "Accept-Language", "Accept",
-					"X-CSRF-Token", "Authorization", "X-Requested-With", "X-Access-Token"},
+					"X-CSRF-Token", "Authorization", "X-Requested-With", "X-Access-Token", "X-Request-Id"},
 				ExposeHeaders:    []string{"MeAllowMethodsntent-Length"},
 				AllowCredentials: true,
 			},
