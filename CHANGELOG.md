@@ -1,3 +1,10 @@
+## [6.17.1](https://github.com/consolelabs/mochi-api/compare/v6.17.0...v6.17.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* guild id list to validate emoji ([fee5ae7](https://github.com/consolelabs/mochi-api/commit/fee5ae7ef080f8d3492dea44968dd26c3ba2541b))
+
 # [6.17.0](https://github.com/consolelabs/mochi-api/compare/v6.16.1...v6.17.0) (2023-10-02)
 
 
