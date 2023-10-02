@@ -1,3 +1,11 @@
+## [6.16.1](https://github.com/consolelabs/mochi-api/compare/v6.16.0...v6.16.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* **compare-token:** handle case token not found return 404 ([#1203](https://github.com/consolelabs/mochi-api/issues/1203)) ([610ec5e](https://github.com/consolelabs/mochi-api/commit/610ec5e8d869af6cc54b359bb04bbdf1f3939611))
+* **get-market-chart:** handle app panic when geckoterminal return err or empty ([#1202](https://github.com/consolelabs/mochi-api/issues/1202)) ([2af08d0](https://github.com/consolelabs/mochi-api/commit/2af08d0ca1c22506f00bf3f6a162b514364d3187))
+
 # [6.16.0](https://github.com/consolelabs/mochi-api/compare/v6.15.0...v6.16.0) (2023-09-22)
 
 
