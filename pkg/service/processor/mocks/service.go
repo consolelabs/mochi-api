@@ -5,36 +5,35 @@
 package mock_processor
 
 import (
-	reflect "reflect"
-
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockService is a mock of Service interface.
+// MockService is a mock of Service interface
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
 }
 
-// MockServiceMockRecorder is the mock recorder for MockService.
+// MockServiceMockRecorder is the mock recorder for MockService
 type MockServiceMockRecorder struct {
 	mock *MockService
 }
 
-// NewMockService creates a new mock instance.
+// NewMockService creates a new mock instance
 func NewMockService(ctrl *gomock.Controller) *MockService {
 	mock := &MockService{ctrl: ctrl}
 	mock.recorder = &MockServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// CreateUserTransaction mocks base method.
+// CreateUserTransaction mocks base method
 func (m *MockService) CreateUserTransaction(createUserTransactionRequest model.CreateUserTransaction) (*model.CreateUserTxResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUserTransaction", createUserTransactionRequest)
@@ -43,7 +42,7 @@ func (m *MockService) CreateUserTransaction(createUserTransactionRequest model.C
 	return ret0, ret1
 }
 
-// CreateUserTransaction indicates an expected call of CreateUserTransaction.
+// CreateUserTransaction indicates an expected call of CreateUserTransaction
 func (mr *MockServiceMockRecorder) CreateUserTransaction(createUserTransactionRequest interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserTransaction", reflect.TypeOf((*MockService)(nil).CreateUserTransaction), createUserTransactionRequest)

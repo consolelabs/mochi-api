@@ -5,51 +5,63 @@
 package mock_discord_user_gm_streak
 
 import (
-	reflect "reflect"
-
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface.
+// MockStore is a mock of Store interface
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore.
+// MockStoreMockRecorder is the mock recorder for MockStore
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance.
+// NewMockStore creates a new mock instance
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetAll mocks base method.
-func (m *MockStore) GetAll() ([]model.DiscordUserGMStreak, error) {
+// UpsertOne mocks base method
+func (m *MockStore) UpsertOne(streak model.DiscordUserGMStreak) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll")
-	ret0, _ := ret[0].([]model.DiscordUserGMStreak)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "UpsertOne", streak)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// GetAll indicates an expected call of GetAll.
-func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
+// UpsertOne indicates an expected call of UpsertOne
+func (mr *MockStoreMockRecorder) UpsertOne(streak interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), streak)
 }
 
-// GetByDiscordIDGuildID mocks base method.
+// UpsertBatch mocks base method
+func (m *MockStore) UpsertBatch(streaks []model.DiscordUserGMStreak) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertBatch", streaks)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertBatch indicates an expected call of UpsertBatch
+func (mr *MockStoreMockRecorder) UpsertBatch(streaks interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertBatch", reflect.TypeOf((*MockStore)(nil).UpsertBatch), streaks)
+}
+
+// GetByDiscordIDGuildID mocks base method
 func (m *MockStore) GetByDiscordIDGuildID(discordID, guildID string) (*model.DiscordUserGMStreak, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByDiscordIDGuildID", discordID, guildID)
@@ -58,36 +70,23 @@ func (m *MockStore) GetByDiscordIDGuildID(discordID, guildID string) (*model.Dis
 	return ret0, ret1
 }
 
-// GetByDiscordIDGuildID indicates an expected call of GetByDiscordIDGuildID.
+// GetByDiscordIDGuildID indicates an expected call of GetByDiscordIDGuildID
 func (mr *MockStoreMockRecorder) GetByDiscordIDGuildID(discordID, guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByDiscordIDGuildID", reflect.TypeOf((*MockStore)(nil).GetByDiscordIDGuildID), discordID, guildID)
 }
 
-// UpsertBatch mocks base method.
-func (m *MockStore) UpsertBatch(streaks []model.DiscordUserGMStreak) error {
+// GetAll mocks base method
+func (m *MockStore) GetAll() ([]model.DiscordUserGMStreak, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertBatch", streaks)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "GetAll")
+	ret0, _ := ret[0].([]model.DiscordUserGMStreak)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// UpsertBatch indicates an expected call of UpsertBatch.
-func (mr *MockStoreMockRecorder) UpsertBatch(streaks interface{}) *gomock.Call {
+// GetAll indicates an expected call of GetAll
+func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertBatch", reflect.TypeOf((*MockStore)(nil).UpsertBatch), streaks)
-}
-
-// UpsertOne mocks base method.
-func (m *MockStore) UpsertOne(streak model.DiscordUserGMStreak) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertOne", streak)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpsertOne indicates an expected call of UpsertOne.
-func (mr *MockStoreMockRecorder) UpsertOne(streak interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), streak)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll))
 }

@@ -5,52 +5,36 @@
 package mock_guild_user_xp
 
 import (
-	reflect "reflect"
-
 	model "github.com/defipod/mochi/pkg/model"
 	guild_user_xp "github.com/defipod/mochi/pkg/repo/guild_user_xp"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface.
+// MockStore is a mock of Store interface
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore.
+// MockStoreMockRecorder is the mock recorder for MockStore
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance.
+// NewMockStore creates a new mock instance
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetByGuildID mocks base method.
-func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByGuildID", guildID)
-	ret0, _ := ret[0].([]model.GuildUserXP)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByGuildID indicates an expected call of GetByGuildID.
-func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
-}
-
-// GetOne mocks base method.
+// GetOne mocks base method
 func (m *MockStore) GetOne(arg0 guild_user_xp.GetOneQuery) (*model.GuildUserXP, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOne", arg0)
@@ -59,13 +43,28 @@ func (m *MockStore) GetOne(arg0 guild_user_xp.GetOneQuery) (*model.GuildUserXP, 
 	return ret0, ret1
 }
 
-// GetOne indicates an expected call of GetOne.
+// GetOne indicates an expected call of GetOne
 func (mr *MockStoreMockRecorder) GetOne(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOne", reflect.TypeOf((*MockStore)(nil).GetOne), arg0)
 }
 
-// GetTopUsers mocks base method.
+// GetByGuildID mocks base method
+func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildUserXP, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByGuildID", guildID)
+	ret0, _ := ret[0].([]model.GuildUserXP)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByGuildID indicates an expected call of GetByGuildID
+func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
+}
+
+// GetTopUsers mocks base method
 func (m *MockStore) GetTopUsers(guildID, query, sort string, limit, offset int) ([]model.GuildUserXP, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTopUsers", guildID, query, sort, limit, offset)
@@ -74,13 +73,13 @@ func (m *MockStore) GetTopUsers(guildID, query, sort string, limit, offset int) 
 	return ret0, ret1
 }
 
-// GetTopUsers indicates an expected call of GetTopUsers.
+// GetTopUsers indicates an expected call of GetTopUsers
 func (mr *MockStoreMockRecorder) GetTopUsers(guildID, query, sort, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTopUsers", reflect.TypeOf((*MockStore)(nil).GetTopUsers), guildID, query, sort, limit, offset)
 }
 
-// GetTotalTopUsersCount mocks base method.
+// GetTotalTopUsersCount mocks base method
 func (m *MockStore) GetTotalTopUsersCount(guildID, query string) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTotalTopUsersCount", guildID, query)
@@ -89,7 +88,7 @@ func (m *MockStore) GetTotalTopUsersCount(guildID, query string) (int64, error) 
 	return ret0, ret1
 }
 
-// GetTotalTopUsersCount indicates an expected call of GetTotalTopUsersCount.
+// GetTotalTopUsersCount indicates an expected call of GetTotalTopUsersCount
 func (mr *MockStoreMockRecorder) GetTotalTopUsersCount(guildID, query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTotalTopUsersCount", reflect.TypeOf((*MockStore)(nil).GetTotalTopUsersCount), guildID, query)

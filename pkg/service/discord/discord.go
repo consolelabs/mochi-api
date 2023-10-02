@@ -60,6 +60,18 @@ func NewService(
 	}, nil
 }
 
+// GetGuildEmojis implements Service.
+func (d *Discord) GetGuildEmojis() ([]*discordgo.Emoji, error) {
+	guildID := "842031384410456115"
+	emojis, err := d.session.GuildEmojis(guildID)
+	if err != nil {
+		d.log.Errorf(err, "[discord.NotifyNewGuild] - failed to get guild emoji: %s", guildID)
+		return nil, fmt.Errorf("failed to get guild emoji: %w", err)
+	}
+
+	return emojis, nil
+}
+
 func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 	// get new guild info
 	guild, err := d.session.Guild(guildID)
