@@ -79,7 +79,7 @@ func (d *Discord) GetGuildEmojis() ([]*discordgo.Emoji, error) {
 		guildEmojis, err := d.session.GuildEmojis(guildID)
 		if err != nil {
 			d.log.Errorf(err, "[discord.NotifyNewGuild] - failed to get guild emoji: %s", guildID)
-			return nil, fmt.Errorf("failed to get guild emoji: %w", err)
+			continue
 		}
 		emojis = append(emojis, guildEmojis...)
 	}
