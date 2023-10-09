@@ -1,3 +1,12 @@
+## [6.17.3](https://github.com/consolelabs/mochi-api/compare/v6.17.2...v6.17.3) (2023-10-09)
+
+
+### Bug Fixes
+
+* allow all origin cors ([#1211](https://github.com/consolelabs/mochi-api/issues/1211)) ([3005165](https://github.com/consolelabs/mochi-api/commit/30051656d76b2e0ce4c82a45d32b53403204bf7f))
+* allow request id header cors ([#1210](https://github.com/consolelabs/mochi-api/issues/1210)) ([c0015bd](https://github.com/consolelabs/mochi-api/commit/c0015bd7a17e69797167153c59f4a82ef87ad93c))
+* handle error when get emojis ([5c713e6](https://github.com/consolelabs/mochi-api/commit/5c713e6863bb508b3f5c2dc9010f067b518f61fa))
+
 ## [6.17.2](https://github.com/consolelabs/mochi-api/compare/v6.17.1...v6.17.2) (2023-10-02)
 
 
