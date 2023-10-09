@@ -71,12 +71,12 @@ func (j *checkInvalidateEmoji) Run() error {
 		for i := range invalidateEmojis {
 			e := invalidateEmojis[i]
 
-			content += fmt.Sprintf("・code: %s\n", e.Code)
+			content += fmt.Sprintf("・%s\n", e.Code)
 		}
 
 		msg := discordgo.MessageSend{
 			Embed: &discordgo.MessageEmbed{
-				Title:       "Invalidate Emojis",
+				Title:       "Invalid Emojis",
 				Description: content,
 				Timestamp:   time.Now().Format("2006-01-02T15:04:05Z07:00"),
 			},
