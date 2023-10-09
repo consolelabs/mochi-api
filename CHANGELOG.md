@@ -1,3 +1,10 @@
+## [6.17.2](https://github.com/consolelabs/mochi-api/compare/v6.17.1...v6.17.2) (2023-10-02)
+
+
+### Bug Fixes
+
+* format message in validate emoji ([244f556](https://github.com/consolelabs/mochi-api/commit/244f55643b651348568c541d7d4b0f3684ed6793))
+
 ## [6.17.1](https://github.com/consolelabs/mochi-api/compare/v6.17.0...v6.17.1) (2023-10-02)
 
 
