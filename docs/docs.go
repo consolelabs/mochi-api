@@ -5112,7 +5112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tono/commands": {
+        "/tono/command-permissions": {
             "get": {
                 "description": "Get Tono command permissions",
                 "consumes": [

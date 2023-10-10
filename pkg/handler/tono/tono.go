@@ -31,7 +31,7 @@ func New(entities *entities.Entity, logger logger.Logger) IHandler {
 // @Produce     json
 // @Param       req   query  request.TonoCommandPermissionsRequest true  "request"
 // @Success     200 {object} response.TonoCommandPermissions
-// @Router      /tono/commands [get]
+// @Router      /tono/command-permissions [get]
 func (h *Handler) TonoCommandPermissions(c *gin.Context) {
 	req := request.TonoCommandPermissionsRequest{}
 	if err := c.ShouldBindQuery(&req); err != nil {
