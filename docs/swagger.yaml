@@ -753,6 +753,23 @@ definitions:
       symbol:
         type: string
     type: object
+  model.TonoCommandPermission:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      discord_permission_flag:
+        type: string
+      id:
+        type: integer
+      need_dm:
+        type: boolean
+      updated_at:
+        type: string
+    type: object
   model.User:
     properties:
       discriminator:
@@ -1443,6 +1460,8 @@ definitions:
       channel_id:
         type: string
       channel_name:
+        type: string
+      channel_url:
         type: string
       each:
         type: boolean
@@ -2144,7 +2163,7 @@ definitions:
     properties:
       address:
         type: string
-      created_at:
+      createdAt:
         type: string
       holders:
         type: integer
@@ -2152,17 +2171,17 @@ definitions:
         type: integer
       price:
         type: number
-      price_change_percentage:
+      priceChangePercentage:
         type: number
-      profile_checked:
+      profileChecked:
         type: boolean
       supply:
         type: integer
-      twitter_pfp_url:
+      twitterPfpUrl:
         type: string
-      twitter_username:
+      twitterUsername:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
   response.FriendTechKeyWatchlistItemResponse:
@@ -2178,7 +2197,7 @@ definitions:
       key_address:
         type: string
       metadata:
-        $ref: '#/definitions/response.FriendTechKey'
+        $ref: '#/definitions/response.TrackedFriendTechKey'
       profile_id:
         type: string
       updated_at:
@@ -2664,13 +2683,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3292,6 +3311,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -3301,12 +3326,6 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3909,6 +3928,13 @@ definitions:
       value:
         type: number
     type: object
+  response.TonoCommandPermissions:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.TonoCommandPermission'
+        type: array
+    type: object
   response.TopUser:
     properties:
       author:
@@ -3924,6 +3950,31 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.FriendTechKeyWatchlistItemResponse'
+    type: object
+  response.TrackedFriendTechKey:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      holders:
+        type: integer
+      id:
+        type: integer
+      price:
+        type: number
+      price_change_percentage:
+        type: number
+      profile_checked:
+        type: boolean
+      supply:
+        type: integer
+      twitter_pfp_url:
+        type: string
+      twitter_username:
+        type: string
+      updated_at:
+        type: string
     type: object
   response.TransferTokenV2Data:
     properties:
@@ -7384,6 +7435,25 @@ paths:
       summary: OffChain Tip Bot - Transfer token v2
       tags:
       - Tip
+  /tono/command-permissions:
+    get:
+      consumes:
+      - application/json
+      description: Get Tono command permissions
+      parameters:
+      - in: query
+        name: code
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.TonoCommandPermissions'
+      summary: Get Tono command permissions
+      tags:
+      - Tono
   /users:
     post:
       consumes:
