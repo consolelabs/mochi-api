@@ -486,4 +486,10 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		onboardingGroup.POST("/start", h.Onboarding.Start)
 	}
+
+	// Tono's api
+	tonoGroup := v1.Group("tono")
+	{
+		tonoGroup.GET("/command-permissions", h.Tono.TonoCommandPermissions)
+	}
 }
