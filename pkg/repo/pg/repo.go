@@ -72,6 +72,7 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	"github.com/defipod/mochi/pkg/repo/token"
 	tokeninfo "github.com/defipod/mochi/pkg/repo/token_info"
+	tonocommandpermission "github.com/defipod/mochi/pkg/repo/tono_command_permission"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -178,5 +179,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		FriendTechKeyWatchlistItem:           friendfechkeywatchlistitem.NewPG(db),
 		ProductHashtag:                       producthashtag.NewPG(db),
 		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
+		TonoCommandPermission:                tonocommandpermission.NewPG(db),
 	}
 }
