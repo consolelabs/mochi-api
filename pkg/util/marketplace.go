@@ -77,6 +77,8 @@ func GetCollectionExplorerUrl(address string, chainID string) string {
 		return "https://optimistic.etherscan.io/address/" + address
 	case "56":
 		return "https://bscscan.com/address/" + address
+	case "324":
+		return "https://explorer.zksync.io/address/" + address
 	default:
 		return ""
 	}

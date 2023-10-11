@@ -5112,6 +5112,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/tono/command-permissions": {
+            "get": {
+                "description": "Get Tono command permissions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tono"
+                ],
+                "summary": "Get Tono command permissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.TonoCommandPermissions"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "post": {
                 "description": "Create User",
@@ -7382,6 +7412,32 @@ const docTemplate = `{
                 }
             }
         },
+        "model.TonoCommandPermission": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discord_permission_flag": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "need_dm": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "model.User": {
             "type": "object",
             "properties": {
@@ -8426,6 +8482,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "channel_name": {
+                    "type": "string"
+                },
+                "channel_url": {
                     "type": "string"
                 },
                 "each": {
@@ -9501,7 +9560,7 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "holders": {
@@ -9513,22 +9572,22 @@ const docTemplate = `{
                 "price": {
                     "type": "number"
                 },
-                "price_change_percentage": {
+                "priceChangePercentage": {
                     "type": "number"
                 },
-                "profile_checked": {
+                "profileChecked": {
                     "type": "boolean"
                 },
                 "supply": {
                     "type": "integer"
                 },
-                "twitter_pfp_url": {
+                "twitterPfpUrl": {
                     "type": "string"
                 },
-                "twitter_username": {
+                "twitterUsername": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -9552,7 +9611,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "metadata": {
-                    "$ref": "#/definitions/response.FriendTechKey"
+                    "$ref": "#/definitions/response.TrackedFriendTechKey"
                 },
                 "profile_id": {
                     "type": "string"
@@ -12213,6 +12272,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.TonoCommandPermissions": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TonoCommandPermission"
+                    }
+                }
+            }
+        },
         "response.TopUser": {
             "type": "object",
             "properties": {
@@ -12235,6 +12305,44 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.FriendTechKeyWatchlistItemResponse"
+                }
+            }
+        },
+        "response.TrackedFriendTechKey": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "holders": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "price_change_percentage": {
+                    "type": "number"
+                },
+                "profile_checked": {
+                    "type": "boolean"
+                },
+                "supply": {
+                    "type": "integer"
+                },
+                "twitter_pfp_url": {
+                    "type": "string"
+                },
+                "twitter_username": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
