@@ -1,3 +1,16 @@
+# [6.18.0](https://github.com/consolelabs/mochi-api/compare/v6.17.3...v6.18.0) (2023-10-11)
+
+
+### Bug Fixes
+
+* wrong format invalid emojis ([57cfbf6](https://github.com/consolelabs/mochi-api/commit/57cfbf6cc3294ba5498a61297bf80041f440b6df))
+
+
+### Features
+
+* integrate chain zkSync ([a768890](https://github.com/consolelabs/mochi-api/commit/a768890fe5b980dd6cb0a9405f376251b4054e11))
+* tono command permission manage ([#1214](https://github.com/consolelabs/mochi-api/issues/1214)) ([eed50a3](https://github.com/consolelabs/mochi-api/commit/eed50a3f395eb825d1ab3cd199fc0541cabac4f0))
+
 ## [6.17.3](https://github.com/consolelabs/mochi-api/compare/v6.17.2...v6.17.3) (2023-10-09)
 
 
