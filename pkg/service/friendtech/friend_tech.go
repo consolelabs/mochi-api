@@ -6,12 +6,20 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type FriendTech struct {
 	baseUrl string
+}
+
+var commonHeader = map[string]string{
+	"Content-Type": "application/json",
+	"Accept":       "application/json",
+	"clientData":   fmt.Sprintf("{\"source\": \"%s\"}", consts.ClientID),
+	"x-client-id":  consts.ClientID,
 }
 
 func NewService(cfg *config.Config) Service {
@@ -35,7 +43,7 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &data,
-		Headers:   map[string]string{"Content-Type": "application/json", "Accept": "application/json"},
+		Headers:   commonHeader,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -50,8 +58,9 @@ func (n *FriendTech) GetHistory(accountAddress, interval string) (*response.Frie
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &data,
-		Headers:   map[string]string{"Content-Type": "application/json", "Accept": "application/json"},
+		Headers:   commonHeader,
 	}
+
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
 		return &response.FriendTechKeyPriceHistoryResponse{}, nil
@@ -70,7 +79,7 @@ func (n *FriendTech) GetTransactions(subjectAddress string, limit int) (*respons
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &data,
-		Headers:   map[string]string{"Content-Type": "application/json", "Accept": "application/json"},
+		Headers:   commonHeader,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil {
