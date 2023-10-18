@@ -131,6 +131,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
+	github.com/ucarion/urlpath v0.0.0-20200424170820-7ccc79b76bbb // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
@@ -151,7 +152,7 @@ require (
 
 require (
 	cloud.google.com/go/storage v1.28.1
-	github.com/consolelabs/mochi-toolkit v0.0.0-20230713093321-b3c70e7b2905
+	github.com/consolelabs/mochi-toolkit v0.0.0-20231018042507-12bf9ab24131
 	github.com/consolelabs/mochi-typeset v0.0.0-20230913195508-ff7f4f4c725c
 	github.com/gammazero/workerpool v1.1.3
 	github.com/shopspring/decimal v1.2.0
