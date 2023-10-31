@@ -59,6 +59,7 @@ import (
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
 	producthashtag "github.com/defipod/mochi/pkg/repo/product_hashtag"
+	producttheme "github.com/defipod/mochi/pkg/repo/product_theme"
 	pac "github.com/defipod/mochi/pkg/repo/profile_airdrop_campaign"
 	profilecommandusage "github.com/defipod/mochi/pkg/repo/profile_command_usage"
 	"github.com/defipod/mochi/pkg/repo/quest"
@@ -180,5 +181,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProductHashtag:                       producthashtag.NewPG(db),
 		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
 		TonoCommandPermission:                tonocommandpermission.NewPG(db),
+		ProductTheme:                         producttheme.NewPG(db),
 	}
 }
