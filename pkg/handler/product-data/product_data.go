@@ -146,3 +146,19 @@ func (h *Handler) GetProductHashtag(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(productHashtag, nil, nil, nil))
 }
+
+func (h *Handler) GetProductTheme(c *gin.Context) {
+	req := request.GetProductThemeRequest{}
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetProductTheme] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	productTheme, err := h.entities.GetProductTheme(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(productTheme, nil, nil, nil))
+}

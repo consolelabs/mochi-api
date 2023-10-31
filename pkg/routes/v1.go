@@ -429,6 +429,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		productMetaData.GET("/changelogs/view", h.ProductData.GetProductChangelogsView)
 		productMetaData.GET("/crawl-changelogs", h.ProductData.CrawlChangelogs)
 		productMetaData.GET("/hashtags", h.ProductData.GetProductHashtag)
+		productMetaData.GET("/themes", h.ProductData.GetProductTheme)
 	}
 
 	// api/v1/earns

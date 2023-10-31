@@ -9,4 +9,5 @@ type IHandler interface {
 	CreateProductChangelogsView(c *gin.Context)
 	GetProductChangelogsView(c *gin.Context)
 	GetProductHashtag(c *gin.Context)
+	GetProductTheme(c *gin.Context)
 }

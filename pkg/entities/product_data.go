@@ -206,3 +206,7 @@ func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model
 		Alias:            strings.ToLower(req.Alias),
 	}, nil
 }
+
+func (e *Entity) GetProductTheme(req request.GetProductThemeRequest) ([]model.ProductTheme, error) {
+	return e.repo.ProductTheme.Get()
+}
