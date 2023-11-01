@@ -28,5 +28,5 @@ type DiscordGuild struct {
 	Active        bool            `json:"active"`
 	JoinedAt      time.Time       `json:"-"`
 	LeftAt        *time.Time      `json:"-"`
-	AvailableCMDs JSONNullString  `json:"available_cmds"`
+	AvailableCMDs JSONNullString  `json:"available_cmds" gorm:"column:available_cmds"`
 }
