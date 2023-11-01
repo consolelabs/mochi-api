@@ -43,6 +43,31 @@ definitions:
       status:
         type: string
     type: object
+  model.AvailableCMD:
+    properties:
+      application_id:
+        type: string
+      default_member_permissions:
+        type: integer
+      description:
+        type: string
+      description_localizations:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_localizations:
+        type: string
+      nsfw:
+        type: boolean
+      type:
+        type: integer
+      version:
+        type: string
+    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -994,31 +1019,6 @@ definitions:
     - guild_id
     - user_discord_id
     type: object
-  request.AvailableCMD:
-    properties:
-      application_id:
-        type: string
-      default_member_permissions:
-        type: integer
-      description:
-        type: string
-      description_localizations:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      name_localizations:
-        type: string
-      nsfw:
-        type: boolean
-      type:
-        type: integer
-      version:
-        type: string
-    type: object
   request.ClaimQuestsRewardsRequest:
     properties:
       quest_id:
@@ -1557,7 +1557,7 @@ definitions:
         type: boolean
       available_cmds:
         items:
-          $ref: '#/definitions/request.AvailableCMD'
+          $ref: '#/definitions/model.AvailableCMD'
         type: array
       global_xp:
         type: boolean
@@ -2485,6 +2485,10 @@ definitions:
         type: boolean
       alias:
         type: string
+      available_cmds:
+        items:
+          $ref: '#/definitions/model.AvailableCMD'
+        type: array
       bot_scopes:
         items:
           type: string
@@ -3350,18 +3354,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -3371,6 +3363,18 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h:
+        type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object

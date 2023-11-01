@@ -6319,6 +6319,44 @@
                 }
             }
         },
+        "model.AvailableCMD": {
+            "type": "object",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "default_member_permissions": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_localizations": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_localizations": {
+                    "type": "string"
+                },
+                "nsfw": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -7768,44 +7806,6 @@
                 }
             }
         },
-        "request.AvailableCMD": {
-            "type": "object",
-            "properties": {
-                "application_id": {
-                    "type": "string"
-                },
-                "default_member_permissions": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "description_localizations": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "name_localizations": {
-                    "type": "string"
-                },
-                "nsfw": {
-                    "type": "boolean"
-                },
-                "type": {
-                    "type": "integer"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
         "request.ClaimQuestsRewardsRequest": {
             "type": "object",
             "properties": {
@@ -8621,7 +8621,7 @@
                 "available_cmds": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/request.AvailableCMD"
+                        "$ref": "#/definitions/model.AvailableCMD"
                     }
                 },
                 "global_xp": {
@@ -10042,6 +10042,12 @@
                 },
                 "alias": {
                     "type": "string"
+                },
+                "available_cmds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AvailableCMD"
+                    }
                 },
                 "bot_scopes": {
                     "type": "array",

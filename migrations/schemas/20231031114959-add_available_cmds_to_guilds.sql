@@ -1,7 +1,7 @@
 
 -- +migrate Up
 
-ALTER TABLE discord_guilds ADD COLUMN available_cmds TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE discord_guilds ADD COLUMN available_cmds TEXT DEFAULT NULL;
 
 -- +migrate Down
 
