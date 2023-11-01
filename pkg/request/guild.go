@@ -13,11 +13,11 @@ type CreateGuildRequest struct {
 }
 
 type UpdateGuildRequest struct {
-	GlobalXP      *bool                 `json:"global_xp"`
-	LogChannel    *string               `json:"log_channel"`
-	Active        *bool                 `json:"active"`
-	LeftAt        *time.Time            `json:"left_at"`
-	AvailableCMDs *[]model.AvailableCMD `json:"available_cmds"`
+	GlobalXP      *bool               `json:"global_xp"`
+	LogChannel    *string             `json:"log_channel"`
+	Active        *bool               `json:"active"`
+	LeftAt        *time.Time          `json:"left_at"`
+	AvailableCMDs *[]model.DiscordCMD `json:"available_cmds"`
 }
 
 type HandleGuildDeleteRequest struct {

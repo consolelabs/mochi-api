@@ -6327,44 +6327,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AvailableCMD": {
-            "type": "object",
-            "properties": {
-                "application_id": {
-                    "type": "string"
-                },
-                "default_member_permissions": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "description_localizations": {
-                    "type": "string"
-                },
-                "guild_id": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "name_localizations": {
-                    "type": "string"
-                },
-                "nsfw": {
-                    "type": "boolean"
-                },
-                "type": {
-                    "type": "integer"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -6560,6 +6522,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DiscordCMD": {
+            "type": "object",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "default_member_permissions": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_localizations": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_localizations": {
+                    "type": "string"
+                },
+                "nsfw": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "version": {
                     "type": "string"
                 }
             }
@@ -8629,7 +8629,7 @@ const docTemplate = `{
                 "available_cmds": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.AvailableCMD"
+                        "$ref": "#/definitions/model.DiscordCMD"
                     }
                 },
                 "global_xp": {
@@ -10054,7 +10054,7 @@ const docTemplate = `{
                 "available_cmds": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.AvailableCMD"
+                        "$ref": "#/definitions/model.DiscordCMD"
                     }
                 },
                 "bot_scopes": {

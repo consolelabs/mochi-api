@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type AvailableCMD struct {
+type DiscordCMD struct {
 	ID                       string `json:"id"`
 	ApplicationID            string `json:"application_id"`
 	Version                  string `json:"version"`

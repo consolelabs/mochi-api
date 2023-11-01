@@ -43,31 +43,6 @@ definitions:
       status:
         type: string
     type: object
-  model.AvailableCMD:
-    properties:
-      application_id:
-        type: string
-      default_member_permissions:
-        type: integer
-      description:
-        type: string
-      description_localizations:
-        type: string
-      guild_id:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      name_localizations:
-        type: string
-      nsfw:
-        type: boolean
-      type:
-        type: integer
-      version:
-        type: string
-    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -196,6 +171,31 @@ definitions:
       type:
         type: string
       updated_at:
+        type: string
+    type: object
+  model.DiscordCMD:
+    properties:
+      application_id:
+        type: string
+      default_member_permissions:
+        type: integer
+      description:
+        type: string
+      description_localizations:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_localizations:
+        type: string
+      nsfw:
+        type: boolean
+      type:
+        type: integer
+      version:
         type: string
     type: object
   model.DiscordGuild:
@@ -1557,7 +1557,7 @@ definitions:
         type: boolean
       available_cmds:
         items:
-          $ref: '#/definitions/model.AvailableCMD'
+          $ref: '#/definitions/model.DiscordCMD'
         type: array
       global_xp:
         type: boolean
@@ -2487,7 +2487,7 @@ definitions:
         type: string
       available_cmds:
         items:
-          $ref: '#/definitions/model.AvailableCMD'
+          $ref: '#/definitions/model.DiscordCMD'
         type: array
       bot_scopes:
         items:
@@ -2726,13 +2726,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3354,12 +3354,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3375,6 +3369,12 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
