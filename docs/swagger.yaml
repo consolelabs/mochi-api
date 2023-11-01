@@ -179,6 +179,8 @@ definitions:
         type: boolean
       alias:
         type: string
+      available_cmds:
+        $ref: '#/definitions/model.JSONNullString'
       bot_scopes:
         items:
           type: string
@@ -434,6 +436,14 @@ definitions:
         $ref: '#/definitions/model.User'
       user_id:
         type: string
+    type: object
+  model.JSONNullString:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
     type: object
   model.MonikerConfig:
     properties:
@@ -984,6 +994,31 @@ definitions:
     - guild_id
     - user_discord_id
     type: object
+  request.AvailableCMD:
+    properties:
+      application_id:
+        type: string
+      default_member_permissions:
+        type: integer
+      description:
+        type: string
+      description_localizations:
+        type: string
+      guild_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      name_localizations:
+        type: string
+      nsfw:
+        type: boolean
+      type:
+        type: integer
+      version:
+        type: string
+    type: object
   request.ClaimQuestsRewardsRequest:
     properties:
       quest_id:
@@ -1520,6 +1555,10 @@ definitions:
     properties:
       active:
         type: boolean
+      available_cmds:
+        items:
+          $ref: '#/definitions/request.AvailableCMD'
+        type: array
       global_xp:
         type: boolean
       left_at:
@@ -3317,6 +3356,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
@@ -3326,12 +3371,6 @@ definitions:
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object

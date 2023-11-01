@@ -6535,6 +6535,9 @@ const docTemplate = `{
                 "alias": {
                     "type": "string"
                 },
+                "available_cmds": {
+                    "$ref": "#/definitions/model.JSONNullString"
+                },
                 "bot_scopes": {
                     "type": "array",
                     "items": {
@@ -6924,6 +6927,18 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "model.JSONNullString": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if String is not NULL",
+                    "type": "boolean"
                 }
             }
         },
@@ -7761,6 +7776,44 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AvailableCMD": {
+            "type": "object",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "default_member_permissions": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_localizations": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_localizations": {
+                    "type": "string"
+                },
+                "nsfw": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "request.ClaimQuestsRewardsRequest": {
             "type": "object",
             "properties": {
@@ -8572,6 +8625,12 @@ const docTemplate = `{
             "properties": {
                 "active": {
                     "type": "boolean"
+                },
+                "available_cmds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.AvailableCMD"
+                    }
                 },
                 "global_xp": {
                     "type": "boolean"
