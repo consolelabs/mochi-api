@@ -47,7 +47,8 @@ func AuthGuard(cfg config.Config) gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		var claims jwt.MapClaims
+		token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
 			return cfg.JWTSecret, nil
 		})
 
@@ -60,6 +61,7 @@ func AuthGuard(cfg config.Config) gin.HandlerFunc {
 			return
 		}
 
+		ctx.Set("profile_id", claims["profile_id"])
 		ctx.Next()
 	}
 }
