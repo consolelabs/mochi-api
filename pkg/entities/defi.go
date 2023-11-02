@@ -507,31 +507,44 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		query = "skullswap-exchange"
 	}
 
-	// get list tokens
+	// 1. Get coin with id = query, if it exists then check if that coin is still supported
+	var err error
 	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
 		return nil, err
 	}
 
-	//
+	_, err, statusCode := e.svc.CoinGecko.GetCoin(token.ID)
+	if err != nil || statusCode == 404 {
+		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoin() failed - token not supported anymore")
+	}
+
+	// 2. After get data case id = query
+	// - check if token is still supported -> return only that token
+	// - token is not supported anymore -> find list by symbol from table coingecko_supported_tokens. And remove non supported tokens from list tokens
 	var tokens []model.CoingeckoSupportedTokens
 	switch true {
-	// found token with id = query
 	case err == nil:
 		tokens = append(tokens, *token)
 
-	// no id = given query -> find list by symbol
 	default:
 		tokens, err = e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
 		if err != nil {
 			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
 			return nil, err
 		}
+
+		// remove non-supported tokens if exist
+		for idx, t := range tokens {
+			if t.ID == token.ID {
+				tokens = append(tokens[:idx], tokens[idx+1:]...)
+			}
+		}
 	}
 
+	// 3. if no tokens found by query symbol -> query data on geckoterminal
 	if len(tokens) == 0 {
-
 		// find on gecktoterminal
 		search, err := e.svc.GeckoTerminal.Search(query)
 		if err != nil {
@@ -568,6 +581,7 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		return tokens, nil
 	}
 
+	// 4. Apply logic to choose most_popular token
 	// get default token
 	defaultToken, err := e.repo.GuildConfigDefaultTicker.GetOneByGuildIDAndQuery(guildId, query)
 	if err != nil && err != gorm.ErrRecordNotFound {
