@@ -17,7 +17,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	tipBotGroup := v1.Group("/tip")
 	{
 		tipBotGroup.POST("/transfer", h.Tip.TransferToken)
-		tipBotGroup.POST("/transfer-v2", h.Tip.TransferTokenV2)
+		tipBotGroup.POST("/transfer-v2", middleware.AuthGuard(cfg), h.Tip.TransferTokenV2)
 	}
 
 	guildGroup := v1.Group("/guilds")
