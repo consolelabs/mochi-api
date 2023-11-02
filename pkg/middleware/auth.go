@@ -42,6 +42,7 @@ func AuthGuard(cfg config.Config) gin.HandlerFunc {
 		}
 
 		// always allows mochi bot
+		ctx.Set("is_mochi", tokenStr == cfg.MochiBotSecret)
 		if tokenStr == cfg.MochiBotSecret {
 			ctx.Next()
 			return
