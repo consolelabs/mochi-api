@@ -1,3 +1,19 @@
+# [6.19.0](https://github.com/consolelabs/mochi-api/compare/v6.18.0...v6.19.0) (2023-11-03)
+
+
+### Bug Fixes
+
+* cannot bind uri remove wl ([#1221](https://github.com/consolelabs/mochi-api/issues/1221)) ([74c91e5](https://github.com/consolelabs/mochi-api/commit/74c91e5b20f338a1eaf39ba43035d10cf737d3c1))
+* friend tech key api - add client id ([1be14b5](https://github.com/consolelabs/mochi-api/commit/1be14b5c24df3435807402fa1813ec8f4dbdc8ec))
+* query ticker rune ([#1220](https://github.com/consolelabs/mochi-api/issues/1220)) ([6fd19f8](https://github.com/consolelabs/mochi-api/commit/6fd19f89fbfea2bd5267ec95e4d1cec0f110677b))
+* transfer-v2 auth ([f055d94](https://github.com/consolelabs/mochi-api/commit/f055d9463d9d8c742dbd8c372bc93c6a98f95295))
+* transfer-v2 authorization ([f3b4f53](https://github.com/consolelabs/mochi-api/commit/f3b4f533861141848705140d5b0bd40a19cee2ad))
+
+
+### Features
+
+* product themes ([#1218](https://github.com/consolelabs/mochi-api/issues/1218)) ([31b858b](https://github.com/consolelabs/mochi-api/commit/31b858b4ebcbbf76a2478cbab24c3432c767aa7a))
+
 # [6.18.0](https://github.com/consolelabs/mochi-api/compare/v6.17.3...v6.18.0) (2023-10-11)
 
 
