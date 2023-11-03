@@ -81,6 +81,15 @@ func (h *Handler) TransferTokenV2(c *gin.Context) {
 		return
 	}
 
+	ctxProfileId := c.GetString("profile_id")
+	isMochi := c.GetBool("is_mochi")
+	if !isMochi && ctxProfileId != req.Sender {
+		err := errors.New("you can only transfer tokens from your profile")
+		h.log.Error(err, "[handler.TransferTokenV2] unauthorized sender")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	for _, recipient := range req.Recipients {
 		if !util.ValidateNumberSeries(recipient) {
 			err := errors.New("recipient is invalid")

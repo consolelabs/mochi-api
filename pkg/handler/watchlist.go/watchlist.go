@@ -325,6 +325,10 @@ func (h *Handler) UntrackToken(c *gin.Context) {
 		return
 	}
 
+	if req.ProfileID == "" {
+		req.ProfileID = c.Param("id")
+	}
+
 	err := h.entities.RemoveFromWatchlist(req)
 	if err != nil {
 		h.log.Error(err, "[handler.UntrackToken] entity.RemoveFromWatchlist() failed")
