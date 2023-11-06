@@ -1,3 +1,10 @@
+# [6.20.0](https://github.com/consolelabs/mochi-api/compare/v6.19.0...v6.20.0) (2023-11-06)
+
+
+### Features
+
+* integrate chain Mantle ([ef15e89](https://github.com/consolelabs/mochi-api/commit/ef15e895d2a021a899e1bfcfd9a7a46fa4518062))
+
 # [6.19.0](https://github.com/consolelabs/mochi-api/compare/v6.18.0...v6.19.0) (2023-11-03)
 
 
