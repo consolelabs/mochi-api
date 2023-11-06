@@ -79,6 +79,8 @@ func GetCollectionExplorerUrl(address string, chainID string) string {
 		return "https://bscscan.com/address/" + address
 	case "324":
 		return "https://explorer.zksync.io/address/" + address
+	case "5000":
+		return "https://explorer.mantle.xyz/" + address
 	default:
 		return ""
 	}
