@@ -1,7 +1,7 @@
 
 -- +migrate Up
 
-ALTER TABLE discord_guilds ADD COLUMN available_cmds TEXT DEFAULT NULL;
+ALTER TABLE discord_guilds ADD COLUMN available_cmds JSONB DEFAULT NULL;
 
 -- +migrate Down
 
