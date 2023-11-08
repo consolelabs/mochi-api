@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -168,6 +170,14 @@ func (e *Entity) UpdateGuild(guildID string, req request.UpdateGuildRequest) err
 	}
 	if req.LeftAt != nil {
 		guild.LeftAt = req.LeftAt
+	}
+	if req.AvailableCMDs != nil {
+		jsonData, err := json.Marshal(req.AvailableCMDs)
+		if err != nil {
+			e.log.Errorf(err, "failed to marshal available cmds")
+			return err
+		}
+		guild.AvailableCMDs.NullString = sql.NullString{String: string(jsonData), Valid: true}
 	}
 	if err := e.repo.DiscordGuilds.Update(guild); err != nil {
 		e.log.Errorf(err, "failed to update guild %s", guildID)

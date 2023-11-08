@@ -100,7 +100,7 @@ func (k *Krystal) doCache(address string) (string, error) {
 }
 
 func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*BalanceTokenResponse, error) {
-	chainIDs := []int{1, 56, 137, 43114, 25, 250, 42161, 1313161554, 8217, 10, 101}
+	chainIDs := []int{1, 10, 25, 56, 101, 137, 199, 250, 324, 2000, 5000, 8217, 8453, 42161, 43114, 1313161554}
 	chainIDsStr := strings.ReplaceAll(strings.Trim(fmt.Sprint(chainIDs), "[]"), " ", ",")
 
 	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/balance/token?addresses=ethereum:%s&quoteSymbols=usd&sparkline=false&chainIds=%s", address, chainIDsStr)

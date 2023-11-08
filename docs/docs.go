@@ -6526,6 +6526,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DiscordCMD": {
+            "type": "object",
+            "properties": {
+                "application_id": {
+                    "type": "string"
+                },
+                "default_member_permissions": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "description_localizations": {
+                    "type": "string"
+                },
+                "guild_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "name_localizations": {
+                    "type": "string"
+                },
+                "nsfw": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "model.DiscordGuild": {
             "type": "object",
             "properties": {
@@ -6534,6 +6572,9 @@ const docTemplate = `{
                 },
                 "alias": {
                     "type": "string"
+                },
+                "available_cmds": {
+                    "$ref": "#/definitions/model.JSONNullString"
                 },
                 "bot_scopes": {
                     "type": "array",
@@ -6924,6 +6965,18 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "model.JSONNullString": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if String is not NULL",
+                    "type": "boolean"
                 }
             }
         },
@@ -8573,6 +8626,12 @@ const docTemplate = `{
                 "active": {
                     "type": "boolean"
                 },
+                "available_cmds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiscordCMD"
+                    }
+                },
                 "global_xp": {
                     "type": "boolean"
                 },
@@ -9991,6 +10050,12 @@ const docTemplate = `{
                 },
                 "alias": {
                     "type": "string"
+                },
+                "available_cmds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiscordCMD"
+                    }
                 },
                 "bot_scopes": {
                     "type": "array",
