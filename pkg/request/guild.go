@@ -1,6 +1,10 @@
 package request
 
-import "time"
+import (
+	"time"
+
+	"github.com/defipod/mochi/pkg/model"
+)
 
 type CreateGuildRequest struct {
 	ID       string    `json:"id"`
@@ -9,10 +13,11 @@ type CreateGuildRequest struct {
 }
 
 type UpdateGuildRequest struct {
-	GlobalXP   *bool      `json:"global_xp"`
-	LogChannel *string    `json:"log_channel"`
-	Active     *bool      `json:"active"`
-	LeftAt     *time.Time `json:"left_at"`
+	GlobalXP      *bool               `json:"global_xp"`
+	LogChannel    *string             `json:"log_channel"`
+	Active        *bool               `json:"active"`
+	LeftAt        *time.Time          `json:"left_at"`
+	AvailableCMDs *[]model.DiscordCMD `json:"available_cmds"`
 }
 
 type HandleGuildDeleteRequest struct {
