@@ -323,7 +323,7 @@ func (e *Entity) fetchTokenBalanceByChain(chainId int64, tokenAddress, walletAdd
 			return nil, err
 		}
 		return bal, nil
-	case 1, 10, 56, 137, 250, 42161, 8453: //EVM
+	case 1, 10, 56, 137, 250, 42161, 8453, 5000: //EVM
 		token := model.Token{
 			Address: tokenAddress,
 			ChainID: int(chainId),
