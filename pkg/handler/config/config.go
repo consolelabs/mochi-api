@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
 
@@ -59,4 +60,50 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.CreateResponse(config, nil, nil, nil))
+}
+
+// GetListCommandPermissions     godoc
+// @Summary     Get list command permissions
+// @Description Get list command permissions
+// @Tags        Tono
+// @Accept      json
+// @Produce     json
+// @Param       req   query  request.TonoCommandPermissionsRequest true  "request"
+// @Success     200 {object} response.TonoCommandPermissions
+// @Router      /config/command-permissions [get]
+func (h *Handler) GetListCommandPermissions(c *gin.Context) {
+	req := request.CommandPermissionsRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetListCommandPermissions] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetCommandPermissions(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetListCommandPermissions] entities.GetCommandPermissions() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
+}
+
+// GetInstallBotUrl  godoc
+// @Summary     Get bot install url
+// @Description Get bot install url
+// @Tags        Command Permission
+// @Accept      json
+// @Produce     json
+// @Success     302 {object}
+// @Router      /config/install-url [get]
+func (h *Handler) GetInstallBotUrl(c *gin.Context) {
+	url, err := h.entities.GetInstallBotUrl()
+	if err != nil {
+		h.log.Error(err, "[handler.GetInstallBotUrl] entities.GetCommandPermissions() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.Redirect(http.StatusFound, url)
 }

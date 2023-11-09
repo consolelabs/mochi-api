@@ -1,5 +1,5 @@
 package request
 
-type TonoCommandPermissionsRequest struct {
+type CommandPermissionsRequest struct {
 	Code string `form:"code"`
 }

@@ -24,7 +24,6 @@ import (
 	productdata "github.com/defipod/mochi/pkg/handler/product-data"
 	"github.com/defipod/mochi/pkg/handler/swap"
 	"github.com/defipod/mochi/pkg/handler/tip"
-	"github.com/defipod/mochi/pkg/handler/tono"
 	"github.com/defipod/mochi/pkg/handler/user"
 	"github.com/defipod/mochi/pkg/handler/vault"
 	"github.com/defipod/mochi/pkg/handler/verify"
@@ -63,7 +62,6 @@ type Handler struct {
 	ProductData     productdata.IHandler
 	Dexes           dexes.IHandler
 	Onboarding      onboarding.IHandler
-	Tono            tono.IHandler
 }
 
 func New(entities *entities.Entity, logger logger.Logger) *Handler {
@@ -96,6 +94,5 @@ func New(entities *entities.Entity, logger logger.Logger) *Handler {
 		ProductData:     productdata.New(entities, logger),
 		Dexes:           dexes.New(entities, logger),
 		Onboarding:      onboarding.New(entities, logger),
-		Tono:            tono.New(entities, logger),
 	}
 }

@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type TonoCommandPermission struct {
+type CommandPermission struct {
 	ID                    int       `json:"id"`
 	Code                  string    `json:"code"`
 	DiscordPermissionFlag string    `json:"discord_permission_flag"`
