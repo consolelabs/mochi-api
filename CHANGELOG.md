@@ -1,3 +1,15 @@
+# [6.21.0](https://github.com/consolelabs/mochi-api/compare/v6.20.0...v6.21.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* whitelist missing chains to serve getting list asset ([ec0b700](https://github.com/consolelabs/mochi-api/commit/ec0b7009cc598a6a598c0bf8d10c57a5cd7c08ac))
+
+
+### Features
+
+* **cmd:** add available cmds to discord guild ([#1219](https://github.com/consolelabs/mochi-api/issues/1219)) ([a808a6a](https://github.com/consolelabs/mochi-api/commit/a808a6a3e702ecd025027ba1993c23b062266676))
+
 # [6.20.0](https://github.com/consolelabs/mochi-api/compare/v6.19.0...v6.20.0) (2023-11-06)
 
 
