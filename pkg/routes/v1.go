@@ -152,6 +152,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	{
 		configGroup.GET("/sales-tracker", h.ConfigChannel.GetSalesTrackerConfig)
 		configGroup.POST("/sales-tracker", h.ConfigChannel.CreateSalesTrackerConfig)
+
+		configGroup.GET("/command-permissions", h.Config.GetListCommandPermissions)
+		configGroup.GET("/install-url", h.Config.GetInstallBotUrl)
 	}
 
 	configRoleGroup := configGroup.Group("/role/:guild_id")
@@ -488,9 +491,4 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		onboardingGroup.POST("/start", h.Onboarding.Start)
 	}
 
-	// Tono's api
-	tonoGroup := v1.Group("tono")
-	{
-		tonoGroup.GET("/command-permissions", h.Tono.TonoCommandPermissions)
-	}
 }
