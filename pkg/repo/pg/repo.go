@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
+	commandpermission "github.com/defipod/mochi/pkg/repo/command_permission"
 	configxplevel "github.com/defipod/mochi/pkg/repo/config_xp_level"
 	"github.com/defipod/mochi/pkg/repo/content"
 	daoguidelinemessages "github.com/defipod/mochi/pkg/repo/dao_guideline_messages"
@@ -73,7 +74,6 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	"github.com/defipod/mochi/pkg/repo/token"
 	tokeninfo "github.com/defipod/mochi/pkg/repo/token_info"
-	tonocommandpermission "github.com/defipod/mochi/pkg/repo/tono_command_permission"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -180,7 +180,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		FriendTechKeyWatchlistItem:           friendfechkeywatchlistitem.NewPG(db),
 		ProductHashtag:                       producthashtag.NewPG(db),
 		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
-		TonoCommandPermission:                tonocommandpermission.NewPG(db),
+		CommandPermission:                    commandpermission.NewPG(db),
 		ProductTheme:                         producttheme.NewPG(db),
 	}
 }

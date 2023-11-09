@@ -54,7 +54,8 @@ type Config struct {
 	CovalentBaseUrl string
 	CovalentAPIKeys []string
 
-	DiscordToken string
+	DiscordToken         string
+	DiscordApplicationID string
 
 	RedisURL string
 
@@ -247,7 +248,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		CovalentBaseUrl: v.GetString("COVALENT_BASE_URL"),
 		CovalentAPIKeys: strings.Split(v.GetString("COVALENT_API_KEYS"), ","),
 
-		DiscordToken: v.GetString("DISCORD_TOKEN"),
+		DiscordToken:         v.GetString("DISCORD_TOKEN"),
+		DiscordApplicationID: v.GetString("DISCORD_APPLICATION_ID"),
 
 		InDiscordWalletMnemonic: v.GetString("IN_DISCORD_WALLET_MNEMONIC"),
 		VaultMnemonic:           v.GetString("VAULT_MNEMONIC"),
