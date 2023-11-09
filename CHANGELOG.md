@@ -1,3 +1,10 @@
+# [6.22.0](https://github.com/consolelabs/mochi-api/compare/v6.21.0...v6.22.0) (2023-11-09)
+
+
+### Features
+
+* command permission install link ([#1226](https://github.com/consolelabs/mochi-api/issues/1226)) ([8fcd8ca](https://github.com/consolelabs/mochi-api/commit/8fcd8cadc80391a02a27b67c54a765ec5d896056))
+
 # [6.21.0](https://github.com/consolelabs/mochi-api/compare/v6.20.0...v6.21.0) (2023-11-08)
 
 
