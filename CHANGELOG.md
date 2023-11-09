@@ -1,3 +1,10 @@
+## [6.22.2](https://github.com/consolelabs/mochi-api/compare/v6.22.1...v6.22.2) (2023-11-09)
+
+
+### Bug Fixes
+
+* support mnt for update user role ([8d0835a](https://github.com/consolelabs/mochi-api/commit/8d0835af575d47f76fb696b2d11a6d7ffe312bd1))
+
 ## [6.22.1](https://github.com/consolelabs/mochi-api/compare/v6.22.0...v6.22.1) (2023-11-09)
 
 
