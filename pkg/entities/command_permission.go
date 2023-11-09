@@ -32,7 +32,7 @@ func (e *Entity) GetInstallBotUrl() (string, error) {
 		finalPermission = finalPermission.Or(finalPermission, flag)
 	}
 
-	installBotUrl := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&permissions=%s&scope=bot applications.commands", e.cfg.DiscordApplicationID, finalPermission.String())
+	installBotUrl := fmt.Sprintf("https://discord.com/api/oauth2/authorize?client_id=%s&permissions=%s&scope=bot applications.commands", e.cfg.ApplicationID, finalPermission.String())
 
 	return installBotUrl, nil
 }
