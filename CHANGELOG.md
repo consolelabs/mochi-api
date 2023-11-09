@@ -1,3 +1,10 @@
+## [6.22.1](https://github.com/consolelabs/mochi-api/compare/v6.22.0...v6.22.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* rename env name application id ([#1227](https://github.com/consolelabs/mochi-api/issues/1227)) ([bc60715](https://github.com/consolelabs/mochi-api/commit/bc607151cf4315faefc30e911d3db101cb0674f9))
+
 # [6.22.0](https://github.com/consolelabs/mochi-api/compare/v6.21.0...v6.22.0) (2023-11-09)
 
 
