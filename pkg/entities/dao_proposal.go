@@ -286,7 +286,11 @@ func (e *Entity) calculateUserBalance(votingType model.ProposalVotingType, walle
 	case model.NFT:
 		return e.calculateNFTBalance(chainId, tokenAddress, walletAddress)
 	case model.CryptoToken:
-		return e.CalculateTokenBalance(chainId, tokenAddress, discordID)
+		profile, err := e.svc.MochiProfile.GetByDiscordID(discordID, false)
+		if err != nil {
+			return nil, err
+		}
+		return e.CalculateTokenBalance(chainId, tokenAddress, *profile)
 	default:
 		return nil, fmt.Errorf("invalid voting type")
 	}

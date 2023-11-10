@@ -260,18 +260,13 @@ func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(ad
 	return balanceOf, nil
 }
 
-func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID string) (*big.Int, error) {
-	profiles, err := e.svc.MochiProfile.GetByDiscordID(discordID, true)
-	if err != nil {
-		e.log.Fields(logger.Fields{"discordID": discordID}).Error(err, "cannot get mochi profile")
-		return nil, err
-	}
+func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress string, profile mochiprofile.GetProfileResponse) (*big.Int, error) {
 	includedPlatform := mochiprofile.PlatformEVM
 	if chainId == 999 {
 		includedPlatform = mochiprofile.PlatformSol
 	}
 	var walletAddrs []string
-	for _, p := range profiles.AssociatedAccounts {
+	for _, p := range profile.AssociatedAccounts {
 		if p.Platform == includedPlatform {
 			walletAddrs = append(walletAddrs, p.PlatformIdentifier)
 		}
@@ -293,7 +288,7 @@ func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID st
 			if err == nil {
 				bals <- bal
 			} else {
-				e.log.Fields(logger.Fields{"discordID": discordID, "tokenAddr": tokenAddress}).Error(err, "fetchTokenBalanceByChain() failed")
+				e.log.Fields(logger.Fields{"profileID": profile.ID, "tokenAddr": tokenAddress}).Error(err, "fetchTokenBalanceByChain() failed")
 			}
 		}(chainId, tokenAddress, addr)
 	}
@@ -306,7 +301,7 @@ func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress, discordID st
 	}
 
 	if counter < len(walletAddrs) {
-		return nil, fmt.Errorf("error while fetching balance - user %s", discordID)
+		return nil, fmt.Errorf("error while fetching balance - user %s", profile.ID)
 	}
 
 	return totalBalances, nil
