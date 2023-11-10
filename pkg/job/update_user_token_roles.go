@@ -5,15 +5,19 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/sirupsen/logrus"
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type updateUserTokenRoles struct {
 	entity *entities.Entity
+	svc    *service.Service
 	log    logger.Logger
 	opts   *UpdateUserTokenRolesOptions
 }
@@ -31,6 +35,7 @@ func NewUpdateUserTokenRolesJob(e *entities.Entity, opts *UpdateUserTokenRolesOp
 	}
 	return &updateUserTokenRoles{
 		entity: e,
+		svc:    e.GetSvc(),
 		log:    e.GetLogger(),
 		opts:   opts,
 	}
@@ -193,24 +198,42 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 		return nil, err
 	}
 	userBals := make(map[struct {
-		UserID  string
-		TokenID int
+		UserDiscordID string
+		TokenID       int
 	}]*big.Int)
+
+	discordIds := []string{}
 	for _, mem := range members {
+		discordIds = append(discordIds, mem.User.ID)
+	}
+	profiles, err := job.svc.MochiProfile.GetByDiscordIds(discordIds)
+	if err != nil {
+		logrus.Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
+		return nil, err
+	}
+
+	for _, profile := range profiles {
+		userDiscordID := ""
+		for _, acc := range profile.AssociatedAccounts {
+			if acc.Platform == mochiprofile.PlatformDiscord {
+				userDiscordID = acc.PlatformIdentifier
+				break
+			}
+		}
 		for _, token := range tokens {
-			bal, err := job.entity.CalculateTokenBalance(int64(token.ChainID), token.Address, mem.User.ID)
+			bal, err := job.entity.CalculateTokenBalance(int64(token.ChainID), token.Address, profile)
 			if err != nil {
 				job.log.Error(err, "[Job.UpdateUserTokenRoles] entity.CalculateTokenBalance() failed")
 				userBals[struct {
-					UserID  string
-					TokenID int
-				}{UserID: mem.User.ID, TokenID: token.ID}] = nil
+					UserDiscordID string
+					TokenID       int
+				}{UserDiscordID: userDiscordID, TokenID: token.ID}] = nil
 				continue
 			}
 			userBals[struct {
-				UserID  string
-				TokenID int
-			}{UserID: mem.User.ID, TokenID: token.ID}] = bal
+				UserDiscordID string
+				TokenID       int
+			}{UserDiscordID: userDiscordID, TokenID: token.ID}] = bal
 		}
 	}
 
@@ -219,9 +242,9 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	for _, mem := range members {
 		for _, cfg := range cfgs {
 			userBal := userBals[struct {
-				UserID  string
-				TokenID int
-			}{UserID: mem.User.ID, TokenID: cfg.TokenID}]
+				UserDiscordID string
+				TokenID       int
+			}{UserDiscordID: mem.User.ID, TokenID: cfg.TokenID}]
 			// cannot fetch user balance
 			if userBal == nil {
 				rolesToAdd[[2]string{mem.User.ID, cfg.RoleID}] = false

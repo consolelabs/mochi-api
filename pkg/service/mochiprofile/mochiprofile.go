@@ -356,3 +356,51 @@ func (m *MochiProfile) GetProfileActivities(profileID string) (any, error) {
 	}
 	return &res, nil
 }
+
+func (m *MochiProfile) GetByIds(profileIds []string) ([]GetProfileResponse, error) {
+	payload, err := json.Marshal(struct {
+		Ids []string `json:"ids"`
+	}{Ids: profileIds})
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/api/v1/profiles/list-by-ids", m.config.MochiProfileServerHost)
+	res := []GetProfileResponse{}
+	req := util.SendRequestQuery{
+		URL:       url,
+		Method:    "POST",
+		Headers:   map[string]string{"Content-Type": "application/json"},
+		Body:      bytes.NewBuffer(payload),
+		ParseForm: &res,
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("util.SendRequest() failed: %v", err)
+	}
+	return res, nil
+}
+
+func (m *MochiProfile) GetByDiscordIds(discordIds []string) ([]GetProfileResponse, error) {
+	payload, err := json.Marshal(struct {
+		Ids []string `json:"ids"`
+	}{Ids: discordIds})
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/api/v1/profiles/list-by-discord-ids", m.config.MochiProfileServerHost)
+	res := []GetProfileResponse{}
+	req := util.SendRequestQuery{
+		URL:       url,
+		Method:    "POST",
+		Headers:   map[string]string{"Content-Type": "application/json"},
+		Body:      bytes.NewBuffer(payload),
+		ParseForm: &res,
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("util.SendRequest() failed: %v", err)
+	}
+	return res, nil
+}
