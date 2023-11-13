@@ -345,19 +345,20 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 	}
 
 	_, err = e.svc.MochiPay.TransferVaultMochiPay(request.MochiPayVaultRequest{
-		ProfileId:  treasurerRequest.RequesterProfileId,
-		Amount:     amountBigIntStr,
-		To:         destination,
-		PrivateKey: privateKey,
-		Token:      token.Symbol,
-		Chain:      token.Chain.ChainId,
-		Name:       vault.Name,
-		VaultId:    vault.Id,
-		Reciever:   treasurerRequest.UserProfileId,
-		Message:    treasurerRequest.Message,
-		ListNotify: listNotify,
-		RequestId:  treasurerRequest.Id,
-		Platform:   req.Platform,
+		ProfileId:   treasurerRequest.RequesterProfileId,
+		Amount:      amountBigIntStr,
+		To:          destination,
+		PrivateKey:  privateKey,
+		Token:       token.Symbol,
+		Chain:       token.Chain.ChainId,
+		Name:        vault.Name,
+		VaultId:     vault.Id,
+		Reciever:    treasurerRequest.UserProfileId,
+		Message:     treasurerRequest.Message,
+		ListNotify:  listNotify,
+		RequestId:   treasurerRequest.Id,
+		Platform:    req.Platform,
+		MesssageUrl: treasurerRequest.MessageUrl,
 	})
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.svc.MochiPay.TransferVaultMochiPay failed")
