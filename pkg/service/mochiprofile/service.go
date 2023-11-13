@@ -5,6 +5,8 @@ type Service interface {
 	GetApiKeyByProfileID(profileID string) (*ProfileApiKeyResponse, error)
 	CreateProfileApiKey(profileAccessToken string) (*ProfileApiKeyResponse, error)
 	GetByID(profileID string) (*GetProfileResponse, error)
+	GetByIds(profileIds []string) ([]GetProfileResponse, error)
+	GetByDiscordIds(discordIds []string) ([]GetProfileResponse, error)
 	GetAllEvmAccount() ([]*EvmAssociatedAccount, error)
 	AssociateDex(profileId, platform, apiKey, apiSecret string) error
 	UnlinkDex(profileId, platform string) error
