@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/consolelabs/mochi-typeset/typeset"
-	"github.com/k0kubun/pp"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 
@@ -296,7 +295,6 @@ func (e *Entity) TransferVaultToken(req *request.TransferVaultTokenRequest) erro
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.TransferVaultToken] - e.repo.VaultRequest.GetById failed")
 		return err
 	}
-	pp.Println("check treasurerRequest", treasurerRequest.MessageUrl)
 
 	if !slices.Contains(listNotify, treasurerRequest.UserProfileId) {
 		listNotify = append(listNotify, treasurerRequest.UserProfileId)
