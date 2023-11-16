@@ -13,6 +13,7 @@ import (
 	mdwgin "github.com/consolelabs/mochi-toolkit/http/middleware/gin"
 	typesetservice "github.com/consolelabs/mochi-typeset/common/service/typeset"
 	typesetqueue "github.com/consolelabs/mochi-typeset/queue"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -48,8 +49,19 @@ import (
 func main() {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 	log := logger.NewLogrusLogger()
+
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:        "https://b632003ad0874c5182ee572bb7ad3c6c@sentry.daf.ug/4",
+		Debug:      true,
+		ServerName: "mochi-api",
+	})
+	if err != nil {
+		log.Fatal(err, "can't init sentry service")
+	}
+	defer sentry.Flush(2 * time.Second)
+
 	// *** entities ***
-	err := entities.Init(cfg, log)
+	err = entities.Init(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init entities")
 	}

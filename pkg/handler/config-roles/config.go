@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 
 	"github.com/defipod/mochi/pkg/entities"
@@ -518,7 +519,7 @@ func (h *Handler) CreateGuildTokenRole(c *gin.Context) {
 	defer func() {
 		go func() {
 			h.log.Fields(logger.Fields{"request": req}).Info("[handler.CreateGuildTokenRole] - start to updateUserRoles...")
-			if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+			if err := job.NewUpdateUserTokenRolesJob(h.entities, sentry.CurrentHub().Client(), &job.UpdateUserTokenRolesOptions{
 				GuildID: req.GuildID,
 			}).Run(); err != nil {
 				h.log.Fields(logger.Fields{"request": req}).Error(err, "[handler.CreateGuildTokenRole] - failed to run job NewUpdateUserTokenRolesJob")
@@ -634,7 +635,7 @@ func (h *Handler) RemoveGuildTokenRole(c *gin.Context) {
 	defer func() {
 		go func() {
 			h.log.Fields(logger.Fields{"id": id, "guild_id": tr.GuildID}).Info("[handler.RemoveGuildTokenRole] - start to updateUserRoles...")
-			if err := job.NewUpdateUserTokenRolesJob(h.entities, &job.UpdateUserTokenRolesOptions{
+			if err := job.NewUpdateUserTokenRolesJob(h.entities, sentry.CurrentHub().Client(), &job.UpdateUserTokenRolesOptions{
 				GuildID:       tr.GuildID,
 				RolesToRemove: []string{tr.RoleID},
 			}).Run(); err != nil {
