@@ -208,7 +208,7 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	}
 	profiles, err := job.svc.MochiProfile.GetByDiscordIds(discordIds)
 	if err != nil {
-		logrus.Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
+		logrus.WithField("discordIds", discordIds).Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
 		return nil, err
 	}
 
