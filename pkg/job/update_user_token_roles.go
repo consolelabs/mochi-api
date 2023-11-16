@@ -1,10 +1,13 @@
 package job
 
 import (
+	"errors"
+	"fmt"
 	"math/big"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 
 	"github.com/defipod/mochi/pkg/entities"
@@ -19,6 +22,7 @@ type updateUserTokenRoles struct {
 	entity *entities.Entity
 	svc    *service.Service
 	log    logger.Logger
+	sentry *sentry.Client
 	opts   *UpdateUserTokenRolesOptions
 }
 
@@ -29,12 +33,13 @@ type UpdateUserTokenRolesOptions struct {
 	RolesToRemove []string
 }
 
-func NewUpdateUserTokenRolesJob(e *entities.Entity, opts *UpdateUserTokenRolesOptions) Job {
+func NewUpdateUserTokenRolesJob(e *entities.Entity, sentry *sentry.Client, opts *UpdateUserTokenRolesOptions) Job {
 	if opts == nil {
 		opts = &UpdateUserTokenRolesOptions{}
 	}
 	return &updateUserTokenRoles{
 		entity: e,
+		sentry: sentry,
 		svc:    e.GetSvc(),
 		log:    e.GetLogger(),
 		opts:   opts,
@@ -52,6 +57,7 @@ func (job *updateUserTokenRoles) Run() error {
 		guildIDs, err = job.entity.ListTokenRoleConfigGuildIds()
 		if err != nil {
 			job.log.Error(err, "entity.ListTokenRoleConfigGuildIds failed")
+			job.captureSentry(fmt.Sprintf("entity.ListTokenRoleConfigGuildIds() failed: %v", err), nil)
 			return err
 		}
 	}
@@ -60,10 +66,16 @@ func (job *updateUserTokenRoles) Run() error {
 		_, err := job.entity.GetGuildById(guildId)
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
+			job.captureSentry(fmt.Sprintf("entity.GetGuildById() failed: %v", err), map[string]interface{}{
+				"guildID": guildId,
+			})
 			continue
 		}
 		if err := job.updateTokenRoles(guildId); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "Run failed")
+			job.captureSentry(fmt.Sprintf("updateTokenRoles failed: %v", err), map[string]interface{}{
+				"guildID": guildId,
+			})
 		}
 	}
 
@@ -206,6 +218,7 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	for _, mem := range members {
 		discordIds = append(discordIds, mem.User.ID)
 	}
+	logrus.WithField("discordIds", discordIds).Info("[Job.UpdateUserTokenRoles] getting profiles with discord Ids")
 	profiles, err := job.svc.MochiProfile.GetByDiscordIds(discordIds)
 	if err != nil {
 		logrus.Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
@@ -261,4 +274,18 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	}
 
 	return rolesToAdd, nil
+}
+
+func (j *updateUserTokenRoles) captureSentry(message string, data map[string]interface{}) {
+	scope := sentry.NewScope()
+	scope.SetLevel(sentry.LevelError)
+	event := sentry.NewEvent()
+	event.Level = sentry.LevelError
+	event.Message = message
+	event.Extra = data
+	j.sentry.CaptureEvent(event, &sentry.EventHint{
+		Data:              data,
+		EventID:           message,
+		OriginalException: errors.New(message),
+	}, scope)
 }
