@@ -2,7 +2,6 @@ package sentrygo
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -23,8 +22,9 @@ func New(cfg *config.Config, l logger.Logger) Service {
 		Debug: true,
 	})
 	if err != nil {
-		log.Fatal(err, "can't init sentry service")
+		l.Fatal(err, "can't init sentry service")
 	}
+
 	return &sentrygo{
 		client: sentry.CurrentHub().Client(),
 		config: cfg,
