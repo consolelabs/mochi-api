@@ -138,6 +138,8 @@ type Config struct {
 	MochiAppPrivateKey string
 
 	FriendScanAPI string
+
+	SentryDsn string
 }
 
 type MarketplaceBaseUrl struct {
@@ -365,6 +367,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		KrystalApiKey:  v.GetString("KRYSTAL_API_KEY"),
 
 		MochiAppPrivateKey: v.GetString("MOCHI_APP_PRIVATE_KEY"),
+
+		SentryDsn: v.GetString("SENTRY_DSN"),
 	}
 }
 
