@@ -587,10 +587,11 @@ func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
 	}
 
 	res := []response.MonikerConfigData{}
-	for _, config := range configs {
+	for i, config := range configs {
 		var configData response.MonikerConfigData
 		configData.Moniker = config
 		configData.Value = config.Amount * prices[config.Token.CoinGeckoID]
+		configs[i].Token.TokenPrice = prices[config.Token.CoinGeckoID]
 		res = append(res, configData)
 	}
 	return res, nil
