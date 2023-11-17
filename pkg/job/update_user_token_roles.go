@@ -62,9 +62,6 @@ func (job *updateUserTokenRoles) Run() error {
 		_, err := job.entity.GetGuildById(guildId)
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
-			job.svc.Sentry.CaptureErrorEvent(fmt.Sprintf("entity.GetGuildById() failed: %v", err), map[string]interface{}{
-				"guildID": guildId,
-			})
 			continue
 		}
 		if err := job.updateTokenRoles(guildId); err != nil {
