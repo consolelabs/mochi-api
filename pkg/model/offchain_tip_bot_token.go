@@ -19,6 +19,8 @@ type OffchainTipBotToken struct {
 	DeletedAt   *time.Time             `json:"-"`
 	CoinGeckoID string                 `json:"coin_gecko_id"`
 	ServiceFee  float64                `json:"service_fee"`
+	TokenPrice  float64                `json:"token_price" gorm:"-"`
+	ChainId     string                 `json:"chain_id"`
 }
 
 func (OffchainTipBotToken) TableName() string {
