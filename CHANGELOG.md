@@ -1,3 +1,10 @@
+## [6.22.6](https://github.com/consolelabs/mochi-api/compare/v6.22.5...v6.22.6) (2023-11-17)
+
+
+### Bug Fixes
+
+* update token role get profile by 50 batch ([#1234](https://github.com/consolelabs/mochi-api/issues/1234)) ([27f7795](https://github.com/consolelabs/mochi-api/commit/27f7795216de8ac191f513973ce43400cc651694))
+
 ## [6.22.5](https://github.com/consolelabs/mochi-api/compare/v6.22.4...v6.22.5) (2023-11-17)
 
 
