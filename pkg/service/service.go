@@ -31,6 +31,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/nghenhan"
 	"github.com/defipod/mochi/pkg/service/processor"
 	"github.com/defipod/mochi/pkg/service/ronin"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/service/skymavis"
 	solscan "github.com/defipod/mochi/pkg/service/solscan"
 	"github.com/defipod/mochi/pkg/service/sui"
@@ -64,6 +65,7 @@ type Service struct {
 	Github        github.Service
 	Ethplorer     ethplorer.Service
 	FriendTech    friendtech.Service
+	Sentry        sentrygo.Service
 }
 
 func NewService(
@@ -120,5 +122,6 @@ func NewService(
 		Github:        github.NewService(&cfg, log),
 		Ethplorer:     ethplorer.NewService(),
 		FriendTech:    friendtech.NewService(&cfg),
+		Sentry:        sentrygo.New(&cfg, log),
 	}, nil
 }

@@ -1,6 +1,7 @@
 package job
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/bwmarrin/discordgo"
@@ -52,6 +53,7 @@ func (job *updateUserTokenRoles) Run() error {
 		guildIDs, err = job.entity.ListTokenRoleConfigGuildIds()
 		if err != nil {
 			job.log.Error(err, "entity.ListTokenRoleConfigGuildIds failed")
+			job.svc.Sentry.CaptureErrorEvent(fmt.Sprintf("entity.ListTokenRoleConfigGuildIds() failed: %v", err), nil)
 			return err
 		}
 	}
@@ -60,10 +62,16 @@ func (job *updateUserTokenRoles) Run() error {
 		_, err := job.entity.GetGuildById(guildId)
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
+			job.svc.Sentry.CaptureErrorEvent(fmt.Sprintf("entity.GetGuildById() failed: %v", err), map[string]interface{}{
+				"guildID": guildId,
+			})
 			continue
 		}
 		if err := job.updateTokenRoles(guildId); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "Run failed")
+			job.svc.Sentry.CaptureErrorEvent(fmt.Sprintf("updateTokenRoles failed: %v", err), map[string]interface{}{
+				"guildID": guildId,
+			})
 		}
 	}
 
@@ -208,7 +216,7 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	}
 	profiles, err := job.svc.MochiProfile.GetByDiscordIds(discordIds)
 	if err != nil {
-		logrus.Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
+		logrus.WithField("discordIds", discordIds).Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
 		return nil, err
 	}
 
