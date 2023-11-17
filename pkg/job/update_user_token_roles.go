@@ -211,10 +211,16 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	for _, mem := range members {
 		discordIds = append(discordIds, mem.User.ID)
 	}
-	profiles, err := job.svc.MochiProfile.GetByDiscordIds(discordIds)
-	if err != nil {
-		logrus.WithField("discordIds", discordIds).Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
-		return nil, err
+	batchIds := job.chunkSlice(discordIds, 50)
+
+	profiles := make([]mochiprofile.GetProfileResponse, 0, len(discordIds))
+	for _, ids := range batchIds {
+		mprofiles, err := job.svc.MochiProfile.GetByDiscordIds(ids)
+		if err != nil {
+			logrus.WithField("discordIds", ids).Error(err, "[Job.UpdateUserTokenRoles] service.MochiProfile.GetByDiscordIds() failed")
+			return nil, err
+		}
+		profiles = append(profiles, mprofiles...)
 	}
 
 	for _, profile := range profiles {
@@ -266,4 +272,21 @@ func (job *updateUserTokenRoles) listMemberTokenRolesToAdd(guildID string, cfgs 
 	}
 
 	return rolesToAdd, nil
+}
+
+func (job *updateUserTokenRoles) chunkSlice(slice []string, chunkSize int) [][]string {
+	var chunks [][]string
+	for i := 0; i < len(slice); i += chunkSize {
+		end := i + chunkSize
+
+		// necessary check to avoid slicing beyond
+		// slice capacity
+		if end > len(slice) {
+			end = len(slice)
+		}
+
+		chunks = append(chunks, slice[i:end])
+	}
+
+	return chunks
 }

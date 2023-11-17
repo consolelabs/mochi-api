@@ -381,6 +381,7 @@ func (m *MochiProfile) GetByIds(profileIds []string) ([]GetProfileResponse, erro
 	return res, nil
 }
 
+// maximize 50 id per request
 func (m *MochiProfile) GetByDiscordIds(discordIds []string) ([]GetProfileResponse, error) {
 	payload, err := json.Marshal(struct {
 		Ids []string `json:"ids"`
