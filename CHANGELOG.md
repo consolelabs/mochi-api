@@ -1,3 +1,10 @@
+## [6.22.4](https://github.com/consolelabs/mochi-api/compare/v6.22.3...v6.22.4) (2023-11-15)
+
+
+### Bug Fixes
+
+* track channel tip tx ([#1231](https://github.com/consolelabs/mochi-api/issues/1231)) ([a6cecdb](https://github.com/consolelabs/mochi-api/commit/a6cecdb75d948fd8b2a5714f6dcaa57805d81e14))
+
 ## [6.22.3](https://github.com/consolelabs/mochi-api/compare/v6.22.2...v6.22.3) (2023-11-13)
 
 
