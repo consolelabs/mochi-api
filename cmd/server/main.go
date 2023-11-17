@@ -48,11 +48,13 @@ import (
 func main() {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 	log := logger.NewLogrusLogger()
+
 	// *** entities ***
 	err := entities.Init(cfg, log)
 	if err != nil {
 		log.Fatal(err, "failed to init entities")
 	}
+	defer entities.Get().GetSvc().Sentry.Flush(2 * time.Second)
 
 	router := setupRouter(cfg, log, entities.Get())
 
