@@ -230,7 +230,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		DBSSLMode:   v.GetString("DB_SSL_MODE"),
 		DBReadHosts: strings.Split(v.GetString("DB_READ_HOSTS"), ","),
 
-		MochiBotSecret: v.GetString("MOCHI_BOT_SECRET"),
+		MochiBotSecret: v.GetString("MOCHI_SECRET"),
 
 		JWTSecret:              []byte(v.GetString("JWT_SECRET")),
 		JWTAccessTokenLifeSpan: time.Hour * 24 * time.Duration(tokenTTLInDay), // 7 days
