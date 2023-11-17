@@ -1,3 +1,10 @@
+## [6.22.5](https://github.com/consolelabs/mochi-api/compare/v6.22.4...v6.22.5) (2023-11-17)
+
+
+### Bug Fixes
+
+* update token role log ([#1233](https://github.com/consolelabs/mochi-api/issues/1233)) ([52fde58](https://github.com/consolelabs/mochi-api/commit/52fde58a1d3ceab0520eeca2a2fc71c8adcabe09))
+
 ## [6.22.4](https://github.com/consolelabs/mochi-api/compare/v6.22.3...v6.22.4) (2023-11-15)
 
 
