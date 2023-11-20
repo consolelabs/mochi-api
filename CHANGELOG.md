@@ -1,3 +1,14 @@
+## [6.22.8](https://github.com/consolelabs/mochi-api/compare/v6.22.7...v6.22.8) (2023-11-20)
+
+
+### Bug Fixes
+
+* add auth query profile ([#1239](https://github.com/consolelabs/mochi-api/issues/1239)) ([7871d75](https://github.com/consolelabs/mochi-api/commit/7871d75597f78bbebb58d90e04b682a0f7b50294))
+* bump toolkit typeset version ([#1240](https://github.com/consolelabs/mochi-api/issues/1240)) ([a05b25a](https://github.com/consolelabs/mochi-api/commit/a05b25a3d23e5586811fbac5175edac2aa5d9658))
+* enrich token price moniker ([#1236](https://github.com/consolelabs/mochi-api/issues/1236)) ([88f3b89](https://github.com/consolelabs/mochi-api/commit/88f3b89d1b4642827aa5696d4aabdd31048f58fb))
+* return id wallet onchain ([#1237](https://github.com/consolelabs/mochi-api/issues/1237)) ([108e6e4](https://github.com/consolelabs/mochi-api/commit/108e6e4285f91f72751162a7ad5077e8d359f236))
+* wrong compare address onchain asset ([#1238](https://github.com/consolelabs/mochi-api/issues/1238)) ([c0b36fd](https://github.com/consolelabs/mochi-api/commit/c0b36fdcc559f27356d3e8abf2778b004ccdac5c))
+
 ## [6.22.7](https://github.com/consolelabs/mochi-api/compare/v6.22.6...v6.22.7) (2023-11-17)
 
 
