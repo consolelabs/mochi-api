@@ -1059,7 +1059,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 }
 
 func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
 		return nil, err
@@ -1479,7 +1479,7 @@ func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionD
 }
 
 func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) ([]response.BinanceFuturePositionInformation, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get profile")
 		return nil, err
