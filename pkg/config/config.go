@@ -135,6 +135,8 @@ type Config struct {
 	KrystalBaseUrl string
 	KrystalApiKey  string
 
+	BirdEyeApiKey string
+
 	MochiAppPrivateKey string
 
 	FriendScanAPI string
@@ -320,6 +322,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 		BlockChainAPISecretKey: v.GetString("BLOCKCHAIN_API_SECRET_KEY"),
 
 		CoinGeckoAPIKey: v.GetString("COINGECKO_API_KEY"),
+		BirdEyeApiKey:   v.GetString("BIRDEYE_API_KEY"),
 
 		CentralizedWalletPrivateKey: v.GetString("CENTRALIZED_WALLET_PRIVATE_KEY"),
 		CentralizedWalletAddress:    v.GetString("CENTRALIZED_WALLET_ADDRESS"),
@@ -442,6 +445,7 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("CENTRALIZED_WALLET_ADDRESS", "0x4ec16127e879464bef6ab310084facec1e4fe465")
 	v.SetDefault("BLUEMOVE_SUI_MAINNET_URL", "https://3rd.console.so/sui/api")
 	v.SetDefault("SOLSCAN_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE2NzU3NzcyODYxMjgsImVtYWlsIjoibmdvdHJvbmdraG9pMTEyQGdtYWlsLmNvbSIsImFjdGlvbiI6InRva2VuLWFwaSIsImlhdCI6MTY3NTc3NzI4Nn0.DCT8Fh8j9uWVpnQSMnq0uuzqeBngNLxc4r8a1Aa2C4Q")
+	v.SetDefault("BIRDEYE_API_KEY", "bc1bdb09bc434a3bb88885fa0ea1a6d1")
 	v.SetDefault("SUI_JSON_RPC", "https://fullnode.mainnet.sui.io")
 	v.SetDefault("SKY_MAVIS_API_BASE_URL", "https://api-gateway.skymavis.com")
 	v.SetDefault("FRIEND_SCAN_API", "https://api.friendscan.tech")

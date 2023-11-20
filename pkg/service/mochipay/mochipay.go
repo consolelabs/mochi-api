@@ -407,10 +407,10 @@ func (m *MochiPay) GetToken(symbol, chainId string) (*Token, error) {
 	return res.Data, nil
 }
 
-func (m *MochiPay) CreateBatchToken(req CreateBatchTokenRequest) error {
+func (m *MochiPay) CreateBatchToken(req CreateBatchTokenRequest) ([]Token, error) {
 	payload, err := json.Marshal(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	jsonBody := bytes.NewBuffer(payload)
@@ -419,32 +419,43 @@ func (m *MochiPay) CreateBatchToken(req CreateBatchTokenRequest) error {
 	url := fmt.Sprintf("%s/api/v1/tokens", m.config.MochiPayServerHost)
 	request, err := http.NewRequest("POST", url, jsonBody)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	request.Header.Add("Content-Type", "application/json")
 
 	response, err := client.Do(request)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if response.StatusCode != http.StatusOK {
 		errBody, err := ioutil.ReadAll(response.Body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		errResponse := &ErrorResponse{}
 		err = json.Unmarshal(errBody, &errResponse)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = fmt.Errorf(errResponse.Msg)
-		return err
+		return nil, err
 	}
 
-	return nil
+	responseBody, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &ListTokensResponse{}
+	err = json.Unmarshal(responseBody, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Data, nil
 }
 
 func (m *MochiPay) GetTokenByProperties(req TokenProperties) (*Token, error) {

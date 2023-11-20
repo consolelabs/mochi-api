@@ -12,7 +12,7 @@ type Service interface {
 	ListTokens(symbol string) ([]Token, error)
 	GetToken(symbol, chainId string) (*Token, error)
 	TransferVaultMochiPay(req request.MochiPayVaultRequest) (*VaultResponse, error)
-	CreateBatchToken(req CreateBatchTokenRequest) error
+	CreateBatchToken(req CreateBatchTokenRequest) ([]Token, error)
 	GetTokenByProperties(req TokenProperties) (*Token, error)
 	GetListBalances(profileId string) (*GetBalanceDataResponse, error)
 	GetListChains() (*GetChainDataResponse, error)
