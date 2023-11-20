@@ -1,3 +1,10 @@
+## [6.22.7](https://github.com/consolelabs/mochi-api/compare/v6.22.6...v6.22.7) (2023-11-17)
+
+
+### Bug Fixes
+
+* mochi secret env ([53b6326](https://github.com/consolelabs/mochi-api/commit/53b6326b268fbdec3440d28f693c7dc47e8a1b31))
+
 ## [6.22.6](https://github.com/consolelabs/mochi-api/compare/v6.22.5...v6.22.6) (2023-11-17)
 
 
