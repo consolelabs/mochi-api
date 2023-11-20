@@ -44,6 +44,8 @@ type WalletAssetData struct {
 }
 
 type AssetToken struct {
+	Id      string          `json:"id"`
+	Address string          `json:"address"`
 	Name    string          `json:"name"`
 	Symbol  string          `json:"symbol"`
 	Decimal int64           `json:"decimal"`

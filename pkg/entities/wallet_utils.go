@@ -387,3 +387,36 @@ func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []re
 	}
 	return resp
 }
+
+// add tokens into mochi-pay database
+func (e *Entity) enrichDataWalletAsset(assets []response.WalletAssetData) []response.WalletAssetData {
+	reqCreateMochiPayTokens := make([]mochipay.CreateTokenRequest, 0)
+	for _, asset := range assets {
+		reqCreateMochiPayTokens = append(reqCreateMochiPayTokens, mochipay.CreateTokenRequest{
+			Name:    asset.Token.Name,
+			Symbol:  asset.Token.Symbol,
+			Decimal: asset.Token.Decimal,
+			ChainId: fmt.Sprint(asset.ChainID),
+			Address: asset.Token.Address,
+		})
+	}
+
+	// create tokens
+	tokens, err := e.svc.MochiPay.CreateBatchToken(mochipay.CreateBatchTokenRequest{Tokens: reqCreateMochiPayTokens})
+	if err != nil {
+		e.log.Error(err, "[entities.enrichDataWalletAsset] Failed to create tokens")
+		return assets
+	}
+
+	// enrich id into assets
+	for i, asset := range assets {
+		for _, token := range tokens {
+			if token.Symbol == asset.Token.Symbol && token.ChainId == fmt.Sprint(asset.ChainID) && token.Address == asset.Token.Address {
+				assets[i].Token.Id = token.Id
+				break
+			}
+		}
+	}
+
+	return assets
+}
