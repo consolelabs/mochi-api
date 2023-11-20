@@ -234,7 +234,7 @@ func (e *Entity) GetTopUsers(req request.GetTopUsersRequest) (*response.TopUser,
 			item := &leaderboard[i]
 
 			if item.User == nil {
-				profile, err := e.svc.MochiProfile.GetByID(item.ProfileID)
+				profile, err := e.svc.MochiProfile.GetByID(item.ProfileID, e.cfg.MochiBotSecret)
 				if err != nil {
 					return
 				}
@@ -544,7 +544,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 	}
 
 	// get all onchain account
-	profile, err := e.svc.MochiProfile.GetByID(profileId)
+	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiProfile.GetByID failed")
 		return nil, err

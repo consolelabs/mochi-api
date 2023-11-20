@@ -168,14 +168,14 @@ func (m *MochiProfile) CreateProfileApiKey(profileAccessToken string) (*ProfileA
 	return &res.Data, nil
 }
 
-func (m *MochiProfile) GetByID(profileID string) (*GetProfileResponse, error) {
+func (m *MochiProfile) GetByID(profileID, authorization string) (*GetProfileResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/profiles/%s", m.config.MochiProfileServerHost, profileID)
 
 	res := GetProfileResponse{}
 	req := util.SendRequestQuery{
 		URL:       url,
 		ParseForm: &res,
-		Headers:   map[string]string{"Content-Type": "application/json"},
+		Headers:   map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + authorization},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
