@@ -152,8 +152,8 @@ require (
 
 require (
 	cloud.google.com/go/storage v1.28.1
-	github.com/consolelabs/mochi-toolkit v0.0.0-20231018042507-12bf9ab24131
-	github.com/consolelabs/mochi-typeset v0.0.0-20230913195508-ff7f4f4c725c
+	github.com/consolelabs/mochi-toolkit v0.0.0-20231120101425-c7a48fbcdee8
+	github.com/consolelabs/mochi-typeset v0.0.0-20231120101232-7743776c4c84
 	github.com/gammazero/workerpool v1.1.3
 	github.com/getsentry/sentry-go v0.18.0
 	github.com/shopspring/decimal v1.2.0

@@ -394,6 +394,12 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				price = 1.5
 			}
 
+			// enrich token data into pay database
+			address := bal.Token.Address
+			if bal.TokenType == "NATIVE" {
+				address = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+			}
+
 			assets = append(assets, response.WalletAssetData{
 				ChainID:        item.ChainId,
 				ContractName:   bal.Token.Name,
@@ -404,6 +410,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					Name:    bal.Token.Name,
 					Symbol:  bal.Token.Symbol,
 					Decimal: int64(bal.Token.Decimals),
+					Address: address,
 					Price:   price,
 					Native:  bal.TokenType == "NATIVE",
 					Chain: response.AssetTokenChain{
@@ -415,6 +422,8 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			})
 		}
 	}
+
+	assets = e.enrichDataWalletAsset(assets)
 
 	baseAsset, err := e.listBaseWalletAssets(req)
 	if err != nil {
@@ -520,6 +529,10 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			continue
 		}
 
+		address := item.ContractAddress
+		if item.NativeToken {
+			address = "So11111111111111111111111111111111111111112"
+		}
 		assets = append(assets, response.WalletAssetData{
 			ChainID:        chainID,
 			ContractName:   item.ContractName,
@@ -529,6 +542,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			Token: response.AssetToken{
 				Name:    item.ContractName,
 				Symbol:  item.ContractTickerSymbol,
+				Address: address,
 				Decimal: decimals,
 				Price:   tokenPrice.Data.Value,
 				Native:  item.NativeToken,
@@ -540,6 +554,8 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			Amount: util.FloatToString(fmt.Sprint(bal), decimals),
 		})
 	}
+
+	assets = e.enrichDataWalletAsset(assets)
 
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(req.Address, false, assets)
@@ -1043,7 +1059,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 }
 
 func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
 		return nil, err
@@ -1463,7 +1479,7 @@ func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionD
 }
 
 func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) ([]response.BinanceFuturePositionInformation, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get profile")
 		return nil, err

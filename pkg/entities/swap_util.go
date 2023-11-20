@@ -275,7 +275,7 @@ func (e *Entity) EnrichTokenMochiPay(route *response.SwapRouteResponse) error {
 		toTokenAddress = quoteResp.OutputMint
 	}
 
-	err := e.svc.MochiPay.CreateBatchToken(mochipayrequest.CreateBatchTokenRequest{
+	_, err := e.svc.MochiPay.CreateBatchToken(mochipayrequest.CreateBatchTokenRequest{
 		Tokens: []mochipayrequest.CreateTokenRequest{
 			{
 				Id:          uuid.New().String(),
