@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -411,7 +412,7 @@ func (e *Entity) enrichDataWalletAsset(assets []response.WalletAssetData) []resp
 	// enrich id into assets
 	for i, asset := range assets {
 		for _, token := range tokens {
-			if token.Symbol == asset.Token.Symbol && token.ChainId == fmt.Sprint(asset.ChainID) && token.Address == asset.Token.Address {
+			if strings.EqualFold(token.Symbol, asset.Token.Symbol) && token.ChainId == fmt.Sprint(asset.ChainID) && strings.EqualFold(token.Address, asset.Token.Address) {
 				assets[i].Token.Id = token.Id
 				break
 			}
