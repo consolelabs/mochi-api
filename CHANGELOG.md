@@ -1,3 +1,10 @@
+## [6.22.11](https://github.com/consolelabs/mochi-api/compare/v6.22.10...v6.22.11) (2023-11-21)
+
+
+### Bug Fixes
+
+* handle case create vault req ([#1244](https://github.com/consolelabs/mochi-api/issues/1244)) ([4f976d4](https://github.com/consolelabs/mochi-api/commit/4f976d425fafd6429d16f582f15b79da9b4e6733))
+
 ## [6.22.10](https://github.com/consolelabs/mochi-api/compare/v6.22.9...v6.22.10) (2023-11-21)
 
 
