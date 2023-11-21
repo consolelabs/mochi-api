@@ -549,7 +549,6 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		search, err := e.svc.GeckoTerminal.Search(query)
 		if err != nil {
 			e.log.Error(err, "[entity.SearchCoins] svc.GeckoTerminal.Search() failed")
-			return nil, err
 		}
 
 		if search != nil {
