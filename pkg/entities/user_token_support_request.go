@@ -138,8 +138,7 @@ func (e *Entity) FindTokenByContractAddress(chainID int, address string) (*respo
 	}
 	if len(res.Data) == 0 {
 		e.log.Fields(logger.Fields{"ChainID": chainID, "contract": address}).Error(err, "[entity.FindTokenByContractAddress] Token contract not found")
-		err = fmt.Errorf("Token contract %s not found", address)
-		return nil, err
+		return &response.GetCoinByContractResponseData{}, nil
 	}
 	return &response.GetCoinByContractResponseData{
 		ID:      "",
