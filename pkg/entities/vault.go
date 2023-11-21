@@ -566,11 +566,13 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 
 	// add submission with status pending for all treasurer in vaul
 	treasurerSubmission := make([]model.VaultSubmission, 0)
+	currentApproved := 0
 
 	for _, treasurer := range treasurers {
 		status := consts.TreasurerSubmissionStatusPending
 		if treasurer.UserProfileId == req.RequesterProfileId {
 			status = consts.TreasurerSubmissionStatusApproved
+			currentApproved++
 		}
 
 		treasurerSubmission = append(treasurerSubmission, model.VaultSubmission{
@@ -592,7 +594,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	// there's 2 case here
 	// - after the requester default approve the request, number of approved will pass the threshold -> execute action now
 	// - or not pass the threshold -> send DM to treasurer about approve / reject button
-	isDecidedAndExecuted, err := e.PostCreateTreasurerRequest(req, treasurerReq, vault, treasurers)
+	isDecidedAndExecuted, err := e.PostCreateTreasurerRequest(req, treasurerReq, vault, treasurers, currentApproved)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.PostCreateTreasurerRequest failed")
 		return nil, err
@@ -605,9 +607,12 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	}, nil
 }
 
-func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.VaultRequest, vault *model.Vault, treasurers []model.VaultTreasurer) (bool, error) {
+func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.VaultRequest, vault *model.Vault, treasurers []model.VaultTreasurer, currentApproved int) (bool, error) {
 	threshold, _ := strconv.ParseFloat(vault.Threshold, 64)
-	percentage := float64(1) / float64(len(treasurers)) * 100
+	percentage := 0.0
+	if currentApproved > 0 {
+		percentage = float64(1) / float64(currentApproved) * 100
+	}
 
 	if percentage >= threshold {
 		// execute action
