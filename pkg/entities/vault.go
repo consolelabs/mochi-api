@@ -594,7 +594,7 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	// there's 2 case here
 	// - after the requester default approve the request, number of approved will pass the threshold -> execute action now
 	// - or not pass the threshold -> send DM to treasurer about approve / reject button
-	isDecidedAndExecuted, err := e.PostCreateTreasurerRequest(req, treasurerReq, vault, treasurers, currentApproved)
+	isDecidedAndExecuted, err := e.PostCreateTreasurerRequest(req, treasurerReq, vault, treasurers, currentApproved, treasurerSubmission)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.AddTreasurerToVault] - e.PostCreateTreasurerRequest failed")
 		return nil, err
@@ -607,11 +607,11 @@ func (e *Entity) CreateTreasurerRequest(req *request.CreateTreasurerRequest) (*r
 	}, nil
 }
 
-func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.VaultRequest, vault *model.Vault, treasurers []model.VaultTreasurer, currentApproved int) (bool, error) {
+func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest, treasurerRequest *model.VaultRequest, vault *model.Vault, treasurers []model.VaultTreasurer, currentApproved int, treasurerSubmission []model.VaultSubmission) (bool, error) {
 	threshold, _ := strconv.ParseFloat(vault.Threshold, 64)
 	percentage := 0.0
 	if currentApproved > 0 {
-		percentage = float64(1) / float64(currentApproved) * 100
+		percentage = float64(currentApproved) / float64(len(treasurers)) * 100
 	}
 
 	if percentage >= threshold {
@@ -668,6 +668,37 @@ func (e *Entity) PostCreateTreasurerRequest(req *request.CreateTreasurerRequest,
 		}
 
 		return true, nil
+	} else if percentage < threshold && percentage > 0 {
+		// noti for this submission of treasurer
+		allowedRejectVote := int64(len(treasurerSubmission)) - int64(math.Ceil(float64(len(treasurerSubmission))*threshold/100))
+		resp := &response.CreateTreasurerSubmissionResponse{
+			// Submission: *submission,
+			VoteResult: response.VoteResult{
+				IsApproved:                false,
+				TotalApprovedSubmission:   1,
+				TotalRejectedSubmisison:   0,
+				AllowedRejectedSubmisison: allowedRejectVote,
+				TotalVote:                 0,
+				TotalSubmission:           int64(len(treasurerSubmission)),
+				Percentage:                fmt.Sprintf("%.2f", percentage),
+				Threshold:                 fmt.Sprintf("%.2f", threshold),
+				ThresholdNumber:           threshold,
+			},
+			TotalSubmissions: treasurerSubmission,
+		}
+		voteMessage, _ := e.formatVoteVaultMessage(&request.CreateTreasurerSubmission{
+			Type:              req.Type,
+			Choice:            consts.TreasurerSubmissionStatusApproved,
+			RequestId:         treasurerRequest.Id,
+			SumitterProfileId: req.RequesterProfileId,
+		}, resp, req.RequesterProfileId, req.UserProfileId, vault, treasurerSubmission, treasurerRequest)
+		byteNotification, _ := json.Marshal(voteMessage)
+
+		err := e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.CreateTreasurerSubmission] - e.kafka.Produce failed")
+			return false, err
+		}
 	}
 
 	return false, nil
