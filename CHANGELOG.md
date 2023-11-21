@@ -1,3 +1,11 @@
+## [6.22.9](https://github.com/consolelabs/mochi-api/compare/v6.22.8...v6.22.9) (2023-11-21)
+
+
+### Bug Fixes
+
+* get custom token null ([#1241](https://github.com/consolelabs/mochi-api/issues/1241)) ([205d589](https://github.com/consolelabs/mochi-api/commit/205d589670b9b900f0a422e3b7977ab2620d7a90))
+* query geckoterminal not found return empty ([#1242](https://github.com/consolelabs/mochi-api/issues/1242)) ([4804da3](https://github.com/consolelabs/mochi-api/commit/4804da30afbe44ff7066f7146d56229869931fcd))
+
 ## [6.22.8](https://github.com/consolelabs/mochi-api/compare/v6.22.7...v6.22.8) (2023-11-20)
 
 
