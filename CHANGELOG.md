@@ -1,3 +1,10 @@
+## [6.22.10](https://github.com/consolelabs/mochi-api/compare/v6.22.9...v6.22.10) (2023-11-21)
+
+
+### Bug Fixes
+
+* logic vault ([#1243](https://github.com/consolelabs/mochi-api/issues/1243)) ([259feb5](https://github.com/consolelabs/mochi-api/commit/259feb5251497bd22974303e2078d5d3410c682f))
+
 ## [6.22.9](https://github.com/consolelabs/mochi-api/compare/v6.22.8...v6.22.9) (2023-11-21)
 
 
