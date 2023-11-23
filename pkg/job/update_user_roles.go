@@ -1,6 +1,7 @@
 package job
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -11,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -37,6 +39,10 @@ func (job *updateUserRoles) Run() error {
 	var guilds *response.GetGuildsResponse
 	var err error
 
+	sentryTags := map[string]string{
+		"type": "system",
+	}
+
 	switch {
 	case job.opts.GuildID != "":
 		guild, err := job.entity.GetGuild(job.opts.GuildID)
@@ -46,6 +52,14 @@ func (job *updateUserRoles) Run() error {
 		}
 		if err := job.updateNFTRoles(guild.ID); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
+			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"guildID": guild.ID,
+					"job":     "updateNFTRoles",
+				},
+			})
 		}
 		return nil
 
@@ -53,6 +67,10 @@ func (job *updateUserRoles) Run() error {
 		guilds, err = job.entity.GetGuilds()
 		if err != nil {
 			job.log.Error(err, "entity.GetGuilds failed")
+			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
+				Tags:    sentryTags,
+			})
 			return err
 		}
 	}
@@ -65,14 +83,34 @@ func (job *updateUserRoles) Run() error {
 		}
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "entity.GetGuildById failed")
+			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
+				Tags:    sentryTags,
+			})
 			continue
 		}
 		if err := job.updateLevelRoles(guild.ID); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
+			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"guildID": guild.ID,
+					"job":     "updateLevelRoles",
+				},
+			})
 		}
 
 		if err := job.updateNFTRoles(guild.ID); err != nil {
 			job.log.Fields(logger.Fields{"guildId": guild.ID}).Error(err, "Run failed")
+			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"guildID": guild.ID,
+					"job":     "updateNFTRoles",
+				},
+			})
 		}
 	}
 

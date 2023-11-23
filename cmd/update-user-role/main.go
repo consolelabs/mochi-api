@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
@@ -15,9 +17,11 @@ func main() {
 		log.Fatal(err, "failed to init entities")
 		return
 	}
+	entity := entities.Get()
+	defer entity.GetSvc().Sentry.Flush(2 * time.Second)
 
 	log.Info("start job updateUserRoles ...")
-	if err := job.NewUpdateUserRolesJob(entities.Get(), nil).Run(); err != nil {
+	if err := job.NewUpdateUserRolesJob(entity, nil).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 		return
 	}
