@@ -7,19 +7,22 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 type skymavis struct {
 	cfg    *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func New(cfg *config.Config, cache cache.Cache) Service {
+func New(cfg *config.Config, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &skymavis{
 		cfg:    cfg,
 		logger: logger.NewLogrusLogger(),
 		cache:  cache,
+		sentry: sentry,
 	}
 }
 

@@ -95,33 +95,35 @@ func NewService(
 		log.Error(err, "failed to init ronin svc")
 	}
 
+	sentry := sentrygo.New(&cfg, log)
+
 	return &Service{
-		CoinGecko:     coingecko.NewService(&cfg, cache),
-		Covalent:      covalent.NewService(&cfg, log, cache),
+		CoinGecko:     coingecko.NewService(&cfg, cache, sentry),
+		Covalent:      covalent.NewService(&cfg, log, cache, sentry),
 		Discord:       discordSvc,
 		Indexer:       indexer.NewIndexer(cfg, log),
 		Abi:           abi.NewAbi(&cfg),
 		Cloud:         cloud.NewCloudClient(&cfg, log),
-		Nghenhan:      nghenhan.NewService(),
+		Nghenhan:      nghenhan.NewService(sentry),
 		Processor:     processor.NewProcessor(&cfg),
-		Solscan:       solscan.NewService(&cfg, log, cache),
-		Binance:       binance.NewService(&cfg, log, cache),
+		Solscan:       solscan.NewService(&cfg, log, cache, sentry),
+		Binance:       binance.NewService(&cfg, log, cache, sentry),
 		APILayer:      apilayer.NewService(&cfg),
 		Bluemove:      bluemove.New(&cfg, log),
 		MochiProfile:  mochiprofile.NewService(&cfg, log),
 		MochiPay:      mochipay.NewService(&cfg, log),
-		ChainExplorer: chainexplorer.NewService(cfg, log, cache),
-		Sui:           sui.New(&cfg, log, cache),
-		Birdeye:       birdeye.NewService(&cfg, log, cache),
+		ChainExplorer: chainexplorer.NewService(cfg, log, cache, sentry),
+		Sui:           sui.New(&cfg, log, cache, sentry),
+		Birdeye:       birdeye.NewService(&cfg, log, cache, sentry),
 		Swap:          swap.New(&cfg, log),
-		Skymavis:      skymavis.New(&cfg, cache),
+		Skymavis:      skymavis.New(&cfg, cache, sentry),
 		Ronin:         roninSvc,
-		Krystal:       krystal.NewService(&cfg, log, cache),
+		Krystal:       krystal.NewService(&cfg, log, cache, sentry),
 		GeckoTerminal: geckoterminal.NewService(&cfg),
-		DexScreener:   dexscreener.NewService(),
+		DexScreener:   dexscreener.NewService(sentry),
 		Github:        github.NewService(&cfg, log),
-		Ethplorer:     ethplorer.NewService(),
-		FriendTech:    friendtech.NewService(&cfg),
+		Ethplorer:     ethplorer.NewService(sentry),
+		FriendTech:    friendtech.NewService(&cfg, sentry),
 		Sentry:        sentrygo.New(&cfg, log),
 	}, nil
 }

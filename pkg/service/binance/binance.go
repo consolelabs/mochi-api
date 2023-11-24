@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	bapdater "github.com/defipod/mochi/pkg/service/binance/adapter"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -23,9 +24,10 @@ type Binance struct {
 	config             *config.Config
 	logger             logger.Logger
 	cache              cache.Cache
+	sentry             sentrygo.Service
 }
 
-func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &Binance{
 		getExchangeInfoURL: "https://api.binance.com/api/v3/exchangeInfo",
 		getSymbolKlinesURL: "https://api.binance.com/api/v3/uiKlines?symbol=%s&interval=1h&limit=168", // 168h = 7d
@@ -34,8 +36,15 @@ func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service 
 		config:             cfg,
 		logger:             l,
 		cache:              cache,
+		sentry:             sentry,
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (b *Binance) GetExchangeInfo(symbol string) (*response.GetExchangeInfoResponse, error, int) {
 	b.logger.Debug("start binance.GetExchangeInfo()")
@@ -59,6 +68,13 @@ func (b *Binance) GetExchangeInfo(symbol string) (*response.GetExchangeInfoRespo
 
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetExchangeInfo failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"symbols": symbol,
+			},
+		})
 		return nil, fmt.Errorf("binance.GetExchangeInfo() failed: %v", err), statusCode
 	}
 
@@ -93,6 +109,13 @@ func (b *Binance) GetTickerPrice(symbol string) (*response.GetTickerPriceRespons
 
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetTickerPrice failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"symbols": symbol,
+			},
+		})
 		return nil, fmt.Errorf("binance.GetTickerPrice() failed: %v", err), statusCode
 	}
 
@@ -126,6 +149,13 @@ func (b *Binance) GetAvgPriceBySymbol(symbol string) (*response.GetAvgPriceBySym
 
 	statusCode, err := util.FetchData(url, res)
 	if err != nil || statusCode != http.StatusOK {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetAvgPriceBySymbol failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"symbols": symbol,
+			},
+		})
 		return nil, fmt.Errorf("binance.GetAvgPriceBySymbol() failed: %v", err), statusCode
 	}
 
@@ -156,6 +186,13 @@ func (b *Binance) GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResp
 
 	statusCode, err := util.FetchData(fmt.Sprintf(b.getSymbolKlinesURL, symbol), &data)
 	if err != nil || statusCode != http.StatusOK {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetKlinesBySymbol failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"symbols": symbol,
+			},
+		})
 		return nil, fmt.Errorf("binance.GetKlinesBySymbol() failed: %v", err), statusCode
 	}
 
@@ -201,6 +238,14 @@ func (b *Binance) GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUser
 
 	res, err = bapdater.GetUserAsset(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetUserAsset failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -229,6 +274,14 @@ func (b *Binance) GetFundingAsset(apiKey, apiSecret string) ([]response.BinanceU
 
 	res, err = bapdater.GetFundingAsset(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetFundingAsset failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -257,6 +310,14 @@ func (b *Binance) GetStakingProductPosition(apiKey, apiSecret string) ([]respons
 
 	res, err = bapdater.GetStakingProductPosition(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetStakingProductPosition failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -285,6 +346,14 @@ func (b *Binance) GetLendingAccount(apiKey, apiSecret string) (*response.Binance
 
 	res, err = bapdater.GetLendingAccount(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetLendingAccount failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -313,6 +382,14 @@ func (b *Binance) GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimp
 
 	res, err = bapdater.GetSimpleEarnAccount(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetSimpleEarn failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -341,6 +418,14 @@ func (b *Binance) GetFutureAccountBalance(apiKey, apiSecret string) ([]response.
 
 	res, err = bapdater.GetFutureAccountBalance(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountBinance failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -369,6 +454,14 @@ func (b *Binance) GetFutureAccount(apiKey, apiSecret string) (*response.BinanceF
 
 	res, err = bapdater.GetFutureAccount(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccount failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 
@@ -397,6 +490,14 @@ func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.Bin
 
 	res, err = bapdater.GetFutureAccountInfo(apiKey, apiSecret)
 	if err != nil {
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountInfo failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"apiKey":    apiKey,
+				"apiSecret": apiSecret,
+			},
+		})
 		return nil, err
 	}
 

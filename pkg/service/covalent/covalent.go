@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 var networks = map[int]string{
@@ -32,15 +33,23 @@ type Covalent struct {
 	config *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &Covalent{
 		config: cfg,
 		logger: l,
 		cache:  cache,
+		sentry: sentry,
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (c *Covalent) getFullUrl(endpoint string, idx int) string {
 	url := c.config.CovalentBaseUrl + endpoint
@@ -62,6 +71,15 @@ func (c *Covalent) GetHistoricalTokenPrices(chainID int, currency string, addres
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil || code != http.StatusOK {
 		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTransactionsByAddress] util.FetchData() failed")
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Covalent - GetHistoricalTokenPrices failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"chainID":  chainID,
+				"address":  address,
+				"currency": currency,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch token data of %s: %v", currency, err), code
 	}
 	return res, nil, http.StatusOK
@@ -92,10 +110,30 @@ func (c *Covalent) GetTransactionsByAddressV3(chainID int, address string, size 
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
 		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTransactionsByAddress] util.FetchData() failed")
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Covalent - GetTransactionsByAddressV3 failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"chainID": chainID,
+				"address": address,
+				"size":    size,
+				"retry":   retry,
+			},
+		})
 		return nil, err
 	}
 	if res.Error {
 		if retry == 0 {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Covalent - GetTransactionsByAddressV3 failed %v", res.Error),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"chainID": chainID,
+					"address": address,
+					"size":    size,
+					"retry":   retry,
+				},
+			})
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
 			return c.GetTransactionsByAddress(chainID, address, size, retry-1)

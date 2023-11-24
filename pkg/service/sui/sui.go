@@ -7,15 +7,17 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 type SuiService struct {
 	config *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func New(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func New(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &SuiService{
 		config: cfg,
 		logger: l,
@@ -29,6 +31,9 @@ var (
 	suiAddressAssetsKey    = "sui-address-asset"
 	suiTransactionBlockKey = "sui-transaction-block"
 	suiAddressTxnKey       = "sui-address-txn"
+	sentryTags             = map[string]string{
+		"type": "system",
+	}
 )
 
 func (s *SuiService) GetBalance(address string) (*response.SuiAllBalance, error) {

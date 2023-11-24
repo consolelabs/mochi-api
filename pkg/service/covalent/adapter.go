@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -22,10 +23,28 @@ func (c *Covalent) doNetworkSolanaTokenBalances(chainName string, address string
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
 		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.chainName] util.FetchData() failed")
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"chainName": chainName,
+				"address":   address,
+				"retry":     retry,
+			},
+		})
 		return nil, err
 	}
 	if res.Error {
 		if retry == 0 {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"chainName": chainName,
+					"address":   address,
+					"retry":     retry,
+				},
+			})
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
 			return c.GetSolanaTokenBalances(chainName, address, retry-1)
@@ -59,6 +78,16 @@ func (c *Covalent) doNetworkTransaction(chainID int, address string, size int, r
 	}
 	if res.Error {
 		if retry == 0 {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTransaction failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"chainID": chainID,
+					"address": address,
+					"size":    size,
+					"retry":   retry,
+				},
+			})
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
 			return c.GetTransactionsByAddress(chainID, address, size, retry-1)
@@ -79,6 +108,15 @@ func (c *Covalent) doNetworkTokenBalances(chainID int, address string, retry int
 	res := &GetTokenBalancesResponse{}
 	code, err := c.fetchCovalentData(endpoint, res)
 	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"chainID": chainID,
+				"address": address,
+				"retry":   retry,
+			},
+		})
 		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] util.FetchData() failed")
 		return nil, err
 	}
@@ -90,6 +128,15 @@ func (c *Covalent) doNetworkTokenBalances(chainID int, address string, retry int
 		}
 
 		if retry == 0 {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"chainID": chainID,
+					"address": address,
+					"retry":   retry,
+				},
+			})
 			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
 		} else {
 			return c.GetTokenBalances(chainID, address, retry-1)
