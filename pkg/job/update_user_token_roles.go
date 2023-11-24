@@ -61,6 +61,9 @@ func (job *updateUserTokenRoles) Run() error {
 			job.svc.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 				Message: fmt.Sprintf("[CJ prod mochi] - update_user_token_roles failed - %v", err),
 				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"task": "ListTokenRoleConfigGuildIds",
+				},
 			})
 			return err
 		}
@@ -68,8 +71,20 @@ func (job *updateUserTokenRoles) Run() error {
 
 	for _, guildId := range guildIDs {
 		_, err := job.entity.GetGuildById(guildId)
+		if util.IsAcceptableErr(err) {
+			job.log.Fields(logger.Fields{"guildId": guildId}).Warnf("entity.GetGuildById failed ", err)
+			continue
+		}
 		if err != nil {
 			job.log.Fields(logger.Fields{"guildId": guildId}).Error(err, "entity.GetGuildById failed")
+			job.svc.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - update_user_token_roles failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"guildID": guildId,
+					"task":    "GetGuildById",
+				},
+			})
 			continue
 		}
 		if err := job.updateTokenRoles(guildId); err != nil {
@@ -78,6 +93,7 @@ func (job *updateUserTokenRoles) Run() error {
 				Message: fmt.Sprintf("[CJ prod mochi] - update_user_token_roles failed - %v", err),
 				Tags:    sentryTags,
 				Extra: map[string]interface{}{
+					"task":    "updateTokenRoles",
 					"guildID": guildId,
 				},
 			})

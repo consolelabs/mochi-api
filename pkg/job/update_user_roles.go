@@ -57,7 +57,7 @@ func (job *updateUserRoles) Run() error {
 				Tags:    sentryTags,
 				Extra: map[string]interface{}{
 					"guildID": guild.ID,
-					"job":     "updateNFTRoles",
+					"task":    "updateNFTRoles",
 				},
 			})
 		}
@@ -86,6 +86,10 @@ func (job *updateUserRoles) Run() error {
 			job.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 				Message: fmt.Sprintf("[CJ prod mochi] - update_user_roles failed - %v", err),
 				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"guildID": guild.ID,
+					"task":    "GetGuildById",
+				},
 			})
 			continue
 		}
@@ -96,7 +100,7 @@ func (job *updateUserRoles) Run() error {
 				Tags:    sentryTags,
 				Extra: map[string]interface{}{
 					"guildID": guild.ID,
-					"job":     "updateLevelRoles",
+					"task":    "updateLevelRoles",
 				},
 			})
 		}
@@ -108,7 +112,7 @@ func (job *updateUserRoles) Run() error {
 				Tags:    sentryTags,
 				Extra: map[string]interface{}{
 					"guildID": guild.ID,
-					"job":     "updateNFTRoles",
+					"task":    "updateNFTRoles",
 				},
 			})
 		}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
@@ -15,8 +17,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err, "failed to init entities")
 	}
+	entity := entities.Get()
+	defer entity.GetSvc().Sentry.Flush(2 * time.Second)
 
-	if err := job.NewFetchCoingeckoTokensJob(entities.Get(), log).Run(); err != nil {
+	if err := job.NewFetchCoingeckoTokensJob(entity, log).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
 	}
 
