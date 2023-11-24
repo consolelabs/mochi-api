@@ -13,6 +13,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	query "github.com/defipod/mochi/pkg/repo/guild_config_log_channel"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -184,9 +185,21 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		break
 	}
 
-	theme, err := e.repo.ProductTheme.GetByID(req.ThemeId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"theme_id": req.ThemeId}).Error(err, "[entity.TransferTokenV2] repo.ProductTheme.GetByID() failed")
+	if template == nil {
+		if req.ThemeId != 0 {
+			theme, err := e.repo.ProductTheme.GetByID(req.ThemeId)
+			if err != nil {
+				e.log.Fields(logger.Fields{"theme_id": req.ThemeId}).Error(err, "[entity.TransferTokenV2] repo.ProductTheme.GetByID() failed")
+			}
+
+			template = model.ProductHashtag{
+				Image:     theme.Image,
+				Slug:      theme.Slug,
+				Name:      theme.Name,
+				CreatedAt: theme.CreatedAt,
+				UpdatedAt: theme.UpdatedAt,
+			}
+		}
 	}
 
 	req.Metadata = map[string]interface{}{
@@ -199,7 +212,6 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		"channel_url":     req.ChannelUrl,
 		"channel_avatar":  req.ChannelAvatar,
 		"template":        template,
-		"theme":           theme,
 	}
 
 	// get senderProfile, recipientProfiles by discordID
