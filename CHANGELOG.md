@@ -1,3 +1,10 @@
+## [6.22.12](https://github.com/consolelabs/mochi-api/compare/v6.22.11...v6.22.12) (2023-11-24)
+
+
+### Bug Fixes
+
+* add sentry for cj invalidate emoji and fetch coingecko token ([#1246](https://github.com/consolelabs/mochi-api/issues/1246)) ([de3443f](https://github.com/consolelabs/mochi-api/commit/de3443fcd0803a72ca4bf7ad450ffcebc37be9d5))
+
 ## [6.22.11](https://github.com/consolelabs/mochi-api/compare/v6.22.10...v6.22.11) (2023-11-21)
 
 
