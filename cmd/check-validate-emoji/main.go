@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/job"
@@ -21,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err, "failed to init service")
 	}
+	defer service.Sentry.Flush(2 * time.Second)
 
 	if err := job.NewCheckInvalidateEmoji(entities.Get(), log, service, cfg).Run(); err != nil {
 		log.Fatal(err, "failed to run job")
