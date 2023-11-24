@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -27,6 +28,15 @@ func (c *CoinGecko) doNetworkCoinByContract(platformId, contractAddress string, 
 	}
 	if err != nil || status != http.StatusOK {
 		if retry == 0 {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Coingecko - doNetworkCoinByContract failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"platformId":      platformId,
+					"contractAddress": contractAddress,
+					"retry":           retry,
+				},
+			})
 			return nil, fmt.Errorf("%d - %v", status, err)
 		} else {
 			return c.GetCoinByContract(platformId, contractAddress, retry-1)

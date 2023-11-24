@@ -5,18 +5,26 @@ import (
 	"net/http"
 
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type Nghenhan struct {
 	baseUrl string
+	sentry  sentrygo.Service
 }
 
-func NewService() Service {
+func NewService(sentry sentrygo.Service) Service {
 	return &Nghenhan{
 		baseUrl: "https://cex.console.so/api/v1",
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (n *Nghenhan) GetFiatHistoricalChart(base, target, interval string, limit int) (*response.NghenhanFiatHistoricalChartResponse, error) {
 	tmpBase := base
@@ -30,6 +38,16 @@ func (n *Nghenhan) GetFiatHistoricalChart(base, target, interval string, limit i
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
+		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Nghenhan - GetFiatHistoricalChart failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"base":     base,
+				"target":   target,
+				"interval": interval,
+				"limit":    limit,
+			},
+		})
 		return &response.NghenhanFiatHistoricalChartResponse{
 			Data: []response.NghenhanFiatHistoricalChart{},
 		}, nil

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 func (s *solscan) doCacheTransaction(address string) (string, error) {
@@ -19,6 +20,13 @@ func (s *solscan) doNetworkTransaction(address string) ([]TransactionListItem, e
 	err := s.fetchSolscanData(url, &res)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTransactions] s.fetchSolscanData() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - doNetworkTransaction failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 
@@ -41,6 +49,13 @@ func (s *solscan) doNetworkTransactionDetail(signature string) (*TransactionDeta
 	err := s.fetchSolscanData(url, &res)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTransactionDetail] s.fetchSolscanData() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - doNetworkTransactionDetail failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"signature": signature,
+			},
+		})
 		return nil, err
 	}
 
@@ -62,6 +77,13 @@ func (s *solscan) doNetworkTokenMetadata(tokenAddress string) (*TokenMetadataRes
 	err := s.fetchSolscanData(url, &res)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTokenMetadata] s.fetchSolscanData() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - doNetworkTokenMetadata failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"tokenAddress": tokenAddress,
+			},
+		})
 		return nil, err
 	}
 
@@ -83,6 +105,13 @@ func (s *solscan) doNetworkTokenBalance(address string) ([]TokenAmountItem, erro
 	err := s.fetchSolscanData(url, &res)
 	if err != nil {
 		s.logger.Fields(logger.Fields{"url": url}).Error(err, "[solscan.getTokenBalances] s.fetchSolscanData() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - doNetworkTokenBalance failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -60,6 +61,13 @@ func (s *SuiService) doNetworkBalance(address string) (*response.SuiAllBalance, 
 
 	resp, err := client.Do(request)
 	if err != nil {
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Sui - doNetWorkBalance failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 
@@ -109,6 +117,13 @@ func (s *SuiService) doNetworkCoinMetadata(coinType string) (*response.SuiCoinMe
 
 	resp, err := client.Do(request)
 	if err != nil {
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Sui - doNetWorkCoinMetadaata failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"coinType": coinType,
+			},
+		})
 		return nil, err
 	}
 
@@ -221,6 +236,13 @@ func (s *SuiService) doNetworkTransactionBlock(address string) (*response.SuiTra
 	request.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Sui - doNetWorkTransactionBlock failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 

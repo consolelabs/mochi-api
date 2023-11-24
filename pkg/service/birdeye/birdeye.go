@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -17,19 +18,24 @@ type birdeye struct {
 	config *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &birdeye{
 		config: cfg,
 		logger: l,
 		cache:  cache,
+		sentry: sentry,
 	}
 }
 
 var (
 	publicBirdeye        = "https://public-api.birdeye.so"
 	birdeyeTokenPriceKey = "birdeye-token-price"
+	sentryTags           = map[string]string{
+		"type": "system",
+	}
 )
 
 func (b *birdeye) GetTokenPrice(address string) (*TokenPrice, error) {
@@ -75,6 +81,13 @@ func (b *birdeye) doNetworkTokenPrice(address string) (*TokenPrice, error) {
 	err := b.fetchBirdeyeData(url, &res)
 	if err != nil {
 		b.logger.Fields(logger.Fields{"url": url}).Error(err, "[birdeye.GetTokenPrice] b.fetchBirdeyeData() failed")
+		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Birdeye - doNetWorkTokenPrice failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return nil, err
 	}
 

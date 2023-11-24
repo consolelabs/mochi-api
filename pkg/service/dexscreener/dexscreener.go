@@ -3,6 +3,7 @@ package dexscreener
 import (
 	"fmt"
 
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -11,21 +12,44 @@ const (
 )
 
 type dexscreener struct {
+	sentry sentrygo.Service
 }
 
-func NewService() Service {
-	return &dexscreener{}
+func NewService(sentry sentrygo.Service) Service {
+	return &dexscreener{
+		sentry: sentry,
+	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (d *dexscreener) Search(query string) ([]Pair, error) {
 	pairResponse := PairResponse{}
 	url := fmt.Sprintf("%s/search?q=%s", baseUrl, query)
 	status, err := util.FetchData(url, &pairResponse)
 	if err != nil {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - Search failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"query": query,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener: %w", err)
 	}
 
 	if status != 200 {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - Search failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"query": query,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener, status: %d", status)
 	}
 
@@ -37,10 +61,26 @@ func (d *dexscreener) Get(network, address string) (*Pair, error) {
 	url := fmt.Sprintf("%s/pairs/%s/%s", baseUrl, network, address)
 	status, err := util.FetchData(url, &pairResponse)
 	if err != nil {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - Get failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"network": network,
+				"address": address,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener: %w", err)
 	}
 
 	if status != 200 {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - Get failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"network": network,
+				"address": address,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener, status: %d", status)
 	}
 

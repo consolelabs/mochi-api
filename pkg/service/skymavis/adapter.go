@@ -9,7 +9,14 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
+)
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
 )
 
 func (s *skymavis) doCacheNft(address string) (string, error) {
@@ -93,10 +100,24 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] util.SendRequest() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Skymavis - GetOwnedAxies failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 	if status != 200 {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] failed to query")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Skymavis - GetOwnedAxies failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 
@@ -165,10 +186,24 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] util.SendRequest() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Skymavis - GetAddressFarming failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 	if status != 200 {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] failed to query")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Skymavis - GetAddressFarming failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": address,
+			},
+		})
 		return nil, err
 	}
 
@@ -194,6 +229,13 @@ func (s *skymavis) doNetworkInternalTxs(hash string) (*response.SkymavisTransact
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.doNetworkInternalTxs] util.SendRequest() failed")
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Skymavis - doNetWorkInternalTxs failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"hash": hash,
+			},
+		})
 		return nil, err
 	}
 	if status != 200 {

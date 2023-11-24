@@ -10,19 +10,22 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	resp "github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 type solscan struct {
 	config *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &solscan{
 		config: cfg,
 		logger: l,
 		cache:  cache,
+		sentry: sentry,
 	}
 }
 
@@ -33,6 +36,9 @@ var (
 	solscanTransactionDetailKey = "solscan-transaction-detail"
 	solscanTokenMetadataKey     = "solscan-token-metadata"
 	solscanTokenBalanceKey      = "solscan-token-balance"
+	sentryTags                  = map[string]string{
+		"type": "system",
+	}
 )
 
 func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataResponse, error) {
@@ -48,6 +54,13 @@ func (s *solscan) GetCollectionBySolscanId(id string) (*resp.CollectionDataRespo
 	response, err := client.Do(request)
 
 	if err != nil {
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - GetCollectionBySolscanId failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"id": id,
+			},
+		})
 		return nil, err
 	}
 
@@ -77,6 +90,14 @@ func (s *solscan) GetNftTokenFromCollection(id, page string) (*resp.NftTokenData
 	response, err := client.Do(request)
 
 	if err != nil {
+		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Solscan - GetNftTokenFromCollection failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"id":   id,
+				"page": page,
+			},
+		})
 		return nil, err
 	}
 
