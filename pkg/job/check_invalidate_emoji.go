@@ -6,12 +6,14 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 type checkInvalidateEmoji struct {
@@ -32,15 +34,34 @@ func NewCheckInvalidateEmoji(e *entities.Entity, l logger.Logger, s *service.Ser
 }
 
 func (j *checkInvalidateEmoji) Run() error {
+	sentryTags := map[string]string{
+		"type": "system",
+	}
+
 	emojis, err := j.service.Discord.GetGuildEmojis()
 	if err != nil {
 		j.log.Error(err, "failed to get guild emojis")
+		j.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[CJ prod mochi] - check_invalidate_emoji failed - %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"task": "GetGuildEmojis",
+			},
+		})
 		return err
 	}
-
-	dbEmojis, _, err := j.entity.GetListEmojis(request.GetListEmojiRequest{Size: 10000, Page: 0, IsQueryAll: true})
+	req := request.GetListEmojiRequest{Size: 10000, Page: 0, IsQueryAll: true}
+	dbEmojis, _, err := j.entity.GetListEmojis(req)
 	if err != nil {
 		j.log.Error(err, "failed to get db emojis")
+		j.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[CJ prod mochi] - check_invalidate_emoji failed - %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"task":    "GetListEmojis",
+				"request": req,
+			},
+		})
 		return err
 	}
 
@@ -89,6 +110,17 @@ func (j *checkInvalidateEmoji) Run() error {
 
 		if err != nil {
 			j.log.Error(err, "failed to send message to product tracking channel")
+			j.service.Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[CJ prod mochi] - check_invalidate_emoji failed - %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"task": "SendMessage",
+					"request": map[string]interface{}{
+						"TrackingChannelID": j.config.MochiProductTrackingChannelID,
+						"Message":           msg,
+					},
+				},
+			})
 			return err
 		}
 	}

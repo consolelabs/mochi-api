@@ -1,8 +1,11 @@
 package job
 
 import (
+	"fmt"
+
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 )
 
 type fetchCoingeckoTokens struct {
@@ -22,8 +25,18 @@ func (j *fetchCoingeckoTokens) Run() error {
 	updatedRows, err := j.entity.RefreshCoingeckoSupportedTokensList()
 	if err != nil {
 		j.log.Error(err, "entity.RefreshCoingeckoSupportedTokensList() failed")
-	} else {
-		j.log.Infof("Successfully refresh coingecko tokens list, %d created", updatedRows)
+		j.entity.GetSvc().Sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[CJ prod mochi] - fetch_coingecko_tokens failed - %v", err),
+			Tags: map[string]string{
+				"type": "system",
+			},
+			Extra: map[string]interface{}{
+				"task": "RefreshCoingeckoSupportedTokenList",
+			},
+		})
+		return err
 	}
-	return err
+
+	j.log.Infof("Successfully refresh coingecko tokens list, %d created", updatedRows)
+	return nil
 }
