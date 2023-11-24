@@ -184,6 +184,11 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		break
 	}
 
+	theme, err := e.repo.ProductTheme.GetByID(req.ThemeId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"theme_id": req.ThemeId}).Error(err, "[entity.TransferTokenV2] repo.ProductTheme.GetByID() failed")
+	}
+
 	req.Metadata = map[string]interface{}{
 		"message":         req.Message,
 		"moniker":         req.Moniker,
@@ -194,6 +199,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		"channel_url":     req.ChannelUrl,
 		"channel_avatar":  req.ChannelAvatar,
 		"template":        template,
+		"theme":           theme,
 	}
 
 	// get senderProfile, recipientProfiles by discordID
