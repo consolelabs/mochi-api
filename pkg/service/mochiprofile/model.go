@@ -8,6 +8,7 @@ const (
 	PlatformDiscord Platform = "discord"
 	PlatformSol     Platform = "solana-chain"
 	PlatformEVM     Platform = "evm-chain"
+	PlatformTON     Platform = "ton"
 )
 
 type GetProfileResponse struct {

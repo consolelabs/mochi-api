@@ -141,7 +141,8 @@ type Config struct {
 
 	FriendScanAPI string
 
-	SentryDsn string
+	SentryDsn    string
+	TonConfigURL string
 }
 
 type MarketplaceBaseUrl struct {
@@ -371,7 +372,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		MochiAppPrivateKey: v.GetString("MOCHI_APP_PRIVATE_KEY"),
 
-		SentryDsn: v.GetString("SENTRY_DSN"),
+		SentryDsn:    v.GetString("SENTRY_DSN"),
+		TonConfigURL: v.GetString("TON_CONFIG_URL"),
 	}
 }
 
