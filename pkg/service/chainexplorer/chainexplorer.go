@@ -11,22 +11,31 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type chainExplorer struct {
-	cfg   config.Config
-	log   logger.Logger
-	cache cache.Cache
+	cfg    config.Config
+	log    logger.Logger
+	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func NewService(cfg config.Config, log logger.Logger, cache cache.Cache) Service {
+func NewService(cfg config.Config, log logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &chainExplorer{
-		cfg:   cfg,
-		log:   log,
-		cache: cache,
+		cfg:    cfg,
+		log:    log,
+		cache:  cache,
+		sentry: sentry,
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (c *chainExplorer) GetGasTracker(listChain []model.Chain) ([]response.GasTrackerResponse, error) {
 	apiKey := ""
@@ -77,7 +86,17 @@ func (c *chainExplorer) executeGetGasTracker(url string) (*response.ChainExplore
 		return resp, json.Unmarshal([]byte(cached), resp)
 	}
 
-	if err := c.doNetworkGetGasTracker(url, resp); err != nil {
+	err = util.RetryRequest(func() error {
+		return c.doNetworkGetGasTracker(url, resp)
+	}, 5, 2*time.Second)
+	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - ChainExplorer - doNetWorkGetGasTracker failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		c.log.Error(err, "[chainexplorer.executeGasTracker] c.doNetworkGetGastracker() failed")
 		return nil, err
 	}

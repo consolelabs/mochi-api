@@ -37,4 +37,5 @@ type TransferV2Request struct {
 	ChannelName    string                 `json:"channel_name"`
 	ChannelUrl     string                 `json:"channel_url"`
 	ChannelAvatar  string                 `json:"channel_avatar"`
+	ThemeId        int64                  `json:"theme_id"`
 }

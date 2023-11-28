@@ -8,11 +8,13 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
 type FriendTech struct {
 	baseUrl string
+	sentry  sentrygo.Service
 }
 
 var commonHeader = map[string]string{
@@ -22,7 +24,7 @@ var commonHeader = map[string]string{
 	"x-client-id":  consts.ClientID,
 }
 
-func NewService(cfg *config.Config) Service {
+func NewService(cfg *config.Config, sentry sentrygo.Service) Service {
 	baseUrl := cfg.FriendScanAPI
 	if baseUrl == "" {
 		baseUrl = "https://api.friendscan.tech"
@@ -32,6 +34,12 @@ func NewService(cfg *config.Config) Service {
 		baseUrl: baseUrl,
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysResponse, error) {
 	if limit == 0 || limit > 200 {
@@ -47,6 +55,13 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
+		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - FriendTech - Search failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return &response.FriendTechKeysResponse{}, nil
 	}
 	return &data, nil
@@ -63,6 +78,13 @@ func (n *FriendTech) GetHistory(accountAddress, interval string) (*response.Frie
 
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
+		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - FriendTech - GetHistory failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return &response.FriendTechKeyPriceHistoryResponse{}, nil
 	}
 
@@ -83,10 +105,24 @@ func (n *FriendTech) GetTransactions(subjectAddress string, limit int) (*respons
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil {
+		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - FriendTech - GetTransaction failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return &response.FriendTechKeyTransactionsResponse{}, err
 	}
 
 	if statusCode != http.StatusOK {
+		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - FriendTech - GetTransaction failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return &response.FriendTechKeyTransactionsResponse{}, errors.New("fetch status code is not 200")
 	}
 

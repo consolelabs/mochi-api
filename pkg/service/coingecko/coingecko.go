@@ -12,6 +12,7 @@ import (
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -31,9 +32,10 @@ type CoinGecko struct {
 	geckoTerminalSearchURL            string
 	getGlobalCryptoDataURL            string
 	cache                             cache.Cache
+	sentry                            sentrygo.Service
 }
 
-func NewService(cfg *config.Config, cache cache.Cache) Service {
+func NewService(cfg *config.Config, cache cache.Cache, sentry sentrygo.Service) Service {
 	apiKey := cfg.CoinGeckoAPIKey
 
 	return &CoinGecko{
@@ -52,11 +54,15 @@ func NewService(cfg *config.Config, cache cache.Cache) Service {
 		getGlobalCryptoDataURL:            "https://pro-api.coingecko.com/api/v3/global?x_cg_pro_api_key=" + apiKey,
 		geckoTerminalSearchURL:            "https://app.geckoterminal.com/api/p1/search",
 		cache:                             cache,
+		sentry:                            sentry,
 	}
 }
 
 var (
 	coingeckoGetTokenByContractKey = "coingecko-token-contract-key"
+	sentryTags                     = map[string]string{
+		"type": "system",
+	}
 )
 
 func (c *CoinGecko) GetHistoricalMarketData(coinID, currency string, days int) (*response.HistoricalMarketChartResponse, error, int) {
@@ -72,6 +78,13 @@ func (c *CoinGecko) GetCoin(coinID string) (*response.GetCoinResponse, error, in
 	data := &response.GetCoinResponse{}
 	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinURL, coinID), data)
 	if err != nil || statusCode != http.StatusOK {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetCoin failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"coinID": coinID,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch coin data of %s: %v", coinID, err), statusCode
 	}
 
@@ -96,6 +109,13 @@ func (c *CoinGecko) GetCoinPrice(coinIDs []string, currency string) (map[string]
 	if coinIDsArg != "" {
 		statusCode, err := util.FetchData(fmt.Sprintf(c.getPriceURL, coinIDsArg, currency), resp)
 		if err != nil || statusCode != http.StatusOK {
+			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Coingecko - GetCoinPrice failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"coinIDs": coinIDs,
+				},
+			})
 			return prices, fmt.Errorf("failed to fetch price data of %s: %v", coinIDs, err)
 		}
 	}
@@ -119,6 +139,14 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [
 		if statusCode == http.StatusNotFound {
 			return nil, errs.ErrRecordNotFound, statusCode
 		}
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetHistoryCoinInfo failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"sourceSymbol": sourceSymbol,
+				"days":         days,
+			},
+		})
 		return nil, err, statusCode
 	}
 
@@ -131,6 +159,16 @@ func (c *CoinGecko) GetCoinsMarketData(ids []string, sparkline bool, page, pageS
 
 	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ","), pageSize, page, sparkline), &resTmp)
 	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetCoinsMarketData failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"ids":       ids,
+				"page":      page,
+				"pageSize":  pageSize,
+				"sparkline": sparkline,
+			},
+		})
 		return nil, err, statusCode
 	}
 
@@ -145,6 +183,10 @@ func (c *CoinGecko) GetSupportedCoins() ([]response.CoingeckoSupportedTokenRespo
 	data := make([]response.CoingeckoSupportedTokenResponse, 0)
 	statusCode, err := util.FetchData(c.getSupportedCoins, &data)
 	if err != nil || statusCode != http.StatusOK {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetSupportedCoins failed %v", err),
+			Tags:    sentryTags,
+		})
 		return nil, fmt.Errorf("failed to fetch supported coins list: %v", err), statusCode
 	}
 	return data, nil, http.StatusOK
@@ -154,6 +196,10 @@ func (c *CoinGecko) GetAssetPlatforms() ([]*response.AssetPlatformResponseData, 
 	var res []*response.AssetPlatformResponseData
 	status, err := util.FetchData(c.getAssetPlatforms, &res)
 	if err != nil || status != http.StatusOK {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetAssetPlatforms failed %v", err),
+			Tags:    sentryTags,
+		})
 		return nil, fmt.Errorf("failed to fetch asset platforms with status %d: %v", status, err)
 	}
 	return res, nil
@@ -176,6 +222,10 @@ func (c *CoinGecko) GetTrendingSearch() (*response.GetTrendingSearch, error) {
 	var res response.GetTrendingSearch
 	status, err := util.FetchData(c.getTrendingSearch, &res)
 	if err != nil || status != http.StatusOK {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetTrendingSearch failed %v", err),
+			Tags:    sentryTags,
+		})
 		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}
 	return &res, nil
@@ -189,6 +239,10 @@ func (c *CoinGecko) GetTopLoserGainer(req request.TopGainerLoserRequest) (*respo
 		if status == http.StatusBadRequest {
 			return nil, errs.ErrInvalidCoingeckoSvcParam
 		}
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetTopLoserGainer failed %v", err),
+			Tags:    sentryTags,
+		})
 		return nil, fmt.Errorf("failed to fetch trending search with status %d: %v", status, err)
 	}
 	return &res, nil
@@ -199,6 +253,13 @@ func (c *CoinGecko) GetHistoricalGlobalMarketChart(days int) (*response.GetHisto
 	url := fmt.Sprintf(c.getHistoricalGlobalMarketChartURL, days)
 	status, err := util.FetchData(url, &res)
 	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetHistoricalGlobalMarketChart failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"days": days,
+			},
+		})
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
@@ -209,6 +270,10 @@ func (c *CoinGecko) GetGlobalData() (*response.GetGlobalDataResponse, error) {
 	url := c.getGlobalCryptoDataURL
 	status, err := util.FetchData(url, &res)
 	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - GetTopLoserGainer failed %v", err),
+			Tags:    sentryTags,
+		})
 		return nil, fmt.Errorf("failed to fetch global market chart with status %d: %v", status, err)
 	}
 	return res, nil
@@ -228,6 +293,13 @@ func (c *CoinGecko) SearchCoin(query string) (*response.SearchCoinResponse, erro
 
 	statusCode, err := util.FetchData(req.URL.String(), resp)
 	if err != nil || statusCode != http.StatusOK {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Coingecko - SearchCoin failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"query": query,
+			},
+		})
 		return nil, fmt.Errorf("failed to search coin %s: %v", query, err), statusCode
 	}
 

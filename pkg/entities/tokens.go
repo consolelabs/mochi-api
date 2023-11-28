@@ -261,10 +261,16 @@ func (e *Entity) GetTokenBalanceFunc(chainID string, token model.Token) (func(ad
 }
 
 func (e *Entity) CalculateTokenBalance(chainId int64, tokenAddress string, profile mochiprofile.GetProfileResponse) (*big.Int, error) {
-	includedPlatform := mochiprofile.PlatformEVM
-	if chainId == 999 {
+	var includedPlatform mochiprofile.Platform
+	switch chainId {
+	case 999: // SOL
 		includedPlatform = mochiprofile.PlatformSol
+	case -2: // TON workchain -1
+		includedPlatform = mochiprofile.PlatformTON
+	default:
+		includedPlatform = mochiprofile.PlatformEVM
 	}
+
 	var walletAddrs []string
 	for _, p := range profile.AssociatedAccounts {
 		if p.Platform == includedPlatform {
@@ -334,6 +340,20 @@ func (e *Entity) fetchTokenBalanceByChain(chainId int64, tokenAddress, walletAdd
 			return nil, err
 		}
 		return balance, err
+	case -2: // TON workchain -1
+		client, err := chain.NewTonClient(&e.cfg, e.log)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - chain.NewTonClient failed")
+			return nil, err
+		}
+
+		balance, err := client.GetJettonBalance(walletAddress, tokenAddress)
+		if err != nil {
+			log.Error(err, "[e.fetchTokenBalanceByChain] - client.GetJettonBalance failed")
+			return nil, err
+		}
+
+		return balance, nil
 	default:
 		return nil, fmt.Errorf("chain is not supported")
 	}

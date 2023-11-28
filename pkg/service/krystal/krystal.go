@@ -11,6 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
 
@@ -18,15 +19,23 @@ type Krystal struct {
 	config *config.Config
 	logger logger.Logger
 	cache  cache.Cache
+	sentry sentrygo.Service
 }
 
-func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache, sentry sentrygo.Service) Service {
 	return &Krystal{
 		config: cfg,
 		logger: l,
 		cache:  cache,
+		sentry: sentry,
 	}
 }
+
+var (
+	sentryTags = map[string]string{
+		"type": "system",
+	}
+)
 
 const (
 	tokenBalanceKey = "krystal-balance-token"
@@ -113,6 +122,13 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 
 	statusCode, err := util.SendRequest(req)
 	if err != nil {
+		k.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Krystal - doNetWork failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		return nil, fmt.Errorf("[krystal.GetBalanceTokenByAddress] util.SendRequest() failed: %v", err)
 	}
 
@@ -139,6 +155,13 @@ func (k *Krystal) doNetworkGeneric(req util.SendRequestQuery, response interface
 	if statusCode != http.StatusOK {
 		err = fmt.Errorf("krystal.doNetworkGeneric() failed, status code: %d", statusCode)
 		k.logger.Error(err, "krystal.doNetworkGeneric() failed")
+		k.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Krystal - doNetWorkGeneric failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"req": req,
+			},
+		})
 		return err
 	}
 
@@ -173,6 +196,13 @@ func (k *Krystal) buildTx(path string, req interface{}) (*BuildTxResp, error) {
 		ParseForm: res,
 	})
 	if err != nil {
+		k.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - Krystal - buildTx failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"req": req,
+			},
+		})
 		return nil, err
 	}
 	if status != http.StatusOK {
