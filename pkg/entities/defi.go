@@ -507,6 +507,10 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		query = "skullswap-exchange"
 	}
 
+	if query == "" {
+		return nil, errors.New("query is required")
+	}
+
 	// 1. Get coin with id = query, if it exists then check if that coin is still supported
 	var err error
 	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
