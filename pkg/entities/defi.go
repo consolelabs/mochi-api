@@ -515,9 +515,14 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		return nil, err
 	}
 
-	_, err, statusCode := e.svc.CoinGecko.GetCoin(token.ID)
-	if err != nil || statusCode == 404 {
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoin() failed - token not supported anymore")
+	if token.ID == "" {
+		err = fmt.Errorf("token not found")
+	} else {
+		// need to recheck to see if coingecko still support this tokenID
+		_, err, statusCode := e.svc.CoinGecko.GetCoin(token.ID)
+		if err != nil || statusCode == 404 {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoin() failed - token not supported anymore")
+		}
 	}
 
 	// 2. After get data case id = query
