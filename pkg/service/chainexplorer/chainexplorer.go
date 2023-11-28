@@ -86,7 +86,17 @@ func (c *chainExplorer) executeGetGasTracker(url string) (*response.ChainExplore
 		return resp, json.Unmarshal([]byte(cached), resp)
 	}
 
-	if err := c.doNetworkGetGasTracker(url, resp); err != nil {
+	err = util.RetryRequest(func() error {
+		return c.doNetworkGetGasTracker(url, resp)
+	}, 5, 2*time.Second)
+	if err != nil {
+		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - ChainExplorer - doNetWorkGetGasTracker failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"url": url,
+			},
+		})
 		c.log.Error(err, "[chainexplorer.executeGasTracker] c.doNetworkGetGastracker() failed")
 		return nil, err
 	}
@@ -101,13 +111,6 @@ func (c *chainExplorer) doNetworkGetGasTracker(url string, resp interface{}) err
 	}
 	statusCode, err := util.SendRequest(query)
 	if err != nil {
-		c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - ChainExplorer - doNetWorkGetGasTracker failed %v", err),
-			Tags:    sentryTags,
-			Extra: map[string]interface{}{
-				"url": url,
-			},
-		})
 		return fmt.Errorf("send request failed: %v", err)
 	}
 
