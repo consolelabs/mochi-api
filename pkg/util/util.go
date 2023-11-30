@@ -11,6 +11,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	errs "errors"
 	"fmt"
 	"image"
 	_ "image/color"
@@ -660,7 +661,18 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		// if context dealine exceeded, wait a bit and retry 3 times
+		if !errs.Is(err, context.DeadlineExceeded) {
+			return http.StatusInternalServerError, err
+		}
+
+		time.Sleep(3 * time.Second)
+		for i := 0; i < 3; i++ {
+			res, err = client.Do(req)
+			if err == nil {
+				break
+			}
+		}
 	}
 	defer res.Body.Close()
 
