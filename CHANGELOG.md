@@ -1,3 +1,11 @@
+## [6.23.1](https://github.com/consolelabs/mochi-api/compare/v6.23.0...v6.23.1) (2023-11-30)
+
+
+### Bug Fixes
+
+* restore api create guild ([#1255](https://github.com/consolelabs/mochi-api/issues/1255)) ([312c81c](https://github.com/consolelabs/mochi-api/commit/312c81c0fa0a9f7fe3f9a2e95edf634b808d01b8))
+* slow response gm webhook ([#1256](https://github.com/consolelabs/mochi-api/issues/1256)) ([c4e12e0](https://github.com/consolelabs/mochi-api/commit/c4e12e0a8adfc6f8cad59c03373b4175176210c5))
+
 # [6.23.0](https://github.com/consolelabs/mochi-api/compare/v6.22.12...v6.23.0) (2023-11-28)
 
 
