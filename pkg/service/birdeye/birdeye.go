@@ -39,8 +39,8 @@ var (
 )
 
 func (b *birdeye) GetTokenPrice(address string) (*TokenPrice, error) {
-	b.logger.Debug("start skymavis.GetAddressFarming()")
-	defer b.logger.Debug("end skymavis.GetAddressFarming()")
+	b.logger.Debug("start birdeye.GetTokenPrice()")
+	defer b.logger.Debug("end birdeye.GetTokenPrice()")
 
 	var data TokenPrice
 	// check if data cached
