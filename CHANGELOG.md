@@ -1,3 +1,20 @@
+# [6.23.0](https://github.com/consolelabs/mochi-api/compare/v6.22.12...v6.23.0) (2023-11-28)
+
+
+### Bug Fixes
+
+* add sentry service layer ([#1247](https://github.com/consolelabs/mochi-api/issues/1247)) ([3242d19](https://github.com/consolelabs/mochi-api/commit/3242d195f20ee03507778cc39e0470198add0e9e))
+* add theme transaction ([#1248](https://github.com/consolelabs/mochi-api/issues/1248)) ([d17f4a3](https://github.com/consolelabs/mochi-api/commit/d17f4a3aca85ae06eea71fb8a0b7c83d92b9e310))
+* add theme transaction v2 ([#1249](https://github.com/consolelabs/mochi-api/issues/1249)) ([4c7a6f2](https://github.com/consolelabs/mochi-api/commit/4c7a6f23295d95b8b0a1803fb5dedabaa144cf3f))
+* handle coingecko id not found ([#1252](https://github.com/consolelabs/mochi-api/issues/1252)) ([7668a5b](https://github.com/consolelabs/mochi-api/commit/7668a5be8b9c7453912afa09cd47d3107fdc1aef))
+* handle retry getting gas tracker ([#1254](https://github.com/consolelabs/mochi-api/issues/1254)) ([1a46c54](https://github.com/consolelabs/mochi-api/commit/1a46c54ab381a36709d7eabf861bbef26e90c95e))
+* ignore search coingecko if query empty ([#1253](https://github.com/consolelabs/mochi-api/issues/1253)) ([f69c62f](https://github.com/consolelabs/mochi-api/commit/f69c62f0231ab1c3787b7c33a11b0918cd04a84b))
+
+
+### Features
+
+* add method to get jetton balance ([5b0bf50](https://github.com/consolelabs/mochi-api/commit/5b0bf5002dd047b3bd3577f5d90be51e4299f838))
+
 ## [6.22.12](https://github.com/consolelabs/mochi-api/compare/v6.22.11...v6.22.12) (2023-11-24)
 
 
