@@ -161,12 +161,13 @@ func (e *Entity) HandleUserActivities(req *request.HandleUserActivityRequest) (*
 		LevelUp:      latestUserXP.Level > userXP.Level,
 	}
 
-	role, levelNeeded, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.ProfileID)
+	role, levelNeeded, err := e.GetRoleByGuildLevelConfig(req.GuildID, req.ProfileID, req.UserID)
 	if err != nil {
 		e.log.Fields(logger.Fields{
-			"guildId": req.GuildID,
-			"userId":  req.ProfileID,
-		}).Errorf(err, "[HandleUserActivities] - SendLevelUpMessage failed")
+			"guildId":   req.GuildID,
+			"userId":    req.UserID,
+			"profileId": req.ProfileID,
+		}).Errorf(err, "[HandleUserActivities] - GetRoleByGuildLevelConfig failed")
 	} else if res.LevelUp {
 		e.log.Fields(logger.Fields{"guildID": req.GuildID, "userID": req.ProfileID}).Info("User leveled up")
 		// get level up config
@@ -383,7 +384,7 @@ func (e *Entity) GetUserProfile(req request.GetUserProfileRequest) (*response.Ge
 	}, nil
 }
 
-func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, int, error) {
+func (e *Entity) GetRoleByGuildLevelConfig(guildID, profileID, userID string) (string, int, error) {
 	if e.discord == nil {
 		return "", 0, nil
 	}
@@ -394,6 +395,10 @@ func (e *Entity) GetRoleByGuildLevelConfig(guildID, userID string) (string, int,
 
 	gMember, err := e.discord.GuildMember(guildID, userID)
 	if err != nil {
+		e.log.Fields(logger.Fields{
+			"guildId": guildID,
+			"userId":  userID,
+		}).Errorf(err, "[entity.GetRoleByGuildLevelConfig] discord.GuildMember() failed")
 		return "", 0, err
 	}
 	if gMember.Roles == nil {
