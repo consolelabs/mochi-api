@@ -23,6 +23,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	guildGroup := v1.Group("/guilds")
 	{
 		guildGroup.GET("", h.Guild.GetGuilds)
+		guildGroup.POST("", h.Guild.CreateGuild)
 		guildGroup.GET("/:guild_id", h.Guild.GetGuild)
 		guildGroup.GET("/:guild_id/custom-tokens", h.ConfigDefi.ListAllCustomToken)
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.Guild.ListMyGuilds)

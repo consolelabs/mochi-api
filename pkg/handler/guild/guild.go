@@ -186,3 +186,20 @@ func (h *Handler) ValidateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
 }
+
+func (h *Handler) CreateGuild(c *gin.Context) {
+	var req request.CreateGuildRequest
+	if err := c.BindJSON(&req); err != nil {
+		h.log.Fields(logger.Fields{"guildID": req.ID, "name": req.Name}).Error(err, "[handler.CreateGuild] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := h.entities.CreateGuild(req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.UpdateGuild] - failed to update guild")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
+}
