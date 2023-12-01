@@ -1,3 +1,14 @@
+## [6.23.2](https://github.com/consolelabs/mochi-api/compare/v6.23.1...v6.23.2) (2023-12-01)
+
+
+### Bug Fixes
+
+* add decimal moniker ([#1260](https://github.com/consolelabs/mochi-api/issues/1260)) ([9f98b65](https://github.com/consolelabs/mochi-api/commit/9f98b65398ae969867b964b943e9703eccefd9db))
+* add fields moniker default ([#1259](https://github.com/consolelabs/mochi-api/issues/1259)) ([2813d3a](https://github.com/consolelabs/mochi-api/commit/2813d3a54f06305613ca56c2e3ea3eb3c2826c8e))
+* birdeye requests - update error msg ([bd4db3e](https://github.com/consolelabs/mochi-api/commit/bd4db3e0b5e062f6704c35d59732dfaeba33514a))
+* handle rate limit skymavis ([#1258](https://github.com/consolelabs/mochi-api/issues/1258)) ([2f54a6f](https://github.com/consolelabs/mochi-api/commit/2f54a6fd30341561ec44a39e4fb3b0163eddb9b6))
+* handle timeout 3rd party ([#1257](https://github.com/consolelabs/mochi-api/issues/1257)) ([2688797](https://github.com/consolelabs/mochi-api/commit/268879775b2d67d6177733d7881610b035be33d8))
+
 ## [6.23.1](https://github.com/consolelabs/mochi-api/compare/v6.23.0...v6.23.1) (2023-11-30)
 
 
