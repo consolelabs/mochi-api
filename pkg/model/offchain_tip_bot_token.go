@@ -21,6 +21,8 @@ type OffchainTipBotToken struct {
 	ServiceFee  float64                `json:"service_fee"`
 	TokenPrice  float64                `json:"token_price" gorm:"-"`
 	ChainId     string                 `json:"chain_id"`
+	Address     string                 `json:"address"`
+	IsNative    bool                   `json:"is_native"`
 }
 
 func (OffchainTipBotToken) TableName() string {
