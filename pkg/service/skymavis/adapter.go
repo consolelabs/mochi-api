@@ -196,14 +196,20 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 		return nil, err
 	}
 	if status != 200 {
-		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] failed to query")
-		s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - Skymavis - GetAddressFarming failed %v", err),
-			Tags:    sentryTags,
-			Extra: map[string]interface{}{
-				"address": address,
-			},
-		})
+		if status == 429 {
+			s.logger.Fields(logger.Fields{"address": address, "status": status}).Error(err, "[skymavis.GetAddressFarming] reach Skymavis API rate limit, retrying")
+			time.Sleep(3 * time.Second)
+			return s.doNetworkFarming(address)
+		} else {
+			s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] failed to query")
+			s.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Skymavis - GetAddressFarming failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"address": address,
+				},
+			})
+		}
 		return nil, err
 	}
 

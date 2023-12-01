@@ -39,8 +39,8 @@ var (
 )
 
 func (b *birdeye) GetTokenPrice(address string) (*TokenPrice, error) {
-	b.logger.Debug("start skymavis.GetAddressFarming()")
-	defer b.logger.Debug("end skymavis.GetAddressFarming()")
+	b.logger.Debug("start birdeye.GetTokenPrice()")
+	defer b.logger.Debug("end birdeye.GetTokenPrice()")
 
 	var data TokenPrice
 	// check if data cached
@@ -64,8 +64,11 @@ func (b *birdeye) fetchBirdeyeData(url string, v any) error {
 	}
 
 	statusCode, err := util.SendRequest(req)
-	if err != nil || statusCode != http.StatusOK {
-		return fmt.Errorf("failed to fetch Birdeye data")
+	if err != nil {
+		return err
+	}
+	if statusCode != http.StatusOK {
+		return fmt.Errorf("failed to fetch birdeye data with status %d", statusCode)
 	}
 
 	return nil
