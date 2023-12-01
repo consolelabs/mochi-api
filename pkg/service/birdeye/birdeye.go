@@ -64,8 +64,11 @@ func (b *birdeye) fetchBirdeyeData(url string, v any) error {
 	}
 
 	statusCode, err := util.SendRequest(req)
-	if err != nil || statusCode != http.StatusOK {
-		return fmt.Errorf("failed to fetch Birdeye data")
+	if err != nil {
+		return err
+	}
+	if statusCode != http.StatusOK {
+		return fmt.Errorf("failed to fetch birdeye data with status %d", statusCode)
 	}
 
 	return nil
