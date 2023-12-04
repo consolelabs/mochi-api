@@ -298,7 +298,11 @@ func (e *Entity) ListWalletAssets(req request.ListWalletAssetsRequest) ([]respon
 	}
 
 	// EVM
-	return e.listEvmWalletAssets(req)
+	if req.Type == "evm" {
+		return e.listEvmWalletAssets(req)
+	}
+
+	return nil, "", "", nil
 }
 
 func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (assets []response.WalletAssetData, pnl string, latestSnapshotBal string, err error) {
