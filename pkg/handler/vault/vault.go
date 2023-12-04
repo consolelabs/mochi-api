@@ -10,6 +10,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	baseerr "github.com/defipod/mochi/pkg/model/errors"
 	vaulttxquery "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -104,7 +105,7 @@ func (h *Handler) GetVault(c *gin.Context) {
 	vault, err := h.entities.GetVault(req)
 	if err != nil {
 		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetVault] entity.GetVault() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		c.JSON(baseerr.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
