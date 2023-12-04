@@ -11,6 +11,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	errs "errors"
 	"fmt"
 	"image"
 	_ "image/color"
@@ -661,9 +662,9 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	res, err := client.Do(req)
 	if err != nil {
 		// if context dealine exceeded, wait a bit and retry 3 times
-		// if !errs.Is(err, context.DeadlineExceeded) {
-		// 	return http.StatusInternalServerError, err
-		// }
+		if !errs.Is(err, context.DeadlineExceeded) {
+			return http.StatusInternalServerError, err
+		}
 
 		log.Info("context deadline exceeded for 3rd party, retrying...")
 		time.Sleep(3 * time.Second)
