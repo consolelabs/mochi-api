@@ -16,6 +16,7 @@ import (
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/repo/vault"
 	vaulttxquery "github.com/defipod/mochi/pkg/repo/vault_transaction"
 	"github.com/defipod/mochi/pkg/request"
@@ -142,8 +143,12 @@ func (e *Entity) GetVault(req request.GetVaultRequest) (*model.Vault, error) {
 	// query db
 	vault, err := e.repo.Vault.GetById(int64(idInt))
 	if err != nil {
-		e.log.Fields(logger.Fields{"query": idInt}).Errorf(err, "[entity.GetVaults] repo.Vault.GetById() failed")
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			return nil, baseerrs.ErrRecordNotFound
+		} else {
+			e.log.Fields(logger.Fields{"query": idInt}).Errorf(err, "[entity.GetVaults] repo.Vault.GetById() failed")
+			return nil, err
+		}
 	}
 
 	if req.NoFetchAmount != "true" {
