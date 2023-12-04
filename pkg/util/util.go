@@ -11,7 +11,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	errs "errors"
 	"fmt"
 	"image"
 	_ "image/color"
@@ -41,6 +40,7 @@ import (
 	"github.com/google/uuid"
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/nfnt/resize"
+	"github.com/sirupsen/logrus"
 
 	"github.com/defipod/mochi/pkg/model/errors"
 )
@@ -661,11 +661,13 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	}
 	res, err := client.Do(req)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"url": q.URL, "res": res.Body}).Error(err, "[util.SendRequest] 3rd party client.Do() failed")
 		// if context dealine exceeded, wait a bit and retry 3 times
-		if !errs.Is(err, context.DeadlineExceeded) {
-			return http.StatusInternalServerError, err
-		}
+		// if !errs.Is(err, context.DeadlineExceeded) {
+		// 	return http.StatusInternalServerError, err
+		// }
 
+		log.Info("context deadline exceeded for 3rd party, retrying...")
 		time.Sleep(3 * time.Second)
 		for i := 0; i < 3; i++ {
 			res, err = client.Do(req)
