@@ -344,6 +344,7 @@ func (e *Entity) listRoninWalletAssets(req request.ListWalletAssetsRequest) (ass
 				Chain: response.AssetTokenChain{
 					Name:      res.Data.ChainName,
 					ShortName: "RON",
+					Type:      "ron",
 				},
 			},
 			Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
@@ -420,6 +421,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					Chain: response.AssetTokenChain{
 						Name:      item.ChainName,
 						ShortName: chain.ShortName,
+						Type:      chain.Type,
 					},
 				},
 				Amount: util.FloatToString(fmt.Sprint(assetBal), int64(bal.Token.Decimals)),
@@ -553,6 +555,7 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 				Chain: response.AssetTokenChain{
 					Name:      res.Data.ChainName,
 					ShortName: "sol",
+					Type:      "solana",
 				},
 			},
 			Amount: util.FloatToString(fmt.Sprint(bal), decimals),
@@ -608,6 +611,7 @@ func (e *Entity) listBaseWalletAssets(req request.ListWalletAssetsRequest) ([]re
 				Chain: response.AssetTokenChain{
 					Name:      res.Data.ChainName,
 					ShortName: "BASE",
+					Type:      "evm",
 				},
 			},
 			Amount: util.FloatToString(fmt.Sprint(bal), int64(item.ContractDecimals)),
