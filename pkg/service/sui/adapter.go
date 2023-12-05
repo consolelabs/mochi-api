@@ -176,6 +176,7 @@ func (s *SuiService) doNetworkAddressAssets(address string) ([]response.WalletAs
 			Chain: response.AssetTokenChain{
 				Name:      "sui",
 				ShortName: "sui",
+				Type:      "sui",
 			},
 		}
 
