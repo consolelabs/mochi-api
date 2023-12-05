@@ -670,7 +670,7 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	if q.Method == "" {
 		q.Method = http.MethodGet
 	}
-	client := &http.Client{Timeout: time.Second * 30}
+	client := &http.Client{Timeout: time.Second * 5}
 	req, _ := http.NewRequest(q.Method, q.URL, q.Body)
 	for k, v := range q.Headers {
 		req.Header.Set(k, v)
@@ -689,7 +689,6 @@ func SendRequest(q SendRequestQuery) (int, error) {
 			return http.StatusInternalServerError, err
 		}
 	}
-	defer res.Body.Close()
 
 	statusCode := res.StatusCode
 	if q.ParseForm != nil {
@@ -702,6 +701,8 @@ func SendRequest(q SendRequestQuery) (int, error) {
 		}
 		return statusCode, nil
 	}
+
+	res.Body.Close()
 
 	return statusCode, nil
 }
