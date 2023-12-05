@@ -690,6 +690,10 @@ func SendRequest(q SendRequestQuery) (int, error) {
 		}
 	}
 
+	if res == nil {
+		return http.StatusInternalServerError, fmt.Errorf("cannot get data from url: %s", q.URL)
+	}
+
 	statusCode := res.StatusCode
 	if q.ParseForm != nil {
 		bytes, err := io.ReadAll(res.Body)
