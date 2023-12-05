@@ -11,7 +11,6 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	errs "errors"
 	"fmt"
 	"image"
 	_ "image/color"
@@ -42,6 +41,7 @@ import (
 	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/nfnt/resize"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model/errors"
 )
 
@@ -518,12 +518,25 @@ func Uint8ToIntPointer(u uint8) *int {
 }
 
 func FetchData(url string, parseForm interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 60}
+	client := &http.Client{Timeout: time.Second * 3}
 	resp, err := client.Get(url)
 	if err != nil {
-		return http.StatusInternalServerError, err
+		if strings.Contains(err.Error(), "context deadline exceeded") {
+			for i := 0; i < 3; i++ {
+				logger.NewLogrusLogger().Fields(logger.Fields{"url": url}).Infof(fmt.Sprintf("context deadline exceeded for service, retrying %dth ...", i+1))
+				resp, err = client.Get(url)
+				if err == nil {
+					break
+				}
+			}
+		} else {
+			return http.StatusInternalServerError, err
+		}
 	}
-	defer resp.Body.Close()
+
+	if resp == nil {
+		return http.StatusInternalServerError, fmt.Errorf("cannot get data from url: %s", url)
+	}
 
 	statusCode := resp.StatusCode
 	b, err := ioutil.ReadAll(resp.Body)
@@ -531,8 +544,11 @@ func FetchData(url string, parseForm interface{}) (int, error) {
 		return statusCode, err
 	}
 
+	resp.Body.Close()
+
 	return statusCode, json.Unmarshal(b, parseForm)
 }
+
 func GetMaxFloat64(arr []float64) float64 {
 	max := arr[0]
 	for _, ele := range arr {
@@ -661,18 +677,16 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		// if context dealine exceeded, wait a bit and retry 3 times
-		if !errs.Is(err, context.DeadlineExceeded) {
-			return http.StatusInternalServerError, err
-		}
-
-		log.Info("context deadline exceeded for 3rd party, retrying...")
-		time.Sleep(3 * time.Second)
-		for i := 0; i < 3; i++ {
-			res, err = client.Do(req)
-			if err == nil {
-				break
+		if strings.Contains(err.Error(), "context deadline exceeded") {
+			for i := 0; i < 3; i++ {
+				logger.NewLogrusLogger().Fields(logger.Fields{"q": q}).Infof(fmt.Sprintf("context deadline exceeded for service, retrying %dth ...", i+1))
+				res, err = client.Do(req)
+				if err == nil {
+					break
+				}
 			}
+		} else {
+			return http.StatusInternalServerError, err
 		}
 	}
 	defer res.Body.Close()
