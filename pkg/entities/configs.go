@@ -588,10 +588,17 @@ func (e *Entity) GetDefaultMoniker() ([]response.MonikerConfigData, error) {
 
 	res := []response.MonikerConfigData{}
 	for i, config := range configs {
+		chainId, _ := strconv.Atoi(config.Token.ChainId)
+		chain, err := e.repo.Chain.GetByID(chainId)
+		if err != nil {
+			e.log.Fields(logger.Fields{"chainId": chainId}).Error(err, "[entities.GetDefaultMoniker] - failed to get chain")
+		}
+
 		var configData response.MonikerConfigData
 		configData.Moniker = config
 		configData.Value = config.Amount * prices[config.Token.CoinGeckoID]
 		configs[i].Token.TokenPrice = prices[config.Token.CoinGeckoID]
+		configs[i].Token.Chain = chain
 		res = append(res, configData)
 	}
 	return res, nil

@@ -10,4 +10,5 @@ type Chain struct {
 	APIKey      string `json:"-"`
 	TxBaseURL   string `json:"-"`
 	Currency    string `json:"currency"`
+	Type        string `json:"type"`
 }

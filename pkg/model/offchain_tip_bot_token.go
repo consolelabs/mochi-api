@@ -24,6 +24,7 @@ type OffchainTipBotToken struct {
 	Address     string                 `json:"address"`
 	IsNative    bool                   `json:"is_native"`
 	Decimal     int64                  `json:"decimal"`
+	Chain       Chain                  `json:"chain" gorm:"-"`
 }
 
 func (OffchainTipBotToken) TableName() string {
