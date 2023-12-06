@@ -1,3 +1,17 @@
+## [6.23.3](https://github.com/consolelabs/mochi-api/compare/v6.23.2...v6.23.3) (2023-12-06)
+
+
+### Bug Fixes
+
+* add chain type ([#1267](https://github.com/consolelabs/mochi-api/issues/1267)) ([426ba32](https://github.com/consolelabs/mochi-api/commit/426ba32b5edddbca6f7bf963f7155248bf6f77ef))
+* add chain type asset ([#1269](https://github.com/consolelabs/mochi-api/issues/1269)) ([75a115e](https://github.com/consolelabs/mochi-api/commit/75a115e40781054b8cc71e9e089b7d3a3f66788a))
+* add more log service ([#1263](https://github.com/consolelabs/mochi-api/issues/1263)) ([c5567ad](https://github.com/consolelabs/mochi-api/commit/c5567ade5b5f4606754a460961f3c396d814ecc0))
+* handle case vault not exist ([#1265](https://github.com/consolelabs/mochi-api/issues/1265)) ([38e0e0c](https://github.com/consolelabs/mochi-api/commit/38e0e0c7258fd4d39a5cb582de01dfdcdc352843))
+* handle non supported wallet ([#1262](https://github.com/consolelabs/mochi-api/issues/1262)) ([fef0443](https://github.com/consolelabs/mochi-api/commit/fef04436ff521b0279ad3a7335c667c02e436a6d))
+* only send internal coingecko error to sentry ([#1266](https://github.com/consolelabs/mochi-api/issues/1266)) ([206fced](https://github.com/consolelabs/mochi-api/commit/206fced1317bcbe3c842d1b8a4f99f7ee9b35272))
+* resolve crash ([#1264](https://github.com/consolelabs/mochi-api/issues/1264)) ([4e524a6](https://github.com/consolelabs/mochi-api/commit/4e524a626315f4c03f75796977ce0b29ca288b69))
+* rm wrong log ([16b4813](https://github.com/consolelabs/mochi-api/commit/16b4813768282006454794e4e79b3bf124fa0383))
+
 ## [6.23.2](https://github.com/consolelabs/mochi-api/compare/v6.23.1...v6.23.2) (2023-12-01)
 
 
