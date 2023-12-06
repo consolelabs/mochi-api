@@ -2,9 +2,8 @@ package job
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
-
-	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
@@ -26,14 +25,13 @@ func NewWatchDMNotifyPriceAlert(e *entities.Entity, l logger.Logger) Job {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 
 	// init redis
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	cache, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
-		l.Fatal(err, "[WatchDMNotifyPriceAlert] failed to init redis")
-	}
-
-	cache, err := cache.NewRedisCache(redisOpt)
-	if err != nil {
-		l.Fatal(err, "[WatchDMNotifyPriceAlert] failed to init redis cache")
+		l.Fatal(err, "[NewWatchDMNotifyPriceAlert] failed to init redis cache")
 	}
 
 	service, err := service.NewService(cfg, l)
