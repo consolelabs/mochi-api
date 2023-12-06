@@ -1,3 +1,15 @@
+# [6.24.0](https://github.com/consolelabs/mochi-api/compare/v6.23.3...v6.24.0) (2023-12-06)
+
+
+### Bug Fixes
+
+* extend timeout url ([#1271](https://github.com/consolelabs/mochi-api/issues/1271)) ([9cfed45](https://github.com/consolelabs/mochi-api/commit/9cfed4529308adfe050e7161c3e16121b72cba17))
+
+
+### Features
+
+* add redis sentiel url env ([#1270](https://github.com/consolelabs/mochi-api/issues/1270)) ([245d437](https://github.com/consolelabs/mochi-api/commit/245d4370afd237b69f28f8f48a2d665b2496fcaa))
+
 ## [6.23.3](https://github.com/consolelabs/mochi-api/compare/v6.23.2...v6.23.3) (2023-12-06)
 
 
