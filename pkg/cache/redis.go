@@ -15,8 +15,33 @@ type redisCache struct {
 	ctx context.Context
 }
 
-func NewRedisCache(opts *redis.Options) (Cache, error) {
-	rdb := redis.NewClient(opts)
+type RedisOpts struct {
+	URL          string
+	SentinelURLs []string
+	MasterName   string
+}
+
+func NewRedisCache(opts RedisOpts) (Cache, error) {
+	var rdb *redis.Client
+	if opts.MasterName == "" {
+		redisURL := opts.URL
+		if redisURL == "" {
+			return nil, fmt.Errorf("redis url is not set")
+		}
+		redisOpt, err := redis.ParseURL(redisURL)
+		if err != nil {
+			return nil, err
+		}
+		rdb = redis.NewClient(redisOpt)
+	} else {
+		if len(opts.SentinelURLs) == 0 {
+			return nil, fmt.Errorf("redis sentinel url is not set")
+		}
+		rdb = redis.NewFailoverClient(&redis.FailoverOptions{
+			SentinelAddrs: opts.SentinelURLs,
+			MasterName:    opts.MasterName,
+		})
+	}
 	ctx := context.Background()
 
 	// ping to test connection

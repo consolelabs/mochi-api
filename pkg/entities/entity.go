@@ -2,9 +2,9 @@ package entities
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/go-redis/redis/v8"
 	"github.com/go-rod/rod"
 
 	"github.com/defipod/mochi/pkg/cache"
@@ -77,12 +77,11 @@ func Init(cfg config.Config, log logger.Logger) error {
 	log.Infof("Connected to discord: %s", u.Username)
 
 	// *** cache ***
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
-	if err != nil {
-		log.Fatal(err, "failed to init redis")
-	}
-
-	cache, err := cache.NewRedisCache(redisOpt)
+	cache, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
 		log.Fatal(err, "failed to init redis cache")
 	}
