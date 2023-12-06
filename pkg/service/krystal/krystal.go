@@ -129,6 +129,12 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 				"url": url,
 			},
 		})
+		k.logger.Fields(
+			logger.Fields{
+				"address": address,
+				"url":     url,
+			},
+		).Errorf(err, "krystal.GetBalanceTokenByAddress() failed, status code: %d", statusCode)
 		return nil, fmt.Errorf("[krystal.GetBalanceTokenByAddress] util.SendRequest() failed: %v", err)
 	}
 
