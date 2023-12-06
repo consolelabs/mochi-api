@@ -2,8 +2,7 @@ package service
 
 import (
 	"fmt"
-
-	"github.com/go-redis/redis/v8"
+	"strings"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
@@ -80,12 +79,11 @@ func NewService(
 		return nil, fmt.Errorf("failed to init discord: %w", err)
 	}
 
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
-	if err != nil {
-		log.Fatal(err, "failed to init redis")
-	}
-
-	cache, err := cache.NewRedisCache(redisOpt)
+	cache, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
 		log.Fatal(err, "failed to init redis cache")
 	}

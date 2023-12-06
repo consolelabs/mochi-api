@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/consolelabs/mochi-typeset/typeset"
+	"github.com/shopspring/decimal"
+
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/entities"
@@ -14,8 +16,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
-	"github.com/go-redis/redis/v8"
-	"github.com/shopspring/decimal"
 )
 
 type watchKeyPriceChanges struct {
@@ -32,14 +32,13 @@ const (
 func NewWatchKeyPriceChange(e *entities.Entity, l logger.Logger) Job {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+	c, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
-		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis")
-	}
-
-	c, err := cache.NewRedisCache(redisOpt)
-	if err != nil {
-		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis cache")
+		log.Fatal(err, "[NewWatchKeyPriceChange] failed to init redis cache")
 	}
 
 	return &watchKeyPriceChanges{

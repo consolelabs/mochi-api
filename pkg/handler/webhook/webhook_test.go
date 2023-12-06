@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
@@ -35,13 +35,11 @@ func Test_HandleDiscordWebhook(t *testing.T) {
 		RedisURL: "redis://localhost:6379/0",
 	}
 
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	cache, err := cache.NewRedisCache(redisOpt)
+	cache, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
 		t.Error(err)
 		return

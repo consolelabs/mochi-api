@@ -518,11 +518,11 @@ func Uint8ToIntPointer(u uint8) *int {
 }
 
 func FetchData(url string, parseForm interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 3}
+	client := &http.Client{Timeout: time.Second * 4}
 	resp, err := client.Get(url)
 	if err != nil {
 		if strings.Contains(err.Error(), "context deadline exceeded") {
-			for i := 0; i < 3; i++ {
+			for i := 0; i < 2; i++ {
 				logger.NewLogrusLogger().Fields(logger.Fields{"url": url}).Infof(fmt.Sprintf("context deadline exceeded for service, retrying %dth ...", i+1))
 				resp, err = client.Get(url)
 				if err == nil {

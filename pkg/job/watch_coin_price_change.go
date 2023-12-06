@@ -3,12 +3,10 @@ package job
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 
 	"github.com/defipod/mochi/pkg/cache"
@@ -42,15 +40,16 @@ func (m watchCoinPriceChangePayload) MarshalBinary() ([]byte, error) {
 
 func NewWatchCoinPriceChange(e *entities.Entity, l logger.Logger) Job {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
-	redisOpt, err := redis.ParseURL(cfg.RedisURL)
+
+	cache, err := cache.NewRedisCache(cache.RedisOpts{
+		URL:          cfg.RedisURL,
+		SentinelURLs: strings.Split(cfg.RedisSentinelURL, ","),
+		MasterName:   cfg.RedisMasterName,
+	})
 	if err != nil {
-		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis")
+		l.Fatal(err, "[NewWatchCoinPriceChange] failed to init redis cache")
 	}
 
-	cache, err := cache.NewRedisCache(redisOpt)
-	if err != nil {
-		log.Fatal(err, "[WatchCoinPriceChanges] failed to init redis cache")
-	}
 	return &watchCoinPriceChanges{
 		entity: e,
 		log:    l,
