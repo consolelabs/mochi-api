@@ -1,3 +1,10 @@
+## [6.24.1](https://github.com/consolelabs/mochi-api/compare/v6.24.0...v6.24.1) (2023-12-07)
+
+
+### Bug Fixes
+
+* **vault:** update correct key to query evm assets ([#1272](https://github.com/consolelabs/mochi-api/issues/1272)) ([cf3bf4f](https://github.com/consolelabs/mochi-api/commit/cf3bf4ff14c723024c49a703bc1b00c6e87d612b))
+
 # [6.24.0](https://github.com/consolelabs/mochi-api/compare/v6.23.3...v6.24.0) (2023-12-06)
 
 
