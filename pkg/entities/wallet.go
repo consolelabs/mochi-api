@@ -375,7 +375,6 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	assets := make([]response.WalletAssetData, 0)
-
 	for _, item := range res.Data {
 		chain, err := e.repo.Chain.GetByID(item.ChainId)
 		if err != nil {
