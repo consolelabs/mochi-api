@@ -1,3 +1,10 @@
+## [6.24.2](https://github.com/consolelabs/mochi-api/compare/v6.24.1...v6.24.2) (2023-12-08)
+
+
+### Bug Fixes
+
+* nghenhan - init sentry ([64b63c6](https://github.com/consolelabs/mochi-api/commit/64b63c66f55ae07faa972e9fb8dc3c94b1aea5de))
+
 ## [6.24.1](https://github.com/consolelabs/mochi-api/compare/v6.24.0...v6.24.1) (2023-12-07)
 
 
