@@ -1,3 +1,10 @@
+## [6.24.3](https://github.com/consolelabs/mochi-api/compare/v6.24.2...v6.24.3) (2023-12-08)
+
+
+### Bug Fixes
+
+* enrich template tx ([#1274](https://github.com/consolelabs/mochi-api/issues/1274)) ([a7adeec](https://github.com/consolelabs/mochi-api/commit/a7adeec51a642a47febc2d54d2ab1384816ab894))
+
 ## [6.24.2](https://github.com/consolelabs/mochi-api/compare/v6.24.1...v6.24.2) (2023-12-08)
 
 
