@@ -17,6 +17,7 @@ type Nghenhan struct {
 func NewService(sentry sentrygo.Service) Service {
 	return &Nghenhan{
 		baseUrl: "https://cex.console.so/api/v1",
+		sentry:  sentry,
 	}
 }
 
