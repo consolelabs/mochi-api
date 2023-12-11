@@ -58,9 +58,9 @@ func (b *birdeye) GetTokenPrice(address string) (*TokenPrice, error) {
 
 func (b *birdeye) fetchBirdeyeData(url string, v any) error {
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &v,
-		Headers:   map[string]string{"Content-Type": "application/json", "X-API-KEY": b.config.BirdEyeApiKey},
+		URL:      url,
+		Response: &v,
+		Headers:  map[string]string{"Content-Type": "application/json", "X-API-KEY": b.config.BirdEyeApiKey},
 	}
 
 	statusCode, err := util.SendRequest(req)

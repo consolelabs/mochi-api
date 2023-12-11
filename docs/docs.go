@@ -1494,6 +1494,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/config/command-permissions": {
+            "get": {
+                "description": "Get list command permissions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tono"
+                ],
+                "summary": "Get list command permissions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.CommandPermissions"
+                        }
+                    }
+                }
+            }
+        },
+        "/config/install-url": {
+            "get": {
+                "description": "Get bot install url",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Command Permission"
+                ],
+                "summary": "Get bot install url",
+                "responses": {
+                    "302": {
+                        "description": "Found"
+                    }
+                }
+            }
+        },
         "/config/role/{guild_id}/admin": {
             "get": {
                 "description": "Get list admin role config of guild",
@@ -5091,6 +5141,7 @@ const docTemplate = `{
                     "Tip"
                 ],
                 "summary": "OffChain Tip Bot - Transfer token v2",
+                "operationId": "transferV2",
                 "parameters": [
                     {
                         "description": "Transfer token request",
@@ -5107,36 +5158,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.TransferTokenV2Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/tono/command-permissions": {
-            "get": {
-                "description": "Get Tono command permissions",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tono"
-                ],
-                "summary": "Get Tono command permissions",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "code",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TonoCommandPermissions"
                         }
                     }
                 }
@@ -6344,6 +6365,9 @@ const docTemplate = `{
                 },
                 "short_name": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -6378,6 +6402,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CommandPermission": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "discord_permission_flag": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "need_dm": {
+                    "type": "boolean"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -7126,17 +7176,32 @@ const docTemplate = `{
         "model.OffchainTipBotToken": {
             "type": "object",
             "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain": {
+                    "$ref": "#/definitions/model.Chain"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
                 "coin_gecko_id": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
+                "decimal": {
+                    "type": "integer"
+                },
                 "icon": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
+                },
+                "is_native": {
+                    "type": "boolean"
                 },
                 "service_fee": {
                     "type": "number"
@@ -7149,6 +7214,9 @@ const docTemplate = `{
                 },
                 "token_name": {
                     "type": "string"
+                },
+                "token_price": {
+                    "type": "number"
                 },
                 "token_symbol": {
                     "type": "string"
@@ -7461,32 +7529,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "symbol": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.TonoCommandPermission": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "discord_permission_flag": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "need_dm": {
-                    "type": "boolean"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -8366,7 +8408,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "description": "AmountString string   ` + "`" + `json:\"amount_string\"` + "`" + `",
                     "type": "string"
                 },
                 "transfer_type": {
@@ -8521,6 +8562,15 @@ const docTemplate = `{
         },
         "request.TransferV2Request": {
             "type": "object",
+            "required": [
+                "amount",
+                "chain_id",
+                "platform",
+                "recipients",
+                "sender",
+                "token",
+                "transfer_type"
+            ],
             "properties": {
                 "all": {
                     "type": "boolean"
@@ -8529,6 +8579,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "chain_id": {
+                    "type": "string"
+                },
+                "channel_avatar": {
                     "type": "string"
                 },
                 "channel_id": {
@@ -8563,7 +8616,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "platform": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "discord",
+                        "telegram",
+                        "web"
+                    ]
                 },
                 "recipients": {
                     "type": "array",
@@ -8573,6 +8631,9 @@ const docTemplate = `{
                 },
                 "sender": {
                     "type": "string"
+                },
+                "theme_id": {
+                    "type": "integer"
                 },
                 "token": {
                     "type": "string"
@@ -9229,6 +9290,17 @@ const docTemplate = `{
                 },
                 "symbol": {
                     "type": "string"
+                }
+            }
+        },
+        "response.CommandPermissions": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CommandPermission"
+                    }
                 }
             }
         },
@@ -12334,17 +12406,6 @@ const docTemplate = `{
                 },
                 "value": {
                     "type": "number"
-                }
-            }
-        },
-        "response.TonoCommandPermissions": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.TonoCommandPermission"
-                    }
                 }
             }
         },

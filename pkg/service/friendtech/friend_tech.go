@@ -49,9 +49,9 @@ func (n *FriendTech) Search(query string, limit int) (*response.FriendTechKeysRe
 	url := n.baseUrl + fmt.Sprintf("/accounts?q=%v&limit=%v", query, limit)
 	data := response.FriendTechKeysResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &data,
-		Headers:   commonHeader,
+		URL:      url,
+		Response: &data,
+		Headers:  commonHeader,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -71,9 +71,9 @@ func (n *FriendTech) GetHistory(accountAddress, interval string) (*response.Frie
 	url := n.baseUrl + fmt.Sprintf("/accounts/%v/historical?interval=%v", accountAddress, interval)
 	data := response.FriendTechKeyPriceHistoryResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &data,
-		Headers:   commonHeader,
+		URL:      url,
+		Response: &data,
+		Headers:  commonHeader,
 	}
 
 	statusCode, err := util.SendRequest(req)
@@ -99,9 +99,9 @@ func (n *FriendTech) GetTransactions(subjectAddress string, limit int) (*respons
 	url := n.baseUrl + fmt.Sprintf("/transactions?subjectAddress=%s&limit=%v", subjectAddress, limit)
 	data := response.FriendTechKeyTransactionsResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &data,
-		Headers:   commonHeader,
+		URL:      url,
+		Response: &data,
+		Headers:  commonHeader,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil {

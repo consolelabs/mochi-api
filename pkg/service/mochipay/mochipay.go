@@ -494,10 +494,10 @@ func (m *MochiPay) TransferV2(req TransferV2Request) (*TransferV2Response, error
 
 	res := &TransferV2Response{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/api/v2/transfer", m.config.MochiPayServerHost),
-		Body:      bytes.NewBuffer(payload),
-		Method:    "POST",
-		ParseForm: res,
+		URL:      fmt.Sprintf("%s/api/v2/transfer", m.config.MochiPayServerHost),
+		Body:     bytes.NewBuffer(payload),
+		Method:   "POST",
+		Response: res,
 	})
 	if err != nil {
 		return nil, err
@@ -517,10 +517,10 @@ func (m *MochiPay) ApplicationTransfer(req ApplicationTransferRequest) (*Applica
 
 	res := &ApplicationTransferResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/api/v1/applications/%s/transfer", m.config.MochiPayServerHost, req.AppId),
-		Body:      bytes.NewBuffer(payload),
-		Method:    "POST",
-		ParseForm: res,
+		URL:      fmt.Sprintf("%s/api/v1/applications/%s/transfer", m.config.MochiPayServerHost, req.AppId),
+		Body:     bytes.NewBuffer(payload),
+		Method:   "POST",
+		Response: res,
 		Headers: map[string]string{
 			"x-application": req.Header.Application,
 			"x-message":     req.Header.Message,
