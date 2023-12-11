@@ -25,9 +25,9 @@ func NewService(cfg *config.Config) Service {
 func (s *APILayer) GetHistoricalExchangeRate(q GetHistoricalExchangeRateQuery) (*GetHistoricalExchangeRateResponse, int, error) {
 	data := &GetHistoricalExchangeRateResponse{}
 	req := util.SendRequestQuery{
-		URL:       fmt.Sprintf(s.getTimeSeriesURL, q.StartDate, q.EndDate, q.Base, q.Target),
-		ParseForm: data,
-		Headers:   s.headers,
+		URL:      fmt.Sprintf(s.getTimeSeriesURL, q.StartDate, q.EndDate, q.Base, q.Target),
+		Response: data,
+		Headers:  s.headers,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -40,9 +40,9 @@ func (s *APILayer) GetHistoricalExchangeRate(q GetHistoricalExchangeRateQuery) (
 func (s *APILayer) GetLatestExchangeRate(q GetLatestExchangeRateQuery) (*GetLatestExchangeRateResponse, int, error) {
 	data := &GetLatestExchangeRateResponse{}
 	req := util.SendRequestQuery{
-		URL:       fmt.Sprintf(s.getLatestRateURL, q.Base, q.Target),
-		ParseForm: data,
-		Headers:   s.headers,
+		URL:      fmt.Sprintf(s.getLatestRateURL, q.Base, q.Target),
+		Response: data,
+		Headers:  s.headers,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {

@@ -31,9 +31,14 @@ type AssociatedAccount struct {
 }
 
 type ErrorResponse struct {
+	Err        error  `json:"err"`
 	Msg        string `json:"msg"`
 	StatusCode int    `json:"status_code"`
 	ErrorCode  string `json:"error_code"`
+}
+
+func (e *ErrorResponse) Error() string {
+	return e.Err.Error()
 }
 
 type GetBalanceDataResponse struct {

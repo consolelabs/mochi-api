@@ -68,8 +68,8 @@ func (h *Handler) ToggleActivityConfig(c *gin.Context) {
 // @Tags        Tono
 // @Accept      json
 // @Produce     json
-// @Param       req   query  request.TonoCommandPermissionsRequest true  "request"
-// @Success     200 {object} response.TonoCommandPermissions
+// @Param       req   query  request.CommandPermissionsRequest true  "request"
+// @Success     200 {object} response.CommandPermissions
 // @Router      /config/command-permissions [get]
 func (h *Handler) GetListCommandPermissions(c *gin.Context) {
 	req := request.CommandPermissionsRequest{}
@@ -95,7 +95,7 @@ func (h *Handler) GetListCommandPermissions(c *gin.Context) {
 // @Tags        Command Permission
 // @Accept      json
 // @Produce     json
-// @Success     302 {object}
+// @Success     302
 // @Router      /config/install-url [get]
 func (h *Handler) GetInstallBotUrl(c *gin.Context) {
 	url, err := h.entities.GetInstallBotUrl()

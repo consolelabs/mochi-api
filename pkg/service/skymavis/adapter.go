@@ -92,11 +92,11 @@ func (s *skymavis) doNetworkNfts(address string) (*response.AxieMarketNftRespons
 
 	res := &response.AxieMarketNftResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/graphql/marketplace", s.cfg.SkyMavisApiBaseUrl),
-		Method:    "POST",
-		Headers:   map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
-		Body:      body,
-		ParseForm: res,
+		URL:      fmt.Sprintf("%s/graphql/marketplace", s.cfg.SkyMavisApiBaseUrl),
+		Method:   "POST",
+		Headers:  map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
+		Body:     body,
+		Response: res,
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetOwnedAxies] util.SendRequest() failed")
@@ -178,11 +178,11 @@ func (s *skymavis) doNetworkFarming(address string) (*response.WalletFarmingResp
 
 	res := &response.WalletFarmingResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/graphql/katana", s.cfg.SkyMavisApiBaseUrl),
-		Method:    "POST",
-		Headers:   map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
-		Body:      body,
-		ParseForm: res,
+		URL:      fmt.Sprintf("%s/graphql/katana", s.cfg.SkyMavisApiBaseUrl),
+		Method:   "POST",
+		Headers:  map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
+		Body:     body,
+		Response: res,
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.GetAddressFarming] util.SendRequest() failed")
@@ -228,10 +228,10 @@ func (s *skymavis) doCacheInternalTxns(hash string) (string, error) {
 func (s *skymavis) doNetworkInternalTxs(hash string) (*response.SkymavisTransactionsResponse, error) {
 	res := &response.SkymavisTransactionsResponse{}
 	status, err := util.SendRequest(util.SendRequestQuery{
-		URL:       fmt.Sprintf("%s/explorer/tx/%s/internal?from=0", s.cfg.SkyMavisApiBaseUrl, hash),
-		Method:    "GET",
-		Headers:   map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
-		ParseForm: res,
+		URL:      fmt.Sprintf("%s/explorer/tx/%s/internal?from=0", s.cfg.SkyMavisApiBaseUrl, hash),
+		Method:   "GET",
+		Headers:  map[string]string{"Content-Type": "application/json", "X-API-Key": s.cfg.SkyMavisApiKey},
+		Response: res,
 	})
 	if err != nil {
 		s.logger.Fields(logger.Fields{"status": status}).Error(err, "[skymavis.doNetworkInternalTxs] util.SendRequest() failed")

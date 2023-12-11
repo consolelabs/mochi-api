@@ -55,6 +55,8 @@ definitions:
         type: string
       short_name:
         type: string
+      type:
+        type: string
     type: object
   model.CoingeckoSupportedTokens:
     properties:
@@ -77,6 +79,23 @@ definitions:
       name:
         type: string
       symbol:
+        type: string
+    type: object
+  model.CommandPermission:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      discord_permission_flag:
+        type: string
+      id:
+        type: integer
+      need_dm:
+        type: boolean
+      updated_at:
         type: string
     type: object
   model.ConfigXpLevel:
@@ -566,14 +585,24 @@ definitions:
     type: object
   model.OffchainTipBotToken:
     properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/model.Chain'
+      chain_id:
+        type: string
       coin_gecko_id:
         type: string
       created_at:
         type: string
+      decimal:
+        type: integer
       icon:
         type: string
       id:
         type: string
+      is_native:
+        type: boolean
       service_fee:
         type: number
       status:
@@ -582,6 +611,8 @@ definitions:
         type: string
       token_name:
         type: string
+      token_price:
+        type: number
       token_symbol:
         type: string
       updated_at:
@@ -786,23 +817,6 @@ definitions:
       name:
         type: string
       symbol:
-        type: string
-    type: object
-  model.TonoCommandPermission:
-    properties:
-      code:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      discord_permission_flag:
-        type: string
-      id:
-        type: integer
-      need_dm:
-        type: boolean
-      updated_at:
         type: string
     type: object
   model.User:
@@ -1382,7 +1396,6 @@ definitions:
       sender:
         type: string
       token:
-        description: AmountString string   `json:"amount_string"`
         type: string
       transfer_type:
         type: string
@@ -1492,6 +1505,8 @@ definitions:
         type: number
       chain_id:
         type: string
+      channel_avatar:
+        type: string
       channel_id:
         type: string
       channel_name:
@@ -1514,6 +1529,10 @@ definitions:
       original_tx_id:
         type: string
       platform:
+        enum:
+        - discord
+        - telegram
+        - web
         type: string
       recipients:
         items:
@@ -1521,6 +1540,8 @@ definitions:
         type: array
       sender:
         type: string
+      theme_id:
+        type: integer
       token:
         type: string
       transfer_type:
@@ -1528,6 +1549,14 @@ definitions:
         - transfer
         - airdrop
         type: string
+    required:
+    - amount
+    - chain_id
+    - platform
+    - recipients
+    - sender
+    - token
+    - transfer_type
     type: object
   request.UnlinkBinance:
     properties:
@@ -1948,6 +1977,13 @@ definitions:
         type: string
       symbol:
         type: string
+    type: object
+  response.CommandPermissions:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.CommandPermission'
+        type: array
     type: object
   response.CompareTokenReponseData:
     properties:
@@ -2726,13 +2762,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3354,6 +3390,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3369,12 +3411,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -3970,13 +4006,6 @@ definitions:
         type: string
       value:
         type: number
-    type: object
-  response.TonoCommandPermissions:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/model.TonoCommandPermission'
-        type: array
     type: object
   response.TopUser:
     properties:
@@ -5089,6 +5118,38 @@ paths:
       summary: Filter config by reaction
       tags:
       - ConfigRole
+  /config/command-permissions:
+    get:
+      consumes:
+      - application/json
+      description: Get list command permissions
+      parameters:
+      - in: query
+        name: code
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandPermissions'
+      summary: Get list command permissions
+      tags:
+      - Tono
+  /config/install-url:
+    get:
+      consumes:
+      - application/json
+      description: Get bot install url
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+      summary: Get bot install url
+      tags:
+      - Command Permission
   /config/role/{guild_id}/admin:
     get:
       consumes:
@@ -7461,6 +7522,7 @@ paths:
       consumes:
       - application/json
       description: API transfer token for tip, airdrop, ...
+      operationId: transferV2
       parameters:
       - description: Transfer token request
         in: body
@@ -7478,25 +7540,6 @@ paths:
       summary: OffChain Tip Bot - Transfer token v2
       tags:
       - Tip
-  /tono/command-permissions:
-    get:
-      consumes:
-      - application/json
-      description: Get Tono command permissions
-      parameters:
-      - in: query
-        name: code
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TonoCommandPermissions'
-      summary: Get Tono command permissions
-      tags:
-      - Tono
   /users:
     post:
       consumes:
