@@ -659,11 +659,12 @@ func RemoveAt[T any](list []T, idx int) []T {
 }
 
 type SendRequestQuery struct {
-	Method    string // default = GET
-	URL       string
-	ParseForm interface{}
-	Headers   map[string]string
-	Body      io.Reader
+	Method      string // default = GET
+	URL         string
+	Response    interface{}
+	ErrResponse interface{}
+	Headers     map[string]string
+	Body        io.Reader
 }
 
 func SendRequest(q SendRequestQuery) (int, error) {
@@ -695,12 +696,12 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	}
 
 	statusCode := res.StatusCode
-	if q.ParseForm != nil {
+	if q.Response != nil {
 		bytes, err := io.ReadAll(res.Body)
 		if err != nil {
 			return statusCode, err
 		}
-		if err := json.Unmarshal(bytes, q.ParseForm); err != nil {
+		if err := json.Unmarshal(bytes, q.Response); err != nil {
 			return statusCode, err
 		}
 		return statusCode, nil

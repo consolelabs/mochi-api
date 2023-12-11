@@ -1,7 +1,6 @@
 package tip
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	"github.com/defipod/mochi/pkg/util"
 )
 
 type Handler struct {
@@ -58,6 +56,7 @@ func (h *Handler) TransferToken(c *gin.Context) {
 }
 
 // TransferTokenV2   godoc
+// @ID          transferV2
 // @Summary     OffChain Tip Bot - Transfer token v2
 // @Description API transfer token for tip, airdrop, ...
 // @Tags        Tip
@@ -67,36 +66,11 @@ func (h *Handler) TransferToken(c *gin.Context) {
 // @Success     200 {object} response.TransferTokenV2Response
 // @Router      /tip/transfer-v2 [post]
 func (h *Handler) TransferTokenV2(c *gin.Context) {
-	req := request.TransferV2Request{}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.TransferToken] - failed to read JSON")
+	var req request.TransferV2Request
+	if err := req.Bind(c); err != nil {
+		h.log.Error(err, "[handler.TransferTokenV2] Bind() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
-	}
-
-	if !util.ValidateNumberSeries(req.Sender) {
-		err := errors.New("sender is invalid")
-		h.log.Error(err, "[handler.TransferTokenV2] validate sender failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	ctxProfileId := c.GetString("profile_id")
-	isMochi := c.GetBool("is_mochi")
-	if !isMochi && ctxProfileId != req.Sender {
-		err := errors.New("you can only transfer tokens from your profile")
-		h.log.Error(err, "[handler.TransferTokenV2] unauthorized sender")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	for _, recipient := range req.Recipients {
-		if !util.ValidateNumberSeries(recipient) {
-			err := errors.New("recipient is invalid")
-			h.log.Error(err, "[handler.TransferTokenV2] validate recipient failed")
-			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-			return
-		}
 	}
 
 	transferHistories, err := h.entities.TransferTokenV2(req)

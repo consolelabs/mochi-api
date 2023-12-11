@@ -173,9 +173,9 @@ func (m *MochiProfile) GetByID(profileID, authorization string) (*GetProfileResp
 
 	res := GetProfileResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &res,
-		Headers:   map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + authorization},
+		URL:      url,
+		Response: &res,
+		Headers:  map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + authorization},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -188,9 +188,9 @@ func (m *MochiProfile) GetAllEvmAccount() (res []*EvmAssociatedAccount, err erro
 	url := fmt.Sprintf("%s/api/v1/associated-accounts/get-evm-account", m.config.MochiProfileServerHost)
 
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &res,
-		Headers:   map[string]string{"Content-Type": "application/json"},
+		URL:      url,
+		Response: &res,
+		Headers:  map[string]string{"Content-Type": "application/json"},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -263,9 +263,9 @@ func (m *MochiProfile) UnlinkDex(profileId, platform string) error {
 func (m *MochiProfile) GetOnboardingStatus(profileId string) (res *OnboardingStatusResponse, err error) {
 	url := fmt.Sprintf("%s/api/v1/profiles/%s/onboarding-status", m.config.MochiProfileServerHost, profileId)
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &res,
-		Headers:   map[string]string{"Content-Type": "application/json"},
+		URL:      url,
+		Response: &res,
+		Headers:  map[string]string{"Content-Type": "application/json"},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -368,11 +368,11 @@ func (m *MochiProfile) GetByIds(profileIds []string) ([]GetProfileResponse, erro
 	url := fmt.Sprintf("%s/api/v1/profiles/list-by-ids", m.config.MochiProfileServerHost)
 	res := []GetProfileResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		Method:    "POST",
-		Headers:   map[string]string{"Content-Type": "application/json"},
-		Body:      bytes.NewBuffer(payload),
-		ParseForm: &res,
+		URL:      url,
+		Method:   "POST",
+		Headers:  map[string]string{"Content-Type": "application/json"},
+		Body:     bytes.NewBuffer(payload),
+		Response: &res,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -393,11 +393,11 @@ func (m *MochiProfile) GetByDiscordIds(discordIds []string) ([]GetProfileRespons
 	url := fmt.Sprintf("%s/api/v1/profiles/list-by-discord-ids", m.config.MochiProfileServerHost)
 	res := []GetProfileResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		Method:    "POST",
-		Headers:   map[string]string{"Content-Type": "application/json"},
-		Body:      bytes.NewBuffer(payload),
-		ParseForm: &res,
+		URL:      url,
+		Method:   "POST",
+		Headers:  map[string]string{"Content-Type": "application/json"},
+		Body:     bytes.NewBuffer(payload),
+		Response: &res,
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {

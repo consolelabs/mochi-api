@@ -106,8 +106,8 @@ func (c *chainExplorer) executeGetGasTracker(url string) (*response.ChainExplore
 
 func (c *chainExplorer) doNetworkGetGasTracker(url string, resp interface{}) error {
 	query := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: resp,
+		URL:      url,
+		Response: resp,
 	}
 	statusCode, err := util.SendRequest(query)
 	if err != nil {

@@ -63,8 +63,8 @@ func (k *Krystal) GetEarningOptions(platforms, chainIds, types, statuses, addres
 	resp := &GetEarningOptionsResponse{}
 	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/earning/options?platforms=%s&chainIds=%s&types=%s&statuses=%s&address=%s", platforms, chainIds, types, statuses, address)
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: resp,
+		URL:      url,
+		Response: resp,
 		Headers: map[string]string{
 			"accept":              "application/json",
 			"x-rate-access-token": k.config.KrystalApiKey,
@@ -115,9 +115,9 @@ func (k *Krystal) doNetwork(address string, data BalanceTokenResponse) (*Balance
 	url := k.config.KrystalBaseUrl + fmt.Sprintf("/all/v1/balance/token?addresses=ethereum:%s&quoteSymbols=usd&sparkline=false&chainIds=%s", address, chainIDsStr)
 
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &data,
-		Headers:   map[string]string{"x-rate-access-token": k.config.KrystalApiKey},
+		URL:      url,
+		Response: &data,
+		Headers:  map[string]string{"x-rate-access-token": k.config.KrystalApiKey},
 	}
 
 	statusCode, err := util.SendRequest(req)
@@ -174,7 +174,7 @@ func (k *Krystal) doNetworkGeneric(req util.SendRequestQuery, response interface
 	// cache data
 	// if error occurs -> ignore
 	cacheKey := req.URL
-	bytes, _ := json.Marshal(&req.ParseForm)
+	bytes, _ := json.Marshal(&req.Response)
 	k.logger.Infof("cache data krystal-service, key: %s", cacheKey)
 	k.cache.Set(cacheKey, string(bytes), 7*24*time.Hour)
 
@@ -198,8 +198,8 @@ func (k *Krystal) buildTx(path string, req interface{}) (*BuildTxResp, error) {
 			"Content-Type":        "application/json",
 			"x-rate-access-token": k.config.KrystalApiKey,
 		},
-		Body:      body,
-		ParseForm: res,
+		Body:     body,
+		Response: res,
 	})
 	if err != nil {
 		k.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{

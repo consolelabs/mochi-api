@@ -33,9 +33,9 @@ func (n *Nghenhan) GetFiatHistoricalChart(base, target, interval string, limit i
 	url := n.baseUrl + fmt.Sprintf("/rate?base=%s&target=%s&interval=%s&limit=%v", tmpBase, tmpTarg, interval, limit)
 	data := response.NghenhanFiatHistoricalChartResponse{}
 	req := util.SendRequestQuery{
-		URL:       url,
-		ParseForm: &data,
-		Headers:   map[string]string{"Content-Type": "application/json"},
+		URL:      url,
+		Response: &data,
+		Headers:  map[string]string{"Content-Type": "application/json"},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
