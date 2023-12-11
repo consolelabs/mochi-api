@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
@@ -60,6 +59,7 @@ func NewService(cfg *config.Config, cache cache.Cache, sentry sentrygo.Service) 
 
 var (
 	coingeckoGetTokenByContractKey = "coingecko-token-contract-key"
+	coingeckoCoinsMarketDataKey    = "coingecko-coins-market-data-key"
 	sentryTags                     = map[string]string{
 		"type": "system",
 	}
@@ -167,32 +167,17 @@ func (c *CoinGecko) GetHistoryCoinInfo(sourceSymbol string, days string) (resp [
 }
 
 func (c *CoinGecko) GetCoinsMarketData(ids []string, sparkline bool, page, pageSize string) ([]response.CoinMarketItemData, error, int) {
-	res := make([]response.CoinMarketItemData, 0)
-	var resTmp []response.CoinMarketItemDataRes
 
-	statusCode, err := util.FetchData(fmt.Sprintf(c.getCoinsMarketData, strings.Join(ids, ","), pageSize, page, sparkline), &resTmp)
-	if err != nil || statusCode != http.StatusOK {
-		if statusCode != http.StatusNotFound {
-			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-				Message: fmt.Sprintf("[API mochi] - Coingecko - GetCoinsMarketData failed %v", err),
-				Tags:    sentryTags,
-				Extra: map[string]interface{}{
-					"ids":       ids,
-					"page":      page,
-					"pageSize":  pageSize,
-					"sparkline": sparkline,
-				},
-			})
-			return nil, err, statusCode
-		}
-		return nil, errs.ErrRecordNotFound, statusCode
+	var data []response.CoinMarketItemData
+	// check if data cached
+	cached, err := c.doCacheCoinsMarketData(ids, sparkline, page, pageSize)
+	if err == nil && cached != "" {
+		go c.doNetworkCoinsMarketData(ids, sparkline, page, pageSize)
+		return data, json.Unmarshal([]byte(cached), &data), http.StatusOK
 	}
 
-	for _, r := range resTmp {
-		res = append(res, r.ToCoinMarketItemData())
-	}
-
-	return res, nil, http.StatusOK
+	// call network
+	return c.doNetworkCoinsMarketData(ids, sparkline, page, pageSize)
 }
 
 func (c *CoinGecko) GetSupportedCoins() ([]response.CoingeckoSupportedTokenResponse, error, int) {

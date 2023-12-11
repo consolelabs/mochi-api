@@ -518,7 +518,7 @@ func Uint8ToIntPointer(u uint8) *int {
 }
 
 func FetchData(url string, parseForm interface{}) (int, error) {
-	client := &http.Client{Timeout: time.Second * 4}
+	client := &http.Client{Timeout: time.Second * 30}
 	resp, err := client.Get(url)
 	if err != nil {
 		if strings.Contains(err.Error(), "context deadline exceeded") {
@@ -671,7 +671,7 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	if q.Method == "" {
 		q.Method = http.MethodGet
 	}
-	client := &http.Client{Timeout: time.Second * 5}
+	client := &http.Client{Timeout: time.Second * 30}
 	req, _ := http.NewRequest(q.Method, q.URL, q.Body)
 	for k, v := range q.Headers {
 		req.Header.Set(k, v)
