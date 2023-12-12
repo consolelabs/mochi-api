@@ -5001,6 +5001,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/profiles/{profile_id}/global-info": {
+            "get": {
+                "description": "Get profile's global info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get profile's global info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetGlobalProfileInfoResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/swap": {
             "post": {
                 "description": "Execute swap token",
@@ -10032,6 +10064,23 @@ const docTemplate = `{
                 },
                 "to": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GetGlobalProfileInfoResponse": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer"
+                },
+                "rank": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

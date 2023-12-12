@@ -11,4 +11,5 @@ type IHandler interface {
 
 	SendUserXP(c *gin.Context)
 	GetUserBalance(c *gin.Context)
+	GetGlobalProfileInfo(c *gin.Context)
 }

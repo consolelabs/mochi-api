@@ -2464,6 +2464,17 @@ definitions:
       to:
         type: string
     type: object
+  response.GetGlobalProfileInfoResponse:
+    properties:
+      level:
+        type: integer
+      rank:
+        type: integer
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
   response.GetGmConfigResponse:
     properties:
       data:
@@ -2762,13 +2773,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3390,18 +3401,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3411,6 +3412,16 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -7433,6 +7444,27 @@ paths:
       summary: Get product bot commands
       tags:
       - ProductMetadata
+  /profiles/{profile_id}/global-info:
+    get:
+      consumes:
+      - application/json
+      description: Get profile's global info
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGlobalProfileInfoResponse'
+      summary: Get profile's global info
+      tags:
+      - Profile
   /swap:
     post:
       consumes:

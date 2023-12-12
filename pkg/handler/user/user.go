@@ -251,3 +251,38 @@ func (h *Handler) GetUserBalance(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(balance, nil, nil, nil))
 }
+
+// GET /profiles/:profile_id/global-info
+// GetGlobalProfileInfo     godoc
+// @Summary     Get profile's global info
+// @Description Get profile's global info
+// @Tags        Profile
+// @Accept      json
+// @Produce     json
+// @Param       profile_id path string true "profile ID"
+// @Success     200 {object} response.GetGlobalProfileInfoResponse
+// @Router      /profiles/{profile_id}/global-info [get]
+func (h *Handler) GetGlobalProfileInfo(c *gin.Context) {
+	var req request.GetGlobalProfileInfoRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Error(err, "[handler.GetGlobalProfileInfo] BindUri() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.ProfileID) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetGlobalProfileInfo] invalid profile_id")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetGlobalProfileInfo(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetGlobalProfileInfo] entity.GetGlobalProfileInfo() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

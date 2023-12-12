@@ -384,6 +384,14 @@ func (e *Entity) GetUserProfile(req request.GetUserProfileRequest) (*response.Ge
 	}, nil
 }
 
+func (e *Entity) GetGlobalProfileInfo(req request.GetGlobalProfileInfoRequest) (*response.GetGlobalProfileInfoResponse, error) {
+	return &response.GetGlobalProfileInfoResponse{
+		Level: 17,
+		Rank:  3,
+		Roles: []string{"@core", "@mod", "@labs"},
+	}, nil
+}
+
 func (e *Entity) GetRoleByGuildLevelConfig(guildID, profileID, userID string) (string, int, error) {
 	if e.discord == nil {
 		return "", 0, nil
