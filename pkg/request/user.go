@@ -40,3 +40,7 @@ type GetTopUsersRequest struct {
 	Query     string `form:"query"`
 	Sort      string `form:"sort"`
 }
+
+type GetGlobalProfileInfoRequest struct {
+	ProfileID string `uri:"profile_id" binding:"required"`
+}

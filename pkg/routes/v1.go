@@ -31,6 +31,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.GET("/validate-user", h.Guild.ValidateUser)
 	}
 
+	profileGroup := v1.Group("/profiles")
+	{
+		profileGroup.GET("/:profile_id/global-info", h.User.GetGlobalProfileInfo)
+	}
+
 	userGroup := v1.Group("/users")
 	{
 		userGroup.POST("", h.User.IndexUsers)
