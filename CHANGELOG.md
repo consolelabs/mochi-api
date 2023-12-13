@@ -1,3 +1,15 @@
+# [6.25.0](https://github.com/consolelabs/mochi-api/compare/v6.24.4...v6.25.0) (2023-12-13)
+
+
+### Bug Fixes
+
+* add retry nghenhan service ([#1278](https://github.com/consolelabs/mochi-api/issues/1278)) ([c5649c3](https://github.com/consolelabs/mochi-api/commit/c5649c30b0648ee98707b0cbe13c4e1453e167ce))
+
+
+### Features
+
+* mock API - global profile info ([833d7d3](https://github.com/consolelabs/mochi-api/commit/833d7d3fb5aebc7a9fb2792f9d5c83483210d153))
+
 ## [6.24.4](https://github.com/consolelabs/mochi-api/compare/v6.24.3...v6.24.4) (2023-12-11)
 
 
