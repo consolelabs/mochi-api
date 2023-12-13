@@ -39,19 +39,30 @@ func (n *Nghenhan) GetFiatHistoricalChart(base, target, interval string, limit i
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
-		n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - Nghenhan - GetFiatHistoricalChart failed %v", err),
-			Tags:    sentryTags,
-			Extra: map[string]interface{}{
-				"base":     base,
-				"target":   target,
-				"interval": interval,
-				"limit":    limit,
-			},
-		})
-		return &response.NghenhanFiatHistoricalChartResponse{
-			Data: []response.NghenhanFiatHistoricalChart{},
-		}, nil
+		retry := 3
+		for retry > 0 {
+			statusCode, err = util.SendRequest(req)
+			if err == nil && statusCode == http.StatusOK {
+				break
+			}
+			retry--
+		}
+
+		if retry == 0 {
+			n.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+				Message: fmt.Sprintf("[API mochi] - Nghenhan - GetFiatHistoricalChart failed %v", err),
+				Tags:    sentryTags,
+				Extra: map[string]interface{}{
+					"base":     base,
+					"target":   target,
+					"interval": interval,
+					"limit":    limit,
+				},
+			})
+			return &response.NghenhanFiatHistoricalChartResponse{
+				Data: []response.NghenhanFiatHistoricalChart{},
+			}, nil
+		}
 	}
 	return &data, nil
 }
