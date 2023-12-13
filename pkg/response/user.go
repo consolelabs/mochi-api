@@ -52,6 +52,12 @@ type GetUserProfileResponse struct {
 	GuildRank    int                  `json:"guild_rank"`
 }
 
+type GetGlobalProfileInfoResponse struct {
+	Level int      `json:"level"`
+	Rank  int      `json:"rank"`
+	Roles []string `json:"roles"`
+}
+
 // For swagger
 type GetDataUserProfileResponse struct {
 	Data *GetUserProfileResponse `json:"data"`
