@@ -1,3 +1,11 @@
+## [6.24.4](https://github.com/consolelabs/mochi-api/compare/v6.24.3...v6.24.4) (2023-12-11)
+
+
+### Bug Fixes
+
+* cache market data coingecko ([#1276](https://github.com/consolelabs/mochi-api/issues/1276)) ([19a11e8](https://github.com/consolelabs/mochi-api/commit/19a11e8b6f335d6eb30da6f1050466482d80d1e9))
+* transfer-v2 validation ([1c693ea](https://github.com/consolelabs/mochi-api/commit/1c693ea149a1a2b89f0812229b577a6c8c8b12df))
+
 ## [6.24.3](https://github.com/consolelabs/mochi-api/compare/v6.24.2...v6.24.3) (2023-12-08)
 
 
