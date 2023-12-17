@@ -13,6 +13,10 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
+var (
+	retryMap map[string]string = make(map[string]string)
+)
+
 func (c *Covalent) doCacheSolanaTokenBalances(address string) (string, error) {
 	return c.cache.GetString(fmt.Sprintf("%s-%s", covalentSolanaTokenBalanceKey, strings.ToLower(address)))
 }
@@ -120,6 +124,7 @@ func (c *Covalent) doNetworkTokenBalances(chainID int, address string, retry int
 		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] util.FetchData() failed")
 		return nil, err
 	}
+
 	if res.Error {
 		if res.ErrorCode == http.StatusNotAcceptable {
 			//TODO: predictably timeout -> should ignore now to avoid missing data from other chains. Will be fixed in the future
@@ -127,20 +132,39 @@ func (c *Covalent) doNetworkTokenBalances(chainID int, address string, retry int
 			return res, nil
 		}
 
-		if retry == 0 {
-			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
-				Tags:    sentryTags,
-				Extra: map[string]interface{}{
-					"chainID": chainID,
-					"address": address,
-					"retry":   retry,
-				},
-			})
-			return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+		c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] cannot get data from covalent, retrying ...")
+		retryTime := retryMap[fmt.Sprintf("TokenBalances-%d-%s", chainID, address)]
+		t, _ := time.Parse(time.RFC3339, retryTime)
+		now := time.Now()
+
+		// current temp solution to fix covalent exceed quota
+		// check if last time retry < now + 30 minutes -> allow retry else ignore
+		// TODO: need real solution for this
+		if now.Sub(t) > 30*time.Minute {
+			c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] time passed, allow retry")
+			// temp fix for covalent bug
+			retryMap[fmt.Sprintf("TokenBalances-%d-%s", chainID, address)] = time.Now().Format(time.RFC3339)
+
+			if retry == 0 {
+				c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+					Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+					Tags:    sentryTags,
+					Extra: map[string]interface{}{
+						"chainID": chainID,
+						"address": address,
+						"retry":   retry,
+					},
+				})
+
+				return nil, fmt.Errorf("%d - %s", res.ErrorCode, res.ErrorMessage)
+			} else {
+				return c.GetTokenBalances(chainID, address, retry-1)
+			}
 		} else {
-			return c.GetTokenBalances(chainID, address, retry-1)
+			c.logger.Fields(logger.Fields{"endpoint": endpoint, "code": code}).Error(err, "[covalent.GetTokenBalances] time not passed, ignore retry")
+			return &GetTokenBalancesResponse{Data: &GetTokenBalancesData{Items: nil}}, nil
 		}
+
 	}
 
 	// cache solana-balance-token-data
