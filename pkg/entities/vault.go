@@ -151,7 +151,6 @@ func (e *Entity) GetVault(req request.GetVaultRequest) (*model.Vault, error) {
 	}
 
 	if req.NoFetchAmount != "true" {
-
 		walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "evm", Address: vault.WalletAddress})
 		if err != nil {
 			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
@@ -159,14 +158,14 @@ func (e *Entity) GetVault(req request.GetVaultRequest) (*model.Vault, error) {
 		}
 		vault.TotalAmountEVM = fmt.Sprintf("%.4f", sumBal(walletAssetsEVM))
 
-		walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
-		if err != nil {
-			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
-			vault.TotalAmountSolana = "0"
-		}
-		if len(walletAssetsSolana) > 0 {
-			vault.TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
-		}
+		// walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
+		// if err != nil {
+		// 	e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
+		// 	vault.TotalAmountSolana = "0"
+		// }
+		// if len(walletAssetsSolana) > 0 {
+		// 	vault.TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+		// }
 
 	}
 
