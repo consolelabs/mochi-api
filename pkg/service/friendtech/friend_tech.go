@@ -27,7 +27,7 @@ var commonHeader = map[string]string{
 func NewService(cfg *config.Config, sentry sentrygo.Service) Service {
 	baseUrl := cfg.FriendScanAPI
 	if baseUrl == "" {
-		baseUrl = "https://api.friendscan.tech"
+		baseUrl = "https://api.friendscan.io"
 	}
 
 	return &FriendTech{
