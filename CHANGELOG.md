@@ -1,3 +1,10 @@
+## [6.25.3](https://github.com/consolelabs/mochi-api/compare/v6.25.2...v6.25.3) (2023-12-19)
+
+
+### Bug Fixes
+
+* init wrong friendtech api endpoint ([145981e](https://github.com/consolelabs/mochi-api/commit/145981e5f64d8613de203c7ebc7f6665091b2262))
+
 ## [6.25.2](https://github.com/consolelabs/mochi-api/compare/v6.25.1...v6.25.2) (2023-12-19)
 
 
