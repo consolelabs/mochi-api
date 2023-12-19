@@ -1,3 +1,10 @@
+## [6.25.2](https://github.com/consolelabs/mochi-api/compare/v6.25.1...v6.25.2) (2023-12-19)
+
+
+### Bug Fixes
+
+* remove default friend scan api ([1ebfacc](https://github.com/consolelabs/mochi-api/commit/1ebfacc6f7045405f6bd449d22d0ccd6f22fc475))
+
 ## [6.25.1](https://github.com/consolelabs/mochi-api/compare/v6.25.0...v6.25.1) (2023-12-19)
 
 
