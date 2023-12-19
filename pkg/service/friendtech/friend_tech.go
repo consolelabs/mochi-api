@@ -32,6 +32,7 @@ func NewService(cfg *config.Config, sentry sentrygo.Service) Service {
 
 	return &FriendTech{
 		baseUrl: baseUrl,
+		sentry:  sentry,
 	}
 }
 
