@@ -377,6 +377,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		MochiAppPrivateKey: v.GetString("MOCHI_APP_PRIVATE_KEY"),
 
+		FriendScanAPI: v.GetString("FRIEND_SCAN_API"),
+
 		SentryDsn:    v.GetString("SENTRY_DSN"),
 		TonConfigURL: v.GetString("TON_CONFIG_URL"),
 	}
