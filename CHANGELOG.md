@@ -1,3 +1,11 @@
+## [6.25.1](https://github.com/consolelabs/mochi-api/compare/v6.25.0...v6.25.1) (2023-12-19)
+
+
+### Bug Fixes
+
+* friendtech svc is missing initiating sentry ([ea22a5d](https://github.com/consolelabs/mochi-api/commit/ea22a5d3d92087b098ce49da5ba1a70d9c2c8cdc))
+* temp solution handle exceed covalent quote ([#1279](https://github.com/consolelabs/mochi-api/issues/1279)) ([7fa2411](https://github.com/consolelabs/mochi-api/commit/7fa24119a4596a1aef8b2cbb630061ce76e8c4ee))
+
 # [6.25.0](https://github.com/consolelabs/mochi-api/compare/v6.24.4...v6.25.0) (2023-12-13)
 
 
