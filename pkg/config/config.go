@@ -455,7 +455,6 @@ func LoadConfig(loaders []Loader) Config {
 	v.SetDefault("BIRDEYE_API_KEY", "bc1bdb09bc434a3bb88885fa0ea1a6d1")
 	v.SetDefault("SUI_JSON_RPC", "https://fullnode.mainnet.sui.io")
 	v.SetDefault("SKY_MAVIS_API_BASE_URL", "https://api-gateway.skymavis.com")
-	v.SetDefault("FRIEND_SCAN_API", "https://api.friendscan.tech")
 
 	for idx := range loaders {
 		newV, err := loaders[idx].Load(*v)
