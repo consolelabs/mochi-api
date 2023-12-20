@@ -117,20 +117,20 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 
 	if req.NoFetchAmount != "true" {
 		for i, vault := range vaults {
-			walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "evm", Address: vault.WalletAddress})
+			walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "evm", Address: vault.WalletAddress, FetchBaseChain: false})
 			if err != nil {
 				e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
 				return nil, err
 			}
 			vaults[i].TotalAmountEVM = fmt.Sprintf("%.4f", sumBal(walletAssetsEVM))
-			walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
-			if err != nil {
-				e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
-				vaults[i].TotalAmountSolana = "0"
-			}
-			if len(walletAssetsSolana) > 0 {
-				vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
-			}
+			// walletAssetsSolana, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "sol", Address: vault.SolanaWalletAddress})
+			// if err != nil {
+			// 	e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
+			// 	vaults[i].TotalAmountSolana = "0"
+			// }
+			// if len(walletAssetsSolana) > 0 {
+			// 	vaults[i].TotalAmountSolana = fmt.Sprintf("%.4f", sumBal(walletAssetsSolana))
+			// }
 		}
 	}
 
@@ -151,7 +151,7 @@ func (e *Entity) GetVault(req request.GetVaultRequest) (*model.Vault, error) {
 	}
 
 	if req.NoFetchAmount != "true" {
-		walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "evm", Address: vault.WalletAddress})
+		walletAssetsEVM, _, _, err := e.ListWalletAssets(request.ListWalletAssetsRequest{Type: "evm", Address: vault.WalletAddress, FetchBaseChain: false})
 		if err != nil {
 			e.log.Fields(logger.Fields{"vault": vault}).Errorf(err, "[entity.GetVaults] e.ListWalletAssets() failed")
 			return nil, err
