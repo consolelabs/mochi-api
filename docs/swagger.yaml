@@ -654,6 +654,31 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.PayToken:
+    properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/model.Chain'
+      chain_id:
+        type: string
+      coin_gecko_id:
+        type: string
+      decimal:
+        type: integer
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      native:
+        type: boolean
+      price:
+        type: number
+      symbol:
+        type: string
+    type: object
   model.PrivacyCustomSetting:
     properties:
       platform:
@@ -875,7 +900,7 @@ definitions:
       min:
         type: number
       token:
-        $ref: '#/definitions/model.Token'
+        $ref: '#/definitions/model.PayToken'
       token_id:
         type: string
     type: object
@@ -947,12 +972,12 @@ definitions:
       default_receiver_platform:
         type: string
       default_token:
-        $ref: '#/definitions/model.Token'
+        $ref: '#/definitions/model.PayToken'
       default_token_id:
         type: string
       prioritized_token:
         items:
-          $ref: '#/definitions/model.Token'
+          $ref: '#/definitions/model.PayToken'
         type: array
       prioritized_token_ids:
         items:
@@ -1776,13 +1801,6 @@ definitions:
       discord_user_id:
         type: string
     type: object
-  request.UpdateActivityNotificationSettingPayloadRequest:
-    properties:
-      enable:
-        type: boolean
-    required:
-    - enable
-    type: object
   request.UpdateDaoVoteRequest:
     properties:
       choice:
@@ -1799,18 +1817,6 @@ definitions:
         type: integer
       increase_alert_at:
         type: integer
-    type: object
-  request.UpdateGeneralNotificationSettingPayloadRequest:
-    properties:
-      enable:
-        type: boolean
-      platforms:
-        items:
-          type: string
-        type: array
-    required:
-    - enable
-    - platforms
     type: object
   request.UpdateGeneralSettingsPayloadRequest:
     properties:
@@ -1836,6 +1842,23 @@ definitions:
         type: string
       log_channel:
         type: string
+    type: object
+  request.UpdateNotificationSettingPayloadRequest:
+    properties:
+      enable:
+        type: boolean
+      flag:
+        additionalProperties:
+          type: boolean
+        type: object
+      platforms:
+        items:
+          type: string
+        type: array
+    required:
+    - enable
+    - flag
+    - platforms
     type: object
   request.UpdateQuestProgressRequest:
     properties:
@@ -3022,13 +3045,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_1y_change:
+        type: number
       usd_7d_change:
         type: number
       usd_14d_change:
         type: number
       usd_1h_change:
-        type: number
-      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -3650,30 +3673,30 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
+      price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_1y:
+        type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
       price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_1h:
-        type: number
-      price_change_percentage_1y:
-        type: number
-      price_change_percentage_7d:
-        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -7841,7 +7864,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/request.UpdateGeneralNotificationSettingPayloadRequest'
+          $ref: '#/definitions/request.UpdateNotificationSettingPayloadRequest'
       produces:
       - application/json
       responses:
@@ -7860,54 +7883,6 @@ paths:
       security:
       - BearerAuth: []
       summary: update profile's notification settings
-      tags:
-      - Settings
-  /profiles/{profile_id}/settings/notifications/activity/{group}/{key}:
-    put:
-      consumes:
-      - application/json
-      description: update profile's activity notification settings
-      operationId: updateUserActivityNotificationSettings
-      parameters:
-      - description: profile ID
-        in: path
-        name: profile_id
-        required: true
-        type: string
-      - description: 'notification group. available values: `wallet`, `app`, `community`'
-        in: path
-        name: group
-        required: true
-        type: string
-      - description: notification key
-        in: path
-        name: key
-        required: true
-        type: string
-      - description: payload
-        in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpdateActivityNotificationSettingPayloadRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: successful operation
-          schema:
-            $ref: '#/definitions/response.UserNotificationSettingResponse'
-        "400":
-          description: bad request
-        "401":
-          description: unauthorized
-        "404":
-          description: not found
-        "500":
-          description: internal server error
-      security:
-      - BearerAuth: []
-      summary: update profile's activity notification settings
       tags:
       - Settings
   /swap:

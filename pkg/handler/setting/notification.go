@@ -58,7 +58,7 @@ func (h *handler) GetUserNotificationSettings(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param profile_id path string true "profile ID"
-// @Param payload body request.UpdateGeneralNotificationSettingPayloadRequest true "payload"
+// @Param payload body request.UpdateNotificationSettingPayloadRequest true "payload"
 // @Success 200 {object} response.UserNotificationSettingResponse "successful operation"
 // @Failure 400 "bad request"
 // @Failure 401 "unauthorized"
@@ -76,7 +76,7 @@ func (h *handler) UpdateUserNotificationSettings(c *gin.Context) {
 		return
 	}
 
-	var payload request.UpdateGeneralNotificationSettingPayloadRequest
+	var payload request.UpdateNotificationSettingPayloadRequest
 	if err := c.BindJSON(&payload); err != nil {
 		logger.WithError(err).Error("BindJSON() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
@@ -87,53 +87,6 @@ func (h *handler) UpdateUserNotificationSettings(c *gin.Context) {
 	if err != nil {
 		logger.WithFields(logrus.Fields{"uri": uri, "payload": payload}).WithError(err).Error("entities.UpdateUserNotificationSettings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("failed to update user notification settings"), nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
-}
-
-// PUT /profiles/:profile_id/settings/notifications/activity/:group/:key
-// UpdateUserActivityNotificationSettings update profile's activity notification settings
-// @ID updateUserActivityNotificationSettings
-// @Summary update profile's activity notification settings
-// @Description update profile's activity notification settings
-// @Tags Settings
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param profile_id path string true "profile ID"
-// @Param group path string true "notification group. available values: `wallet`, `app`, `community`"
-// @Param key path string true "notification key"
-// @Param payload body request.UpdateActivityNotificationSettingPayloadRequest true "payload"
-// @Success 200 {object} response.UserNotificationSettingResponse "successful operation"
-// @Failure 400 "bad request"
-// @Failure 401 "unauthorized"
-// @Failure 404 "not found"
-// @Failure 500 "internal server error"
-// @Router /profiles/{profile_id}/settings/notifications/activity/{group}/{key} [put]
-func (h *handler) UpdateUserActivityNotificationSettings(c *gin.Context) {
-	logger.Debug("api call ", c.Request.RequestURI)
-	defer logger.Debug("api finish ", c.Request.RequestURI)
-
-	var uri request.UpdateActivityNotificationSettingUriRequest
-	if err := c.BindUri(&uri); err != nil {
-		logger.WithError(err).Error("BindUri() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	var payload request.UpdateActivityNotificationSettingPayloadRequest
-	if err := c.BindJSON(&payload); err != nil {
-		logger.WithError(err).Error("BindJSON() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
-		return
-	}
-
-	data, err := h.entities.UpdateUserActivityNotificationSettings(uri, payload)
-	if err != nil {
-		logger.WithFields(logrus.Fields{"uri": uri, "payload": payload}).WithError(err).Error("entities.UpdateUserActivityNotificationSettings() failed")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("failed to update user activity notification settings"), nil))
 		return
 	}
 

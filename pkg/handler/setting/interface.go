@@ -10,5 +10,4 @@ type IHandler interface {
 	// notification
 	GetUserNotificationSettings(c *gin.Context)
 	UpdateUserNotificationSettings(c *gin.Context)
-	UpdateUserActivityNotificationSettings(c *gin.Context)
 }
