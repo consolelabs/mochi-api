@@ -5221,80 +5221,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UpdateGeneralNotificationSettingPayloadRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/response.UserNotificationSettingResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "bad request"
-                    },
-                    "401": {
-                        "description": "unauthorized"
-                    },
-                    "404": {
-                        "description": "not found"
-                    },
-                    "500": {
-                        "description": "internal server error"
-                    }
-                }
-            }
-        },
-        "/profiles/{profile_id}/settings/notifications/activity/{group}/{key}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "update profile's activity notification settings",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "update profile's activity notification settings",
-                "operationId": "updateUserActivityNotificationSettings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "profile ID",
-                        "name": "profile_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "notification group. available values: ` + "`" + `wallet` + "`" + `, ` + "`" + `app` + "`" + `, ` + "`" + `community` + "`" + `",
-                        "name": "group",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "notification key",
-                        "name": "key",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "payload",
-                        "name": "payload",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpdateActivityNotificationSettingPayloadRequest"
+                            "$ref": "#/definitions/request.UpdateNotificationSettingPayloadRequest"
                         }
                     }
                 ],
@@ -7601,6 +7528,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PayToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain": {
+                    "$ref": "#/definitions/model.Chain"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "coin_gecko_id": {
+                    "type": "string"
+                },
+                "decimal": {
+                    "type": "integer"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "native": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
         "model.PrivacyCustomSetting": {
             "type": "object",
             "properties": {
@@ -7938,7 +7903,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "token": {
-                    "$ref": "#/definitions/model.Token"
+                    "$ref": "#/definitions/model.PayToken"
                 },
                 "token_id": {
                     "type": "string"
@@ -8048,7 +8013,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "default_token": {
-                    "$ref": "#/definitions/model.Token"
+                    "$ref": "#/definitions/model.PayToken"
                 },
                 "default_token_id": {
                     "type": "string"
@@ -8056,7 +8021,7 @@ const docTemplate = `{
                 "prioritized_token": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Token"
+                        "$ref": "#/definitions/model.PayToken"
                     }
                 },
                 "prioritized_token_ids": {
@@ -9297,17 +9262,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UpdateActivityNotificationSettingPayloadRequest": {
-            "type": "object",
-            "required": [
-                "enable"
-            ],
-            "properties": {
-                "enable": {
-                    "type": "boolean"
-                }
-            }
-        },
         "request.UpdateDaoVoteRequest": {
             "type": "object",
             "required": [
@@ -9331,24 +9285,6 @@ const docTemplate = `{
                 },
                 "increase_alert_at": {
                     "type": "integer"
-                }
-            }
-        },
-        "request.UpdateGeneralNotificationSettingPayloadRequest": {
-            "type": "object",
-            "required": [
-                "enable",
-                "platforms"
-            ],
-            "properties": {
-                "enable": {
-                    "type": "boolean"
-                },
-                "platforms": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -9387,6 +9323,31 @@ const docTemplate = `{
                 },
                 "log_channel": {
                     "type": "string"
+                }
+            }
+        },
+        "request.UpdateNotificationSettingPayloadRequest": {
+            "type": "object",
+            "required": [
+                "enable",
+                "flag",
+                "platforms"
+            ],
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "flag": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
+                },
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

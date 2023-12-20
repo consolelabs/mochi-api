@@ -510,11 +510,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		{
 			notification.GET("", h.Setting.GetUserNotificationSettings)
 			notification.PUT("", h.Setting.UpdateUserNotificationSettings)
-
-			activity := notification.Group("/activity")
-			{
-				activity.PUT("/:group/:key", h.Setting.UpdateUserActivityNotificationSettings)
-			}
 		}
 	}
 }

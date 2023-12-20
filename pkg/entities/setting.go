@@ -114,10 +114,6 @@ func (e *Entity) GetUserNotificationSettings(uri request.UserSettingBaseUriReque
 	return &userNotiSettings, nil
 }
 
-func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateGeneralNotificationSettingPayloadRequest) (*model.UserNotificationSetting, error) {
-	return &userNotiSettings, nil
-}
-
-func (e *Entity) UpdateUserActivityNotificationSettings(uri request.UpdateActivityNotificationSettingUriRequest, payload request.UpdateActivityNotificationSettingPayloadRequest) (*model.UserNotificationSetting, error) {
+func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateNotificationSettingPayloadRequest) (*model.UserNotificationSetting, error) {
 	return &userNotiSettings, nil
 }

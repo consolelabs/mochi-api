@@ -68,17 +68,8 @@ type PrivacySetting struct {
 	Wallets        *BasePrivacySetting `json:"wallets"`
 }
 
-type UpdateGeneralNotificationSettingPayloadRequest struct {
-	Enable    bool     `json:"enable" binding:"required"`
-	Platforms []string `json:"platforms" binding:"required"`
-}
-
-type UpdateActivityNotificationSettingUriRequest struct {
-	UserSettingBaseUriRequest
-	Group string `uri:"group" binding:"required"`
-	Key   string `uri:"key" binding:"required"`
-}
-
-type UpdateActivityNotificationSettingPayloadRequest struct {
-	Enable bool `json:"enable" binding:"required"`
+type UpdateNotificationSettingPayloadRequest struct {
+	Enable    bool            `json:"enable" binding:"required"`
+	Platforms []string        `json:"platforms" binding:"required"`
+	Flags     map[string]bool `json:"flag" binding:"required"`
 }
