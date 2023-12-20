@@ -430,13 +430,15 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 
 	assets = e.enrichDataWalletAsset(assets)
 
-	baseAsset, err := e.listBaseWalletAssets(req)
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] entity.listBaseWalletAssets() failed")
-		return nil, "", "", err
-	}
+	if req.FetchBaseChain {
+		baseAsset, err := e.listBaseWalletAssets(req)
+		if err != nil {
+			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.listEvmWalletAssets] entity.listBaseWalletAssets() failed")
+			return nil, "", "", err
+		}
 
-	assets = append(assets, baseAsset...)
+		assets = append(assets, baseAsset...)
+	}
 
 	// calculate pnl
 	pnl, latestSnapshotBal, err := e.calculateWalletSnapshot(address, true, assets)

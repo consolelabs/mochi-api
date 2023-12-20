@@ -64,8 +64,9 @@ type UntrackWalletRequest struct {
 
 type ListWalletAssetsRequest struct {
 	WatchlistBaseRequest
-	Address string `uri:"address" binding:"required"`
-	Type    string `uri:"type" binding:"required"`
+	Address        string `uri:"address" binding:"required"`
+	Type           string `uri:"type" binding:"required"`
+	FetchBaseChain bool   `json:"fetch_base_chain"`
 }
 
 type ListWalletTransactionsRequest struct {
