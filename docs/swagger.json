@@ -7459,9 +7459,6 @@
                 "group": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "key": {
                     "type": "string"
                 }
@@ -7893,12 +7890,6 @@
                 },
                 "min": {
                     "type": "number"
-                },
-                "token": {
-                    "$ref": "#/definitions/model.PayToken"
-                },
-                "token_id": {
-                    "type": "string"
                 }
             }
         },
@@ -8022,7 +8013,7 @@
                         "type": "string"
                     }
                 },
-                "profileId": {
+                "profile_id": {
                     "type": "string"
                 },
                 "tx_limit_enable": {
@@ -9322,14 +9313,14 @@
             "type": "object",
             "required": [
                 "enable",
-                "flag",
+                "flags",
                 "platforms"
             ],
             "properties": {
                 "enable": {
                     "type": "boolean"
                 },
-                "flag": {
+                "flags": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "boolean"

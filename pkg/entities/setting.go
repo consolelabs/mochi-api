@@ -1,71 +1,196 @@
 package entities
 
 import (
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
 	"github.com/defipod/mochi/pkg/request"
 )
 
-var payment model.UserPaymentSetting = model.UserPaymentSetting{
-	ProfileId: "50453",
-	DefaultMoneySource: model.MoneySource{
-		Platform:           "evm",
-		PlatformIdentifier: "0xa1bc23fabefbaabfaebb446",
-	},
-	DefaultReceiverPlatform: "discord",
-	PrioritizedTokenIds:     []string{"941f0fb1-00da-49dc-a538-5e81fc874cb4", "61388b7c-5505-4fdf-8084-077422369a93"},
-	DefaultTokenId:          "941f0fb1-00da-49dc-a538-5e81fc874cb4",
-	DefaultMessageEnable:    true,
-	DefaultMessageSettings: []model.DefaultMessageSetting{
-		{Action: "tip", Message: "take my money"},
-	},
-	TxLimitEnable: true,
-	TxLimitSettings: []model.TxLimitSetting{
-		{Action: "tip", Max: 20},
-		{Action: "airdrop", Min: 2},
-	},
-	DefaultToken: &model.PayToken{Id: "941f0fb1-00da-49dc-a538-5e81fc874cb4", Symbol: "ICY"},
-	PrioritizedTokens: []model.PayToken{
-		{Id: "941f0fb1-00da-49dc-a538-5e81fc874cb4", Symbol: "ICY"},
-		{Id: "61388b7c-5505-4fdf-8084-077422369a93", Symbol: "FTM"},
-	},
+func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetting {
+	return model.UserPaymentSetting{
+		ProfileId: profileId,
+		DefaultMoneySource: model.MoneySource{
+			Platform:           "mochi",
+			PlatformIdentifier: "mochi-balance",
+		},
+		DefaultReceiverPlatform: "discord",
+		PrioritizedTokenIds:     []string{},
+		DefaultTokenId:          "",
+		DefaultMessageEnable:    false,
+		DefaultMessageSettings:  []model.DefaultMessageSetting{},
+		TxLimitEnable:           false,
+		TxLimitSettings:         []model.TxLimitSetting{},
+	}
 }
 
-var privacy model.UserPrivacySetting = model.UserPrivacySetting{
-	ProfileId: "50453",
-	Tx: &model.BasePrivacySetting{
-		GeneralTargetGroup:   model.TargetGroupAll,
-		GeneralPlatformGroup: model.PlatformGroupCustom,
-		CustomSettings: []model.PrivacyCustomSetting{
-			{TargetGroup: model.TargetGroupFriends, Platform: "discord"},
-			{TargetGroup: model.TargetGroupReceivers, Platform: "telegram"},
-			{TargetGroup: model.TargetGroupAll, Platform: "website"},
+func (e *Entity) initUserPrivacySetting(profileId string) model.UserPrivacySetting {
+	return model.UserPrivacySetting{
+		ProfileId: profileId,
+		Tx: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroupAll,
+			GeneralPlatformGroup: model.PlatformGroupAll,
+			CustomSettings:       []model.PrivacyCustomSetting{},
 		},
-	},
-	SocialAccounts: &model.BasePrivacySetting{
-		GeneralTargetGroup:   model.TargetGroupAll,
-		GeneralPlatformGroup: model.PlatformGroupCustom,
-		CustomSettings: []model.PrivacyCustomSetting{
-			{TargetGroup: model.TargetGroupFriends, Platform: "discord"},
-			{TargetGroup: model.TargetGroupReceivers, Platform: "telegram"},
-			{TargetGroup: model.TargetGroupAll, Platform: "website"},
+		SocialAccounts: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroupAll,
+			GeneralPlatformGroup: model.PlatformGroupAll,
+			CustomSettings:       []model.PrivacyCustomSetting{},
 		},
-	},
-	Wallets: &model.BasePrivacySetting{
-		GeneralTargetGroup:   model.TargetGroupAll,
-		GeneralPlatformGroup: model.PlatformGroupCustom,
-		CustomSettings: []model.PrivacyCustomSetting{
-			{TargetGroup: model.TargetGroupFriends, Platform: "discord"},
-			{TargetGroup: model.TargetGroupReceivers, Platform: "telegram"},
-			{TargetGroup: model.TargetGroupAll, Platform: "website"},
+		Wallets: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroupAll,
+			GeneralPlatformGroup: model.PlatformGroupAll,
+			CustomSettings:       []model.PrivacyCustomSetting{},
 		},
-	},
+	}
 }
 
 func (e *Entity) GetUserGeneralSettings(uri request.UserSettingBaseUriRequest) (*model.UserPaymentSetting, *model.UserPrivacySetting, error) {
-	return &payment, &privacy, nil
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.GetUserGeneralSettings",
+		"profile_id": uri.ProfileId,
+	})
+
+	// compose init settings for user
+	initPayment := e.initUserPaymentSetting(uri.ProfileId)
+	initPrivacy := e.initUserPrivacySetting(uri.ProfileId)
+
+	/////// start working with db layer
+	tx, fn := e.repo.Store.NewTransaction()
+
+	// get user's payment setting or create if not exists
+	payment, err := tx.UserPaymentSetting.FirstOrCreate(initPayment)
+	if err != nil {
+		logger.Error(err, "tx.UserPaymentSetting.FirstOrCreate() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
+	// update privacy setting or create if not exists
+	privacy, err := tx.UserPrivacySetting.FirstOrCreate(initPrivacy)
+	if err != nil {
+		logger.Error(err, "tx.UserPrivacySetting.FirstOrCreate() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
+	// commit db tx
+	err = fn.Commit()
+	if err != nil {
+		logger.Error(err, "fn.Commit() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
+	return payment, privacy, nil
 }
 
 func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateGeneralSettingsPayloadRequest) (*model.UserPaymentSetting, *model.UserPrivacySetting, error) {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.UpdateUserGeneralSettings",
+		"profile_id": uri.ProfileId,
+	})
+
+	/////// prepare data
+	// payment settings
+	defaultMessages := make([]model.DefaultMessageSetting, len(payload.Payment.DefaultMessageSettings))
+	for i, s := range payload.Payment.DefaultMessageSettings {
+		defaultMessages[i] = model.DefaultMessageSetting{
+			Action:  s.Action,
+			Message: s.Message,
+		}
+	}
+
+	txLimits := make([]model.TxLimitSetting, len(payload.Payment.TxLimitSettings))
+	for i, s := range payload.Payment.TxLimitSettings {
+		txLimits[i] = model.TxLimitSetting{
+			Action: s.Action,
+			Min:    s.Min,
+			Max:    s.Max,
+		}
+	}
+
+	// transform custom privacy settings
+	txPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
+	for i, s := range payload.Privacy.Tx.CustomSettings {
+		txPrivacyCustom[i] = model.PrivacyCustomSetting{
+			TargetGroup: model.TargetGroup(s.TargetGroup),
+			Platform:    s.Platform,
+		}
+	}
+	socialAccsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
+	for i, s := range payload.Privacy.SocialAccounts.CustomSettings {
+		socialAccsPrivacyCustom[i] = model.PrivacyCustomSetting{
+			TargetGroup: model.TargetGroup(s.TargetGroup),
+			Platform:    s.Platform,
+		}
+	}
+	walletsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
+	for i, s := range payload.Privacy.Wallets.CustomSettings {
+		walletsPrivacyCustom[i] = model.PrivacyCustomSetting{
+			TargetGroup: model.TargetGroup(s.TargetGroup),
+			Platform:    s.Platform,
+		}
+	}
+
+	privacy := model.UserPrivacySetting{
+		ProfileId: uri.ProfileId,
+		Tx: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Tx.GeneralTargetGroup),
+			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Tx.GeneralPlatformGroup),
+			CustomSettings:       txPrivacyCustom,
+		},
+		SocialAccounts: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.SocialAccounts.GeneralTargetGroup),
+			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.SocialAccounts.GeneralPlatformGroup),
+			CustomSettings:       socialAccsPrivacyCustom,
+		},
+		Wallets: &model.BasePrivacySetting{
+			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Wallets.GeneralTargetGroup),
+			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Wallets.GeneralPlatformGroup),
+			CustomSettings:       walletsPrivacyCustom,
+		},
+	}
+
+	payment := model.UserPaymentSetting{
+		ProfileId:               uri.ProfileId,
+		DefaultMoneySource:      model.MoneySource(payload.Payment.DefaultMoneySource),
+		DefaultReceiverPlatform: payload.Payment.DefaultReceiverPlatform,
+		PrioritizedTokenIds:     payload.Payment.TokenPriorities,
+		DefaultTokenId:          payload.Payment.DefaultToken,
+		DefaultMessageEnable:    *payload.Payment.DefaultMessageEnable,
+		DefaultMessageSettings:  defaultMessages,
+		TxLimitEnable:           *payload.Payment.TxLimitEnable,
+		TxLimitSettings:         txLimits,
+	}
+
+	/////// start working with db layer
+	tx, fn := e.repo.Store.NewTransaction()
+
+	// update payment setting
+	err := tx.UserPaymentSetting.Update(&payment)
+	if err != nil {
+		logger.Error(err, "tx.UserPaymentSetting.Update() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
+	// update privacy setting
+	err = tx.UserPrivacySetting.Update(&privacy)
+	if err != nil {
+		logger.Error(err, "tx.UserPrivacySetting.Update() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
+	// commit db tx
+	err = fn.Commit()
+	if err != nil {
+		logger.Error(err, "fn.Commit() failed")
+		fn.Rollback(err)
+		return nil, nil, err
+	}
+
 	return &payment, &privacy, nil
 }
 
@@ -86,34 +211,100 @@ var notificationSettings []model.NotificationFlag = []model.NotificationFlag{
 	{Group: model.NotificationGroupApp, Key: "new_member", Description: "New members"},
 }
 
-var userNotiSettings model.UserNotificationSetting = model.UserNotificationSetting{
-	ProfileId: "50453",
-	Enable:    true,
-	Platforms: []string{"discord", "telegram"},
-	Flags: map[string]bool{
-		"disable_all":             false,
-		"receive_tip_success":     true,
-		"receive_airdrop_success": false,
-		"receive_deposit_success": true,
-		"send_withdraw_success":   false,
-		"receive_payme_success":   true,
-		"*_payme_expired":         false,
-		"*_paylink_expired":       true,
-		"send_paylink_success":    false,
-		"receive_paylink_success": true,
-		"new_configuration":       false,
-		"new_vault_tx":            true,
-		"new_api_call":            true,
-		"info_updated":            true,
-		"new_member":              false,
-	},
-	NotificationSettings: notificationSettings,
+func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {
+	userFlags := make(map[string]bool)
+	for _, f := range settings {
+		userFlags[f.Key] = false
+	}
+
+	return model.UserNotificationSetting{
+		ProfileId:            profileId,
+		Enable:               true,
+		Platforms:            []string{},
+		Flags:                userFlags,
+		NotificationSettings: settings,
+	}
 }
 
 func (e *Entity) GetUserNotificationSettings(uri request.UserSettingBaseUriRequest) (*model.UserNotificationSetting, error) {
-	return &userNotiSettings, nil
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.GetUserNotificationSettings",
+		"profile_id": uri.ProfileId,
+	})
+
+	// get all notification flags
+	var listQ notificationflag.ListQuery
+	flags, err := e.repo.NotificationFlag.List(listQ)
+	if err != nil {
+		logger.Error(err, "repo.NotificationFlag.List() failed")
+		return nil, err
+	}
+
+	// compose init noti setting for user
+	initNotiSetting := e.initUserNotiSetting(uri.ProfileId, flags)
+
+	/////// start working with db layer
+	tx, fn := e.repo.Store.NewTransaction()
+
+	// update payment setting
+	userNotiSettings, err := tx.UserNotificationSetting.FirstOrCreate(initNotiSetting)
+	if err != nil {
+		logger.Error(err, "tx.UserNotificationSetting.FirstOrCreate() failed")
+		fn.Rollback(err)
+		return nil, err
+	}
+	userNotiSettings.NotificationSettings = flags
+
+	// commit db tx
+	err = fn.Commit()
+	if err != nil {
+		logger.Error(err, "fn.Commit() failed")
+		fn.Rollback(err)
+		return nil, err
+	}
+
+	return userNotiSettings, nil
 }
 
 func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateNotificationSettingPayloadRequest) (*model.UserNotificationSetting, error) {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.UpdateUserNotificationSettings",
+		"profile_id": uri.ProfileId,
+	})
+
+	// get all notification flags
+	var listQ notificationflag.ListQuery
+	notificationFlags, err := e.repo.NotificationFlag.List(listQ)
+	if err != nil {
+		logger.Error(err, "repo.NotificationFlag.List() failed")
+		return nil, err
+	}
+
+	/////// start working with db layer
+	tx, fn := e.repo.Store.NewTransaction()
+
+	// update payment setting
+	userNotiSettings := model.UserNotificationSetting{
+		ProfileId:            uri.ProfileId,
+		Enable:               payload.Enable,
+		Platforms:            payload.Platforms,
+		Flags:                payload.Flags,
+		NotificationSettings: notificationFlags,
+	}
+	err = tx.UserNotificationSetting.Update(&userNotiSettings)
+	if err != nil {
+		logger.Error(err, "tx.UserNotificationSetting.Update() failed")
+		fn.Rollback(err)
+		return nil, err
+	}
+
+	// commit db tx
+	err = fn.Commit()
+	if err != nil {
+		logger.Error(err, "fn.Commit() failed")
+		fn.Rollback(err)
+		return nil, err
+	}
+
 	return &userNotiSettings, nil
 }

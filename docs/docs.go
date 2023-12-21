@@ -7467,9 +7467,6 @@ const docTemplate = `{
                 "group": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "key": {
                     "type": "string"
                 }
@@ -7901,12 +7898,6 @@ const docTemplate = `{
                 },
                 "min": {
                     "type": "number"
-                },
-                "token": {
-                    "$ref": "#/definitions/model.PayToken"
-                },
-                "token_id": {
-                    "type": "string"
                 }
             }
         },
@@ -8030,7 +8021,7 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "profileId": {
+                "profile_id": {
                     "type": "string"
                 },
                 "tx_limit_enable": {
@@ -9330,14 +9321,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "enable",
-                "flag",
+                "flags",
                 "platforms"
             ],
             "properties": {
                 "enable": {
                     "type": "boolean"
                 },
-                "flag": {
+                "flags": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "boolean"
