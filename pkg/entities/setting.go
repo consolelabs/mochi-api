@@ -194,23 +194,6 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 	return &payment, &privacy, nil
 }
 
-var notificationSettings []model.NotificationFlag = []model.NotificationFlag{
-	{Group: model.NotificationGroupWallet, Key: "disable_all", Description: "Disable all notification wallets"},
-	{Group: model.NotificationGroupWallet, Key: "receive_airdrop_success", Description: "Receive airdrops"},
-	{Group: model.NotificationGroupWallet, Key: "receive_deposit_success", Description: "Deposit completed"},
-	{Group: model.NotificationGroupWallet, Key: "send_withdraw_success", Description: "Withdrawal completed"},
-	{Group: model.NotificationGroupWallet, Key: "receive_payme_success", Description: "Payment request completed"},
-	{Group: model.NotificationGroupWallet, Key: "*_payme_expired", Description: "Payment request expired"},
-	{Group: model.NotificationGroupWallet, Key: "*_paylink_expired", Description: "Pay link has expired"},
-	{Group: model.NotificationGroupWallet, Key: "send_paylink_success", Description: "Pay link claimed by another"},
-	{Group: model.NotificationGroupWallet, Key: "receive_paylink_success", Description: "Claim a pay link"},
-	{Group: model.NotificationGroupCommunity, Key: "new_configuration", Description: "New configuration"},
-	{Group: model.NotificationGroupApp, Key: "new_vault_tx", Description: "New vault transactions"},
-	{Group: model.NotificationGroupApp, Key: "new_api_call", Description: "New API calls"},
-	{Group: model.NotificationGroupApp, Key: "info_updated", Description: "Information changes"},
-	{Group: model.NotificationGroupApp, Key: "new_member", Description: "New members"},
-}
-
 func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {
 	userFlags := make(map[string]bool)
 	for _, f := range settings {

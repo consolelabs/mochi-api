@@ -4,6 +4,7 @@ INSERT INTO
 	notification_flags ("group", "key", "description") 
 VALUES 
 	('wallet', 'disable_all', 'Disable all notification wallets'),
+	('wallet', 'receive_transfer_success', 'Receive a tip'),
 	('wallet', 'receive_airdrop_success', 'Receive airdrops'),
 	('wallet', 'receive_deposit_success', 'Deposit completed'),
 	('wallet', 'send_withdraw_success', 'Withdrawal completed'),
