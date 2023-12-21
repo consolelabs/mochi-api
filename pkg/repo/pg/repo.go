@@ -53,6 +53,7 @@ import (
 	monikerconfig "github.com/defipod/mochi/pkg/repo/moniker_config"
 	nftaddrequesthistory "github.com/defipod/mochi/pkg/repo/nft_add_request_history"
 	nftcollection "github.com/defipod/mochi/pkg/repo/nft_collection"
+	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
@@ -77,6 +78,9 @@ import (
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
+	usernotificationsetting "github.com/defipod/mochi/pkg/repo/user_notification_setting"
+	userpaymentsetting "github.com/defipod/mochi/pkg/repo/user_payment_setting"
+	userprivacysetting "github.com/defipod/mochi/pkg/repo/user_privacy_setting"
 	usertag "github.com/defipod/mochi/pkg/repo/user_tag"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
 	usertokensupportrequest "github.com/defipod/mochi/pkg/repo/user_token_support_request"
@@ -182,5 +186,9 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
 		CommandPermission:                    commandpermission.NewPG(db),
 		ProductTheme:                         producttheme.NewPG(db),
+		UserPaymentSetting:                   userpaymentsetting.NewPG(db),
+		UserPrivacySetting:                   userprivacysetting.NewPG(db),
+		UserNotificationSetting:              usernotificationsetting.NewPG(db),
+		NotificationFlag:                     notificationflag.NewPG(db),
 	}
 }

@@ -614,8 +614,6 @@ definitions:
         type: string
       group:
         type: string
-      id:
-        type: integer
       key:
         type: string
     type: object
@@ -899,10 +897,6 @@ definitions:
         type: number
       min:
         type: number
-      token:
-        $ref: '#/definitions/model.PayToken'
-      token_id:
-        type: string
     type: object
   model.User:
     properties:
@@ -983,7 +977,7 @@ definitions:
         items:
           type: string
         type: array
-      profileId:
+      profile_id:
         type: string
       tx_limit_enable:
         type: boolean
@@ -1847,7 +1841,7 @@ definitions:
     properties:
       enable:
         type: boolean
-      flag:
+      flags:
         additionalProperties:
           type: boolean
         type: object
@@ -1857,7 +1851,7 @@ definitions:
         type: array
     required:
     - enable
-    - flag
+    - flags
     - platforms
     type: object
   request.UpdateQuestProgressRequest:
@@ -3045,13 +3039,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1y_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
+        type: number
+      usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3673,6 +3667,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3688,12 +3688,6 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object

@@ -14,7 +14,6 @@ const (
 // status: tx status
 // e.g. receive_tip_success
 type NotificationFlag struct {
-	Id          int               `json:"id"`
 	Key         string            `json:"key"`
 	Group       NotificationGroup `json:"group"`
 	Description string            `json:"description"`

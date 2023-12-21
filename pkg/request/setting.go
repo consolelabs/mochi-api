@@ -36,29 +36,14 @@ type PaymentSetting struct {
 	TxLimitSettings         []TxLimitSetting        `json:"tx_limit_settings" binding:"required"`
 }
 
-type TargetGroup string
-
-const (
-	TargetGroupAll       TargetGroup = "all"
-	TargetGroupReceivers TargetGroup = "receivers"
-	TargetGroupFriends   TargetGroup = "friends"
-)
-
-type PlatformGroup string
-
-const (
-	PlatformGroupAll    PlatformGroup = "all"
-	PlatformGroupCustom PlatformGroup = "custom"
-)
-
 type PrivacyCustomSetting struct {
-	TargetGroup TargetGroup `json:"target_group"`
-	Platform    string      `json:"platform"`
+	TargetGroup string `json:"target_group"`
+	Platform    string `json:"platform"`
 }
 
 type BasePrivacySetting struct {
-	GeneralTargetGroup   TargetGroup            `json:"general_target_group"`
-	GeneralPlatformGroup PlatformGroup          `json:"general_platform_group"`
+	GeneralTargetGroup   string                 `json:"general_target_group"`
+	GeneralPlatformGroup string                 `json:"general_platform_group"`
 	CustomSettings       []PrivacyCustomSetting `json:"custom_settings"`
 }
 
@@ -71,5 +56,5 @@ type PrivacySetting struct {
 type UpdateNotificationSettingPayloadRequest struct {
 	Enable    bool            `json:"enable" binding:"required"`
 	Platforms []string        `json:"platforms" binding:"required"`
-	Flags     map[string]bool `json:"flag" binding:"required"`
+	Flags     map[string]bool `json:"flags" binding:"required"`
 }
