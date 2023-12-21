@@ -197,7 +197,7 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {
 	userFlags := make(map[string]bool)
 	for _, f := range settings {
-		userFlags[f.Key] = false
+		userFlags[f.Key] = true
 	}
 
 	return model.UserNotificationSetting{
