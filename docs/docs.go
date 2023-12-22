@@ -8003,12 +8003,6 @@ const docTemplate = `{
                 "default_receiver_platform": {
                     "type": "string"
                 },
-                "default_token": {
-                    "$ref": "#/definitions/model.PayToken"
-                },
-                "default_token_id": {
-                    "type": "string"
-                },
                 "prioritized_token": {
                     "type": "array",
                     "items": {
@@ -8949,7 +8943,6 @@ const docTemplate = `{
                 "default_message_settings",
                 "default_money_source",
                 "default_receiver_platform",
-                "default_token",
                 "token_priorities",
                 "tx_limit_enable",
                 "tx_limit_settings"
@@ -8968,9 +8961,6 @@ const docTemplate = `{
                     "$ref": "#/definitions/request.MoneySource"
                 },
                 "default_receiver_platform": {
-                    "type": "string"
-                },
-                "default_token": {
                     "type": "string"
                 },
                 "token_priorities": {

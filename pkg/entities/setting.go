@@ -269,7 +269,7 @@ func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRe
 	// update payment setting
 	userNotiSettings := model.UserNotificationSetting{
 		ProfileId:            uri.ProfileId,
-		Enable:               payload.Enable,
+		Enable:               *payload.Enable,
 		Platforms:            payload.Platforms,
 		Flags:                payload.Flags,
 		NotificationSettings: notificationFlags,
