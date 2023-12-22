@@ -96,12 +96,10 @@ type UserPaymentSetting struct {
 	DefaultMoneySource      MoneySource            `json:"default_money_source" gorm:"type:jsonb"`
 	DefaultReceiverPlatform string                 `json:"default_receiver_platform"`
 	PrioritizedTokenIds     pq.StringArray         `json:"prioritized_token_ids" gorm:"type:text[]"`
-	DefaultTokenId          string                 `json:"default_token_id"`
 	DefaultMessageEnable    bool                   `json:"default_message_enable"`
 	DefaultMessageSettings  DefaultMessageSettings `json:"default_message_settings" gorm:"type:jsonb"`
 	TxLimitEnable           bool                   `json:"tx_limit_enable"`
 	TxLimitSettings         TxLimitSettings        `json:"tx_limit_settings" gorm:"type:jsonb"`
-	DefaultToken            *PayToken              `json:"default_token" gorm:"foreignkey:DefaultTokenId;<-:false"`
 	PrioritizedTokens       []PayToken             `json:"prioritized_token" gorm:"-"`
 }
 

@@ -29,7 +29,6 @@ type PaymentSetting struct {
 	DefaultMoneySource      MoneySource             `json:"default_money_source" binding:"required"`
 	DefaultReceiverPlatform string                  `json:"default_receiver_platform" binding:"required"`
 	TokenPriorities         []string                `json:"token_priorities" binding:"required"`
-	DefaultToken            string                  `json:"default_token" binding:"required"`
 	DefaultMessageEnable    *bool                   `json:"default_message_enable" binding:"required"`
 	DefaultMessageSettings  []DefaultMessageSetting `json:"default_message_settings" binding:"required"`
 	TxLimitEnable           *bool                   `json:"tx_limit_enable" binding:"required"`
