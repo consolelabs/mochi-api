@@ -965,10 +965,6 @@ definitions:
         $ref: '#/definitions/model.MoneySource'
       default_receiver_platform:
         type: string
-      default_token:
-        $ref: '#/definitions/model.PayToken'
-      default_token_id:
-        type: string
       prioritized_token:
         items:
           $ref: '#/definitions/model.PayToken'
@@ -1596,8 +1592,6 @@ definitions:
         $ref: '#/definitions/request.MoneySource'
       default_receiver_platform:
         type: string
-      default_token:
-        type: string
       token_priorities:
         items:
           type: string
@@ -1613,7 +1607,6 @@ definitions:
     - default_message_settings
     - default_money_source
     - default_receiver_platform
-    - default_token
     - token_priorities
     - tx_limit_enable
     - tx_limit_settings

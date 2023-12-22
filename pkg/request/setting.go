@@ -53,7 +53,7 @@ type PrivacySetting struct {
 }
 
 type UpdateNotificationSettingPayloadRequest struct {
-	Enable    bool            `json:"enable" binding:"required"`
+	Enable    *bool           `json:"enable" binding:"required"`
 	Platforms []string        `json:"platforms" binding:"required"`
 	Flags     map[string]bool `json:"flags" binding:"required"`
 }
