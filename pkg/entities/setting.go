@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"github.com/consolelabs/mochi-toolkit/formatter"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
@@ -16,7 +18,6 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 		},
 		DefaultReceiverPlatform: "discord",
 		PrioritizedTokenIds:     []string{},
-		DefaultTokenId:          "",
 		DefaultMessageEnable:    false,
 		DefaultMessageSettings:  []model.DefaultMessageSetting{},
 		TxLimitEnable:           false,
@@ -157,7 +158,6 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 		DefaultMoneySource:      model.MoneySource(payload.Payment.DefaultMoneySource),
 		DefaultReceiverPlatform: payload.Payment.DefaultReceiverPlatform,
 		PrioritizedTokenIds:     payload.Payment.TokenPriorities,
-		DefaultTokenId:          payload.Payment.DefaultToken,
 		DefaultMessageEnable:    *payload.Payment.DefaultMessageEnable,
 		DefaultMessageSettings:  defaultMessages,
 		TxLimitEnable:           *payload.Payment.TxLimitEnable,
@@ -197,13 +197,13 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {
 	userFlags := make(map[string]bool)
 	for _, f := range settings {
-		userFlags[f.Key] = true
+		userFlags[f.Key] = f.Key != "disable_all"
 	}
 
 	return model.UserNotificationSetting{
 		ProfileId:            profileId,
 		Enable:               true,
-		Platforms:            []string{},
+		Platforms:            []string{formatter.PlatformDiscord, formatter.PlatformTelegram, formatter.PlatformWeb},
 		Flags:                userFlags,
 		NotificationSettings: settings,
 	}
