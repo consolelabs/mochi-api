@@ -494,12 +494,11 @@ func (e *Entity) calculateWalletSnapshot(address string, isEvm bool, assets []re
 }
 
 func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]response.WalletAssetData, string, string, error) {
-	chainID := 999
 	assets := make([]response.WalletAssetData, 0)
 
 	res, err := e.svc.Covalent.GetSolanaTokenBalances("solana-mainnet", req.Address, 3)
 	if err != nil {
-		e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
+		e.log.Fields(logger.Fields{"address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Covalent.GetTokenBalances() failed")
 		return nil, "", "", err
 	}
 	if res.Data.Items == nil || len(res.Data.Items) == 0 {
@@ -511,56 +510,11 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			continue
 		}
 
-		tokenAddress := item.ContractAddress
-		if item.NativeToken {
-			tokenAddress = consts.SolAddress
-		}
+		asset := e.enrichMetadataSolAsset(*res, item)
 
-		// decimal from covalent seems wrong in some case, use coingecko first if error fallback to covalent
-		decimals := int64(item.ContractDecimals)
-		tokenInfo, err := e.svc.CoinGecko.GetCoinByContract(consts.SolChainType, item.ContractAddress, 0)
-		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.CoinGecko.GetCoinByContract() failed")
+		if asset != nil {
+			assets = append(assets, *asset)
 		}
-
-		if tokenInfo != nil && tokenInfo.DetailPlatforms != nil && util.CheckKeyInMap(consts.SolChainType, tokenInfo.DetailPlatforms) {
-			decimals = int64(tokenInfo.DetailPlatforms[consts.SolChainType].DecimalPlace)
-		}
-		item.ContractDecimals = int(decimals)
-
-		bal, _ := e.calculateTokenBalance(item, chainID)
-
-		tokenPrice, err := e.svc.Birdeye.GetTokenPrice(tokenAddress)
-		if err != nil {
-			e.log.Fields(logger.Fields{"chainID": chainID, "address": req.Address}).Error(err, "[entity.listSolWalletAssets] svc.Birdeye.GetTokenPrice() failed")
-			continue
-		}
-
-		address := item.ContractAddress
-		if item.NativeToken {
-			address = "So11111111111111111111111111111111111111112"
-		}
-		assets = append(assets, response.WalletAssetData{
-			ChainID:        chainID,
-			ContractName:   item.ContractName,
-			ContractSymbol: item.ContractTickerSymbol,
-			AssetBalance:   bal,
-			UsdBalance:     tokenPrice.Data.Value * bal,
-			Token: response.AssetToken{
-				Name:    item.ContractName,
-				Symbol:  item.ContractTickerSymbol,
-				Address: address,
-				Decimal: decimals,
-				Price:   tokenPrice.Data.Value,
-				Native:  item.NativeToken,
-				Chain: response.AssetTokenChain{
-					Name:      res.Data.ChainName,
-					ShortName: "sol",
-					Type:      "solana",
-				},
-			},
-			Amount: util.FloatToString(fmt.Sprint(bal), decimals),
-		})
 	}
 
 	assets = e.enrichDataWalletAsset(assets)

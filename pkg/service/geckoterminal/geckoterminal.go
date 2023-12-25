@@ -3,16 +3,23 @@ package geckoterminal
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/stealth"
 
+	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model/errors"
+	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 const (
@@ -21,15 +28,22 @@ const (
 	getPoolApiP1 = "https://app.geckoterminal.com/api/p1/%s/pools/%s?base_token=0&include=pairs&fields[pool]=pairs&fields[pair]=base_price_in_usd,base_price_in_quote,quote_price_in_usd,quote_price_in_base"
 	// getCandlestickApi = "https://app.geckoterminal.com/api/p1/candlesticks/%s/%s?resolution=15&from_timestamp=%d&to_timestamp=%d"
 	getCandlestickApi = "https://api.geckoterminal.com/api/v2/networks/%s/pools/%s/ohlcv/minute?aggregate=15&before_timestamp=%d&limit=1000&currency=usd&token=base"
+	getTokenByAddress = "https://api.geckoterminal.com/api/v2/networks/%s/tokens/%s"
+
+	getTokenByAddressCacheKey = "geckoterminal-get-token-by-address"
 )
 
 type GeckoTerminal struct {
 	chromeHost string
+	cache      cache.Cache
+	logger     logger.Logger
 }
 
-func NewService(cfg *config.Config) Service {
+func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service {
 	return &GeckoTerminal{
 		chromeHost: cfg.ChromeHost,
+		cache:      cache,
+		logger:     l,
 	}
 }
 
@@ -269,4 +283,38 @@ func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before
 	}
 
 	return resp, nil
+}
+
+func (g *GeckoTerminal) GetTokenByAddress(chain, address string) (*response.GeckoTerminalTokensResponse, error) {
+	var data response.GeckoTerminalTokensResponse
+
+	cached, err := g.doCacheGetTokenByAddress(chain, address)
+	if err == nil && cached != "" {
+		g.logger.Infof("hit cache data geckoterminal-service, address: %s", address)
+		go g.doNetworkGetTokenByAddress(chain, address)
+		return &data, json.Unmarshal([]byte(cached), &data)
+	}
+
+	return g.doNetworkGetTokenByAddress(chain, address)
+}
+
+func (g *GeckoTerminal) doCacheGetTokenByAddress(chain, address string) (string, error) {
+	return g.cache.GetString(fmt.Sprintf("%s-%s-%s", getTokenByAddressCacheKey, chain, strings.ToLower(address)))
+}
+
+func (c *GeckoTerminal) doNetworkGetTokenByAddress(chain, address string) (*response.GeckoTerminalTokensResponse, error) {
+	var res response.GeckoTerminalTokensResponse
+	url := fmt.Sprintf(getTokenByAddress, chain, address)
+	status, err := util.FetchData(url, &res)
+	if err != nil || status != http.StatusOK {
+		if status != http.StatusNotFound {
+			return nil, fmt.Errorf("failed to fetch token info with status %d: %v", status, err)
+		}
+		return nil, errs.ErrRecordNotFound
+	}
+
+	bytes, _ := json.Marshal(&res)
+	c.cache.Set(fmt.Sprintf("%s-%s-%s", getTokenByAddressCacheKey, chain, strings.ToLower(address)), string(bytes), 7*24*time.Hour)
+
+	return &res, nil
 }
