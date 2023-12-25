@@ -28,3 +28,7 @@ func (pg *pg) ListEmojis(q Query) (model []*model.ProductMetadataEmojis, total i
 	}
 	return model, total, db.Find(&model).Error
 }
+
+func (pg *pg) GetByCode(code string) (model *model.ProductMetadataEmojis, err error) {
+	return model, pg.db.Where("code = ?", code).First(&model).Error
+}

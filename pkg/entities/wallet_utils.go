@@ -416,6 +416,18 @@ func (e *Entity) enrichDataWalletAsset(assets []response.WalletAssetData) []resp
 		for _, token := range tokens {
 			if strings.EqualFold(token.Symbol, asset.Token.Symbol) && token.ChainId == fmt.Sprint(asset.ChainID) && strings.EqualFold(token.Address, asset.Token.Address) {
 				assets[i].Token.Id = token.Id
+				icon := token.Icon
+				if icon == "" {
+					emoji, err := e.GetEmojiByCode(token.Symbol)
+					if err != nil {
+						e.log.Error(err, "[entities.enrichDataWalletAsset] Failed to get emoji by code")
+						icon = ""
+					} else {
+						icon = emoji.EmojiUrl
+					}
+				}
+
+				assets[i].Token.Icon = icon
 				break
 			}
 		}
