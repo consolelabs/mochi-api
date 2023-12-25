@@ -117,7 +117,7 @@ func NewService(
 		Skymavis:      skymavis.New(&cfg, cache, sentry),
 		Ronin:         roninSvc,
 		Krystal:       krystal.NewService(&cfg, log, cache, sentry),
-		GeckoTerminal: geckoterminal.NewService(&cfg),
+		GeckoTerminal: geckoterminal.NewService(&cfg, log, cache),
 		DexScreener:   dexscreener.NewService(sentry),
 		Github:        github.NewService(&cfg, log),
 		Ethplorer:     ethplorer.NewService(sentry),
