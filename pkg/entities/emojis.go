@@ -136,3 +136,25 @@ func (e *Entity) GetListEmojisByCode(req request.GetListEmojiRequest) ([]*model.
 
 	return emojiResponse, int64(len(req.ListCode)), nil
 }
+
+func (e *Entity) GetEmojiByCode(code string) (*model.EmojiData, error) {
+	emoji, err := e.repo.Emojis.GetByCode(code)
+	if err != nil {
+		e.log.Error(err, "[entity.GetEmojiByCode] repo.emojis.GetByCode failed")
+		return nil, err
+	}
+
+	var emojiUrl string
+	re := regexp.MustCompile("[0-9]{15,}")
+	matchList := re.FindAllString(*emoji.DiscordId, -1)
+	if len(matchList) > 0 {
+		id := matchList[0]
+		emojiUrl = fmt.Sprintf("https://cdn.discordapp.com/emojis/%s.png?size=240&quality=lossless", id)
+	}
+
+	return &model.EmojiData{
+		Code:     emoji.Code,
+		Emoji:    *emoji.DiscordId,
+		EmojiUrl: emojiUrl,
+	}, nil
+}
