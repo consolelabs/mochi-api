@@ -813,10 +813,8 @@ func (e *Entity) GetUserWatchlist(req request.ListTrackingTokensRequest) (*respo
 	q := usertokenwatchlistitem.UserWatchlistQuery{
 		ProfileID:   req.ProfileID,
 		CoinGeckoID: req.CoinGeckoID,
-		Offset:      req.Page * req.Size,
-		Limit:       req.Size,
 	}
-	list, total, err := e.repo.UserTokenWatchlistItem.List(q)
+	list, _, err := e.repo.UserTokenWatchlistItem.List(q)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": q}).Error(err, "[entity.GetUserWatchlist] repo.UserWatchlistItem.List() failed")
 		return nil, err
@@ -929,13 +927,6 @@ func (e *Entity) GetUserWatchlist(req request.ListTrackingTokensRequest) (*respo
 		e.log.Fields(logger.Fields{"log": log}).Error(err, "[entity.GetUserWatchlist] entity.UpdateUserQuestProgress() failed")
 	}
 	return &response.GetWatchlistResponse{
-		Pagination: &response.PaginationResponse{
-			Total: total,
-			Pagination: model.Pagination{
-				Page: int64(req.Page),
-				Size: int64(req.Size),
-			},
-		},
 		Data: data,
 	}, nil
 }
