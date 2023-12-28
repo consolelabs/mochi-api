@@ -1,3 +1,23 @@
+# [6.26.0](https://github.com/consolelabs/mochi-api/compare/v6.25.4...v6.26.0) (2023-12-28)
+
+
+### Bug Fixes
+
+* add icon wallet asset ([#1293](https://github.com/consolelabs/mochi-api/issues/1293)) ([179dfea](https://github.com/consolelabs/mochi-api/commit/179dfea37d9a7bddfcae606ef1a7d73d1766ab4e))
+* init notification flags ([3e7829b](https://github.com/consolelabs/mochi-api/commit/3e7829b8f2c274189a5cdbdf07dc3f880a2214d7))
+* init user notification flags ([f75b56b](https://github.com/consolelabs/mochi-api/commit/f75b56b13915ac9444fab5b684976da1f7f22819))
+* payment settings - remove default token ([16e654c](https://github.com/consolelabs/mochi-api/commit/16e654cbe5a759801a9425276b98597a4841aa2b))
+* render sol wallet ([#1292](https://github.com/consolelabs/mochi-api/issues/1292)) ([fba2e74](https://github.com/consolelabs/mochi-api/commit/fba2e74e9fdbfe532d5ee304e63871e223662355))
+* small tweak - update noti settings API ([65e8e1c](https://github.com/consolelabs/mochi-api/commit/65e8e1c9ec87355c46c67f67febf6a02814a2e3d))
+* update get coingecko market cache time to 5 minutes ([#1295](https://github.com/consolelabs/mochi-api/issues/1295)) ([683ffe3](https://github.com/consolelabs/mochi-api/commit/683ffe3700ab2ee113f71c42b727d947ea1541eb))
+* update noti settings ([8df26ff](https://github.com/consolelabs/mochi-api/commit/8df26ff1e01f707517e304590761f688618abca6))
+
+
+### Features
+
+* implement read/write mochi setting ([55bcf6b](https://github.com/consolelabs/mochi-api/commit/55bcf6b4d3602f1bb16152e4a540adcaa5fd29b4))
+* mochi settings ([086943d](https://github.com/consolelabs/mochi-api/commit/086943d930b9bbbb6d29cf09ec4df1c3c1f340f1))
+
 ## [6.25.4](https://github.com/consolelabs/mochi-api/compare/v6.25.3...v6.25.4) (2023-12-20)
 
 
