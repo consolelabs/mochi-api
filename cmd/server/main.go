@@ -42,9 +42,9 @@ import (
 
 // @BasePath /api/v1
 
-// @securityDefinitions.apikey ApiKeyAuth
+// @securityDefinitions.apikey BearerAuth
 // @in header
-// @name access_token
+// @name Authorization
 func main() {
 	cfg := config.LoadConfig(config.DefaultConfigLoaders())
 	log := logger.NewLogrusLogger()

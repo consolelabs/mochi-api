@@ -83,7 +83,7 @@ func (c *CoinGecko) doNetworkCoinsMarketData(ids []string, sparkline bool, page,
 	}
 
 	bytes, _ := json.Marshal(&res)
-	c.cache.Set(fmt.Sprintf("%s-%s-%v", coingeckoCoinsMarketDataKey, strings.Join(ids, "-"), sparkline), string(bytes), 7*24*time.Hour)
+	c.cache.Set(fmt.Sprintf("%s-%s-%v", coingeckoCoinsMarketDataKey, strings.Join(ids, "-"), sparkline), string(bytes), 5*time.Minute)
 
 	return res, nil, http.StatusOK
 }

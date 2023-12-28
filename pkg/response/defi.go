@@ -462,3 +462,23 @@ func (t CoinMarketItemDataRes) ToCoinMarketItemData() CoinMarketItemData {
 		IsDefault:                          t.IsDefault,
 	}
 }
+
+type GeckoTerminalTokensResponse struct {
+	Data GeckoTerminalToken `json:"data"`
+}
+
+type GeckoTerminalToken struct {
+	Id         string                       `json:"id"`
+	Type       string                       `json:"type"`
+	Attributes GeckoTerminalTokenAttributes `json:"attributes"`
+}
+
+type GeckoTerminalTokenAttributes struct {
+	Address         string `json:"address"`
+	Name            string `json:"name"`
+	Symbol          string `json:"symbol"`
+	CoingeckoCoinId string `json:"coingecko_coin_id"`
+	Decimals        int64  `json:"decimals"`
+	TotalSuply      string `json:"total_supply"`
+	PriceUsd        string `json:"price_usd"`
+}

@@ -43,6 +43,17 @@ definitions:
       status:
         type: string
     type: object
+  model.BasePrivacySetting:
+    properties:
+      custom_settings:
+        items:
+          $ref: '#/definitions/model.PrivacyCustomSetting'
+        type: array
+      general_platform_group:
+        type: string
+      general_target_group:
+        type: string
+    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -190,6 +201,13 @@ definitions:
       type:
         type: string
       updated_at:
+        type: string
+    type: object
+  model.DefaultMessageSetting:
+    properties:
+      action:
+        type: string
+      message:
         type: string
     type: object
   model.DiscordCMD:
@@ -489,6 +507,13 @@ definitions:
         description: Valid is true if String is not NULL
         type: boolean
     type: object
+  model.MoneySource:
+    properties:
+      platform:
+        type: string
+      platform_identifier:
+        type: string
+    type: object
   model.MonikerConfig:
     properties:
       amount:
@@ -583,6 +608,15 @@ definitions:
       symbol:
         type: string
     type: object
+  model.NotificationFlag:
+    properties:
+      description:
+        type: string
+      group:
+        type: string
+      key:
+        type: string
+    type: object
   model.OffchainTipBotToken:
     properties:
       address:
@@ -616,6 +650,38 @@ definitions:
       token_symbol:
         type: string
       updated_at:
+        type: string
+    type: object
+  model.PayToken:
+    properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/model.Chain'
+      chain_id:
+        type: string
+      coin_gecko_id:
+        type: string
+      decimal:
+        type: integer
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      native:
+        type: boolean
+      price:
+        type: number
+      symbol:
+        type: string
+    type: object
+  model.PrivacyCustomSetting:
+    properties:
+      platform:
+        type: string
+      target_group:
         type: string
     type: object
   model.ProductBotCommand:
@@ -794,6 +860,10 @@ definitions:
       user_id:
         type: string
     type: object
+  model.SettingFlags:
+    additionalProperties:
+      type: boolean
+    type: object
   model.Token:
     properties:
       address:
@@ -818,6 +888,15 @@ definitions:
         type: string
       symbol:
         type: string
+    type: object
+  model.TxLimitSetting:
+    properties:
+      action:
+        type: string
+      max:
+        type: number
+      min:
+        type: number
     type: object
   model.User:
     properties:
@@ -856,6 +935,63 @@ definitions:
         type: string
       status:
         type: string
+    type: object
+  model.UserNotificationSetting:
+    properties:
+      enable:
+        type: boolean
+      flags:
+        $ref: '#/definitions/model.SettingFlags'
+      notification_settings:
+        items:
+          $ref: '#/definitions/model.NotificationFlag'
+        type: array
+      platforms:
+        items:
+          type: string
+        type: array
+      profile_id:
+        type: string
+    type: object
+  model.UserPaymentSetting:
+    properties:
+      default_message_enable:
+        type: boolean
+      default_message_settings:
+        items:
+          $ref: '#/definitions/model.DefaultMessageSetting'
+        type: array
+      default_money_source:
+        $ref: '#/definitions/model.MoneySource'
+      default_receiver_platform:
+        type: string
+      prioritized_token:
+        items:
+          $ref: '#/definitions/model.PayToken'
+        type: array
+      prioritized_token_ids:
+        items:
+          type: string
+        type: array
+      profile_id:
+        type: string
+      tx_limit_enable:
+        type: boolean
+      tx_limit_settings:
+        items:
+          $ref: '#/definitions/model.TxLimitSetting'
+        type: array
+    type: object
+  model.UserPrivacySetting:
+    properties:
+      profile_id:
+        type: string
+      social_accounts:
+        $ref: '#/definitions/model.BasePrivacySetting'
+      tx:
+        $ref: '#/definitions/model.BasePrivacySetting'
+      wallets:
+        $ref: '#/definitions/model.BasePrivacySetting'
     type: object
   model.UserTokenSupportRequest:
     properties:
@@ -1032,6 +1168,17 @@ definitions:
     required:
     - guild_id
     - user_discord_id
+    type: object
+  request.BasePrivacySetting:
+    properties:
+      custom_settings:
+        items:
+          $ref: '#/definitions/request.PrivacyCustomSetting'
+        type: array
+      general_platform_group:
+        type: string
+      general_target_group:
+        type: string
     type: object
   request.ClaimQuestsRewardsRequest:
     properties:
@@ -1281,6 +1428,16 @@ definitions:
     - token_chain
     - user_discord_id
     type: object
+  request.DefaultMessageSetting:
+    properties:
+      action:
+        type: string
+      message:
+        type: string
+    required:
+    - action
+    - message
+    type: object
   request.DeleteGuildConfigDaoProposal:
     properties:
       id:
@@ -1350,6 +1507,16 @@ definitions:
       guild_id:
         type: string
     type: object
+  request.MoneySource:
+    properties:
+      platform:
+        type: string
+      platform_identifier:
+        type: string
+    required:
+    - platform
+    - platform_identifier
+    type: object
   request.NewGuildConfigWalletVerificationMessageRequest:
     properties:
       content:
@@ -1412,6 +1579,53 @@ definitions:
     required:
     - platform
     - profile_id
+    type: object
+  request.PaymentSetting:
+    properties:
+      default_message_enable:
+        type: boolean
+      default_message_settings:
+        items:
+          $ref: '#/definitions/request.DefaultMessageSetting'
+        type: array
+      default_money_source:
+        $ref: '#/definitions/request.MoneySource'
+      default_receiver_platform:
+        type: string
+      token_priorities:
+        items:
+          type: string
+        type: array
+      tx_limit_enable:
+        type: boolean
+      tx_limit_settings:
+        items:
+          $ref: '#/definitions/request.TxLimitSetting'
+        type: array
+    required:
+    - default_message_enable
+    - default_message_settings
+    - default_money_source
+    - default_receiver_platform
+    - token_priorities
+    - tx_limit_enable
+    - tx_limit_settings
+    type: object
+  request.PrivacyCustomSetting:
+    properties:
+      platform:
+        type: string
+      target_group:
+        type: string
+    type: object
+  request.PrivacySetting:
+    properties:
+      social_accounts:
+        $ref: '#/definitions/request.BasePrivacySetting'
+      tx:
+        $ref: '#/definitions/request.BasePrivacySetting'
+      wallets:
+        $ref: '#/definitions/request.BasePrivacySetting'
     type: object
   request.RoleReactionRequest:
     properties:
@@ -1558,6 +1772,17 @@ definitions:
     - token
     - transfer_type
     type: object
+  request.TxLimitSetting:
+    properties:
+      action:
+        type: string
+      max:
+        type: number
+      min:
+        type: number
+    required:
+    - action
+    type: object
   request.UnlinkBinance:
     properties:
       discord_user_id:
@@ -1580,6 +1805,16 @@ definitions:
       increase_alert_at:
         type: integer
     type: object
+  request.UpdateGeneralSettingsPayloadRequest:
+    properties:
+      payment:
+        $ref: '#/definitions/request.PaymentSetting'
+      privacy:
+        $ref: '#/definitions/request.PrivacySetting'
+    required:
+    - payment
+    - privacy
+    type: object
   request.UpdateGuildRequest:
     properties:
       active:
@@ -1594,6 +1829,23 @@ definitions:
         type: string
       log_channel:
         type: string
+    type: object
+  request.UpdateNotificationSettingPayloadRequest:
+    properties:
+      enable:
+        type: boolean
+      flags:
+        additionalProperties:
+          type: boolean
+        type: object
+      platforms:
+        items:
+          type: string
+        type: array
+    required:
+    - enable
+    - flags
+    - platforms
     type: object
   request.UpdateQuestProgressRequest:
     properties:
@@ -2308,6 +2560,13 @@ definitions:
         items:
           $ref: '#/definitions/response.GasTrackerResponse'
         type: array
+    type: object
+  response.GeneralSettingData:
+    properties:
+      payment:
+        $ref: '#/definitions/model.UserPaymentSetting'
+      privacy:
+        $ref: '#/definitions/model.UserPrivacySetting'
     type: object
   response.GetAllDaoProposalVotes:
     properties:
@@ -3403,6 +3662,10 @@ definitions:
         type: object
       price_change_percentage_14d:
         type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3418,10 +3681,6 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4136,6 +4395,16 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  response.UserGeneralSettingResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.GeneralSettingData'
+    type: object
+  response.UserNotificationSettingResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserNotificationSetting'
     type: object
   util.Pagination:
     properties:
@@ -7465,6 +7734,144 @@ paths:
       summary: Get profile's global info
       tags:
       - Profile
+  /profiles/{profile_id}/settings/general:
+    get:
+      consumes:
+      - application/json
+      description: get profile's general settings
+      operationId: getUserGeneralSettings
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/response.UserGeneralSettingResponse'
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "404":
+          description: not found
+        "500":
+          description: internal server error
+      security:
+      - BearerAuth: []
+      summary: get profile's general settings
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: update profile's general settings
+      operationId: updateUserGeneralSettings
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateGeneralSettingsPayloadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/response.UserGeneralSettingResponse'
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "404":
+          description: not found
+        "500":
+          description: internal server error
+      security:
+      - BearerAuth: []
+      summary: update profile's general settings
+      tags:
+      - Settings
+  /profiles/{profile_id}/settings/notifications:
+    get:
+      consumes:
+      - application/json
+      description: get profile's notification settings
+      operationId: getUserNotificationSettings
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/response.UserNotificationSettingResponse'
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "404":
+          description: not found
+        "500":
+          description: internal server error
+      security:
+      - BearerAuth: []
+      summary: get profile's notification settings
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: update profile's notification settings
+      operationId: updateUserNotificationSettings
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateNotificationSettingPayloadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/response.UserNotificationSettingResponse'
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "404":
+          description: not found
+        "500":
+          description: internal server error
+      security:
+      - BearerAuth: []
+      summary: update profile's notification settings
+      tags:
+      - Settings
   /swap:
     post:
       consumes:
@@ -8301,8 +8708,8 @@ paths:
       tags:
       - WatchList
 securityDefinitions:
-  ApiKeyAuth:
+  BearerAuth:
     in: header
-    name: access_token
+    name: Authorization
     type: apiKey
 swagger: "2.0"

@@ -5033,6 +5033,220 @@ const docTemplate = `{
                 }
             }
         },
+        "/profiles/{profile_id}/settings/general": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get profile's general settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "get profile's general settings",
+                "operationId": "getUserGeneralSettings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserGeneralSettingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update profile's general settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "update profile's general settings",
+                "operationId": "updateUserGeneralSettings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateGeneralSettingsPayloadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserGeneralSettingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/profiles/{profile_id}/settings/notifications": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get profile's notification settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "get profile's notification settings",
+                "operationId": "getUserNotificationSettings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserNotificationSettingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update profile's notification settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "update profile's notification settings",
+                "operationId": "updateUserNotificationSettings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateNotificationSettingPayloadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserNotificationSettingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
         "/swap": {
             "post": {
                 "description": "Execute swap token",
@@ -6380,6 +6594,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BasePrivacySetting": {
+            "type": "object",
+            "properties": {
+                "custom_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PrivacyCustomSetting"
+                    }
+                },
+                "general_platform_group": {
+                    "type": "string"
+                },
+                "general_target_group": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -6604,6 +6835,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DefaultMessageSetting": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 }
             }
@@ -7062,6 +7304,17 @@ const docTemplate = `{
                 }
             }
         },
+        "model.MoneySource": {
+            "type": "object",
+            "properties": {
+                "platform": {
+                    "type": "string"
+                },
+                "platform_identifier": {
+                    "type": "string"
+                }
+            }
+        },
         "model.MonikerConfig": {
             "type": "object",
             "properties": {
@@ -7205,6 +7458,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.NotificationFlag": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
         "model.OffchainTipBotToken": {
             "type": "object",
             "properties": {
@@ -7254,6 +7521,55 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.PayToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain": {
+                    "$ref": "#/definitions/model.Chain"
+                },
+                "chain_id": {
+                    "type": "string"
+                },
+                "coin_gecko_id": {
+                    "type": "string"
+                },
+                "decimal": {
+                    "type": "integer"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "native": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.PrivacyCustomSetting": {
+            "type": "object",
+            "properties": {
+                "platform": {
+                    "type": "string"
+                },
+                "target_group": {
                     "type": "string"
                 }
             }
@@ -7527,6 +7843,12 @@ const docTemplate = `{
                 }
             }
         },
+        "model.SettingFlags": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "boolean"
+            }
+        },
         "model.Token": {
             "type": "object",
             "properties": {
@@ -7562,6 +7884,20 @@ const docTemplate = `{
                 },
                 "symbol": {
                     "type": "string"
+                }
+            }
+        },
+        "model.TxLimitSetting": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
                 }
             }
         },
@@ -7620,6 +7956,93 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "model.UserNotificationSetting": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "flags": {
+                    "$ref": "#/definitions/model.SettingFlags"
+                },
+                "notification_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.NotificationFlag"
+                    }
+                },
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "profile_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserPaymentSetting": {
+            "type": "object",
+            "properties": {
+                "default_message_enable": {
+                    "type": "boolean"
+                },
+                "default_message_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DefaultMessageSetting"
+                    }
+                },
+                "default_money_source": {
+                    "$ref": "#/definitions/model.MoneySource"
+                },
+                "default_receiver_platform": {
+                    "type": "string"
+                },
+                "prioritized_token": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PayToken"
+                    }
+                },
+                "prioritized_token_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "profile_id": {
+                    "type": "string"
+                },
+                "tx_limit_enable": {
+                    "type": "boolean"
+                },
+                "tx_limit_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TxLimitSetting"
+                    }
+                }
+            }
+        },
+        "model.UserPrivacySetting": {
+            "type": "object",
+            "properties": {
+                "profile_id": {
+                    "type": "string"
+                },
+                "social_accounts": {
+                    "$ref": "#/definitions/model.BasePrivacySetting"
+                },
+                "tx": {
+                    "$ref": "#/definitions/model.BasePrivacySetting"
+                },
+                "wallets": {
+                    "$ref": "#/definitions/model.BasePrivacySetting"
                 }
             }
         },
@@ -7884,6 +8307,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.BasePrivacySetting": {
+            "type": "object",
+            "properties": {
+                "custom_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.PrivacyCustomSetting"
+                    }
+                },
+                "general_platform_group": {
+                    "type": "string"
+                },
+                "general_target_group": {
                     "type": "string"
                 }
             }
@@ -8264,6 +8704,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.DefaultMessageSetting": {
+            "type": "object",
+            "required": [
+                "action",
+                "message"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "request.DeleteGuildConfigDaoProposal": {
             "type": "object",
             "properties": {
@@ -8371,6 +8826,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.MoneySource": {
+            "type": "object",
+            "required": [
+                "platform",
+                "platform_identifier"
+            ],
+            "properties": {
+                "platform": {
+                    "type": "string"
+                },
+                "platform_identifier": {
+                    "type": "string"
+                }
+            }
+        },
         "request.NewGuildConfigWalletVerificationMessageRequest": {
             "type": "object",
             "properties": {
@@ -8463,6 +8933,75 @@ const docTemplate = `{
                 },
                 "profile_id": {
                     "type": "string"
+                }
+            }
+        },
+        "request.PaymentSetting": {
+            "type": "object",
+            "required": [
+                "default_message_enable",
+                "default_message_settings",
+                "default_money_source",
+                "default_receiver_platform",
+                "token_priorities",
+                "tx_limit_enable",
+                "tx_limit_settings"
+            ],
+            "properties": {
+                "default_message_enable": {
+                    "type": "boolean"
+                },
+                "default_message_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.DefaultMessageSetting"
+                    }
+                },
+                "default_money_source": {
+                    "$ref": "#/definitions/request.MoneySource"
+                },
+                "default_receiver_platform": {
+                    "type": "string"
+                },
+                "token_priorities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tx_limit_enable": {
+                    "type": "boolean"
+                },
+                "tx_limit_settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/request.TxLimitSetting"
+                    }
+                }
+            }
+        },
+        "request.PrivacyCustomSetting": {
+            "type": "object",
+            "properties": {
+                "platform": {
+                    "type": "string"
+                },
+                "target_group": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.PrivacySetting": {
+            "type": "object",
+            "properties": {
+                "social_accounts": {
+                    "$ref": "#/definitions/request.BasePrivacySetting"
+                },
+                "tx": {
+                    "$ref": "#/definitions/request.BasePrivacySetting"
+                },
+                "wallets": {
+                    "$ref": "#/definitions/request.BasePrivacySetting"
                 }
             }
         },
@@ -8679,6 +9218,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.TxLimitSetting": {
+            "type": "object",
+            "required": [
+                "action"
+            ],
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                }
+            }
+        },
         "request.UnlinkBinance": {
             "type": "object",
             "properties": {
@@ -8713,6 +9269,21 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateGeneralSettingsPayloadRequest": {
+            "type": "object",
+            "required": [
+                "payment",
+                "privacy"
+            ],
+            "properties": {
+                "payment": {
+                    "$ref": "#/definitions/request.PaymentSetting"
+                },
+                "privacy": {
+                    "$ref": "#/definitions/request.PrivacySetting"
+                }
+            }
+        },
         "request.UpdateGuildRequest": {
             "type": "object",
             "properties": {
@@ -8733,6 +9304,31 @@ const docTemplate = `{
                 },
                 "log_channel": {
                     "type": "string"
+                }
+            }
+        },
+        "request.UpdateNotificationSettingPayloadRequest": {
+            "type": "object",
+            "required": [
+                "enable",
+                "flags",
+                "platforms"
+            ],
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "flags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
+                },
+                "platforms": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -9829,6 +10425,17 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.GasTrackerResponse"
                     }
+                }
+            }
+        },
+        "response.GeneralSettingData": {
+            "type": "object",
+            "properties": {
+                "payment": {
+                    "$ref": "#/definitions/model.UserPaymentSetting"
+                },
+                "privacy": {
+                    "$ref": "#/definitions/model.UserPrivacySetting"
                 }
             }
         },
@@ -12642,6 +13249,22 @@ const docTemplate = `{
                 }
             }
         },
+        "response.UserGeneralSettingResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.GeneralSettingData"
+                }
+            }
+        },
+        "response.UserNotificationSettingResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.UserNotificationSetting"
+                }
+            }
+        },
         "util.Pagination": {
             "type": "object",
             "properties": {
@@ -12670,9 +13293,9 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "ApiKeyAuth": {
+        "BearerAuth": {
             "type": "apiKey",
-            "name": "access_token",
+            "name": "Authorization",
             "in": "header"
         }
     }

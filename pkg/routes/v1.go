@@ -497,4 +497,19 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		onboardingGroup.POST("/start", h.Onboarding.Start)
 	}
 
+	// settings
+	profileSettings := v1.Group("/profiles/:profile_id/settings")
+	{
+		general := profileSettings.Group("/general")
+		{
+			general.GET("", h.Setting.GetUserGeneralSettings)
+			general.PUT("", h.Setting.UpdateUserGeneralSettings)
+		}
+
+		notification := profileSettings.Group("/notifications")
+		{
+			notification.GET("", h.Setting.GetUserNotificationSettings)
+			notification.PUT("", h.Setting.UpdateUserNotificationSettings)
+		}
+	}
 }

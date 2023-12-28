@@ -52,6 +52,7 @@ type AssetToken struct {
 	Price   float64         `json:"price"`
 	Native  bool            `json:"native"`
 	Chain   AssetTokenChain `json:"chain"`
+	Icon    string          `json:"icon"`
 }
 
 type AssetTokenChain struct {
