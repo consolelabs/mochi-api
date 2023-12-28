@@ -38,8 +38,6 @@ func (input *TransferRequest) Bind(c *gin.Context) (err error) {
 type ListTrackingTokensRequest struct {
 	ProfileID   string
 	CoinGeckoID string `json:"coin_gecko_id" form:"coin_gecko_id"`
-	Page        int    `json:"page" form:"page,default=0"`
-	Size        int    `json:"size" form:"size,default=16"`
 }
 
 type AddToWatchlistRequest struct {
