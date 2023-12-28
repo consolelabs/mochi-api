@@ -1,3 +1,10 @@
+## [6.25.4](https://github.com/consolelabs/mochi-api/compare/v6.25.3...v6.25.4) (2023-12-20)
+
+
+### Bug Fixes
+
+* remove base when get balance vault ([#1284](https://github.com/consolelabs/mochi-api/issues/1284)) ([965c7b8](https://github.com/consolelabs/mochi-api/commit/965c7b8d33a277d53fde8649aa1292e662251ec4))
+
 ## [6.25.3](https://github.com/consolelabs/mochi-api/compare/v6.25.2...v6.25.3) (2023-12-19)
 
 
