@@ -966,6 +966,9 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 		return nil, err
 	}
 
+	if simpleEarnAcc.TotalAmountInBTC == "" {
+		simpleEarnAcc.TotalAmountInBTC = "0"
+	}
 	simpleEarnValue, err := strconv.ParseFloat(simpleEarnAcc.TotalAmountInBTC, 64)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Binance.GetSimpleEarn] Failed to parse asset value")

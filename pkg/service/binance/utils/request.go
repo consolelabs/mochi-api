@@ -3,15 +3,16 @@ package butils
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"strings"
 )
 
-func signature(queryString, apiSecret string) string {
-	h := hmac.New(sha256.New, []byte(apiSecret))
-	h.Write([]byte(queryString))
-	return hex.EncodeToString(h.Sum(nil))
+func signature(message, secret string) string {
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(message))
+	signingKey := fmt.Sprintf("%x", mac.Sum(nil))
+	return signingKey
+
 }
 
 func QueryString(q map[string]string, apiSecret string) string {
