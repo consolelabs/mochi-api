@@ -1,5 +1,17 @@
 package request
 
+import (
+	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/defipod/mochi/pkg/model"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
+	uuidutils "github.com/defipod/mochi/pkg/util/uuid"
+)
+
 type UserSettingBaseUriRequest struct {
 	ProfileId string `uri:"profile_id" binding:"required"`
 }
@@ -52,8 +64,139 @@ type PrivacySetting struct {
 	Wallets        *BasePrivacySetting `json:"wallets"`
 }
 
+func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
+	// binding payload
+	if err := c.BindJSON(&r); err != nil {
+		return errors.New("failed to bind payload")
+	}
+
+	// validate payment settings
+	if err := r.Payment.validate(); err != nil {
+		return err
+	}
+
+	// validate payment settings
+	if err := r.Privacy.validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *PaymentSetting) validate() error {
+	// platforms
+	platforms := []string{"discord", "telegram", "web"}
+	if !sliceutils.Contains(platforms, s.DefaultReceiverPlatform) {
+		return fmt.Errorf("default_receiver_platform: invalid value. Available values: %s", strings.Join(platforms, ","))
+	}
+
+	// token_priorities
+	for _, tkn := range s.TokenPriorities {
+		if !uuidutils.IsValid(tkn) {
+			return errors.New("token_priorities: must contain valid token IDs")
+		}
+	}
+
+	// default_message_settings
+	if s.DefaultMessageEnable != nil && *s.DefaultMessageEnable {
+		if len(s.DefaultMessageSettings) == 0 {
+			return errors.New("default_message_settings: must specify at least one")
+		}
+	}
+
+	actions := []string{"tip", "airdrop", "paylink", "payme"}
+	for _, s := range s.DefaultMessageSettings {
+		if !sliceutils.Contains(actions, s.Action) {
+			return fmt.Errorf("default_message_settings.action: invalid value. Available values: %s", strings.Join(actions, ","))
+		}
+	}
+
+	// tx_limit_settings
+	if s.TxLimitEnable != nil && *s.TxLimitEnable {
+		if len(s.TxLimitSettings) == 0 {
+			return errors.New("tx_limit_settings: must specify at least one")
+		}
+	}
+
+	limitActions := []string{"tip", "airdrop", "paylink", "payme", "withdraw", "vault_transfer"}
+	for _, s := range s.TxLimitSettings {
+		if !sliceutils.Contains(limitActions, s.Action) {
+			return fmt.Errorf("tx_limit_settings.action: invalid value. Available values: %s", strings.Join(limitActions, ","))
+		}
+	}
+
+	return nil
+}
+
+func (s *PrivacySetting) validate() error {
+	// tx
+	if err := s.Tx.validate(); err != nil {
+		return fmt.Errorf("tx.%v", err)
+	}
+
+	// social_accounts
+	if err := s.SocialAccounts.validate(); err != nil {
+		return fmt.Errorf("social_accounts.%v", err)
+	}
+
+	// wallets
+	if err := s.Wallets.validate(); err != nil {
+		return fmt.Errorf("wallets.%v", err)
+	}
+
+	return nil
+}
+
+func (s *BasePrivacySetting) validate() error {
+	// target_group
+	targetGroups := sliceutils.Map([]model.TargetGroup{model.TargetGroupAll, model.TargetGroupFriends, model.TargetGroupReceivers}, func(g model.TargetGroup) string {
+		return string(g)
+	})
+	if !sliceutils.Contains(targetGroups, s.GeneralTargetGroup) {
+		return fmt.Errorf("general_target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
+	}
+
+	// platform_group
+	platformGroups := sliceutils.Map([]model.PlatformGroup{model.PlatformGroupAll, model.PlatformGroupCustom}, func(g model.PlatformGroup) string {
+		return string(g)
+	})
+	if !sliceutils.Contains(platformGroups, s.GeneralPlatformGroup) {
+		return fmt.Errorf("platform_group: invalid value. Available values: %s", strings.Join(platformGroups, ","))
+	}
+
+	// custom_settings
+	if s.GeneralPlatformGroup == string(model.PlatformGroupCustom) {
+		if len(s.CustomSettings) == 0 {
+			return errors.New("custom_settings: must specify at least one")
+		}
+	}
+
+	platforms := []string{"discord", "telegram", "web"}
+	for _, s := range s.CustomSettings {
+		if !sliceutils.Contains(targetGroups, s.TargetGroup) {
+			return fmt.Errorf("custom_settings.target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
+		}
+		if !sliceutils.Contains(platforms, s.Platform) {
+			return fmt.Errorf("custom_settings.platform: invalid value. Available values: %s", strings.Join(platforms, ","))
+		}
+	}
+
+	return nil
+}
+
 type UpdateNotificationSettingPayloadRequest struct {
 	Enable    *bool           `json:"enable" binding:"required"`
 	Platforms []string        `json:"platforms" binding:"required"`
 	Flags     map[string]bool `json:"flags" binding:"required"`
+}
+
+func (r *UpdateNotificationSettingPayloadRequest) Bind(c *gin.Context) error {
+	platforms := []string{"discord", "telegram", "web"}
+	for _, p := range r.Platforms {
+		if !sliceutils.Contains(platforms, p) {
+			return fmt.Errorf("platforms: invalid value. Available values: %s", strings.Join(platforms, ","))
+		}
+	}
+
+	return nil
 }
