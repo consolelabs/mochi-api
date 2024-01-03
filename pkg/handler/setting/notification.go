@@ -7,8 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 // GET /profiles/:profile_id/settings/notifications
@@ -40,7 +42,7 @@ func (h *handler) GetUserNotificationSettings(c *gin.Context) {
 
 	data, err := h.entities.GetUserNotificationSettings(uri)
 	if err != nil {
-		logger.WithField("uri", uri).WithError(err).Error("entities.GetUserNotificationSettings() failed")
+		logger.WithField("uri", uri).WithError(err).Error("entity.GetUserNotificationSettings() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("failed to get user notification settings"), nil))
 		return
 	}
@@ -77,15 +79,36 @@ func (h *handler) UpdateUserNotificationSettings(c *gin.Context) {
 	}
 
 	var payload request.UpdateNotificationSettingPayloadRequest
-	if err := c.BindJSON(&payload); err != nil {
-		logger.WithError(err).Error("BindJSON() failed")
+	if err := payload.Bind(c); err != nil {
+		logger.WithError(err).Error("Bind() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	data, err := h.entities.UpdateUserNotificationSettings(uri, payload)
+	// get all notification flags
+	notificationFlags, err := h.entities.ListAllNotificationFlags()
 	if err != nil {
-		logger.WithFields(logrus.Fields{"uri": uri, "payload": payload}).WithError(err).Error("entities.UpdateUserNotificationSettings() failed")
+		logger.WithError(err).Error("entity.ListAllNotificationFlags() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	// validate flags
+	systemFlags := sliceutils.Map(notificationFlags, func(s model.NotificationFlag) string {
+		return s.Key
+	})
+	for k := range payload.Flags {
+		if !sliceutils.Contains(systemFlags, k) {
+			err := errors.New("flags: insufficiant data")
+			logger.Error(err.Error())
+			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+	}
+
+	data, err := h.entities.UpdateUserNotificationSettings(uri, payload, notificationFlags)
+	if err != nil {
+		logger.WithFields(logrus.Fields{"uri": uri, "payload": payload}).WithError(err).Error("entity.UpdateUserNotificationSettings() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, errors.New("failed to update user notification settings"), nil))
 		return
 	}

@@ -77,8 +77,8 @@ func (h *handler) UpdateUserGeneralSettings(c *gin.Context) {
 	}
 
 	var payload request.UpdateGeneralSettingsPayloadRequest
-	if err := c.BindJSON(&payload); err != nil {
-		logger.WithError(err).Error("BindJSON() failed")
+	if err := payload.Bind(c); err != nil {
+		logger.WithError(err).Error("Bind() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
