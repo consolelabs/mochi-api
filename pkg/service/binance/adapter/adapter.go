@@ -45,7 +45,8 @@ func GetApiKeyPermission(apiKey, apiSecret string) (permission *response.Binance
 
 func GetUserAsset(apiKey, apiSecret string) (assets []response.BinanceUserAssetResponse, err error) {
 	q := map[string]string{
-		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+		"timestamp":        strconv.Itoa(int(time.Now().UnixMilli())),
+		"needBtcValuation": "true",
 	}
 	queryString := butils.QueryString(q, apiSecret)
 
@@ -77,7 +78,8 @@ func GetUserAsset(apiKey, apiSecret string) (assets []response.BinanceUserAssetR
 
 func GetFundingAsset(apiKey, apiSecret string) (assets []response.BinanceUserAssetResponse, err error) {
 	q := map[string]string{
-		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
+		"timestamp":        strconv.Itoa(int(time.Now().UnixMilli())),
+		"needBtcValuation": "true",
 	}
 	queryString := butils.QueryString(q, apiSecret)
 
