@@ -1,3 +1,10 @@
+## [6.26.1](https://github.com/consolelabs/mochi-api/compare/v6.26.0...v6.26.1) (2023-12-28)
+
+
+### Bug Fixes
+
+* user watchlist token remove pagination ([#1294](https://github.com/consolelabs/mochi-api/issues/1294)) ([2c49ecd](https://github.com/consolelabs/mochi-api/commit/2c49ecdaec252045ed4f1fba1a1fc9bf899214cf))
+
 # [6.26.0](https://github.com/consolelabs/mochi-api/compare/v6.25.4...v6.26.0) (2023-12-28)
 
 
