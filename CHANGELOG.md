@@ -1,3 +1,10 @@
+## [6.26.2](https://github.com/consolelabs/mochi-api/compare/v6.26.1...v6.26.2) (2024-01-03)
+
+
+### Bug Fixes
+
+* update binance query api ([#1297](https://github.com/consolelabs/mochi-api/issues/1297)) ([6b38970](https://github.com/consolelabs/mochi-api/commit/6b38970bc91ebaf3ea64427cc22a4d9816045c98))
+
 ## [6.26.1](https://github.com/consolelabs/mochi-api/compare/v6.26.0...v6.26.1) (2023-12-28)
 
 
