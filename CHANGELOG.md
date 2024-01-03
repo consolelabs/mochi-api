@@ -1,3 +1,10 @@
+## [6.26.3](https://github.com/consolelabs/mochi-api/compare/v6.26.2...v6.26.3) (2024-01-03)
+
+
+### Bug Fixes
+
+* remove cache total amt binance ([#1298](https://github.com/consolelabs/mochi-api/issues/1298)) ([7c88fd9](https://github.com/consolelabs/mochi-api/commit/7c88fd9edbb0a218813d57a5dc2989ccfe38f516))
+
 ## [6.26.2](https://github.com/consolelabs/mochi-api/compare/v6.26.1...v6.26.2) (2024-01-03)
 
 
