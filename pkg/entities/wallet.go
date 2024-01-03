@@ -952,13 +952,6 @@ func (*Entity) handleErc1155TransferBatch(address string, ev covalent.LogEvent, 
 }
 
 func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.WalletBinanceResponse, error) {
-	// redis cache
-	value, err := e.cache.HashGet(fmt.Sprintf("binance-assets-%s-%s", req.Id, req.ApiKey))
-	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get cache user data binance")
-		return nil, err
-	}
-
 	// simple earn
 	simpleEarnAcc, err := e.svc.Binance.GetSimpleEarn(req.ApiKey, req.ApiSecret)
 	if err != nil {
@@ -977,38 +970,20 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 
 	// all user asset
 	totalAssetValue := 0.0
-	if len(value) == 0 {
-		asset, err := e.SummarizeFundingAsset(req.Id, req.ApiKey, req.ApiSecret)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get binance asset")
-			return nil, err
-		}
+	asset, err := e.SummarizeFundingAsset(req.Id, req.ApiKey, req.ApiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get binance asset")
+		return nil, err
+	}
 
-		for _, asset := range asset {
-			assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
-			if err != nil {
-				e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
-				return nil, err
-			}
-
-			totalAssetValue += assetValue
-		}
-
-		encodeData := map[string]string{
-			"total_asset": fmt.Sprint(totalAssetValue),
-		}
-
-		err = e.cache.HashSet(fmt.Sprintf("binance-assets-%s-%s", req.Id, req.ApiKey), encodeData, 30*time.Second)
-		if err != nil {
-			e.log.Fields(logger.Fields{"req": req}).Error(err, "Failed to set cache data wallet")
-			return nil, err
-		}
-	} else {
-		totalAssetValue, err = strconv.ParseFloat(value["total_asset"], 64)
+	for _, asset := range asset {
+		assetValue, err := strconv.ParseFloat(asset.BtcValuation, 64)
 		if err != nil {
 			e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
 			return nil, err
 		}
+
+		totalAssetValue += assetValue
 	}
 
 	// btc price
