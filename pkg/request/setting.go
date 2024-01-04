@@ -191,7 +191,7 @@ func (s *BasePrivacySetting) validate() error {
 		}
 	}
 
-	platforms := []string{"discord", "telegram", "website"}
+	platforms := []string{"discord", "telegram", "web"}
 	for _, s := range s.CustomSettings {
 		if !sliceutils.Contains(targetGroups, s.TargetGroup) {
 			return fmt.Errorf("custom_settings.target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
@@ -211,7 +211,7 @@ type UpdateNotificationSettingPayloadRequest struct {
 }
 
 func (r *UpdateNotificationSettingPayloadRequest) Bind(c *gin.Context) error {
-	platforms := []string{"discord", "telegram", "website"}
+	platforms := []string{"discord", "telegram", "web"}
 	for _, p := range r.Platforms {
 		if !sliceutils.Contains(platforms, p) {
 			return fmt.Errorf("platforms: invalid value. Available values: %s", strings.Join(platforms, ","))
