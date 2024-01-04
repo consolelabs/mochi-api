@@ -1,3 +1,12 @@
+## [6.26.4](https://github.com/consolelabs/mochi-api/compare/v6.26.3...v6.26.4) (2024-01-04)
+
+
+### Bug Fixes
+
+* add logger to debug geckoterminal data crawling ([92064c2](https://github.com/consolelabs/mochi-api/commit/92064c263387308acad8e0e5691d35da7986abe4))
+* **emojis:** remove pagination when query emojis list with codes ([ae91faf](https://github.com/consolelabs/mochi-api/commit/ae91faf448ca10b6b19ba0c5e0c5b8241bdebca3))
+* notification settings - add validation ([487e9ac](https://github.com/consolelabs/mochi-api/commit/487e9ace4d6ccfd5af95dad46ac31eb8dd48ff87))
+
 ## [6.26.3](https://github.com/consolelabs/mochi-api/compare/v6.26.2...v6.26.3) (2024-01-03)
 
 
