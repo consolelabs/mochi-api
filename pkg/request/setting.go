@@ -85,7 +85,7 @@ func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
 
 func (s *PaymentSetting) validate() error {
 	// platforms
-	platforms := []string{"discord", "telegram", "web"}
+	platforms := []string{"discord", "telegram", "google"}
 	if !sliceutils.Contains(platforms, s.DefaultReceiverPlatform) {
 		return fmt.Errorf("default_receiver_platform: invalid value. Available values: %s", strings.Join(platforms, ","))
 	}
@@ -104,11 +104,21 @@ func (s *PaymentSetting) validate() error {
 		}
 	}
 
-	actions := []string{"tip", "airdrop", "paylink", "payme"}
-	for _, s := range s.DefaultMessageSettings {
-		if !sliceutils.Contains(actions, s.Action) {
-			return fmt.Errorf("default_message_settings.action: invalid value. Available values: %s", strings.Join(actions, ","))
-		}
+	// validate action of message settings
+	msgActions := []string{"tip", "airdrop", "paylink", "payme"}
+	hasInvalidMsgAction := sliceutils.Some(s.DefaultMessageSettings, func(s DefaultMessageSetting) bool {
+		return !sliceutils.Contains(msgActions, s.Action)
+	})
+	if hasInvalidMsgAction {
+		return fmt.Errorf("default_message_settings.action: invalid value. Available values: %s", strings.Join(msgActions, ","))
+	}
+
+	// check duplicated actions
+	inputMsgActions := sliceutils.Map(s.DefaultMessageSettings, func(s DefaultMessageSetting) string {
+		return s.Action
+	})
+	if duplications := sliceutils.FindDuplications(inputMsgActions); len(duplications) > 0 {
+		return fmt.Errorf("default_message_settings.action: duplicated values (%s)", strings.Join(duplications, ","))
 	}
 
 	// tx_limit_settings
@@ -118,11 +128,21 @@ func (s *PaymentSetting) validate() error {
 		}
 	}
 
-	limitActions := []string{"tip", "airdrop", "paylink", "payme", "withdraw", "vault_transfer"}
-	for _, s := range s.TxLimitSettings {
-		if !sliceutils.Contains(limitActions, s.Action) {
-			return fmt.Errorf("tx_limit_settings.action: invalid value. Available values: %s", strings.Join(limitActions, ","))
-		}
+	// validate action of tx limit settings
+	limitActions := []string{"tip", "airdrop", "paylink", "payme", "withdraw"}
+	hasInvalidLimitAction := sliceutils.Some(s.TxLimitSettings, func(s TxLimitSetting) bool {
+		return !sliceutils.Contains(limitActions, s.Action)
+	})
+	if hasInvalidLimitAction {
+		return fmt.Errorf("tx_limit_settings.action: invalid value. Available values: %s", strings.Join(limitActions, ","))
+	}
+
+	// check duplicated actions
+	inputLimitActions := sliceutils.Map(s.TxLimitSettings, func(s TxLimitSetting) string {
+		return s.Action
+	})
+	if duplications := sliceutils.FindDuplications(inputLimitActions); len(duplications) > 0 {
+		return fmt.Errorf("tx_limit_settings.action: duplicated values (%s)", strings.Join(duplications, ","))
 	}
 
 	return nil
@@ -171,7 +191,7 @@ func (s *BasePrivacySetting) validate() error {
 		}
 	}
 
-	platforms := []string{"discord", "telegram", "web"}
+	platforms := []string{"discord", "telegram", "website"}
 	for _, s := range s.CustomSettings {
 		if !sliceutils.Contains(targetGroups, s.TargetGroup) {
 			return fmt.Errorf("custom_settings.target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
@@ -191,7 +211,7 @@ type UpdateNotificationSettingPayloadRequest struct {
 }
 
 func (r *UpdateNotificationSettingPayloadRequest) Bind(c *gin.Context) error {
-	platforms := []string{"discord", "telegram", "web"}
+	platforms := []string{"discord", "telegram", "website"}
 	for _, p := range r.Platforms {
 		if !sliceutils.Contains(platforms, p) {
 			return fmt.Errorf("platforms: invalid value. Available values: %s", strings.Join(platforms, ","))
