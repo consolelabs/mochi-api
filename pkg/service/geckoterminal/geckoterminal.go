@@ -56,6 +56,7 @@ func (g *GeckoTerminal) Search(query string) (*Search, error) {
 
 	var search *Search
 	if err := json.Unmarshal([]byte(data), &search); err != nil {
+		g.logger.Infof("invalid raw data from geckoterminal: %s", data)
 		return nil, err
 	}
 
