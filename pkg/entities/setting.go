@@ -249,12 +249,10 @@ func (e *Entity) GetUserNotificationSettings(uri request.UserSettingBaseUriReque
 	return userNotiSettings, nil
 }
 
-func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateNotificationSettingPayloadRequest) (*model.UserNotificationSetting, error) {
+func (e *Entity) ListAllNotificationFlags() ([]model.NotificationFlag, error) {
 	logger := e.log.Fields(logger.Fields{
-		"component":  "entity.setting.UpdateUserNotificationSettings",
-		"profile_id": uri.ProfileId,
+		"component": "entity.setting.ListAllNotificationFlags",
 	})
-
 	// get all notification flags
 	var listQ notificationflag.ListQuery
 	notificationFlags, err := e.repo.NotificationFlag.List(listQ)
@@ -262,6 +260,15 @@ func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRe
 		logger.Error(err, "repo.NotificationFlag.List() failed")
 		return nil, err
 	}
+
+	return notificationFlags, nil
+}
+
+func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRequest, payload request.UpdateNotificationSettingPayloadRequest, notiSettings []model.NotificationFlag) (*model.UserNotificationSetting, error) {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.UpdateUserNotificationSettings",
+		"profile_id": uri.ProfileId,
+	})
 
 	/////// start working with db layer
 	tx, fn := e.repo.Store.NewTransaction()
@@ -272,9 +279,9 @@ func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRe
 		Enable:               *payload.Enable,
 		Platforms:            payload.Platforms,
 		Flags:                payload.Flags,
-		NotificationSettings: notificationFlags,
+		NotificationSettings: notiSettings,
 	}
-	err = tx.UserNotificationSetting.Update(&userNotiSettings)
+	err := tx.UserNotificationSetting.Update(&userNotiSettings)
 	if err != nil {
 		logger.Error(err, "tx.UserNotificationSetting.Update() failed")
 		fn.Rollback(err)
