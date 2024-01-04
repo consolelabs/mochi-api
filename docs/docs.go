@@ -6000,18 +6000,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "profileID",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "size",
                         "in": "query"
                     },
                     {
@@ -6308,12 +6298,12 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "default": "false",
-                        "name": "noFetchAmount",
+                        "name": "no_fetch_amount",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "vaultId",
+                        "name": "vault_id",
                         "in": "query"
                     }
                 ],
@@ -11295,9 +11285,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.CoinMarketItemData"
                     }
-                },
-                "metadata": {
-                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },

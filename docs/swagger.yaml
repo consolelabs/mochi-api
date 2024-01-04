@@ -3032,13 +3032,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3125,8 +3125,6 @@ definitions:
         items:
           $ref: '#/definitions/response.CoinMarketItemData'
         type: array
-      metadata:
-        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.GetWelcomeChannelConfigResponse:
     properties:
@@ -8254,14 +8252,8 @@ paths:
         name: coin_gecko_id
         type: string
       - in: query
-        name: page
-        type: integer
-      - in: query
         name: profileID
         type: string
-      - in: query
-        name: size
-        type: integer
       - description: profile ID
         in: path
         name: id
@@ -8562,10 +8554,10 @@ paths:
       parameters:
       - default: "false"
         in: query
-        name: noFetchAmount
+        name: no_fetch_amount
         type: string
       - in: query
-        name: vaultId
+        name: vault_id
         type: string
       produces:
       - application/json

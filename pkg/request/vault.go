@@ -100,15 +100,17 @@ type MochiPayVaultRequest struct {
 }
 
 type GetVaultsRequest struct {
-	GuildID       string `form:"guild_id"`
-	ProfileID     string `form:"profile_id"`
-	EvmAddress    string `form:"evm_address"`
-	SolanaAddress string `form:"solana_address"`
-	Threshold     string `form:"threshold"`
-	NoFetchAmount string `form:"no_fetch_amount" default:"false"`
+	GuildID       string   `json:"guild_id" form:"guild_id"`
+	ProfileID     string   `json:"profile_id" form:"profile_id"`
+	EvmAddress    string   `json:"evm_addres" form:"evm_address"`
+	SolanaAddress string   `json:"solana_address" form:"solana_address"`
+	Threshold     string   `json:"threshold" form:"threshold"`
+	NoFetchAmount string   `json:"no_fetch_amount" form:"no_fetch_amount" default:"false"`
+	VaultIDsRaw   string   `json:"vault_ids" form:"vault_ids"`
+	VaultIDs      []string `json:"-" form:"-"`
 }
 
 type GetVaultRequest struct {
-	VaultId       string `uri:"vault_id"`
-	NoFetchAmount string `form:"no_fetch_amount" default:"false"`
+	VaultId       string `json:"vault_id" uri:"vault_id"`
+	NoFetchAmount string `json:"no_fetch_amount" form:"no_fetch_amount" default:"false"`
 }
