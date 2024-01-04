@@ -106,6 +106,7 @@ func (e *Entity) GetVaults(req request.GetVaultsRequest) ([]model.Vault, error) 
 		SolanaWallet:  req.SolanaAddress,
 		Threshold:     req.Threshold,
 		UserProfileID: req.ProfileID,
+		VaultIDs:      req.VaultIDs,
 	}
 
 	// query db

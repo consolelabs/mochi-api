@@ -6,4 +6,5 @@ type ListQuery struct {
 	EvmWallet     string
 	SolanaWallet  string
 	Threshold     string
+	VaultIDs      []string
 }
