@@ -88,7 +88,7 @@ func (e *Entity) GetListEmojisByCode(req request.GetListEmojiRequest) ([]*model.
 		}
 	}
 
-	emojis, _, err := e.repo.Emojis.ListEmojis(emojis.Query{
+	emojis, total, err := e.repo.Emojis.ListEmojis(emojis.Query{
 		Codes: listCodeQuery,
 	})
 	if err != nil {
@@ -121,20 +121,7 @@ func (e *Entity) GetListEmojisByCode(req request.GetListEmojiRequest) ([]*model.
 		}
 	}
 
-	if req.Page >= 0 && req.Size >= 0 {
-		start := int(req.Page) * int(req.Size)
-		if start > len(emojiResponse) {
-			return nil, int64(len(req.ListCode)), nil
-		}
-		end := start + int(req.Size)
-		if end > len(emojiResponse) {
-			end = len(emojiResponse)
-		}
-
-		emojiResponse = emojiResponse[start:end]
-	}
-
-	return emojiResponse, int64(len(req.ListCode)), nil
+	return emojiResponse, total, nil
 }
 
 func (e *Entity) GetEmojiByCode(code string) (*model.EmojiData, error) {

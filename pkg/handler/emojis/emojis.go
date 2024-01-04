@@ -67,12 +67,18 @@ func (h *Handler) ListEmojis(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": emojis,
-		"pagination": gin.H{
-			"total": total,
-			"page":  req.Page,
-			"size":  req.Size,
-		},
-	})
+	if req.IsQueryAll {
+		c.JSON(http.StatusOK, gin.H{
+			"data": emojis,
+			"pagination": gin.H{
+				"total": total,
+				"page":  req.Page,
+				"size":  req.Size,
+			},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": emojis})
+
 }
