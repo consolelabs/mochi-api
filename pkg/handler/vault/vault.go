@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -71,8 +72,20 @@ func (h *Handler) GetVaults(c *gin.Context) {
 	var req request.GetVaultsRequest
 	if err := c.BindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.GetVaults] BindQuery() failed")
-		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, nil, nil))
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
+	}
+
+	// bind vault IDs
+	if req.VaultIDsRaw != "" {
+		req.VaultIDs = strings.Split(req.VaultIDsRaw, ",")
+		for _, vid := range req.VaultIDs {
+			if _, err := strconv.Atoi(vid); err != nil {
+				h.log.Error(err, "[handler.GetVaults] invalid vault_ids")
+				c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid vault_ids"), nil))
+				return
+			}
+		}
 	}
 
 	vault, err := h.entities.GetVaults(req)
