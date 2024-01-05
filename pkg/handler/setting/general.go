@@ -83,6 +83,12 @@ func (h *handler) UpdateUserGeneralSettings(c *gin.Context) {
 		return
 	}
 
+	if err := h.entities.ValidateMoneySourceSetting(uri.ProfileId, payload.Payment.DefaultMoneySource); err != nil {
+		logger.WithError(err).Error("ValidateMoneySourceSetting() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
 	payment, privacy, err := h.entities.UpdateUserGeneralSettings(uri, payload)
 	if err != nil {
 		logger.WithFields(logrus.Fields{"uri": uri, "payload": payload}).WithError(err).Error("entities.UpdateUserGeneralSettings() failed")
