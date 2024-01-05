@@ -3,7 +3,6 @@ package request
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -195,10 +194,7 @@ func (s *BasePrivacySetting) validate() error {
 	///// custom_settings
 	platforms := []string{"discord", "telegram", "web"}
 	customPlatforms := sliceutils.Map(s.CustomSettings, func(s PrivacyCustomSetting) string { return s.Platform })
-	// if len(s.CustomSettings) != len(platforms) {
-	// 	return fmt.Errorf("custom_settings: must contain custom settings for all %d platforms (%s)", len(platforms), strings.Join(platforms, ","))
-	// }
-	if !reflect.DeepEqual(customPlatforms, platforms) {
+	if !sliceutils.Equal(platforms, customPlatforms) {
 		return fmt.Errorf("custom_settings: must contain one setting for each of all %d platforms (%s)", len(platforms), strings.Join(platforms, ","))
 	}
 
