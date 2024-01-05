@@ -1,12 +1,17 @@
 package entities
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/consolelabs/mochi-toolkit/formatter"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetting {
@@ -198,6 +203,42 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 	}
 
 	return &payment, &privacy, nil
+}
+
+func (e *Entity) ValidateMoneySourceSetting(profileId string, s request.MoneySource) error {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.ValidateMoneySourceSetting",
+		"profile_id": profileId,
+	})
+
+	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
+	if err != nil {
+		logger.Error(err, "svc.MochiProfile.GetByID() failed")
+		return errors.New("failed to validate profile accounts")
+	}
+
+	if profile == nil || profile.AssociatedAccounts == nil || len(profile.AssociatedAccounts) == 0 {
+		return errors.New("invalid money source")
+	}
+
+	profile.AssociatedAccounts = append(profile.AssociatedAccounts, mochiprofile.AssociatedAccount{
+		Platform:           "mochi",
+		PlatformIdentifier: "mochi-balance",
+	})
+
+	// a money source is considered as valid when it's either mochi wallet or connected wallet (evm,sol,etc.)
+	// other social platforms such as telegram, discord, email are invalid money source
+	validMoneySource := sliceutils.Some(profile.AssociatedAccounts, func(acc mochiprofile.AssociatedAccount) bool {
+		existingSource := string(acc.Platform) == s.Platform && strings.EqualFold(acc.PlatformIdentifier, s.PlatformIdentifier)
+		isMochi := s.Platform == "mochi" && existingSource
+		isConnectedWallet := strings.Contains(s.Platform, "chain") && existingSource
+		return isMochi || isConnectedWallet
+	})
+	if !validMoneySource {
+		return errors.New("invalid money source")
+	}
+
+	return nil
 }
 
 func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {

@@ -138,10 +138,10 @@ func (s *PaymentSetting) validate() error {
 	}
 
 	hasInvalidLimitBoundary := sliceutils.Some(s.TxLimitSettings, func(s TxLimitSetting) bool {
-		return s.Min != 0 && s.Min >= s.Max
+		return s.Min < 0 || s.Min >= s.Max
 	})
 	if hasInvalidLimitBoundary {
-		return fmt.Errorf("tx_limit_settings.min: min has to be smaller than max")
+		return fmt.Errorf("tx_limit_settings: min has to be a whole number and smaller than max")
 	}
 
 	// check duplicated actions
