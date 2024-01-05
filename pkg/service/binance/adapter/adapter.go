@@ -112,7 +112,7 @@ func GetFundingAsset(apiKey, apiSecret string) (assets []response.BinanceUserAss
 func GetStakingProductPosition(apiKey, apiSecret string) (pos []response.BinanceStakingProductPosition, err error) {
 	q := map[string]string{
 		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
-		"product":   "STAKING",
+		"product":   "L_DEFI",
 	}
 	queryString := butils.QueryString(q, apiSecret)
 
