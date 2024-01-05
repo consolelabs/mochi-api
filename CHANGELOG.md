@@ -1,3 +1,10 @@
+## [6.26.6](https://github.com/consolelabs/mochi-api/compare/v6.26.5...v6.26.6) (2024-01-05)
+
+
+### Bug Fixes
+
+* temp disable changelog notify ([#1306](https://github.com/consolelabs/mochi-api/issues/1306)) ([673df6f](https://github.com/consolelabs/mochi-api/commit/673df6f8f75b16c92015eb004e0b73c032e30c76))
+
 ## [6.26.5](https://github.com/consolelabs/mochi-api/compare/v6.26.4...v6.26.5) (2024-01-05)
 
 
