@@ -1,3 +1,14 @@
+## [6.26.5](https://github.com/consolelabs/mochi-api/compare/v6.26.4...v6.26.5) (2024-01-05)
+
+
+### Bug Fixes
+
+* multiple ticker ([#1305](https://github.com/consolelabs/mochi-api/issues/1305)) ([65f5695](https://github.com/consolelabs/mochi-api/commit/65f56955b7f1eeb9fa6774def68e485642a0306e))
+* remove unused cache binance ([#1304](https://github.com/consolelabs/mochi-api/issues/1304)) ([6326b41](https://github.com/consolelabs/mochi-api/commit/6326b41726f698ba8c0e96c1256bb38340874c20))
+* setting validation ([c8ccb24](https://github.com/consolelabs/mochi-api/commit/c8ccb24116a6b0a155ba239fdccb70c3d67f4602))
+* update get vaults API ([1ec71cd](https://github.com/consolelabs/mochi-api/commit/1ec71cdb1def684ef15ad6320e009e4ef5cf6f46))
+* update setting web platform ([ddefac5](https://github.com/consolelabs/mochi-api/commit/ddefac5916fa9531da6f4c1a6c07843084f00757))
+
 ## [6.26.4](https://github.com/consolelabs/mochi-api/compare/v6.26.3...v6.26.4) (2024-01-04)
 
 
