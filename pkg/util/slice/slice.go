@@ -1,5 +1,12 @@
 package sliceutils
 
+import (
+	"reflect"
+	"sort"
+
+	"golang.org/x/exp/constraints"
+)
+
 // check if the given slice contains the given elemement
 func Contains[T comparable](s []T, elem T) bool {
 	m := make(map[T]bool)
@@ -63,4 +70,16 @@ func FindDuplications[T comparable](s []T) (duplications []T) {
 	})
 
 	return
+}
+
+// Check if 2 slices have the same elements without considering their order
+// Supported types: int, float, string
+func Equal[T constraints.Ordered](a []T, b []T) bool {
+	sort.Slice(a, func(i, j int) bool {
+		return a[i] < a[j]
+	})
+	sort.Slice(b, func(i, j int) bool {
+		return b[i] < b[j]
+	})
+	return reflect.DeepEqual(a, b)
 }
