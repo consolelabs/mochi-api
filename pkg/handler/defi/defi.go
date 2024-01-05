@@ -162,7 +162,7 @@ func (h *Handler) SearchCoins(c *gin.Context) {
 		return
 	}
 
-	tokens, err := h.entities.SearchCoins(req.Query, req.GuildId, req.NoDefault)
+	tokens, err := h.entities.SearchCoins(req.Query, req.GuildId, req.NoDefault, true)
 	if err != nil {
 		h.log.Error(err, "[handler.SearchCoins] entities.SearchCoins() failed")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

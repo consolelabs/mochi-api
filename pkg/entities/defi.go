@@ -501,7 +501,7 @@ func (e *Entity) getCoingeckoTokenPlatform(platformID string) (platform *respons
 	return
 }
 
-func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.CoingeckoSupportedTokens, error) {
+func (e *Entity) SearchCoins(query, guildId string, noDefault bool, queryBySymbol bool) ([]model.CoingeckoSupportedTokens, error) {
 	// TODO: do we need this?
 	if query == "skull" {
 		query = "skullswap-exchange"
@@ -511,43 +511,56 @@ func (e *Entity) SearchCoins(query, guildId string, noDefault bool) ([]model.Coi
 		return nil, errors.New("query is required")
 	}
 
-	// 1. Get coin with id = query, if it exists then check if that coin is still supported
+	// TODO: refactor from line to line
+	// Issue: this SearchCoins() is used by ticker and watchlist
+	// - in watchlist we need to handle case coingecko_id = symbol and get only that token (1 token)
+	// - in ticker we dont handle that, just get list and check most popular one
+	// => for now temporary solution is to use queryBySymbol to handle that case and refactor logic later
 	var err error
-	token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
-		return nil, err
-	}
-
-	if token.ID == "" {
-		err = fmt.Errorf("token not found")
-	} else {
-		// need to recheck to see if coingecko still support this tokenID
-		_, err, statusCode := e.svc.CoinGecko.GetCoin(token.ID)
-		if err != nil || statusCode == 404 {
-			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoin() failed - token not supported anymore")
-		}
-	}
-
-	// 2. After get data case id = query
-	// - check if token is still supported -> return only that token
-	// - token is not supported anymore -> find list by symbol from table coingecko_supported_tokens. And remove non supported tokens from list tokens
 	var tokens []model.CoingeckoSupportedTokens
-	switch true {
-	case err == nil:
-		tokens = append(tokens, *token)
-
-	default:
+	if queryBySymbol {
 		tokens, err = e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
 		if err != nil {
 			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
 			return nil, err
 		}
+	} else {
+		// 1. Get coin with id = query, if it exists then check if that coin is still supported
+		token, err := e.repo.CoingeckoSupportedTokens.GetOne(query)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.GetOne() failed")
+			return nil, err
+		}
 
-		// remove non-supported tokens if exist
-		for idx, t := range tokens {
-			if t.ID == token.ID {
-				tokens = append(tokens[:idx], tokens[idx+1:]...)
+		if token.ID == "" {
+			err = fmt.Errorf("token not found")
+		} else {
+			// need to recheck to see if coingecko still support this tokenID
+			_, err, statusCode := e.svc.CoinGecko.GetCoin(token.ID)
+			if err != nil || statusCode == 404 {
+				e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] svc.CoinGecko.GetCoin() failed - token not supported anymore")
+			}
+		}
+
+		// 2. After get data case id = query
+		// - check if token is still supported -> return only that token
+		// - token is not supported anymore -> find list by symbol from table coingecko_supported_tokens. And remove non supported tokens from list tokens
+		switch true {
+		case err == nil:
+			tokens = append(tokens, *token)
+
+		default:
+			tokens, err = e.repo.CoingeckoSupportedTokens.List(coingeckosupportedtokens.ListQuery{Symbol: query})
+			if err != nil {
+				e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.SearchCoins] repo.CoingeckoSupportedTokens.List() failed")
+				return nil, err
+			}
+
+			// remove non-supported tokens if exist
+			for idx, t := range tokens {
+				if t.ID == token.ID {
+					tokens = append(tokens[:idx], tokens[idx+1:]...)
+				}
 			}
 		}
 	}
@@ -702,7 +715,7 @@ func (e *Entity) queryCoins(guildID, query string) ([]model.CoingeckoSupportedTo
 	}
 
 	// ... else SearchCoins()
-	searchResult, err := e.SearchCoins(query, "", false)
+	searchResult, err := e.SearchCoins(query, "", false, false)
 	// searchResult, err, code := e.svc.CoinGecko.SearchCoins(query)
 	if err != nil {
 		e.log.Fields(logger.Fields{"query": query}).Error(err, "[entity.queryCoins] svc.CoinGecko.SearchCoins failed")
@@ -964,7 +977,7 @@ func (e *Entity) AddToWatchlist(req request.AddToWatchlistRequest) (*response.Ad
 		req.CoinGeckoID = fmt.Sprintf("%s/%s", data.BaseCoin.ID, data.TargetCoin.ID)
 
 	case !isPair && req.CoinGeckoID == "":
-		tokens, err := e.SearchCoins(req.Symbol, "", false)
+		tokens, err := e.SearchCoins(req.Symbol, "", false, false)
 		// coins, err, code := e.svc.CoinGecko.SearchCoins(req.Symbol)
 		if err != nil {
 			e.log.Fields(logger.Fields{"symbol": req.Symbol}).Error(err, "[entity.AddToWatchlist] svc.CoinGecko.SearchCoins() failed")
@@ -1472,7 +1485,7 @@ func (e *Entity) GetDominanceChartData(coinId string, days int) (*response.CoinP
 
 func (e *Entity) GetTokenPrice(symbol string, tokenName string) (*float64, error) {
 	var price float64
-	tokens, err := e.SearchCoins(strings.ToLower(symbol), "", false)
+	tokens, err := e.SearchCoins(strings.ToLower(symbol), "", false, false)
 	if err != nil {
 		e.log.Fields(logger.Fields{"symbol": strings.ToLower(symbol)}).Error(err, "[listSuiWalletAssets] svc.CoinGecko.SearchCoins() failed")
 		return nil, err

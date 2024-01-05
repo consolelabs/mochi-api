@@ -457,7 +457,7 @@ func TestEntity_SearchCoins(t *testing.T) {
 				mockServiceCoingecko.EXPECT().GetCoinPrice(tt.coinIds, "usd").Return(tt.coinPrices, nil).AnyTimes()
 			}
 
-			got, err := e.SearchCoins(tt.query, "", false)
+			got, err := e.SearchCoins(tt.query, "", false, false)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Entity.SearchCoins() error = %v, wantErr %v", err, tt.wantErr)
 				return
