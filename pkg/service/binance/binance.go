@@ -475,8 +475,8 @@ func (b *Binance) GetFutureAccount(apiKey, apiSecret string) (*response.BinanceF
 }
 
 func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.BinanceFuturePositionInfo, error) {
-	b.logger.Debug("start binance.GetFutureAccount()")
-	defer b.logger.Debug("end binance.GetFutureAccount()")
+	b.logger.Debug("start binance.GetFutureAccountInfo()")
+	defer b.logger.Debug("end binance.GetFutureAccountInfo()")
 
 	res := []response.BinanceFuturePositionInfo{}
 
