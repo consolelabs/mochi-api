@@ -2,7 +2,6 @@ package entities
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"strings"
 	"time"
 
@@ -129,15 +128,16 @@ func (e *Entity) CrawlChangelogs() {
 
 	// 3. push notification for new changelogs
 	// TODO. implement push notification
-	for _, message := range newChangelogMessages {
-		byteNotification, _ := json.Marshal(message)
+	// TODO. disable temp
+	// for _, message := range newChangelogMessages {
+	// 	byteNotification, _ := json.Marshal(message)
 
-		err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
-		if err != nil {
-			e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
-			return
-		}
-	}
+	// 	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+	// 	if err != nil {
+	// 		e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
+	// 		return
+	// 	}
+	// }
 
 	// 4. update product changelog snapshot
 	if len(productChangelogSnapshots) > 0 {
