@@ -26,22 +26,28 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 }
 
 func (e *Entity) initUserPrivacySetting(profileId string) model.UserPrivacySetting {
+	defaultCustomSettings := []model.PrivacyCustomSetting{
+		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformDiscord},
+		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformTelegram},
+		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformWeb},
+	}
+
 	return model.UserPrivacySetting{
 		ProfileId: profileId,
 		Tx: &model.BasePrivacySetting{
 			GeneralTargetGroup:   model.TargetGroupAll,
 			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
+			CustomSettings:       defaultCustomSettings,
 		},
 		SocialAccounts: &model.BasePrivacySetting{
 			GeneralTargetGroup:   model.TargetGroupAll,
 			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
+			CustomSettings:       defaultCustomSettings,
 		},
 		Wallets: &model.BasePrivacySetting{
 			GeneralTargetGroup:   model.TargetGroupAll,
 			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
+			CustomSettings:       defaultCustomSettings,
 		},
 	}
 }
