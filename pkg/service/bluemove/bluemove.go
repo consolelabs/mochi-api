@@ -89,6 +89,45 @@ func (b *bluemoveService) SelectBluemoveCollection(collectionAddress, chainId st
 	return nil, errors.New("not found collection")
 }
 
+func (b *bluemoveService) GetAllCollections(chainId string) ([]*model.NFTCollection, error) {
+	page := 0
+	pageSize := 100
+	mapCollections := make([]response.BluemoveCollectionDetail, 0)
+	collectionList := make([]*model.NFTCollection, 0)
+
+	for {
+		collections, err := b.GetCollections(chainId, fmt.Sprintf("%d", page), fmt.Sprintf("%d", pageSize))
+		if err != nil {
+			return nil, err
+		}
+
+		mapCollections = append(mapCollections, collections.Data...)
+
+		if int64(page) == collections.Meta.Pagination.PageCount {
+			break
+		}
+		page++
+	}
+
+	// get collection
+	for _, c := range mapCollections {
+		collectionAddress := c.Attributes.Creator
+		if collectionAddress == "" {
+			collectionAddress = util.GetSuiAddressCollection(c.Attributes.Type)
+		}
+		collection := &model.NFTCollection{
+			ChainID: chainId,
+			Name:    c.Attributes.Name,
+			Symbol:  util.GetSymbolSuiCollection(c.Attributes.Slug),
+			Address: collectionAddress,
+			Image:   c.Attributes.Uri,
+			Author:  strconv.Itoa(int(c.Id)),
+		}
+		collectionList = append(collectionList, collection)
+	}
+	return collectionList, nil
+}
+
 func (b *bluemoveService) ChooseBluemoveChain(chainId string) string {
 	switch chainId {
 	case "9999":
