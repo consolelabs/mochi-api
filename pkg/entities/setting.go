@@ -32,11 +32,9 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 
 func (e *Entity) initUserPrivacySetting(profileId string) model.UserPrivacySetting {
 	return model.UserPrivacySetting{
-		ProfileId: profileId,
-		DestinationWallet: &model.BasePrivacySetting{
-			Enable:      true,
-			TargetGroup: model.TargetGroupAll,
-		},
+		ProfileId:             profileId,
+		ShowDestinationWallet: true,
+		TxTargetGroup:         model.TargetGroupAll,
 	}
 }
 
@@ -106,11 +104,9 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 	}
 
 	privacy := model.UserPrivacySetting{
-		ProfileId: uri.ProfileId,
-		DestinationWallet: &model.BasePrivacySetting{
-			Enable:      payload.Privacy.DestinationWalet.Enable,
-			TargetGroup: model.TargetGroup(payload.Privacy.DestinationWalet.TargetGroup),
-		},
+		ProfileId:             uri.ProfileId,
+		ShowDestinationWallet: *payload.Privacy.ShowDestinationWallet,
+		TxTargetGroup:         model.TargetGroup(payload.Privacy.TxTargetGroup),
 	}
 
 	payment := model.UserPaymentSetting{

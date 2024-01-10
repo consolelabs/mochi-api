@@ -15,13 +15,13 @@ const (
 )
 
 type BasePrivacySetting struct {
-	Enable      bool        `json:"enable"`
 	TargetGroup TargetGroup `json:"target_group"`
 }
 
 type UserPrivacySetting struct {
-	ProfileId         string              `json:"profile_id"`
-	DestinationWallet *BasePrivacySetting `json:"destination_wallet" gorm:"type:jsonb"`
+	ProfileId             string      `json:"profile_id"`
+	ShowDestinationWallet bool        `json:"show_destination_wallet"`
+	TxTargetGroup         TargetGroup `json:"tx_target_group"`
 }
 
 // db explaination for select query
