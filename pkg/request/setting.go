@@ -53,15 +53,12 @@ type PrivacyCustomSetting struct {
 }
 
 type BasePrivacySetting struct {
-	GeneralTargetGroup   string                 `json:"general_target_group"`
-	GeneralPlatformGroup string                 `json:"general_platform_group"`
-	CustomSettings       []PrivacyCustomSetting `json:"custom_settings"`
+	Enable      bool   `json:"enable" binding:"required"`
+	TargetGroup string `json:"target_group" binding:"required"`
 }
 
 type PrivacySetting struct {
-	Tx             *BasePrivacySetting `json:"tx"`
-	SocialAccounts *BasePrivacySetting `json:"social_accounts"`
-	Wallets        *BasePrivacySetting `json:"wallets"`
+	DestinationWalet *BasePrivacySetting `json:"destination_wallet" binding:"required"`
 }
 
 func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
@@ -156,54 +153,21 @@ func (s *PaymentSetting) validate() error {
 }
 
 func (s *PrivacySetting) validate() error {
-	// tx
-	if err := s.Tx.validate(); err != nil {
+	// destination wallet
+	if err := s.DestinationWalet.validate(); err != nil {
 		return fmt.Errorf("tx.%v", err)
-	}
-
-	// social_accounts
-	if err := s.SocialAccounts.validate(); err != nil {
-		return fmt.Errorf("social_accounts.%v", err)
-	}
-
-	// wallets
-	if err := s.Wallets.validate(); err != nil {
-		return fmt.Errorf("wallets.%v", err)
 	}
 
 	return nil
 }
 
 func (s *BasePrivacySetting) validate() error {
-	///// general_target_group
+	// target_group
 	targetGroups := sliceutils.Map([]model.TargetGroup{model.TargetGroupAll, model.TargetGroupFriends, model.TargetGroupReceivers}, func(g model.TargetGroup) string {
 		return string(g)
 	})
-	if !sliceutils.Contains(targetGroups, s.GeneralTargetGroup) {
-		return fmt.Errorf("general_target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
-	}
-
-	///// general_platform_group
-	platformGroups := sliceutils.Map([]model.PlatformGroup{model.PlatformGroupAll, model.PlatformGroupCustom}, func(g model.PlatformGroup) string {
-		return string(g)
-	})
-	if !sliceutils.Contains(platformGroups, s.GeneralPlatformGroup) {
-		return fmt.Errorf("platform_group: invalid value. Available values: %s", strings.Join(platformGroups, ","))
-	}
-
-	///// custom_settings
-	platforms := []string{"discord", "telegram", "web"}
-	customPlatforms := sliceutils.Map(s.CustomSettings, func(s PrivacyCustomSetting) string { return s.Platform })
-	if !sliceutils.Equal(platforms, customPlatforms) {
-		return fmt.Errorf("custom_settings: must contain one setting for each of all %d platforms (%s)", len(platforms), strings.Join(platforms, ","))
-	}
-
-	// validate target_group in each custom setting
-	hasInvalidCustomTargetGroup := sliceutils.Some(s.CustomSettings, func(s PrivacyCustomSetting) bool {
-		return !sliceutils.Contains(targetGroups, s.TargetGroup)
-	})
-	if hasInvalidCustomTargetGroup {
-		return fmt.Errorf("custom_settings.target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
+	if !sliceutils.Contains(targetGroups, s.TargetGroup) {
+		return fmt.Errorf("target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
 	}
 
 	return nil

@@ -31,28 +31,11 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 }
 
 func (e *Entity) initUserPrivacySetting(profileId string) model.UserPrivacySetting {
-	defaultCustomSettings := []model.PrivacyCustomSetting{
-		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformDiscord},
-		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformTelegram},
-		{TargetGroup: model.TargetGroupAll, Platform: formatter.PlatformWeb},
-	}
-
 	return model.UserPrivacySetting{
 		ProfileId: profileId,
-		Tx: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       defaultCustomSettings,
-		},
-		SocialAccounts: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       defaultCustomSettings,
-		},
-		Wallets: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       defaultCustomSettings,
+		DestinationWallet: &model.BasePrivacySetting{
+			Enable:      true,
+			TargetGroup: model.TargetGroupAll,
 		},
 	}
 }
@@ -122,45 +105,11 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 		}
 	}
 
-	// transform custom privacy settings
-	txPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.Tx.CustomSettings {
-		txPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-	socialAccsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.SocialAccounts.CustomSettings {
-		socialAccsPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-	walletsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.Wallets.CustomSettings {
-		walletsPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-
 	privacy := model.UserPrivacySetting{
 		ProfileId: uri.ProfileId,
-		Tx: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Tx.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Tx.GeneralPlatformGroup),
-			CustomSettings:       txPrivacyCustom,
-		},
-		SocialAccounts: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.SocialAccounts.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.SocialAccounts.GeneralPlatformGroup),
-			CustomSettings:       socialAccsPrivacyCustom,
-		},
-		Wallets: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Wallets.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Wallets.GeneralPlatformGroup),
-			CustomSettings:       walletsPrivacyCustom,
+		DestinationWallet: &model.BasePrivacySetting{
+			Enable:      payload.Privacy.DestinationWalet.Enable,
+			TargetGroup: model.TargetGroup(payload.Privacy.DestinationWalet.TargetGroup),
 		},
 	}
 
