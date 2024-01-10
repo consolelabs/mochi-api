@@ -43,17 +43,6 @@ definitions:
       status:
         type: string
     type: object
-  model.BasePrivacySetting:
-    properties:
-      custom_settings:
-        items:
-          $ref: '#/definitions/model.PrivacyCustomSetting'
-        type: array
-      general_platform_group:
-        type: string
-      general_target_group:
-        type: string
-    type: object
   model.Chain:
     properties:
       coin_gecko_id:
@@ -677,13 +666,6 @@ definitions:
       symbol:
         type: string
     type: object
-  model.PrivacyCustomSetting:
-    properties:
-      platform:
-        type: string
-      target_group:
-        type: string
-    type: object
   model.ProductBotCommand:
     properties:
       code:
@@ -986,12 +968,10 @@ definitions:
     properties:
       profile_id:
         type: string
-      social_accounts:
-        $ref: '#/definitions/model.BasePrivacySetting'
-      tx:
-        $ref: '#/definitions/model.BasePrivacySetting'
-      wallets:
-        $ref: '#/definitions/model.BasePrivacySetting'
+      show_destination_wallet:
+        type: boolean
+      tx_target_group:
+        type: string
     type: object
   model.UserTokenSupportRequest:
     properties:
@@ -1168,17 +1148,6 @@ definitions:
     required:
     - guild_id
     - user_discord_id
-    type: object
-  request.BasePrivacySetting:
-    properties:
-      custom_settings:
-        items:
-          $ref: '#/definitions/request.PrivacyCustomSetting'
-        type: array
-      general_platform_group:
-        type: string
-      general_target_group:
-        type: string
     type: object
   request.ClaimQuestsRewardsRequest:
     properties:
@@ -1611,21 +1580,15 @@ definitions:
     - tx_limit_enable
     - tx_limit_settings
     type: object
-  request.PrivacyCustomSetting:
-    properties:
-      platform:
-        type: string
-      target_group:
-        type: string
-    type: object
   request.PrivacySetting:
     properties:
-      social_accounts:
-        $ref: '#/definitions/request.BasePrivacySetting'
-      tx:
-        $ref: '#/definitions/request.BasePrivacySetting'
-      wallets:
-        $ref: '#/definitions/request.BasePrivacySetting'
+      show_destination_wallet:
+        type: boolean
+      tx_target_group:
+        type: string
+    required:
+    - show_destination_wallet
+    - tx_target_group
     type: object
   request.RoleReactionRequest:
     properties:
@@ -3032,13 +2995,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_14d_change:
+        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
-        type: number
-      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3658,30 +3621,30 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_14d:
+        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:

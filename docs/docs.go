@@ -6584,23 +6584,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BasePrivacySetting": {
-            "type": "object",
-            "properties": {
-                "custom_settings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PrivacyCustomSetting"
-                    }
-                },
-                "general_platform_group": {
-                    "type": "string"
-                },
-                "general_target_group": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Chain": {
             "type": "object",
             "properties": {
@@ -7553,17 +7536,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PrivacyCustomSetting": {
-            "type": "object",
-            "properties": {
-                "platform": {
-                    "type": "string"
-                },
-                "target_group": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ProductBotCommand": {
             "type": "object",
             "properties": {
@@ -8025,14 +7997,11 @@ const docTemplate = `{
                 "profile_id": {
                     "type": "string"
                 },
-                "social_accounts": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
+                "show_destination_wallet": {
+                    "type": "boolean"
                 },
-                "tx": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
-                },
-                "wallets": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
+                "tx_target_group": {
+                    "type": "string"
                 }
             }
         },
@@ -8297,23 +8266,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.BasePrivacySetting": {
-            "type": "object",
-            "properties": {
-                "custom_settings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.PrivacyCustomSetting"
-                    }
-                },
-                "general_platform_group": {
-                    "type": "string"
-                },
-                "general_target_group": {
                     "type": "string"
                 }
             }
@@ -8970,28 +8922,18 @@ const docTemplate = `{
                 }
             }
         },
-        "request.PrivacyCustomSetting": {
-            "type": "object",
-            "properties": {
-                "platform": {
-                    "type": "string"
-                },
-                "target_group": {
-                    "type": "string"
-                }
-            }
-        },
         "request.PrivacySetting": {
             "type": "object",
+            "required": [
+                "show_destination_wallet",
+                "tx_target_group"
+            ],
             "properties": {
-                "social_accounts": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
+                "show_destination_wallet": {
+                    "type": "boolean"
                 },
-                "tx": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
-                },
-                "wallets": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
+                "tx_target_group": {
+                    "type": "string"
                 }
             }
         },

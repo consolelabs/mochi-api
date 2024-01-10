@@ -52,13 +52,9 @@ type PrivacyCustomSetting struct {
 	Platform    string `json:"platform" binding:"required"`
 }
 
-type BasePrivacySetting struct {
-	Enable      bool   `json:"enable" binding:"required"`
-	TargetGroup string `json:"target_group" binding:"required"`
-}
-
 type PrivacySetting struct {
-	DestinationWalet *BasePrivacySetting `json:"destination_wallet" binding:"required"`
+	ShowDestinationWallet *bool  `json:"show_destination_wallet" binding:"required"`
+	TxTargetGroup         string `json:"tx_target_group" binding:"required"`
 }
 
 func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
@@ -153,21 +149,12 @@ func (s *PaymentSetting) validate() error {
 }
 
 func (s *PrivacySetting) validate() error {
-	// destination wallet
-	if err := s.DestinationWalet.validate(); err != nil {
-		return fmt.Errorf("tx.%v", err)
-	}
-
-	return nil
-}
-
-func (s *BasePrivacySetting) validate() error {
 	// target_group
 	targetGroups := sliceutils.Map([]model.TargetGroup{model.TargetGroupAll, model.TargetGroupFriends, model.TargetGroupReceivers}, func(g model.TargetGroup) string {
 		return string(g)
 	})
-	if !sliceutils.Contains(targetGroups, s.TargetGroup) {
-		return fmt.Errorf("target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
+	if !sliceutils.Contains(targetGroups, s.TxTargetGroup) {
+		return fmt.Errorf("tx_target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
 	}
 
 	return nil
