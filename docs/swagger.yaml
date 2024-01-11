@@ -2018,6 +2018,36 @@ definitions:
       shortname:
         type: string
     type: object
+  response.AssetToken:
+    properties:
+      address:
+        type: string
+      chain:
+        $ref: '#/definitions/response.AssetTokenChain'
+      decimal:
+        type: integer
+      icon:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      native:
+        type: boolean
+      price:
+        type: number
+      symbol:
+        type: string
+    type: object
+  response.AssetTokenChain:
+    properties:
+      name:
+        type: string
+      short_name:
+        type: string
+      type:
+        type: string
+    type: object
   response.BinanceFutureAccountPositionResponse:
     properties:
       data:
@@ -2066,6 +2096,60 @@ definitions:
         items:
           $ref: '#/definitions/response.BinanceFuturePositionInfo'
         type: array
+    type: object
+  response.BinancePositionAmountVos:
+    properties:
+      amount:
+        type: string
+      amountInBTC:
+        type: string
+      amountInUSDT:
+        type: string
+      asset:
+        type: string
+    type: object
+  response.BinanceStakingProductPosition:
+    properties:
+      accrualDays:
+        type: integer
+      amount:
+        type: string
+      apy:
+        type: string
+      asset:
+        type: string
+      canReStake:
+        type: boolean
+      canRedeemEarly:
+        type: boolean
+      deliveryDate:
+        type: integer
+      duration:
+        type: integer
+      interestEndDate:
+        type: integer
+      nexInterestPay:
+        type: string
+      nextInterestPayDate:
+        type: integer
+      payInterestPeriod:
+        type: integer
+      positionId:
+        type: integer
+      projectId:
+        type: string
+      purchaseTime:
+        type: integer
+      redeemPeriod:
+        type: integer
+      rewardAmt:
+        type: string
+      rewardAsset:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
     type: object
   response.ChainGasTrackerResponseData:
     properties:
@@ -2995,13 +3079,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_7d_change:
+        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
         type: number
       usd_1y_change:
-        type: number
-      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3621,30 +3705,30 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h:
         type: number
+      price_change_percentage_1h_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
       price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1h_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_14d:
-        type: number
       price_change_percentage_24h:
         type: number
       price_change_percentage_24h_in_currency:
@@ -4344,6 +4428,53 @@ definitions:
       username:
         type: string
     type: object
+  response.UserBalanceCex:
+    properties:
+      binance:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+    type: object
+  response.UserBalanceOnchain:
+    properties:
+      evm:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      ron:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      sol:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      sui:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+    type: object
+  response.UserBalanceResponse:
+    properties:
+      cex:
+        $ref: '#/definitions/response.UserBalanceCex'
+      lastest_snapshot_bals:
+        type: string
+      offchain:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      onchain:
+        $ref: '#/definitions/response.UserBalanceOnchain'
+      pnl:
+        type: string
+      summarize:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      totalUsdAmount:
+        type: number
+    type: object
   response.UserFeedbackResponse:
     properties:
       data:
@@ -4366,6 +4497,27 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.UserNotificationSetting'
+    type: object
+  response.WalletAssetData:
+    properties:
+      amount:
+        type: string
+      asset_balance:
+        type: number
+      chain_id:
+        type: integer
+      contract_name:
+        type: string
+      contract_symbol:
+        type: string
+      detail_lending:
+        $ref: '#/definitions/response.BinancePositionAmountVos'
+      detail_staking:
+        $ref: '#/definitions/response.BinanceStakingProductPosition'
+      token:
+        $ref: '#/definitions/response.AssetToken'
+      usd_balance:
+        type: number
     type: object
   util.Pagination:
     properties:
@@ -8380,6 +8532,27 @@ paths:
       summary: Untrack a wallet
       tags:
       - WatchList
+  /users/{profile_id}/balances:
+    get:
+      consumes:
+      - application/json
+      description: Get user's balances
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserBalanceResponse'
+      summary: Get user's balances
+      tags:
+      - User
   /users/{user_id}:
     get:
       consumes:
