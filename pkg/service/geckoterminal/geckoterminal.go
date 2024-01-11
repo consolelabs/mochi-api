@@ -52,7 +52,7 @@ func (g *GeckoTerminal) Search(query string) (*Search, error) {
 	defer browser.MustClose()
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(searchApi, query))
 
-	data := page.MustElement("body").MustText()
+	data := page.MustWaitStable().MustElement("body").MustText()
 
 	var search *Search
 	if err := json.Unmarshal([]byte(data), &search); err != nil {
