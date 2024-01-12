@@ -48,7 +48,7 @@ func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service 
 }
 
 func (g *GeckoTerminal) Search(query string) (*Search, error) {
-	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
+	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost + "?proxy=residential&proxyCountry=us&proxySticky")).MustConnect()
 	defer browser.MustClose()
 	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(searchApi, query))
 
