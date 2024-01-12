@@ -48,20 +48,13 @@ type PaymentSetting struct {
 }
 
 type PrivacyCustomSetting struct {
-	TargetGroup string `json:"target_group"`
-	Platform    string `json:"platform"`
-}
-
-type BasePrivacySetting struct {
-	GeneralTargetGroup   string                 `json:"general_target_group"`
-	GeneralPlatformGroup string                 `json:"general_platform_group"`
-	CustomSettings       []PrivacyCustomSetting `json:"custom_settings"`
+	TargetGroup string `json:"target_group" binding:"required"`
+	Platform    string `json:"platform" binding:"required"`
 }
 
 type PrivacySetting struct {
-	Tx             *BasePrivacySetting `json:"tx"`
-	SocialAccounts *BasePrivacySetting `json:"social_accounts"`
-	Wallets        *BasePrivacySetting `json:"wallets"`
+	ShowDestinationWallet *bool  `json:"show_destination_wallet" binding:"required"`
+	TxTargetGroup         string `json:"tx_target_group" binding:"required"`
 }
 
 func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
@@ -137,6 +130,13 @@ func (s *PaymentSetting) validate() error {
 		return fmt.Errorf("tx_limit_settings.action: invalid value. Available values: %s", strings.Join(limitActions, ","))
 	}
 
+	hasInvalidLimitBoundary := sliceutils.Some(s.TxLimitSettings, func(s TxLimitSetting) bool {
+		return s.Min < 0 || s.Min >= s.Max
+	})
+	if hasInvalidLimitBoundary {
+		return fmt.Errorf("tx_limit_settings: min has to be a whole number and smaller than max")
+	}
+
 	// check duplicated actions
 	inputLimitActions := sliceutils.Map(s.TxLimitSettings, func(s TxLimitSetting) string {
 		return s.Action
@@ -149,56 +149,12 @@ func (s *PaymentSetting) validate() error {
 }
 
 func (s *PrivacySetting) validate() error {
-	// tx
-	if err := s.Tx.validate(); err != nil {
-		return fmt.Errorf("tx.%v", err)
-	}
-
-	// social_accounts
-	if err := s.SocialAccounts.validate(); err != nil {
-		return fmt.Errorf("social_accounts.%v", err)
-	}
-
-	// wallets
-	if err := s.Wallets.validate(); err != nil {
-		return fmt.Errorf("wallets.%v", err)
-	}
-
-	return nil
-}
-
-func (s *BasePrivacySetting) validate() error {
 	// target_group
 	targetGroups := sliceutils.Map([]model.TargetGroup{model.TargetGroupAll, model.TargetGroupFriends, model.TargetGroupReceivers}, func(g model.TargetGroup) string {
 		return string(g)
 	})
-	if !sliceutils.Contains(targetGroups, s.GeneralTargetGroup) {
-		return fmt.Errorf("general_target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
-	}
-
-	// platform_group
-	platformGroups := sliceutils.Map([]model.PlatformGroup{model.PlatformGroupAll, model.PlatformGroupCustom}, func(g model.PlatformGroup) string {
-		return string(g)
-	})
-	if !sliceutils.Contains(platformGroups, s.GeneralPlatformGroup) {
-		return fmt.Errorf("platform_group: invalid value. Available values: %s", strings.Join(platformGroups, ","))
-	}
-
-	// custom_settings
-	if s.GeneralPlatformGroup == string(model.PlatformGroupCustom) {
-		if len(s.CustomSettings) == 0 {
-			return errors.New("custom_settings: must specify at least one")
-		}
-	}
-
-	platforms := []string{"discord", "telegram", "web"}
-	for _, s := range s.CustomSettings {
-		if !sliceutils.Contains(targetGroups, s.TargetGroup) {
-			return fmt.Errorf("custom_settings.target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
-		}
-		if !sliceutils.Contains(platforms, s.Platform) {
-			return fmt.Errorf("custom_settings.platform: invalid value. Available values: %s", strings.Join(platforms, ","))
-		}
+	if !sliceutils.Contains(targetGroups, s.TxTargetGroup) {
+		return fmt.Errorf("tx_target_group: invalid value. Available values: %s", strings.Join(targetGroups, ","))
 	}
 
 	return nil

@@ -46,13 +46,14 @@ type GetBalanceDataResponse struct {
 }
 
 type GetBalanceResponse struct {
-	Id        string `json:"id"`
-	ProfileId string `json:"profile_id"`
-	TokenId   string `json:"token_id"`
-	Amount    string `json:"amount"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-	Token     Token  `json:"token"`
+	Id        string  `json:"id"`
+	ProfileId string  `json:"profile_id"`
+	TokenId   string  `json:"token_id"`
+	Amount    string  `json:"amount"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+	Token     Token   `json:"token"`
+	UsdAmount float64 `json:"usd_amount"`
 }
 type GetChainDataResponse struct {
 	Data []Chain `json:"data"`

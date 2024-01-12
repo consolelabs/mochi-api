@@ -175,19 +175,6 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	logger.Info("receive new transfer request")
 	template := parseTemplate(req)
 
-	// compose transfer metadata
-	req.Metadata = map[string]interface{}{
-		"message":         req.Message,
-		"moniker":         req.Moniker,
-		"original_tx_id":  req.OriginalTxId,
-		"original_amount": req.OriginalAmount,
-		"channel_id":      req.ChannelId,
-		"channel_name":    req.ChannelName,
-		"channel_url":     req.ChannelUrl,
-		"channel_avatar":  req.ChannelAvatar,
-		"template":        template,
-	}
-
 	// validate token
 	token, err := e.svc.MochiPay.GetToken(req.Token, req.ChainID)
 	if err != nil {
@@ -221,7 +208,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	}
 
 	// compose transfer request
-	transferReq := e.composeTransferRequest(req, token, amountPerRecipient)
+	transferReq := e.composeTransferRequest(req, token, amountPerRecipient, template)
 	// send request to Mochi Pay
 	res, err := e.svc.MochiPay.TransferV2(transferReq)
 	if err != nil {
@@ -247,7 +234,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 	}, nil
 }
 
-func (e *Entity) composeTransferRequest(req request.TransferV2Request, token *mochipay.Token, amount *big.Int) mochipay.TransferV2Request {
+func (e *Entity) composeTransferRequest(req request.TransferV2Request, token *mochipay.Token, amount *big.Int, template interface{}) mochipay.TransferV2Request {
 	recipients := make([]*mochipay.Wallet, 0)
 	for _, r := range req.Recipients {
 		recipients = append(recipients, &mochipay.Wallet{
@@ -261,13 +248,31 @@ func (e *Entity) composeTransferRequest(req request.TransferV2Request, token *mo
 		amounts = append(amounts, fmt.Sprintf("%v", strconv.FormatFloat(amt, 'f', -1, 64)))
 	}
 
+	// compose metadata
+	metadata := map[string]interface{}{
+		"message":         req.Message,
+		"moniker":         req.Moniker,
+		"original_tx_id":  req.OriginalTxId,
+		"original_amount": req.OriginalAmount,
+		"channel_id":      req.ChannelId,
+		"channel_name":    req.ChannelName,
+		"channel_url":     req.ChannelUrl,
+		"channel_avatar":  req.ChannelAvatar,
+		"template":        template,
+	}
+	if req.Metadata != nil {
+		for k, v := range req.Metadata {
+			metadata[k] = v
+		}
+	}
+
 	return mochipay.TransferV2Request{
 		From: &mochipay.Wallet{
 			ProfileGlobalId: req.Sender,
 		},
 		Tos:      recipients,
 		Platform: req.Platform,
-		Metadata: req.Metadata,
+		Metadata: metadata,
 		Action:   req.TransferType,
 		TokenId:  token.Id,
 		Amount:   amounts,

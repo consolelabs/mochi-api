@@ -86,9 +86,13 @@ type GetUserEnvelopStreak struct {
 }
 
 type UserBalanceResponse struct {
-	Summarize []WalletAssetData  `json:"summarize"`
-	Onchain   UserBalanceOnchain `json:"onchain"`
-	Offchain  []WalletAssetData  `json:"offchain"`
+	Summarize          []WalletAssetData  `json:"summarize"`
+	Onchain            UserBalanceOnchain `json:"onchain"`
+	Offchain           []WalletAssetData  `json:"offchain"`
+	Cex                UserBalanceCex     `json:"cex"`
+	Pnl                string             `json:"pnl"`
+	LastestSnapshotBal string             `json:"lastest_snapshot_bals"`
+	TotalUsdAmount     float64            `json:"totalUsdAmount"`
 }
 
 type UserBalanceOnchain struct {
@@ -96,4 +100,8 @@ type UserBalanceOnchain struct {
 	Sol []WalletAssetData `json:"sol"`
 	Sui []WalletAssetData `json:"sui"`
 	Ron []WalletAssetData `json:"ron"`
+}
+
+type UserBalanceCex struct {
+	Binance []WalletAssetData `json:"binance"`
 }

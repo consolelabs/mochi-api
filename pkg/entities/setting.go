@@ -1,12 +1,17 @@
 package entities
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/consolelabs/mochi-toolkit/formatter"
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
 	"github.com/defipod/mochi/pkg/request"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetting {
@@ -27,22 +32,9 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 
 func (e *Entity) initUserPrivacySetting(profileId string) model.UserPrivacySetting {
 	return model.UserPrivacySetting{
-		ProfileId: profileId,
-		Tx: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
-		},
-		SocialAccounts: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
-		},
-		Wallets: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroupAll,
-			GeneralPlatformGroup: model.PlatformGroupAll,
-			CustomSettings:       []model.PrivacyCustomSetting{},
-		},
+		ProfileId:             profileId,
+		ShowDestinationWallet: true,
+		TxTargetGroup:         model.TargetGroupAll,
 	}
 }
 
@@ -111,46 +103,10 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 		}
 	}
 
-	// transform custom privacy settings
-	txPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.Tx.CustomSettings {
-		txPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-	socialAccsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.SocialAccounts.CustomSettings {
-		socialAccsPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-	walletsPrivacyCustom := make([]model.PrivacyCustomSetting, len(payload.Privacy.Tx.CustomSettings))
-	for i, s := range payload.Privacy.Wallets.CustomSettings {
-		walletsPrivacyCustom[i] = model.PrivacyCustomSetting{
-			TargetGroup: model.TargetGroup(s.TargetGroup),
-			Platform:    s.Platform,
-		}
-	}
-
 	privacy := model.UserPrivacySetting{
-		ProfileId: uri.ProfileId,
-		Tx: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Tx.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Tx.GeneralPlatformGroup),
-			CustomSettings:       txPrivacyCustom,
-		},
-		SocialAccounts: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.SocialAccounts.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.SocialAccounts.GeneralPlatformGroup),
-			CustomSettings:       socialAccsPrivacyCustom,
-		},
-		Wallets: &model.BasePrivacySetting{
-			GeneralTargetGroup:   model.TargetGroup(payload.Privacy.Wallets.GeneralTargetGroup),
-			GeneralPlatformGroup: model.PlatformGroup(payload.Privacy.Wallets.GeneralPlatformGroup),
-			CustomSettings:       walletsPrivacyCustom,
-		},
+		ProfileId:             uri.ProfileId,
+		ShowDestinationWallet: *payload.Privacy.ShowDestinationWallet,
+		TxTargetGroup:         model.TargetGroup(payload.Privacy.TxTargetGroup),
 	}
 
 	payment := model.UserPaymentSetting{
@@ -192,6 +148,42 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 	}
 
 	return &payment, &privacy, nil
+}
+
+func (e *Entity) ValidateMoneySourceSetting(profileId string, s request.MoneySource) error {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.ValidateMoneySourceSetting",
+		"profile_id": profileId,
+	})
+
+	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
+	if err != nil {
+		logger.Error(err, "svc.MochiProfile.GetByID() failed")
+		return errors.New("failed to validate profile accounts")
+	}
+
+	if profile == nil || profile.AssociatedAccounts == nil || len(profile.AssociatedAccounts) == 0 {
+		return errors.New("invalid money source")
+	}
+
+	profile.AssociatedAccounts = append(profile.AssociatedAccounts, mochiprofile.AssociatedAccount{
+		Platform:           "mochi",
+		PlatformIdentifier: "mochi-balance",
+	})
+
+	// a money source is considered as valid when it's either mochi wallet or connected wallet (evm,sol,etc.)
+	// other social platforms such as telegram, discord, email are invalid money source
+	validMoneySource := sliceutils.Some(profile.AssociatedAccounts, func(acc mochiprofile.AssociatedAccount) bool {
+		existingSource := string(acc.Platform) == s.Platform && strings.EqualFold(acc.PlatformIdentifier, s.PlatformIdentifier)
+		isMochi := s.Platform == "mochi" && existingSource
+		isConnectedWallet := strings.Contains(s.Platform, "chain") && existingSource
+		return isMochi || isConnectedWallet
+	})
+	if !validMoneySource {
+		return errors.New("invalid money source")
+	}
+
+	return nil
 }
 
 func (e *Entity) initUserNotiSetting(profileId string, settings []model.NotificationFlag) model.UserNotificationSetting {

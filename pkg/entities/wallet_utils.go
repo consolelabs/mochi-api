@@ -333,6 +333,7 @@ func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []re
 					ShortName: asset.Token.Chain.Symbol,
 				},
 			},
+			UsdBalance: asset.UsdAmount,
 		}
 
 		resp = append(resp, itm)

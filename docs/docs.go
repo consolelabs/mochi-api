@@ -6249,6 +6249,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{profile_id}/balances": {
+            "get": {
+                "description": "Get user's balances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get user's balances",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.UserBalanceResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{user_id}": {
             "get": {
                 "description": "Get user",
@@ -6580,23 +6612,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.BasePrivacySetting": {
-            "type": "object",
-            "properties": {
-                "custom_settings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.PrivacyCustomSetting"
-                    }
-                },
-                "general_platform_group": {
-                    "type": "string"
-                },
-                "general_target_group": {
                     "type": "string"
                 }
             }
@@ -7553,17 +7568,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PrivacyCustomSetting": {
-            "type": "object",
-            "properties": {
-                "platform": {
-                    "type": "string"
-                },
-                "target_group": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ProductBotCommand": {
             "type": "object",
             "properties": {
@@ -8025,14 +8029,11 @@ const docTemplate = `{
                 "profile_id": {
                     "type": "string"
                 },
-                "social_accounts": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
+                "show_destination_wallet": {
+                    "type": "boolean"
                 },
-                "tx": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
-                },
-                "wallets": {
-                    "$ref": "#/definitions/model.BasePrivacySetting"
+                "tx_target_group": {
+                    "type": "string"
                 }
             }
         },
@@ -8297,23 +8298,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_discord_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.BasePrivacySetting": {
-            "type": "object",
-            "properties": {
-                "custom_settings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/request.PrivacyCustomSetting"
-                    }
-                },
-                "general_platform_group": {
-                    "type": "string"
-                },
-                "general_target_group": {
                     "type": "string"
                 }
             }
@@ -8970,28 +8954,18 @@ const docTemplate = `{
                 }
             }
         },
-        "request.PrivacyCustomSetting": {
-            "type": "object",
-            "properties": {
-                "platform": {
-                    "type": "string"
-                },
-                "target_group": {
-                    "type": "string"
-                }
-            }
-        },
         "request.PrivacySetting": {
             "type": "object",
+            "required": [
+                "show_destination_wallet",
+                "tx_target_group"
+            ],
             "properties": {
-                "social_accounts": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
+                "show_destination_wallet": {
+                    "type": "boolean"
                 },
-                "tx": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
-                },
-                "wallets": {
-                    "$ref": "#/definitions/request.BasePrivacySetting"
+                "tx_target_group": {
+                    "type": "string"
                 }
             }
         },
@@ -9642,6 +9616,52 @@ const docTemplate = `{
                 }
             }
         },
+        "response.AssetToken": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "chain": {
+                    "$ref": "#/definitions/response.AssetTokenChain"
+                },
+                "decimal": {
+                    "type": "integer"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "native": {
+                    "type": "boolean"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.AssetTokenChain": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "short_name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "response.BinanceFutureAccountPositionResponse": {
             "type": "object",
             "properties": {
@@ -9714,6 +9734,88 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.BinanceFuturePositionInfo"
                     }
+                }
+            }
+        },
+        "response.BinancePositionAmountVos": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "amountInBTC": {
+                    "type": "string"
+                },
+                "amountInUSDT": {
+                    "type": "string"
+                },
+                "asset": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.BinanceStakingProductPosition": {
+            "type": "object",
+            "properties": {
+                "accrualDays": {
+                    "type": "integer"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "apy": {
+                    "type": "string"
+                },
+                "asset": {
+                    "type": "string"
+                },
+                "canReStake": {
+                    "type": "boolean"
+                },
+                "canRedeemEarly": {
+                    "type": "boolean"
+                },
+                "deliveryDate": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "integer"
+                },
+                "interestEndDate": {
+                    "type": "integer"
+                },
+                "nexInterestPay": {
+                    "type": "string"
+                },
+                "nextInterestPayDate": {
+                    "type": "integer"
+                },
+                "payInterestPeriod": {
+                    "type": "integer"
+                },
+                "positionId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "string"
+                },
+                "purchaseTime": {
+                    "type": "integer"
+                },
+                "redeemPeriod": {
+                    "type": "integer"
+                },
+                "rewardAmt": {
+                    "type": "string"
+                },
+                "rewardAsset": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -13216,6 +13318,78 @@ const docTemplate = `{
                 }
             }
         },
+        "response.UserBalanceCex": {
+            "type": "object",
+            "properties": {
+                "binance": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                }
+            }
+        },
+        "response.UserBalanceOnchain": {
+            "type": "object",
+            "properties": {
+                "evm": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "ron": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "sol": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "sui": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                }
+            }
+        },
+        "response.UserBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "cex": {
+                    "$ref": "#/definitions/response.UserBalanceCex"
+                },
+                "lastest_snapshot_bals": {
+                    "type": "string"
+                },
+                "offchain": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "onchain": {
+                    "$ref": "#/definitions/response.UserBalanceOnchain"
+                },
+                "pnl": {
+                    "type": "string"
+                },
+                "summarize": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "totalUsdAmount": {
+                    "type": "number"
+                }
+            }
+        },
         "response.UserFeedbackResponse": {
             "type": "object",
             "properties": {
@@ -13249,6 +13423,38 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserNotificationSetting"
+                }
+            }
+        },
+        "response.WalletAssetData": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "asset_balance": {
+                    "type": "number"
+                },
+                "chain_id": {
+                    "type": "integer"
+                },
+                "contract_name": {
+                    "type": "string"
+                },
+                "contract_symbol": {
+                    "type": "string"
+                },
+                "detail_lending": {
+                    "$ref": "#/definitions/response.BinancePositionAmountVos"
+                },
+                "detail_staking": {
+                    "$ref": "#/definitions/response.BinanceStakingProductPosition"
+                },
+                "token": {
+                    "$ref": "#/definitions/response.AssetToken"
+                },
+                "usd_balance": {
+                    "type": "number"
                 }
             }
         },

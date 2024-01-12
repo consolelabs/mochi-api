@@ -233,6 +233,16 @@ func (h *Handler) SendUserXP(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
 
+// GET /users/:profile_id/balances
+// GetUserBalance    godoc
+// @Summary     Get user's balances
+// @Description Get user's balances
+// @Tags        User
+// @Accept      json
+// @Produce     json
+// @Param       profile_id path string true "profile ID"
+// @Success     200 {object} response.UserBalanceResponse
+// @Router      /users/{profile_id}/balances [get]
 func (h *Handler) GetUserBalance(c *gin.Context) {
 	userID := c.Param("id")
 
