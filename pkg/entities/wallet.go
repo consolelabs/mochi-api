@@ -506,15 +506,23 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	for _, item := range res.Data.Items {
+		// if item.Type != "cryptocurrency" {
+		// 	continue
+		// }
 		if item.Type != "cryptocurrency" {
-			continue
+			stakingAsset := e.GetAssetStakingSol(item)
+			if stakingAsset != nil {
+				assets = append(assets, *stakingAsset)
+			}
 		}
 
-		asset := e.enrichMetadataSolAsset(*res, item)
-
-		if asset != nil {
-			assets = append(assets, *asset)
+		if item.Type == "cryptocurrency" {
+			asset := e.enrichMetadataSolAsset(*res, item)
+			if asset != nil {
+				assets = append(assets, *asset)
+			}
 		}
+
 	}
 
 	assets = e.enrichDataWalletAsset(assets)

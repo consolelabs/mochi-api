@@ -18,6 +18,7 @@ type Service interface {
 	GetListChains() (*GetChainDataResponse, error)
 	GetProfileCustodialWallets(profileID string) (any, error)
 	GetProfileKrystalEarnBalances(profileID string) (any, error)
+	GetStakingTokenMapping(symbol, address string) (*StakingTokenMappingResponse, error)
 
 	// TransferV2
 	TransferV2(req TransferV2Request) (*TransferV2Response, error)
