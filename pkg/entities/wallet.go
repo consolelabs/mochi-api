@@ -389,7 +389,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		for _, bal := range item.Balances {
 			assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
 			// filter out dusty tokens
-			if quote < 0.001 {
+			if quote < 0.001 && bal.TokenType != "NATIVE" {
 				continue
 			}
 
