@@ -146,3 +146,17 @@ type TransferV2TransactionData struct {
 type ApplicationTransferResponse struct {
 	Data []TransferV2TransactionData `json:"data"`
 }
+
+type StakingTokenMappingResponse struct {
+	Data *StakingTokenMapping `json:"data"`
+}
+type StakingTokenMapping struct {
+	Id                  uint64    `json:"id"`
+	StakingTokenSymbol  string    `json:"staking_token_symbol"`
+	StakingTokenAddress string    `json:"staking_token_address"`
+	BaseTokenSymbol     string    `json:"base_token_symbol"`
+	StakingTokenId      string    `json:"staking_token_id"`
+	BaseTokenId         string    `json:"base_token_id"`
+	CreatedAt           time.Time `json:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at"`
+}
