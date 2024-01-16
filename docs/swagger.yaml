@@ -196,6 +196,8 @@ definitions:
     properties:
       action:
         type: string
+      enable:
+        type: boolean
       message:
         type: string
     type: object
@@ -1401,10 +1403,13 @@ definitions:
     properties:
       action:
         type: string
+      enable:
+        type: boolean
       message:
         type: string
     required:
     - action
+    - enable
     - message
     type: object
   request.DeleteGuildConfigDaoProposal:
@@ -3079,13 +3084,13 @@ definitions:
         type: string
       usd:
         type: number
+      usd_1y_change:
+        type: number
       usd_7d_change:
         type: number
       usd_14d_change:
         type: number
       usd_1h_change:
-        type: number
-      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
