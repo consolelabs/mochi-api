@@ -182,6 +182,11 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 		return nil, err
 	}
 
+	if token == nil {
+		logger.Error(err, "[entity.TransferTokenV2] token not found")
+		return nil, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
+	}
+
 	// convert total transfer amount
 	totalAmount := util.FloatToBigInt(req.Amount, token.Decimal)
 
