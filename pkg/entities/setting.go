@@ -91,6 +91,7 @@ func (e *Entity) UpdateUserGeneralSettings(uri request.UserSettingBaseUriRequest
 		defaultMessages[i] = model.DefaultMessageSetting{
 			Action:  s.Action,
 			Message: s.Message,
+			Enable:  *s.Enable,
 		}
 	}
 
@@ -156,6 +157,14 @@ func (e *Entity) ValidateMoneySourceSetting(profileId string, s request.MoneySou
 		"profile_id": profileId,
 	})
 
+	mochiSource := mochiprofile.AssociatedAccount{
+		Platform:           "mochi",
+		PlatformIdentifier: "mochi-balance",
+	}
+	if string(mochiSource.Platform) == s.Platform && mochiSource.PlatformIdentifier == s.PlatformIdentifier {
+		return nil
+	}
+
 	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
 	if err != nil {
 		logger.Error(err, "svc.MochiProfile.GetByID() failed")
@@ -166,18 +175,12 @@ func (e *Entity) ValidateMoneySourceSetting(profileId string, s request.MoneySou
 		return errors.New("invalid money source")
 	}
 
-	profile.AssociatedAccounts = append(profile.AssociatedAccounts, mochiprofile.AssociatedAccount{
-		Platform:           "mochi",
-		PlatformIdentifier: "mochi-balance",
-	})
-
 	// a money source is considered as valid when it's either mochi wallet or connected wallet (evm,sol,etc.)
 	// other social platforms such as telegram, discord, email are invalid money source
 	validMoneySource := sliceutils.Some(profile.AssociatedAccounts, func(acc mochiprofile.AssociatedAccount) bool {
 		existingSource := string(acc.Platform) == s.Platform && strings.EqualFold(acc.PlatformIdentifier, s.PlatformIdentifier)
-		isMochi := s.Platform == "mochi" && existingSource
 		isConnectedWallet := strings.Contains(s.Platform, "chain") && existingSource
-		return isMochi || isConnectedWallet
+		return isConnectedWallet
 	})
 	if !validMoneySource {
 		return errors.New("invalid money source")
