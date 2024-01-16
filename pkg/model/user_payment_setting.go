@@ -37,6 +37,7 @@ func (m MoneySource) Value() (driver.Value, error) {
 type DefaultMessageSetting struct {
 	Action  string `json:"action"`
 	Message string `json:"message"`
+	Enable  bool   `json:"enable"`
 }
 
 type DefaultMessageSettings []DefaultMessageSetting
