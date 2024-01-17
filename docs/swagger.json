@@ -6842,6 +6842,9 @@
                 "action": {
                     "type": "string"
                 },
+                "enable": {
+                    "type": "boolean"
+                },
                 "message": {
                     "type": "string"
                 }
@@ -8674,11 +8677,15 @@
             "type": "object",
             "required": [
                 "action",
+                "enable",
                 "message"
             ],
             "properties": {
                 "action": {
                     "type": "string"
+                },
+                "enable": {
+                    "type": "boolean"
                 },
                 "message": {
                     "type": "string"

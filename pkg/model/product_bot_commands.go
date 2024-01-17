@@ -27,6 +27,7 @@ type ProductChangelogs struct {
 	ThumbnailUrl string    `json:"thumbnail_url"`
 	FileName     string    `json:"file_name"`
 	IsExpired    bool      `json:"is_expired"`
+	Version      string    `json:"version"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }

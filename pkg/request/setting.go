@@ -24,6 +24,7 @@ type MoneySource struct {
 type DefaultMessageSetting struct {
 	Action  string `json:"action" binding:"required"`
 	Message string `json:"message" binding:"required"`
+	Enable  *bool  `json:"enable" binding:"required"`
 }
 
 type TxLimitSetting struct {
@@ -42,9 +43,9 @@ type PaymentSetting struct {
 	DefaultReceiverPlatform string                  `json:"default_receiver_platform" binding:"required"`
 	TokenPriorities         []string                `json:"token_priorities" binding:"required"`
 	DefaultMessageEnable    *bool                   `json:"default_message_enable" binding:"required"`
-	DefaultMessageSettings  []DefaultMessageSetting `json:"default_message_settings" binding:"required"`
+	DefaultMessageSettings  []DefaultMessageSetting `json:"default_message_settings" binding:"required,dive"`
 	TxLimitEnable           *bool                   `json:"tx_limit_enable" binding:"required"`
-	TxLimitSettings         []TxLimitSetting        `json:"tx_limit_settings" binding:"required"`
+	TxLimitSettings         []TxLimitSetting        `json:"tx_limit_settings" binding:"required,dive"`
 }
 
 type PrivacyCustomSetting struct {
@@ -78,7 +79,7 @@ func (r *UpdateGeneralSettingsPayloadRequest) Bind(c *gin.Context) error {
 
 func (s *PaymentSetting) validate() error {
 	// platforms
-	platforms := []string{"discord", "telegram", "google"}
+	platforms := []string{"discord", "telegram", "google", "twitter", "github", "reddit", "onchain"}
 	if !sliceutils.Contains(platforms, s.DefaultReceiverPlatform) {
 		return fmt.Errorf("default_receiver_platform: invalid value. Available values: %s", strings.Join(platforms, ","))
 	}

@@ -389,7 +389,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		for _, bal := range item.Balances {
 			assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
 			// filter out dusty tokens
-			if quote < 0.001 {
+			if quote < 0.001 && bal.TokenType != "NATIVE" {
 				continue
 			}
 
@@ -418,7 +418,7 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 					Price:   price,
 					Native:  bal.TokenType == "NATIVE",
 					Chain: response.AssetTokenChain{
-						Name:      item.ChainName,
+						Name:      chain.Name,
 						ShortName: chain.ShortName,
 						Type:      chain.Type,
 					},
@@ -506,15 +506,23 @@ func (e *Entity) listSolWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	}
 
 	for _, item := range res.Data.Items {
+		// if item.Type != "cryptocurrency" {
+		// 	continue
+		// }
 		if item.Type != "cryptocurrency" {
-			continue
+			stakingAsset := e.GetAssetStakingSol(item)
+			if stakingAsset != nil {
+				assets = append(assets, *stakingAsset)
+			}
 		}
 
-		asset := e.enrichMetadataSolAsset(*res, item)
-
-		if asset != nil {
-			assets = append(assets, *asset)
+		if item.Type == "cryptocurrency" {
+			asset := e.enrichMetadataSolAsset(*res, item)
+			if asset != nil {
+				assets = append(assets, *asset)
+			}
 		}
+
 	}
 
 	assets = e.enrichDataWalletAsset(assets)

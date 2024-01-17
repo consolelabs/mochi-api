@@ -6850,6 +6850,9 @@ const docTemplate = `{
                 "action": {
                     "type": "string"
                 },
+                "enable": {
+                    "type": "boolean"
+                },
                 "message": {
                     "type": "string"
                 }
@@ -8682,11 +8685,15 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "action",
+                "enable",
                 "message"
             ],
             "properties": {
                 "action": {
                     "type": "string"
+                },
+                "enable": {
+                    "type": "boolean"
                 },
                 "message": {
                     "type": "string"

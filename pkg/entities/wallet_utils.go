@@ -434,3 +434,62 @@ func (e *Entity) enrichMetadataSolAsset(res covalent.GetTokenBalancesResponse, i
 		Amount: util.FloatToString(fmt.Sprint(bal), tokenInfo.Data.Attributes.Decimals),
 	}
 }
+
+func (e *Entity) GetAssetStakingSol(item covalent.TokenBalanceItem) *response.WalletAssetData {
+	chainID := 999
+
+	stakingToken, err := e.svc.MochiPay.GetStakingTokenMapping(item.ContractTickerSymbol, item.ContractAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{"symbol": item.ContractTickerSymbol, "address": item.ContractAddress}).Error(err, "[entities.GetAssetStakingSol] Failed to get staking token mapping")
+		return nil
+	}
+
+	if stakingToken.Data == nil {
+		return nil
+	}
+
+	tokenAddress := item.ContractAddress
+	if item.NativeToken {
+		tokenAddress = consts.SolAddress
+	}
+
+	tokenInfo, err := e.svc.GeckoTerminal.GetTokenByAddress(consts.SolChainType, tokenAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{"chainID": consts.SolChainType, "address": item.ContractAddress}).Error(err, "[entity.enrichMetadataSolAsset] svc.GeckoTerminal.GetTokenByAddress() failed")
+		return nil
+	}
+
+	bal, _ := e.calculateTokenBalance(item, chainID)
+	price, _ := strconv.ParseFloat(tokenInfo.Data.Attributes.PriceUsd, 32)
+
+	contractName := item.ContractName
+	if contractName == "" {
+		contractName = tokenInfo.Data.Attributes.Name
+	}
+	contractSymbol := item.ContractTickerSymbol
+	if contractSymbol == "" {
+		contractSymbol = tokenInfo.Data.Attributes.Symbol
+	}
+
+	return &response.WalletAssetData{
+		ChainID:        chainID,
+		ContractName:   contractName,
+		ContractSymbol: contractSymbol,
+		AssetBalance:   bal,
+		UsdBalance:     price * bal,
+		Token: response.AssetToken{
+			Name:    contractName,
+			Symbol:  contractSymbol,
+			Address: tokenAddress,
+			Decimal: tokenInfo.Data.Attributes.Decimals,
+			Price:   price,
+			Native:  item.NativeToken,
+			Chain: response.AssetTokenChain{
+				Name:      "Solana",
+				ShortName: "sol",
+				Type:      "solana",
+			},
+		},
+		Amount: util.FloatToString(fmt.Sprint(bal), tokenInfo.Data.Attributes.Decimals),
+	}
+}
