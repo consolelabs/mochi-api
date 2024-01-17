@@ -151,7 +151,7 @@ func (e *Entity) CrawlChangelogs() {
 }
 
 func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs {
-	var changlogs model.ProductChangelogs
+	var changelogs model.ProductChangelogs
 	contentSplit := strings.Split(content, "---")
 	if len(contentSplit) < 3 {
 		return nil
@@ -171,24 +171,26 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 			dateString := strings.TrimSpace(cRow[1])
 			date, err := time.Parse("02-01-2006", dateString)
 			if err != nil {
-				changlogs.CreatedAt = time.Now()
-				changlogs.UpdatedAt = time.Now()
+				changelogs.CreatedAt = time.Now()
+				changelogs.UpdatedAt = time.Now()
 			}
-			changlogs.CreatedAt = date
-			changlogs.UpdatedAt = date
+			changelogs.CreatedAt = date
+			changelogs.UpdatedAt = date
 		case "title":
-			changlogs.Title = strings.TrimSpace(cRow[1])
+			changelogs.Title = strings.TrimSpace(cRow[1])
 		case "product":
-			changlogs.Product = strings.TrimSpace(cRow[1])
+			changelogs.Product = strings.TrimSpace(cRow[1])
 		case "thumbnai_url":
-			changlogs.ThumbnailUrl = strings.TrimSpace(cRow[1])
+			changelogs.ThumbnailUrl = strings.TrimSpace(cRow[1])
+		case "version":
+			changelogs.Version = strings.TrimSpace(cRow[1])
 		}
 	}
 
 	// 2. Get content changelogs
-	changlogs.Content = strings.TrimSpace(contentSplit[2])
+	changelogs.Content = strings.TrimSpace(contentSplit[2])
 
-	return &changlogs
+	return &changelogs
 }
 
 func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model.ProductHashtagAlias, error) {
