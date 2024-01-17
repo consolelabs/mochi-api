@@ -1,3 +1,19 @@
+## [6.26.7](https://github.com/consolelabs/mochi-api/compare/v6.26.6...v6.26.7) (2024-01-12)
+
+
+### Bug Fixes
+
+* add more data for user balances api ([2e29b7c](https://github.com/consolelabs/mochi-api/commit/2e29b7c6ac5de4f190cd9841fa80197d860eab21))
+* add more data for user balances api ([2ac99ab](https://github.com/consolelabs/mochi-api/commit/2ac99abebf0f090d70308335f61ba036c9b4980c))
+* add swagger for get user total balances ([7c2147f](https://github.com/consolelabs/mochi-api/commit/7c2147f58bb062dd5388bfb660853d6363ae9794))
+* must wait stable when searching pair ([68084ce](https://github.com/consolelabs/mochi-api/commit/68084ce45979de7dddec1714978e47668b131b81))
+* privacy settings - update structure ([ccfe54b](https://github.com/consolelabs/mochi-api/commit/ccfe54bb5f8da3ed49661b45324e6ecfff8ce61d))
+* privacy settings - update structure ([4f46398](https://github.com/consolelabs/mochi-api/commit/4f463989491f291ccbf8aa5b35069edffb25d771))
+* transfer-v2 - overwrited metadata ([4ed1e06](https://github.com/consolelabs/mochi-api/commit/4ed1e0623e2a0d3d0ea8bf9bbd496aea5dd62989))
+* user privacy settings - update initial configuration ([7c49483](https://github.com/consolelabs/mochi-api/commit/7c494833d3629640fb697f8cc4172943b29d3c6c))
+* validate money source ([0a6613e](https://github.com/consolelabs/mochi-api/commit/0a6613e6f8214739bb43a080651ff24b30608af6))
+* validate privacy custom settings ([18e2fd7](https://github.com/consolelabs/mochi-api/commit/18e2fd78a7a93ee8fcdd4af4587f9a68c2681672))
+
 ## [6.26.6](https://github.com/consolelabs/mochi-api/compare/v6.26.5...v6.26.6) (2024-01-05)
 
 
