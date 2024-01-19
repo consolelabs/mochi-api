@@ -20,7 +20,7 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 		e.log.Error(err, "svc.MochiPay.GetListBalances() failed")
 	}
 
-	var prioritizedTokens []string
+	prioritizedTokens := make([]string, 0)
 	if balances != nil && balances.Data != nil {
 		for _, b := range balances.Data {
 			prioritizedTokens = append(prioritizedTokens, b.TokenId)
