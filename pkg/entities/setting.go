@@ -15,6 +15,18 @@ import (
 )
 
 func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetting {
+	balances, err := e.svc.MochiPay.GetListBalances(profileId)
+	if err != nil {
+		e.log.Error(err, "svc.MochiPay.GetListBalances() failed")
+	}
+
+	var prioritizedTokens []string
+	if balances != nil && balances.Data != nil {
+		for _, b := range balances.Data {
+			prioritizedTokens = append(prioritizedTokens, b.TokenId)
+		}
+	}
+
 	return model.UserPaymentSetting{
 		ProfileId: profileId,
 		DefaultMoneySource: model.MoneySource{
@@ -22,7 +34,7 @@ func (e *Entity) initUserPaymentSetting(profileId string) model.UserPaymentSetti
 			PlatformIdentifier: "mochi-balance",
 		},
 		DefaultReceiverPlatform: "discord",
-		PrioritizedTokenIds:     []string{},
+		PrioritizedTokenIds:     prioritizedTokens,
 		DefaultMessageEnable:    false,
 		DefaultMessageSettings:  []model.DefaultMessageSetting{},
 		TxLimitEnable:           false,
