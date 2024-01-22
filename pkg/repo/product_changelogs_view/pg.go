@@ -29,5 +29,5 @@ func (pg *pg) List(q ListQuery) (changeLogsView []model.ProductChangelogView, er
 
 func (pg *pg) Create(changeLogsView *model.ProductChangelogView) error {
 	db := pg.db
-	return db.Create(changeLogsView).Error
+	return db.Where("key = ? and changelog_name = ?", changeLogsView.Key, changeLogsView.ChangelogName).FirstOrCreate(changeLogsView).Error
 }
