@@ -7,10 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 
-	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
-	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 // GET /profiles/:profile_id/settings/notifications
@@ -94,11 +92,8 @@ func (h *handler) UpdateUserNotificationSettings(c *gin.Context) {
 	}
 
 	// validate flags
-	systemFlags := sliceutils.Map(notificationFlags, func(s model.NotificationFlag) string {
-		return s.Key
-	})
-	for k := range payload.Flags {
-		if !sliceutils.Contains(systemFlags, k) {
+	for _, notiFlag := range notificationFlags {
+		if _, ok := payload.Flags[notiFlag.Key]; !ok {
 			err := errors.New("flags: insufficiant data")
 			logger.Error(err.Error())
 			c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))

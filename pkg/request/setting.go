@@ -168,6 +168,11 @@ type UpdateNotificationSettingPayloadRequest struct {
 }
 
 func (r *UpdateNotificationSettingPayloadRequest) Bind(c *gin.Context) error {
+	// binding payload
+	if err := c.BindJSON(&r); err != nil {
+		return errors.New("failed to bind payload")
+	}
+
 	platforms := []string{"discord", "telegram", "web"}
 	for _, p := range r.Platforms {
 		if !sliceutils.Contains(platforms, p) {
