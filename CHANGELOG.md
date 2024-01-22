@@ -1,3 +1,22 @@
+# [6.27.0](https://github.com/consolelabs/mochi-api/compare/v6.26.7...v6.27.0) (2024-01-17)
+
+
+### Bug Fixes
+
+* change response chain name of api get assets ([3c2ccc2](https://github.com/consolelabs/mochi-api/commit/3c2ccc2ab852195e23265d3683240646d8d1d86d))
+* handle nil token when not supported ([be9956a](https://github.com/consolelabs/mochi-api/commit/be9956a719f57a62836ab7101fdf91b42eac531d))
+* not filter native token in asset ([#1319](https://github.com/consolelabs/mochi-api/issues/1319)) ([ba23f17](https://github.com/consolelabs/mochi-api/commit/ba23f1741fbe4146b67a94b85a107d754a809885))
+* **product-changelog:** add version field ([a14d7fc](https://github.com/consolelabs/mochi-api/commit/a14d7fcbb617c2d500969e8423d90546296576d2))
+* **product-changelog:** get changelog version ([7247bb6](https://github.com/consolelabs/mochi-api/commit/7247bb64b98caaed929d2cbad9034e2cc56d3437))
+* revert logic of SearchCoins ([a4218f8](https://github.com/consolelabs/mochi-api/commit/a4218f8c7bb632b4069283d7de5ddfa067f16292))
+* update payment setting API ([731cbc7](https://github.com/consolelabs/mochi-api/commit/731cbc72bb2b5d40d08597c45cfcdb4670bced6a))
+* update setting swagger ([61e2b9e](https://github.com/consolelabs/mochi-api/commit/61e2b9ece6d2c3262610b86840f4d783ca6f9301))
+
+
+### Features
+
+* wallet sol render lending ([#1318](https://github.com/consolelabs/mochi-api/issues/1318)) ([0a9240b](https://github.com/consolelabs/mochi-api/commit/0a9240bede70644c5900684db3f73f7a1c86c2a1))
+
 ## [6.26.7](https://github.com/consolelabs/mochi-api/compare/v6.26.6...v6.26.7) (2024-01-12)
 
 
