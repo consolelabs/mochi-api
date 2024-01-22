@@ -277,6 +277,16 @@ func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRe
 		"profile_id": uri.ProfileId,
 	})
 
+	// remove redundant flags from input
+	systemFlags := sliceutils.Map(notiSettings, func(s model.NotificationFlag) string {
+		return s.Key
+	})
+	for k := range payload.Flags {
+		if !sliceutils.Contains(systemFlags, k) {
+			delete(payload.Flags, k)
+		}
+	}
+
 	/////// start working with db layer
 	tx, fn := e.repo.Store.NewTransaction()
 
