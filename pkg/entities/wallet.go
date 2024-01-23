@@ -1007,11 +1007,11 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}, err
 }
 
-func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, error) {
+func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, string, string, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	apiKey, apiSecret := "", ""
@@ -1025,47 +1025,53 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 	simpleEarnAcc, err := e.svc.Binance.GetSimpleEarn(apiKey, apiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[Binance.GetSimpleEarn] Failed to get simple earn")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	if apiKey == "" || apiSecret == "" {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get api key or api secret")
-		return nil, baseerr.ErrProfileNotLinkBinance
+		return nil, "", "", baseerr.ErrProfileNotLinkBinance
 	}
 
 	// get data asset from binance or cache
 	fundingAsset, err := e.SummarizeFundingAsset(req.Id, apiKey, apiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance asset")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	earnAsset, err := e.SummarizeEarnAsset(req.Id, apiKey, apiSecret)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get binance asset")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	// format asset
 	formatFundingAsset, err := e.FormatAsset(fundingAsset)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to format asset")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	formatEarnAsset, err := e.FormatAsset(earnAsset)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to format asset")
-		return nil, err
+		return nil, "", "", err
 	}
 
 	// btc price
 	btcPrice, err := e.svc.CoinGecko.GetCoinPrice([]string{"bitcoin"}, "usd")
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
-		return nil, err
+		return nil, "", "", err
 	}
 
+	//calculate pnl
+	pnl, lastestSnapshotBal, err := e.calculateWalletSnapshot(apiKey, false, formatFundingAsset)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
+		return nil, "", "", err
+	}
 	return &response.GetBinanceAsset{
 		Asset: formatFundingAsset,
 		Earn:  formatEarnAsset,
@@ -1078,7 +1084,7 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 			TotalLockedInUSDT:         simpleEarnAcc.TotalLockedInUSDT,
 			BtcPrice:                  fmt.Sprintf("%f", btcPrice["bitcoin"]),
 		},
-	}, nil
+	}, pnl, lastestSnapshotBal, nil
 }
 
 func (e *Entity) ListWalletFarmings(req request.ListWalletAssetsRequest) ([]response.LiquidityPosition, error) {

@@ -53,6 +53,7 @@ type AssetToken struct {
 	Native  bool            `json:"native"`
 	Chain   AssetTokenChain `json:"chain"`
 	Icon    string          `json:"icon"`
+	Pnl     string          `json:"pnl,omitempty"`
 }
 
 type AssetTokenChain struct {

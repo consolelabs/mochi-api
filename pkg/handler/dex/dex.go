@@ -69,7 +69,7 @@ func (h *Handler) GetBinanceAssets(c *gin.Context) {
 		return
 	}
 
-	res, err := h.entities.GetBinanceAssets(req)
+	res, _, _, err := h.entities.GetBinanceAssets(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetBinanceAssets] entity.GetBinanceAssets() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
