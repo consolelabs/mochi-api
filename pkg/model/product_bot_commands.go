@@ -42,6 +42,7 @@ type ProductChangelogView struct {
 
 type ProductChangelogSnapshot struct {
 	Filename  string    `json:"filename"`
+	IsPublic  bool      `json:"is_public"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

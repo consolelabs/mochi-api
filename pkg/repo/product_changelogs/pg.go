@@ -16,6 +16,11 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
+func (pg pg) GetChangelogByFilename(filename string) (p model.ProductChangelogs, err error) {
+	db := pg.db
+	return p, db.Where("file_name = ?", filename).First(&p).Error
+}
+
 func (pg *pg) List(q ListQuery) (changeLogs []model.ProductChangelogs, total int64, err error) {
 	db := pg.db.Model(&model.ProductChangelogs{})
 	if q.Product != "" {
@@ -46,9 +51,27 @@ func (pg *pg) GetNewChangelog() (changeLogs []model.ProductChangelogs, err error
 	}
 	tx.Raw(`Select * from product_changelogs as pc 
     				left join product_changelog_snapshots as pcs 
-    				on pc.file_name = pcs.filename 
+    				on pc.file_name = pcs.filename
          			where pcs.filename is null`).Scan(&changeLogs)
 	return changeLogs, nil
+}
+
+func (pg *pg) GetChangelogNotConfirmed() (changeLogs []model.ProductChangelogs, err error) {
+	db := pg.db
+	tx := db.Begin()
+	if err := tx.Error; err != nil {
+		return changeLogs, err
+	}
+	tx.Raw(`Select * from product_changelogs as pc 
+    				left join product_changelog_snapshots as pcs 
+    				on pc.file_name = pcs.filename
+         			where pcs.is_public = false`).Scan(&changeLogs)
+	return changeLogs, nil
+}
+
+func (pg *pg) UpdateProductChangelogSnapshot(q ProductChangelogSnapshotQuery) error {
+	p := &model.ProductChangelogSnapshot{}
+	return pg.db.Model(p).Where("filename = ?", q.Filename).Update("is_public", q.IsPublic).Error
 }
 
 func (pg *pg) InsertBulkProductChangelogSnapshot(changelogSnapshot []model.ProductChangelogSnapshot) error {

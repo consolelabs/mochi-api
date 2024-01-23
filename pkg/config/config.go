@@ -70,6 +70,7 @@ type Config struct {
 	MochiAdDiscussionCategoryID   string
 	MochiAdDiscussionChannelID    string
 	MochiTokenRequestChannelID    string
+	MochiChangelogChannelID       string
 
 	MoralisXApiKey string
 
@@ -268,6 +269,7 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		MochiGuildID:                  v.GetString("MOCHI_GUILD_ID"),
 		MochiLogChannelID:             v.GetString("MOCHI_LOG_CHANNEL_ID"),
+		MochiChangelogChannelID:       v.GetString("MOCHI_CHANGELOG_CHANNEL_ID"),
 		MochiProductTrackingChannelID: v.GetString("MOCHI_PRODUCT_TRACKING_CHANNEL_ID"),
 		MochiSaleChannelID:            v.GetString("MOCHI_SALE_CHANNEL_ID"),
 		MochiActivityChannelID:        v.GetString("MOCHI_ACTIVITY_CHANNEL_ID"),

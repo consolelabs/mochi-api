@@ -6,6 +6,7 @@ type IHandler interface {
 	ProductBotCommand(c *gin.Context)
 	ProductChangelogs(c *gin.Context)
 	CrawlChangelogs(c *gin.Context)
+	PublishChangelog(c *gin.Context)
 	CreateProductChangelogsView(c *gin.Context)
 	GetProductChangelogsView(c *gin.Context)
 	GetProductHashtag(c *gin.Context)

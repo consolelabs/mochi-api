@@ -3,13 +3,19 @@ package entities
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/consolelabs/mochi-typeset/typeset"
+	"github.com/defipod/mochi/pkg/kafka/message"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/text"
 	"gorm.io/gorm"
 
-	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
@@ -105,49 +111,39 @@ func (e *Entity) CrawlChangelogs() {
 	}
 
 	var productChangelogSnapshots []model.ProductChangelogSnapshot
-	var newChangelogMessages []message.NewChangelog
+	//var newChangelogMessages []message.NewChangelog
 	for _, pc := range newChangelogs {
-		newChangelogMessages = append(newChangelogMessages, message.NewChangelog{
-			Type: typeset.NOTIFICATION_NEW_CHANGELOG,
-			NewChangelogMetadata: message.NewChangelogMetadata{
-				Product:      pc.Product,
-				Title:        pc.Title,
-				Content:      pc.Content,
-				FileName:     pc.FileName,
-				GithubUrl:    pc.GithubUrl,
-				Version:      pc.Version,
-				ThumbnailUrl: pc.ThumbnailUrl,
-				IsExpired:    pc.IsExpired,
-				CreatedAt:    pc.CreatedAt,
-				UpdatedAt:    pc.UpdatedAt,
-			},
-		})
 		productChangelogSnapshots = append(productChangelogSnapshots, model.ProductChangelogSnapshot{
 			Filename:  pc.FileName,
+			IsPublic:  false,
 			CreatedAt: pc.CreatedAt,
 			UpdatedAt: pc.UpdatedAt,
 		})
 	}
 
-	// 3. push notification for new changelogs
-	// TODO. implement push notification
-	// TODO. disable temp
-	for _, message := range newChangelogMessages {
-		byteNotification, _ := json.Marshal(message)
-
-		err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
-		if err != nil {
-			e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
-			return
-		}
-	}
-
-	// 4. update product changelog snapshot
+	// 3. update product changelog snapshot
 	if len(productChangelogSnapshots) > 0 {
 		err = e.repo.ProductChangelogs.InsertBulkProductChangelogSnapshot(productChangelogSnapshots)
 		if err != nil {
 			e.log.Error(err, "[entity.CrawlChangelogs()] - cannot insert bulk product changelog snapshot")
 			return
+		}
+	}
+
+	// 4. get changelog not confirmed
+	changelogNotConfirmed, err := e.repo.ProductChangelogs.GetChangelogNotConfirmed()
+	if err != nil {
+		e.log.Error(err, "[entity.CrawlChangelogs()] - cannot find changelog has not confirmed")
+		return
+	}
+
+	for _, pc := range changelogNotConfirmed {
+		content, images := e.ParseChangelogContent(pc.Content)
+		err := e.SendChangelogToChannel(pc.FileName, content, images)
+
+		if err != nil {
+			e.log.Error(err, "[entity.CrawlChangelogs()] - cannot send changelog to channel")
+			continue
 		}
 	}
 
@@ -214,4 +210,172 @@ func (e *Entity) GetProductHashtag(req request.GetProductHashtagRequest) (*model
 
 func (e *Entity) GetProductTheme(req request.GetProductThemeRequest) ([]model.ProductTheme, error) {
 	return e.repo.ProductTheme.Get()
+}
+
+func (e *Entity) PublishChangeLog(req request.ProductChangelogSnapshotRequest) error {
+	err := e.repo.ProductChangelogs.UpdateProductChangelogSnapshot(productchangelogs.ProductChangelogSnapshotQuery{
+		Filename: req.ChangelogName,
+		IsPublic: req.IsPublic,
+	})
+
+	if err != nil {
+		e.log.Errorf(err, "[entity.PublishChangeLog] - e.repo.ProductChangelogs.UpdateProductChangelogSnapshot failed")
+		return err
+	}
+
+	changelog, err := e.repo.ProductChangelogs.GetChangelogByFilename(req.ChangelogName)
+
+	if err != nil {
+		e.log.Errorf(err, "[entity.PublishChangeLog] - e.repo.ProductChangelogs.GetChangelogByFilename failed")
+		return err
+	}
+
+	msg := message.NewChangelog{
+		Type: typeset.NOTIFICATION_NEW_CHANGELOG,
+		NewChangelogMetadata: message.NewChangelogMetadata{
+			Product:      changelog.Product,
+			Title:        changelog.Title,
+			Content:      changelog.Content,
+			FileName:     changelog.FileName,
+			GithubUrl:    changelog.GithubUrl,
+			Version:      changelog.Version,
+			ThumbnailUrl: changelog.ThumbnailUrl,
+			IsExpired:    changelog.IsExpired,
+			CreatedAt:    changelog.CreatedAt,
+			UpdatedAt:    changelog.UpdatedAt,
+		},
+	}
+
+	// 3. push notification for new changelogs
+	// TODO. implement push notification
+	byteNotification, _ := json.Marshal(msg)
+
+	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+	if err != nil {
+		e.log.Errorf(err, "[entity.PublishChangeLog] - e.kafka.Produce failed")
+		return err
+	}
+
+	return nil
+}
+
+func (e *Entity) SendChangelogToChannel(filename string, content string, images []string) error {
+	sections := strings.Split(content, `\<br\>`)
+
+	for index, section := range sections {
+		var image string
+		if index < len(images) {
+			image = images[index]
+		}
+		msg := &discordgo.MessageSend{
+			Embed: &discordgo.MessageEmbed{
+				Author:      &discordgo.MessageEmbedAuthor{},
+				Description: section,
+				Color:       0x62A1FE,
+				Image: &discordgo.MessageEmbedImage{
+					URL: image,
+				},
+			},
+		}
+		_, err := e.discord.ChannelMessageSendComplex(e.cfg.MochiChangelogChannelID, msg)
+		if err != nil {
+			e.log.Error(err, "[entity.SendChangelogToChannel()] - cannot send messsage to changelog channel")
+			return err
+		}
+	}
+
+	confirmButtonMsg := &discordgo.MessageSend{
+		Content: "Want to publish this changelog?",
+		Components: []discordgo.MessageComponent{
+			discordgo.ActionsRow{
+				Components: []discordgo.MessageComponent{
+					discordgo.Button{
+						Label: "Confirm",
+						Emoji: discordgo.ComponentEmoji{
+							Name: "approve",
+							ID:   "1077631110047080478",
+						},
+						Style:    discordgo.SuccessButton,
+						CustomID: fmt.Sprintf(`mochi_changelog_confirm_%s`, filename),
+					},
+					discordgo.Button{
+						Label: "Cancel",
+						Emoji: discordgo.ComponentEmoji{
+							Name: "revoke",
+							ID:   "1077631119073230970",
+						},
+						Style:    discordgo.DangerButton,
+						CustomID: fmt.Sprintf(`mochi_changelog_cancel_%s`, filename),
+					},
+				},
+			},
+		},
+	}
+
+	_, err := e.discord.ChannelMessageSendComplex(e.cfg.MochiChangelogChannelID, confirmButtonMsg)
+	if err != nil {
+		e.log.Error(err, "[entity.SendChangelogToChannel()] - cannot send confirm button to changelog channel")
+		return err
+	}
+
+	return nil
+}
+
+func (e *Entity) ParseChangelogContent(content string) (string, []string) {
+	replaceContent := regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(content, `\<b>$1\</b>`)
+	input := []byte(replaceContent)
+	reader := text.NewReader(input)
+	markdownAST := goldmark.DefaultParser().Parse(reader)
+
+	ctx := model.MarkdownContext{
+		Images:         make([]string, 0),
+		FirstParagraph: false,
+		FirstHeading:   false,
+	}
+
+	var text string
+	text = e.parseMarkDown(markdownAST, &ctx, input)
+	filteredImages := make([]string, 0)
+	for _, img := range ctx.Images {
+		if strings.Contains(img, "imgur.com") {
+			filteredImages = append(filteredImages, img)
+		}
+	}
+
+	// parse strong text
+	text = regexp.MustCompile(`\\<b>(.*?)\\</b>`).ReplaceAllString(text, "**$1**")
+
+	return text, filteredImages
+}
+
+func (e *Entity) parseMarkDown(content ast.Node, ctx *model.MarkdownContext, source []byte) string {
+	text := ""
+	ast.Walk(content, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
+		if entering {
+			switch n.Kind() {
+			case ast.KindHeading:
+				text += "\n"
+				if ctx.FirstHeading {
+					text += "\n"
+				}
+				text += "**" + string(n.FirstChild().Text(source)) + "**"
+				ctx.FirstHeading = true
+				break
+			case ast.KindParagraph:
+				text += "\n" + string(n.FirstChild().Text(source))
+				ctx.FirstParagraph = true
+				break
+			case ast.KindImage:
+				astImage := n.(*ast.Image)
+				text += `\<br\>`
+				ctx.Images = append(ctx.Images, string(astImage.Destination))
+				break
+			case ast.KindListItem:
+				text += "\n" + string(n.FirstChild().Text(source))
+			}
+		}
+		return ast.WalkContinue, nil
+	})
+
+	return text
 }
