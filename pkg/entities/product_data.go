@@ -2,6 +2,7 @@ package entities
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"strings"
 	"time"
 
@@ -113,6 +114,7 @@ func (e *Entity) CrawlChangelogs() {
 				Content:      pc.Content,
 				FileName:     pc.FileName,
 				GithubUrl:    pc.GithubUrl,
+				Version:      pc.Version,
 				ThumbnailUrl: pc.ThumbnailUrl,
 				IsExpired:    pc.IsExpired,
 				CreatedAt:    pc.CreatedAt,
@@ -129,15 +131,15 @@ func (e *Entity) CrawlChangelogs() {
 	// 3. push notification for new changelogs
 	// TODO. implement push notification
 	// TODO. disable temp
-	// for _, message := range newChangelogMessages {
-	// 	byteNotification, _ := json.Marshal(message)
+	for _, message := range newChangelogMessages {
+		byteNotification, _ := json.Marshal(message)
 
-	// 	err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
-	// 	if err != nil {
-	// 		e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
-	// 		return
-	// 	}
-	// }
+		err = e.kafka.ProduceNotification(e.cfg.Kafka.NotificationTopic, byteNotification)
+		if err != nil {
+			e.log.Errorf(err, "[entity.CrawlChangelogs] - e.kafka.Produce failed")
+			return
+		}
+	}
 
 	// 4. update product changelog snapshot
 	if len(productChangelogSnapshots) > 0 {
@@ -182,7 +184,7 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 			changelogs.Product = strings.TrimSpace(cRow[1])
 		case "thumbnai_url":
 			changelogs.ThumbnailUrl = strings.TrimSpace(cRow[1])
-		case "version":
+		case "field_version":
 			changelogs.Version = strings.TrimSpace(cRow[1])
 		}
 	}
