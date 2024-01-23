@@ -1,9 +1,9 @@
 package product_changelogs
 
 import (
-	"gorm.io/gorm"
-	"strconv"
 	"strings"
+
+	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
 )
@@ -16,20 +16,16 @@ func NewPG(db *gorm.DB) Store {
 	return &pg{db: db}
 }
 
-func (pg *pg) List(q ListQuery) (changeLogs []model.ProductChangelogs, err error) {
-	db := pg.db
+func (pg *pg) List(q ListQuery) (changeLogs []model.ProductChangelogs, total int64, err error) {
+	db := pg.db.Model(&model.ProductChangelogs{})
 	if q.Product != "" {
 		db = db.Where("lower(product) = ?", strings.ToLower(q.Product))
 	}
-	if q.Size != "" {
-		size, err := strconv.Atoi(q.Size)
-		if err != nil {
-			size = 1
-		}
-		db = db.Limit(size)
-	}
-
-	return changeLogs, db.Order("created_at DESC").Find(&changeLogs).Error
+	return changeLogs, total, db.
+		Count(&total).
+		Offset(q.Page * q.Size).
+		Limit(q.Size).
+		Order("created_at DESC").Find(&changeLogs).Error
 }
 
 func (pg *pg) Create(changelog *model.ProductChangelogs) error {

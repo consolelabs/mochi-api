@@ -7,6 +7,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -61,19 +62,32 @@ func (h *Handler) ProductBotCommand(c *gin.Context) {
 // @Router      /product-metadata/changelogs [get]
 func (h *Handler) ProductChangelogs(c *gin.Context) {
 	req := request.ProductChangelogsRequest{}
-	if err := c.BindQuery(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.ProductChangelogs] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	productChangelogs, err := h.entities.ProductChangelogs(req)
+	productChangelogs, total, err := h.entities.ProductChangelogs(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(productChangelogs, nil, nil, nil))
+	pagination := response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: req.Page,
+			Size: req.Size,
+		},
+		Total: total,
+	}
+
+	resp := response.ProductChangelogs{
+		Data:       productChangelogs,
+		Pagination: pagination,
+	}
+
+	c.JSON(http.StatusOK, resp)
 }
 
 // CreateProductChangelogsView   godoc

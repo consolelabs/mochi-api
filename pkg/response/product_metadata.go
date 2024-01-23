@@ -7,7 +7,8 @@ type ProductBotCommand struct {
 }
 
 type ProductChangelogs struct {
-	Data []model.ProductChangelogs `json:"data"`
+	Data       []model.ProductChangelogs `json:"data"`
+	Pagination PaginationResponse        `json:"pagination"`
 }
 
 type CreateProductChangelogsViewed struct {
