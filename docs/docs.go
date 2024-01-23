@@ -4879,12 +4879,17 @@ const docTemplate = `{
                 "summary": "Get product changelogs",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "product",
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "name": "size",
                         "in": "query"
                     }
@@ -7658,6 +7663,9 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },
@@ -9646,6 +9654,9 @@ const docTemplate = `{
                 },
                 "native": {
                     "type": "boolean"
+                },
+                "pnl": {
+                    "type": "string"
                 },
                 "price": {
                     "type": "number"
@@ -12726,6 +12737,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ProductChangelogs"
                     }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },

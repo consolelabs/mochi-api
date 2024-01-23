@@ -726,6 +726,8 @@ definitions:
         type: string
       updated_at:
         type: string
+      version:
+        type: string
     type: object
   model.ProductMetadataEmojis:
     properties:
@@ -2039,6 +2041,8 @@ definitions:
         type: string
       native:
         type: boolean
+      pnl:
+        type: string
       price:
         type: number
       symbol:
@@ -3084,13 +3088,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1y_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
+        type: number
+      usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -4046,6 +4050,8 @@ definitions:
         items:
           $ref: '#/definitions/model.ProductChangelogs'
         type: array
+      pagination:
+        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.ProfileAirdropCampaignResponse:
     properties:
@@ -7751,11 +7757,14 @@ paths:
       description: Get product changelogs
       parameters:
       - in: query
+        name: page
+        type: integer
+      - in: query
         name: product
         type: string
       - in: query
         name: size
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
