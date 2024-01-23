@@ -7,7 +7,8 @@ type ProductBotCommandRequest struct {
 
 type ProductChangelogsRequest struct {
 	Product string `form:"product"`
-	Size    string `form:"size"`
+	Size    int64  `form:"size,default=10"`
+	Page    int64  `form:"page,default=0"`
 }
 
 type CreateProductChangelogsViewRequest struct {

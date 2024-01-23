@@ -25,10 +25,11 @@ func (e *Entity) ProductBotCommand(req request.ProductBotCommandRequest) ([]mode
 	})
 }
 
-func (e *Entity) ProductChangelogs(req request.ProductChangelogsRequest) ([]model.ProductChangelogs, error) {
+func (e *Entity) ProductChangelogs(req request.ProductChangelogsRequest) ([]model.ProductChangelogs, int64, error) {
 	return e.repo.ProductChangelogs.List(productchangelogs.ListQuery{
 		Product: req.Product,
-		Size:    req.Size,
+		Size:    int(req.Size),
+		Page:    int(req.Page),
 	})
 }
 
