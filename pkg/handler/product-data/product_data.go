@@ -8,6 +8,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -88,6 +89,27 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, resp)
+}
+
+// ProductChangelogs     godoc
+// @Summary     Get product changelogs
+// @Description Get product changelogs
+// @Tags        ProductMetadata
+// @Accept      json
+// @Produce     json
+// @Param       req   query  request.ProductChangelogsRequest false  "request"
+// @Success     200 {object} response.ProductChangelogs
+// @Router      /product-metadata/changelogs [get]
+func (h *Handler) GetProductChangelogByVersion(c *gin.Context) {
+	version := c.Param("version")
+
+	productChangelog, err := h.entities.GetProductChangelogByVersion(version)
+	if err != nil {
+		c.JSON(errors.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](productChangelog, nil, nil, nil, nil))
 }
 
 // CreateProductChangelogsView   godoc

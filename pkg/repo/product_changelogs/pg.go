@@ -55,3 +55,29 @@ func (pg *pg) InsertBulkProductChangelogSnapshot(changelogSnapshot []model.Produ
 	db := pg.db
 	return db.Create(changelogSnapshot).Error
 }
+
+func (pg *pg) GetByVersion(version string) (*model.ProductChangelogs, error) {
+	changelog := &model.ProductChangelogs{}
+	db := pg.db.Where("version = ?", version)
+	return changelog, db.First(changelog).Error
+}
+
+func (pg *pg) GetNextVersion(id int64) (string, error) {
+	changelog := &model.ProductChangelogs{}
+	db := pg.db.Where("id > ?", id).Order("id DESC").Limit(1)
+	err := db.First(&changelog).Error
+	if err != nil {
+		return "", err
+	}
+	return changelog.Version, nil
+}
+
+func (pg *pg) GetPreviousVersion(id int64) (string, error) {
+	changelog := &model.ProductChangelogs{}
+	db := pg.db.Where("id < ?", id).Order("id DESC").Limit(1)
+	err := db.First(&changelog).Error
+	if err != nil {
+		return "", err
+	}
+	return changelog.Version, nil
+}
