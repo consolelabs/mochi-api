@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
@@ -32,6 +33,24 @@ func (e *Entity) ProductChangelogs(req request.ProductChangelogsRequest) ([]mode
 		Size:    int(req.Size),
 		Page:    int(req.Page),
 	})
+}
+
+func (e *Entity) GetProductChangelogByVersion(version string) (*model.ProductChangelogs, error) {
+	changelog, err := e.repo.ProductChangelogs.GetByVersion(version)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.ErrRecordNotFound
+		}
+		e.log.Error(err, "[entity.GetProductChangelogByVersion] - repo.ProductChangelogs.GetByVersion() failed")
+		return nil, err
+	}
+
+	nextVer, _ := e.repo.ProductChangelogs.GetNextVersion(changelog.Id)
+	prevVer, _ := e.repo.ProductChangelogs.GetPreviousVersion(changelog.Id)
+	changelog.NextVersion = nextVer
+	changelog.PreviousVersion = prevVer
+
+	return changelog, nil
 }
 
 func (e *Entity) CreateProductChangelogsView(req request.CreateProductChangelogsViewRequest) (*model.ProductChangelogView, error) {

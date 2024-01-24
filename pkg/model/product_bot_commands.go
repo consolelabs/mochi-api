@@ -20,16 +20,19 @@ type ProductBotCommand struct {
 }
 
 type ProductChangelogs struct {
-	Product      string    `json:"product"`
-	Title        string    `json:"title"`
-	Content      string    `json:"content"`
-	GithubUrl    string    `json:"github_url"`
-	ThumbnailUrl string    `json:"thumbnail_url"`
-	FileName     string    `json:"file_name"`
-	IsExpired    bool      `json:"is_expired"`
-	Version      string    `json:"version"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	Id              int64     `json:"id"`
+	Product         string    `json:"product"`
+	Title           string    `json:"title"`
+	Content         string    `json:"content"`
+	GithubUrl       string    `json:"github_url"`
+	ThumbnailUrl    string    `json:"thumbnail_url"`
+	FileName        string    `json:"file_name"`
+	IsExpired       bool      `json:"is_expired"`
+	Version         string    `json:"version"`
+	NextVersion     string    `json:"next_version"`
+	PreviousVersion string    `json:"previous_version"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type ProductChangelogView struct {
