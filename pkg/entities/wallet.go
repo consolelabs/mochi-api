@@ -553,6 +553,12 @@ func (e *Entity) listBaseWalletAssets(req request.ListWalletAssetsRequest) ([]re
 		if item.Type != "cryptocurrency" {
 			continue
 		}
+
+		// this is the old Toshi token, it has been move to another contract
+		// https://basescan.org/address/0x8544fe9d190fd7ec52860abbf45088e81ee24a8c
+		if item.ContractAddress == "0x8544fe9d190fd7ec52860abbf45088e81ee24a8c" {
+			continue
+		}
 		bal, quote := e.calculateTokenBalance(item, chainID)
 		// filter out dusty tokens
 		if quote < 0.001 {
