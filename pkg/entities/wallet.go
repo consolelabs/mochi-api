@@ -392,6 +392,9 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			if quote < 0.001 && bal.TokenType != "NATIVE" {
 				continue
 			}
+			if bal.Token.Address == "0x8544fe9d190fd7ec52860abbf45088e81ee24a8c" {
+				continue
+			}
 
 			price := bal.Quotes.Usd.Price
 			if strings.EqualFold(bal.Token.Symbol, "ICY") {
