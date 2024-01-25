@@ -21,6 +21,11 @@ func (pg pg) GetChangelogByFilename(filename string) (p model.ProductChangelogs,
 	return p, db.Where("file_name = ?", filename).First(&p).Error
 }
 
+func (pg pg) GetChangelogSnapshotByFilename(filename string) (p model.ProductChangelogSnapshot, err error) {
+	db := pg.db
+	return p, db.Where("filename = ?", filename).First(&p).Error
+}
+
 func (pg *pg) List(q ListQuery) (changeLogs []model.ProductChangelogs, total int64, err error) {
 	db := pg.db.Model(&model.ProductChangelogs{})
 	if q.Product != "" {
