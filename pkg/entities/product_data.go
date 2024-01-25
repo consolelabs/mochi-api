@@ -198,7 +198,7 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 			changelogs.Title = strings.TrimSpace(cRow[1])
 		case "product":
 			changelogs.Product = strings.TrimSpace(cRow[1])
-		case "thumbnai_url":
+		case "thumbnail_url":
 			changelogs.ThumbnailUrl = strings.TrimSpace(cRow[1])
 		case "field_version":
 			changelogs.Version = strings.TrimSpace(cRow[1])
