@@ -21,6 +21,11 @@ type GetProductChangelogsViewRequest struct {
 	ChangelogName string `form:"changelog_name"`
 }
 
+type ProductChangelogSnapshotRequest struct {
+	ChangelogName string `json:"changelog_name"`
+	IsPublic      bool   `json:"is_public"`
+}
+
 type GetProductHashtagRequest struct {
 	Alias string `form:"alias"`
 }

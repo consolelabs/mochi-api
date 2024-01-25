@@ -5,3 +5,8 @@ type ListQuery struct {
 	Size    int
 	Page    int
 }
+
+type ProductChangelogSnapshotQuery struct {
+	Filename string
+	IsPublic bool
+}

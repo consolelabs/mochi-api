@@ -167,6 +167,23 @@ func (h *Handler) CrawlChangelogs(c *gin.Context) {
 	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
 }
 
+func (h *Handler) PublishChangelog(c *gin.Context) {
+	req := request.ProductChangelogSnapshotRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.PublishChangelog] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.PublishChangeLog(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
+}
+
 func (h *Handler) GetProductHashtag(c *gin.Context) {
 	req := request.GetProductHashtagRequest{}
 	if err := c.BindQuery(&req); err != nil {
