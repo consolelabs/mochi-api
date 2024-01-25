@@ -10,12 +10,12 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/consolelabs/mochi-typeset/typeset"
-	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 	"gorm.io/gorm"
 
+	"github.com/defipod/mochi/pkg/kafka/message"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/model/errors"
@@ -202,6 +202,8 @@ func (e *Entity) parseChangelogsContent(content string) *model.ProductChangelogs
 			changelogs.ThumbnailUrl = strings.TrimSpace(cRow[1])
 		case "field_version":
 			changelogs.Version = strings.TrimSpace(cRow[1])
+		case "seo_description":
+			changelogs.SeoDescription = strings.TrimSpace(cRow[1])
 		}
 	}
 
