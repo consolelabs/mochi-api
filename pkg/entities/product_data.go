@@ -391,6 +391,9 @@ func (e *Entity) parseMarkDown(content ast.Node, ctx *model.MarkdownContext, sou
 				break
 			case ast.KindListItem:
 				text += "\n" + string(n.FirstChild().Text(source))
+			case ast.KindLink:
+				astLink := n.(*ast.Link)
+				text += fmt.Sprintf(`[%s](%s)`, string(n.Text(source)), astLink.Destination)
 			}
 		}
 		return ast.WalkContinue, nil
