@@ -29,6 +29,7 @@ type ProductChangelogs struct {
 	FileName        string    `json:"file_name"`
 	IsExpired       bool      `json:"is_expired"`
 	Version         string    `json:"version"`
+	SeoDescription  string    `json:"seo_description"`
 	NextVersion     string    `json:"next_version" gorm:"-"`
 	PreviousVersion string    `json:"previous_version" gorm:"-"`
 	CreatedAt       time.Time `json:"created_at"`

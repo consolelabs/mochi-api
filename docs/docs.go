@@ -7696,6 +7696,9 @@ const docTemplate = `{
                 "product": {
                     "type": "string"
                 },
+                "seo_description": {
+                    "type": "string"
+                },
                 "thumbnail_url": {
                     "type": "string"
                 },
