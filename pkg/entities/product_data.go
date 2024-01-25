@@ -157,7 +157,7 @@ func (e *Entity) CrawlChangelogs() {
 	}
 
 	for _, pc := range changelogNotConfirmed {
-		content, images := e.ParseChangelogContent(pc.Content)
+		content, images := e.ParseChangelogContent(pc.Title, pc.Content)
 		err := e.SendChangelogToChannel(pc.FileName, content, images)
 
 		if err != nil {
@@ -279,6 +279,7 @@ func (e *Entity) PublishChangeLog(req request.ProductChangelogSnapshotRequest) e
 }
 
 func (e *Entity) SendChangelogToChannel(filename string, content string, images []string) error {
+	content += "\n\n**Want to publish this changelog?**"
 	sections := strings.Split(content, `\<br\>`)
 
 	for index, section := range sections {
@@ -304,12 +305,11 @@ func (e *Entity) SendChangelogToChannel(filename string, content string, images 
 	}
 
 	confirmButtonMsg := &discordgo.MessageSend{
-		Content: "Want to publish this changelog?",
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
 				Components: []discordgo.MessageComponent{
 					discordgo.Button{
-						Label: "Confirm",
+						Label: "Publish",
 						Emoji: discordgo.ComponentEmoji{
 							Name: "approve",
 							ID:   "1077631110047080478",
@@ -340,7 +340,7 @@ func (e *Entity) SendChangelogToChannel(filename string, content string, images 
 	return nil
 }
 
-func (e *Entity) ParseChangelogContent(content string) (string, []string) {
+func (e *Entity) ParseChangelogContent(title string, content string) (string, []string) {
 	replaceContent := regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(content, `\<b>$1\</b>`)
 	input := []byte(replaceContent)
 	reader := text.NewReader(input)
@@ -362,6 +362,7 @@ func (e *Entity) ParseChangelogContent(content string) (string, []string) {
 	}
 
 	// parse strong text
+	text = fmt.Sprintf("**%s**\n%s", title, text)
 	text = regexp.MustCompile(`\\<b>(.*?)\\</b>`).ReplaceAllString(text, "**$1**")
 
 	return text, filteredImages
