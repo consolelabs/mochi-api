@@ -161,6 +161,5 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.2.0
 	github.com/xssnick/tonutils-go v1.8.5
-	github.com/yuin/goldmark v1.6.0
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea
 )
