@@ -4864,6 +4864,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/product-metadata/changelog/{version}": {
+            "get": {
+                "description": "Get product changelog by version",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelog by version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "changelog version",
+                        "name": "version",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogs"
+                        }
+                    }
+                }
+            }
+        },
         "/product-metadata/changelogs": {
             "get": {
                 "description": "Get product changelogs",
@@ -7649,8 +7681,17 @@ const docTemplate = `{
                 "github_url": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "is_expired": {
                     "type": "boolean"
+                },
+                "next_version": {
+                    "type": "string"
+                },
+                "previous_version": {
+                    "type": "string"
                 },
                 "product": {
                     "type": "string"

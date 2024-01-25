@@ -716,8 +716,14 @@ definitions:
         type: string
       github_url:
         type: string
+      id:
+        type: integer
       is_expired:
         type: boolean
+      next_version:
+        type: string
+      previous_version:
+        type: string
       product:
         type: string
       thumbnail_url:
@@ -3714,6 +3720,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3729,12 +3741,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -7750,6 +7756,27 @@ paths:
       summary: Get onchain invest unstake data
       tags:
       - Invest
+  /product-metadata/changelog/{version}:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelog by version
+      parameters:
+      - description: changelog version
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductChangelogs'
+      summary: Get product changelog by version
+      tags:
+      - ProductMetadata
   /product-metadata/changelogs:
     get:
       consumes:

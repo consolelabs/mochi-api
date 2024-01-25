@@ -91,15 +91,15 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// ProductChangelogs     godoc
-// @Summary     Get product changelogs
-// @Description Get product changelogs
+// GetProductChangelogByVersion     godoc
+// @Summary     Get product changelog by version
+// @Description Get product changelog by version
 // @Tags        ProductMetadata
 // @Accept      json
 // @Produce     json
-// @Param       req   query  request.ProductChangelogsRequest false  "request"
+// @Param       version   path  string true  "changelog version"
 // @Success     200 {object} response.ProductChangelogs
-// @Router      /product-metadata/changelogs [get]
+// @Router      /product-metadata/changelog/{version} [get]
 func (h *Handler) GetProductChangelogByVersion(c *gin.Context) {
 	version := c.Param("version")
 
