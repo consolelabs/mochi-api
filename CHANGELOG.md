@@ -1,3 +1,12 @@
+## [6.27.1](https://github.com/consolelabs/mochi-api/compare/v6.27.0...v6.27.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* **changelog:** update unique value for product changelog view ([25cfa20](https://github.com/consolelabs/mochi-api/commit/25cfa20aaafe20542f258cc5536ac0f2da7fd847))
+* payment settings - init prioritized tokens got null ([e9a4f79](https://github.com/consolelabs/mochi-api/commit/e9a4f79797b7581751130c0c2ed8351d122013c0))
+* payment settings - use balances as prioritized tokens ([f700459](https://github.com/consolelabs/mochi-api/commit/f70045967b40c3da7ae1636fa613f2b63a82e2e3))
+
 # [6.27.0](https://github.com/consolelabs/mochi-api/compare/v6.26.7...v6.27.0) (2024-01-17)
 
 
