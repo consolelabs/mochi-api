@@ -1,3 +1,4 @@
 package consts
 
-const NewChangelogDiscordFooter = "⎯⎯⎯⎯⎯\nView changelog detail on [Mochi web](https://beta.mochi.gg/changelog)"
+const NewChangelogDiscordFooter = "⎯⎯⎯⎯⎯\nView changelog detail on"
+const ChangelogUrl = `https://mochi.gg/changelog`

@@ -158,7 +158,7 @@ func (e *Entity) CrawlChangelogs() {
 	}
 
 	for _, pc := range changelogNotConfirmed {
-		content, images := e.ParseChangelogContent(pc.Title, pc.Content)
+		content, images := e.ParseChangelogContent(pc.Version, pc.Title, pc.Content)
 		err := e.SendChangelogToChannel(pc.FileName, pc.Version, content, images)
 
 		if err != nil {
@@ -347,7 +347,7 @@ func (e *Entity) SendChangelogToChannel(filename string, version string, content
 	return nil
 }
 
-func (e *Entity) ParseChangelogContent(title string, content string) (string, []string) {
+func (e *Entity) ParseChangelogContent(version string, title string, content string) (string, []string) {
 	replaceContent := regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(content, `\<b>$1\</b>`)
 	replaceContent = strings.ReplaceAll(replaceContent, "[//]: new_line", `\newline`)
 	input := []byte(strings.Split(replaceContent, "[//]: break")[0])
@@ -373,7 +373,7 @@ func (e *Entity) ParseChangelogContent(title string, content string) (string, []
 	text = fmt.Sprintf("<a:gem:1095990259877158964> **%s**\n%s", title, text)
 	text = regexp.MustCompile(`\\<b>(.*?)\\</b>`).ReplaceAllString(text, "**$1**")
 	text = strings.ReplaceAll(text, `\newline`, "")
-	text += fmt.Sprintf("\n%s", consts.NewChangelogDiscordFooter)
+	text += fmt.Sprintf("\n%s [Mochi Web](%s/%s)", consts.NewChangelogDiscordFooter, consts.ChangelogUrl, version)
 
 	return text, filteredImages
 }
