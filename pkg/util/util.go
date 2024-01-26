@@ -57,6 +57,11 @@ func GenRandomInRange(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
+// GenRandomFloatInRange return a random float in a range
+func GenRandomFloatInRange(min, max float64) float64 {
+	return rand.Float64()*(max-min) + min
+}
+
 // SplitAndTrimSpaceString is a helper for split and strim space from the results
 func SplitAndTrimSpaceString(s string, sep string) []string {
 	if s == "" {

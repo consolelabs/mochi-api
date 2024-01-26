@@ -716,15 +716,25 @@ definitions:
         type: string
       github_url:
         type: string
+      id:
+        type: integer
       is_expired:
         type: boolean
+      next_version:
+        type: string
+      previous_version:
+        type: string
       product:
+        type: string
+      seo_description:
         type: string
       thumbnail_url:
         type: string
       title:
         type: string
       updated_at:
+        type: string
+      version:
         type: string
     type: object
   model.ProductMetadataEmojis:
@@ -2039,6 +2049,8 @@ definitions:
         type: string
       native:
         type: boolean
+      pnl:
+        type: string
       price:
         type: number
       symbol:
@@ -3084,13 +3096,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1y_change:
-        type: number
-      usd_7d_change:
-        type: number
       usd_14d_change:
         type: number
       usd_1h_change:
+        type: number
+      usd_1y_change:
+        type: number
+      usd_7d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3710,6 +3722,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3725,12 +3743,6 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4046,6 +4058,8 @@ definitions:
         items:
           $ref: '#/definitions/model.ProductChangelogs'
         type: array
+      pagination:
+        $ref: '#/definitions/response.PaginationResponse'
     type: object
   response.ProfileAirdropCampaignResponse:
     properties:
@@ -7744,6 +7758,27 @@ paths:
       summary: Get onchain invest unstake data
       tags:
       - Invest
+  /product-metadata/changelog/{version}:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelog by version
+      parameters:
+      - description: changelog version
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductChangelogs'
+      summary: Get product changelog by version
+      tags:
+      - ProductMetadata
   /product-metadata/changelogs:
     get:
       consumes:
@@ -7751,11 +7786,14 @@ paths:
       description: Get product changelogs
       parameters:
       - in: query
+        name: page
+        type: integer
+      - in: query
         name: product
         type: string
       - in: query
         name: size
-        type: string
+        type: integer
       produces:
       - application/json
       responses:

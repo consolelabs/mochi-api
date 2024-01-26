@@ -7,6 +7,8 @@ import (
 
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
+	"github.com/defipod/mochi/pkg/model"
+	"github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 )
@@ -61,19 +63,53 @@ func (h *Handler) ProductBotCommand(c *gin.Context) {
 // @Router      /product-metadata/changelogs [get]
 func (h *Handler) ProductChangelogs(c *gin.Context) {
 	req := request.ProductChangelogsRequest{}
-	if err := c.BindQuery(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		h.log.Error(err, "[handler.ProductChangelogs] ShouldBindQuery() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
 
-	productChangelogs, err := h.entities.ProductChangelogs(req)
+	productChangelogs, total, err := h.entities.ProductChangelogs(req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(productChangelogs, nil, nil, nil))
+	pagination := response.PaginationResponse{
+		Pagination: model.Pagination{
+			Page: req.Page,
+			Size: req.Size,
+		},
+		Total: total,
+	}
+
+	resp := response.ProductChangelogs{
+		Data:       productChangelogs,
+		Pagination: pagination,
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetProductChangelogByVersion     godoc
+// @Summary     Get product changelog by version
+// @Description Get product changelog by version
+// @Tags        ProductMetadata
+// @Accept      json
+// @Produce     json
+// @Param       version   path  string true  "changelog version"
+// @Success     200 {object} response.ProductChangelogs
+// @Router      /product-metadata/changelog/{version} [get]
+func (h *Handler) GetProductChangelogByVersion(c *gin.Context) {
+	version := c.Param("version")
+
+	productChangelog, err := h.entities.GetProductChangelogByVersion(version)
+	if err != nil {
+		c.JSON(errors.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](productChangelog, nil, nil, nil, nil))
 }
 
 // CreateProductChangelogsView   godoc
@@ -128,6 +164,23 @@ func (h *Handler) GetProductChangelogsView(c *gin.Context) {
 
 func (h *Handler) CrawlChangelogs(c *gin.Context) {
 	go h.entities.CrawlChangelogs()
+	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
+}
+
+func (h *Handler) PublishChangelog(c *gin.Context) {
+	req := request.ProductChangelogSnapshotRequest{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		h.log.Error(err, "[handler.PublishChangelog] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	err := h.entities.PublishChangeLog(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, response.CreateResponse(map[string]string{"message": "ok"}, nil, nil, nil))
 }
 

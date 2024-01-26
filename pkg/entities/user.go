@@ -570,60 +570,50 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		suiBalance         []response.WalletAssetData
 		ronBalance         []response.WalletAssetData
 		binanceBalance     []response.WalletAssetData
-		pnlSum             float64
 		lastestSnapshotSum float64
 		totalUsdAmount     float64
 	)
 
 	for _, acc := range profile.AssociatedAccounts {
-		var pnlEvm, pnlSol, pnlSui, pnlRonin string
 		var lastestSnapshotEvm, lastestSnapshotSol, lastestSnapshotSui, lastestSnapshotRonin string
 		if acc.Platform == "evm-chain" {
-			evmBalance, pnlEvm, lastestSnapshotEvm, err = e.listEvmWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			evmBalance, _, lastestSnapshotEvm, err = e.listEvmWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listEvmWalletAssets failed")
 				return nil, err
 			}
-			pnlEvmFloat, _ := strconv.ParseFloat(pnlEvm, 64)
 			lastestSnaphotEvmFloat, _ := strconv.ParseFloat(lastestSnapshotEvm, 64)
-			pnlSum += pnlEvmFloat
 			lastestSnapshotSum += lastestSnaphotEvmFloat
 		}
 		if acc.Platform == "solana-chain" {
-			solBalance, pnlSol, lastestSnapshotSol, err = e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			solBalance, _, lastestSnapshotSol, err = e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSolWalletAssets failed")
 				return nil, err
 			}
-			pnlSolFloat, _ := strconv.ParseFloat(pnlSol, 64)
 			latestSnapshotSolFloat, _ := strconv.ParseFloat(lastestSnapshotSol, 64)
-			pnlSum += pnlSolFloat
 			lastestSnapshotSum += latestSnapshotSolFloat
 		}
 		if acc.Platform == "sui-chain" {
-			suiBalance, pnlSui, lastestSnapshotSui, err = e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			suiBalance, _, lastestSnapshotSui, err = e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSuiWalletAssets failed")
 				return nil, err
 			}
-			pnlSuiFloat, _ := strconv.ParseFloat(pnlSui, 64)
 			latestSnapshotSuiFloat, _ := strconv.ParseFloat(lastestSnapshotSui, 64)
-			pnlSum += pnlSuiFloat
 			lastestSnapshotSum += latestSnapshotSuiFloat
 		}
 		if acc.Platform == "ronin-chain" {
-			ronBalance, pnlRonin, lastestSnapshotRonin, err = e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			ronBalance, _, lastestSnapshotRonin, err = e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listRonWalletAssets failed")
 				return nil, err
 			}
-			pnlRoninFloat, _ := strconv.ParseFloat(pnlRonin, 64)
 			latestSnapshotRoninFloat, _ := strconv.ParseFloat(lastestSnapshotRonin, 64)
-			pnlSum += pnlRoninFloat
 			lastestSnapshotSum += latestSnapshotRoninFloat
 		}
 		if acc.Platform == "binance" {
-			binanceData, err := e.GetBinanceAssets(request.GetBinanceAssetsRequest{Id: profileId, Platform: "binance"})
+			binanceData, _, lastestSnapshotBinance, err := e.GetBinanceAssets(request.GetBinanceAssetsRequest{Id: profileId, Platform: "binance"})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.GetBinanceAssets failed")
 				return nil, err
@@ -631,6 +621,9 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			if binanceData != nil {
 				binanceBalance = binanceData.Asset
 			}
+
+			lastestSnapshotBinanceFloat, _ := strconv.ParseFloat(lastestSnapshotBinance, 64)
+			lastestSnapshotSum += lastestSnapshotBinanceFloat
 		}
 	}
 
@@ -643,6 +636,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 	for _, bal := range summarizeBals {
 		totalUsdAmount += bal.UsdBalance
 	}
+
 	return &response.UserBalanceResponse{
 		Summarize: summarizeBals,
 		Offchain:  formatOffchainBalance(*offchainBalance),
@@ -655,7 +649,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		Cex: response.UserBalanceCex{
 			Binance: binanceBalance,
 		},
-		Pnl:                fmt.Sprintf("%.4f", pnlSum),
+		Pnl:                fmt.Sprintf("%.2f", ((totalUsdAmount/lastestSnapshotSum)-1)*100),
 		LastestSnapshotBal: fmt.Sprintf("%.4f", lastestSnapshotSum),
 		TotalUsdAmount:     totalUsdAmount,
 	}, nil

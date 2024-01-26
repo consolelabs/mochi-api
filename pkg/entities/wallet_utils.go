@@ -257,6 +257,7 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 				Decimal: 18,
 				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
 			},
+			UsdBalance: btcValuation * btcPrice["bitcoin"],
 		}
 
 		if asset.DetailLending != nil && asset.DetailLending.Amount != "0" {
@@ -308,7 +309,9 @@ func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []re
 		}
 
 	}
-
+	for i := range secondWallet {
+		secondWallet[i].Token.Pnl = fmt.Sprintf("%.2f", util.GenRandomFloatInRange(-100, 1000))
+	}
 	return secondWallet
 }
 

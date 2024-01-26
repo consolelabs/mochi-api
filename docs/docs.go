@@ -4864,6 +4864,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/product-metadata/changelog/{version}": {
+            "get": {
+                "description": "Get product changelog by version",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelog by version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "changelog version",
+                        "name": "version",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogs"
+                        }
+                    }
+                }
+            }
+        },
         "/product-metadata/changelogs": {
             "get": {
                 "description": "Get product changelogs",
@@ -4879,12 +4911,17 @@ const docTemplate = `{
                 "summary": "Get product changelogs",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "name": "product",
                         "in": "query"
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "name": "size",
                         "in": "query"
                     }
@@ -7644,10 +7681,22 @@ const docTemplate = `{
                 "github_url": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "is_expired": {
                     "type": "boolean"
                 },
+                "next_version": {
+                    "type": "string"
+                },
+                "previous_version": {
+                    "type": "string"
+                },
                 "product": {
+                    "type": "string"
+                },
+                "seo_description": {
                     "type": "string"
                 },
                 "thumbnail_url": {
@@ -7657,6 +7706,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }
@@ -9646,6 +9698,9 @@ const docTemplate = `{
                 },
                 "native": {
                     "type": "boolean"
+                },
+                "pnl": {
+                    "type": "string"
                 },
                 "price": {
                     "type": "number"
@@ -12726,6 +12781,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ProductChangelogs"
                     }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/response.PaginationResponse"
                 }
             }
         },
