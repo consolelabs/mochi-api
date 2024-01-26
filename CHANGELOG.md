@@ -1,3 +1,11 @@
+## [6.27.3](https://github.com/consolelabs/mochi-api/compare/v6.27.2...v6.27.3) (2024-01-26)
+
+
+### Bug Fixes
+
+* **changelog:** update parse markdown ([8e85761](https://github.com/consolelabs/mochi-api/commit/8e85761421871447995fdee20960fe2ef53a4f2a))
+* **changelog:** update parse markdown ([7237b86](https://github.com/consolelabs/mochi-api/commit/7237b86f84d88a8657ff14815736424cc15b4a53))
+
 ## [6.27.2](https://github.com/consolelabs/mochi-api/compare/v6.27.1...v6.27.2) (2024-01-26)
 
 
