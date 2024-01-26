@@ -1,3 +1,25 @@
+## [6.27.2](https://github.com/consolelabs/mochi-api/compare/v6.27.1...v6.27.2) (2024-01-26)
+
+
+### Bug Fixes
+
+* add pagination changelog ([#1332](https://github.com/consolelabs/mochi-api/issues/1332)) ([c938adc](https://github.com/consolelabs/mochi-api/commit/c938adc5e3b4ee8d81aadd3631fbadd3210db8bf))
+* **changelog:** add field seo to changelog ([#1344](https://github.com/consolelabs/mochi-api/issues/1344)) ([f461c0f](https://github.com/consolelabs/mochi-api/commit/f461c0f7fcda31c8a4d52fedd46435c62464ccfc))
+* **changelog:** add public changelog flow ([3580508](https://github.com/consolelabs/mochi-api/commit/358050894811aa182236c8b2ff84dbdd96498d46))
+* **changelog:** handle parse markdown ([7845161](https://github.com/consolelabs/mochi-api/commit/7845161ff1dc227fcf35eeaa246ed0f322ea8f98))
+* **changelog:** push new changelog notification data ([2420b67](https://github.com/consolelabs/mochi-api/commit/2420b67e8582e3c6c70b80de5d1c537ca486a324))
+* **changelog:** update changelog model ([f6fce77](https://github.com/consolelabs/mochi-api/commit/f6fce770abadd7cb6a8363fa10d3072012d32d0e))
+* **changelog:** update changelog preview ui ([ddf20e2](https://github.com/consolelabs/mochi-api/commit/ddf20e2fa91d018ef67612a09c2d31443c08f640))
+* **changelog:** update changelog preview ui ([efa1e72](https://github.com/consolelabs/mochi-api/commit/efa1e726e5b616aac6f94d45c87106d4bca918c2))
+* filter old base contract ([#1336](https://github.com/consolelabs/mochi-api/issues/1336)) ([d6f41d1](https://github.com/consolelabs/mochi-api/commit/d6f41d17f015210af58891c37bed2f352e54d927))
+* filter old base contract ([#1337](https://github.com/consolelabs/mochi-api/issues/1337)) ([c4ef0d2](https://github.com/consolelabs/mochi-api/commit/c4ef0d23f339bbd667336feb15136f4467cc1119))
+* gen swagger for changelog ([#1338](https://github.com/consolelabs/mochi-api/issues/1338)) ([7f292c2](https://github.com/consolelabs/mochi-api/commit/7f292c2baa848382038b6049acc905c41264fe29))
+* gen swagger for pnl token changes ([d02cf29](https://github.com/consolelabs/mochi-api/commit/d02cf29f2f786c04422776b2dd16b6ca0b1dba2d))
+* mock pnl changes of tokens in balances api ([73b1c56](https://github.com/consolelabs/mochi-api/commit/73b1c56c67dd9e7280a932b03dc9978132f531e7))
+* try passing cloudflare when searching geckoterminal ([80dca56](https://github.com/consolelabs/mochi-api/commit/80dca56b3eced90292daff7ca2d5d25d0ac6001b))
+* typo changelog parsing ([#1345](https://github.com/consolelabs/mochi-api/issues/1345)) ([375c37f](https://github.com/consolelabs/mochi-api/commit/375c37f8534e8e919a294c42d4bd3361216aece4))
+* update noti settings validation ([54902f7](https://github.com/consolelabs/mochi-api/commit/54902f75bb00d623a1fc9227268e205623df8732))
+
 ## [6.27.1](https://github.com/consolelabs/mochi-api/compare/v6.27.0...v6.27.1) (2024-01-22)
 
 
