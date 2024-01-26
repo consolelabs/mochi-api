@@ -11,12 +11,12 @@ import (
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/launcher"
+	"github.com/go-rod/rod/lib/utils"
 	"github.com/go-rod/stealth"
 
 	"github.com/defipod/mochi/pkg/cache"
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model/errors"
 	errs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/util"
@@ -48,9 +48,16 @@ func NewService(cfg *config.Config, l logger.Logger, cache cache.Cache) Service 
 }
 
 func (g *GeckoTerminal) Search(query string) (*Search, error) {
-	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost + "?proxy=residential&proxyCountry=us&proxySticky")).MustConnect()
+	browser := rod.New().ControlURL(launcher.MustResolveURL(g.chromeHost)).MustConnect()
 	defer browser.MustClose()
-	page := stealth.MustPage(browser).MustNavigate(fmt.Sprintf(searchApi, query))
+
+	// Stealth page that can't be detected as bot
+	page := stealth.MustPage(browser)
+
+	// Passing Cloudflare
+	page.MustNavigate(fmt.Sprintf(searchApi, query))
+	page.MustWaitNavigation()
+	utils.Sleep(3)
 
 	data := page.MustWaitStable().MustElement("body").MustText()
 
@@ -254,7 +261,7 @@ func (g *GeckoTerminal) GetHistoricalMarketData(network, poolAddr string, before
 	}
 
 	if len(candlesticks.Data.Attributes.OhlcvList) == 0 {
-		return nil, errors.ErrTokenNotSupportedYet
+		return nil, errs.ErrTokenNotSupportedYet
 	}
 
 	prices := [][]float64{}
