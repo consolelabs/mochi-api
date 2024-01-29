@@ -1,3 +1,11 @@
+## [6.27.4](https://github.com/consolelabs/mochi-api/compare/v6.27.3...v6.27.4) (2024-01-29)
+
+
+### Bug Fixes
+
+* add snapshot price to calcualte pnl token change ([c0d3336](https://github.com/consolelabs/mochi-api/commit/c0d333623267c3f6483eb2def9ddb1ebb218e1d6))
+* resposne token pnl in api balances ([61a9e3c](https://github.com/consolelabs/mochi-api/commit/61a9e3cfb2ee86674c8f29123fe26608f222abae))
+
 ## [6.27.3](https://github.com/consolelabs/mochi-api/compare/v6.27.2...v6.27.3) (2024-01-26)
 
 
