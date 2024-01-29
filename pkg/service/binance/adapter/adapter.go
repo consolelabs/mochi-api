@@ -149,7 +149,7 @@ func GetLendingAccount(apiKey, apiSecret string) (lendingAcc *response.BinanceLe
 	queryString := butils.QueryString(q, apiSecret)
 
 	// http request
-	req, err := http.NewRequest("GET", url+"/sapi/v1/lending/union/account?"+queryString, nil)
+	req, err := http.NewRequest("GET", url+"/sapi/v1/simple-earn/account?"+queryString, nil)
 	if err != nil {
 		return nil, err
 	}
