@@ -657,8 +657,8 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		}
 	}
 	//calculate pnl offchain token
-	for i, v := range offchainBalanceFormated {
-		offchainBalanceFormated[i].Token.Pnl = e.calculateTokenPriceSnapshot(v.Token)
+	for i := range offchainBalanceFormated {
+		offchainBalanceFormated[i].Token.Pnl = e.calculateTokenPriceSnapshot(offchainBalanceFormated[i].Token)
 	}
 
 	evmBalance = append(evmBalance, solBalance...)
@@ -673,7 +673,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 
 	return &response.UserBalanceResponse{
 		Summarize: summarizeBals,
-		Offchain:  formatOffchainBalance(*offchainBalance),
+		Offchain:  offchainBalanceFormated,
 		Onchain: response.UserBalanceOnchain{
 			Evm: evmBalance,
 			Sol: solBalance,
