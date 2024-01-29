@@ -75,6 +75,7 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	"github.com/defipod/mochi/pkg/repo/token"
 	tokeninfo "github.com/defipod/mochi/pkg/repo/token_info"
+	tokenpricesnapshot "github.com/defipod/mochi/pkg/repo/token_price_snapshot"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -190,5 +191,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserPrivacySetting:                   userprivacysetting.NewPG(db),
 		UserNotificationSetting:              usernotificationsetting.NewPG(db),
 		NotificationFlag:                     notificationflag.NewPG(db),
+		TokenPriceSnapshot:                   tokenpricesnapshot.NewPG(db),
 	}
 }
