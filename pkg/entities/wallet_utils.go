@@ -309,9 +309,7 @@ func mergeWalletAsset(firstWallet, secondWallet []response.WalletAssetData) []re
 		}
 
 	}
-	for i := range secondWallet {
-		secondWallet[i].Token.Pnl = fmt.Sprintf("%.2f", util.GenRandomFloatInRange(-100, 1000))
-	}
+
 	return secondWallet
 }
 
@@ -326,6 +324,8 @@ func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []re
 			ContractSymbol: asset.Token.Symbol,
 			Amount:         asset.Amount,
 			Token: response.AssetToken{
+				Id:      asset.Token.Id,
+				Address: asset.Token.Address,
 				Name:    asset.Token.Name,
 				Symbol:  asset.Token.Symbol,
 				Decimal: asset.Token.Decimal,
@@ -335,6 +335,7 @@ func formatOffchainBalance(offchainBalance mochipay.GetBalanceDataResponse) []re
 					Name:      asset.Token.Chain.Name,
 					ShortName: asset.Token.Chain.Symbol,
 				},
+				Icon: asset.Token.Icon,
 			},
 			UsdBalance: asset.UsdAmount,
 		}

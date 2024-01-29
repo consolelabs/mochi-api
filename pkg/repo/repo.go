@@ -72,6 +72,7 @@ import (
 	questuserreward "github.com/defipod/mochi/pkg/repo/quest_user_reward"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	tokeninfo "github.com/defipod/mochi/pkg/repo/token_info"
+	tokenpricesnapshot "github.com/defipod/mochi/pkg/repo/token_price_snapshot"
 	userfeedback "github.com/defipod/mochi/pkg/repo/user_feedback"
 	usernftbalance "github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
@@ -185,4 +186,5 @@ type Repo struct {
 	UserPrivacySetting                   userprivacysetting.Store
 	UserNotificationSetting              usernotificationsetting.Store
 	NotificationFlag                     notificationflag.Store
+	TokenPriceSnapshot                   tokenpricesnapshot.Store
 }

@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"gorm.io/gorm"
@@ -550,20 +551,6 @@ func (e *Entity) FetchAndSaveGuildMembers(guildID string) (int, error) {
 }
 
 func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse, error) {
-	// get offchain balance
-	offchainBalance, err := e.svc.MochiPay.GetListBalances(profileId)
-	if err != nil {
-		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiPay.GetListBalances failed")
-		return nil, err
-	}
-
-	// get all onchain account
-	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
-	if err != nil {
-		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiProfile.GetByID failed")
-		return nil, err
-	}
-
 	var (
 		evmBalance         []response.WalletAssetData
 		solBalance         []response.WalletAssetData
@@ -573,6 +560,29 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		lastestSnapshotSum float64
 		totalUsdAmount     float64
 	)
+
+	// get offchain balance
+	offchainBalance, err := e.svc.MochiPay.GetListBalances(profileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiPay.GetListBalances failed")
+		return nil, err
+	}
+	offchainBalanceFormated := formatOffchainBalance(*offchainBalance)
+	_, lastestSnapshotOffchainBalance, err := e.calculateWalletSnapshot(profileId, false, offchainBalanceFormated)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.calculateWalletSnapshot failed")
+		return nil, err
+	}
+
+	lastestSnapshotOffchainBalanceFloat, _ := strconv.ParseFloat(lastestSnapshotOffchainBalance, 64)
+	lastestSnapshotSum += lastestSnapshotOffchainBalanceFloat
+
+	// get all onchain account
+	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.svc.MochiProfile.GetByID failed")
+		return nil, err
+	}
 
 	for _, acc := range profile.AssociatedAccounts {
 		var lastestSnapshotEvm, lastestSnapshotSol, lastestSnapshotSui, lastestSnapshotRonin string
@@ -584,6 +594,10 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			}
 			lastestSnaphotEvmFloat, _ := strconv.ParseFloat(lastestSnapshotEvm, 64)
 			lastestSnapshotSum += lastestSnaphotEvmFloat
+			//calculate pnl
+			for i := range evmBalance {
+				evmBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(evmBalance[i].Token)
+			}
 		}
 		if acc.Platform == "solana-chain" {
 			solBalance, _, lastestSnapshotSol, err = e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
@@ -593,6 +607,10 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			}
 			latestSnapshotSolFloat, _ := strconv.ParseFloat(lastestSnapshotSol, 64)
 			lastestSnapshotSum += latestSnapshotSolFloat
+			//calculate pnl
+			for i := range solBalance {
+				solBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(solBalance[i].Token)
+			}
 		}
 		if acc.Platform == "sui-chain" {
 			suiBalance, _, lastestSnapshotSui, err = e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
@@ -602,6 +620,10 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			}
 			latestSnapshotSuiFloat, _ := strconv.ParseFloat(lastestSnapshotSui, 64)
 			lastestSnapshotSum += latestSnapshotSuiFloat
+			//calculate pnl
+			for i := range suiBalance {
+				suiBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(suiBalance[i].Token)
+			}
 		}
 		if acc.Platform == "ronin-chain" {
 			ronBalance, _, lastestSnapshotRonin, err = e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
@@ -611,6 +633,11 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			}
 			latestSnapshotRoninFloat, _ := strconv.ParseFloat(lastestSnapshotRonin, 64)
 			lastestSnapshotSum += latestSnapshotRoninFloat
+			//calculate pnl
+			for i := range ronBalance {
+				ronBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(ronBalance[i].Token)
+			}
+
 		}
 		if acc.Platform == "binance" {
 			binanceData, _, lastestSnapshotBinance, err := e.GetBinanceAssets(request.GetBinanceAssetsRequest{Id: profileId, Platform: "binance"})
@@ -621,17 +648,24 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			if binanceData != nil {
 				binanceBalance = binanceData.Asset
 			}
-
 			lastestSnapshotBinanceFloat, _ := strconv.ParseFloat(lastestSnapshotBinance, 64)
 			lastestSnapshotSum += lastestSnapshotBinanceFloat
+			//calculate pnl
+			for i := range binanceBalance {
+				binanceBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(binanceBalance[i].Token)
+			}
 		}
+	}
+	//calculate pnl offchain token
+	for i := range offchainBalanceFormated {
+		offchainBalanceFormated[i].Token.Pnl = e.calculateTokenPriceSnapshot(offchainBalanceFormated[i].Token)
 	}
 
 	evmBalance = append(evmBalance, solBalance...)
 	evmBalance = append(evmBalance, suiBalance...)
 	evmBalance = append(evmBalance, ronBalance...)
 	evmBalance = append(evmBalance, binanceBalance...)
-	summarizeBals := mergeWalletAsset(evmBalance, formatOffchainBalance(*offchainBalance))
+	summarizeBals := mergeWalletAsset(evmBalance, offchainBalanceFormated)
 
 	for _, bal := range summarizeBals {
 		totalUsdAmount += bal.UsdBalance
@@ -639,7 +673,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 
 	return &response.UserBalanceResponse{
 		Summarize: summarizeBals,
-		Offchain:  formatOffchainBalance(*offchainBalance),
+		Offchain:  offchainBalanceFormated,
 		Onchain: response.UserBalanceOnchain{
 			Evm: evmBalance,
 			Sol: solBalance,
@@ -653,4 +687,38 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		LastestSnapshotBal: fmt.Sprintf("%.4f", lastestSnapshotSum),
 		TotalUsdAmount:     totalUsdAmount,
 	}, nil
+}
+
+func (e *Entity) calculateTokenPriceSnapshot(token response.AssetToken) string {
+	if token.Symbol == "" || token.Price == 0 {
+		return ""
+	}
+	// get snapshot in 8 hour
+	latestSnapshotPrice, err := e.repo.TokenPriceSnapshot.GetLatestSnapshotWithTime(token.Symbol, time.Now().Add(-8*time.Hour))
+	if err != nil && err != gorm.ErrRecordNotFound {
+		e.log.Fields(logger.Fields{"tokenId": token.Id}).Error(err, "[entity.calculateTokenPriceSnapshot] repo.TokenPriceSnapshot.GetSnapshotInTime() failed")
+		return ""
+	}
+
+	// if not found, get lastest 24h for calculate
+	if latestSnapshotPrice == 0 {
+		latestSnapshotPrice, err = e.repo.TokenPriceSnapshot.GetLatestSnapshotWithTime(token.Symbol, time.Now().Add(-24*time.Hour))
+		if err != nil && err != gorm.ErrRecordNotFound {
+			e.log.Fields(logger.Fields{"tokenId": token.Id}).Error(err, "[entity.calculateTokenPriceSnapshot] repo.TokenPriceSnapshot.GetLatestInPast() failed")
+			return ""
+		}
+
+		// upsert data
+		err = e.repo.TokenPriceSnapshot.UpsertOne(&model.TokenPriceSnapshot{
+			Symbol: token.Symbol,
+			Chain:  token.Chain.ShortName,
+			Price:  token.Price,
+		})
+		if err != nil {
+			e.log.Fields(logger.Fields{"tokenId": token.Id}).Error(err, "[entity.calculateTokenPriceSnapshot] repo.TokenPriceSnapshot.Create() failed")
+			return ""
+		}
+	}
+
+	return fmt.Sprintf("%.2f", ((token.Price/latestSnapshotPrice)-1)*100)
 }
