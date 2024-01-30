@@ -4930,7 +4930,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ProductChangelogs"
+                            "$ref": "#/definitions/response.ProductChangelogLatest"
                         }
                     }
                 }
@@ -12802,6 +12802,14 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ProductBotCommand"
                     }
+                }
+            }
+        },
+        "response.ProductChangelogLatest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.ProductChangelogs"
                 }
             }
         },

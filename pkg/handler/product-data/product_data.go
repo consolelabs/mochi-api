@@ -119,7 +119,7 @@ func (h *Handler) GetProductChangelogByVersion(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       version   path  string true  "changelog version"
-// @Success     200 {object} response.ProductChangelogs
+// @Success     200 {object} response.ProductChangelogLatest
 // @Router      /product-metadata/changelogs/latest [get]
 func (h *Handler) GetProductChangelogLatest(c *gin.Context) {
 	productChangelog, err := h.entities.GetProductChangelogLatest()
