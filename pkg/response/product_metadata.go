@@ -11,6 +11,10 @@ type ProductChangelogs struct {
 	Pagination PaginationResponse        `json:"pagination"`
 }
 
+type ProductChangelogLatest struct {
+	Data model.ProductChangelogs `json:"data"`
+}
+
 type CreateProductChangelogsViewed struct {
 	Data model.ProductChangelogView `json:"data"`
 }
