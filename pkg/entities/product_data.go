@@ -60,6 +60,19 @@ func (e *Entity) GetProductChangelogByVersion(version string) (*model.ProductCha
 	return changelog, nil
 }
 
+func (e *Entity) GetProductChangelogLatest() (*model.ProductChangelogs, error) {
+	changelog, err := e.repo.ProductChangelogs.GetLatest()
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.ErrRecordNotFound
+		}
+		e.log.Error(err, "[entity.GetProductChangelogByVersion] - repo.ProductChangelogs.GetByVersion() failed")
+		return nil, err
+	}
+
+	return changelog, nil
+}
+
 func (e *Entity) CreateProductChangelogsView(req request.CreateProductChangelogsViewRequest) (*model.ProductChangelogView, error) {
 	productchangelogsview := &model.ProductChangelogView{
 		Key:           req.Key,

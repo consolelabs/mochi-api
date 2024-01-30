@@ -90,6 +90,12 @@ func (pg *pg) GetByVersion(version string) (*model.ProductChangelogs, error) {
 	return changelog, db.First(changelog).Error
 }
 
+func (pg *pg) GetLatest() (*model.ProductChangelogs, error) {
+	changelog := &model.ProductChangelogs{}
+	db := pg.db.Where("is_expired = false").Order("created_at DESC")
+	return changelog, db.First(changelog).Error
+}
+
 func (pg *pg) GetNextVersion(id int64) (string, error) {
 	changelog := &model.ProductChangelogs{}
 	db := pg.db.Where("id > ?", id).Order("id DESC").Limit(1)
