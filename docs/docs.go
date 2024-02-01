@@ -5316,6 +5316,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/profiles/{profile_id}/settings/tip/default-message": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get profile's default tip message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "get profile's default tip message",
+                "operationId": "getUserTipMessage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserTipMessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
         "/swap": {
             "post": {
                 "description": "Execute swap token",
@@ -11446,6 +11496,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserTipMessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.UserTipMessageData"
+                }
+            }
+        },
         "response.GetVaultResponse": {
             "type": "object",
             "properties": {
@@ -13528,6 +13586,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserNotificationSetting"
+                }
+            }
+        },
+        "response.UserTipMessageData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },

@@ -8,6 +8,7 @@ import (
 
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	notificationflag "github.com/defipod/mochi/pkg/repo/notification_flag"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service/mochiprofile"
@@ -314,4 +315,35 @@ func (e *Entity) UpdateUserNotificationSettings(uri request.UserSettingBaseUriRe
 	}
 
 	return &userNotiSettings, nil
+}
+
+func (e *Entity) GetUserTipMessage(uri request.UserSettingBaseUriRequest) (string, error) {
+	logger := e.log.Fields(logger.Fields{
+		"component":  "entity.setting.GetUserTipMessage",
+		"profile_id": uri.ProfileId,
+	})
+
+	// compose init settings for user
+	initPayment := e.initUserPaymentSetting(uri.ProfileId)
+
+	// get user's payment setting or create if not exists
+	payment, err := e.repo.UserPaymentSetting.FirstOrCreate(initPayment)
+	if err != nil {
+		logger.Error(err, "repo.UserPaymentSetting.FirstOrCreate() failed")
+		return "", err
+	}
+
+	// if default msg disable return record not found
+	if !payment.DefaultMessageEnable {
+		return "", baseerrs.ErrRecordNotFound
+	}
+
+	// get user's default tip message
+	for _, setting := range payment.DefaultMessageSettings {
+		if setting.Action == "tip" {
+			return setting.Message, nil
+		}
+	}
+
+	return "", baseerrs.ErrRecordNotFound
 }
