@@ -514,5 +514,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			notification.GET("", h.Setting.GetUserNotificationSettings)
 			notification.PUT("", h.Setting.UpdateUserNotificationSettings)
 		}
+
+		profileSettings.GET("/tip/default-message", h.Setting.GetUserTipMessage)
 	}
 }
