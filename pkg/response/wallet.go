@@ -107,6 +107,7 @@ type WalletBinanceAssetResponse struct {
 type GetBinanceAsset struct {
 	Asset      []WalletAssetData                    `json:"asset"`
 	Earn       []WalletAssetData                    `json:"earn"`
+	Future     []BinanceFutureAccountBalance        `json:"future"`
 	SimpleEarn WalletBinanceAssetSimpleEarnResponse `json:"simple_earn"`
 }
 

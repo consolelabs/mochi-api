@@ -556,7 +556,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		solBalance         []response.WalletAssetData
 		suiBalance         []response.WalletAssetData
 		ronBalance         []response.WalletAssetData
-		binanceBalance     []response.WalletAssetData
+		binanceData        *response.GetBinanceAsset
 		lastestSnapshotSum float64
 		totalUsdAmount     float64
 	)
@@ -640,19 +640,20 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 
 		}
 		if acc.Platform == "binance" {
-			binanceData, _, lastestSnapshotBinance, err := e.GetBinanceAssets(request.GetBinanceAssetsRequest{Id: profileId, Platform: "binance"})
+			lastestSnapshotBinance := ""
+			binanceData, _, lastestSnapshotBinance, err = e.GetBinanceAssets(request.GetBinanceAssetsRequest{Id: profileId, Platform: "binance"})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.GetBinanceAssets failed")
 				return nil, err
 			}
-			if binanceData != nil {
-				binanceBalance = binanceData.Asset
+			if binanceData == nil {
+				continue
 			}
 			lastestSnapshotBinanceFloat, _ := strconv.ParseFloat(lastestSnapshotBinance, 64)
 			lastestSnapshotSum += lastestSnapshotBinanceFloat
 			//calculate pnl
-			for i := range binanceBalance {
-				binanceBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(binanceBalance[i].Token)
+			for i := range binanceData.Asset {
+				binanceData.Asset[i].Token.Pnl = e.calculateTokenPriceSnapshot(binanceData.Asset[i].Token)
 			}
 		}
 	}
@@ -664,7 +665,9 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 	evmBalance = append(evmBalance, solBalance...)
 	evmBalance = append(evmBalance, suiBalance...)
 	evmBalance = append(evmBalance, ronBalance...)
-	evmBalance = append(evmBalance, binanceBalance...)
+	if binanceData != nil {
+		evmBalance = append(evmBalance, binanceData.Asset...)
+	}
 	summarizeBals := mergeWalletAsset(evmBalance, offchainBalanceFormated)
 
 	for _, bal := range summarizeBals {
@@ -681,7 +684,7 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			Ron: ronBalance,
 		},
 		Cex: response.UserBalanceCex{
-			Binance: binanceBalance,
+			Binance: binanceData,
 		},
 		Pnl:                fmt.Sprintf("%.2f", ((totalUsdAmount/lastestSnapshotSum)-1)*100),
 		LastestSnapshotBal: fmt.Sprintf("%.4f", lastestSnapshotSum),

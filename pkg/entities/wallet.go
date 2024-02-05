@@ -1055,6 +1055,13 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		return nil, "", "", err
 	}
 
+	// get future asset data from binance or cache
+	futureAsset, err := e.svc.Binance.GetFutureAccountBalance(apiKey, apiSecret)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] svc.Binance.GetFutureAccountBalance fail")
+		return nil, "", "", err
+	}
+
 	// format asset
 	formatFundingAsset, err := e.FormatAsset(fundingAsset)
 	if err != nil {
@@ -1082,8 +1089,9 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		return nil, "", "", err
 	}
 	return &response.GetBinanceAsset{
-		Asset: formatFundingAsset,
-		Earn:  formatEarnAsset,
+		Asset:  formatFundingAsset,
+		Earn:   formatEarnAsset,
+		Future: futureAsset,
 		SimpleEarn: response.WalletBinanceAssetSimpleEarnResponse{
 			TotalAmountInBTC:          simpleEarnAcc.TotalAmountInBTC,
 			TotalAmountInUSDT:         simpleEarnAcc.TotalAmountInUSDT,

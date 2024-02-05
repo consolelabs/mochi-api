@@ -103,5 +103,5 @@ type UserBalanceOnchain struct {
 }
 
 type UserBalanceCex struct {
-	Binance []WalletAssetData `json:"binance"`
+	Binance *GetBinanceAsset `json:"binance"`
 }

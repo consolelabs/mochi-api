@@ -9806,6 +9806,38 @@ const docTemplate = `{
                 }
             }
         },
+        "response.BinanceFutureAccountBalance": {
+            "type": "object",
+            "properties": {
+                "accountAlias": {
+                    "type": "string"
+                },
+                "asset": {
+                    "type": "string"
+                },
+                "availableBalance": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "string"
+                },
+                "crossUnPnl": {
+                    "type": "string"
+                },
+                "crossWalletBalance": {
+                    "type": "string"
+                },
+                "marginAvailable": {
+                    "type": "boolean"
+                },
+                "maxWithdrawAmount": {
+                    "type": "string"
+                },
+                "updateTime": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.BinanceFutureAccountPositionResponse": {
             "type": "object",
             "properties": {
@@ -10697,6 +10729,32 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.DaoProposal"
                     }
+                }
+            }
+        },
+        "response.GetBinanceAsset": {
+            "type": "object",
+            "properties": {
+                "asset": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "earn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.WalletAssetData"
+                    }
+                },
+                "future": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.BinanceFutureAccountBalance"
+                    }
+                },
+                "simple_earn": {
+                    "$ref": "#/definitions/response.WalletBinanceAssetSimpleEarnResponse"
                 }
             }
         },
@@ -13485,10 +13543,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "binance": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.WalletAssetData"
-                    }
+                    "$ref": "#/definitions/response.GetBinanceAsset"
                 }
             }
         },
@@ -13626,6 +13681,32 @@ const docTemplate = `{
                 },
                 "usd_balance": {
                     "type": "number"
+                }
+            }
+        },
+        "response.WalletBinanceAssetSimpleEarnResponse": {
+            "type": "object",
+            "properties": {
+                "btc_price": {
+                    "type": "string"
+                },
+                "total_amount_in_btc": {
+                    "type": "string"
+                },
+                "total_amount_in_usdt": {
+                    "type": "string"
+                },
+                "total_flexible_amount_in_btc": {
+                    "type": "string"
+                },
+                "total_flexible_amount_in_usdt": {
+                    "type": "string"
+                },
+                "total_locked_in_btc": {
+                    "type": "string"
+                },
+                "total_locked_in_usdt": {
+                    "type": "string"
                 }
             }
         },
