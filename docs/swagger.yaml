@@ -3166,6 +3166,11 @@ definitions:
       data:
         $ref: '#/definitions/response.User'
     type: object
+  response.GetUserTipMessageResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.UserTipMessageData'
+    type: object
   response.GetVaultResponse:
     properties:
       data:
@@ -3722,12 +3727,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_7d:
-        type: number
-      price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_14d:
         type: number
       price_change_percentage_14d_in_currency:
@@ -3743,6 +3742,12 @@ definitions:
       price_change_percentage_1y:
         type: number
       price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_7d:
+        type: number
+      price_change_percentage_7d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4051,6 +4056,11 @@ definitions:
         items:
           $ref: '#/definitions/model.ProductBotCommand'
         type: array
+    type: object
+  response.ProductChangelogLatest:
+    properties:
+      data:
+        $ref: '#/definitions/model.ProductChangelogs'
     type: object
   response.ProductChangelogs:
     properties:
@@ -4516,6 +4526,11 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/model.UserNotificationSetting'
+    type: object
+  response.UserTipMessageData:
+    properties:
+      message:
+        type: string
     type: object
   response.WalletAssetData:
     properties:
@@ -7758,27 +7773,6 @@ paths:
       summary: Get onchain invest unstake data
       tags:
       - Invest
-  /product-metadata/changelog/{version}:
-    get:
-      consumes:
-      - application/json
-      description: Get product changelog by version
-      parameters:
-      - description: changelog version
-        in: path
-        name: version
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.ProductChangelogs'
-      summary: Get product changelog by version
-      tags:
-      - ProductMetadata
   /product-metadata/changelogs:
     get:
       consumes:
@@ -7802,6 +7796,48 @@ paths:
           schema:
             $ref: '#/definitions/response.ProductChangelogs'
       summary: Get product changelogs
+      tags:
+      - ProductMetadata
+  /product-metadata/changelogs/{version}:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelog by version
+      parameters:
+      - description: changelog version
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductChangelogs'
+      summary: Get product changelog by version
+      tags:
+      - ProductMetadata
+  /product-metadata/changelogs/latest:
+    get:
+      consumes:
+      - application/json
+      description: Get product changelog latest
+      parameters:
+      - description: changelog version
+        in: path
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ProductChangelogLatest'
+      summary: Get product changelog latest
       tags:
       - ProductMetadata
   /product-metadata/changelogs/view:
@@ -8026,6 +8062,38 @@ paths:
       security:
       - BearerAuth: []
       summary: update profile's notification settings
+      tags:
+      - Settings
+  /profiles/{profile_id}/settings/tip/default-message:
+    get:
+      consumes:
+      - application/json
+      description: get profile's default tip message
+      operationId: getUserTipMessage
+      parameters:
+      - description: profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/response.GetUserTipMessageResponse'
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "404":
+          description: not found
+        "500":
+          description: internal server error
+      security:
+      - BearerAuth: []
+      summary: get profile's default tip message
       tags:
       - Settings
   /swap:

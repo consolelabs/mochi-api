@@ -31,3 +31,19 @@ type UserPrivacySettingResponse struct {
 type UserNotificationSettingResponse struct {
 	Data *model.UserNotificationSetting `json:"data"`
 }
+
+type GetUserTipMessageResponse struct {
+	Data *UserTipMessageData `json:"data"`
+}
+
+type UserTipMessageData struct {
+	Message string `json:"message"`
+}
+
+func ToUserTipMessageResponse(msg string) *GetUserTipMessageResponse {
+	return &GetUserTipMessageResponse{
+		Data: &UserTipMessageData{
+			Message: msg,
+		},
+	}
+}

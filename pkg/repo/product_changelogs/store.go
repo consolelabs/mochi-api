@@ -13,6 +13,7 @@ type Store interface {
 	InsertBulkProductChangelogSnapshot(changelogSnapshot []model.ProductChangelogSnapshot) error
 	DeleteAll() error
 	GetByVersion(version string) (*model.ProductChangelogs, error)
+	GetLatest() (*model.ProductChangelogs, error)
 	GetNextVersion(id int64) (string, error)
 	GetPreviousVersion(id int64) (string, error)
 }

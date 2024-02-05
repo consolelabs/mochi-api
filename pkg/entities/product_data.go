@@ -60,6 +60,19 @@ func (e *Entity) GetProductChangelogByVersion(version string) (*model.ProductCha
 	return changelog, nil
 }
 
+func (e *Entity) GetProductChangelogLatest() (*model.ProductChangelogs, error) {
+	changelog, err := e.repo.ProductChangelogs.GetLatest()
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.ErrRecordNotFound
+		}
+		e.log.Error(err, "[entity.GetProductChangelogByVersion] - repo.ProductChangelogs.GetByVersion() failed")
+		return nil, err
+	}
+
+	return changelog, nil
+}
+
 func (e *Entity) CreateProductChangelogsView(req request.CreateProductChangelogsViewRequest) (*model.ProductChangelogView, error) {
 	productchangelogsview := &model.ProductChangelogView{
 		Key:           req.Key,
@@ -349,9 +362,8 @@ func (e *Entity) SendChangelogToChannel(filename string, version string, content
 
 func (e *Entity) ParseChangelogContent(version string, title string, content string) (string, []string) {
 	replaceContent := regexp.MustCompile(`\*\*(.*?)\*\*`).ReplaceAllString(content, `\<b>$1\</b>`)
+	replaceContent = regexp.MustCompile(`\[(.+)]\((.*)\)`).ReplaceAllString(replaceContent, `\<t>$1\</t>\<d>$2\</d>`)
 	replaceContent = strings.ReplaceAll(replaceContent, "[//]: new_line", `\newline`)
-	replaceContent = strings.ReplaceAll(replaceContent, "! ", `\exclamation`)
-	replaceContent = strings.ReplaceAll(replaceContent, "!\n", `\exn`)
 	input := []byte(strings.Split(replaceContent, "[//]: break")[0])
 	reader := text.NewReader(input)
 	markdownAST := goldmark.DefaultParser().Parse(reader)
@@ -374,9 +386,9 @@ func (e *Entity) ParseChangelogContent(version string, title string, content str
 	// parse strong text
 	text = fmt.Sprintf("<a:gem:1095990259877158964> **%s**\n%s", title, text)
 	text = regexp.MustCompile(`\\<b>(.*?)\\</b>`).ReplaceAllString(text, "**$1**")
+	text = regexp.MustCompile(`\\<t>(.+)\\</t>`).ReplaceAllString(text, "[$1]")
+	text = regexp.MustCompile(`\\<d>(.*)\\</d>`).ReplaceAllString(text, "($1)")
 	text = strings.ReplaceAll(text, `\newline`, "")
-	text = strings.ReplaceAll(text, `\exclamation`, "! ")
-	text = strings.ReplaceAll(text, `\exn`, "!\n")
 	text += fmt.Sprintf("\n%s [Mochi Web](%s/%s)", consts.NewChangelogDiscordFooter, consts.ChangelogUrl, version)
 
 	return text, filteredImages
@@ -387,6 +399,7 @@ func (e *Entity) parseMarkDown(content ast.Node, ctx *model.MarkdownContext, sou
 	ast.Walk(content, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		if entering {
 			switch n.Kind() {
+
 			case ast.KindHeading:
 				astHeading := n.(*ast.Heading)
 				if astHeading.Level != 3 {
@@ -396,7 +409,7 @@ func (e *Entity) parseMarkDown(content ast.Node, ctx *model.MarkdownContext, sou
 				ctx.FirstHeading = true
 				break
 			case ast.KindParagraph:
-				text += "\n" + string(n.FirstChild().Text(source))
+				text += "\n" + string(n.Text(source))
 				ctx.FirstParagraph = true
 				break
 			case ast.KindImage:
@@ -406,9 +419,6 @@ func (e *Entity) parseMarkDown(content ast.Node, ctx *model.MarkdownContext, sou
 				break
 			case ast.KindListItem:
 				text += "\n" + string(n.FirstChild().Text(source))
-			case ast.KindLink:
-				astLink := n.(*ast.Link)
-				text += fmt.Sprintf(`[%s](%s)`, string(n.Text(source)), astLink.Destination)
 			}
 		}
 		return ast.WalkContinue, nil

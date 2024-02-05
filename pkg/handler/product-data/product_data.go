@@ -99,11 +99,30 @@ func (h *Handler) ProductChangelogs(c *gin.Context) {
 // @Produce     json
 // @Param       version   path  string true  "changelog version"
 // @Success     200 {object} response.ProductChangelogs
-// @Router      /product-metadata/changelog/{version} [get]
+// @Router      /product-metadata/changelogs/{version} [get]
 func (h *Handler) GetProductChangelogByVersion(c *gin.Context) {
 	version := c.Param("version")
 
 	productChangelog, err := h.entities.GetProductChangelogByVersion(version)
+	if err != nil {
+		c.JSON(errors.GetStatusCode(err), gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](productChangelog, nil, nil, nil, nil))
+}
+
+// GetProductChangelogLatest     godoc
+// @Summary     Get product changelog latest
+// @Description Get product changelog latest
+// @Tags        ProductMetadata
+// @Accept      json
+// @Produce     json
+// @Param       version   path  string true  "changelog version"
+// @Success     200 {object} response.ProductChangelogLatest
+// @Router      /product-metadata/changelogs/latest [get]
+func (h *Handler) GetProductChangelogLatest(c *gin.Context) {
+	productChangelog, err := h.entities.GetProductChangelogLatest()
 	if err != nil {
 		c.JSON(errors.GetStatusCode(err), gin.H{"error": err.Error()})
 		return

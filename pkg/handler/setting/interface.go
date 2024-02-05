@@ -10,4 +10,7 @@ type IHandler interface {
 	// notification
 	GetUserNotificationSettings(c *gin.Context)
 	UpdateUserNotificationSettings(c *gin.Context)
+
+	// Tip message
+	GetUserTipMessage(c *gin.Context)
 }

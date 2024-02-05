@@ -4864,38 +4864,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/product-metadata/changelog/{version}": {
-            "get": {
-                "description": "Get product changelog by version",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ProductMetadata"
-                ],
-                "summary": "Get product changelog by version",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "changelog version",
-                        "name": "version",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.ProductChangelogs"
-                        }
-                    }
-                }
-            }
-        },
         "/product-metadata/changelogs": {
             "get": {
                 "description": "Get product changelogs",
@@ -4931,6 +4899,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.ProductChangelogs"
+                        }
+                    }
+                }
+            }
+        },
+        "/product-metadata/changelogs/latest": {
+            "get": {
+                "description": "Get product changelog latest",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelog latest",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "changelog version",
+                        "name": "version",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogLatest"
                         }
                     }
                 }
@@ -4998,6 +4998,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.CreateProductChangelogsViewed"
+                        }
+                    }
+                }
+            }
+        },
+        "/product-metadata/changelogs/{version}": {
+            "get": {
+                "description": "Get product changelog by version",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductMetadata"
+                ],
+                "summary": "Get product changelog by version",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "changelog version",
+                        "name": "version",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ProductChangelogs"
                         }
                     }
                 }
@@ -5267,6 +5299,56 @@ const docTemplate = `{
                         "description": "successful operation",
                         "schema": {
                             "$ref": "#/definitions/response.UserNotificationSettingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request"
+                    },
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "404": {
+                        "description": "not found"
+                    },
+                    "500": {
+                        "description": "internal server error"
+                    }
+                }
+            }
+        },
+        "/profiles/{profile_id}/settings/tip/default-message": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get profile's default tip message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "get profile's default tip message",
+                "operationId": "getUserTipMessage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "profile_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/response.GetUserTipMessageResponse"
                         }
                     },
                     "400": {
@@ -11414,6 +11496,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.GetUserTipMessageResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/response.UserTipMessageData"
+                }
+            }
+        },
         "response.GetVaultResponse": {
             "type": "object",
             "properties": {
@@ -12773,6 +12863,14 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ProductChangelogLatest": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/model.ProductChangelogs"
+                }
+            }
+        },
         "response.ProductChangelogs": {
             "type": "object",
             "properties": {
@@ -13488,6 +13586,14 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/model.UserNotificationSetting"
+                }
+            }
+        },
+        "response.UserTipMessageData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },

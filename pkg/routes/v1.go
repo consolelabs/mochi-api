@@ -435,6 +435,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		productMetaData.GET("/commands", h.ProductData.ProductBotCommand)
 		productMetaData.GET("/changelogs", h.ProductData.ProductChangelogs)
 		productMetaData.GET("/changelogs/:version", h.ProductData.GetProductChangelogByVersion)
+		productMetaData.GET("/changelogs/latest", h.ProductData.GetProductChangelogLatest)
 		productMetaData.POST("/changelogs/view", h.ProductData.CreateProductChangelogsView)
 		productMetaData.GET("/changelogs/view", h.ProductData.GetProductChangelogsView)
 		productMetaData.GET("/crawl-changelogs", h.ProductData.CrawlChangelogs)
@@ -513,5 +514,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			notification.GET("", h.Setting.GetUserNotificationSettings)
 			notification.PUT("", h.Setting.UpdateUserNotificationSettings)
 		}
+
+		profileSettings.GET("/tip/default-message", h.Setting.GetUserTipMessage)
 	}
 }
