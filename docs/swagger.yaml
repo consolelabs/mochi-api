@@ -2065,6 +2065,27 @@ definitions:
       type:
         type: string
     type: object
+  response.BinanceFutureAccountBalance:
+    properties:
+      accountAlias:
+        type: string
+      asset:
+        type: string
+      availableBalance:
+        type: string
+      balance:
+        type: string
+      crossUnPnl:
+        type: string
+      crossWalletBalance:
+        type: string
+      marginAvailable:
+        type: boolean
+      maxWithdrawAmount:
+        type: string
+      updateTime:
+        type: integer
+    type: object
   response.BinanceFutureAccountPositionResponse:
     properties:
       data:
@@ -2647,6 +2668,23 @@ definitions:
         items:
           $ref: '#/definitions/model.DaoProposal'
         type: array
+    type: object
+  response.GetBinanceAsset:
+    properties:
+      asset:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      earn:
+        items:
+          $ref: '#/definitions/response.WalletAssetData'
+        type: array
+      future:
+        items:
+          $ref: '#/definitions/response.BinanceFutureAccountBalance'
+        type: array
+      simple_earn:
+        $ref: '#/definitions/response.WalletBinanceAssetSimpleEarnResponse'
     type: object
   response.GetCoinResponse:
     properties:
@@ -3729,10 +3767,6 @@ definitions:
         type: object
       price_change_percentage_14d:
         type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3741,13 +3775,17 @@ definitions:
         type: object
       price_change_percentage_1y:
         type: number
-      price_change_percentage_1y_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4460,9 +4498,7 @@ definitions:
   response.UserBalanceCex:
     properties:
       binance:
-        items:
-          $ref: '#/definitions/response.WalletAssetData'
-        type: array
+        $ref: '#/definitions/response.GetBinanceAsset'
     type: object
   response.UserBalanceOnchain:
     properties:
@@ -4552,6 +4588,23 @@ definitions:
         $ref: '#/definitions/response.AssetToken'
       usd_balance:
         type: number
+    type: object
+  response.WalletBinanceAssetSimpleEarnResponse:
+    properties:
+      btc_price:
+        type: string
+      total_amount_in_btc:
+        type: string
+      total_amount_in_usdt:
+        type: string
+      total_flexible_amount_in_btc:
+        type: string
+      total_flexible_amount_in_usdt:
+        type: string
+      total_locked_in_btc:
+        type: string
+      total_locked_in_usdt:
+        type: string
     type: object
   util.Pagination:
     properties:
