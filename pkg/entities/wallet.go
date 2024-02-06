@@ -1055,10 +1055,6 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		return nil, "", "", err
 	}
 
-	// get future asset data from binance or cache
-	futureAsset := make([]response.BinanceFutureAccountBalance, 0)
-	futureAsset, _ = e.svc.Binance.GetFutureAccountBalance(apiKey, apiSecret)
-
 	// format asset
 	formatFundingAsset, err := e.FormatAsset(fundingAsset)
 	if err != nil {
@@ -1085,6 +1081,25 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
 		return nil, "", "", err
 	}
+
+	// get future asset data from binance or cache
+	mapSymbolFutureBalance := map[string]float64{}
+	futureAsset, err := e.svc.Binance.GetFutureAccountBalance(apiKey, apiSecret)
+	if err == nil {
+		for _, v := range futureAsset {
+			balanceFloat, _ := strconv.ParseFloat(v.Balance, 64)
+			mapSymbolFutureBalance[v.Asset] = balanceFloat
+		}
+	}
+	// binding future asset balance to Asset balance
+	for i, v := range formatFundingAsset {
+		if value, exist := mapSymbolFutureBalance[v.Token.Symbol]; exist {
+			formatFundingAsset[i].AssetBalance += value
+			formatFundingAsset[i].UsdBalance += value * v.Token.Price
+			formatFundingAsset[i].Amount = util.FloatToString(fmt.Sprint(formatFundingAsset[i].AssetBalance), v.Token.Decimal)
+		}
+	}
+
 	return &response.GetBinanceAsset{
 		Asset:  formatFundingAsset,
 		Earn:   formatEarnAsset,
