@@ -673,6 +673,12 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 	for _, bal := range summarizeBals {
 		totalUsdAmount += bal.UsdBalance
 	}
+	// add binance future data to totalUsdAmount
+	if binanceData != nil {
+		for _, v := range binanceData.Future {
+			totalUsdAmount += v.UsdBalance
+		}
+	}
 
 	return &response.UserBalanceResponse{
 		Summarize: summarizeBals,

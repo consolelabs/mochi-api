@@ -107,7 +107,7 @@ type WalletBinanceAssetResponse struct {
 type GetBinanceAsset struct {
 	Asset      []WalletAssetData                    `json:"asset"`
 	Earn       []WalletAssetData                    `json:"earn"`
-	Future     []BinanceFutureAccountBalance        `json:"future"`
+	Future     []BinanceFutureBalanceResponse       `json:"future"`
 	SimpleEarn WalletBinanceAssetSimpleEarnResponse `json:"simple_earn"`
 }
 
@@ -278,4 +278,17 @@ type SkymavisTransactionsResultItem struct {
 	// BlockNumber int    `json:"block_number"`
 	// BlockHash   string `json:"block_hash"`
 	// Timestamp   int    `json:"timestamp"`
+}
+
+type BinanceFutureBalanceResponse struct {
+	AccountAlias       string  `json:"account_alias"`
+	Asset              string  `json:"asset"`
+	Balance            string  `json:"balance"`
+	CrossWalletBalance string  `json:"cross_wallet_balance"`
+	CrossUnPnl         string  `json:"cross_un_pnl"`
+	AvailableBalance   string  `json:"available_balance"`
+	MaxWithdrawAmount  string  `json:"max_withdraw_amount"`
+	MarginAvailable    bool    `json:"margin_available"`
+	UpdateTime         int64   `json:"update_time"`
+	UsdBalance         float64 `json:"usd_balance,omitempty"`
 }
