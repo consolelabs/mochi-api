@@ -1010,8 +1010,18 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 		return nil, err
 	}
 
+	// get future asset data from binance or cache
+	futureAssetValue := 0.0
+	futureAsset, err := e.svc.Binance.GetFutureAccountBalance(req.ApiKey, req.ApiSecret)
+	if err == nil {
+		for _, v := range futureAsset {
+			balanceFloat, _ := strconv.ParseFloat(v.Balance, 64)
+			futureAssetValue += balanceFloat / btcPrice["bitcoin"]
+		}
+	}
+
 	return &response.WalletBinanceResponse{
-		TotalBtc: totalAssetValue + simpleEarnValue,
+		TotalBtc: totalAssetValue + simpleEarnValue + futureAssetValue,
 		Price:    btcPrice["bitcoin"],
 	}, err
 }
