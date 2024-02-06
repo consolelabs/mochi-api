@@ -1010,8 +1010,18 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 		return nil, err
 	}
 
+	// get future asset data from binance or cache
+	futureAssetValue := 0.0
+	futureAsset, err := e.svc.Binance.GetFutureAccountBalance(req.ApiKey, req.ApiSecret)
+	if err == nil {
+		for _, v := range futureAsset {
+			balanceFloat, _ := strconv.ParseFloat(v.Balance, 64)
+			futureAssetValue += balanceFloat / btcPrice["bitcoin"]
+		}
+	}
+
 	return &response.WalletBinanceResponse{
-		TotalBtc: totalAssetValue + simpleEarnValue,
+		TotalBtc: totalAssetValue + simpleEarnValue + futureAssetValue,
 		Price:    btcPrice["bitcoin"],
 	}, err
 }
@@ -1081,9 +1091,42 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.SumarizeBinanceAsset] Failed to get btc price")
 		return nil, "", "", err
 	}
+
+	mapSymbolTokenAsset := map[string]response.AssetToken{}
+	for _, v := range formatFundingAsset {
+		mapSymbolTokenAsset[v.Token.Symbol] = v.Token
+	}
+	for _, v := range formatEarnAsset {
+		mapSymbolTokenAsset[v.Token.Symbol] = v.Token
+	}
+	// get future asset data from binance or cache
+	futureAsset, _ := e.svc.Binance.GetFutureAccountBalance(apiKey, apiSecret)
+
+	var formatFutureAsset []response.BinanceFutureBalanceResponse
+	for _, asset := range futureAsset {
+		usdAmount := 0.0
+		if value, exist := mapSymbolTokenAsset[asset.Asset]; exist {
+			balanceFloat, _ := strconv.ParseFloat(asset.Balance, 64)
+			usdAmount = balanceFloat * value.Price
+		}
+		formatFutureAsset = append(formatFutureAsset, response.BinanceFutureBalanceResponse{
+			AccountAlias:       asset.AccountAlias,
+			Asset:              asset.Asset,
+			Balance:            asset.Balance,
+			CrossWalletBalance: asset.CrossWalletBalance,
+			CrossUnPnl:         asset.CrossUnPnl,
+			AvailableBalance:   asset.AvailableBalance,
+			MaxWithdrawAmount:  asset.MaxWithdrawAmount,
+			MarginAvailable:    asset.MarginAvailable,
+			UpdateTime:         asset.UpdateTime,
+			UsdBalance:         usdAmount,
+		})
+	}
+
 	return &response.GetBinanceAsset{
-		Asset: formatFundingAsset,
-		Earn:  formatEarnAsset,
+		Asset:  formatFundingAsset,
+		Earn:   formatEarnAsset,
+		Future: formatFutureAsset,
 		SimpleEarn: response.WalletBinanceAssetSimpleEarnResponse{
 			TotalAmountInBTC:          simpleEarnAcc.TotalAmountInBTC,
 			TotalAmountInUSDT:         simpleEarnAcc.TotalAmountInUSDT,
