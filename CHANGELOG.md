@@ -1,3 +1,18 @@
+# [6.28.0](https://github.com/consolelabs/mochi-api/compare/v6.27.4...v6.28.0) (2024-02-05)
+
+
+### Bug Fixes
+
+* **changelog:** get latest changelog ([a366e7a](https://github.com/consolelabs/mochi-api/commit/a366e7ae902bf395c6bdc810fa13b794e1ab021c))
+* **changelog:** parse markdown content ([7a0a495](https://github.com/consolelabs/mochi-api/commit/7a0a49526dbf34f6529f027574ddfc3e80ce1085))
+* **changelog:** update response api ([db58746](https://github.com/consolelabs/mochi-api/commit/db587461c7a5248bcee7682b21a505d00f27eab8))
+* **swagger:** update swagger ([d100251](https://github.com/consolelabs/mochi-api/commit/d1002514964faee5f8cbb764d4c0f8e5b55e7ee7))
+
+
+### Features
+
+* get default tip message ([#1355](https://github.com/consolelabs/mochi-api/issues/1355)) ([8129755](https://github.com/consolelabs/mochi-api/commit/8129755f982ce99ea7211736906408e0102944da))
+
 ## [6.27.4](https://github.com/consolelabs/mochi-api/compare/v6.27.3...v6.27.4) (2024-01-29)
 
 
