@@ -1104,12 +1104,7 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 
 	var formatFutureAsset []response.BinanceFutureBalanceResponse
 	for _, asset := range futureAsset {
-		usdAmount := 0.0
-		if value, exist := mapSymbolTokenAsset[asset.Asset]; exist {
-			balanceFloat, _ := strconv.ParseFloat(asset.Balance, 64)
-			usdAmount = balanceFloat * value.Price
-		}
-		formatFutureAsset = append(formatFutureAsset, response.BinanceFutureBalanceResponse{
+		res := response.BinanceFutureBalanceResponse{
 			AccountAlias:       asset.AccountAlias,
 			Asset:              asset.Asset,
 			Balance:            asset.Balance,
@@ -1119,8 +1114,13 @@ func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*respons
 			MaxWithdrawAmount:  asset.MaxWithdrawAmount,
 			MarginAvailable:    asset.MarginAvailable,
 			UpdateTime:         asset.UpdateTime,
-			UsdBalance:         usdAmount,
-		})
+		}
+		if value, exist := mapSymbolTokenAsset[asset.Asset]; exist {
+			balanceFloat, _ := strconv.ParseFloat(asset.Balance, 64)
+			res.UsdBalance = balanceFloat * value.Price
+			res.Token = value
+		}
+		formatFutureAsset = append(formatFutureAsset, res)
 	}
 
 	return &response.GetBinanceAsset{
