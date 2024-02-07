@@ -1,3 +1,18 @@
+# [6.29.0](https://github.com/consolelabs/mochi-api/compare/v6.28.0...v6.29.0) (2024-02-06)
+
+
+### Bug Fixes
+
+* binding future binance to asset ([dadd7c5](https://github.com/consolelabs/mochi-api/commit/dadd7c514eb4f3f61e423238c21f45dd79a915b1))
+* binding future binance to asset ([2968388](https://github.com/consolelabs/mochi-api/commit/29683888a9068b76bf5213bb9e82f708350626d8))
+* seperate data binance ([6a576b6](https://github.com/consolelabs/mochi-api/commit/6a576b6e0103c6aef5ad28bf301a59d0aafc5b78))
+
+
+### Features
+
+* add binance future data resp in api user balances ([41a7871](https://github.com/consolelabs/mochi-api/commit/41a78716ef90156042fe67ae3361719dec7d98aa))
+* handle err when not found binance future data ([adc78ce](https://github.com/consolelabs/mochi-api/commit/adc78ce3c400a651600e88404ff2e58eac2f79c4))
+
 # [6.28.0](https://github.com/consolelabs/mochi-api/compare/v6.27.4...v6.28.0) (2024-02-05)
 
 
