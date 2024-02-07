@@ -2065,33 +2065,37 @@ definitions:
       type:
         type: string
     type: object
-  response.BinanceFutureAccountBalance:
-    properties:
-      accountAlias:
-        type: string
-      asset:
-        type: string
-      availableBalance:
-        type: string
-      balance:
-        type: string
-      crossUnPnl:
-        type: string
-      crossWalletBalance:
-        type: string
-      marginAvailable:
-        type: boolean
-      maxWithdrawAmount:
-        type: string
-      updateTime:
-        type: integer
-    type: object
   response.BinanceFutureAccountPositionResponse:
     properties:
       data:
         items:
           $ref: '#/definitions/response.BinanceFuturePositionInformation'
         type: array
+    type: object
+  response.BinanceFutureBalanceResponse:
+    properties:
+      account_alias:
+        type: string
+      asset:
+        type: string
+      available_balance:
+        type: string
+      balance:
+        type: string
+      cross_un_pnl:
+        type: string
+      cross_wallet_balance:
+        type: string
+      margin_available:
+        type: boolean
+      max_withdraw_amount:
+        type: string
+      token:
+        $ref: '#/definitions/response.AssetToken'
+      update_time:
+        type: integer
+      usd_balance:
+        type: number
     type: object
   response.BinanceFuturePositionInfo:
     properties:
@@ -2681,7 +2685,7 @@ definitions:
         type: array
       future:
         items:
-          $ref: '#/definitions/response.BinanceFutureAccountBalance'
+          $ref: '#/definitions/response.BinanceFutureBalanceResponse'
         type: array
       simple_earn:
         $ref: '#/definitions/response.WalletBinanceAssetSimpleEarnResponse'
@@ -3767,6 +3771,10 @@ definitions:
         type: object
       price_change_percentage_14d:
         type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3775,17 +3783,13 @@ definitions:
         type: object
       price_change_percentage_1y:
         type: number
+      price_change_percentage_1y_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_1y_in_currency:
         additionalProperties:
           type: number
         type: object

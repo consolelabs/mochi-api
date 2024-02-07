@@ -655,6 +655,9 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			for i := range binanceData.Asset {
 				binanceData.Asset[i].Token.Pnl = e.calculateTokenPriceSnapshot(binanceData.Asset[i].Token)
 			}
+			for i := range binanceData.Future {
+				binanceData.Future[i].Token.Pnl = e.calculateTokenPriceSnapshot(binanceData.Future[i].Token)
+			}
 		}
 	}
 	//calculate pnl offchain token

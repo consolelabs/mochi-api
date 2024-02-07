@@ -9806,38 +9806,6 @@ const docTemplate = `{
                 }
             }
         },
-        "response.BinanceFutureAccountBalance": {
-            "type": "object",
-            "properties": {
-                "accountAlias": {
-                    "type": "string"
-                },
-                "asset": {
-                    "type": "string"
-                },
-                "availableBalance": {
-                    "type": "string"
-                },
-                "balance": {
-                    "type": "string"
-                },
-                "crossUnPnl": {
-                    "type": "string"
-                },
-                "crossWalletBalance": {
-                    "type": "string"
-                },
-                "marginAvailable": {
-                    "type": "boolean"
-                },
-                "maxWithdrawAmount": {
-                    "type": "string"
-                },
-                "updateTime": {
-                    "type": "integer"
-                }
-            }
-        },
         "response.BinanceFutureAccountPositionResponse": {
             "type": "object",
             "properties": {
@@ -9846,6 +9814,44 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/response.BinanceFuturePositionInformation"
                     }
+                }
+            }
+        },
+        "response.BinanceFutureBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "account_alias": {
+                    "type": "string"
+                },
+                "asset": {
+                    "type": "string"
+                },
+                "available_balance": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "string"
+                },
+                "cross_un_pnl": {
+                    "type": "string"
+                },
+                "cross_wallet_balance": {
+                    "type": "string"
+                },
+                "margin_available": {
+                    "type": "boolean"
+                },
+                "max_withdraw_amount": {
+                    "type": "string"
+                },
+                "token": {
+                    "$ref": "#/definitions/response.AssetToken"
+                },
+                "update_time": {
+                    "type": "integer"
+                },
+                "usd_balance": {
+                    "type": "number"
                 }
             }
         },
@@ -10750,7 +10756,7 @@ const docTemplate = `{
                 "future": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/response.BinanceFutureAccountBalance"
+                        "$ref": "#/definitions/response.BinanceFutureBalanceResponse"
                     }
                 },
                 "simple_earn": {

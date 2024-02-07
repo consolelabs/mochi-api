@@ -53,7 +53,7 @@ type AssetToken struct {
 	Native  bool            `json:"native"`
 	Chain   AssetTokenChain `json:"chain"`
 	Icon    string          `json:"icon"`
-	Pnl     string          `json:"pnl,omitempty"`
+	Pnl     string          `json:"pnl"`
 }
 
 type AssetTokenChain struct {
@@ -281,14 +281,15 @@ type SkymavisTransactionsResultItem struct {
 }
 
 type BinanceFutureBalanceResponse struct {
-	AccountAlias       string  `json:"account_alias"`
-	Asset              string  `json:"asset"`
-	Balance            string  `json:"balance"`
-	CrossWalletBalance string  `json:"cross_wallet_balance"`
-	CrossUnPnl         string  `json:"cross_un_pnl"`
-	AvailableBalance   string  `json:"available_balance"`
-	MaxWithdrawAmount  string  `json:"max_withdraw_amount"`
-	MarginAvailable    bool    `json:"margin_available"`
-	UpdateTime         int64   `json:"update_time"`
-	UsdBalance         float64 `json:"usd_balance,omitempty"`
+	AccountAlias       string     `json:"account_alias"`
+	Asset              string     `json:"asset"`
+	Balance            string     `json:"balance"`
+	CrossWalletBalance string     `json:"cross_wallet_balance"`
+	CrossUnPnl         string     `json:"cross_un_pnl"`
+	AvailableBalance   string     `json:"available_balance"`
+	MaxWithdrawAmount  string     `json:"max_withdraw_amount"`
+	MarginAvailable    bool       `json:"margin_available"`
+	UpdateTime         int64      `json:"update_time"`
+	UsdBalance         float64    `json:"usd_balance,omitempty"`
+	Token              AssetToken `json:"token"`
 }
