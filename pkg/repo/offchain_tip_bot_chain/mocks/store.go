@@ -5,37 +5,38 @@
 package mock_offchain_tip_bot_chain
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	offchain_tip_bot_chain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetAll mocks base method
+// GetAll mocks base method.
 func (m *MockStore) GetAll(f offchain_tip_bot_chain.Filter) ([]model.OffchainTipBotChain, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAll", f)
@@ -44,28 +45,13 @@ func (m *MockStore) GetAll(f offchain_tip_bot_chain.Filter) ([]model.OffchainTip
 	return ret0, ret1
 }
 
-// GetAll indicates an expected call of GetAll
+// GetAll indicates an expected call of GetAll.
 func (mr *MockStoreMockRecorder) GetAll(f interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll), f)
 }
 
-// GetByID mocks base method
-func (m *MockStore) GetByID(id uuid.UUID) (model.OffchainTipBotChain, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", id)
-	ret0, _ := ret[0].(model.OffchainTipBotChain)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByID indicates an expected call of GetByID
-func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
-}
-
-// GetByChainID mocks base method
+// GetByChainID mocks base method.
 func (m *MockStore) GetByChainID(chainID int) (model.OffchainTipBotChain, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByChainID", chainID)
@@ -74,8 +60,23 @@ func (m *MockStore) GetByChainID(chainID int) (model.OffchainTipBotChain, error)
 	return ret0, ret1
 }
 
-// GetByChainID indicates an expected call of GetByChainID
+// GetByChainID indicates an expected call of GetByChainID.
 func (mr *MockStoreMockRecorder) GetByChainID(chainID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), chainID)
+}
+
+// GetByID mocks base method.
+func (m *MockStore) GetByID(id uuid.UUID) (model.OffchainTipBotChain, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", id)
+	ret0, _ := ret[0].(model.OffchainTipBotChain)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
 }
