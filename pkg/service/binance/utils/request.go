@@ -12,7 +12,6 @@ func signature(message, secret string) string {
 	mac.Write([]byte(message))
 	signingKey := fmt.Sprintf("%x", mac.Sum(nil))
 	return signingKey
-
 }
 
 func QueryString(q map[string]string, apiSecret string) string {

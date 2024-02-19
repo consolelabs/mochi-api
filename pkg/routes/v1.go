@@ -303,19 +303,6 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			gasTrackerGroup.GET("", h.Defi.GetGasTracker)
 			gasTrackerGroup.GET("/:chain", h.Defi.GetChainGasTracker)
 		}
-
-		friendTechKeyGroup := defiGroup.Group("/keys")
-		{
-			friendTechKeyGroup.GET("/keys", h.Defi.SearchKeys)
-		}
-
-		trackingFriendTechKeyGroup := defiGroup.Group("/tracking-keys")
-		{
-			trackingFriendTechKeyGroup.GET("", h.Defi.GetUserFriendTechKeyWatchlist)
-			trackingFriendTechKeyGroup.POST("", h.Defi.TrackFriendTechKey)
-			trackingFriendTechKeyGroup.DELETE("/:id", h.Defi.UntrackFriendTechKey)
-			trackingFriendTechKeyGroup.PUT("/:id", h.Defi.UpdateFriendTechKeyTrack)
-		}
 	}
 
 	verifyGroup := v1.Group("/verify")

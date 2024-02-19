@@ -5,36 +5,51 @@
 package mock_message_repost_history
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	request "github.com/defipod/mochi/pkg/request"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetByMessageID mocks base method
+// EditMessageRepost mocks base method.
+func (m *MockStore) EditMessageRepost(req *request.EditMessageRepostRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EditMessageRepost", req)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// EditMessageRepost indicates an expected call of EditMessageRepost.
+func (mr *MockStoreMockRecorder) EditMessageRepost(req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditMessageRepost", reflect.TypeOf((*MockStore)(nil).EditMessageRepost), req)
+}
+
+// GetByMessageID mocks base method.
 func (m *MockStore) GetByMessageID(guildID, messageID string) (*model.MessageRepostHistory, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByMessageID", guildID, messageID)
@@ -43,13 +58,13 @@ func (m *MockStore) GetByMessageID(guildID, messageID string) (*model.MessageRep
 	return ret0, ret1
 }
 
-// GetByMessageID indicates an expected call of GetByMessageID
+// GetByMessageID indicates an expected call of GetByMessageID.
 func (mr *MockStoreMockRecorder) GetByMessageID(guildID, messageID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByMessageID", reflect.TypeOf((*MockStore)(nil).GetByMessageID), guildID, messageID)
 }
 
-// Upsert mocks base method
+// Upsert mocks base method.
 func (m *MockStore) Upsert(record model.MessageRepostHistory) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Upsert", record)
@@ -57,22 +72,8 @@ func (m *MockStore) Upsert(record model.MessageRepostHistory) error {
 	return ret0
 }
 
-// Upsert indicates an expected call of Upsert
+// Upsert indicates an expected call of Upsert.
 func (mr *MockStoreMockRecorder) Upsert(record interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockStore)(nil).Upsert), record)
-}
-
-// EditMessageRepost mocks base method
-func (m *MockStore) EditMessageRepost(req *request.EditMessageRepostRequest) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "EditMessageRepost", req)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// EditMessageRepost indicates an expected call of EditMessageRepost
-func (mr *MockStoreMockRecorder) EditMessageRepost(req interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditMessageRepost", reflect.TypeOf((*MockStore)(nil).EditMessageRepost), req)
 }

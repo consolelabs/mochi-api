@@ -22,7 +22,6 @@ import (
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
-	friendfechkeywatchlistitem "github.com/defipod/mochi/pkg/repo/friend_tech_key_watchlist_item"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
@@ -182,7 +181,6 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		ProductBotCommand:                    productbotcommand.NewPG(db),
 		ProductChangelogs:                    productchangelogs.NewPG(db),
 		ProductChangelogsView:                productchangelogsview.NewPG(db),
-		FriendTechKeyWatchlistItem:           friendfechkeywatchlistitem.NewPG(db),
 		ProductHashtag:                       producthashtag.NewPG(db),
 		ProfileCommandUsage:                  profilecommandusage.NewPG(db),
 		CommandPermission:                    commandpermission.NewPG(db),

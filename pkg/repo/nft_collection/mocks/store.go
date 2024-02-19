@@ -5,35 +5,51 @@
 package mock_nftcollection
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetByAddress mocks base method
+// Create mocks base method.
+func (m *MockStore) Create(collection model.NFTCollection) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", collection)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockStoreMockRecorder) Create(collection interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockStore)(nil).Create), collection)
+}
+
+// GetByAddress mocks base method.
 func (m *MockStore) GetByAddress(address string) (*model.NFTCollection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByAddress", address)
@@ -42,13 +58,13 @@ func (m *MockStore) GetByAddress(address string) (*model.NFTCollection, error) {
 	return ret0, ret1
 }
 
-// GetByAddress indicates an expected call of GetByAddress
+// GetByAddress indicates an expected call of GetByAddress.
 func (mr *MockStoreMockRecorder) GetByAddress(address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockStore)(nil).GetByAddress), address)
 }
 
-// GetByAddressChainId mocks base method
+// GetByAddressChainId mocks base method.
 func (m *MockStore) GetByAddressChainId(address, chainId string) (*model.NFTCollection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByAddressChainId", address, chainId)
@@ -57,73 +73,13 @@ func (m *MockStore) GetByAddressChainId(address, chainId string) (*model.NFTColl
 	return ret0, ret1
 }
 
-// GetByAddressChainId indicates an expected call of GetByAddressChainId
+// GetByAddressChainId indicates an expected call of GetByAddressChainId.
 func (mr *MockStoreMockRecorder) GetByAddressChainId(address, chainId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddressChainId", reflect.TypeOf((*MockStore)(nil).GetByAddressChainId), address, chainId)
 }
 
-// GetBySymbol mocks base method
-func (m *MockStore) GetBySymbol(symbol string) (*model.NFTCollection, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBySymbol", symbol)
-	ret0, _ := ret[0].(*model.NFTCollection)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetBySymbol indicates an expected call of GetBySymbol
-func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol)
-}
-
-// GetBySymbolorName mocks base method
-func (m *MockStore) GetBySymbolorName(symbol string) ([]model.NFTCollection, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBySymbolorName", symbol)
-	ret0, _ := ret[0].([]model.NFTCollection)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetBySymbolorName indicates an expected call of GetBySymbolorName
-func (mr *MockStoreMockRecorder) GetBySymbolorName(symbol interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetBySymbolorName), symbol)
-}
-
-// GetByID mocks base method
-func (m *MockStore) GetByID(id string) (*model.NFTCollection, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", id)
-	ret0, _ := ret[0].(*model.NFTCollection)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByID indicates an expected call of GetByID
-func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
-}
-
-// GetSuggestionsBySymbolorName mocks base method
-func (m *MockStore) GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSuggestionsBySymbolorName", name, len)
-	ret0, _ := ret[0].([]model.NFTCollection)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetSuggestionsBySymbolorName indicates an expected call of GetSuggestionsBySymbolorName
-func (mr *MockStoreMockRecorder) GetSuggestionsBySymbolorName(name, len interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSuggestionsBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetSuggestionsBySymbolorName), name, len)
-}
-
-// GetByChain mocks base method
+// GetByChain mocks base method.
 func (m *MockStore) GetByChain(chain int) ([]model.NFTCollection, int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByChain", chain)
@@ -133,13 +89,58 @@ func (m *MockStore) GetByChain(chain int) ([]model.NFTCollection, int, error) {
 	return ret0, ret1, ret2
 }
 
-// GetByChain indicates an expected call of GetByChain
+// GetByChain indicates an expected call of GetByChain.
 func (mr *MockStoreMockRecorder) GetByChain(chain interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChain", reflect.TypeOf((*MockStore)(nil).GetByChain), chain)
 }
 
-// GetNewListed mocks base method
+// GetByID mocks base method.
+func (m *MockStore) GetByID(id string) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", id)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockStoreMockRecorder) GetByID(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockStore)(nil).GetByID), id)
+}
+
+// GetBySymbol mocks base method.
+func (m *MockStore) GetBySymbol(symbol string) (*model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBySymbol", symbol)
+	ret0, _ := ret[0].(*model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBySymbol indicates an expected call of GetBySymbol.
+func (mr *MockStoreMockRecorder) GetBySymbol(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol)
+}
+
+// GetBySymbolorName mocks base method.
+func (m *MockStore) GetBySymbolorName(symbol string) ([]model.NFTCollection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBySymbolorName", symbol)
+	ret0, _ := ret[0].([]model.NFTCollection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBySymbolorName indicates an expected call of GetBySymbolorName.
+func (mr *MockStoreMockRecorder) GetBySymbolorName(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetBySymbolorName), symbol)
+}
+
+// GetNewListed mocks base method.
 func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NewListedNFTCollection, int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNewListed", interval, page, size)
@@ -149,28 +150,28 @@ func (m *MockStore) GetNewListed(interval, page, size int) ([]model.NewListedNFT
 	return ret0, ret1, ret2
 }
 
-// GetNewListed indicates an expected call of GetNewListed
+// GetNewListed indicates an expected call of GetNewListed.
 func (mr *MockStoreMockRecorder) GetNewListed(interval, page, size interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNewListed", reflect.TypeOf((*MockStore)(nil).GetNewListed), interval, page, size)
 }
 
-// Create mocks base method
-func (m *MockStore) Create(collection model.NFTCollection) (*model.NFTCollection, error) {
+// GetSuggestionsBySymbolorName mocks base method.
+func (m *MockStore) GetSuggestionsBySymbolorName(name string, len int) ([]model.NFTCollection, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", collection)
-	ret0, _ := ret[0].(*model.NFTCollection)
+	ret := m.ctrl.Call(m, "GetSuggestionsBySymbolorName", name, len)
+	ret0, _ := ret[0].([]model.NFTCollection)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create
-func (mr *MockStoreMockRecorder) Create(collection interface{}) *gomock.Call {
+// GetSuggestionsBySymbolorName indicates an expected call of GetSuggestionsBySymbolorName.
+func (mr *MockStoreMockRecorder) GetSuggestionsBySymbolorName(name, len interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockStore)(nil).Create), collection)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSuggestionsBySymbolorName", reflect.TypeOf((*MockStore)(nil).GetSuggestionsBySymbolorName), name, len)
 }
 
-// ListAll mocks base method
+// ListAll mocks base method.
 func (m *MockStore) ListAll() ([]model.NFTCollection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAll")
@@ -179,13 +180,28 @@ func (m *MockStore) ListAll() ([]model.NFTCollection, error) {
 	return ret0, ret1
 }
 
-// ListAll indicates an expected call of ListAll
+// ListAll indicates an expected call of ListAll.
 func (mr *MockStoreMockRecorder) ListAll() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAll", reflect.TypeOf((*MockStore)(nil).ListAll))
 }
 
-// ListAllWithPaging mocks base method
+// ListAllNFTCollectionConfigs mocks base method.
+func (m *MockStore) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAllNFTCollectionConfigs")
+	ret0, _ := ret[0].([]model.NFTCollectionConfig)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAllNFTCollectionConfigs indicates an expected call of ListAllNFTCollectionConfigs.
+func (mr *MockStoreMockRecorder) ListAllNFTCollectionConfigs() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllNFTCollectionConfigs", reflect.TypeOf((*MockStore)(nil).ListAllNFTCollectionConfigs))
+}
+
+// ListAllWithPaging mocks base method.
 func (m *MockStore) ListAllWithPaging(page, size int) ([]model.NFTCollection, int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListAllWithPaging", page, size)
@@ -195,28 +211,13 @@ func (m *MockStore) ListAllWithPaging(page, size int) ([]model.NFTCollection, in
 	return ret0, ret1, ret2
 }
 
-// ListAllWithPaging indicates an expected call of ListAllWithPaging
+// ListAllWithPaging indicates an expected call of ListAllWithPaging.
 func (mr *MockStoreMockRecorder) ListAllWithPaging(page, size interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllWithPaging", reflect.TypeOf((*MockStore)(nil).ListAllWithPaging), page, size)
 }
 
-// ListAllNFTCollectionConfigs mocks base method
-func (m *MockStore) ListAllNFTCollectionConfigs() ([]model.NFTCollectionConfig, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListAllNFTCollectionConfigs")
-	ret0, _ := ret[0].([]model.NFTCollectionConfig)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListAllNFTCollectionConfigs indicates an expected call of ListAllNFTCollectionConfigs
-func (mr *MockStoreMockRecorder) ListAllNFTCollectionConfigs() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllNFTCollectionConfigs", reflect.TypeOf((*MockStore)(nil).ListAllNFTCollectionConfigs))
-}
-
-// ListByGuildID mocks base method
+// ListByGuildID mocks base method.
 func (m *MockStore) ListByGuildID(guildID string) ([]model.NFTCollection, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListByGuildID", guildID)
@@ -225,27 +226,13 @@ func (m *MockStore) ListByGuildID(guildID string) ([]model.NFTCollection, error)
 	return ret0, ret1
 }
 
-// ListByGuildID indicates an expected call of ListByGuildID
+// ListByGuildID indicates an expected call of ListByGuildID.
 func (mr *MockStoreMockRecorder) ListByGuildID(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByGuildID", reflect.TypeOf((*MockStore)(nil).ListByGuildID), guildID)
 }
 
-// UpdateImage mocks base method
-func (m *MockStore) UpdateImage(address, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateImage", address, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpdateImage indicates an expected call of UpdateImage
-func (mr *MockStoreMockRecorder) UpdateImage(address, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateImage", reflect.TypeOf((*MockStore)(nil).UpdateImage), address, image)
-}
-
-// TotalNftCollection mocks base method
+// TotalNftCollection mocks base method.
 func (m *MockStore) TotalNftCollection() (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "TotalNftCollection")
@@ -254,8 +241,22 @@ func (m *MockStore) TotalNftCollection() (int64, error) {
 	return ret0, ret1
 }
 
-// TotalNftCollection indicates an expected call of TotalNftCollection
+// TotalNftCollection indicates an expected call of TotalNftCollection.
 func (mr *MockStoreMockRecorder) TotalNftCollection() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalNftCollection", reflect.TypeOf((*MockStore)(nil).TotalNftCollection))
+}
+
+// UpdateImage mocks base method.
+func (m *MockStore) UpdateImage(address, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateImage", address, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateImage indicates an expected call of UpdateImage.
+func (mr *MockStoreMockRecorder) UpdateImage(address, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateImage", reflect.TypeOf((*MockStore)(nil).UpdateImage), address, image)
 }

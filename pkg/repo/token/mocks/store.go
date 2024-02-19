@@ -5,51 +5,81 @@
 package mock_token
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	token "github.com/defipod/mochi/pkg/repo/token"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetBySymbol mocks base method
-func (m *MockStore) GetBySymbol(symbol string, botSupported bool) (model.Token, error) {
+// CreateOne mocks base method.
+func (m *MockStore) CreateOne(token *model.Token) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBySymbol", symbol, botSupported)
-	ret0, _ := ret[0].(model.Token)
+	ret := m.ctrl.Call(m, "CreateOne", token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateOne indicates an expected call of CreateOne.
+func (mr *MockStoreMockRecorder) CreateOne(token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), token)
+}
+
+// Get mocks base method.
+func (m *MockStore) Get(id int) (*model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Get", id)
+	ret0, _ := ret[0].(*model.Token)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetBySymbol indicates an expected call of GetBySymbol
-func (mr *MockStoreMockRecorder) GetBySymbol(symbol, botSupported interface{}) *gomock.Call {
+// Get indicates an expected call of Get.
+func (mr *MockStoreMockRecorder) Get(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol, botSupported)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockStore)(nil).Get), id)
 }
 
-// GetAllSupported mocks base method
+// GetAll mocks base method.
+func (m *MockStore) GetAll() ([]model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAll")
+	ret0, _ := ret[0].([]model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll.
+func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll))
+}
+
+// GetAllSupported mocks base method.
 func (m *MockStore) GetAllSupported(q token.ListQuery) ([]model.Token, int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllSupported", q)
@@ -59,13 +89,13 @@ func (m *MockStore) GetAllSupported(q token.ListQuery) ([]model.Token, int64, er
 	return ret0, ret1, ret2
 }
 
-// GetAllSupported indicates an expected call of GetAllSupported
+// GetAllSupported indicates an expected call of GetAllSupported.
 func (mr *MockStoreMockRecorder) GetAllSupported(q interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSupported", reflect.TypeOf((*MockStore)(nil).GetAllSupported), q)
 }
 
-// GetByAddress mocks base method
+// GetByAddress mocks base method.
 func (m *MockStore) GetByAddress(address string, chainID int) (*model.Token, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByAddress", address, chainID)
@@ -74,131 +104,13 @@ func (m *MockStore) GetByAddress(address string, chainID int) (*model.Token, err
 	return ret0, ret1
 }
 
-// GetByAddress indicates an expected call of GetByAddress
+// GetByAddress indicates an expected call of GetByAddress.
 func (mr *MockStoreMockRecorder) GetByAddress(address, chainID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockStore)(nil).GetByAddress), address, chainID)
 }
 
-// GetDefaultTokens mocks base method
-func (m *MockStore) GetDefaultTokens() ([]model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDefaultTokens")
-	ret0, _ := ret[0].([]model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDefaultTokens indicates an expected call of GetDefaultTokens
-func (mr *MockStoreMockRecorder) GetDefaultTokens() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokens", reflect.TypeOf((*MockStore)(nil).GetDefaultTokens))
-}
-
-// CreateOne mocks base method
-func (m *MockStore) CreateOne(token *model.Token) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOne", token)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateOne indicates an expected call of CreateOne
-func (mr *MockStoreMockRecorder) CreateOne(token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOne", reflect.TypeOf((*MockStore)(nil).CreateOne), token)
-}
-
-// UpsertOne mocks base method
-func (m *MockStore) UpsertOne(token model.Token) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertOne", token)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpsertOne indicates an expected call of UpsertOne
-func (mr *MockStoreMockRecorder) UpsertOne(token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), token)
-}
-
-// GetAll mocks base method
-func (m *MockStore) GetAll() ([]model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAll")
-	ret0, _ := ret[0].([]model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAll indicates an expected call of GetAll
-func (mr *MockStoreMockRecorder) GetAll() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockStore)(nil).GetAll))
-}
-
-// Get mocks base method
-func (m *MockStore) Get(id int) (*model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", id)
-	ret0, _ := ret[0].(*model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Get indicates an expected call of Get
-func (mr *MockStoreMockRecorder) Get(id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockStore)(nil).Get), id)
-}
-
-// GetSupportedTokenByGuildId mocks base method
-func (m *MockStore) GetSupportedTokenByGuildId(guildID string) ([]model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSupportedTokenByGuildId", guildID)
-	ret0, _ := ret[0].([]model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetSupportedTokenByGuildId indicates an expected call of GetSupportedTokenByGuildId
-func (mr *MockStoreMockRecorder) GetSupportedTokenByGuildId(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedTokenByGuildId", reflect.TypeOf((*MockStore)(nil).GetSupportedTokenByGuildId), guildID)
-}
-
-// GetOneBySymbol mocks base method
-func (m *MockStore) GetOneBySymbol(symbol string) (*model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOneBySymbol", symbol)
-	ret0, _ := ret[0].(*model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetOneBySymbol indicates an expected call of GetOneBySymbol
-func (mr *MockStoreMockRecorder) GetOneBySymbol(symbol interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneBySymbol", reflect.TypeOf((*MockStore)(nil).GetOneBySymbol), symbol)
-}
-
-// GetDefaultTokenByGuildID mocks base method
-func (m *MockStore) GetDefaultTokenByGuildID(guildID string) (model.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDefaultTokenByGuildID", guildID)
-	ret0, _ := ret[0].(model.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetDefaultTokenByGuildID indicates an expected call of GetDefaultTokenByGuildID
-func (mr *MockStoreMockRecorder) GetDefaultTokenByGuildID(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokenByGuildID", reflect.TypeOf((*MockStore)(nil).GetDefaultTokenByGuildID), guildID)
-}
-
-// GetByChainID mocks base method
+// GetByChainID mocks base method.
 func (m *MockStore) GetByChainID(chainID int) ([]model.Token, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByChainID", chainID)
@@ -207,8 +119,97 @@ func (m *MockStore) GetByChainID(chainID int) ([]model.Token, error) {
 	return ret0, ret1
 }
 
-// GetByChainID indicates an expected call of GetByChainID
+// GetByChainID indicates an expected call of GetByChainID.
 func (mr *MockStoreMockRecorder) GetByChainID(chainID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChainID", reflect.TypeOf((*MockStore)(nil).GetByChainID), chainID)
+}
+
+// GetBySymbol mocks base method.
+func (m *MockStore) GetBySymbol(symbol string, botSupported bool) (model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBySymbol", symbol, botSupported)
+	ret0, _ := ret[0].(model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBySymbol indicates an expected call of GetBySymbol.
+func (mr *MockStoreMockRecorder) GetBySymbol(symbol, botSupported interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySymbol", reflect.TypeOf((*MockStore)(nil).GetBySymbol), symbol, botSupported)
+}
+
+// GetDefaultTokenByGuildID mocks base method.
+func (m *MockStore) GetDefaultTokenByGuildID(guildID string) (model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultTokenByGuildID", guildID)
+	ret0, _ := ret[0].(model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultTokenByGuildID indicates an expected call of GetDefaultTokenByGuildID.
+func (mr *MockStoreMockRecorder) GetDefaultTokenByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokenByGuildID", reflect.TypeOf((*MockStore)(nil).GetDefaultTokenByGuildID), guildID)
+}
+
+// GetDefaultTokens mocks base method.
+func (m *MockStore) GetDefaultTokens() ([]model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDefaultTokens")
+	ret0, _ := ret[0].([]model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDefaultTokens indicates an expected call of GetDefaultTokens.
+func (mr *MockStoreMockRecorder) GetDefaultTokens() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDefaultTokens", reflect.TypeOf((*MockStore)(nil).GetDefaultTokens))
+}
+
+// GetOneBySymbol mocks base method.
+func (m *MockStore) GetOneBySymbol(symbol string) (*model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOneBySymbol", symbol)
+	ret0, _ := ret[0].(*model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOneBySymbol indicates an expected call of GetOneBySymbol.
+func (mr *MockStoreMockRecorder) GetOneBySymbol(symbol interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneBySymbol", reflect.TypeOf((*MockStore)(nil).GetOneBySymbol), symbol)
+}
+
+// GetSupportedTokenByGuildId mocks base method.
+func (m *MockStore) GetSupportedTokenByGuildId(guildID string) ([]model.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSupportedTokenByGuildId", guildID)
+	ret0, _ := ret[0].([]model.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSupportedTokenByGuildId indicates an expected call of GetSupportedTokenByGuildId.
+func (mr *MockStoreMockRecorder) GetSupportedTokenByGuildId(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupportedTokenByGuildId", reflect.TypeOf((*MockStore)(nil).GetSupportedTokenByGuildId), guildID)
+}
+
+// UpsertOne mocks base method.
+func (m *MockStore) UpsertOne(token model.Token) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertOne", token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertOne indicates an expected call of UpsertOne.
+func (mr *MockStoreMockRecorder) UpsertOne(token interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), token)
 }

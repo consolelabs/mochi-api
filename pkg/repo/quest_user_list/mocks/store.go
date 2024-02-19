@@ -5,51 +5,38 @@
 package mock_questuserlist
 
 import (
-	model "github.com/defipod/mochi/pkg/model"
-	quest_user_list "github.com/defipod/mochi/pkg/repo/quest_user_list"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	model "github.com/defipod/mochi/pkg/model"
+	questuserlist "github.com/defipod/mochi/pkg/repo/quest_user_list"
+	gomock "github.com/golang/mock/gomock"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// UpsertMany mocks base method
-func (m *MockStore) UpsertMany(list []model.QuestUserList) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertMany", list)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UpsertMany indicates an expected call of UpsertMany
-func (mr *MockStoreMockRecorder) UpsertMany(list interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertMany", reflect.TypeOf((*MockStore)(nil).UpsertMany), list)
-}
-
-// List mocks base method
-func (m *MockStore) List(arg0 quest_user_list.ListQuery) ([]model.QuestUserList, error) {
+// List mocks base method.
+func (m *MockStore) List(arg0 questuserlist.ListQuery) ([]model.QuestUserList, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", arg0)
 	ret0, _ := ret[0].([]model.QuestUserList)
@@ -57,8 +44,22 @@ func (m *MockStore) List(arg0 quest_user_list.ListQuery) ([]model.QuestUserList,
 	return ret0, ret1
 }
 
-// List indicates an expected call of List
+// List indicates an expected call of List.
 func (mr *MockStoreMockRecorder) List(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockStore)(nil).List), arg0)
+}
+
+// UpsertMany mocks base method.
+func (m *MockStore) UpsertMany(list []model.QuestUserList) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertMany", list)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertMany indicates an expected call of UpsertMany.
+func (mr *MockStoreMockRecorder) UpsertMany(list interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertMany", reflect.TypeOf((*MockStore)(nil).UpsertMany), list)
 }

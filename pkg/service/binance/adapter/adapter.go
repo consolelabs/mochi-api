@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	butils "github.com/defipod/mochi/pkg/service/binance/utils"
 )
@@ -14,6 +15,9 @@ import (
 var (
 	url       = "https://api.binance.com"
 	futureUrl = "https://fapi.binance.com"
+	log       = logger.NewLogrusLogger().Fields(logger.Fields{
+		"component": "service.binance.adapter",
+	})
 )
 
 func GetApiKeyPermission(apiKey, apiSecret string) (permission *response.BinanceApiKeyPermissionResponse, err error) {
@@ -232,6 +236,7 @@ func GetFutureAccountBalance(apiKey, apiSecret string) (fAccountBal []response.B
 	// decode response json
 	err = json.Unmarshal(resBody, &fAccountBal)
 	if err != nil {
+		log.Fields(logger.Fields{"response": string(resBody)}).Error(err, "[GetFutureAccountBalance] failed to parse response")
 		return nil, err
 	}
 
