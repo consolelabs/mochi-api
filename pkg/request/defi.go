@@ -88,8 +88,3 @@ type SearchCoinRequest struct {
 	NoDefault bool   `form:"no_default,default=false"`
 	GuildId   string `form:"guild_id"`
 }
-
-type SearchFriendTechKeysRequest struct {
-	Query string `form:"query"`
-	Limit int    `form:"limit,default=200"`
-}

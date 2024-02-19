@@ -19,7 +19,6 @@ import (
 	discordguilds "github.com/defipod/mochi/pkg/repo/discord_guilds"
 	discordusergmstreak "github.com/defipod/mochi/pkg/repo/discord_user_gm_streak"
 	"github.com/defipod/mochi/pkg/repo/emojis"
-	friendtechkeywatchlistitem "github.com/defipod/mochi/pkg/repo/friend_tech_key_watchlist_item"
 	guildconfigactivity "github.com/defipod/mochi/pkg/repo/guild_config_activity"
 	guildconfigadminrole "github.com/defipod/mochi/pkg/repo/guild_config_admin_role"
 	guildconfigdaoproposal "github.com/defipod/mochi/pkg/repo/guild_config_dao_proposal"
@@ -177,7 +176,6 @@ type Repo struct {
 	ProductBotCommand                    productbotcommand.Store
 	ProductChangelogs                    productchangelogs.Store
 	ProductChangelogsView                productchangelogsview.Store
-	FriendTechKeyWatchlistItem           friendtechkeywatchlistitem.Store
 	ProductHashtag                       producthashtag.Store
 	ProfileCommandUsage                  profilecommandusage.Store
 	CommandPermission                    commandpermission.Store

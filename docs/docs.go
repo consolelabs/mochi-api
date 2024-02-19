@@ -2831,38 +2831,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/defi/keys": {
-            "get": {
-                "description": "Search coin",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Search coin",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "coin query",
-                        "name": "query",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.FriendTechKeysResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/defi/market-chart": {
             "get": {
                 "description": "Get historical market chart",
@@ -3295,141 +3263,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/response.GetTopGainerLoser"
-                        }
-                    }
-                }
-            }
-        },
-        "/defi/tracking-keys": {
-            "get": {
-                "description": "Get user's friend tech key watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Get user's friend tech key watchlist",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "profile_id",
-                        "name": "profile_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Track a specific friend tech key by adding to user's watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Track a specific friend tech key by adding to user's watchlist",
-                "parameters": [
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.TrackFriendTechKeyRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/defi/tracking-keys/{id}": {
-            "put": {
-                "description": "Update friend tech key track config",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Update friend tech key track config",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "request",
-                        "name": "req",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.UpdateFriendTechKeyTrackRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.TrackFriendTechKeyResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Untrack a specific friend tech key by removing from user's watchlist",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Defi"
-                ],
-                "summary": "Untrack a specific friend tech key by removing from user's watchlist",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 }
@@ -9184,27 +9017,6 @@ const docTemplate = `{
                 }
             }
         },
-        "request.TrackFriendTechKeyRequest": {
-            "type": "object",
-            "required": [
-                "key_address",
-                "profile_id"
-            ],
-            "properties": {
-                "decrease_alert_at": {
-                    "type": "integer"
-                },
-                "increase_alert_at": {
-                    "type": "integer"
-                },
-                "key_address": {
-                    "type": "string"
-                },
-                "profile_id": {
-                    "type": "string"
-                }
-            }
-        },
         "request.TrackWalletRequest": {
             "type": "object",
             "required": [
@@ -9360,17 +9172,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
-                }
-            }
-        },
-        "request.UpdateFriendTechKeyTrackRequest": {
-            "type": "object",
-            "properties": {
-                "decrease_alert_at": {
-                    "type": "integer"
-                },
-                "increase_alert_at": {
-                    "type": "integer"
                 }
             }
         },
@@ -10584,84 +10385,6 @@ const docTemplate = `{
             "properties": {
                 "data": {
                     "$ref": "#/definitions/response.Token"
-                }
-            }
-        },
-        "response.FriendTechKey": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "holders": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "priceChangePercentage": {
-                    "type": "number"
-                },
-                "profileChecked": {
-                    "type": "boolean"
-                },
-                "supply": {
-                    "type": "integer"
-                },
-                "twitterPfpUrl": {
-                    "type": "string"
-                },
-                "twitterUsername": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.FriendTechKeyWatchlistItemResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "decrease_alert_at": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "increase_alert_at": {
-                    "type": "integer"
-                },
-                "key_address": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "$ref": "#/definitions/response.TrackedFriendTechKey"
-                },
-                "profile_id": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.FriendTechKeysResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/response.FriendTechKey"
-                    }
                 }
             }
         },
@@ -13395,52 +13118,6 @@ const docTemplate = `{
                 },
                 "metadata": {
                     "$ref": "#/definitions/response.PaginationResponse"
-                }
-            }
-        },
-        "response.TrackFriendTechKeyResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/response.FriendTechKeyWatchlistItemResponse"
-                }
-            }
-        },
-        "response.TrackedFriendTechKey": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "holders": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "price_change_percentage": {
-                    "type": "number"
-                },
-                "profile_checked": {
-                    "type": "boolean"
-                },
-                "supply": {
-                    "type": "integer"
-                },
-                "twitter_pfp_url": {
-                    "type": "string"
-                },
-                "twitter_username": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },

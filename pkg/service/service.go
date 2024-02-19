@@ -20,7 +20,6 @@ import (
 	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/discord"
 	"github.com/defipod/mochi/pkg/service/ethplorer"
-	"github.com/defipod/mochi/pkg/service/friendtech"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/service/github"
 	"github.com/defipod/mochi/pkg/service/indexer"
@@ -63,7 +62,6 @@ type Service struct {
 	DexScreener   dexscreener.Service
 	Github        github.Service
 	Ethplorer     ethplorer.Service
-	FriendTech    friendtech.Service
 	Sentry        sentrygo.Service
 }
 
@@ -121,7 +119,6 @@ func NewService(
 		DexScreener:   dexscreener.NewService(sentry),
 		Github:        github.NewService(&cfg, log),
 		Ethplorer:     ethplorer.NewService(sentry),
-		FriendTech:    friendtech.NewService(&cfg, sentry),
 		Sentry:        sentrygo.New(&cfg, log),
 	}, nil
 }

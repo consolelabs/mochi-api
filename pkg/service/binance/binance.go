@@ -419,7 +419,7 @@ func (b *Binance) GetFutureAccountBalance(apiKey, apiSecret string) ([]response.
 	res, err = bapdater.GetFutureAccountBalance(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountBinance failed %v", err),
+			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountBalance failed %v", err),
 			Tags:    sentryTags,
 			Extra: map[string]interface{}{
 				"apiKey":    apiKey,

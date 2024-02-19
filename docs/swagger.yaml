@@ -1654,20 +1654,6 @@ definitions:
     - chainName
     - userDiscordId
     type: object
-  request.TrackFriendTechKeyRequest:
-    properties:
-      decrease_alert_at:
-        type: integer
-      increase_alert_at:
-        type: integer
-      key_address:
-        type: string
-      profile_id:
-        type: string
-    required:
-    - key_address
-    - profile_id
-    type: object
   request.TrackWalletRequest:
     properties:
       address:
@@ -1775,13 +1761,6 @@ definitions:
     required:
     - choice
     - user_id
-    type: object
-  request.UpdateFriendTechKeyTrackRequest:
-    properties:
-      decrease_alert_at:
-        type: integer
-      increase_alert_at:
-        type: integer
     type: object
   request.UpdateGeneralSettingsPayloadRequest:
     properties:
@@ -2574,57 +2553,6 @@ definitions:
     properties:
       data:
         $ref: '#/definitions/response.Token'
-    type: object
-  response.FriendTechKey:
-    properties:
-      address:
-        type: string
-      createdAt:
-        type: string
-      holders:
-        type: integer
-      id:
-        type: integer
-      price:
-        type: number
-      priceChangePercentage:
-        type: number
-      profileChecked:
-        type: boolean
-      supply:
-        type: integer
-      twitterPfpUrl:
-        type: string
-      twitterUsername:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  response.FriendTechKeyWatchlistItemResponse:
-    properties:
-      created_at:
-        type: string
-      decrease_alert_at:
-        type: integer
-      id:
-        type: integer
-      increase_alert_at:
-        type: integer
-      key_address:
-        type: string
-      metadata:
-        $ref: '#/definitions/response.TrackedFriendTechKey'
-      profile_id:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  response.FriendTechKeysResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/response.FriendTechKey'
-        type: array
     type: object
   response.GasTrackerResponse:
     properties:
@@ -3769,12 +3697,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3790,6 +3712,12 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4403,36 +4331,6 @@ definitions:
         type: array
       metadata:
         $ref: '#/definitions/response.PaginationResponse'
-    type: object
-  response.TrackFriendTechKeyResponse:
-    properties:
-      data:
-        $ref: '#/definitions/response.FriendTechKeyWatchlistItemResponse'
-    type: object
-  response.TrackedFriendTechKey:
-    properties:
-      address:
-        type: string
-      created_at:
-        type: string
-      holders:
-        type: integer
-      id:
-        type: integer
-      price:
-        type: number
-      price_change_percentage:
-        type: number
-      profile_checked:
-        type: boolean
-      supply:
-        type: integer
-      twitter_pfp_url:
-        type: string
-      twitter_username:
-        type: string
-      updated_at:
-        type: string
     type: object
   response.TransferTokenV2Data:
     properties:
@@ -6484,27 +6382,6 @@ paths:
       summary: Get gas tracker of one chain
       tags:
       - Defi
-  /defi/keys:
-    get:
-      consumes:
-      - application/json
-      description: Search coin
-      parameters:
-      - description: coin query
-        in: query
-        name: query
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.FriendTechKeysResponse'
-      summary: Search coin
-      tags:
-      - Defi
   /defi/market-chart:
     get:
       consumes:
@@ -6792,95 +6669,6 @@ paths:
           schema:
             $ref: '#/definitions/response.GetTopGainerLoser'
       summary: Get top 300 gainer and loser
-      tags:
-      - Defi
-  /defi/tracking-keys:
-    get:
-      consumes:
-      - application/json
-      description: Get user's friend tech key watchlist
-      parameters:
-      - description: profile_id
-        in: query
-        name: profile_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
-      summary: Get user's friend tech key watchlist
-      tags:
-      - Defi
-    post:
-      consumes:
-      - application/json
-      description: Track a specific friend tech key by adding to user's watchlist
-      parameters:
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.TrackFriendTechKeyRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
-      summary: Track a specific friend tech key by adding to user's watchlist
-      tags:
-      - Defi
-  /defi/tracking-keys/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Untrack a specific friend tech key by removing from user's watchlist
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-      summary: Untrack a specific friend tech key by removing from user's watchlist
-      tags:
-      - Defi
-    put:
-      consumes:
-      - application/json
-      description: Update friend tech key track config
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: request
-        in: body
-        name: req
-        required: true
-        schema:
-          $ref: '#/definitions/request.UpdateFriendTechKeyTrackRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.TrackFriendTechKeyResponse'
-      summary: Update friend tech key track config
       tags:
       - Defi
   /defi/trending:
