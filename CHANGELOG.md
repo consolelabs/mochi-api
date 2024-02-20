@@ -1,3 +1,10 @@
+## [6.29.1](https://github.com/consolelabs/mochi-api/compare/v6.29.0...v6.29.1) (2024-02-07)
+
+
+### Bug Fixes
+
+* add pnl token for future binance asset ([0b3b22a](https://github.com/consolelabs/mochi-api/commit/0b3b22ae5c685e73be59c58813f21372390a3b9d))
+
 # [6.29.0](https://github.com/consolelabs/mochi-api/compare/v6.28.0...v6.29.0) (2024-02-06)
 
 
