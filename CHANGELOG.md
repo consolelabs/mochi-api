@@ -1,3 +1,12 @@
+## [6.29.2](https://github.com/consolelabs/mochi-api/compare/v6.29.1...v6.29.2) (2024-02-20)
+
+
+### Bug Fixes
+
+* binanace future - ignore permission error ([ee571ac](https://github.com/consolelabs/mochi-api/commit/ee571ac96908eeafeb4420b6354639b4a11f1b25))
+* **feedback:** handle user feedback ([b8311d8](https://github.com/consolelabs/mochi-api/commit/b8311d83093a9325d94033c92dd11fa22bb276e4))
+* **verify:** send verify component ([d6aa695](https://github.com/consolelabs/mochi-api/commit/d6aa6955f34e1918bc5a1429303a9d77cdde0c27))
+
 ## [6.29.1](https://github.com/consolelabs/mochi-api/compare/v6.29.0...v6.29.1) (2024-02-07)
 
 
