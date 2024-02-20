@@ -1,4 +1,4 @@
-package bapdater
+package badapter
 
 import (
 	"net/http"
