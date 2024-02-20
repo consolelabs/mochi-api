@@ -62,6 +62,7 @@ var emojis = map[string]string{
 	"PENCIL":       "1078633895500722187",
 	"PLUS":         "1078633897513992202",
 	"POINTINGDOWN": "1058304350650384434",
+	"APPROVE":      "1077631110047080478",
 }
 
 func GetEmoji(key string) string {
