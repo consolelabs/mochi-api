@@ -11,7 +11,7 @@ import (
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
-	bapdater "github.com/defipod/mochi/pkg/service/binance/adapter"
+	badapter "github.com/defipod/mochi/pkg/service/binance/adapter"
 	"github.com/defipod/mochi/pkg/service/sentrygo"
 	"github.com/defipod/mochi/pkg/util"
 )
@@ -215,7 +215,7 @@ func (b *Binance) GetKlinesBySymbol(symbol string) ([]response.GetKlinesDataResp
 }
 
 func (b *Binance) GetApiKeyPermission(apiKey, apiSecret string) (*response.BinanceApiKeyPermissionResponse, error) {
-	permission, err := bapdater.GetApiKeyPermission(apiKey, apiSecret)
+	permission, err := badapter.GetApiKeyPermission(apiKey, apiSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func (b *Binance) GetUserAsset(apiKey, apiSecret string) ([]response.BinanceUser
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetUserAsset(apiKey, apiSecret)
+	res, err = badapter.GetUserAsset(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetUserAsset failed %v", err),
@@ -272,7 +272,7 @@ func (b *Binance) GetFundingAsset(apiKey, apiSecret string) ([]response.BinanceU
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetFundingAsset(apiKey, apiSecret)
+	res, err = badapter.GetFundingAsset(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetFundingAsset failed %v", err),
@@ -308,7 +308,7 @@ func (b *Binance) GetStakingProductPosition(apiKey, apiSecret string) ([]respons
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetStakingProductPosition(apiKey, apiSecret)
+	res, err = badapter.GetStakingProductPosition(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetStakingProductPosition failed %v", err),
@@ -344,7 +344,7 @@ func (b *Binance) GetLendingAccount(apiKey, apiSecret string) (*response.Binance
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetLendingAccount(apiKey, apiSecret)
+	res, err = badapter.GetLendingAccount(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetLendingAccount failed %v", err),
@@ -380,7 +380,7 @@ func (b *Binance) GetSimpleEarn(apiKey, apiSecret string) (*response.BinanceSimp
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetSimpleEarnAccount(apiKey, apiSecret)
+	res, err = badapter.GetSimpleEarnAccount(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetSimpleEarn failed %v", err),
@@ -416,7 +416,7 @@ func (b *Binance) GetFutureAccountBalance(apiKey, apiSecret string) ([]response.
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetFutureAccountBalance(apiKey, apiSecret)
+	res, err = badapter.GetFutureAccountBalance(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountBalance failed %v", err),
@@ -452,7 +452,7 @@ func (b *Binance) GetFutureAccount(apiKey, apiSecret string) (*response.BinanceF
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetFutureAccount(apiKey, apiSecret)
+	res, err = badapter.GetFutureAccount(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccount failed %v", err),
@@ -488,7 +488,7 @@ func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.Bin
 		return res, json.Unmarshal([]byte(cached), &res)
 	}
 
-	res, err = bapdater.GetFutureAccountInfo(apiKey, apiSecret)
+	res, err = badapter.GetFutureAccountInfo(apiKey, apiSecret)
 	if err != nil {
 		b.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
 			Message: fmt.Sprintf("[API mochi] - Binance - GetFutureAccountInfo failed %v", err),

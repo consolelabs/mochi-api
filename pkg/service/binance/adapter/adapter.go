@@ -1,4 +1,4 @@
-package bapdater
+package badapter
 
 import (
 	"encoding/json"
@@ -237,6 +237,12 @@ func GetFutureAccountBalance(apiKey, apiSecret string) (fAccountBal []response.B
 	err = json.Unmarshal(resBody, &fAccountBal)
 	if err != nil {
 		log.Fields(logger.Fields{"response": string(resBody)}).Error(err, "[GetFutureAccountBalance] failed to parse response")
+		// if user has invalid api key or insufficient permission ->
+		var errRes BinanceFutureErrorResponse
+		json.Unmarshal(resBody, &errRes)
+		if errRes.Code == -2015 {
+			return nil, nil
+		}
 		return nil, err
 	}
 
