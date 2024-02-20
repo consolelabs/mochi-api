@@ -5,36 +5,37 @@
 package mock_indexer
 
 import (
+	reflect "reflect"
+
 	response "github.com/defipod/mochi/pkg/response"
 	indexer "github.com/defipod/mochi/pkg/service/indexer"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockService is a mock of Service interface
+// MockService is a mock of Service interface.
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
 }
 
-// MockServiceMockRecorder is the mock recorder for MockService
+// MockServiceMockRecorder is the mock recorder for MockService.
 type MockServiceMockRecorder struct {
 	mock *MockService
 }
 
-// NewMockService creates a new mock instance
+// NewMockService creates a new mock instance.
 func NewMockService(ctrl *gomock.Controller) *MockService {
 	mock := &MockService{ctrl: ctrl}
 	mock.recorder = &MockServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// CreateERC721Contract mocks base method
+// CreateERC721Contract mocks base method.
 func (m *MockService) CreateERC721Contract(arg0 indexer.CreateERC721ContractRequest) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateERC721Contract", arg0)
@@ -42,103 +43,13 @@ func (m *MockService) CreateERC721Contract(arg0 indexer.CreateERC721ContractRequ
 	return ret0
 }
 
-// CreateERC721Contract indicates an expected call of CreateERC721Contract
+// CreateERC721Contract indicates an expected call of CreateERC721Contract.
 func (mr *MockServiceMockRecorder) CreateERC721Contract(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateERC721Contract", reflect.TypeOf((*MockService)(nil).CreateERC721Contract), arg0)
 }
 
-// GetNFTCollectionTickers mocks base method
-func (m *MockService) GetNFTCollectionTickers(address, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTCollectionTickers", address, rawQuery)
-	ret0, _ := ret[0].(*response.IndexerNFTCollectionTickersResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTCollectionTickers indicates an expected call of GetNFTCollectionTickers
-func (mr *MockServiceMockRecorder) GetNFTCollectionTickers(address, rawQuery interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollectionTickers", reflect.TypeOf((*MockService)(nil).GetNFTCollectionTickers), address, rawQuery)
-}
-
-// GetNFTTokenTickers mocks base method
-func (m *MockService) GetNFTTokenTickers(address, tokenID, rawQuery string) (*response.IndexerNFTTokenTickersData, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTTokenTickers", address, tokenID, rawQuery)
-	ret0, _ := ret[0].(*response.IndexerNFTTokenTickersData)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTTokenTickers indicates an expected call of GetNFTTokenTickers
-func (mr *MockServiceMockRecorder) GetNFTTokenTickers(address, tokenID, rawQuery interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokenTickers", reflect.TypeOf((*MockService)(nil).GetNFTTokenTickers), address, tokenID, rawQuery)
-}
-
-// GetNFTTradingVolume mocks base method
-func (m *MockService) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTTradingVolume")
-	ret0, _ := ret[0].([]response.NFTTradingVolume)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTTradingVolume indicates an expected call of GetNFTTradingVolume
-func (mr *MockServiceMockRecorder) GetNFTTradingVolume() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTradingVolume", reflect.TypeOf((*MockService)(nil).GetNFTTradingVolume))
-}
-
-// GetNFTCollections mocks base method
-func (m *MockService) GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTCollections", query)
-	ret0, _ := ret[0].(*response.IndexerGetNFTCollectionsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTCollections indicates an expected call of GetNFTCollections
-func (mr *MockServiceMockRecorder) GetNFTCollections(query interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollections", reflect.TypeOf((*MockService)(nil).GetNFTCollections), query)
-}
-
-// GetNFTTokens mocks base method
-func (m *MockService) GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTTokens", address, query)
-	ret0, _ := ret[0].(*response.IndexerGetNFTTokensResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTTokens indicates an expected call of GetNFTTokens
-func (mr *MockServiceMockRecorder) GetNFTTokens(address, query interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokens", reflect.TypeOf((*MockService)(nil).GetNFTTokens), address, query)
-}
-
-// GetNFTDetail mocks base method
-func (m *MockService) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTDetail", collectionAddress, tokenID)
-	ret0, _ := ret[0].(*response.IndexerGetNFTTokenDetailResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTDetail indicates an expected call of GetNFTDetail
-func (mr *MockServiceMockRecorder) GetNFTDetail(collectionAddress, tokenID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTDetail", reflect.TypeOf((*MockService)(nil).GetNFTDetail), collectionAddress, tokenID)
-}
-
-// GetNFTActivity mocks base method
+// GetNFTActivity mocks base method.
 func (m *MockService) GetNFTActivity(collectionAddress, tokenID, query string) (*response.IndexerGetNFTActivityResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNFTActivity", collectionAddress, tokenID, query)
@@ -147,73 +58,28 @@ func (m *MockService) GetNFTActivity(collectionAddress, tokenID, query string) (
 	return ret0, ret1
 }
 
-// GetNFTActivity indicates an expected call of GetNFTActivity
+// GetNFTActivity indicates an expected call of GetNFTActivity.
 func (mr *MockServiceMockRecorder) GetNFTActivity(collectionAddress, tokenID, query interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTActivity", reflect.TypeOf((*MockService)(nil).GetNFTActivity), collectionAddress, tokenID, query)
 }
 
-// GetNFTTokenTxHistory mocks base method
-func (m *MockService) GetNFTTokenTxHistory(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenTxHistoryResponse, error) {
+// GetNFTCollectionTickers mocks base method.
+func (m *MockService) GetNFTCollectionTickers(address, rawQuery string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTTokenTxHistory", collectionAddress, tokenID)
-	ret0, _ := ret[0].(*response.IndexerGetNFTTokenTxHistoryResponse)
+	ret := m.ctrl.Call(m, "GetNFTCollectionTickers", address, rawQuery)
+	ret0, _ := ret[0].(*response.IndexerNFTCollectionTickersResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetNFTTokenTxHistory indicates an expected call of GetNFTTokenTxHistory
-func (mr *MockServiceMockRecorder) GetNFTTokenTxHistory(collectionAddress, tokenID interface{}) *gomock.Call {
+// GetNFTCollectionTickers indicates an expected call of GetNFTCollectionTickers.
+func (mr *MockServiceMockRecorder) GetNFTCollectionTickers(address, rawQuery interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokenTxHistory", reflect.TypeOf((*MockService)(nil).GetNFTTokenTxHistory), collectionAddress, tokenID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollectionTickers", reflect.TypeOf((*MockService)(nil).GetNFTCollectionTickers), address, rawQuery)
 }
 
-// GetNftSales mocks base method
-func (m *MockService) GetNftSales(addr, platform string) (*response.NftSalesResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNftSales", addr, platform)
-	ret0, _ := ret[0].(*response.NftSalesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNftSales indicates an expected call of GetNftSales
-func (mr *MockServiceMockRecorder) GetNftSales(addr, platform interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftSales", reflect.TypeOf((*MockService)(nil).GetNftSales), addr, platform)
-}
-
-// GetNFTContract mocks base method
-func (m *MockService) GetNFTContract(addr string) (*response.IndexerContract, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNFTContract", addr)
-	ret0, _ := ret[0].(*response.IndexerContract)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNFTContract indicates an expected call of GetNFTContract
-func (mr *MockServiceMockRecorder) GetNFTContract(addr interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTContract", reflect.TypeOf((*MockService)(nil).GetNFTContract), addr)
-}
-
-// GetNftMetadataAttrIcon mocks base method
-func (m *MockService) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNftMetadataAttrIcon")
-	ret0, _ := ret[0].(*response.NftMetadataAttrIconResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNftMetadataAttrIcon indicates an expected call of GetNftMetadataAttrIcon
-func (mr *MockServiceMockRecorder) GetNftMetadataAttrIcon() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftMetadataAttrIcon", reflect.TypeOf((*MockService)(nil).GetNftMetadataAttrIcon))
-}
-
-// GetNFTCollectionTickersForWl mocks base method
+// GetNFTCollectionTickersForWl mocks base method.
 func (m *MockService) GetNFTCollectionTickersForWl(address string) (*response.IndexerNFTCollectionTickersResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNFTCollectionTickersForWl", address)
@@ -222,13 +88,118 @@ func (m *MockService) GetNFTCollectionTickersForWl(address string) (*response.In
 	return ret0, ret1
 }
 
-// GetNFTCollectionTickersForWl indicates an expected call of GetNFTCollectionTickersForWl
+// GetNFTCollectionTickersForWl indicates an expected call of GetNFTCollectionTickersForWl.
 func (mr *MockServiceMockRecorder) GetNFTCollectionTickersForWl(address interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollectionTickersForWl", reflect.TypeOf((*MockService)(nil).GetNFTCollectionTickersForWl), address)
 }
 
-// GetNftCollectionMetadata mocks base method
+// GetNFTCollections mocks base method.
+func (m *MockService) GetNFTCollections(query string) (*response.IndexerGetNFTCollectionsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTCollections", query)
+	ret0, _ := ret[0].(*response.IndexerGetNFTCollectionsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTCollections indicates an expected call of GetNFTCollections.
+func (mr *MockServiceMockRecorder) GetNFTCollections(query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTCollections", reflect.TypeOf((*MockService)(nil).GetNFTCollections), query)
+}
+
+// GetNFTContract mocks base method.
+func (m *MockService) GetNFTContract(addr string) (*response.IndexerContract, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTContract", addr)
+	ret0, _ := ret[0].(*response.IndexerContract)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTContract indicates an expected call of GetNFTContract.
+func (mr *MockServiceMockRecorder) GetNFTContract(addr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTContract", reflect.TypeOf((*MockService)(nil).GetNFTContract), addr)
+}
+
+// GetNFTDetail mocks base method.
+func (m *MockService) GetNFTDetail(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenDetailResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTDetail", collectionAddress, tokenID)
+	ret0, _ := ret[0].(*response.IndexerGetNFTTokenDetailResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTDetail indicates an expected call of GetNFTDetail.
+func (mr *MockServiceMockRecorder) GetNFTDetail(collectionAddress, tokenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTDetail", reflect.TypeOf((*MockService)(nil).GetNFTDetail), collectionAddress, tokenID)
+}
+
+// GetNFTTokenTickers mocks base method.
+func (m *MockService) GetNFTTokenTickers(address, tokenID, rawQuery string) (*response.IndexerNFTTokenTickersData, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTTokenTickers", address, tokenID, rawQuery)
+	ret0, _ := ret[0].(*response.IndexerNFTTokenTickersData)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTTokenTickers indicates an expected call of GetNFTTokenTickers.
+func (mr *MockServiceMockRecorder) GetNFTTokenTickers(address, tokenID, rawQuery interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokenTickers", reflect.TypeOf((*MockService)(nil).GetNFTTokenTickers), address, tokenID, rawQuery)
+}
+
+// GetNFTTokenTxHistory mocks base method.
+func (m *MockService) GetNFTTokenTxHistory(collectionAddress, tokenID string) (*response.IndexerGetNFTTokenTxHistoryResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTTokenTxHistory", collectionAddress, tokenID)
+	ret0, _ := ret[0].(*response.IndexerGetNFTTokenTxHistoryResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTTokenTxHistory indicates an expected call of GetNFTTokenTxHistory.
+func (mr *MockServiceMockRecorder) GetNFTTokenTxHistory(collectionAddress, tokenID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokenTxHistory", reflect.TypeOf((*MockService)(nil).GetNFTTokenTxHistory), collectionAddress, tokenID)
+}
+
+// GetNFTTokens mocks base method.
+func (m *MockService) GetNFTTokens(address, query string) (*response.IndexerGetNFTTokensResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTTokens", address, query)
+	ret0, _ := ret[0].(*response.IndexerGetNFTTokensResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTTokens indicates an expected call of GetNFTTokens.
+func (mr *MockServiceMockRecorder) GetNFTTokens(address, query interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTokens", reflect.TypeOf((*MockService)(nil).GetNFTTokens), address, query)
+}
+
+// GetNFTTradingVolume mocks base method.
+func (m *MockService) GetNFTTradingVolume() ([]response.NFTTradingVolume, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNFTTradingVolume")
+	ret0, _ := ret[0].([]response.NFTTradingVolume)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNFTTradingVolume indicates an expected call of GetNFTTradingVolume.
+func (mr *MockServiceMockRecorder) GetNFTTradingVolume() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNFTTradingVolume", reflect.TypeOf((*MockService)(nil).GetNFTTradingVolume))
+}
+
+// GetNftCollectionMetadata mocks base method.
 func (m *MockService) GetNftCollectionMetadata(collectionAddress, chainId string) (*response.IndexerNftCollectionMetadataResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNftCollectionMetadata", collectionAddress, chainId)
@@ -237,8 +208,38 @@ func (m *MockService) GetNftCollectionMetadata(collectionAddress, chainId string
 	return ret0, ret1
 }
 
-// GetNftCollectionMetadata indicates an expected call of GetNftCollectionMetadata
+// GetNftCollectionMetadata indicates an expected call of GetNftCollectionMetadata.
 func (mr *MockServiceMockRecorder) GetNftCollectionMetadata(collectionAddress, chainId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftCollectionMetadata", reflect.TypeOf((*MockService)(nil).GetNftCollectionMetadata), collectionAddress, chainId)
+}
+
+// GetNftMetadataAttrIcon mocks base method.
+func (m *MockService) GetNftMetadataAttrIcon() (*response.NftMetadataAttrIconResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNftMetadataAttrIcon")
+	ret0, _ := ret[0].(*response.NftMetadataAttrIconResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNftMetadataAttrIcon indicates an expected call of GetNftMetadataAttrIcon.
+func (mr *MockServiceMockRecorder) GetNftMetadataAttrIcon() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftMetadataAttrIcon", reflect.TypeOf((*MockService)(nil).GetNftMetadataAttrIcon))
+}
+
+// GetNftSales mocks base method.
+func (m *MockService) GetNftSales(addr, platform string) (*response.NftSalesResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNftSales", addr, platform)
+	ret0, _ := ret[0].(*response.NftSalesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNftSales indicates an expected call of GetNftSales.
+func (mr *MockServiceMockRecorder) GetNftSales(addr, platform interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNftSales", reflect.TypeOf((*MockService)(nil).GetNftSales), addr, platform)
 }

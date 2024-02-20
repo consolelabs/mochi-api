@@ -5,35 +5,64 @@
 package mock_guild_config_default_roles
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetAllByGuildID mocks base method
+// CreateDefaultRoleIfNotExist mocks base method.
+func (m *MockStore) CreateDefaultRoleIfNotExist(config model.GuildConfigDefaultRole) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDefaultRoleIfNotExist", config)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateDefaultRoleIfNotExist indicates an expected call of CreateDefaultRoleIfNotExist.
+func (mr *MockStoreMockRecorder) CreateDefaultRoleIfNotExist(config interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDefaultRoleIfNotExist", reflect.TypeOf((*MockStore)(nil).CreateDefaultRoleIfNotExist), config)
+}
+
+// DeleteByGuildID mocks base method.
+func (m *MockStore) DeleteByGuildID(guildID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteByGuildID", guildID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteByGuildID indicates an expected call of DeleteByGuildID.
+func (mr *MockStoreMockRecorder) DeleteByGuildID(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByGuildID", reflect.TypeOf((*MockStore)(nil).DeleteByGuildID), guildID)
+}
+
+// GetAllByGuildID mocks base method.
 func (m *MockStore) GetAllByGuildID(guildID string) (model.GuildConfigDefaultRole, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllByGuildID", guildID)
@@ -42,36 +71,8 @@ func (m *MockStore) GetAllByGuildID(guildID string) (model.GuildConfigDefaultRol
 	return ret0, ret1
 }
 
-// GetAllByGuildID indicates an expected call of GetAllByGuildID
+// GetAllByGuildID indicates an expected call of GetAllByGuildID.
 func (mr *MockStoreMockRecorder) GetAllByGuildID(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllByGuildID", reflect.TypeOf((*MockStore)(nil).GetAllByGuildID), guildID)
-}
-
-// CreateDefaultRoleIfNotExist mocks base method
-func (m *MockStore) CreateDefaultRoleIfNotExist(config model.GuildConfigDefaultRole) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDefaultRoleIfNotExist", config)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateDefaultRoleIfNotExist indicates an expected call of CreateDefaultRoleIfNotExist
-func (mr *MockStoreMockRecorder) CreateDefaultRoleIfNotExist(config interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDefaultRoleIfNotExist", reflect.TypeOf((*MockStore)(nil).CreateDefaultRoleIfNotExist), config)
-}
-
-// DeleteByGuildID mocks base method
-func (m *MockStore) DeleteByGuildID(guildID string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteByGuildID", guildID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteByGuildID indicates an expected call of DeleteByGuildID
-func (mr *MockStoreMockRecorder) DeleteByGuildID(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteByGuildID", reflect.TypeOf((*MockStore)(nil).DeleteByGuildID), guildID)
 }

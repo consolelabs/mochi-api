@@ -5,218 +5,39 @@
 package mock_discord
 
 import (
+	reflect "reflect"
+
 	discordgo "github.com/bwmarrin/discordgo"
 	model "github.com/defipod/mochi/pkg/model"
 	request "github.com/defipod/mochi/pkg/request"
 	response "github.com/defipod/mochi/pkg/response"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockService is a mock of Service interface
+// MockService is a mock of Service interface.
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
 }
 
-// MockServiceMockRecorder is the mock recorder for MockService
+// MockServiceMockRecorder is the mock recorder for MockService.
 type MockServiceMockRecorder struct {
 	mock *MockService
 }
 
-// NewMockService creates a new mock instance
+// NewMockService creates a new mock instance.
 func NewMockService(ctrl *gomock.Controller) *MockService {
 	mock := &MockService{ctrl: ctrl}
 	mock.recorder = &MockServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// NotifyAddNewCollection mocks base method
-func (m *MockService) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyAddNewCollection", guildID, collectionName, symbol, chain, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyAddNewCollection indicates an expected call of NotifyAddNewCollection
-func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyAddNewCollection", reflect.TypeOf((*MockService)(nil).NotifyAddNewCollection), guildID, collectionName, symbol, chain, image)
-}
-
-// NotifyStealFloorPrice mocks base method
-func (m *MockService) NotifyStealFloorPrice(price, floor float64, url, name, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyStealFloorPrice", price, floor, url, name, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyStealFloorPrice indicates an expected call of NotifyStealFloorPrice
-func (mr *MockServiceMockRecorder) NotifyStealFloorPrice(price, floor, url, name, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealFloorPrice", reflect.TypeOf((*MockService)(nil).NotifyStealFloorPrice), price, floor, url, name, image)
-}
-
-// NotifyStealAveragePrice mocks base method
-func (m *MockService) NotifyStealAveragePrice(price, floor float64, url, name, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyStealAveragePrice", price, floor, url, name, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyStealAveragePrice indicates an expected call of NotifyStealAveragePrice
-func (mr *MockServiceMockRecorder) NotifyStealAveragePrice(price, floor, url, name, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealAveragePrice", reflect.TypeOf((*MockService)(nil).NotifyStealAveragePrice), price, floor, url, name, image)
-}
-
-// NotifyCompleteCollectionIntegration mocks base method
-func (m *MockService) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyCompleteCollectionIntegration", guildID, collectionName, symbol, chain, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyCompleteCollectionIntegration indicates an expected call of NotifyCompleteCollectionIntegration
-func (mr *MockServiceMockRecorder) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionIntegration", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionIntegration), guildID, collectionName, symbol, chain, image)
-}
-
-// NotifyCompleteCollectionSync mocks base method
-func (m *MockService) NotifyCompleteCollectionSync(guildID, collectionName, symbol, chain, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyCompleteCollectionSync", guildID, collectionName, symbol, chain, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyCompleteCollectionSync indicates an expected call of NotifyCompleteCollectionSync
-func (mr *MockServiceMockRecorder) NotifyCompleteCollectionSync(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionSync", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionSync), guildID, collectionName, symbol, chain, image)
-}
-
-// NotifyNewGuild mocks base method
-func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyNewGuild", newGuildID, count)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyNewGuild indicates an expected call of NotifyNewGuild
-func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
-}
-
-// SendUpdateRolesLog mocks base method
-func (m *MockService) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendUpdateRolesLog", guildID, logChannelID, userID, roleID, _type)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendUpdateRolesLog indicates an expected call of SendUpdateRolesLog
-func (mr *MockServiceMockRecorder) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRolesLog", reflect.TypeOf((*MockService)(nil).SendUpdateRolesLog), guildID, logChannelID, userID, roleID, _type)
-}
-
-// SendFeedback mocks base method
-func (m *MockService) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendFeedback", req, feedbackID)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendFeedback indicates an expected call of SendFeedback
-func (mr *MockServiceMockRecorder) SendFeedback(req, feedbackID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendFeedback", reflect.TypeOf((*MockService)(nil).SendFeedback), req, feedbackID)
-}
-
-// SendGuildActivityLogs mocks base method
-func (m *MockService) SendGuildActivityLogs(channelID, userID, title, description string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendGuildActivityLogs", channelID, userID, title, description)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendGuildActivityLogs indicates an expected call of SendGuildActivityLogs
-func (mr *MockServiceMockRecorder) SendGuildActivityLogs(channelID, userID, title, description interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendGuildActivityLogs", reflect.TypeOf((*MockService)(nil).SendGuildActivityLogs), channelID, userID, title, description)
-}
-
-// SendLevelUpMessage mocks base method
-func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SendLevelUpMessage", levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
-}
-
-// SendLevelUpMessage indicates an expected call of SendLevelUpMessage
-func (mr *MockServiceMockRecorder) SendLevelUpMessage(levelUpConfig, role, levelRoleLevel, randomTip, uActivity interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
-}
-
-// NotifyGmStreak mocks base method
-func (m *MockService) NotifyGmStreak(channelID, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyGmStreak", channelID, userDiscordID, streakCount, podTownXps)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyGmStreak indicates an expected call of NotifyGmStreak
-func (mr *MockServiceMockRecorder) NotifyGmStreak(channelID, userDiscordID, streakCount, podTownXps interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), channelID, userDiscordID, streakCount, podTownXps)
-}
-
-// NotifyGuildDelete mocks base method
-func (m *MockService) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NotifyGuildDelete", guildID, guildName, iconURL, guildsLeft)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// NotifyGuildDelete indicates an expected call of NotifyGuildDelete
-func (mr *MockServiceMockRecorder) NotifyGuildDelete(guildID, guildName, iconURL, guildsLeft interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGuildDelete", reflect.TypeOf((*MockService)(nil).NotifyGuildDelete), guildID, guildName, iconURL, guildsLeft)
-}
-
-// SendTipActivityLogs mocks base method
-func (m *MockService) SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, author, description, image)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendTipActivityLogs indicates an expected call of SendTipActivityLogs
-func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, author, description, image interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, author, description, image)
-}
-
-// Channel mocks base method
+// Channel mocks base method.
 func (m *MockService) Channel(channelID string) (*discordgo.Channel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Channel", channelID)
@@ -225,13 +46,13 @@ func (m *MockService) Channel(channelID string) (*discordgo.Channel, error) {
 	return ret0, ret1
 }
 
-// Channel indicates an expected call of Channel
+// Channel indicates an expected call of Channel.
 func (mr *MockServiceMockRecorder) Channel(channelID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Channel", reflect.TypeOf((*MockService)(nil).Channel), channelID)
 }
 
-// CreateChannel mocks base method
+// CreateChannel mocks base method.
 func (m *MockService) CreateChannel(guildID string, createData discordgo.GuildChannelCreateData) (*discordgo.Channel, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateChannel", guildID, createData)
@@ -240,129 +61,13 @@ func (m *MockService) CreateChannel(guildID string, createData discordgo.GuildCh
 	return ret0, ret1
 }
 
-// CreateChannel indicates an expected call of CreateChannel
+// CreateChannel indicates an expected call of CreateChannel.
 func (mr *MockServiceMockRecorder) CreateChannel(guildID, createData interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateChannel", reflect.TypeOf((*MockService)(nil).CreateChannel), guildID, createData)
 }
 
-// DeleteChannel mocks base method
-func (m *MockService) DeleteChannel(channelId string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteChannel", channelId)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteChannel indicates an expected call of DeleteChannel
-func (mr *MockServiceMockRecorder) DeleteChannel(channelId interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChannel", reflect.TypeOf((*MockService)(nil).DeleteChannel), channelId)
-}
-
-// SendDMUserPriceAlert mocks base method
-func (m *MockService) SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendDMUserPriceAlert", userID, symbol, alertType, price)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendDMUserPriceAlert indicates an expected call of SendDMUserPriceAlert
-func (mr *MockServiceMockRecorder) SendDMUserPriceAlert(userID, symbol, alertType, price interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDMUserPriceAlert", reflect.TypeOf((*MockService)(nil).SendDMUserPriceAlert), userID, symbol, alertType, price)
-}
-
-// SendMessage mocks base method
-func (m *MockService) SendMessage(channelID string, msgSend discordgo.MessageSend) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendMessage", channelID, msgSend)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendMessage indicates an expected call of SendMessage
-func (mr *MockServiceMockRecorder) SendMessage(channelID, msgSend interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockService)(nil).SendMessage), channelID, msgSend)
-}
-
-// SendDM mocks base method
-func (m *MockService) SendDM(userID string, payload discordgo.MessageSend) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendDM", userID, payload)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SendDM indicates an expected call of SendDM
-func (mr *MockServiceMockRecorder) SendDM(userID, payload interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDM", reflect.TypeOf((*MockService)(nil).SendDM), userID, payload)
-}
-
-// GetGuildMembers mocks base method
-func (m *MockService) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGuildMembers", guildID)
-	ret0, _ := ret[0].([]*discordgo.Member)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetGuildMembers indicates an expected call of GetGuildMembers
-func (mr *MockServiceMockRecorder) GetGuildMembers(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildMembers", reflect.TypeOf((*MockService)(nil).GetGuildMembers), guildID)
-}
-
-// GetGuild mocks base method
-func (m *MockService) GetGuild(guildID string) (*discordgo.Guild, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGuild", guildID)
-	ret0, _ := ret[0].(*discordgo.Guild)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetGuild indicates an expected call of GetGuild
-func (mr *MockServiceMockRecorder) GetGuild(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuild", reflect.TypeOf((*MockService)(nil).GetGuild), guildID)
-}
-
-// GetGuildRoles mocks base method
-func (m *MockService) GetGuildRoles(guildID string) ([]*model.DiscordGuildRole, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGuildRoles", guildID)
-	ret0, _ := ret[0].([]*model.DiscordGuildRole)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetGuildRoles indicates an expected call of GetGuildRoles
-func (mr *MockServiceMockRecorder) GetGuildRoles(guildID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildRoles", reflect.TypeOf((*MockService)(nil).GetGuildRoles), guildID)
-}
-
-// GetUser mocks base method
-func (m *MockService) GetUser(userID string) (*discordgo.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", userID)
-	ret0, _ := ret[0].(*discordgo.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUser indicates an expected call of GetUser
-func (mr *MockServiceMockRecorder) GetUser(userID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockService)(nil).GetUser), userID)
-}
-
-// CreateDiscussionChannelForProposal mocks base method
+// CreateDiscussionChannelForProposal mocks base method.
 func (m *MockService) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateDiscussionChannelForProposal", guildId, proposalChannelID, proposalTitle)
@@ -371,13 +76,42 @@ func (m *MockService) CreateDiscussionChannelForProposal(guildId, proposalChanne
 	return ret0, ret1
 }
 
-// CreateDiscussionChannelForProposal indicates an expected call of CreateDiscussionChannelForProposal
+// CreateDiscussionChannelForProposal indicates an expected call of CreateDiscussionChannelForProposal.
 func (mr *MockServiceMockRecorder) CreateDiscussionChannelForProposal(guildId, proposalChannelID, proposalTitle interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDiscussionChannelForProposal", reflect.TypeOf((*MockService)(nil).CreateDiscussionChannelForProposal), guildId, proposalChannelID, proposalTitle)
 }
 
-// GetGuildEmojis mocks base method
+// DeleteChannel mocks base method.
+func (m *MockService) DeleteChannel(channelId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChannel", channelId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteChannel indicates an expected call of DeleteChannel.
+func (mr *MockServiceMockRecorder) DeleteChannel(channelId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChannel", reflect.TypeOf((*MockService)(nil).DeleteChannel), channelId)
+}
+
+// GetGuild mocks base method.
+func (m *MockService) GetGuild(guildID string) (*discordgo.Guild, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGuild", guildID)
+	ret0, _ := ret[0].(*discordgo.Guild)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGuild indicates an expected call of GetGuild.
+func (mr *MockServiceMockRecorder) GetGuild(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuild", reflect.TypeOf((*MockService)(nil).GetGuild), guildID)
+}
+
+// GetGuildEmojis mocks base method.
 func (m *MockService) GetGuildEmojis() ([]*discordgo.Emoji, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetGuildEmojis")
@@ -386,8 +120,275 @@ func (m *MockService) GetGuildEmojis() ([]*discordgo.Emoji, error) {
 	return ret0, ret1
 }
 
-// GetGuildEmojis indicates an expected call of GetGuildEmojis
+// GetGuildEmojis indicates an expected call of GetGuildEmojis.
 func (mr *MockServiceMockRecorder) GetGuildEmojis() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildEmojis", reflect.TypeOf((*MockService)(nil).GetGuildEmojis))
+}
+
+// GetGuildMembers mocks base method.
+func (m *MockService) GetGuildMembers(guildID string) ([]*discordgo.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGuildMembers", guildID)
+	ret0, _ := ret[0].([]*discordgo.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGuildMembers indicates an expected call of GetGuildMembers.
+func (mr *MockServiceMockRecorder) GetGuildMembers(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildMembers", reflect.TypeOf((*MockService)(nil).GetGuildMembers), guildID)
+}
+
+// GetGuildRoles mocks base method.
+func (m *MockService) GetGuildRoles(guildID string) ([]*model.DiscordGuildRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGuildRoles", guildID)
+	ret0, _ := ret[0].([]*model.DiscordGuildRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGuildRoles indicates an expected call of GetGuildRoles.
+func (mr *MockServiceMockRecorder) GetGuildRoles(guildID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGuildRoles", reflect.TypeOf((*MockService)(nil).GetGuildRoles), guildID)
+}
+
+// GetUser mocks base method.
+func (m *MockService) GetUser(userID string) (*discordgo.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUser", userID)
+	ret0, _ := ret[0].(*discordgo.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUser indicates an expected call of GetUser.
+func (mr *MockServiceMockRecorder) GetUser(userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockService)(nil).GetUser), userID)
+}
+
+// NotifyAddNewCollection mocks base method.
+func (m *MockService) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyAddNewCollection", guildID, collectionName, symbol, chain, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyAddNewCollection indicates an expected call of NotifyAddNewCollection.
+func (mr *MockServiceMockRecorder) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyAddNewCollection", reflect.TypeOf((*MockService)(nil).NotifyAddNewCollection), guildID, collectionName, symbol, chain, image)
+}
+
+// NotifyCompleteCollectionIntegration mocks base method.
+func (m *MockService) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyCompleteCollectionIntegration", guildID, collectionName, symbol, chain, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyCompleteCollectionIntegration indicates an expected call of NotifyCompleteCollectionIntegration.
+func (mr *MockServiceMockRecorder) NotifyCompleteCollectionIntegration(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionIntegration", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionIntegration), guildID, collectionName, symbol, chain, image)
+}
+
+// NotifyCompleteCollectionSync mocks base method.
+func (m *MockService) NotifyCompleteCollectionSync(guildID, collectionName, symbol, chain, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyCompleteCollectionSync", guildID, collectionName, symbol, chain, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyCompleteCollectionSync indicates an expected call of NotifyCompleteCollectionSync.
+func (mr *MockServiceMockRecorder) NotifyCompleteCollectionSync(guildID, collectionName, symbol, chain, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyCompleteCollectionSync", reflect.TypeOf((*MockService)(nil).NotifyCompleteCollectionSync), guildID, collectionName, symbol, chain, image)
+}
+
+// NotifyGmStreak mocks base method.
+func (m *MockService) NotifyGmStreak(channelID, userDiscordID string, streakCount int, podTownXps model.CreateUserTxResponse) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyGmStreak", channelID, userDiscordID, streakCount, podTownXps)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyGmStreak indicates an expected call of NotifyGmStreak.
+func (mr *MockServiceMockRecorder) NotifyGmStreak(channelID, userDiscordID, streakCount, podTownXps interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGmStreak", reflect.TypeOf((*MockService)(nil).NotifyGmStreak), channelID, userDiscordID, streakCount, podTownXps)
+}
+
+// NotifyGuildDelete mocks base method.
+func (m *MockService) NotifyGuildDelete(guildID, guildName, iconURL string, guildsLeft int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyGuildDelete", guildID, guildName, iconURL, guildsLeft)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyGuildDelete indicates an expected call of NotifyGuildDelete.
+func (mr *MockServiceMockRecorder) NotifyGuildDelete(guildID, guildName, iconURL, guildsLeft interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyGuildDelete", reflect.TypeOf((*MockService)(nil).NotifyGuildDelete), guildID, guildName, iconURL, guildsLeft)
+}
+
+// NotifyNewGuild mocks base method.
+func (m *MockService) NotifyNewGuild(newGuildID string, count int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyNewGuild", newGuildID, count)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyNewGuild indicates an expected call of NotifyNewGuild.
+func (mr *MockServiceMockRecorder) NotifyNewGuild(newGuildID, count interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyNewGuild", reflect.TypeOf((*MockService)(nil).NotifyNewGuild), newGuildID, count)
+}
+
+// NotifyStealAveragePrice mocks base method.
+func (m *MockService) NotifyStealAveragePrice(price, floor float64, url, name, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyStealAveragePrice", price, floor, url, name, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyStealAveragePrice indicates an expected call of NotifyStealAveragePrice.
+func (mr *MockServiceMockRecorder) NotifyStealAveragePrice(price, floor, url, name, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealAveragePrice", reflect.TypeOf((*MockService)(nil).NotifyStealAveragePrice), price, floor, url, name, image)
+}
+
+// NotifyStealFloorPrice mocks base method.
+func (m *MockService) NotifyStealFloorPrice(price, floor float64, url, name, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NotifyStealFloorPrice", price, floor, url, name, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// NotifyStealFloorPrice indicates an expected call of NotifyStealFloorPrice.
+func (mr *MockServiceMockRecorder) NotifyStealFloorPrice(price, floor, url, name, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NotifyStealFloorPrice", reflect.TypeOf((*MockService)(nil).NotifyStealFloorPrice), price, floor, url, name, image)
+}
+
+// SendDM mocks base method.
+func (m *MockService) SendDM(userID string, payload discordgo.MessageSend) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendDM", userID, payload)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendDM indicates an expected call of SendDM.
+func (mr *MockServiceMockRecorder) SendDM(userID, payload interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDM", reflect.TypeOf((*MockService)(nil).SendDM), userID, payload)
+}
+
+// SendDMUserPriceAlert mocks base method.
+func (m *MockService) SendDMUserPriceAlert(userID, symbol string, alertType model.AlertType, price float64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendDMUserPriceAlert", userID, symbol, alertType, price)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendDMUserPriceAlert indicates an expected call of SendDMUserPriceAlert.
+func (mr *MockServiceMockRecorder) SendDMUserPriceAlert(userID, symbol, alertType, price interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendDMUserPriceAlert", reflect.TypeOf((*MockService)(nil).SendDMUserPriceAlert), userID, symbol, alertType, price)
+}
+
+// SendFeedback mocks base method.
+func (m *MockService) SendFeedback(req *request.UserFeedbackRequest, feedbackID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendFeedback", req, feedbackID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendFeedback indicates an expected call of SendFeedback.
+func (mr *MockServiceMockRecorder) SendFeedback(req, feedbackID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendFeedback", reflect.TypeOf((*MockService)(nil).SendFeedback), req, feedbackID)
+}
+
+// SendGuildActivityLogs mocks base method.
+func (m *MockService) SendGuildActivityLogs(channelID, userID, title, description string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendGuildActivityLogs", channelID, userID, title, description)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendGuildActivityLogs indicates an expected call of SendGuildActivityLogs.
+func (mr *MockServiceMockRecorder) SendGuildActivityLogs(channelID, userID, title, description interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendGuildActivityLogs", reflect.TypeOf((*MockService)(nil).SendGuildActivityLogs), channelID, userID, title, description)
+}
+
+// SendLevelUpMessage mocks base method.
+func (m *MockService) SendLevelUpMessage(levelUpConfig *model.GuildConfigLogChannel, role string, levelRoleLevel int, randomTip string, uActivity *response.HandleUserActivityResponse) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SendLevelUpMessage", levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
+}
+
+// SendLevelUpMessage indicates an expected call of SendLevelUpMessage.
+func (mr *MockServiceMockRecorder) SendLevelUpMessage(levelUpConfig, role, levelRoleLevel, randomTip, uActivity interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendLevelUpMessage", reflect.TypeOf((*MockService)(nil).SendLevelUpMessage), levelUpConfig, role, levelRoleLevel, randomTip, uActivity)
+}
+
+// SendMessage mocks base method.
+func (m *MockService) SendMessage(channelID string, msgSend discordgo.MessageSend) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMessage", channelID, msgSend)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMessage indicates an expected call of SendMessage.
+func (mr *MockServiceMockRecorder) SendMessage(channelID, msgSend interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockService)(nil).SendMessage), channelID, msgSend)
+}
+
+// SendTipActivityLogs mocks base method.
+func (m *MockService) SendTipActivityLogs(channelID, userID string, author *discordgo.MessageEmbedAuthor, description, image string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendTipActivityLogs", channelID, userID, author, description, image)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendTipActivityLogs indicates an expected call of SendTipActivityLogs.
+func (mr *MockServiceMockRecorder) SendTipActivityLogs(channelID, userID, author, description, image interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTipActivityLogs", reflect.TypeOf((*MockService)(nil).SendTipActivityLogs), channelID, userID, author, description, image)
+}
+
+// SendUpdateRolesLog mocks base method.
+func (m *MockService) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendUpdateRolesLog", guildID, logChannelID, userID, roleID, _type)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendUpdateRolesLog indicates an expected call of SendUpdateRolesLog.
+func (mr *MockServiceMockRecorder) SendUpdateRolesLog(guildID, logChannelID, userID, roleID, _type interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendUpdateRolesLog", reflect.TypeOf((*MockService)(nil).SendUpdateRolesLog), guildID, logChannelID, userID, roleID, _type)
 }

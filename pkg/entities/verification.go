@@ -34,6 +34,10 @@ func (e *Entity) NewGuildConfigWalletVerificationMessage(req model.GuildConfigWa
 						Label:    "Verify",
 						Style:    discordgo.PrimaryButton,
 						CustomID: "mochi_verify",
+						Emoji: discordgo.ComponentEmoji{
+							Name: "approve",
+							ID:   util.GetEmojiID("approve"),
+						},
 					},
 				},
 			},

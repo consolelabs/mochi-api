@@ -5,65 +5,50 @@
 package mock_guild_config_level_role
 
 import (
+	reflect "reflect"
+
 	model "github.com/defipod/mochi/pkg/model"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockStore is a mock of Store interface
+// MockStore is a mock of Store interface.
 type MockStore struct {
 	ctrl     *gomock.Controller
 	recorder *MockStoreMockRecorder
 }
 
-// MockStoreMockRecorder is the mock recorder for MockStore
+// MockStoreMockRecorder is the mock recorder for MockStore.
 type MockStoreMockRecorder struct {
 	mock *MockStore
 }
 
-// NewMockStore creates a new mock instance
+// NewMockStore creates a new mock instance.
 func NewMockStore(ctrl *gomock.Controller) *MockStore {
 	mock := &MockStore{ctrl: ctrl}
 	mock.recorder = &MockStoreMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 	return m.recorder
 }
 
-// GetCurrentLevelRole mocks base method
-func (m *MockStore) GetCurrentLevelRole(guildID string, level int) (*model.GuildConfigLevelRole, error) {
+// DeleteOne mocks base method.
+func (m *MockStore) DeleteOne(guildID string, level int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCurrentLevelRole", guildID, level)
-	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "DeleteOne", guildID, level)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// GetCurrentLevelRole indicates an expected call of GetCurrentLevelRole
-func (mr *MockStoreMockRecorder) GetCurrentLevelRole(guildID, level interface{}) *gomock.Call {
+// DeleteOne indicates an expected call of DeleteOne.
+func (mr *MockStoreMockRecorder) DeleteOne(guildID, level interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentLevelRole", reflect.TypeOf((*MockStore)(nil).GetCurrentLevelRole), guildID, level)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOne", reflect.TypeOf((*MockStore)(nil).DeleteOne), guildID, level)
 }
 
-// GetNextLevelRole mocks base method
-func (m *MockStore) GetNextLevelRole(guildID string, currentLevel int) (*model.GuildConfigLevelRole, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNextLevelRole", guildID, currentLevel)
-	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetNextLevelRole indicates an expected call of GetNextLevelRole
-func (mr *MockStoreMockRecorder) GetNextLevelRole(guildID, currentLevel interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextLevelRole", reflect.TypeOf((*MockStore)(nil).GetNextLevelRole), guildID, currentLevel)
-}
-
-// GetByGuildID mocks base method
+// GetByGuildID mocks base method.
 func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildConfigLevelRole, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByGuildID", guildID)
@@ -72,13 +57,13 @@ func (m *MockStore) GetByGuildID(guildID string) ([]model.GuildConfigLevelRole, 
 	return ret0, ret1
 }
 
-// GetByGuildID indicates an expected call of GetByGuildID
+// GetByGuildID indicates an expected call of GetByGuildID.
 func (mr *MockStoreMockRecorder) GetByGuildID(guildID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByGuildID", reflect.TypeOf((*MockStore)(nil).GetByGuildID), guildID)
 }
 
-// GetByRoleID mocks base method
+// GetByRoleID mocks base method.
 func (m *MockStore) GetByRoleID(guildID, roleID string) (*model.GuildConfigLevelRole, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByRoleID", guildID, roleID)
@@ -87,13 +72,43 @@ func (m *MockStore) GetByRoleID(guildID, roleID string) (*model.GuildConfigLevel
 	return ret0, ret1
 }
 
-// GetByRoleID indicates an expected call of GetByRoleID
+// GetByRoleID indicates an expected call of GetByRoleID.
 func (mr *MockStoreMockRecorder) GetByRoleID(guildID, roleID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByRoleID", reflect.TypeOf((*MockStore)(nil).GetByRoleID), guildID, roleID)
 }
 
-// UpsertOne mocks base method
+// GetCurrentLevelRole mocks base method.
+func (m *MockStore) GetCurrentLevelRole(guildID string, level int) (*model.GuildConfigLevelRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentLevelRole", guildID, level)
+	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCurrentLevelRole indicates an expected call of GetCurrentLevelRole.
+func (mr *MockStoreMockRecorder) GetCurrentLevelRole(guildID, level interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentLevelRole", reflect.TypeOf((*MockStore)(nil).GetCurrentLevelRole), guildID, level)
+}
+
+// GetNextLevelRole mocks base method.
+func (m *MockStore) GetNextLevelRole(guildID string, currentLevel int) (*model.GuildConfigLevelRole, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetNextLevelRole", guildID, currentLevel)
+	ret0, _ := ret[0].(*model.GuildConfigLevelRole)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetNextLevelRole indicates an expected call of GetNextLevelRole.
+func (mr *MockStoreMockRecorder) GetNextLevelRole(guildID, currentLevel interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNextLevelRole", reflect.TypeOf((*MockStore)(nil).GetNextLevelRole), guildID, currentLevel)
+}
+
+// UpsertOne mocks base method.
 func (m *MockStore) UpsertOne(config model.GuildConfigLevelRole) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpsertOne", config)
@@ -101,22 +116,8 @@ func (m *MockStore) UpsertOne(config model.GuildConfigLevelRole) error {
 	return ret0
 }
 
-// UpsertOne indicates an expected call of UpsertOne
+// UpsertOne indicates an expected call of UpsertOne.
 func (mr *MockStoreMockRecorder) UpsertOne(config interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertOne", reflect.TypeOf((*MockStore)(nil).UpsertOne), config)
-}
-
-// DeleteOne mocks base method
-func (m *MockStore) DeleteOne(guildID string, level int) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteOne", guildID, level)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteOne indicates an expected call of DeleteOne
-func (mr *MockStoreMockRecorder) DeleteOne(guildID, level interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOne", reflect.TypeOf((*MockStore)(nil).DeleteOne), guildID, level)
 }

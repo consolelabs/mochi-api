@@ -457,6 +457,10 @@ func (d *Discord) SendFeedback(req *request.UserFeedbackRequest, feedbackID stri
 						Label:    "In progress",
 						Style:    2,
 						CustomID: fmt.Sprintf("feedback_handle-set-in-progress_%s", feedbackID),
+						Emoji: discordgo.ComponentEmoji{
+							Name: "approve",
+							ID:   util.GetEmojiID("approve"),
+						},
 					},
 				},
 			},
