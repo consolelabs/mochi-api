@@ -1,3 +1,10 @@
+## [6.29.4](https://github.com/consolelabs/mochi-api/compare/v6.29.3...v6.29.4) (2024-02-23)
+
+
+### Bug Fixes
+
+* **changelog:** update get changelog api ([fae2aee](https://github.com/consolelabs/mochi-api/commit/fae2aeeff9757b8365039059a83443c6eff4b6c0))
+
 ## [6.29.3](https://github.com/consolelabs/mochi-api/compare/v6.29.2...v6.29.3) (2024-02-23)
 
 
