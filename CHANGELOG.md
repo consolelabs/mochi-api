@@ -1,3 +1,11 @@
+## [6.29.3](https://github.com/consolelabs/mochi-api/compare/v6.29.2...v6.29.3) (2024-02-23)
+
+
+### Bug Fixes
+
+* **covalent:** remove sentry log for covalent rate limit ([9cbc0b2](https://github.com/consolelabs/mochi-api/commit/9cbc0b23b4fa2ea8c6629ac699395ce3d6b98911))
+* handle non json response and 503 when sending ext reqeust ([fe4bb3b](https://github.com/consolelabs/mochi-api/commit/fe4bb3b0665f7d7f20e7ea5a2175e5aea2d5371d))
+
 ## [6.29.2](https://github.com/consolelabs/mochi-api/compare/v6.29.1...v6.29.2) (2024-02-20)
 
 
