@@ -701,6 +701,26 @@ func SendRequest(q SendRequestQuery) (int, error) {
 	}
 
 	statusCode := res.StatusCode
+
+	// Handle 503 error first before unmarshal response, because 503 error response sometimes is not json -> cannot unmarshal -> let unmarshal error is returned instead of 503 error
+	if statusCode == http.StatusServiceUnavailable {
+		return statusCode, nil
+	}
+
+	// Handle error response when it is an HTML page, can consider to parse error message from HTML page later
+	contentType := res.Header.Get("Content-Type")
+	if strings.HasPrefix(contentType, "text/html") {
+		// Handle HTML error response
+		htmlBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return statusCode, err
+		}
+
+		// Just logging the error response and return response as empty -> get no data
+		logger.NewLogrusLogger().Fields(logger.Fields{"q": q, "htmlBody": string(htmlBody)}).Info("Error response from service is not json")
+		return statusCode, nil
+	}
+
 	if q.Response != nil {
 		bytes, err := io.ReadAll(res.Body)
 		if err != nil {
