@@ -41,7 +41,7 @@ func (c *Covalent) doNetworkSolanaTokenBalances(chainName string, address string
 	if res.Error {
 		if retry == 0 {
 			c.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", err),
+				Message: fmt.Sprintf("[API mochi] - Covalent - doNetworkTokenBalances failed %v", res.Error),
 				Tags:    sentryTags,
 				Extra: map[string]interface{}{
 					"chainName": chainName,
