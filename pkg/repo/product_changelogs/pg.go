@@ -32,6 +32,8 @@ func (pg *pg) List(q ListQuery) (changeLogs []model.ProductChangelogs, total int
 		db = db.Where("lower(product) = ?", strings.ToLower(q.Product))
 	}
 	return changeLogs, total, db.
+		Joins("JOIN product_changelog_snapshots ON product_changelogs.file_name = product_changelog_snapshots.filename").
+		Where("product_changelog_snapshots.is_public = true").
 		Count(&total).
 		Offset(q.Page * q.Size).
 		Limit(q.Size).
@@ -92,8 +94,16 @@ func (pg *pg) GetByVersion(version string) (*model.ProductChangelogs, error) {
 
 func (pg *pg) GetLatest() (*model.ProductChangelogs, error) {
 	changelog := &model.ProductChangelogs{}
-	db := pg.db.Where("is_expired = false").Order("created_at DESC")
-	return changelog, db.First(changelog).Error
+	db := pg.db
+	tx := db.Begin()
+	if err := tx.Error; err != nil {
+		return changelog, err
+	}
+	tx.Raw(`Select * from product_changelogs as pc 
+    				left join product_changelog_snapshots as pcs 
+    				on pc.file_name = pcs.filename
+         			where pcs.is_public = true and pc.is_expired = false order by pc.created_at DESC`).Scan(&changelog)
+	return changelog, nil
 }
 
 func (pg *pg) GetNextVersion(id int64) (string, error) {
