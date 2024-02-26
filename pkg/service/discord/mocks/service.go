@@ -171,6 +171,21 @@ func (mr *MockServiceMockRecorder) GetUser(userID interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockService)(nil).GetUser), userID)
 }
 
+// GuildWithCounts mocks base method.
+func (m *MockService) GuildWithCounts(guildId string) (*discordgo.Guild, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GuildWithCounts", guildId)
+	ret0, _ := ret[0].(*discordgo.Guild)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GuildWithCounts indicates an expected call of GuildWithCounts.
+func (mr *MockServiceMockRecorder) GuildWithCounts(guildId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GuildWithCounts", reflect.TypeOf((*MockService)(nil).GuildWithCounts), guildId)
+}
+
 // NotifyAddNewCollection mocks base method.
 func (m *MockService) NotifyAddNewCollection(guildID, collectionName, symbol, chain, image string) error {
 	m.ctrl.T.Helper()

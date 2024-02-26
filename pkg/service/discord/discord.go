@@ -87,6 +87,16 @@ func (d *Discord) GetGuildEmojis() ([]*discordgo.Emoji, error) {
 	return emojis, nil
 }
 
+func (d *Discord) GuildWithCounts(guildId string) (*discordgo.Guild, error) {
+	guild, err := d.session.GuildWithCounts(guildId)
+	if err != nil {
+		d.log.Errorf(err, "[discord.GuildWithCounts] - failed to get guild with counts: %s", guildId)
+		return nil, err
+	}
+
+	return guild, nil
+}
+
 func (d *Discord) NotifyNewGuild(guildID string, count int) error {
 	// get new guild info
 	guild, err := d.session.Guild(guildID)

@@ -29,6 +29,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		guildGroup.GET("/user-managed", middleware.AuthGuard(cfg), h.Guild.ListMyGuilds)
 		guildGroup.PUT("/:guild_id", h.Guild.UpdateGuild)
 		guildGroup.GET("/validate-user", h.Guild.ValidateUser)
+
+		reportGuildGroup := guildGroup.Group("/:guild_id/report")
+		{
+			reportGuildGroup.GET("/roles", h.Guild.GuildReportRoles)
+		}
 	}
 
 	profileGroup := v1.Group("/profiles")

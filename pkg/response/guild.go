@@ -1,6 +1,8 @@
 package response
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -35,4 +37,16 @@ type DiscordGuildResponse struct {
 
 type ListMyGuildsResponse struct {
 	Data []DiscordGuildResponse `json:"data"`
+}
+
+type GuildReportRoles struct {
+	Roles       []GuildReportRoleDetail `json:"roles"`
+	LastUpdated time.Time               `json:"last_updated"`
+}
+
+type GuildReportRoleDetail struct {
+	Id               string  `json:"id"`
+	Name             string  `json:"name"`
+	NrOfMember       int64   `json:"nr_of_member"`
+	ChangePercentage float64 `json:"change_percentage"`
 }

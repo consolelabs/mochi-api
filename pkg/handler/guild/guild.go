@@ -203,3 +203,21 @@ func (h *Handler) CreateGuild(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(response.ResponseMessage{Message: "OK"}, nil, nil, nil))
 }
+
+func (h *Handler) GuildReportRoles(c *gin.Context) {
+	var req request.GuildRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Statistic] - failed to read query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid request"), nil))
+		return
+	}
+
+	resp, err := h.entities.GuildReportRoles(req.GuildId)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.Statistic] - failed to statistic")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+}
