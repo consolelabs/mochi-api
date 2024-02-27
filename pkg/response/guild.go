@@ -60,3 +60,11 @@ type GuildReportMembers struct {
 	ChangePercentage float64   `json:"change_percentage"`
 	LastUpdated      time.Time `json:"last_updated"`
 }
+
+type GuildReportAdditionalRole struct {
+	Id          string                  `json:"id"`
+	Name        string                  `json:"name"`
+	LastUpdated time.Time               `json:"last_updated"`
+	Roles       []GuildReportRoleDetail `json:"roles"`
+	ListMember  []discordgo.User        `json:"list_member"`
+}

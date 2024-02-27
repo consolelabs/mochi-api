@@ -205,21 +205,40 @@ func (h *Handler) CreateGuild(c *gin.Context) {
 }
 
 func (h *Handler) GuildReportRoles(c *gin.Context) {
-	var req request.GuildRequest
+	var req request.GuildReportAdditionalRoleRequest
 	if err := c.ShouldBindUri(&req); err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportRoles] - failed to read query")
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportAdditionalRoles] - failed to read query")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid request"), nil))
 		return
 	}
 
-	resp, err := h.entities.GuildReportRoles(req.GuildId)
-	if err != nil {
-		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportRoles] - failed to GuildReportRoles")
-		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportAdditionalRoles] - failed to read query")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, errors.New("invalid request"), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+	if req.AdditionalRoles == "" {
+		resp, err := h.entities.GuildReportRoles(req.GuildId)
+		if err != nil {
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportRoles] - failed to GuildReportRoles")
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+
+		c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+	} else {
+		req.AdditionalRolesList = strings.Split(req.AdditionalRoles, ",")
+
+		resp, err := h.entities.GuildReportAdditionalRoles(req)
+		if err != nil {
+			h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GuildReportAdditionalRoles] - failed to GuildReportAdditionalRoles")
+			c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+			return
+		}
+
+		c.JSON(http.StatusOK, response.CreateResponse(resp, nil, nil, nil))
+	}
 }
 
 func (h *Handler) GuildReportMembers(c *gin.Context) {
