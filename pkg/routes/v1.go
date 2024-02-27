@@ -33,6 +33,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 		reportGuildGroup := guildGroup.Group("/:guild_id/report")
 		{
 			reportGuildGroup.GET("/roles", h.Guild.GuildReportRoles)
+			reportGuildGroup.GET("/members", h.Guild.GuildReportMembers)
 		}
 	}
 

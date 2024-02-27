@@ -40,6 +40,8 @@ type ListMyGuildsResponse struct {
 }
 
 type GuildReportRoles struct {
+	Id          string                  `json:"id"`
+	Name        string                  `json:"name"`
 	Roles       []GuildReportRoleDetail `json:"roles"`
 	LastUpdated time.Time               `json:"last_updated"`
 }
@@ -49,4 +51,12 @@ type GuildReportRoleDetail struct {
 	Name             string  `json:"name"`
 	NrOfMember       int64   `json:"nr_of_member"`
 	ChangePercentage float64 `json:"change_percentage"`
+}
+
+type GuildReportMembers struct {
+	Id               string    `json:"id"`
+	Name             string    `json:"name"`
+	NrOfMember       int64     `json:"nr_of_member"`
+	ChangePercentage float64   `json:"change_percentage"`
+	LastUpdated      time.Time `json:"last_updated"`
 }
