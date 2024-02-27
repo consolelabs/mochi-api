@@ -398,7 +398,7 @@ func (e *Entity) GuildReportRoles(guildId string) (*response.GuildReportRoles, e
 		if role.ID != guildId {
 			// change percentage: temp random value until implement database logic
 			rand.Seed(time.Now().UnixNano())
-			changePercentage := util.RandFloats(0.0, 100.0)
+			changePercentage := util.RandFloats(-100.0, 100.0)
 			guildReportRoles = append(guildReportRoles, response.GuildReportRoleDetail{
 				Id:               role.ID,
 				Name:             role.Name,
@@ -409,7 +409,29 @@ func (e *Entity) GuildReportRoles(guildId string) (*response.GuildReportRoles, e
 	}
 
 	return &response.GuildReportRoles{
+		Id:          guildInfo.ID,
+		Name:        guildInfo.Name,
 		LastUpdated: time.Now(),
 		Roles:       guildReportRoles,
 	}, nil
+}
+
+func (e *Entity) GuildReportMembers(guildId string) (*response.GuildReportMembers, error) {
+	guildInfo, err := e.svc.Discord.GuildWithCounts(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[entity.Statistic] cannot get guild info from Discord")
+		return nil, err
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	changePercentage := util.RandFloats(-100.0, 100.0)
+
+	return &response.GuildReportMembers{
+		Id:               guildInfo.ID,
+		Name:             guildInfo.Name,
+		NrOfMember:       int64(guildInfo.ApproximateMemberCount),
+		ChangePercentage: changePercentage,
+		LastUpdated:      time.Now(),
+	}, nil
+
 }

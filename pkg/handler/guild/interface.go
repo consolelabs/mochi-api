@@ -12,4 +12,5 @@ type IHandler interface {
 	ValidateUser(c *gin.Context)
 	// report
 	GuildReportRoles(c *gin.Context)
+	GuildReportMembers(c *gin.Context)
 }
