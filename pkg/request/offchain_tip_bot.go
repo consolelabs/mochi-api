@@ -31,6 +31,7 @@ type TransferV2Request struct {
 	GuildID        string                 `json:"guild_id"`
 	Amount         float64                `json:"amount" binding:"required"`
 	Token          string                 `json:"token" binding:"required"`
+	TokenId        string                 `json:"token_id"`
 	Each           bool                   `json:"each"`
 	All            bool                   `json:"all"`
 	TransferType   string                 `json:"transfer_type" binding:"required" enums:"transfer,airdrop"`
