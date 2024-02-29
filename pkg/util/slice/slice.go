@@ -83,3 +83,14 @@ func Equal[T constraints.Ordered](a []T, b []T) bool {
 	})
 	return reflect.DeepEqual(a, b)
 }
+
+// returns the first element of the given slice, which pass the provided callback function ('callbackFn' returns true)
+func Find[T any](s []T, callbackFn func(elem T) bool) *T {
+	for _, item := range s {
+		if callbackFn(item) {
+			return &item
+		}
+	}
+
+	return nil
+}

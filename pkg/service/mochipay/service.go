@@ -19,6 +19,7 @@ type Service interface {
 	GetProfileCustodialWallets(profileID string) (any, error)
 	GetProfileKrystalEarnBalances(profileID string) (any, error)
 	GetStakingTokenMapping(symbol, address string) (*StakingTokenMappingResponse, error)
+	GetTokenById(tokenId string) (*Token, error)
 
 	// TransferV2
 	TransferV2(req TransferV2Request) (*TransferV2Response, error)

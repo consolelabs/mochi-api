@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -437,7 +438,7 @@ func (m *MochiPay) GetToken(symbol, chainId string) (*Token, error) {
 		return nil, err
 	}
 
-	responseBody, err := ioutil.ReadAll(response.Body)
+	responseBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -610,4 +611,21 @@ func (m *MochiPay) GetProfileKrystalEarnBalances(profileID string) (any, error) 
 	}
 
 	return nil, nil
+}
+
+func (m *MochiPay) GetTokenById(tokenId string) (*Token, error) {
+	var res GetTokenResponse
+	status, err := util.SendRequest(util.SendRequestQuery{
+		URL:      fmt.Sprintf("%s/api/v1/tokens/%s", m.config.MochiPayServerHost, tokenId),
+		Method:   "GET",
+		Response: &res,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("transfer failed with status %d", status)
+	}
+
+	return res.Data, nil
 }
