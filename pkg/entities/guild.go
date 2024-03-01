@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/logger"
@@ -15,6 +17,7 @@ import (
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
+	"github.com/defipod/mochi/pkg/util"
 )
 
 func (e *Entity) CreateGuild(guild request.CreateGuildRequest) error {
@@ -351,4 +354,183 @@ func (e *Entity) ValidateUser(ids []string, guildId string) ([]string, error) {
 	}
 
 	return res, nil
+}
+
+func (e *Entity) GuildReportRoles(guildId string) (*response.GuildReportRoles, error) {
+	guildInfo, err := e.svc.Discord.GuildWithCounts(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[entity.Statistic] cannot get guild info from Discord")
+		return nil, err
+	}
+
+	// Discord API not count number of members in each role
+	// - need to get all guild member to see what roles they have and count
+	// - only allow 1000 members per request, so need to loop until all members are counted
+	after := ""
+	limit := 1000
+	countRole := make(map[string]int64, 0)
+
+	for {
+		guildMembers, err := e.discord.GuildMembers(guildId, after, limit)
+		if err != nil {
+			return nil, err
+		}
+		for _, member := range guildMembers {
+			for _, role := range member.Roles {
+				_, ok := countRole[role]
+				if !ok {
+					countRole[role] = 1
+				} else {
+					countRole[role] = countRole[role] + 1
+				}
+
+			}
+		}
+
+		if len(guildMembers) < limit {
+			break
+		}
+		after = guildMembers[len(guildMembers)-1].User.ID
+	}
+
+	// mapping to response
+	guildReportRoles := make([]response.GuildReportRoleDetail, 0)
+	for _, role := range guildInfo.Roles {
+		if role.ID != guildId {
+			// change percentage: temp random value until implement database logic
+			rand.Seed(time.Now().UnixNano())
+			changePercentage := util.RandFloats(-100.0, 100.0)
+			guildReportRoles = append(guildReportRoles, response.GuildReportRoleDetail{
+				Id:               role.ID,
+				Name:             role.Name,
+				NrOfMember:       countRole[role.ID],
+				ChangePercentage: changePercentage,
+			})
+		}
+	}
+
+	return &response.GuildReportRoles{
+		Id:          guildInfo.ID,
+		Name:        guildInfo.Name,
+		LastUpdated: time.Now(),
+		Roles:       guildReportRoles,
+	}, nil
+}
+
+func (e *Entity) GuildReportMembers(guildId string) (*response.GuildReportMembers, error) {
+	guildInfo, err := e.svc.Discord.GuildWithCounts(guildId)
+	if err != nil {
+		e.log.Errorf(err, "[entity.Statistic] cannot get guild info from Discord")
+		return nil, err
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	changePercentage := util.RandFloats(-100.0, 100.0)
+
+	return &response.GuildReportMembers{
+		Id:               guildInfo.ID,
+		Name:             guildInfo.Name,
+		NrOfMember:       int64(guildInfo.ApproximateMemberCount),
+		ChangePercentage: changePercentage,
+		LastUpdated:      time.Now(),
+	}, nil
+}
+
+func (e *Entity) GuildReportAdditionalRoles(req request.GuildReportAdditionalRoleRequest) (*response.GuildReportAdditionalRole, error) {
+	guildInfo, err := e.svc.Discord.GuildWithCounts(req.GuildId)
+	if err != nil {
+		e.log.Errorf(err, "[entity.Statistic] cannot get guild info from Discord")
+		return nil, err
+	}
+
+	// Discord API not count number of members in each role
+	// - need to get all guild member to see what roles they have and count
+	// - only allow 1000 members per request, so need to loop until all members are counted
+	after := ""
+	limit := 1000
+	countRole := make(map[string]int64, 0)
+	memberSatify := make([]discordgo.User, 0)
+
+	for {
+		guildMembers, err := e.discord.GuildMembers(req.GuildId, after, limit)
+		if err != nil {
+			return nil, err
+		}
+		for _, member := range guildMembers {
+			additionalRoleSatisfy, listRoleSatisfy := e.countAdditionalRole(member, req)
+			for role, satisfy := range listRoleSatisfy {
+				if satisfy {
+					_, ok := countRole[role]
+					if !ok {
+						countRole[role] = 1
+					} else {
+						countRole[role] = countRole[role] + 1
+					}
+				}
+			}
+
+			if additionalRoleSatisfy {
+				memberSatify = append(memberSatify, *member.User)
+			}
+		}
+
+		if len(guildMembers) < limit {
+			break
+		}
+		after = guildMembers[len(guildMembers)-1].User.ID
+	}
+
+	// mapping to response
+	guildReportRoles := make([]response.GuildReportRoleDetail, 0)
+	for _, role := range req.AdditionalRolesList {
+		// change percentage: temp random value until implement database logic
+		rand.Seed(time.Now().UnixNano())
+		changePercentage := util.RandFloats(-100.0, 100.0)
+		guildReportRoles = append(guildReportRoles, response.GuildReportRoleDetail{
+			Id: role,
+			// Name:             role.Name,
+			NrOfMember:       countRole[role],
+			ChangePercentage: changePercentage,
+		})
+
+	}
+
+	return &response.GuildReportAdditionalRole{
+		Id:          guildInfo.ID,
+		Name:        guildInfo.Name,
+		LastUpdated: time.Now(),
+		ListMember:  memberSatify,
+		Roles:       guildReportRoles,
+	}, nil
+}
+
+func (e *Entity) countAdditionalRole(member *discordgo.Member, req request.GuildReportAdditionalRoleRequest) (bool, map[string]bool) {
+	roleSatisfy := make(map[string]bool, 0)
+
+	switch req.Logic {
+	case "or":
+		isSatisfy := false
+		for _, role := range req.AdditionalRolesList {
+			if slices.Contains(member.Roles, role) {
+				roleSatisfy[role] = true
+				isSatisfy = true
+			} else {
+				roleSatisfy[role] = false
+			}
+		}
+		return isSatisfy, roleSatisfy
+	case "and":
+		nrOfSatisfyRole := 0
+		for _, role := range req.AdditionalRolesList {
+			if slices.Contains(member.Roles, role) {
+				roleSatisfy[role] = true
+				nrOfSatisfyRole++
+			} else {
+				roleSatisfy[role] = false
+			}
+		}
+		return nrOfSatisfyRole == len(req.AdditionalRolesList), roleSatisfy
+	}
+	return false, nil
+
 }

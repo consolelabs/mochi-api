@@ -18,6 +18,7 @@ import (
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/mochipay"
 	"github.com/defipod/mochi/pkg/util"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 func (e *Entity) TransferToken(req request.OffchainTransferRequest) (*response.OffchainTipBotTransferToken, error) {
@@ -170,21 +171,39 @@ func (e *Entity) sendLogNotify(req request.OffchainTransferRequest, decimal int,
 	}
 }
 
-func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
-	logger := e.log.Fields(logger.Fields{"component": "entity.TransferV2", "req": req})
-	logger.Info("receive new transfer request")
-	template := parseTemplate(req)
+func (e *Entity) getTransferToken(req request.TransferV2Request) (token *mochipay.Token, err error) {
+	logger := e.log.Fields(logger.Fields{"component": "entity.getTransferToken", "req": req})
 
-	// validate token
-	token, err := e.svc.MochiPay.GetToken(req.Token, req.ChainID)
+	if req.TokenId != "" {
+		token, err = e.svc.MochiPay.GetTokenById(req.TokenId)
+	} else {
+		token, err = e.svc.MochiPay.GetToken(req.Token, req.ChainID)
+	}
+
 	if err != nil {
-		logger.Error(err, "[entity.TransferTokenV2] svc.MochiPay.GetToken() failed")
+		logger.Error(err, "failed to get token")
 		return nil, err
 	}
 
 	if token == nil {
-		logger.Error(err, "[entity.TransferTokenV2] token not found")
-		return nil, errors.New(consts.OffchainTipBotFailReasonTokenNotSupported)
+		err = errors.New("token not found")
+		logger.Error(err, "token not found")
+		return nil, err
+	}
+
+	return
+}
+
+func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.TransferTokenV2Data, error) {
+	logger := e.log.Fields(logger.Fields{"component": "entity.TransferTokenV2", "req": req})
+	logger.Info("receive new transfer request")
+	template := parseTemplate(req)
+
+	// validate token
+	token, err := e.getTransferToken(req)
+	if err != nil {
+		logger.Error(err, "getTransferToken() failed")
+		return nil, err
 	}
 
 	// convert total transfer amount
@@ -192,7 +211,7 @@ func (e *Entity) TransferTokenV2(req request.TransferV2Request) (*response.Trans
 
 	// validate balance
 	if err := e.validateTransferBalance(totalAmount, req); err != nil {
-		logger.Error(err, "[entity.TransferTokenV2] svc.MochiPay.GetToken() failed")
+		logger.Error(err, "validateTransferBalance() failed")
 		return nil, err
 	}
 
@@ -329,7 +348,7 @@ func (e *Entity) validateTransferBalance(total *big.Int, req request.TransferV2R
 	// validate balance
 	senderBalance, err := e.svc.MochiPay.GetBalance(req.Sender, req.Token, req.ChainID)
 	if err != nil {
-		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferTokenV2] repo.OffchainTipBotUserBalances.GetUserBalanceByTokenID() failed")
+		e.log.Fields(logger.Fields{"token": req.Token, "user": req.Sender}).Error(err, "[entity.TransferTokenV2] svc.MochiPay.GetBalance() failed")
 		return err
 	}
 
@@ -337,12 +356,21 @@ func (e *Entity) validateTransferBalance(total *big.Int, req request.TransferV2R
 		return errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 
-	bal, err := util.StringToBigInt(senderBalance.Data[0].Amount)
+	var bal *mochipay.GetBalanceResponse
+	if req.TokenId != "" {
+		bal = sliceutils.Find(senderBalance.Data, func(b mochipay.GetBalanceResponse) bool {
+			return b.TokenId == req.TokenId
+		})
+	} else {
+		bal = &senderBalance.Data[0]
+	}
+
+	currentAmount, err := util.StringToBigInt(bal.Amount)
 	if err != nil {
 		return errors.New(consts.OffchainTipBotFailReasonInvalidAmount)
 	}
 
-	if bal.Cmp(total) < 0 {
+	if currentAmount.Cmp(total) < 0 {
 		return errors.New(consts.OffchainTipBotFailReasonNotEnoughBalance)
 	}
 

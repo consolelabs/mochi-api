@@ -883,3 +883,7 @@ func ValidateFileMarkdown(s string) bool {
 
 	return matched
 }
+
+func RandFloats(min, max float64) float64 {
+	return min + rand.Float64()*(max-min)
+}

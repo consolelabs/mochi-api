@@ -30,3 +30,14 @@ type ValidateUserRequest struct {
 	Ids     string `form:"ids"`
 	GuildId string `form:"guild_id"`
 }
+
+type GuildRequest struct {
+	GuildId string `uri:"guild_id" binding:"required"`
+}
+
+type GuildReportAdditionalRoleRequest struct {
+	GuildId             string `uri:"guild_id" binding:"required"`
+	AdditionalRoles     string `form:"additional_roles"`
+	Logic               string `form:"logic"`
+	AdditionalRolesList []string
+}
