@@ -1,3 +1,17 @@
+# [6.30.0](https://github.com/consolelabs/mochi-api/compare/v6.29.4...v6.30.0) (2024-03-01)
+
+
+### Bug Fixes
+
+* transfer-v2 - add token_id to payload ([6ae9e83](https://github.com/consolelabs/mochi-api/commit/6ae9e83c03c0da42ded352702e18a8202a523d52))
+
+
+### Features
+
+* report guild additional roles ([#1372](https://github.com/consolelabs/mochi-api/issues/1372)) ([b3b6ce7](https://github.com/consolelabs/mochi-api/commit/b3b6ce72991c0fdb3f56f78f085c23536a841732))
+* report guild member ([#1371](https://github.com/consolelabs/mochi-api/issues/1371)) ([6ad1e25](https://github.com/consolelabs/mochi-api/commit/6ad1e25082eeb67feecddf2c438b0f30bd399be9))
+* report guild role ([#1370](https://github.com/consolelabs/mochi-api/issues/1370)) ([82da56f](https://github.com/consolelabs/mochi-api/commit/82da56f048b555e3f2ea512d120675669ff7e265))
+
 ## [6.29.4](https://github.com/consolelabs/mochi-api/compare/v6.29.3...v6.29.4) (2024-02-23)
 
 
