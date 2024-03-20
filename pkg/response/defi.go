@@ -91,6 +91,12 @@ type GetCoinResponse struct {
 	Tickers                      []TickerData                      `json:"tickers"`
 	ContractAddress              string                            `json:"contract_address"`
 	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
+	IcoData                      *ICOData                          `json:"ico_data"`
+}
+
+type ICOData struct {
+	ICOStartDate *time.Time `json:"ico_start_date"`
+	ICOEndDate   *time.Time `json:"ico_end_date"`
 }
 
 type TokenInfoResponse struct {
