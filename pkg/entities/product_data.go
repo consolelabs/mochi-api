@@ -378,9 +378,7 @@ func (e *Entity) ParseChangelogContent(version string, title string, content str
 	text = e.parseMarkDown(markdownAST, &ctx, input)
 	filteredImages := make([]string, 0)
 	for _, img := range ctx.Images {
-		if strings.Contains(img, "imgur.com") {
-			filteredImages = append(filteredImages, img)
-		}
+		filteredImages = append(filteredImages, img)
 	}
 
 	// parse strong text
