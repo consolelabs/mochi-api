@@ -1,3 +1,10 @@
+## [6.30.1](https://github.com/consolelabs/mochi-api/compare/v6.30.0...v6.30.1) (2024-03-20)
+
+
+### Bug Fixes
+
+* get coin - update response ([e76a98d](https://github.com/consolelabs/mochi-api/commit/e76a98d1abe8625c4bed4dd03df3823b2790946e))
+
 # [6.30.0](https://github.com/consolelabs/mochi-api/compare/v6.29.4...v6.30.0) (2024-03-01)
 
 
