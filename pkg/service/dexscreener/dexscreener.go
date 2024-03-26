@@ -56,17 +56,17 @@ func (d *dexscreener) Search(query string) ([]Pair, error) {
 	return pairResponse.Pairs, nil
 }
 
-func (d *dexscreener) Get(network, address string) (*Pair, error) {
+func (d *dexscreener) GetByChainAndPairAddress(network, pairAddr string) (*Pair, error) {
 	pairResponse := PairResponse{}
-	url := fmt.Sprintf("%s/pairs/%s/%s", baseUrl, network, address)
+	url := fmt.Sprintf("%s/pairs/%s/%s", baseUrl, network, pairAddr)
 	status, err := util.FetchData(url, &pairResponse)
 	if err != nil {
 		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - DexScreener - Get failed %v", err),
+			Message: fmt.Sprintf("[API mochi] - DexScreener - GetByChainAndPairAddress failed %v", err),
 			Tags:    sentryTags,
 			Extra: map[string]interface{}{
 				"network": network,
-				"address": address,
+				"address": pairAddr,
 			},
 		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener: %w", err)
@@ -74,11 +74,11 @@ func (d *dexscreener) Get(network, address string) (*Pair, error) {
 
 	if status != 200 {
 		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
-			Message: fmt.Sprintf("[API mochi] - DexScreener - Get failed %v", err),
+			Message: fmt.Sprintf("[API mochi] - DexScreener - GetByChainAndPairAddress failed %v", err),
 			Tags:    sentryTags,
 			Extra: map[string]interface{}{
 				"network": network,
-				"address": address,
+				"address": pairAddr,
 			},
 		})
 		return nil, fmt.Errorf("failed to fetch data from dexscreener, status: %d", status)
@@ -91,4 +91,33 @@ func (d *dexscreener) Get(network, address string) (*Pair, error) {
 	pair := pairResponse.Pairs[0]
 
 	return &pair, nil
+}
+
+func (d *dexscreener) GetByTokenAddress(tokenAddr string) ([]Pair, error) {
+	pairResponse := PairResponse{}
+	url := fmt.Sprintf("%s/tokens/%s", baseUrl, tokenAddr)
+	status, err := util.FetchData(url, &pairResponse)
+	if err != nil {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - GetByTokenAddress failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": tokenAddr,
+			},
+		})
+		return nil, fmt.Errorf("failed to fetch data from dexscreener: %w", err)
+	}
+
+	if status != 200 {
+		d.sentry.CaptureErrorEvent(sentrygo.SentryCapturePayload{
+			Message: fmt.Sprintf("[API mochi] - DexScreener - GetByTokenAddress failed %v", err),
+			Tags:    sentryTags,
+			Extra: map[string]interface{}{
+				"address": tokenAddr,
+			},
+		})
+		return nil, fmt.Errorf("failed to fetch data from dexscreener, status: %d", status)
+	}
+
+	return pairResponse.Pairs, nil
 }

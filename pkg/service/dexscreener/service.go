@@ -2,5 +2,6 @@ package dexscreener
 
 type Service interface {
 	Search(query string) ([]Pair, error)
-	Get(network, address string) (*Pair, error)
+	GetByChainAndPairAddress(network, pairAddr string) (*Pair, error)
+	GetByTokenAddress(tokenAddr string) ([]Pair, error)
 }
