@@ -1,3 +1,10 @@
+## [6.31.2](https://github.com/consolelabs/mochi-api/compare/v6.31.1...v6.31.2) (2024-03-27)
+
+
+### Bug Fixes
+
+* update coingecko tickers response model ([fe037e9](https://github.com/consolelabs/mochi-api/commit/fe037e9becd695ac5db72ab88bfd2a660e3ac7df))
+
 ## [6.31.1](https://github.com/consolelabs/mochi-api/compare/v6.31.0...v6.31.1) (2024-03-27)
 
 
