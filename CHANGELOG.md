@@ -1,3 +1,10 @@
+# [6.31.0](https://github.com/consolelabs/mochi-api/compare/v6.30.2...v6.31.0) (2024-03-27)
+
+
+### Features
+
+* search dex-screener pairs ([343ae47](https://github.com/consolelabs/mochi-api/commit/343ae47fef39353aba911b66c1041edbd1ccf6da))
+
 ## [6.30.2](https://github.com/consolelabs/mochi-api/compare/v6.30.1...v6.30.2) (2024-03-25)
 
 
