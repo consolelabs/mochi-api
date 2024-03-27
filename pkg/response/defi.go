@@ -121,15 +121,17 @@ type TokenInfoKeyValue struct {
 }
 
 type TickerData struct {
-	Base         string            `json:"base"`
-	Target       string            `json:"target"`
-	Last         float64           `json:"last"`
-	CoinID       string            `json:"coin_id"`
-	TargetCoinID string            `json:"target_coin_id"`
-	Market       *TickerMarketData `json:"market"`
-	TradeUrl     string            `json:"trade_url"`
-	Volume       float64           `json:"volume"`
-	TrustScore   string            `json:"trust_score"`
+	Base            string             `json:"base"`
+	Target          string             `json:"target"`
+	Last            float64            `json:"last"`
+	CoinID          string             `json:"coin_id"`
+	TargetCoinID    string             `json:"target_coin_id"`
+	Market          *TickerMarketData  `json:"market"`
+	TradeUrl        string             `json:"trade_url"`
+	Volume          float64            `json:"volume"`
+	TrustScore      string             `json:"trust_score"`
+	ConvertedVolume map[string]float64 `json:"converted_volume"`
+	ConvertedLast   map[string]float64 `json:"converted_last"`
 }
 
 type TickerMarketData struct {
