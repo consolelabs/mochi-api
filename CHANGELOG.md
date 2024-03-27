@@ -1,3 +1,10 @@
+## [6.30.2](https://github.com/consolelabs/mochi-api/compare/v6.30.1...v6.30.2) (2024-03-25)
+
+
+### Bug Fixes
+
+* **changelog:** remove filter image ([d6e4358](https://github.com/consolelabs/mochi-api/commit/d6e4358c3851a2281ae1d4e01ab3266a23c6d6c4))
+
 ## [6.30.1](https://github.com/consolelabs/mochi-api/compare/v6.30.0...v6.30.1) (2024-03-20)
 
 
