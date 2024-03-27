@@ -486,6 +486,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 	dexesGroup := v1.Group("/dexes")
 	{
 		dexesGroup.GET("/search", h.Dexes.SearchDexPair)
+		dexesGroup.GET("/dex-screener/search", h.Dexes.SearchDexScreenerPair)
 	}
 
 	onboardingGroup := v1.Group("/onboarding")

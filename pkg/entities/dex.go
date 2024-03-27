@@ -7,11 +7,13 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gammazero/workerpool"
+
+	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
-	"github.com/gammazero/workerpool"
 )
 
 type dexSearch struct {
@@ -167,6 +169,71 @@ func (e *Entity) SearchDexPair(req request.SearchDexPairRequest) (*response.Sear
 	sort.Slice(pairs, func(i, j int) bool {
 		return pairs[i].LiquidityUsd > pairs[j].LiquidityUsd
 	})
+
+	return &response.SearchDexPairResponse{
+		Pairs: pairs,
+	}, nil
+}
+
+func (e *Entity) SearchDexScreenerPair(req request.SearchDexScreenerPairRequest) (*response.SearchDexPairResponse, error) {
+	pairs := []response.DexPair{}
+
+	var (
+		dexScreenerPairs []dexscreener.Pair
+		err              error
+	)
+	if req.TokenAddress != "" {
+		dexScreenerPairs, err = e.svc.DexScreener.GetByTokenAddress(req.TokenAddress)
+	} else {
+		dexScreenerPairs, err = e.svc.DexScreener.Search(req.Symbol)
+	}
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.SearchDexScreenerPair] failed to get dexscreener pairs")
+		return nil, fmt.Errorf("search dexscreener failed: %w", err)
+	}
+
+	for _, item := range dexScreenerPairs {
+		url := map[string]string{
+			"dexscreener": item.URL,
+		}
+		p := response.DexPair{
+			Name:         fmt.Sprintf("%s/%s", item.BaseToken.Symbol, item.QuoteToken.Symbol),
+			ChainId:      item.ChainID,
+			DexId:        item.DexID,
+			Address:      item.PairAddress,
+			Url:          url,
+			Txn24hBuy:    int(item.Txns.H24.Buys),
+			Txn24hSell:   int(item.Txns.H24.Sells),
+			VolumeUsd24h: item.Volume.H24,
+			LiquidityUsd: item.Liquidity.Usd,
+			Fdv:          item.Fdv,
+
+			BaseToken: response.DexToken{
+				Address: item.BaseToken.Address,
+				Name:    item.BaseToken.Name,
+				Symbol:  item.BaseToken.Symbol,
+			},
+			QuoteToken: response.DexToken{
+				Address: item.QuoteToken.Address,
+				Name:    item.QuoteToken.Name,
+				Symbol:  item.QuoteToken.Symbol,
+			},
+			PricePercentChange24H: item.PriceChange.H24,
+			CreatedAt:             item.PairCreatedAt,
+		}
+
+		price, err := strconv.ParseFloat(item.PriceNative, 64)
+		if err == nil {
+			p.Price = price
+		}
+
+		priceUsd, err := strconv.ParseFloat(item.PriceUsd, 64)
+		if err == nil {
+			p.PriceUsd = priceUsd
+		}
+
+		pairs = append(pairs, p)
+	}
 
 	return &response.SearchDexPairResponse{
 		Pairs: pairs,

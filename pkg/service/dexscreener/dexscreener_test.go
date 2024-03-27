@@ -30,9 +30,9 @@ func Test_dexscreener_Get(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &dexscreener{}
-			got, err := d.Get(tt.args.network, tt.args.address)
+			got, err := d.GetByChainAndPairAddress(tt.args.network, tt.args.address)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("dexscreener.Get() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("dexscreener.GetByChainAndPairAddress() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
