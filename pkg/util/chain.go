@@ -32,10 +32,10 @@ func ConvertChainToChainId(chain string) string {
 		return "1975"
 	case "sui":
 		return "9996"
-	case "base":
-		return "8453"
 	case "zksync":
 		return "324"
+	case "base":
+		return "8453"
 	case "mantle":
 		return "5000"
 	default:
