@@ -1,3 +1,10 @@
+## [6.31.3](https://github.com/consolelabs/mochi-api/compare/v6.31.2...v6.31.3) (2024-04-11)
+
+
+### Bug Fixes
+
+* self calculate market cap if not supported ([21438ad](https://github.com/consolelabs/mochi-api/commit/21438ad7e68bc75001f6706d476cd70d6f60b53f))
+
 ## [6.31.2](https://github.com/consolelabs/mochi-api/compare/v6.31.1...v6.31.2) (2024-03-27)
 
 
