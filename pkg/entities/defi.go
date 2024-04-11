@@ -225,6 +225,21 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	}
 	data.AssetPlatform = platform
 
+	// if no market cap data, get token supply to calculate it
+	// support solana only for now
+	if data.AssetPlatformID == "solana" && data.Platforms != nil {
+		currency := "usd"
+		if _, ok := data.Platforms[data.AssetPlatformID]; ok && data.MarketData.MarketCap[currency] == 0 {
+			supply, err := util.GetSplTokenSupply(data.Platforms[data.AssetPlatformID])
+			if err != nil {
+				e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] util.GetSplTokenSupply() failed")
+				return data, nil, http.StatusOK
+			}
+			price := data.MarketData.CurrentPrice[currency]
+			data.MarketData.MarketCap[currency] = price * supply
+		}
+	}
+
 	return data, nil, http.StatusOK
 }
 
