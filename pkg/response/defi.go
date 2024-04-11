@@ -69,7 +69,7 @@ type GetCoinResponse struct {
 	Symbol                       string                            `json:"symbol"`
 	AssetPlatformID              string                            `json:"asset_platform_id"`
 	AssetPlatform                *AssetPlatformResponseData        `json:"asset_platform"`
-	Platforms                    interface{}                       `json:"platforms"`
+	Platforms                    map[string]string                 `json:"platforms"`
 	BlockTimeInMinutes           int64                             `json:"block_time_in_minutes"`
 	HashingAlgorithm             interface{}                       `json:"hashing_algorithm"`
 	Categories                   []string                          `json:"categories"`
