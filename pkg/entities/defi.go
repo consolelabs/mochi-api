@@ -20,6 +20,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
 	"github.com/defipod/mochi/pkg/repo/token"
 	usertokenpricealert "github.com/defipod/mochi/pkg/repo/user_token_price_alert"
@@ -227,20 +228,78 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 
 	// if no market cap data, get token supply to calculate it
 	// support solana only for now
-	if data.AssetPlatformID == "solana" && data.Platforms != nil {
-		currency := "usd"
-		if _, ok := data.Platforms[data.AssetPlatformID]; ok && data.MarketData.MarketCap[currency] == 0 {
-			supply, err := util.GetSplTokenSupply(data.Platforms[data.AssetPlatformID])
-			if err != nil {
-				e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] util.GetSplTokenSupply() failed")
-				return data, nil, http.StatusOK
-			}
-			price := data.MarketData.CurrentPrice[currency]
-			data.MarketData.MarketCap[currency] = price * supply
-		}
+	// if data.AssetPlatformID == "solana" && data.Platforms != nil {
+	// 	currency := "usd"
+	// 	if _, ok := data.Platforms[data.AssetPlatformID]; ok && data.MarketData.MarketCap[currency] == 0 {
+	// 		supply, err := util.GetSplTokenSupply(data.Platforms[data.AssetPlatformID])
+	// 		if err != nil {
+	// 			e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] util.GetSplTokenSupply() failed")
+	// 			return data, nil, http.StatusOK
+	// 		}
+	// 		price := data.MarketData.CurrentPrice[currency]
+	// 		data.MarketData.MarketCap[currency] = price * supply
+	// 	}
+	// }
+
+	// if no market cap data, try to find from network api
+	currency := "usd"
+	var supply float64
+	if data.DetailPlatforms != nil && data.Platforms != nil && data.MarketData.MarketCap[currency] == 0 {
+		platformId := data.AssetPlatformID
+		detail := data.DetailPlatforms[platformId]
+		contractAddr := data.Platforms[platformId]
+		supply = e.getTokenTotalSupply(contractAddr, platformId, detail.DecimalPlace)
+		price := data.MarketData.CurrentPrice[currency]
+		data.MarketData.MarketCap[currency] = price * supply
 	}
 
 	return data, nil, http.StatusOK
+}
+
+func (e *Entity) getTokenTotalSupply(address, assetPlatformId string, decimal int) float64 {
+	// no address data -> returns 0
+	if address == "" || assetPlatformId == "" || decimal == 0 {
+		return 0
+	}
+
+	// solana
+	if assetPlatformId == "solana" {
+		supply, err := util.GetSplTokenSupply(address)
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.getTokenTotalSupply] util.GetSplTokenSupply() failed")
+		}
+		return supply
+	}
+
+	// evm-based chains
+	chain, err := e.repo.Chain.GetOne(chain.GetOneQuery{CoingeckoId: assetPlatformId, Type: "evm"})
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.getTokenTotalSupply] repo.Chain.GetOne() failed")
+		return 0
+	}
+
+	apiKey := chain.APIKey
+	apiBaseUrl := chain.APIBaseURL
+	if apiKey == "" || apiBaseUrl == "" {
+		return 0
+	}
+
+	if strings.HasSuffix(apiBaseUrl, "api") {
+		apiBaseUrl += "?"
+	}
+
+	w := e.dcwallet.Chain(chain.ID)
+	if w == nil {
+		e.log.Info("[entity.getTokenTotalSupply] chain not supported")
+		return 0
+	}
+
+	supply, err := w.TokenTotalSupply(address, decimal)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.getTokenTotalSupply] chain.TokenTotalSupply() failed")
+	}
+
+	return supply
 }
 
 func (e *Entity) GetTokenInfo(tokenId string) (*response.TokenInfoResponse, error) {
