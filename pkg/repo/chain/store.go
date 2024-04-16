@@ -6,4 +6,5 @@ type Store interface {
 	GetAll() ([]model.Chain, error)
 	GetByID(id int) (model.Chain, error)
 	GetByShortName(shortName string) (*model.Chain, error)
+	GetOne(GetOneQuery) (*model.Chain, error)
 }

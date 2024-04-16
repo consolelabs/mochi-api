@@ -316,6 +316,27 @@ func (ch *Chain) Balances(address string, tokens []model.Token) (map[string]floa
 	return balances, nil
 }
 
+func (ch *Chain) TokenTotalSupply(address string, decimal int) (float64, error) {
+	v, err := ch.scan.TokenTotalSupply(address)
+	if err != nil {
+		return 0, err
+	}
+
+	if v == nil {
+		return 0, nil
+	}
+
+	str := v.Int().String()
+	f, ok := new(big.Float).SetString(str)
+	f.Quo(f, big.NewFloat(math.Pow10(decimal)))
+	if !ok {
+		return 0, nil
+	}
+
+	supply, _ := f.Float64()
+	return supply, nil
+}
+
 // func (ch *Chain) RawBalances(address string, tokens []model.Token) (map[string]*big.Int, error) {
 // 	balances := make(map[string]*big.Int, 0)
 // 	for _, token := range tokens {
