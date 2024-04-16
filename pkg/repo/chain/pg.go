@@ -31,3 +31,14 @@ func (pg *pg) GetByShortName(shortName string) (*model.Chain, error) {
 	}
 	return chain, nil
 }
+
+func (pg *pg) GetOne(q GetOneQuery) (chain *model.Chain, err error) {
+	db := pg.db
+	if q.CoingeckoId != "" {
+		db = db.Where("coin_gecko_id = ?", q.CoingeckoId)
+	}
+	if q.Type != "" {
+		db = db.Where("\"type\" = ?", q.Type)
+	}
+	return chain, db.First(&chain).Error
+}
