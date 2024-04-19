@@ -312,3 +312,25 @@ func GetFutureAccountInfo(apiKey, apiSecret string) (fAccountBal []response.Bina
 
 	return fAccountBal, nil
 }
+
+func GetTickerPrice(symbol string) (price *response.BinanceApiTickerPriceResponse, err error) {
+	// http request
+	req, err := http.NewRequest("GET", url+"/api/v3/ticker/price?symbol="+symbol, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, "", 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// decode response json
+	err = json.NewDecoder(resp.Body).Decode(&price)
+	if err != nil {
+		return nil, err
+	}
+
+	return price, nil
+}

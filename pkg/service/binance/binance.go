@@ -509,3 +509,7 @@ func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.Bin
 
 	return res, nil
 }
+
+func (b *Binance) GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error) {
+	return badapter.GetTickerPrice(symbol)
+}

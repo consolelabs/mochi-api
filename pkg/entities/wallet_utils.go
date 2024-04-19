@@ -237,16 +237,35 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 			continue
 		}
 
-		assetValue, err := strconv.ParseFloat(asset.Free, 64)
+		assetFree, err := strconv.ParseFloat(asset.Free, 64)
 		if err != nil {
 			e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
 			return nil, err
 		}
 
+		assetLocked, err := strconv.ParseFloat(asset.Locked, 64)
+		if err != nil {
+			e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
+			return nil, err
+		}
+
+		assetValue := assetFree + assetLocked
+
 		btcValuation, err := strconv.ParseFloat(asset.BtcValuation, 64)
 		if err != nil {
 			e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to parse asset value")
 			return nil, err
+		}
+
+		usdBal := btcValuation * btcPrice["bitcoin"]
+		if usdBal <= 0 {
+			binancePrice, err := e.svc.Binance.GetPrice(asset.Asset + "USDT")
+			if err != nil {
+				e.log.Error(err, "[entities.SumarizeBinanceAsset] Failed to get binance price")
+				return nil, err
+			}
+
+			usdBal, _ = strconv.ParseFloat(binancePrice.Price, 64)
 		}
 
 		itm := response.WalletAssetData{
@@ -257,7 +276,7 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 				Decimal: 18,
 				Price:   btcValuation * btcPrice["bitcoin"] / assetValue,
 			},
-			UsdBalance: btcValuation * btcPrice["bitcoin"],
+			UsdBalance: usdBal,
 		}
 
 		if asset.DetailLending != nil && asset.DetailLending.Amount != "0" {
