@@ -18,4 +18,5 @@ type Service interface {
 	GetFutureAccountBalance(apiKey, apiSecret string) ([]response.BinanceFutureAccountBalance, error)
 	GetFutureAccount(apiKey, apiSecret string) (*response.BinanceFutureAccount, error)
 	GetFutureAccountInfo(apiKey, apiSecret string) ([]response.BinanceFuturePositionInfo, error)
+	GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error)
 }
