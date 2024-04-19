@@ -180,6 +180,7 @@ type MarketData struct {
 	TotalSupply                            float64            `json:"total_supply"`
 	MaxSupply                              float64            `json:"max_supply"`
 	CirculatingSupply                      float64            `json:"circulating_supply"`
+	LastUpdated                            *time.Time         `json:"last_updated"`
 }
 
 type CoinImage struct {
