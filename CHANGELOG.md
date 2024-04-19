@@ -1,3 +1,10 @@
+## [6.31.4](https://github.com/consolelabs/mochi-api/compare/v6.31.3...v6.31.4) (2024-04-16)
+
+
+### Bug Fixes
+
+* get coin - support market cap data for evm chains ([94f9ed4](https://github.com/consolelabs/mochi-api/commit/94f9ed49c3978fa4d696010216703dccaf78962e))
+
 ## [6.31.3](https://github.com/consolelabs/mochi-api/compare/v6.31.2...v6.31.3) (2024-04-11)
 
 
