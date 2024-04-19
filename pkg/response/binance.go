@@ -212,3 +212,8 @@ type BinanceFuturePositionInfo struct {
 	PositionSide     string `json:"positionSide"`
 	UpdateTime       int64  `json:"updateTime"`
 }
+
+type BinanceApiTickerPriceResponse struct {
+	Symbol string `json:"symbol"`
+	Price  string `json:"price"`
+}
