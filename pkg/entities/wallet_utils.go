@@ -265,7 +265,8 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 				return nil, err
 			}
 
-			usdBal, _ = strconv.ParseFloat(binancePrice.Price, 64)
+			assetUsdPrice, _ := strconv.ParseFloat(binancePrice.Price, 64)
+			usdBal = assetUsdPrice * assetValue
 		}
 
 		itm := response.WalletAssetData{
