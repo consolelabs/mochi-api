@@ -1,3 +1,10 @@
+## [6.31.6](https://github.com/consolelabs/mochi-api/compare/v6.31.5...v6.31.6) (2024-04-19)
+
+
+### Bug Fixes
+
+* binance wallet ([#1382](https://github.com/consolelabs/mochi-api/issues/1382)) ([ac48199](https://github.com/consolelabs/mochi-api/commit/ac4819959e07eb683a6c27ad4f8db4c85afcac90))
+
 ## [6.31.5](https://github.com/consolelabs/mochi-api/compare/v6.31.4...v6.31.5) (2024-04-19)
 
 
