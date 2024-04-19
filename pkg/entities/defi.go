@@ -226,31 +226,31 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 	}
 	data.AssetPlatform = platform
 
-	// if no market cap data, get token supply to calculate it
-	// support solana only for now
-	// if data.AssetPlatformID == "solana" && data.Platforms != nil {
-	// 	currency := "usd"
-	// 	if _, ok := data.Platforms[data.AssetPlatformID]; ok && data.MarketData.MarketCap[currency] == 0 {
-	// 		supply, err := util.GetSplTokenSupply(data.Platforms[data.AssetPlatformID])
-	// 		if err != nil {
-	// 			e.log.Fields(logger.Fields{"id": data.AssetPlatformID}).Error(err, "[entity.GetCoinData] util.GetSplTokenSupply() failed")
-	// 			return data, nil, http.StatusOK
-	// 		}
-	// 		price := data.MarketData.CurrentPrice[currency]
-	// 		data.MarketData.MarketCap[currency] = price * supply
-	// 	}
-	// }
-
-	// if no market cap data, try to find from network api
-	currency := "usd"
-	var supply float64
-	if data.DetailPlatforms != nil && data.Platforms != nil && data.MarketData.MarketCap[currency] == 0 {
+	if data.Platforms != nil && len(data.Platforms) > 0 && data.DetailPlatforms != nil {
 		platformId := data.AssetPlatformID
-		detail := data.DetailPlatforms[platformId]
 		contractAddr := data.Platforms[platformId]
-		supply = e.getTokenTotalSupply(contractAddr, platformId, detail.DecimalPlace)
-		price := data.MarketData.CurrentPrice[currency]
-		data.MarketData.MarketCap[currency] = price * supply
+		currency := "usd"
+
+		if data.MarketData.LastUpdated != nil && time.Since(*data.MarketData.LastUpdated) > 5*time.Hour {
+			dsData, err := e.svc.DexScreener.GetByTokenAddress(contractAddr)
+			if err != nil {
+				e.log.Fields(logger.Fields{"address": contractAddr}).Error(err, "[entity.GetCoinData] svc.DexScreener.GetByTokenAddress() failed")
+			} else if dsData != nil {
+				price, err := strconv.ParseFloat(dsData[0].PriceUsd, 64)
+				if err == nil {
+					data.MarketData.CurrentPrice[currency] = price
+				}
+			}
+		}
+
+		// if no market cap data, try to find from network api
+		var supply float64
+		if data.MarketData.MarketCap[currency] == 0 {
+			detail := data.DetailPlatforms[platformId]
+			supply = e.getTokenTotalSupply(contractAddr, platformId, detail.DecimalPlace)
+			price := data.MarketData.CurrentPrice[currency]
+			data.MarketData.MarketCap[currency] = price * supply
+		}
 	}
 
 	return data, nil, http.StatusOK
