@@ -1,3 +1,10 @@
+## [6.31.5](https://github.com/consolelabs/mochi-api/compare/v6.31.4...v6.31.5) (2024-04-19)
+
+
+### Bug Fixes
+
+* get coin - use dexscreener if coingecko data is stale ([e20b0fb](https://github.com/consolelabs/mochi-api/commit/e20b0fb1b8326f179df7d55e6c6b9c4244016523))
+
 ## [6.31.4](https://github.com/consolelabs/mochi-api/compare/v6.31.3...v6.31.4) (2024-04-16)
 
 
