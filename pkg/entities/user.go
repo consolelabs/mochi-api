@@ -585,9 +585,9 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 	}
 
 	for _, acc := range profile.AssociatedAccounts {
-		var lastestSnapshotEvm, lastestSnapshotSol, lastestSnapshotSui, lastestSnapshotRonin string
+		// var lastestSnapshotEvm, lastestSnapshotSol, lastestSnapshotSui, lastestSnapshotRonin string
 		if acc.Platform == "evm-chain" {
-			evmBalance, _, lastestSnapshotEvm, err = e.listEvmWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			bals, _, lastestSnapshotEvm, err := e.listEvmWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listEvmWalletAssets failed")
 				return nil, err
@@ -595,12 +595,13 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			lastestSnaphotEvmFloat, _ := strconv.ParseFloat(lastestSnapshotEvm, 64)
 			lastestSnapshotSum += lastestSnaphotEvmFloat
 			//calculate pnl
-			for i := range evmBalance {
-				evmBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(evmBalance[i].Token)
+			for i := range bals {
+				bals[i].Token.Pnl = e.calculateTokenPriceSnapshot(bals[i].Token)
 			}
+			evmBalance = append(evmBalance, bals...)
 		}
 		if acc.Platform == "solana-chain" {
-			solBalance, _, lastestSnapshotSol, err = e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			bals, _, lastestSnapshotSol, err := e.listSolWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSolWalletAssets failed")
 				return nil, err
@@ -608,12 +609,13 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			latestSnapshotSolFloat, _ := strconv.ParseFloat(lastestSnapshotSol, 64)
 			lastestSnapshotSum += latestSnapshotSolFloat
 			//calculate pnl
-			for i := range solBalance {
-				solBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(solBalance[i].Token)
+			for i := range bals {
+				bals[i].Token.Pnl = e.calculateTokenPriceSnapshot(bals[i].Token)
 			}
+			solBalance = append(solBalance, bals...)
 		}
 		if acc.Platform == "sui-chain" {
-			suiBalance, _, lastestSnapshotSui, err = e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			bals, _, lastestSnapshotSui, err := e.listSuiWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listSuiWalletAssets failed")
 				return nil, err
@@ -621,12 +623,13 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			latestSnapshotSuiFloat, _ := strconv.ParseFloat(lastestSnapshotSui, 64)
 			lastestSnapshotSum += latestSnapshotSuiFloat
 			//calculate pnl
-			for i := range suiBalance {
-				suiBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(suiBalance[i].Token)
+			for i := range bals {
+				bals[i].Token.Pnl = e.calculateTokenPriceSnapshot(bals[i].Token)
 			}
+			suiBalance = append(suiBalance, bals...)
 		}
 		if acc.Platform == "ronin-chain" {
-			ronBalance, _, lastestSnapshotRonin, err = e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
+			bals, _, lastestSnapshotRonin, err := e.listRoninWalletAssets(request.ListWalletAssetsRequest{Address: acc.PlatformIdentifier})
 			if err != nil {
 				e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entity.GetUserBalance] - e.listRonWalletAssets failed")
 				return nil, err
@@ -634,10 +637,10 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 			latestSnapshotRoninFloat, _ := strconv.ParseFloat(lastestSnapshotRonin, 64)
 			lastestSnapshotSum += latestSnapshotRoninFloat
 			//calculate pnl
-			for i := range ronBalance {
-				ronBalance[i].Token.Pnl = e.calculateTokenPriceSnapshot(ronBalance[i].Token)
+			for i := range bals {
+				bals[i].Token.Pnl = e.calculateTokenPriceSnapshot(bals[i].Token)
 			}
-
+			ronBalance = append(ronBalance, bals...)
 		}
 		if acc.Platform == "binance" {
 			lastestSnapshotBinance := ""
@@ -665,13 +668,15 @@ func (e *Entity) GetUserBalance(profileId string) (*response.UserBalanceResponse
 		offchainBalanceFormated[i].Token.Pnl = e.calculateTokenPriceSnapshot(offchainBalanceFormated[i].Token)
 	}
 
-	evmBalance = append(evmBalance, solBalance...)
-	evmBalance = append(evmBalance, suiBalance...)
-	evmBalance = append(evmBalance, ronBalance...)
+	onchainBalances := make([]response.WalletAssetData, 0)
+	onchainBalances = append(onchainBalances, evmBalance...)
+	onchainBalances = append(onchainBalances, solBalance...)
+	onchainBalances = append(onchainBalances, suiBalance...)
+	onchainBalances = append(onchainBalances, ronBalance...)
 	if binanceData != nil {
-		evmBalance = append(evmBalance, binanceData.Asset...)
+		onchainBalances = append(onchainBalances, binanceData.Asset...)
 	}
-	summarizeBals := mergeWalletAsset(evmBalance, offchainBalanceFormated)
+	summarizeBals := mergeWalletAsset(onchainBalances, offchainBalanceFormated)
 
 	for _, bal := range summarizeBals {
 		totalUsdAmount += bal.UsdBalance
