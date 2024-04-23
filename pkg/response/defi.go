@@ -92,6 +92,7 @@ type GetCoinResponse struct {
 	ContractAddress              string                            `json:"contract_address"`
 	DetailPlatforms              map[string]CoinPlatformDetailData `json:"detail_platforms"`
 	IcoData                      *ICOData                          `json:"ico_data"`
+	OwnershipRenouned            bool                              `json:"ownership_renounced"`
 }
 
 type ICOData struct {
