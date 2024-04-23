@@ -1,3 +1,10 @@
+## [6.31.7](https://github.com/consolelabs/mochi-api/compare/v6.31.6...v6.31.7) (2024-04-19)
+
+
+### Bug Fixes
+
+* binance usd bal ([#1383](https://github.com/consolelabs/mochi-api/issues/1383)) ([b0f178a](https://github.com/consolelabs/mochi-api/commit/b0f178a71f81d9fbc467deb1d3df5942e8960bdc))
+
 ## [6.31.6](https://github.com/consolelabs/mochi-api/compare/v6.31.5...v6.31.6) (2024-04-19)
 
 
