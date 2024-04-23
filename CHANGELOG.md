@@ -1,3 +1,15 @@
+# [6.32.0](https://github.com/consolelabs/mochi-api/compare/v6.31.7...v6.32.0) (2024-04-23)
+
+
+### Bug Fixes
+
+* get user balances ([7d9809c](https://github.com/consolelabs/mochi-api/commit/7d9809c63534c794fb9734442cba3835fcaad613))
+
+
+### Features
+
+* ticker - add contract renounced ([6cf8c72](https://github.com/consolelabs/mochi-api/commit/6cf8c7295f511e3140c6ee03dbd1dff9a240b154))
+
 ## [6.31.7](https://github.com/consolelabs/mochi-api/compare/v6.31.6...v6.31.7) (2024-04-19)
 
 
