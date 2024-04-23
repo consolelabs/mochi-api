@@ -251,6 +251,9 @@ func (e *Entity) GetCoinData(coinID string, isDominanceChart bool) (*response.Ge
 			price := data.MarketData.CurrentPrice[currency]
 			data.MarketData.MarketCap[currency] = price * supply
 		}
+
+		// check if contract ownership is renounced
+		data.OwnershipRenouned = e.isContractRenounced(contractAddr, platformId)
 	}
 
 	return data, nil, http.StatusOK
@@ -300,6 +303,36 @@ func (e *Entity) getTokenTotalSupply(address, assetPlatformId string, decimal in
 	}
 
 	return supply
+}
+
+func (e *Entity) isContractRenounced(address, assetPlatformId string) bool {
+	if assetPlatformId == "solana" {
+		renounced, err := util.IsProgramContractRenounced(address)
+		if err != nil {
+			e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.isContractRenounced] util.IsProgramContractRenounced() failed")
+		}
+		return renounced
+	}
+
+	// evm-based chains
+	chain, err := e.repo.Chain.GetOne(chain.GetOneQuery{CoingeckoId: assetPlatformId, Type: "evm"})
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.getTokenTotalSupply] repo.Chain.GetOne() failed")
+		return false
+	}
+
+	w := e.dcwallet.Chain(chain.ID)
+	if w == nil {
+		e.log.Info("[entity.getTokenTotalSupply] chain not supported")
+		return false
+	}
+
+	renounced, err := w.IsContractRenounced(address)
+	if err != nil {
+		e.log.Fields(logger.Fields{"address": address, "platform_id": assetPlatformId}).Error(err, "[entity.isContractRenounced] chain.IsContractRenounced() failed")
+	}
+
+	return renounced
 }
 
 func (e *Entity) GetTokenInfo(tokenId string) (*response.TokenInfoResponse, error) {

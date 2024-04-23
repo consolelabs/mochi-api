@@ -376,3 +376,19 @@ func (ch *Chain) RawErc20TokenBalance(address string, token model.Token) (*big.I
 	}
 	return tokenBalance, nil
 }
+
+func (ch *Chain) IsContractRenounced(address string) (bool, error) {
+	req := map[string]string{"to": address, "data": "0x8da5cb5b"}
+	var resp string
+
+	if ch.client.Client() == nil {
+		return false, nil
+	}
+
+	if err := ch.client.Client().Call(&resp, "eth_call", req, "latest"); err != nil {
+		return false, err
+	}
+
+	owner := common.HexToAddress(resp)
+	return strings.EqualFold(owner.String(), common.HexToAddress("0").String()), nil
+}
