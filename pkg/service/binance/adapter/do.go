@@ -3,6 +3,8 @@ package badapter
 import (
 	"net/http"
 	"time"
+
+	"github.com/k0kubun/pp/v3"
 )
 
 func do(req *http.Request, apiKey string, retry int) (*http.Response, error) {
@@ -15,6 +17,7 @@ func do(req *http.Request, apiKey string, retry int) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	pp.Println("check resp binance", resp.Header)
 
 	if resp.StatusCode == 429 {
 		time.Sleep(time.Duration(retry) * 5 * time.Second)

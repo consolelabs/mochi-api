@@ -63,3 +63,14 @@ type EvmAssociatedAccount struct {
 type OnboardingStatusResponse struct {
 	DidOnboardingTelegram bool `json:"did_onboarding_telegram"`
 }
+
+type GetAllBinanceAssociatedAccountData struct {
+	Data []BinanceAssociatedAccount `json:"data"`
+}
+
+type BinanceAssociatedAccount struct {
+	ProfileId    string    `json:"profile_id"`
+	ApiKey       string    `json:"api_key"`
+	ApiSecret    string    `json:"api_secret"`
+	SpotLastTime time.Time `json:"spot_last_time"`
+}
