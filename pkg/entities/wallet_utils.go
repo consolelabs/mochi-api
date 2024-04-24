@@ -296,7 +296,7 @@ func (e *Entity) FormatAsset(assets []response.BinanceUserAssetResponse) ([]resp
 
 func containsWalletAsset(wallet []response.WalletAssetData, userAssetSymbol, userAssetName string, userAssetChainId int) bool {
 	for _, w := range wallet {
-		if w.ContractSymbol == userAssetSymbol && w.ContractName == userAssetName && w.ChainID == userAssetChainId {
+		if w.ContractSymbol == userAssetSymbol && w.ContractName == userAssetName && w.ChainID == userAssetChainId && w.ContractSymbol != "" && w.ContractName != "" && w.ChainID != 0 {
 			return true
 		}
 	}
