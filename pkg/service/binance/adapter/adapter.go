@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/k0kubun/pp/v3"
-
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	butils "github.com/defipod/mochi/pkg/service/binance/utils"
@@ -337,12 +335,12 @@ func GetTickerPrice(symbol string) (price *response.BinanceApiTickerPriceRespons
 	return price, nil
 }
 
-func GetSpotTransaction(apiKey, apiSecret, startTime, endTime string) (txs []response.BinanceSpotTransaction, err error) {
+func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (txs []response.BinanceSpotTransaction, err error) {
 	q := map[string]string{
 		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
 		"startTime": startTime,
 		"endTime":   endTime,
-		"symbol":    "BTCUSDT",
+		"symbol":    symbol,
 		"limit":     "1000",
 	}
 	queryString := butils.QueryString(q, apiSecret)
@@ -363,8 +361,6 @@ func GetSpotTransaction(apiKey, apiSecret, startTime, endTime string) (txs []res
 	if err != nil {
 		return nil, err
 	}
-
-	pp.Println(string(resBody))
 
 	// decode response json
 	err = json.Unmarshal(resBody, &txs)

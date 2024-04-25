@@ -31,8 +31,6 @@ create table binance_spot_transactions (
     self_trade_prevention_mode text
 );
 
-create unique index binance_spot_transactions_profile_id_order_id_index on binance_spot_transactions (profile_id, order_id);
 -- +migrate Down
 drop table if exists binance_trackings;
-drop index if exists binance_spot_transactions_profile_id_order_id_index;
 drop table if exists binance_spot_transactions;

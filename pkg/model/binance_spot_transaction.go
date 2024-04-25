@@ -12,7 +12,7 @@ type BinanceSpotTransaction struct {
 	Price                   string    `json:"price"`
 	OrigQty                 string    `json:"orig_qty"`
 	ExecutedQty             string    `json:"executed_qty"`
-	CummulativeQuoteQty     string    `json:"cummulative_quote_qty"`
+	CumulativeQuoteQty      string    `json:"cumulative_quote_qty"`
 	Status                  string    `json:"status"`
 	TimeInForce             string    `json:"time_in_force"`
 	Type                    string    `json:"type"`

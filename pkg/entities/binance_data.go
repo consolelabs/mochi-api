@@ -109,7 +109,7 @@ func (e *Entity) CrawlBinanceSpotTransactions() {
 		// get spot transactions
 		startTime := strconv.Itoa(int(binance.SpotLastTime.UnixMilli()))
 		endTime := strconv.Itoa(int(time.Date(2024, 2, 20, 0, 0, 0, 0, time.UTC).UnixMilli()))
-		_, err := e.svc.Binance.GetSpotTransactions(binance.ApiKey, binance.ApiSecret, startTime, endTime)
+		_, err := e.svc.Binance.GetSpotTransactions(binance.ApiKey, binance.ApiSecret, "BTCUSDT", startTime, endTime)
 		if err != nil {
 			e.log.Fields(logger.Fields{"profileId": binance.ProfileId}).Error(err, "[entities.CrawlBinanceSpotTransactions] - fail to get spot transactions")
 			continue
