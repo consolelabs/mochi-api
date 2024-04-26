@@ -1,3 +1,10 @@
+## [6.32.2](https://github.com/consolelabs/mochi-api/compare/v6.32.1...v6.32.2) (2024-04-26)
+
+
+### Bug Fixes
+
+* remove old icy ([#1388](https://github.com/consolelabs/mochi-api/issues/1388)) ([1677b80](https://github.com/consolelabs/mochi-api/commit/1677b80df0c33855d78542c8d92fc71acd7a0ef9))
+
 ## [6.32.1](https://github.com/consolelabs/mochi-api/compare/v6.32.0...v6.32.1) (2024-04-25)
 
 
