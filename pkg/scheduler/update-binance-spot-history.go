@@ -37,7 +37,7 @@ func (s *updateBinanceSpotHistory) Run() error {
 	for {
 		s.schedulerUpdate()
 		// Sleep for an hour interval before checking the database again
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Minute)
 	}
 }
 
@@ -103,7 +103,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 						Price:                   tx.Price,
 						OrigQty:                 tx.OrigQty,
 						ExecutedQty:             tx.ExecutedQty,
-						CumulativeQuoteQty:      tx.CummulativeQuoteQty,
+						CumulativeQuoteQty:      tx.CumulativeQuoteQty,
 						Status:                  tx.Status,
 						TimeInForce:             tx.TimeInForce,
 						Type:                    tx.Type,
@@ -113,6 +113,8 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 						IsWorking:               tx.IsWorking,
 						OrigQuoteOrderQty:       tx.OrigQuoteOrderQty,
 						SelfTradePreventionMode: tx.SelfTradePreventionMode,
+						Time:                    time.Unix(tx.Time, 0),
+						UpdateTime:              time.Unix(tx.UpdateTime, 0),
 					})
 					if err != nil {
 						fmt.Printf("err: %v", err)

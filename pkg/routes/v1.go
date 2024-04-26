@@ -66,6 +66,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			cexGroup.GET("/binance", h.Dex.SumarizeBinanceAsset)
 			cexGroup.GET("/binance/positions", h.Dex.GetBinanceFutures)
 			cexGroup.GET("/:platform/assets", h.Dex.GetBinanceAssets)
+			cexGroup.GET("/binance/spot_txs", h.Dex.GetBinanceSpotTxs)
 		}
 
 		// TODO: remove after migrate

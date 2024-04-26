@@ -28,7 +28,9 @@ create table binance_spot_transactions (
     is_working boolean,
     orig_quote_order_qty text,
     working_time timestamp,
-    self_trade_prevention_mode text
+    self_trade_prevention_mode text,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- +migrate Down

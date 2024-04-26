@@ -110,3 +110,36 @@ func (h *Handler) GetBinanceFutures(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
+
+// GetBinanceSpot godoc
+// @Summary     Get user's spot account txs
+// @Description Get user's spot account txs
+// @Tags        Binance
+// @Accept      json
+// @Produce     json
+// @Param       id   			path  string true  "profile ID"
+// @Success     200 {object} response.BinanceFutureAccountPositionResponse
+// @Router      /users/{id}/cexs/binance/spot-txs [get]
+func (h *Handler) GetBinanceSpotTxs(c *gin.Context) {
+	req := request.GetBinanceSpotTxsRequest{}
+	if err := c.ShouldBindUri(&req); err != nil {
+		h.log.Error(err, "[handler.GetBinanceSpotTxs] BindJSON() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if !util.ValidateNumberSeries(req.Id) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetBinanceFutures] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.GetBinanceSpotTxs(req)
+	if err != nil {
+		h.log.Error(err, "[handler.GetBinanceFutures] entity.GetBinanceFutures() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

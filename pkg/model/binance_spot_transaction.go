@@ -25,4 +25,6 @@ type BinanceSpotTransaction struct {
 	OrigQuoteOrderQty       string    `json:"orig_quote_order_qty"`
 	WorkingTime             time.Time `json:"working_time"`
 	SelfTradePreventionMode string    `json:"self_trade_prevention_mode"`
+	CreatedAt               time.Time `json:"created_at"`
+	UpdatedAt               time.Time `json:"updated_at"`
 }

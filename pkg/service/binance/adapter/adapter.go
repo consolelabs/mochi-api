@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/k0kubun/pp/v3"
+
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	butils "github.com/defipod/mochi/pkg/service/binance/utils"
@@ -361,6 +363,8 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 	if err != nil {
 		return nil, err
 	}
+
+	pp.Println("pair", symbol, string(resBody))
 
 	// decode response json
 	err = json.Unmarshal(resBody, &txs)
