@@ -392,7 +392,14 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 			if quote < 0.001 && bal.TokenType != "NATIVE" {
 				continue
 			}
-			if bal.Token.Address == "0x8544fe9d190fd7ec52860abbf45088e81ee24a8c" {
+
+			oldIcyAddr := "0x8d57d71b02d71e1e449a0e459de40473eb8f4a90"
+			if strings.ToLower(bal.Token.Address) == oldIcyAddr {
+				continue
+			}
+
+			toshiAddr := "0x8544fe9d190fd7ec52860abbf45088e81ee24a8c"
+			if strings.ToLower(bal.Token.Address) == toshiAddr {
 				continue
 			}
 
