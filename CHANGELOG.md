@@ -1,3 +1,10 @@
+## [6.32.1](https://github.com/consolelabs/mochi-api/compare/v6.32.0...v6.32.1) (2024-04-25)
+
+
+### Bug Fixes
+
+* fix summarize wallets bals of wallets ([5ca756a](https://github.com/consolelabs/mochi-api/commit/5ca756a8ee2947a91a67cf9015361f985691242c))
+
 # [6.32.0](https://github.com/consolelabs/mochi-api/compare/v6.31.7...v6.32.0) (2024-04-23)
 
 
