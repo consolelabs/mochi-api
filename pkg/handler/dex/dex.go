@@ -119,11 +119,11 @@ func (h *Handler) GetBinanceFutures(c *gin.Context) {
 // @Produce     json
 // @Param       id   			path  string true  "profile ID"
 // @Success     200 {object} response.BinanceFutureAccountPositionResponse
-// @Router      /users/{id}/cexs/binance/spot-txs [get]
-func (h *Handler) GetBinanceSpotTxs(c *gin.Context) {
-	req := request.GetBinanceSpotTxsRequest{}
+// @Router      /users/{id}/cexs/binance/spot-txns [get]
+func (h *Handler) GetBinanceSpotTxns(c *gin.Context) {
+	req := request.GetBinanceSpotTxnsRequest{}
 	if err := c.ShouldBindUri(&req); err != nil {
-		h.log.Error(err, "[handler.GetBinanceSpotTxs] BindJSON() failed")
+		h.log.Error(err, "[handler.GetBinanceSpotTxns] BindJSON() failed")
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
@@ -135,7 +135,7 @@ func (h *Handler) GetBinanceSpotTxs(c *gin.Context) {
 		return
 	}
 
-	res, err := h.entities.GetBinanceSpotTxs(req)
+	res, err := h.entities.GetBinanceSpotTxns(req)
 	if err != nil {
 		h.log.Error(err, "[handler.GetBinanceFutures] entity.GetBinanceFutures() failed")
 		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))

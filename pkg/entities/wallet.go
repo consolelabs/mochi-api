@@ -1511,14 +1511,14 @@ func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) (
 	return res, nil
 }
 
-func (e *Entity) GetBinanceSpotTxs(req request.GetBinanceSpotTxsRequest) ([]response.BinanceSpotTransaction, error) {
-	res := make([]response.BinanceSpotTransaction, 0)
+func (e *Entity) GetBinanceSpotTxns(req request.GetBinanceSpotTxnsRequest) ([]response.BinanceSpotTransactionResponse, error) {
+	res := make([]response.BinanceSpotTransactionResponse, 0)
 	txs, err := e.repo.BinanceSpotTransaction.List(binancespottransaction.ListQuery{ProfileId: req.Id})
 	if err != nil {
-		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceSpotTxs] Failed to get spot txs")
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceSpotTxns] Failed to get spot txs")
 	}
 	for _, tx := range txs {
-		res = append(res, response.BinanceSpotTransaction{
+		res = append(res, response.BinanceSpotTransactionResponse{
 			Symbol:                  tx.Symbol,
 			OrderId:                 tx.OrderId,
 			OrderListId:             tx.OrderListId,
@@ -1539,8 +1539,6 @@ func (e *Entity) GetBinanceSpotTxs(req request.GetBinanceSpotTxsRequest) ([]resp
 			OrigQuoteOrderQty:       tx.OrigQuoteOrderQty,
 			WorkingTime:             tx.WorkingTime.Unix(),
 			SelfTradePreventionMode: tx.SelfTradePreventionMode,
-			CreatedAt:               tx.CreatedAt,
-			UpdatedAt:               tx.UpdatedAt,
 		})
 	}
 	return res, nil

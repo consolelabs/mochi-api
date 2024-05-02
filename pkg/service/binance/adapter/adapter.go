@@ -337,13 +337,14 @@ func GetTickerPrice(symbol string) (price *response.BinanceApiTickerPriceRespons
 	return price, nil
 }
 
-func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (txs []response.BinanceSpotTransaction, err error) {
+func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (txs []response.BinanceSpotTransactionResponse, err error) {
 	q := map[string]string{
-		"timestamp": strconv.Itoa(int(time.Now().UnixMilli())),
-		"startTime": startTime,
-		"endTime":   endTime,
-		"symbol":    symbol,
-		"limit":     "1000",
+		"timestamp":  strconv.Itoa(int(time.Now().UnixMilli())),
+		"startTime":  startTime,
+		"endTime":    endTime,
+		"symbol":     symbol,
+		"limit":      "1000",
+		"recvWindow": "60000",
 	}
 	queryString := butils.QueryString(q, apiSecret)
 
@@ -364,7 +365,7 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 		return nil, err
 	}
 
-	pp.Println("pair", symbol, string(resBody))
+	pp.Println("pair", symbol, string(resBody), "status", resp.Status, "header", resp.Header.Get("X-Mbx-Used-Weight-1m"))
 
 	// decode response json
 	err = json.Unmarshal(resBody, &txs)

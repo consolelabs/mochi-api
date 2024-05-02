@@ -514,7 +514,7 @@ func (b *Binance) GetPrice(symbol string) (*response.BinanceApiTickerPriceRespon
 	return badapter.GetTickerPrice(symbol)
 }
 
-func (b *Binance) GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransaction, error) {
+func (b *Binance) GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransactionResponse, error) {
 	b.logger.Debug("start binance.GetSpotTransaction()")
 	defer b.logger.Debug("end binance.GetSpotTransaction()")
 

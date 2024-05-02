@@ -31,7 +31,7 @@ func NewUpdateBinanceSpotHistory(e *entities.Entity, l logger.Logger, s *service
 	}
 }
 func binanceStartTime() time.Time {
-	return time.Now().Add(-90 * 24 * time.Hour).UTC()
+	return time.Now().Add(-180 * 24 * time.Hour).UTC()
 }
 func (s *updateBinanceSpotHistory) Run() error {
 	for {
@@ -113,8 +113,10 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 						IsWorking:               tx.IsWorking,
 						OrigQuoteOrderQty:       tx.OrigQuoteOrderQty,
 						SelfTradePreventionMode: tx.SelfTradePreventionMode,
-						Time:                    time.Unix(tx.Time, 0),
-						UpdateTime:              time.Unix(tx.UpdateTime, 0),
+						Time:                    time.UnixMilli(tx.Time),
+						UpdateTime:              time.UnixMilli(tx.UpdateTime),
+						CreatedAt:               time.Now(),
+						UpdatedAt:               time.Now(),
 					})
 					if err != nil {
 						fmt.Printf("err: %v", err)

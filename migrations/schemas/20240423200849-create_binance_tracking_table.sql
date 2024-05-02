@@ -10,7 +10,7 @@ create table binance_spot_transactions (
     id serial,
     profile_id text,
     symbol text,
-    order_id integer,
+    order_id bigint not null,
     order_list_id integer,
     client_order_id text,
     price text,

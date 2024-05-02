@@ -25,6 +25,6 @@ type GetBinanceFutureRequest struct {
 	Id string `uri:"id"`
 }
 
-type GetBinanceSpotTxsRequest struct {
+type GetBinanceSpotTxnsRequest struct {
 	Id string `uri:"id"`
 }

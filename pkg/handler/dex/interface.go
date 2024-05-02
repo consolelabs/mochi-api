@@ -6,5 +6,5 @@ type IHandler interface {
 	SumarizeBinanceAsset(c *gin.Context)
 	GetBinanceAssets(c *gin.Context)
 	GetBinanceFutures(c *gin.Context)
-	GetBinanceSpotTxs(c *gin.Context)
+	GetBinanceSpotTxns(c *gin.Context)
 }
