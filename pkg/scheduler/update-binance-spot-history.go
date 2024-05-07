@@ -31,7 +31,7 @@ func NewUpdateBinanceSpotHistory(e *entities.Entity, l logger.Logger, s *service
 	}
 }
 func binanceStartTime() time.Time {
-	return time.Now().Add(-180 * 24 * time.Hour).UTC()
+	return time.Now().Add(-1 * time.Hour).UTC()
 }
 func (s *updateBinanceSpotHistory) Run() error {
 	for {
@@ -41,12 +41,11 @@ func (s *updateBinanceSpotHistory) Run() error {
 			continue
 		}
 		// Sleep for an hour interval before checking the database again
-		time.Sleep(1 * time.Minute)
+		time.Sleep(1 * time.Hour)
 	}
 }
 
 func (s *updateBinanceSpotHistory) schedulerUpdate() error {
-	fmt.Println("running ")
 	res, err := s.svc.MochiProfile.GetAllBinanceAccount()
 	if err != nil {
 		s.log.Error(err, "[updateBinanceSpotHistory] - MochiProfile.GetAllBinanceAccount() fail to get all binance associated account")
@@ -91,7 +90,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 			pairs := symbolPairs[symbol]
 			for _, p := range pairs {
 				startTime := strconv.Itoa(int(binanceTracking.SpotLastTime.UnixMilli()))
-				endTime := strconv.Itoa(int(binanceTracking.SpotLastTime.Add(24 * time.Hour).UnixMilli()))
+				endTime := strconv.Itoa(int(binanceTracking.SpotLastTime.Add(1 * time.Hour).UnixMilli()))
 				txs, err := s.svc.Binance.GetSpotTransactions(acc.ApiKey, acc.ApiSecret, p, startTime, endTime)
 				if err != nil {
 					s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.GetSpotTransactions() fail to get spot txs")

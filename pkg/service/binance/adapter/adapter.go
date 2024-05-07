@@ -365,8 +365,8 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 	if err != nil {
 		return nil, err
 	}
-	if req.Header.Get("X-Mbx-Used-Weight-1m") != "" {
-		usedWeight1M, err := strconv.Atoi(req.Header.Get("X-Mbx-Used-Weight-1m"))
+	if resp.Header.Get("X-Mbx-Used-Weight-1m") != "" {
+		usedWeight1M, err := strconv.Atoi(resp.Header.Get("X-Mbx-Used-Weight-1m"))
 		if err != nil || usedWeight1M > 5000 {
 			fmt.Printf("err: %+v, %d", err, usedWeight1M)
 			time.Sleep(1 * time.Minute)
