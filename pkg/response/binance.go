@@ -1,5 +1,7 @@
 package response
 
+import "time"
+
 type ExchangeSymbolResponse struct {
 	Symbol     string `json:"symbol"`
 	BaseAsset  string `json:"base_asset"`
@@ -219,24 +221,26 @@ type BinanceApiTickerPriceResponse struct {
 }
 
 type BinanceSpotTransactionResponse struct {
-	Symbol                  string `json:"symbol"`
-	OrderId                 int64  `json:"orderId"`
-	OrderListId             int64  `json:"orderListId"`
-	ClientOrderId           string `json:"clientOrderId"`
-	Price                   string `json:"price"`
-	OrigQty                 string `json:"origQty"`
-	ExecutedQty             string `json:"executedQty"`
-	CumulativeQuoteQty      string `json:"cumulativeQuoteQty"`
-	Status                  string `json:"status"`
-	TimeInForce             string `json:"timeInForce"`
-	Type                    string `json:"type"`
-	Side                    string `json:"side"`
-	StopPrice               string `json:"stopPrice"`
-	IcebergQty              string `json:"icebergQty"`
-	Time                    int64  `json:"time"`
-	UpdateTime              int64  `json:"updateTime"`
-	IsWorking               bool   `json:"isWorking"`
-	OrigQuoteOrderQty       string `json:"origQuoteOrderQty"`
-	WorkingTime             int64  `json:"workingTime"`
-	SelfTradePreventionMode string `json:"selfTradePreventionMode"`
+	Symbol                  string    `json:"symbol"`
+	OrderId                 int64     `json:"orderId"`
+	OrderListId             int64     `json:"orderListId"`
+	ClientOrderId           string    `json:"clientOrderId"`
+	Price                   string    `json:"price"`
+	OrigQty                 string    `json:"origQty"`
+	ExecutedQty             string    `json:"executedQty"`
+	CumulativeQuoteQty      string    `json:"cumulativeQuoteQty"`
+	Status                  string    `json:"status"`
+	TimeInForce             string    `json:"timeInForce"`
+	Type                    string    `json:"type"`
+	Side                    string    `json:"side"`
+	StopPrice               string    `json:"stopPrice"`
+	IcebergQty              string    `json:"icebergQty"`
+	Time                    int64     `json:"time"`
+	UpdateTime              int64     `json:"updateTime"`
+	IsWorking               bool      `json:"isWorking"`
+	OrigQuoteOrderQty       string    `json:"origQuoteOrderQty"`
+	WorkingTime             int64     `json:"workingTime"`
+	SelfTradePreventionMode string    `json:"selfTradePreventionMode"`
+	CreatedAt               time.Time `json:"created_at"`
+	UpdatedAt               time.Time `json:"updated_at"`
 }

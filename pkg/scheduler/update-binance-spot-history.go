@@ -35,14 +35,18 @@ func binanceStartTime() time.Time {
 }
 func (s *updateBinanceSpotHistory) Run() error {
 	for {
-		s.schedulerUpdate()
+		err := s.schedulerUpdate()
+		if err != nil {
+			s.log.Error(err, "[updateBinanceSpotHistory] - s.schedulerUpdate()")
+			continue
+		}
 		// Sleep for an hour interval before checking the database again
 		time.Sleep(1 * time.Minute)
 	}
 }
 
 func (s *updateBinanceSpotHistory) schedulerUpdate() error {
-
+	fmt.Println("running ")
 	res, err := s.svc.MochiProfile.GetAllBinanceAccount()
 	if err != nil {
 		s.log.Error(err, "[updateBinanceSpotHistory] - MochiProfile.GetAllBinanceAccount() fail to get all binance associated account")
@@ -96,7 +100,8 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 				for _, tx := range txs {
 					err = s.entity.GetRepo().BinanceSpotTransaction.Create(&model.BinanceSpotTransaction{
 						ProfileId:               acc.ProfileId,
-						Symbol:                  tx.Symbol,
+						Symbol:                  symbol,
+						Pair:                    tx.Symbol,
 						OrderId:                 tx.OrderId,
 						OrderListId:             tx.OrderListId,
 						ClientOrderId:           tx.ClientOrderId,
@@ -113,10 +118,10 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 						IsWorking:               tx.IsWorking,
 						OrigQuoteOrderQty:       tx.OrigQuoteOrderQty,
 						SelfTradePreventionMode: tx.SelfTradePreventionMode,
-						Time:                    time.UnixMilli(tx.Time),
-						UpdateTime:              time.UnixMilli(tx.UpdateTime),
-						CreatedAt:               time.Now(),
-						UpdatedAt:               time.Now(),
+						Time:                    tx.Time,
+						UpdateTime:              tx.UpdateTime,
+						CreatedAt:               time.UnixMilli(tx.Time),
+						UpdatedAt:               time.UnixMilli(tx.UpdateTime),
 					})
 					if err != nil {
 						fmt.Printf("err: %v", err)

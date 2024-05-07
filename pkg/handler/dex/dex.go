@@ -127,6 +127,11 @@ func (h *Handler) GetBinanceSpotTxns(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
 		return
 	}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Error(err, "[handler.GetBinanceSpotTxns] ShouldBindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
 
 	if !util.ValidateNumberSeries(req.Id) {
 		err := errors.New("profile Id is invalid")

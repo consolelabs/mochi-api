@@ -24,5 +24,14 @@ func (pg *pg) List(q ListQuery) ([]model.BinanceSpotTransaction, error) {
 	if q.ProfileId != "" {
 		db = db.Where("profile_id = ?", q.ProfileId)
 	}
-	return txs, pg.db.Find(&txs).Order("time DESC").Error
+	if q.Status != "" {
+		db = db.Where("status = ?", q.Status)
+	}
+	if q.Offset > 0 {
+		db = db.Offset(q.Offset)
+	}
+	if q.Limit > 0 {
+		db = db.Limit(q.Limit)
+	}
+	return txs, db.Order("created_at DESC").Find(&txs).Error
 }

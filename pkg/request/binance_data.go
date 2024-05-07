@@ -26,5 +26,7 @@ type GetBinanceFutureRequest struct {
 }
 
 type GetBinanceSpotTxnsRequest struct {
-	Id string `uri:"id"`
+	Id     string `uri:"id"`
+	Status string `json:"status" form:"status"`
+	PaginationRequest
 }

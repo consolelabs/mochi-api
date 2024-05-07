@@ -2,6 +2,7 @@ package badapter
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -344,7 +345,7 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 		"endTime":    endTime,
 		"symbol":     symbol,
 		"limit":      "1000",
-		"recvWindow": "60000",
+		"recvWindow": "59000",
 	}
 	queryString := butils.QueryString(q, apiSecret)
 
@@ -364,7 +365,13 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 	if err != nil {
 		return nil, err
 	}
-
+	if req.Header.Get("X-Mbx-Used-Weight-1m") != "" {
+		usedWeight1M, err := strconv.Atoi(req.Header.Get("X-Mbx-Used-Weight-1m"))
+		if err != nil || usedWeight1M > 6000 {
+			fmt.Printf("err: %+v, %d", err, usedWeight1M)
+			time.Sleep(1 * time.Minute)
+		}
+	}
 	pp.Println("pair", symbol, string(resBody), "status", resp.Status, "header", resp.Header.Get("X-Mbx-Used-Weight-1m"))
 
 	// decode response json

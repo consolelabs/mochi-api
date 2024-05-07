@@ -5,6 +5,7 @@ import "time"
 type BinanceSpotTransaction struct {
 	ID                      int64     `json:"id"`
 	ProfileId               string    `json:"profile_id"`
+	Pair                    string    `json:"pair"`
 	Symbol                  string    `json:"symbol"`
 	OrderId                 int64     `json:"order_id"`
 	OrderListId             int64     `json:"order_list_id"`
@@ -19,8 +20,8 @@ type BinanceSpotTransaction struct {
 	Side                    string    `json:"side"`
 	StopPrice               string    `json:"stop_price"`
 	IcebergQty              string    `json:"iceberg_qty"`
-	Time                    time.Time `json:"time"`
-	UpdateTime              time.Time `json:"update_time"`
+	Time                    int64     `json:"time"`
+	UpdateTime              int64     `json:"update_time"`
 	IsWorking               bool      `json:"is_working"`
 	OrigQuoteOrderQty       string    `json:"orig_quote_order_qty"`
 	WorkingTime             time.Time `json:"working_time"`
