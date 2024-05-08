@@ -180,7 +180,7 @@ Can insert video URL in case the size exceeds github limit
 
 ## :pray: Credits
 
-A big thank to all who contributed to this project!
+A big thanks to all who contributed to this project!
 
 If you'd like to contribute, please check out the [contributing guide](CONTRIBUTING.md).
 
