@@ -53,7 +53,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 	}
 	// get binance exchangeInfo
 	data, _, _ := s.svc.Binance.GetExchangeInfo("")
-	pairs := []string{}
+	var pairs []string
 	for _, d := range data.Symbols {
 		pairs = append(pairs, d.Symbol)
 	}
@@ -129,7 +129,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 				}
 			}
 		}
-		binanceTracking.SpotLastTime = binanceTracking.SpotLastTime.Add(24 * time.Hour)
+		binanceTracking.SpotLastTime = binanceTracking.SpotLastTime.Add(1 * time.Hour)
 		err = s.entity.GetRepo().BinanceTracking.Update(binanceTracking)
 		if err != nil {
 			s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] -BinanceTracking.Update() fail to update binance tracking")

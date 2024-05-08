@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/logger"
@@ -81,38 +80,4 @@ func (e *Entity) UnlinkBinance(req request.UnlinkBinance) error {
 	}
 
 	return nil
-}
-
-func binanceStartTime() time.Time {
-	return time.Unix(1499943600, 0).UTC()
-}
-func (e *Entity) CrawlBinanceSpotTransactions() {
-	e.log.Info("Watching Binance account from profile ...")
-	// get all binance associated account
-	res, err := e.svc.MochiProfile.GetAllBinanceAccount()
-	if err != nil {
-		e.log.Error(err, "[entities.CrawlBinanceSpotTransactions] - fail to get all binance associated account")
-		return
-	}
-
-	for idx, binance := range res.Data {
-		binanceTracking, err := e.repo.BinanceTracking.FirstOrCreate(&model.BinanceTracking{ProfileId: binance.ProfileId, SpotLastTime: binanceStartTime()})
-		if err != nil {
-			e.log.Fields(logger.Fields{"profileId": binance.ProfileId}).Error(err, "[entities.CrawlBinanceSpotTransactions] - fail to first or create binance tracking")
-			continue
-		}
-		res.Data[idx].SpotLastTime = binanceTracking.SpotLastTime
-	}
-
-	for _, binance := range res.Data {
-		e.log.Fields(logger.Fields{"profileId": binance.ProfileId}).Info("[entities.CrawlBinanceSpotTransactions] - start crawling binance spot transactions")
-		// get spot transactions
-		startTime := strconv.Itoa(int(binance.SpotLastTime.UnixMilli()))
-		endTime := strconv.Itoa(int(time.Date(2024, 2, 20, 0, 0, 0, 0, time.UTC).UnixMilli()))
-		_, err := e.svc.Binance.GetSpotTransactions(binance.ApiKey, binance.ApiSecret, "BTCUSDT", startTime, endTime)
-		if err != nil {
-			e.log.Fields(logger.Fields{"profileId": binance.ProfileId}).Error(err, "[entities.CrawlBinanceSpotTransactions] - fail to get spot transactions")
-			continue
-		}
-	}
 }
