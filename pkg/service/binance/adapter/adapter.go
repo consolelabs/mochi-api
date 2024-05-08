@@ -8,8 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/k0kubun/pp/v3"
-
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/response"
 	butils "github.com/defipod/mochi/pkg/service/binance/utils"
@@ -372,7 +370,6 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 			time.Sleep(1 * time.Minute)
 		}
 	}
-	pp.Println("pair", symbol, string(resBody), "status", resp.Status, "header", resp.Header.Get("X-Mbx-Used-Weight-1m"))
 
 	// decode response json
 	err = json.Unmarshal(resBody, &txs)
