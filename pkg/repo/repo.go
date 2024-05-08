@@ -5,6 +5,8 @@ import (
 	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
 	autoActionHistory "github.com/defipod/mochi/pkg/repo/auto_action_history"
 	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
+	binancespottransaction "github.com/defipod/mochi/pkg/repo/binance_spot_transaction"
+	binancetracking "github.com/defipod/mochi/pkg/repo/binance_tracking"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
@@ -185,4 +187,6 @@ type Repo struct {
 	UserNotificationSetting              usernotificationsetting.Store
 	NotificationFlag                     notificationflag.Store
 	TokenPriceSnapshot                   tokenpricesnapshot.Store
+	BinanceTracking                      binancetracking.Store
+	BinanceSpotTransaction               binancespottransaction.Store
 }

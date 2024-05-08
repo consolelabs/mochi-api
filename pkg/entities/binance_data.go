@@ -67,18 +67,17 @@ func (e *Entity) IntegrateBinanceData(req request.IntegrationBinanceData) (*mode
 }
 
 func (e *Entity) UnlinkBinance(req request.UnlinkBinance) error {
-  res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, true)
-  if err != nil {
+	res, err := e.svc.MochiProfile.GetByDiscordID(req.DiscordUserId, true)
+	if err != nil {
 		e.log.Fields(logger.Fields{"discordUserId": req.DiscordUserId}).Error(err, "[entities.UnlinkBinance] - fail to get profile by discord id")
 		return err
-  }
-
-  err = e.svc.MochiProfile.UnlinkDex(res.ID, consts.PlatformBinance)
-	if err != nil {
-    e.log.Fields(logger.Fields{"profileId": res.ID, "platform": consts.PlatformBinance}).Error(err, "[entities.UnlinkBinance] - fail to unlink binance")
-    return err
 	}
 
-  return nil
-}
+	err = e.svc.MochiProfile.UnlinkDex(res.ID, consts.PlatformBinance)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": res.ID, "platform": consts.PlatformBinance}).Error(err, "[entities.UnlinkBinance] - fail to unlink binance")
+		return err
+	}
 
+	return nil
+}

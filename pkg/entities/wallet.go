@@ -18,6 +18,7 @@ import (
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerr "github.com/defipod/mochi/pkg/model/errors"
+	binancespottransaction "github.com/defipod/mochi/pkg/repo/binance_spot_transaction"
 	userwalletwatchlistitem "github.com/defipod/mochi/pkg/repo/user_wallet_watchlist_item"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
@@ -1514,5 +1515,45 @@ func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) (
 		}
 	}
 
+	return res, nil
+}
+
+func (e *Entity) GetBinanceSpotTxns(req request.GetBinanceSpotTxnsRequest) ([]response.BinanceSpotTransactionResponse, error) {
+	res := make([]response.BinanceSpotTransactionResponse, 0)
+	txs, err := e.repo.BinanceSpotTransaction.List(binancespottransaction.ListQuery{
+		ProfileId: req.Id,
+		Limit:     int(req.PaginationRequest.Size),
+		Offset:    int(req.PaginationRequest.Page * req.PaginationRequest.Size),
+		Status:    req.Status,
+	})
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceSpotTxns] Failed to get spot txs")
+	}
+	for _, tx := range txs {
+		res = append(res, response.BinanceSpotTransactionResponse{
+			Symbol:                  tx.Symbol,
+			OrderId:                 tx.OrderId,
+			OrderListId:             tx.OrderListId,
+			ClientOrderId:           tx.ClientOrderId,
+			Price:                   tx.Price,
+			OrigQty:                 tx.OrigQty,
+			ExecutedQty:             tx.ExecutedQty,
+			CumulativeQuoteQty:      tx.CumulativeQuoteQty,
+			Status:                  tx.Status,
+			TimeInForce:             tx.TimeInForce,
+			Type:                    tx.Type,
+			Side:                    tx.Side,
+			StopPrice:               tx.StopPrice,
+			IcebergQty:              tx.IcebergQty,
+			Time:                    tx.Time,
+			UpdateTime:              tx.UpdateTime,
+			IsWorking:               tx.IsWorking,
+			OrigQuoteOrderQty:       tx.OrigQuoteOrderQty,
+			WorkingTime:             tx.WorkingTime.Unix(),
+			SelfTradePreventionMode: tx.SelfTradePreventionMode,
+			CreatedAt:               tx.CreatedAt,
+			UpdatedAt:               tx.UpdatedAt,
+		})
+	}
 	return res, nil
 }

@@ -19,4 +19,5 @@ type Service interface {
 	GetFutureAccount(apiKey, apiSecret string) (*response.BinanceFutureAccount, error)
 	GetFutureAccountInfo(apiKey, apiSecret string) ([]response.BinanceFuturePositionInfo, error)
 	GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error)
+	GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransactionResponse, error)
 }

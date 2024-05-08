@@ -5674,6 +5674,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/cexs/binance/spot-txs": {
+            "get": {
+                "description": "Get user's spot account txs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Binance"
+                ],
+                "summary": "Get user's spot account txs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BinanceFutureAccountPositionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/earns/airdrop-campaigns": {
             "get": {
                 "description": "Get user earn list",
@@ -9126,6 +9158,9 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 },
+                "token_id": {
+                    "type": "string"
+                },
                 "transfer_type": {
                     "type": "string",
                     "enum": [
@@ -10533,6 +10568,9 @@ const docTemplate = `{
                 "developer_data": {},
                 "genesis_date": {},
                 "hashing_algorithm": {},
+                "ico_data": {
+                    "$ref": "#/definitions/response.ICOData"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -10555,7 +10593,15 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "platforms": {},
+                "ownership_renounced": {
+                    "type": "boolean"
+                },
+                "platforms": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "sentiment_votes_down_percentage": {
                     "type": "number"
                 },
@@ -11377,6 +11423,17 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ICOData": {
+            "type": "object",
+            "properties": {
+                "ico_end_date": {
+                    "type": "string"
+                },
+                "ico_start_date": {
+                    "type": "string"
+                }
+            }
+        },
         "response.IndexerChain": {
             "type": "object",
             "properties": {
@@ -12101,6 +12158,9 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "number"
                     }
+                },
+                "last_updated": {
+                    "type": "string"
                 },
                 "low_24h": {
                     "type": "object",
@@ -12935,13 +12995,51 @@ const docTemplate = `{
                 "coin_id": {
                     "type": "string"
                 },
+                "converted_last": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
+                "converted_volume": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                },
                 "last": {
                     "type": "number"
+                },
+                "market": {
+                    "$ref": "#/definitions/response.TickerMarketData"
                 },
                 "target": {
                     "type": "string"
                 },
                 "target_coin_id": {
+                    "type": "string"
+                },
+                "trade_url": {
+                    "type": "string"
+                },
+                "trust_score": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "number"
+                }
+            }
+        },
+        "response.TickerMarketData": {
+            "type": "object",
+            "properties": {
+                "has_trading_incentive": {
+                    "type": "boolean"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
