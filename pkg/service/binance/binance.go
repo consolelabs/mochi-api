@@ -513,3 +513,11 @@ func (b *Binance) GetFutureAccountInfo(apiKey, apiSecret string) ([]response.Bin
 func (b *Binance) GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error) {
 	return badapter.GetTickerPrice(symbol)
 }
+
+func (b *Binance) GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransactionResponse, error) {
+	b.logger.Debug("start binance.GetSpotTransaction()")
+	defer b.logger.Debug("end binance.GetSpotTransaction()")
+
+	// get spot transaction
+	return badapter.GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime)
+}

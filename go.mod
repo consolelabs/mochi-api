@@ -111,6 +111,7 @@ require (
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/linkedin/goavro/v2 v2.11.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
@@ -158,8 +159,8 @@ require (
 	github.com/consolelabs/mochi-typeset v0.0.0-20231120101232-7743776c4c84
 	github.com/gammazero/workerpool v1.1.3
 	github.com/getsentry/sentry-go v0.18.0
+	github.com/k0kubun/pp/v3 v3.2.0
 	github.com/pkg/errors v0.9.1
-	github.com/shopspring/decimal v1.2.0
 	github.com/xssnick/tonutils-go v1.8.5
 	github.com/yuin/goldmark v1.6.0
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea

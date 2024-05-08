@@ -405,3 +405,19 @@ func (m *MochiProfile) GetByDiscordIds(discordIds []string) ([]GetProfileRespons
 	}
 	return res, nil
 }
+
+func (m *MochiProfile) GetAllBinanceAccount() (*GetAllBinanceAssociatedAccountData, error) {
+	url := fmt.Sprintf("%s/api/v1/associated-accounts/get-binance-account", m.config.MochiProfileServerHost)
+
+	res := GetAllBinanceAssociatedAccountData{}
+	req := util.SendRequestQuery{
+		URL:      url,
+		Response: &res,
+		Headers:  map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + m.config.MochiBotSecret},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
+	}
+	return &res, nil
+}

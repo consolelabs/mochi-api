@@ -1722,6 +1722,8 @@ definitions:
         type: integer
       token:
         type: string
+      token_id:
+        type: string
       transfer_type:
         enum:
         - transfer
@@ -2650,6 +2652,8 @@ definitions:
       developer_data: {}
       genesis_date: {}
       hashing_algorithm: {}
+      ico_data:
+        $ref: '#/definitions/response.ICOData'
       id:
         type: string
       image:
@@ -2665,7 +2669,12 @@ definitions:
         $ref: '#/definitions/response.MarketData'
       name:
         type: string
-      platforms: {}
+      ownership_renounced:
+        type: boolean
+      platforms:
+        additionalProperties:
+          type: string
+        type: object
       sentiment_votes_down_percentage:
         type: number
       sentiment_votes_up_percentage:
@@ -3066,13 +3075,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_14d_change:
-        type: number
       usd_1h_change:
         type: number
       usd_1y_change:
         type: number
       usd_7d_change:
+        type: number
+      usd_14d_change:
         type: number
       usd_24h_change:
         type: number
@@ -3194,6 +3203,13 @@ definitions:
       min:
         type: number
       updated_at:
+        type: string
+    type: object
+  response.ICOData:
+    properties:
+      ico_end_date:
+        type: string
+      ico_start_date:
         type: string
     type: object
   response.IndexerChain:
@@ -3670,6 +3686,8 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      last_updated:
+        type: string
       low_24h:
         additionalProperties:
           type: number
@@ -3697,6 +3715,12 @@ definitions:
         additionalProperties:
           type: number
         type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3712,12 +3736,6 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -4211,11 +4229,36 @@ definitions:
         type: string
       coin_id:
         type: string
+      converted_last:
+        additionalProperties:
+          type: number
+        type: object
+      converted_volume:
+        additionalProperties:
+          type: number
+        type: object
       last:
         type: number
+      market:
+        $ref: '#/definitions/response.TickerMarketData'
       target:
         type: string
       target_coin_id:
+        type: string
+      trade_url:
+        type: string
+      trust_score:
+        type: string
+      volume:
+        type: number
+    type: object
+  response.TickerMarketData:
+    properties:
+      has_trading_incentive:
+        type: boolean
+      identifier:
+        type: string
+      name:
         type: string
     type: object
   response.ToggleActivityConfigResponse:
@@ -8142,6 +8185,27 @@ paths:
           schema:
             $ref: '#/definitions/response.BinanceFutureAccountPositionResponse'
       summary: Get user's future account balance
+      tags:
+      - Binance
+  /users/{id}/cexs/binance/spot-txs:
+    get:
+      consumes:
+      - application/json
+      description: Get user's spot account txs
+      parameters:
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BinanceFutureAccountPositionResponse'
+      summary: Get user's spot account txs
       tags:
       - Binance
   /users/{id}/earns/airdrop-campaigns:

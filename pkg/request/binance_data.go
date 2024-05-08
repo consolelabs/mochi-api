@@ -24,3 +24,9 @@ type GetBinanceAssetsRequest struct {
 type GetBinanceFutureRequest struct {
 	Id string `uri:"id"`
 }
+
+type GetBinanceSpotTxnsRequest struct {
+	Id     string `uri:"id"`
+	Status string `json:"status" form:"status"`
+	PaginationRequest
+}

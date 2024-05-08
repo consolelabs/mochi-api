@@ -8,6 +8,8 @@ import (
 	ac "github.com/defipod/mochi/pkg/repo/airdrop_campaign"
 	autoActionHistory "github.com/defipod/mochi/pkg/repo/auto_action_history"
 	autoTrigger "github.com/defipod/mochi/pkg/repo/auto_trigger"
+	binancespottransaction "github.com/defipod/mochi/pkg/repo/binance_spot_transaction"
+	binacetracking "github.com/defipod/mochi/pkg/repo/binance_tracking"
 	"github.com/defipod/mochi/pkg/repo/chain"
 	coingeckoinfo "github.com/defipod/mochi/pkg/repo/coingecko_info"
 	coingeckosupportedtokens "github.com/defipod/mochi/pkg/repo/coingecko_supported_tokens"
@@ -190,5 +192,7 @@ func NewRepo(db *gorm.DB) *repo.Repo {
 		UserNotificationSetting:              usernotificationsetting.NewPG(db),
 		NotificationFlag:                     notificationflag.NewPG(db),
 		TokenPriceSnapshot:                   tokenpricesnapshot.NewPG(db),
+		BinanceTracking:                      binacetracking.NewPG(db),
+		BinanceSpotTransaction:               binancespottransaction.NewPG(db),
 	}
 }

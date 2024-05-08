@@ -14,4 +14,5 @@ type Service interface {
 	MarkUserDidOnboarding(profileId string) error
 	GetByTelegramID(telegramID string, noFetchAmount bool) (*GetProfileResponse, error)
 	GetProfileActivities(profileID string) (any, error)
+	GetAllBinanceAccount() (*GetAllBinanceAssociatedAccountData, error)
 }
