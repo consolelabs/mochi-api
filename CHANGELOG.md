@@ -1,3 +1,10 @@
+## [6.32.3](https://github.com/consolelabs/mochi-api/compare/v6.32.2...v6.32.3) (2024-05-08)
+
+
+### Bug Fixes
+
+* bump version ([#1389](https://github.com/consolelabs/mochi-api/issues/1389)) ([8ac0e67](https://github.com/consolelabs/mochi-api/commit/8ac0e67eeb20c8cfe6961c008595c4b34b33a13d))
+
 ## [6.32.2](https://github.com/consolelabs/mochi-api/compare/v6.32.1...v6.32.2) (2024-04-26)
 
 
