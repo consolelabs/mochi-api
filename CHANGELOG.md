@@ -1,3 +1,10 @@
+## [6.32.4](https://github.com/consolelabs/mochi-api/compare/v6.32.3...v6.32.4) (2024-05-08)
+
+
+### Bug Fixes
+
+* remove pp print ([849d9cd](https://github.com/consolelabs/mochi-api/commit/849d9cd44fb495325e1db2220b11cb6232e3882d))
+
 ## [6.32.3](https://github.com/consolelabs/mochi-api/compare/v6.32.2...v6.32.3) (2024-05-08)
 
 
