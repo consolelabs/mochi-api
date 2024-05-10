@@ -5642,6 +5642,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/{id}/cexs/binance/average-costs": {
+            "get": {
+                "description": "Get user's assets average cost",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Binance"
+                ],
+                "summary": "Get user's assets average cost",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.BinanceFutureAccountPositionResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}/cexs/binance/positions": {
             "get": {
                 "description": "Get user's future account balance",
@@ -5674,7 +5706,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}/cexs/binance/spot-txs": {
+        "/users/{id}/cexs/binance/spot-txns": {
             "get": {
                 "description": "Get user's spot account txs",
                 "consumes": [

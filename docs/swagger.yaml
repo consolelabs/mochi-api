@@ -3075,13 +3075,13 @@ definitions:
         type: string
       usd:
         type: number
-      usd_1h_change:
-        type: number
-      usd_1y_change:
-        type: number
       usd_7d_change:
         type: number
       usd_14d_change:
+        type: number
+      usd_1h_change:
+        type: number
+      usd_1y_change:
         type: number
       usd_24h_change:
         type: number
@@ -3715,12 +3715,6 @@ definitions:
         additionalProperties:
           type: number
         type: object
-      price_change_percentage_14d:
-        type: number
-      price_change_percentage_14d_in_currency:
-        additionalProperties:
-          type: number
-        type: object
       price_change_percentage_1h:
         type: number
       price_change_percentage_1h_in_currency:
@@ -3736,6 +3730,12 @@ definitions:
       price_change_percentage_7d:
         type: number
       price_change_percentage_7d_in_currency:
+        additionalProperties:
+          type: number
+        type: object
+      price_change_percentage_14d:
+        type: number
+      price_change_percentage_14d_in_currency:
         additionalProperties:
           type: number
         type: object
@@ -8166,6 +8166,27 @@ paths:
       summary: Find one user's trackng wallet
       tags:
       - Wallet
+  /users/{id}/cexs/binance/average-costs:
+    get:
+      consumes:
+      - application/json
+      description: Get user's assets average cost
+      parameters:
+      - description: profile ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BinanceFutureAccountPositionResponse'
+      summary: Get user's assets average cost
+      tags:
+      - Binance
   /users/{id}/cexs/binance/positions:
     get:
       consumes:
@@ -8187,7 +8208,7 @@ paths:
       summary: Get user's future account balance
       tags:
       - Binance
-  /users/{id}/cexs/binance/spot-txs:
+  /users/{id}/cexs/binance/spot-txns:
     get:
       consumes:
       - application/json
