@@ -148,3 +148,31 @@ func (h *Handler) GetBinanceSpotTxns(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
 }
+
+// GetBinanceAverageCosts godoc
+// @Summary     Get user's assets average cost
+// @Description Get user's assets average cost
+// @Tags        Binance
+// @Accept      json
+// @Produce     json
+// @Param       id   			path  string true  "profile ID"
+// @Success     200 {object} response.BinanceFutureAccountPositionResponse
+// @Router      /users/{id}/cexs/binance/average-costs [get]
+func (h *Handler) GetBinanceAverageCosts(c *gin.Context) {
+	profileId := c.Param("id")
+	if !util.ValidateNumberSeries(profileId) {
+		err := errors.New("profile Id is invalid")
+		h.log.Error(err, "[handler.GetBinanceFutures] validate profile id failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	res, err := h.entities.GetBinanceAverageCost(profileId)
+	if err != nil {
+		h.log.Error(err, "[handler.GetBinanceAverageCosts] entity.GetBinanceAverageCosts() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(res, nil, nil, nil))
+}

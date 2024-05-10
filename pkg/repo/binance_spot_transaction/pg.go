@@ -35,3 +35,33 @@ func (pg *pg) List(q ListQuery) ([]model.BinanceSpotTransaction, error) {
 	}
 	return txs, db.Order("created_at DESC").Find(&txs).Error
 }
+
+func (pg *pg) GetUserAverageCost(profileId string) ([]model.BinanceAssetAverageCost, error) {
+	avgCost := make([]model.BinanceAssetAverageCost, 0)
+	db := pg.db
+	rows, err := db.Raw(`
+	SELECT
+		profile_id, symbol, sum(executed_qty::decimal * price_in_usd::decimal) / sum(executed_qty::decimal) as average_cost
+	FROM
+		binance_spot_transactions
+	WHERE
+		profile_id = ?
+		AND TYPE = 'LIMIT'
+		AND side = 'BUY'
+		AND status = 'FILLED'
+		GROUP BY symbol, profile_id;
+	`, profileId).Rows()
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var avgCostItem model.BinanceAssetAverageCost
+		if err := rows.Scan(&avgCostItem.ProfileId, &avgCostItem.Symbol, &avgCostItem.AverageCost); err != nil {
+			return nil, err
+		}
+		avgCost = append(avgCost, avgCostItem)
+	}
+
+	return avgCost, nil
+}

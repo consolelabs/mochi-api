@@ -12,6 +12,7 @@ import (
 	"github.com/defipod/mochi/pkg/model"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
+	"github.com/defipod/mochi/pkg/service/binance"
 )
 
 type updateBinanceSpotHistory struct {
@@ -97,6 +98,26 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 					break
 				}
 				for _, tx := range txs {
+					// If order is filled, and
+					// if the pair order is xxxbtc / xxxeth / xxxbnb we will get the price of symbol in usd
+					// This data will be used to calculate the average price of the symbol
+					isFilled := tx.Status == "FILLED"
+					isBtcPair := strings.HasSuffix(p, "BTC")
+					isEthPair := strings.HasSuffix(p, "ETH")
+					isBnbPair := strings.HasSuffix(p, "BNB")
+					priceInUsd := tx.Price
+					if isFilled && (isBtcPair || isEthPair || isBnbPair) {
+						// get price of the symbol at the time of the transaction
+						usdtpair := fmt.Sprintf("%sUSDT", symbol)
+						ticks, err := s.svc.Binance.Kline(usdtpair, binance.Interval1m, tx.Time, 0)
+						if err != nil {
+							s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.Kline() fail to get kline")
+							break
+						}
+						if len(ticks) > 0 && len(ticks[0]) > 0 {
+							priceInUsd = ticks[0][0]
+						}
+					}
 					err = s.entity.GetRepo().BinanceSpotTransaction.Create(&model.BinanceSpotTransaction{
 						ProfileId:               acc.ProfileId,
 						Symbol:                  symbol,
@@ -105,6 +126,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 						OrderListId:             tx.OrderListId,
 						ClientOrderId:           tx.ClientOrderId,
 						Price:                   tx.Price,
+						PriceInUsd:              priceInUsd,
 						OrigQty:                 tx.OrigQty,
 						ExecutedQty:             tx.ExecutedQty,
 						CumulativeQuoteQty:      tx.CumulativeQuoteQty,

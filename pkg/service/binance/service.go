@@ -20,4 +20,5 @@ type Service interface {
 	GetFutureAccountInfo(apiKey, apiSecret string) ([]response.BinanceFuturePositionInfo, error)
 	GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error)
 	GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransactionResponse, error)
+	Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]string, error)
 }
