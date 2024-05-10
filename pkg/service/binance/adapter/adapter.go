@@ -379,3 +379,49 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 
 	return txs, nil
 }
+
+func Kline(symbol, interval string, startTime, endTime int64) (tickers [][]string, err error) {
+	// http request
+	req, err := http.NewRequest("GET", url+"/api/v3/klines", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("symbol", symbol)
+	q.Add("interval", interval)
+	if startTime != 0 {
+		q.Add("startTime", strconv.FormatInt(startTime, 10))
+	}
+	if endTime != 0 {
+		q.Add("endTime", strconv.FormatInt(endTime, 10))
+	}
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := do(req, "", 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.Header.Get("X-Mbx-Used-Weight-1m") != "" {
+		usedWeight1M, err := strconv.Atoi(resp.Header.Get("X-Mbx-Used-Weight-1m"))
+		if err != nil || usedWeight1M > 5000 {
+			fmt.Printf("err: %+v, %d", err, usedWeight1M)
+			time.Sleep(1 * time.Minute)
+		}
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &tickers)
+	if err != nil {
+		return nil, err
+	}
+
+	return tickers, nil
+}

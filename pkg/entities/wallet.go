@@ -1034,6 +1034,15 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 	}, err
 }
 
+func (e *Entity) GetBinanceAverageCost(profileId string) ([]model.BinanceAssetAverageCost, error) {
+	res, err := e.repo.BinanceSpotTransaction.GetUserAverageCost(profileId)
+	if err != nil {
+		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entities.GetBinanceAssetAverageCost] Failed to get asset average cost of user")
+		return nil, err
+	}
+	return res, nil
+}
+
 func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, string, string, error) {
 	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
 	if err != nil {

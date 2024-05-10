@@ -7,4 +7,5 @@ type IHandler interface {
 	GetBinanceAssets(c *gin.Context)
 	GetBinanceFutures(c *gin.Context)
 	GetBinanceSpotTxns(c *gin.Context)
+	GetBinanceAverageCosts(c *gin.Context)
 }
