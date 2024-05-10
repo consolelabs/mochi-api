@@ -1,3 +1,10 @@
+# [6.33.0](https://github.com/consolelabs/mochi-api/compare/v6.32.4...v6.33.0) (2024-05-10)
+
+
+### Features
+
+* binance spot average cost ([#1391](https://github.com/consolelabs/mochi-api/issues/1391)) ([a558b3f](https://github.com/consolelabs/mochi-api/commit/a558b3f453d4cf65aaf28ec354ec229394c26da3))
+
 ## [6.32.4](https://github.com/consolelabs/mochi-api/compare/v6.32.3...v6.32.4) (2024-05-08)
 
 
