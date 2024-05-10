@@ -521,3 +521,21 @@ func (b *Binance) GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endT
 	// get spot transaction
 	return badapter.GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime)
 }
+
+// Get binance candlestick
+type Interval string
+
+const (
+	Interval1m  Interval = "1m"
+	Interval5m  Interval = "5m"
+	Interval15m Interval = "15m"
+	Interval30m Interval = "30m"
+	Interval1h  Interval = "1h"
+	Interval1d  Interval = "1d"
+	Interval1w  Interval = "1w"
+	Interval1M  Interval = "1M"
+)
+
+func (b *Binance) Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]string, error) {
+	return badapter.Kline(symbol, string(interval), startTime, endTime)
+}

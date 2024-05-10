@@ -11,6 +11,7 @@ type BinanceSpotTransaction struct {
 	OrderListId             int64     `json:"order_list_id"`
 	ClientOrderId           string    `json:"client_order_id"`
 	Price                   string    `json:"price"`
+	PriceInUsd              string    `json:"price_in_usd"`
 	OrigQty                 string    `json:"orig_qty"`
 	ExecutedQty             string    `json:"executed_qty"`
 	CumulativeQuoteQty      string    `json:"cumulative_quote_qty"`
