@@ -108,7 +108,8 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 					priceInUsd := tx.Price
 					if isFilled && (isBtcPair || isEthPair || isBnbPair) {
 						// get price of the symbol at the time of the transaction
-						ticks, err := s.svc.Binance.Kline(tx.Symbol, binance.Interval1m, tx.Time, 0)
+						usdtpair := fmt.Sprintf("%sUSDT", symbol)
+						ticks, err := s.svc.Binance.Kline(usdtpair, binance.Interval1m, tx.Time, 0)
 						if err != nil {
 							s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.Kline() fail to get kline")
 							break
