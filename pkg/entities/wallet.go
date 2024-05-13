@@ -1036,6 +1036,7 @@ func (e *Entity) SumarizeBinanceAsset(req request.BinanceRequest) (*response.Wal
 
 func (e *Entity) GetBinanceAverageCost(profileId string) ([]model.BinanceAssetAverageCost, error) {
 	res, err := e.repo.BinanceSpotTransaction.GetUserAverageCost(profileId)
+	if
 	if err != nil {
 		e.log.Fields(logger.Fields{"profileId": profileId}).Error(err, "[entities.GetBinanceAssetAverageCost] Failed to get asset average cost of user")
 		return nil, err
