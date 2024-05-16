@@ -96,3 +96,7 @@ func (pg *pg) GetUserAverageCost(profileId string) ([]model.BinanceAssetAverageC
 
 	return avgCost, nil
 }
+
+func (pg *pg) Update(tx *model.BinanceSpotTransaction) error {
+	return pg.db.Save(&tx).Error
+}
