@@ -425,3 +425,43 @@ func Kline(symbol, interval string, startTime, endTime int64) (tickers [][]strin
 
 	return tickers, nil
 }
+
+func GetSpotTransactionByOrderId(apiKey, apiSecret, symbol string, orderId int64) (tx *response.BinanceSpotTransactionResponse, err error) {
+	q := map[string]string{
+		"timestamp":  strconv.Itoa(int(time.Now().UnixMilli())),
+		"orderId":    fmt.Sprintf("%d", orderId),
+		"symbol":     symbol,
+		"recvWindow": "59000",
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", url+"/api/v3/order?"+queryString, nil)
+	if err != nil {
+		return
+	}
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	resBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	if resp.Header.Get("X-Mbx-Used-Weight-1m") != "" {
+		usedWeight1M, err := strconv.Atoi(resp.Header.Get("X-Mbx-Used-Weight-1m"))
+		if err != nil || usedWeight1M > 5000 {
+			fmt.Printf("err: %+v, %d", err, usedWeight1M)
+			time.Sleep(1 * time.Minute)
+		}
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &tx)
+	if err != nil {
+		return
+	}
+	return
+}

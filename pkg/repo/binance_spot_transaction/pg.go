@@ -1,6 +1,8 @@
 package binancespottransaction
 
 import (
+	"strconv"
+
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/model"
@@ -41,15 +43,34 @@ func (pg *pg) GetUserAverageCost(profileId string) ([]model.BinanceAssetAverageC
 	db := pg.db
 	rows, err := db.Raw(`
 	SELECT
-		profile_id, symbol, sum(executed_qty::decimal * price_in_usd::decimal) / sum(executed_qty::decimal) as average_cost
+		profile_id,
+		symbol,
+		sum(
+			CASE WHEN side = 'BUY' THEN
+				executed_qty::decimal
+			ELSE
+				- executed_qty::decimal
+			END) AS total_amount,
+		sum(
+			CASE WHEN side = 'BUY' THEN
+				executed_qty::decimal * price::decimal
+			ELSE
+				- executed_qty::decimal * price::decimal
+			END) /
+		sum(
+			CASE WHEN side = 'BUY' THEN
+				executed_qty::decimal
+			ELSE
+				- executed_qty::decimal
+			END) AS avg_cost
 	FROM
 		binance_spot_transactions
 	WHERE
 		profile_id = ?
 		AND TYPE = 'LIMIT'
-		AND side = 'BUY'
 		AND status = 'FILLED'
-		GROUP BY symbol, profile_id;
+	GROUP BY
+		symbol, profile_id;
 	`, profileId).Rows()
 	if err != nil {
 		return nil, err
@@ -57,11 +78,25 @@ func (pg *pg) GetUserAverageCost(profileId string) ([]model.BinanceAssetAverageC
 
 	for rows.Next() {
 		var avgCostItem model.BinanceAssetAverageCost
-		if err := rows.Scan(&avgCostItem.ProfileId, &avgCostItem.Symbol, &avgCostItem.AverageCost); err != nil {
+		if err := rows.Scan(&avgCostItem.ProfileId, &avgCostItem.Symbol, &avgCostItem.TotalAmount, &avgCostItem.AverageCost); err != nil {
 			return nil, err
 		}
-		avgCost = append(avgCost, avgCostItem)
+		// Incase of invalid total amount, we just skip the pair
+		// there is some case leading to invalid total amount
+		// tx is not enough
+		// user deposit or withdraw asset from cex
+		amount, err := strconv.ParseFloat(avgCostItem.TotalAmount, 64)
+		if err != nil {
+			continue
+		}
+		if amount > 0 {
+			avgCost = append(avgCost, avgCostItem)
+		}
 	}
 
 	return avgCost, nil
+}
+
+func (pg *pg) Update(tx *model.BinanceSpotTransaction) error {
+	return pg.db.Save(&tx).Error
 }

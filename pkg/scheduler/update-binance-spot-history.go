@@ -10,6 +10,7 @@ import (
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
+	binancespottransaction "github.com/defipod/mochi/pkg/repo/binance_spot_transaction"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/service"
 	"github.com/defipod/mochi/pkg/service/binance"
@@ -64,6 +65,27 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 		if err != nil {
 			s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - BinanceTracking.FirstOrCreate() fail to first or create binance tracking ")
 			continue
+		}
+		// update status of NEW order in case it filled or cancel
+		newTxs, _ := s.entity.GetRepo().BinanceSpotTransaction.List(binancespottransaction.ListQuery{
+			ProfileId: acc.ProfileId,
+			Status:    "NEW",
+		})
+		for _, newTx := range newTxs {
+			tx, err := s.svc.Binance.GetSpotTransactionByOrderId(acc.ApiKey, acc.ApiSecret, newTx.Pair, newTx.OrderId)
+			if err != nil {
+				continue
+			}
+			if tx.Status != newTx.Status {
+				newTx.Status = tx.Status
+				newTx.ExecutedQty = tx.ExecutedQty
+				newTx.UpdateTime = tx.UpdateTime
+				newTx.UpdatedAt = time.UnixMilli(tx.UpdateTime)
+			}
+			err = s.entity.GetRepo().BinanceSpotTransaction.Update(&newTx)
+			if err != nil {
+				continue
+			}
 		}
 
 		symbols := []string{}
