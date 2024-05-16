@@ -1,3 +1,11 @@
+## [6.33.1](https://github.com/consolelabs/mochi-api/compare/v6.33.0...v6.33.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* update dca formula ([#1392](https://github.com/consolelabs/mochi-api/issues/1392)) ([08a3988](https://github.com/consolelabs/mochi-api/commit/08a398820c25d5417b15c8ba469b5c9eb73d52a2))
+* update spot tx when it status is new ([6c85df3](https://github.com/consolelabs/mochi-api/commit/6c85df34bfd75ed75a94007b1c66393ac22d01a5))
+
 # [6.33.0](https://github.com/consolelabs/mochi-api/compare/v6.32.4...v6.33.0) (2024-05-10)
 
 
