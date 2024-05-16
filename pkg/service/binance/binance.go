@@ -539,3 +539,11 @@ const (
 func (b *Binance) Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]string, error) {
 	return badapter.Kline(symbol, string(interval), startTime, endTime)
 }
+
+func (b *Binance) GetSpotTransactionByOrderId(apiKey, apiSecret, symbol string, orderId int64) (*response.BinanceSpotTransactionResponse, error) {
+	b.logger.Debug("start binance.GetSpotTransactionByOrderId()")
+	defer b.logger.Debug("end binance.GetSpotTransactionByOrderId()")
+
+	// get spot transaction
+	return badapter.GetSpotTransactionByOrderId(apiKey, apiSecret, symbol, orderId)
+}
