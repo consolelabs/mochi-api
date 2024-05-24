@@ -380,7 +380,7 @@ func GetSpotTransaction(apiKey, apiSecret, symbol, startTime, endTime string) (t
 	return txs, nil
 }
 
-func Kline(symbol, interval string, startTime, endTime int64) (tickers [][]string, err error) {
+func Kline(symbol, interval string, startTime, endTime int64) (tickers [][]interface{}, err error) {
 	// http request
 	req, err := http.NewRequest("GET", url+"/api/v3/klines", nil)
 	if err != nil {
@@ -464,4 +464,74 @@ func GetSpotTransactionByOrderId(apiKey, apiSecret, symbol string, orderId int64
 		return
 	}
 	return
+}
+
+func GetDepositHistory(apiKey, apiSecret, startTime, endTime string) (txs []response.BinanceDepositHistory, err error) {
+	q := map[string]string{
+		"timestamp":  strconv.Itoa(int(time.Now().UnixMilli())),
+		"startTime":  startTime,
+		"endTime":    endTime,
+		"recvWindow": "59000",
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", url+"/sapi/v1/capital/deposit/hisrec?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &txs)
+	if err != nil {
+		return nil, err
+	}
+
+	return txs, nil
+}
+
+func GetWithdrawHistory(apiKey, apiSecret, startTime, endTime string) (txs []response.BinanceWithdrawHistory, err error) {
+	q := map[string]string{
+		"timestamp":  strconv.Itoa(int(time.Now().UnixMilli())),
+		"startTime":  startTime,
+		"endTime":    endTime,
+		"recvWindow": "59000",
+	}
+	queryString := butils.QueryString(q, apiSecret)
+
+	// http request
+	req, err := http.NewRequest("GET", url+"/sapi/v1/capital/withdraw/history?"+queryString, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := do(req, apiKey, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	resBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// decode response json
+	err = json.Unmarshal(resBody, &txs)
+	if err != nil {
+		return nil, err
+	}
+
+	return txs, nil
 }

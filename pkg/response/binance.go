@@ -244,3 +244,42 @@ type BinanceSpotTransactionResponse struct {
 	CreatedAt               time.Time `json:"created_at"`
 	UpdatedAt               time.Time `json:"updated_at"`
 }
+
+type BinanceDepositHistory struct {
+	Id              string `json:"id"`
+	Amount          string `json:"amount"`
+	Coin            string `json:"coin"`
+	Network         string `json:"network"`
+	Status          int    `json:"status"`
+	Address         string `json:"address"`
+	AddressTag      string `json:"addressTag"`
+	TxId            string `json:"txId"`
+	InsertTime      int64  `json:"insertTime"`
+	TransferType    int    `json:"transferType"`
+	ConfirmTimes    string `json:"confirmTimes"`
+	UnlockConfirm   int    `json:"unlockConfirm"`
+	WalletType      int    `json:"walletType"`
+	WithdrawOrderId string `json:"withdrawOrderId"`
+	CompleteTime    string `json:"completeTime"`
+}
+
+type BinanceWithdrawHistory struct {
+	Id              string `json:"id"`
+	Amount          string `json:"amount"`
+	Coin            string `json:"coin"`
+	Network         string `json:"network"`
+	Status          int    `json:"status"`
+	Address         string `json:"address"`
+	AddressTag      string `json:"addressTag"`
+	TxId            string `json:"txId"`
+	InsertTime      int64  `json:"insertTime"`
+	TransferType    int    `json:"transferType"`
+	ConfirmTimes    string `json:"confirmTimes"`
+	UnlockConfirm   int    `json:"unlockConfirm"`
+	WalletType      int    `json:"walletType"`
+	WithdrawOrderId string `json:"withdrawOrderId"`
+	CompleteTime    string `json:"completeTime"`
+	Info            string `json:"info"`
+	ConfirmNo       int    `json:"confirmNo"`
+	TxKey           string `json:"txKey"`
+}
