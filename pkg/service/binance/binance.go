@@ -536,7 +536,7 @@ const (
 	Interval1M  Interval = "1M"
 )
 
-func (b *Binance) Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]string, error) {
+func (b *Binance) Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]interface{}, error) {
 	return badapter.Kline(symbol, string(interval), startTime, endTime)
 }
 
@@ -546,4 +546,20 @@ func (b *Binance) GetSpotTransactionByOrderId(apiKey, apiSecret, symbol string, 
 
 	// get spot transaction
 	return badapter.GetSpotTransactionByOrderId(apiKey, apiSecret, symbol, orderId)
+}
+
+func (b *Binance) GetWithdrawHistory(apiKey, apiSecret, startTime, endTime string) ([]response.BinanceWithdrawHistory, error) {
+	b.logger.Debug("start binance.GetSpotTransactionByOrderId()")
+	defer b.logger.Debug("end binance.GetSpotTransactionByOrderId()")
+
+	// get spot transaction
+	return badapter.GetWithdrawHistory(apiKey, apiSecret, startTime, endTime)
+}
+
+func (b *Binance) GetDepositHistory(apiKey, apiSecret, startTime, endTime string) ([]response.BinanceDepositHistory, error) {
+	b.logger.Debug("start binance.GetSpotTransactionByOrderId()")
+	defer b.logger.Debug("end binance.GetSpotTransactionByOrderId()")
+
+	// get spot transaction
+	return badapter.GetDepositHistory(apiKey, apiSecret, startTime, endTime)
 }

@@ -66,6 +66,8 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 			s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - BinanceTracking.FirstOrCreate() fail to first or create binance tracking ")
 			continue
 		}
+		startTime := strconv.Itoa(int(binanceTracking.SpotLastTime.UnixMilli()))
+		endTime := strconv.Itoa(int(binanceTracking.SpotLastTime.Add(1 * time.Hour).UnixMilli()))
 		// update status of NEW order in case it filled or cancel
 		newTxs, _ := s.entity.GetRepo().BinanceSpotTransaction.List(binancespottransaction.ListQuery{
 			ProfileId: acc.ProfileId,
@@ -86,6 +88,74 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 			if err != nil {
 				continue
 			}
+		}
+		// withdrawTx
+		wdTxs, err := s.svc.Binance.GetWithdrawHistory(acc.ApiKey, acc.ApiSecret, startTime, endTime)
+		if err != nil {
+			s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.GetWithdrawHistory() fail to get spot txs")
+			break
+		}
+		for _, wdTx := range wdTxs {
+			status := ""
+			switch wdTx.Status {
+			case 6:
+				status = "FILLED"
+			case 1:
+				status = "CANCELED"
+			}
+			timeParsed, _ := time.Parse(time.DateTime, wdTx.CompleteTime)
+			priceInUsd := ""
+			usdtpair := fmt.Sprintf("%sUSDT", wdTx.Coin)
+			ticks, _ := s.svc.Binance.Kline(usdtpair, binance.Interval1m, timeParsed.UnixMilli(), 0)
+			if len(ticks) > 0 && len(ticks[0]) > 0 {
+				priceInUsd = ticks[0][4].(string)
+			}
+
+			err = s.entity.GetRepo().BinanceSpotTransaction.Create(&model.BinanceSpotTransaction{
+				ProfileId:   acc.ProfileId,
+				Symbol:      wdTx.Coin,
+				OrigQty:     wdTx.Amount,
+				ExecutedQty: wdTx.Amount,
+				Status:      status,
+				Time:        timeParsed.UnixMilli(),
+				CreatedAt:   timeParsed,
+				Side:        "WITHDRAW",
+				PriceInUsd:  priceInUsd,
+			})
+		}
+		// deposit
+		depositTxs, err := s.svc.Binance.GetDepositHistory(acc.ApiKey, acc.ApiSecret, startTime, endTime)
+		if err != nil {
+			s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.GetDepositHistory() fail to get spot txs")
+			break
+		}
+		for _, depositTx := range depositTxs {
+			status := ""
+			switch depositTx.Status {
+			case 1:
+				status = "FILLED"
+			case 0:
+				status = "PENDING"
+			case 7:
+				status = "CANCELED"
+			}
+			priceInUsd := ""
+			usdtpair := fmt.Sprintf("%sUSDT", depositTx.Coin)
+			ticks, _ := s.svc.Binance.Kline(usdtpair, binance.Interval1m, depositTx.InsertTime, 0)
+			if len(ticks) > 0 && len(ticks[0]) > 0 {
+				priceInUsd = ticks[0][4].(string)
+			}
+			err = s.entity.GetRepo().BinanceSpotTransaction.Create(&model.BinanceSpotTransaction{
+				ProfileId:   acc.ProfileId,
+				Symbol:      depositTx.Coin,
+				OrigQty:     depositTx.Amount,
+				ExecutedQty: depositTx.Amount,
+				Status:      status,
+				Time:        depositTx.InsertTime,
+				CreatedAt:   time.UnixMilli(depositTx.InsertTime),
+				Side:        "DEPOSIT",
+				PriceInUsd:  priceInUsd,
+			})
 		}
 
 		symbols := []string{}
@@ -112,8 +182,6 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 		for _, symbol := range symbols {
 			pairs := symbolPairs[symbol]
 			for _, p := range pairs {
-				startTime := strconv.Itoa(int(binanceTracking.SpotLastTime.UnixMilli()))
-				endTime := strconv.Itoa(int(binanceTracking.SpotLastTime.Add(1 * time.Hour).UnixMilli()))
 				txs, err := s.svc.Binance.GetSpotTransactions(acc.ApiKey, acc.ApiSecret, p, startTime, endTime)
 				if err != nil {
 					s.log.Fields(logger.Fields{"profileId": acc.ProfileId}).Error(err, "[updateBinanceSpotHistory] - svc.Binance.GetSpotTransactions() fail to get spot txs")
@@ -137,7 +205,7 @@ func (s *updateBinanceSpotHistory) schedulerUpdate() error {
 							break
 						}
 						if len(ticks) > 0 && len(ticks[0]) > 0 {
-							priceInUsd = ticks[0][0]
+							priceInUsd = ticks[0][4].(string)
 						}
 					}
 					err = s.entity.GetRepo().BinanceSpotTransaction.Create(&model.BinanceSpotTransaction{
