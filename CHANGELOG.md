@@ -1,3 +1,10 @@
+## [6.33.2](https://github.com/consolelabs/mochi-api/compare/v6.33.1...v6.33.2) (2024-05-24)
+
+
+### Bug Fixes
+
+* add wd and dep tx binance ([264dc8b](https://github.com/consolelabs/mochi-api/commit/264dc8b865b0b1c8886cbebb325bb2723343d99f))
+
 ## [6.33.1](https://github.com/consolelabs/mochi-api/compare/v6.33.0...v6.33.1) (2024-05-16)
 
 
