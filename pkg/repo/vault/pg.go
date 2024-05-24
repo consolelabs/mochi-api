@@ -44,6 +44,9 @@ func (pg *pg) GetLatestWalletNumber() (walletNumber sql.NullInt64, err error) {
 
 func (pg *pg) List(q ListQuery) (vaults []model.Vault, err error) {
 	db := pg.db
+	if !q.GetArchived {
+		db = db.Where("vaults.deleted_at IS NULL")
+	}
 	if q.GuildID != "" {
 		db = db.Where("vaults.guild_id = ?", q.GuildID)
 	}

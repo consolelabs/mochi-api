@@ -7,4 +7,5 @@ type ListQuery struct {
 	SolanaWallet  string
 	Threshold     string
 	VaultIDs      []string
+	GetArchived   bool
 }
