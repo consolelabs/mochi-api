@@ -1,3 +1,10 @@
+# [6.34.0](https://github.com/consolelabs/mochi-api/compare/v6.33.2...v6.34.0) (2024-05-24)
+
+
+### Features
+
+* vault soft delete ([#1395](https://github.com/consolelabs/mochi-api/issues/1395)) ([d18b72a](https://github.com/consolelabs/mochi-api/commit/d18b72acf464b8936ef887b5cce0c06f060d6e3a))
+
 ## [6.33.2](https://github.com/consolelabs/mochi-api/compare/v6.33.1...v6.33.2) (2024-05-24)
 
 
