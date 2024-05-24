@@ -1,3 +1,10 @@
+## [6.34.1](https://github.com/consolelabs/mochi-api/compare/v6.34.0...v6.34.1) (2024-05-24)
+
+
+### Bug Fixes
+
+* update cache time krystal balance fetcher ([#1396](https://github.com/consolelabs/mochi-api/issues/1396)) ([a53728f](https://github.com/consolelabs/mochi-api/commit/a53728fa1625645ffc3ac49ceb0dbebddb927be2))
+
 # [6.34.0](https://github.com/consolelabs/mochi-api/compare/v6.33.2...v6.34.0) (2024-05-24)
 
 
