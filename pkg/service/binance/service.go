@@ -21,5 +21,7 @@ type Service interface {
 	GetPrice(symbol string) (*response.BinanceApiTickerPriceResponse, error)
 	GetSpotTransactions(apiKey, apiSecret, symbol, startTime, endTime string) ([]response.BinanceSpotTransactionResponse, error)
 	GetSpotTransactionByOrderId(apiKey, apiSecret, symbol string, orderId int64) (*response.BinanceSpotTransactionResponse, error)
-	Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]string, error)
+	Kline(symbol string, interval Interval, startTime int64, endTime int64) ([][]interface{}, error)
+	GetWithdrawHistory(apiKey, apiSecret, startTime, endTime string) ([]response.BinanceWithdrawHistory, error)
+	GetDepositHistory(apiKey, apiSecret, startTime, endTime string) ([]response.BinanceDepositHistory, error)
 }
