@@ -1562,6 +1562,7 @@ func (e *Entity) GetBinanceSpotTxns(req request.GetBinanceSpotTxnsRequest) ([]re
 			SelfTradePreventionMode: tx.SelfTradePreventionMode,
 			CreatedAt:               tx.CreatedAt,
 			UpdatedAt:               tx.UpdatedAt,
+			PriceInUsd:              tx.PriceInUsd,
 		})
 	}
 	return res, nil
