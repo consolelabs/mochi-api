@@ -1,3 +1,10 @@
+## [6.34.2](https://github.com/consolelabs/mochi-api/compare/v6.34.1...v6.34.2) (2024-05-29)
+
+
+### Bug Fixes
+
+* resp tx price in usd for binance spot tx ([561b200](https://github.com/consolelabs/mochi-api/commit/561b200a77e87085ce28f2b1d22cdfe3f36b9a82))
+
 ## [6.34.1](https://github.com/consolelabs/mochi-api/compare/v6.34.0...v6.34.1) (2024-05-24)
 
 
