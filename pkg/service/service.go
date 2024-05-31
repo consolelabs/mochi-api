@@ -19,6 +19,7 @@ import (
 	"github.com/defipod/mochi/pkg/service/covalent"
 	"github.com/defipod/mochi/pkg/service/dexscreener"
 	"github.com/defipod/mochi/pkg/service/discord"
+	"github.com/defipod/mochi/pkg/service/dune"
 	"github.com/defipod/mochi/pkg/service/ethplorer"
 	"github.com/defipod/mochi/pkg/service/geckoterminal"
 	"github.com/defipod/mochi/pkg/service/github"
@@ -63,6 +64,7 @@ type Service struct {
 	Github        github.Service
 	Ethplorer     ethplorer.Service
 	Sentry        sentrygo.Service
+	Dune          dune.Service
 }
 
 func NewService(
@@ -120,5 +122,6 @@ func NewService(
 		Github:        github.NewService(&cfg, log),
 		Ethplorer:     ethplorer.NewService(sentry),
 		Sentry:        sentrygo.New(&cfg, log),
+		Dune:          dune.NewService(&cfg, log, cache),
 	}, nil
 }
