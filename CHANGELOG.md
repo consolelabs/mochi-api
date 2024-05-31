@@ -1,3 +1,10 @@
+# [6.35.0](https://github.com/consolelabs/mochi-api/compare/v6.34.2...v6.35.0) (2024-05-31)
+
+
+### Features
+
+* get onchain asset average cost ([#1398](https://github.com/consolelabs/mochi-api/issues/1398)) ([8f39eb2](https://github.com/consolelabs/mochi-api/commit/8f39eb274444aa63443102310e844ec3c22bf32e))
+
 ## [6.34.2](https://github.com/consolelabs/mochi-api/compare/v6.34.1...v6.34.2) (2024-05-29)
 
 
