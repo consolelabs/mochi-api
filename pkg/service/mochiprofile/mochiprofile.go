@@ -381,8 +381,11 @@ func (m *MochiProfile) GetByIds(profileIds []string) ([]GetProfileResponse, erro
 	return res, nil
 }
 
-// maximize 50 id per request
+// NOTE: maximize 50 id per request
 func (m *MochiProfile) GetByDiscordIds(discordIds []string) ([]GetProfileResponse, error) {
+	if len(discordIds) > 50 {
+		return nil, fmt.Errorf("discordIds length should be less than or equal to 50")
+	}
 	payload, err := json.Marshal(struct {
 		Ids []string `json:"ids"`
 	}{Ids: discordIds})
@@ -420,4 +423,22 @@ func (m *MochiProfile) GetAllBinanceAccount() (*GetAllBinanceAssociatedAccountDa
 		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
 	}
 	return &res, nil
+}
+
+func (m *MochiProfile) GetTopActiveUsers(top int) ([]GetProfileResponse, error) {
+	url := fmt.Sprintf("%s/api/v1/profiles/top-active/%v", m.config.MochiProfileServerHost, top)
+	res := []GetProfileResponse{}
+	req := util.SendRequestQuery{
+		URL:      url,
+		Response: &res,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + m.config.MochiBotSecret,
+		},
+	}
+	statusCode, err := util.SendRequest(req)
+	if err != nil || statusCode != http.StatusOK {
+		return nil, fmt.Errorf("[mochiprofile.GetTopActiveUsers] util.SendRequest() failed: %v", err)
+	}
+	return res, nil
 }

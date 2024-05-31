@@ -55,6 +55,7 @@ import (
 	offchaintipbotchain "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_chain"
 	offchaintipbotconfignotify "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_config_notify"
 	offchaintipbottokens "github.com/defipod/mochi/pkg/repo/offchain_tip_bot_tokens"
+	onchainassetavgcost "github.com/defipod/mochi/pkg/repo/onchain_asset_avg_cost"
 	productbotcommand "github.com/defipod/mochi/pkg/repo/product_bot_command"
 	productchangelogs "github.com/defipod/mochi/pkg/repo/product_changelogs"
 	productchangelogsview "github.com/defipod/mochi/pkg/repo/product_changelogs_view"
@@ -189,4 +190,5 @@ type Repo struct {
 	TokenPriceSnapshot                   tokenpricesnapshot.Store
 	BinanceTracking                      binancetracking.Store
 	BinanceSpotTransaction               binancespottransaction.Store
+	OnchainAssetAverageCost              onchainassetavgcost.Store
 }

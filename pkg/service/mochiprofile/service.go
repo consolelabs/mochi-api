@@ -15,4 +15,5 @@ type Service interface {
 	GetByTelegramID(telegramID string, noFetchAmount bool) (*GetProfileResponse, error)
 	GetProfileActivities(profileID string) (any, error)
 	GetAllBinanceAccount() (*GetAllBinanceAssociatedAccountData, error)
+	GetTopActiveUsers(top int) ([]GetProfileResponse, error)
 }
