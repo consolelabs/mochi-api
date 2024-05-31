@@ -20,7 +20,7 @@ func (pg *pg) Upsert(asset *model.OnchainAssetAvgCost) error {
 	tx := pg.db.Begin()
 	err := tx.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "wallet_address"}, {Name: "token_address"}, {Name: "blockchain"}},
-		DoUpdates: clause.AssignmentColumns([]string{"average_cost"}),
+		DoUpdates: clause.AssignmentColumns([]string{"average_cost", "updated_at"}),
 	}).Create(asset).Error
 	if err != nil {
 		tx.Rollback()
@@ -36,7 +36,7 @@ func (pg *pg) UpsertMany(assets []model.OnchainAssetAvgCost) error {
 	for _, asset := range assets {
 		err := tx.Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "wallet_address"}, {Name: "token_address"}, {Name: "blockchain"}},
-			DoUpdates: clause.AssignmentColumns([]string{"average_cost"}),
+			DoUpdates: clause.AssignmentColumns([]string{"average_cost", "updated_at"}),
 		}).Create(&asset).Error
 		if err != nil {
 			log.Error(err, "[onchainassetavgcost.UpsertMany] failed")
