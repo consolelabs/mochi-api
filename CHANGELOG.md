@@ -1,3 +1,10 @@
+## [6.35.1](https://github.com/consolelabs/mochi-api/compare/v6.35.0...v6.35.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* search case insensitive onchain avg cost ([#1399](https://github.com/consolelabs/mochi-api/issues/1399)) ([47f9c22](https://github.com/consolelabs/mochi-api/commit/47f9c227c73ea5830f01cd661953d28deff32959))
+
 # [6.35.0](https://github.com/consolelabs/mochi-api/compare/v6.34.2...v6.35.0) (2024-05-31)
 
 
