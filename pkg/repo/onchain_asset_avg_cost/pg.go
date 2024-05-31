@@ -48,5 +48,5 @@ func (pg *pg) UpsertMany(assets []model.OnchainAssetAvgCost) error {
 
 func (pg *pg) GetByWalletAddr(walletAddr string) ([]model.OnchainAssetAvgCost, error) {
 	assets := make([]model.OnchainAssetAvgCost, 0)
-	return assets, pg.db.Where("wallet_address = ?", walletAddr).Find(&assets).Error
+	return assets, pg.db.Where("LOWER(wallet_address) = LOWER(?)", walletAddr).Find(&assets).Error
 }
