@@ -104,3 +104,21 @@ func (h *Handler) OnchainData(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
 }
+
+func (h *Handler) GetOnchainAssetAvgCost(c *gin.Context) {
+	var req request.GetOnchainAssetAvgCost
+	if err := c.ShouldBindQuery(&req); err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetOnchainAssetAvgCost] - failed to read JSON")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetOnchainAssetAvgCost(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"wallet_address": req.WalletAddress}).Error(err, "[handler.GetOnchainAssetAvgCost] - entity.GetOnchainAssetAvgCost() failed")
+		c.JSON(baseerrs.GetStatusCode(err), response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse[any](data, nil, nil, nil))
+}

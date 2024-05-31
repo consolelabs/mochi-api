@@ -146,6 +146,8 @@ type Config struct {
 
 	SentryDsn    string
 	TonConfigURL string
+
+	DuneApiKey string
 }
 
 type MarketplaceBaseUrl struct {
@@ -383,6 +385,8 @@ func generateConfigFromViper(v *viper.Viper) Config {
 
 		SentryDsn:    v.GetString("SENTRY_DSN"),
 		TonConfigURL: v.GetString("TON_CONFIG_URL"),
+
+		DuneApiKey: v.GetString("DUNE_API_KEY"),
 	}
 }
 

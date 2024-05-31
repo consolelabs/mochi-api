@@ -216,3 +216,14 @@ func (e *Entity) Swap(req request.SwapRequest) (interface{}, error) {
 	}
 	return nil, nil
 }
+
+func (e *Entity) GetOnchainAssetAvgCost(req request.GetOnchainAssetAvgCost) ([]model.OnchainAssetAvgCost, error) {
+	// get all onchain asset avg cost
+	assets, err := e.repo.OnchainAssetAverageCost.GetByWalletAddr(req.WalletAddress)
+	if err != nil {
+		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entity.GetOnchainAssetAvgCost] - repo.OnchainAssetAverageCost.GetByWalletAddr() failed")
+		return nil, err
+	}
+
+	return assets, nil
+}

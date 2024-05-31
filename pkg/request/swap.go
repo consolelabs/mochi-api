@@ -15,3 +15,7 @@ type SwapRequest struct {
 	Aggregator    string      `json:"aggregator"`
 	SwapData      interface{} `json:"swapData"`
 }
+
+type GetOnchainAssetAvgCost struct {
+	WalletAddress string `form:"walletAddress" binding:"required"`
+}

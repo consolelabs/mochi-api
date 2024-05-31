@@ -513,4 +513,11 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 		profileSettings.GET("/tip/default-message", h.Setting.GetUserTipMessage)
 	}
+
+	// onchains api
+	onchain := v1.Group("/onchain")
+	{
+		onchain.GET("/average-cost", h.Swap.GetOnchainAssetAvgCost)
+	}
+
 }
