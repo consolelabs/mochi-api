@@ -15,7 +15,6 @@ func do(req *http.Request, apiKey string, retry int) (*http.Response, error) {
 	if retry == 0 {
 		return nil, errors.New("retry limit exceeded")
 	}
-	req.Header.Add("Host", "*/*")
 	req.Header.Add("Accept", "*/*")
 	req.Header.Add("X-DUNE-API-KEY", apiKey)
 	req.Header.Add("Content-Type", "application/json")
