@@ -38,6 +38,8 @@ func ConvertChainToChainId(chain string) string {
 		return "324"
 	case "mantle":
 		return "5000"
+	case "ton":
+		return "-2"
 	default:
 		return chain
 	}
@@ -73,6 +75,8 @@ func ConvertChainIDToChain(chain string) string {
 		return "324"
 	case "mantle":
 		return "5000"
+	case "-2":
+		return "ton"
 	default:
 		return chain
 	}
@@ -127,6 +131,7 @@ func ConvertInputToChainId(input string) string {
 		"8453":       "base",
 		"324":        "zksync",
 		"5000":       "mantle",
+		"-2":         "ton",
 	}
 	chainId := ""
 	if _, exist := mapChainIdChain[strings.ToLower(input)]; exist {
@@ -176,6 +181,8 @@ func ConvertChainIdToChainName(chainId int64) string {
 		return "zksync"
 	case 5000:
 		return "mantle"
+	case -2:
+		return "ton"
 	default:
 		return "ethereum"
 	}
@@ -215,6 +222,8 @@ func ConvertChainNameToChainId(chainName string) int64 {
 		return 324
 	case "mantle":
 		return 5000
+	case "ton":
+		return -2
 	default:
 		return 1
 	}
@@ -255,6 +264,8 @@ func ConvertCoingeckoChain(chainName string) int64 {
 		return 324
 	case "mantle":
 		return 5000
+	case "the-open-network":
+		return -2
 	default:
 		return 0
 	}
