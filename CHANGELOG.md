@@ -1,3 +1,10 @@
+## [6.35.3](https://github.com/consolelabs/mochi-api/compare/v6.35.2...v6.35.3) (2024-06-09)
+
+
+### Bug Fixes
+
+* remove krystal earn balance ([#1402](https://github.com/consolelabs/mochi-api/issues/1402)) ([aa011e2](https://github.com/consolelabs/mochi-api/commit/aa011e241be40e59901aa3e94efe9d39f384b32f))
+
 ## [6.35.2](https://github.com/consolelabs/mochi-api/compare/v6.35.1...v6.35.2) (2024-06-05)
 
 
