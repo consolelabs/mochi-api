@@ -89,14 +89,6 @@ func (j *cacheProfileCommands) Run() error {
 		}(u)
 
 		go func(u model.CommandUsageCounter) {
-			_, err = j.entity.GetSvc().MochiPay.GetProfileKrystalEarnBalances(u.ProfileId)
-			if err != nil {
-				l.Error(err, "svc.MochiPay.GetProfileKrystalEarnBalances() failed")
-			}
-			wg.Done()
-		}(u)
-
-		go func(u model.CommandUsageCounter) {
 			_, err = j.entity.GetVaults(request.GetVaultsRequest{ProfileID: u.ProfileId})
 			if err != nil {
 				l.Error(err, "entity.GetVaults() failed")
