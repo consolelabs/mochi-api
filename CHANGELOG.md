@@ -1,3 +1,11 @@
+## [6.35.2](https://github.com/consolelabs/mochi-api/compare/v6.35.1...v6.35.2) (2024-06-05)
+
+
+### Bug Fixes
+
+* get average cost assets support solana ([#1401](https://github.com/consolelabs/mochi-api/issues/1401)) ([f3c3268](https://github.com/consolelabs/mochi-api/commit/f3c3268f993d2de31fbec2ab30567dd40d53ea1c))
+* update user onchain avg cost logic ([#1400](https://github.com/consolelabs/mochi-api/issues/1400)) ([6dbbeca](https://github.com/consolelabs/mochi-api/commit/6dbbecae211896e5f708e04a38686aaef85e2508))
+
 ## [6.35.1](https://github.com/consolelabs/mochi-api/compare/v6.35.0...v6.35.1) (2024-05-31)
 
 
