@@ -158,3 +158,13 @@ func (pg *pg) UpdateImage(address string, image string) error {
 func (pg *pg) TotalNftCollection() (count int64, err error) {
 	return count, pg.db.Table("nft_collections").Count(&count).Error
 }
+
+func (pg *pg) ListAllNFTCollections() ([]model.NFTCollection, error) {
+	var collections []model.NFTCollection
+	return collections, pg.db.Table("nft_collections").
+		Select("nft_collections.*").
+		Joins("JOIN guild_config_nft_roles ON nft_collections.id = guild_config_nft_roles.nft_collection_id").
+		Where("nft_collections.erc_format != '1155'").
+		Group("nft_collections.id").
+		Find(&collections).Error
+}

@@ -92,6 +92,7 @@ func (e *Entity) ListAllWalletAddresses() ([]model.EvmAddress, error) {
 		listWalletAddress = append(listWalletAddress, model.EvmAddress{
 			Address:   account.PlatformIdentifier,
 			ChainType: chainType,
+			ProfileId: account.ProfileID,
 		})
 	}
 
@@ -1044,7 +1045,7 @@ func (e *Entity) GetBinanceAverageCost(profileId string) ([]model.BinanceAssetAv
 }
 
 func (e *Entity) GetBinanceAssets(req request.GetBinanceAssetsRequest) (*response.GetBinanceAsset, string, string, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceAssets] Failed to get profile")
 		return nil, "", "", err
@@ -1503,7 +1504,7 @@ func (e *Entity) parseSkymavisInternalTxnsData(data *response.WalletTransactionD
 }
 
 func (e *Entity) GetBinanceFuturePosition(req request.GetBinanceFutureRequest) ([]response.BinanceFuturePositionInformation, error) {
-	profile, err := e.svc.MochiProfile.GetByID(req.Id, e.cfg.MochiBotSecret)
+	profile, err := e.svc.MochiProfile.GetByID(req.Id)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Error(err, "[entities.GetBinanceFuturePosition] Failed to get profile")
 		return nil, err

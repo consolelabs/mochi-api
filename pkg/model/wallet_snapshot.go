@@ -15,4 +15,5 @@ type WalletSnapshot struct {
 type EvmAddress struct {
 	Address   string         `json:"address"`
 	ChainType JSONNullString `json:"chain_type"`
+	ProfileId string         `json:"profile_id"`
 }

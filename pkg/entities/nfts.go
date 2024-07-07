@@ -2,6 +2,7 @@ package entities
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,24 +10,32 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/consolelabs/mochi-typeset/common/contract/abi/typeset"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"gorm.io/gorm"
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
+	"github.com/defipod/mochi/pkg/contract/neko"
+	"github.com/defipod/mochi/pkg/contract/nekostaking"
 	"github.com/defipod/mochi/pkg/contracts/erc721"
 	"github.com/defipod/mochi/pkg/logger"
 	"github.com/defipod/mochi/pkg/model"
 	baseerrs "github.com/defipod/mochi/pkg/model/errors"
+	"github.com/defipod/mochi/pkg/repo/user_nft_balance"
 	usernftwatchlistitem "github.com/defipod/mochi/pkg/repo/user_nft_watchlist_items"
 	"github.com/defipod/mochi/pkg/request"
 	"github.com/defipod/mochi/pkg/response"
 	"github.com/defipod/mochi/pkg/service/indexer"
+	"github.com/defipod/mochi/pkg/service/mochiprofile"
 	"github.com/defipod/mochi/pkg/util"
+	maputils "github.com/defipod/mochi/pkg/util/map"
+	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
 var (
@@ -795,7 +804,7 @@ func (e *Entity) GetNFTCollections(p string, s string) (*response.NFTCollections
 		return nil, err
 	}
 
-	for i, _ := range data {
+	for i := range data {
 		data[i].Image = util.StandardizeUri(data[i].Image)
 	}
 
@@ -1303,4 +1312,308 @@ func (e *Entity) GetNFTTokenTickers(req request.GetNFTTokenTickersRequest, rawQu
 
 func (e *Entity) TotalNftCollection() (int64, error) {
 	return e.repo.NFTCollection.TotalNftCollection()
+}
+
+func (e *Entity) GetProfileNftBalance(req request.GetProfileNFTsRequest) (*response.ProfileNftBalancesData, error) {
+	collection, err := e.repo.NFTCollection.GetByAddress(req.CollectionAddress)
+	if err != nil {
+		e.log.Error(err, "[entity.GetProfileNftBalance] repo.NFTCollection.GetByAddress() failed")
+		return nil, err
+	}
+
+	collectionID := collection.ID.UUID.String()
+	total, err := e.repo.UserNFTBalance.TotalBalance(collectionID)
+	if err != nil {
+		e.log.Error(err, "[entity.GetProfileNftBalance] repo.UserNFTBalance.TotalBalance() failed")
+		return nil, err
+	}
+
+	bals, err := e.repo.UserNFTBalance.List(user_nft_balance.ListQuery{ProfileID: req.ProfileID, CollectionID: collectionID})
+	if err != nil {
+		e.log.Error(err, "[entity.GetProfileNftBalance] repo.UserNFTBalance.List() failed")
+		return nil, err
+	}
+
+	data := response.ProfileNftBalancesData{
+		ProfileID: req.ProfileID,
+		Total:     total,
+		Items:     bals,
+	}
+	if !sliceutils.IsEmpty(bals) {
+		data.Balance = sliceutils.Reduce(bals, func(acc int, curr model.UserNFTBalance) int {
+			return acc + curr.Balance + curr.StakingNekos
+		}, 0)
+		if total != 0 {
+			data.Share = float64(data.Balance) / float64(total)
+		}
+
+	}
+
+	go e.fetchNftBalance(req.ProfileID, collection)
+
+	return &data, nil
+}
+
+func (e *Entity) fetchNftBalance(profileID string, collection *model.NFTCollection) {
+	fmt.Println(profileID == "", !strings.EqualFold(collection.ERCFormat, model.ErcFormat721) || !collection.IsVerified)
+	if profileID == "" {
+		return
+	}
+	if !strings.EqualFold(collection.ERCFormat, model.ErcFormat721) || !collection.IsVerified {
+		return
+	}
+
+	// only support EVM
+	// TODO: why collection.chainID is string?
+	chainID, err := strconv.Atoi(collection.ChainID)
+	if err != nil {
+		return
+	}
+	chain, err := e.repo.Chain.GetByID(chainID)
+	if err != nil {
+		e.log.Errorf(err, "[entity.fetchNftBalance] GetNFTBalanceFunc() failed")
+		return
+	}
+	if !strings.EqualFold(chain.Type, model.ChainTypeEvm.String()) {
+		return
+	}
+
+	balanceOf, err := e.GetNFTBalanceFunc(model.NFTCollectionConfig{
+		ID:        collection.ID,
+		ERCFormat: collection.ERCFormat,
+		Address:   collection.Address,
+		Name:      collection.Name,
+		ChainID:   collection.ChainID,
+	})
+	if err != nil {
+		e.log.Errorf(err, "[entity.fetchNftBalance] GetNFTBalanceFunc() failed")
+		return
+	}
+
+	profile, err := e.svc.MochiProfile.GetByID(profileID)
+	if err != nil {
+		e.log.Errorf(err, "[entity.fetchNftBalance] svc.MochiProfile.GetByID() failed")
+		return
+	}
+
+	if profile == nil || profile.AssociatedAccounts == nil {
+		return
+	}
+
+	evmAccs := sliceutils.Filter(profile.AssociatedAccounts, func(aa mochiprofile.AssociatedAccount) bool {
+		return aa.Platform == mochiprofile.PlatformEVM
+	})
+
+	now := time.Now().UTC()
+	for _, acc := range evmAccs {
+		// fetch nft balance
+		bal, err := balanceOf(acc.PlatformIdentifier)
+		if err != nil {
+			e.log.Errorf(err, "[entity.fetchNftBalance] balanceOf() failed")
+			continue
+		}
+
+		// update db record
+		err = e.repo.UserNFTBalance.Upsert(model.UserNFTBalance{
+			NFTCollectionID: collection.ID,
+			UserAddress:     strings.ToLower(acc.PlatformIdentifier),
+			ChainType:       model.JSONNullString{NullString: sql.NullString{String: chain.Type, Valid: true}},
+			Balance:         int(bal.Int64()),
+			ProfileID:       profileID,
+			UpdatedAt:       now,
+		})
+		if err != nil {
+			e.log.Errorf(err, "[entity.fetchNftBalance] repo.UserNFTBalance.Upsert() failed")
+			continue
+		}
+	}
+}
+
+func (e *Entity) GetNekoBalanceFunc(config model.NFTCollectionConfig) (func(address string) (*big.Int, *big.Int, error), error) {
+	chainID, err := strconv.Atoi(config.ChainID)
+	if err != nil {
+		e.log.Errorf(err, "[strconv.Atoi] failed to convert chain id %s to int", config.ChainID)
+		return nil, fmt.Errorf("failed to convert chain id %s to int: %v", config.ChainID, err)
+	}
+
+	chain, err := e.repo.Chain.GetByID(chainID)
+	if err != nil {
+		e.log.Errorf(err, "[repo.Chain.GetByID] failed to get chain by id %s", config.ChainID)
+		return nil, fmt.Errorf("failed to get chain by id %s: %v", config.ChainID, err)
+	}
+
+	client, err := ethclient.Dial(chain.RPC)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to chain client: %v", err.Error())
+	}
+
+	var balanceOf func(string) (*big.Int, *big.Int, error)
+	contract721, err := erc721.NewErc721(common.HexToAddress(config.Address), client)
+	if err != nil {
+		e.log.Errorf(err, "[erc721.NewErc721] failed to init erc721 contract")
+		return nil, err
+	}
+
+	nekoStakingAddr := "0xD28Cf82b9B8ee25E3C82923aDF6aA6CC2f220932"
+	stakingInstance, err := nekostaking.NewNekostaking(common.HexToAddress(nekoStakingAddr), client)
+	if err != nil {
+		e.log.Errorf(err, "[erc721.NewErc721] nekostaking.NewNekoStaking() failed")
+		return nil, err
+	}
+
+	balanceOf = func(address string) (holding *big.Int, staking *big.Int, err error) {
+		exist, err := e.repo.UserNFTBalance.IsExists(config.ID.UUID.String(), address)
+		if exist {
+			return nil, nil, errors.New("existed")
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+
+		go func(addr string) {
+			defer wg.Done()
+			holding, err = contract721.BalanceOf(nil, common.HexToAddress(address))
+			if err != nil {
+				e.log.Errorf(err, "[contract721.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
+				// return nil, nil, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+			}
+		}(address)
+
+		go func(addr string) {
+			defer wg.Done()
+			staking, err = stakingInstance.Balances(nil, common.HexToAddress(address))
+			if err != nil {
+				e.log.Errorf(err, "[contract721.BalanceOf] failed to get balance of %s in chain %s", address, config.ChainID)
+				// return nil, nil, fmt.Errorf("failed to get balance of %s in chain %s: %v", address, config.ChainID, err.Error())
+			}
+		}(address)
+
+		wg.Wait()
+
+		return holding, staking, nil
+	}
+
+	return balanceOf, nil
+}
+
+// TODO: remove after airdrop
+func (e *Entity) GetNekoHolders(col model.NFTCollection) ([]model.UserNFTBalance, error) {
+	chainID, err := strconv.Atoi(col.ChainID)
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] strconv.Atoi() failed")
+		return nil, err
+	}
+
+	chain, err := e.repo.Chain.GetByID(chainID)
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] repo.Chain.GetByID() failed")
+		return nil, err
+	}
+
+	client, err := ethclient.Dial(chain.RPC)
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] ethclient.Dial() failed")
+		return nil, err
+	}
+
+	nekoInstance, err := neko.NewNeko(common.HexToAddress(col.Address), client)
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] neko.NewNeko() failed")
+		return nil, err
+	}
+
+	stakingAddr := consts.NekoStakingContractAddress
+	stakingInstance, err := nekostaking.NewNekostaking(common.HexToAddress(stakingAddr), client)
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] nekostaking.NewNekoStaking() failed")
+		return nil, err
+	}
+
+	stakings, err := nekoInstance.TokensOfOwner(nil, common.HexToAddress(stakingAddr))
+	if err != nil {
+		e.log.Errorf(err, "[GetNekoHolders] nekoInstance.TokensOfOwner() failed")
+		return nil, err
+	}
+	stakingIds := sliceutils.Map(stakings, func(t *big.Int) int64 {
+		return t.Int64()
+	})
+
+	var unstakings []*big.Int
+	for tokenId := 0; tokenId < col.TotalSupply; tokenId++ {
+		if sliceutils.Contains(stakingIds, int64(tokenId)) {
+			continue
+		}
+		unstakings = append(unstakings, big.NewInt(int64(tokenId)))
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	holders := make(map[string]int)
+	tokensByHolder := make(map[string][]int64)
+	go func(tokenIds []*big.Int) {
+		for _, tokenId := range tokenIds {
+			owner, err := nekoInstance.OwnerOf(&bind.CallOpts{}, tokenId)
+			if err != nil {
+				e.log.Errorf(err, "[GetNekoHolders] failed to get balance of %d in chain %s", tokenId.Int64(), col.ChainID)
+				continue
+			}
+
+			k := strings.ToLower(owner.Hex())
+			holders[k]++
+			tokensByHolder[k] = append(tokensByHolder[k], tokenId.Int64())
+		}
+		wg.Done()
+	}(unstakings)
+
+	stakers := make(map[string]int)
+	tokensByStaker := make(map[string][]int64)
+	go func(tokenIds []*big.Int) {
+		for _, tokenId := range tokenIds {
+			staker, err := stakingInstance.Owners(&bind.CallOpts{}, tokenId)
+			if err != nil {
+				e.log.Errorf(err, "[GetNekoHolders] stakingInstance.Owners() failed")
+				continue
+			}
+
+			k := strings.ToLower(staker.Hex())
+			stakers[k]++
+			tokensByStaker[k] = append(tokensByStaker[k], tokenId.Int64())
+		}
+		wg.Done()
+	}(stakings)
+
+	wg.Wait()
+
+	evmAccs, err := e.ListAllWalletAddresses()
+	if err != nil {
+		e.log.Error(err, "[GetNekoHolders] ListAllWalletAddresses() failed")
+		return nil, err
+	}
+
+	evms := map[string]string{}
+	for _, acc := range evmAccs {
+		k := strings.ToLower(acc.Address)
+		evms[k] = acc.ProfileId
+	}
+
+	wallets := append(maputils.Keys(holders), maputils.Keys(stakers)...)
+	data := sliceutils.Map(wallets, func(w string) model.UserNFTBalance {
+		return model.UserNFTBalance{
+			UserAddress:     w,
+			ChainType:       model.JSONNullString{NullString: sql.NullString{String: "evm", Valid: true}},
+			NFTCollectionID: col.ID,
+			Balance:         holders[w],
+			ProfileID:       evms[w],
+			StakingNekos:    stakers[w],
+			Metadata:        map[string]interface{}{"holding": tokensByHolder[w], "staking": tokensByStaker[w]},
+		}
+	})
+
+	return data, nil
+}
+
+func (e *Entity) ExistedNekoHolder(colId, addr string) bool {
+	existed, _ := e.repo.UserNFTBalance.IsExists(colId, addr)
+	return existed
 }

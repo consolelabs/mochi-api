@@ -178,7 +178,7 @@ func (e *Entity) ValidateMoneySourceSetting(profileId string, s request.MoneySou
 		return nil
 	}
 
-	profile, err := e.svc.MochiProfile.GetByID(profileId, e.cfg.MochiBotSecret)
+	profile, err := e.svc.MochiProfile.GetByID(profileId)
 	if err != nil {
 		logger.Error(err, "svc.MochiProfile.GetByID() failed")
 		return errors.New("failed to validate profile accounts")

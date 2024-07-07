@@ -4,7 +4,7 @@ type Service interface {
 	GetByDiscordID(discordID string, noFetchAmount bool) (*GetProfileResponse, error)
 	GetApiKeyByProfileID(profileID string) (*ProfileApiKeyResponse, error)
 	CreateProfileApiKey(profileAccessToken string) (*ProfileApiKeyResponse, error)
-	GetByID(profileID, authorization string) (*GetProfileResponse, error)
+	GetByID(profileID string) (*GetProfileResponse, error)
 	GetByIds(profileIds []string) ([]GetProfileResponse, error)
 	GetByDiscordIds(discordIds []string) ([]GetProfileResponse, error)
 	GetAllEvmAccount() ([]*EvmAssociatedAccount, error)

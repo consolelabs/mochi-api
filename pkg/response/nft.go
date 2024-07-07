@@ -386,3 +386,15 @@ type IndexerErrorResponse struct {
 	Data  interface{} `json:"data"`
 	Error string      `json:"error"`
 }
+
+type ProfileNftBalancesData struct {
+	ProfileID string                 `json:"profile_id"`
+	Total     int                    `json:"total"`
+	Balance   int                    `json:"total_balance"`
+	Share     float64                `json:"share"`
+	Items     []model.UserNFTBalance `json:"items"`
+}
+
+type ProfileNftBalancesResponse struct {
+	Data *ProfileNftBalancesData `json:"data"`
+}
