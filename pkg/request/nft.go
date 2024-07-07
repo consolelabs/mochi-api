@@ -27,3 +27,8 @@ type GetNFTTokenTickersRequest struct {
 	CollectionAddress string `json:"collection_address" form:"collection_address" binding:"required"`
 	TokenID           string `json:"token_id" form:"token_id" binding:"required"`
 }
+
+type GetProfileNFTsRequest struct {
+	ProfileID         string `json:"profile_id" form:"profile_id"`
+	CollectionAddress string `json:"address" uri:"address" binding:"required"`
+}

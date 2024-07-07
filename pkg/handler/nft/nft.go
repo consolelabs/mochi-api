@@ -620,3 +620,27 @@ func (h *Handler) GetNftSalesHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, data)
 }
+
+func (h *Handler) GetProfileNFTBalances(c *gin.Context) {
+	var req request.GetProfileNFTsRequest
+	if err := c.BindUri(&req); err != nil {
+		h.log.Info("[handler.GetProfileNFTBalances] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	if err := c.BindQuery(&req); err != nil {
+		h.log.Info("[handler.GetProfileNFTBalances] BindQuery() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetProfileNftBalance(req)
+	if err != nil {
+		h.log.Fields(logger.Fields{"req": req}).Error(err, "[handler.GetProfileNFTBalances] entity.GetProfileNftBalance() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

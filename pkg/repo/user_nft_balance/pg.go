@@ -17,18 +17,18 @@ func NewPG(db *gorm.DB) Store {
 	}
 }
 
-func (pg *pg) Upsert(balance model.UserNFTBalance) error {
+func (pg *pg) Upsert(b model.UserNFTBalance) error {
 	tx := pg.db.Begin()
 
+	updates := []string{"balance", "updated_at", "profile_id"}
+	if b.StakingNekos != 0 {
+		updates = append(updates, "staking_nekos")
+	}
+
 	if err := tx.Clauses(clause.OnConflict{
-		Columns: []clause.Column{
-			{Name: "user_address"},
-			{Name: "chain_type"},
-			{Name: "nft_collection_id"},
-			{Name: "token_id"},
-		},
-		UpdateAll: true,
-	}).Create(&balance).Error; err != nil {
+		OnConstraint: "user_nft_balances_collection_id_address",
+		DoUpdates:    clause.AssignmentColumns(updates),
+	}).Create(&b).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -91,4 +91,31 @@ func (pg *pg) GetUserNFTBalancesByUserInGuild(guildID string) ([]model.UserAddre
 	}
 
 	return res, nil
+}
+
+func (pg *pg) List(q ListQuery) ([]model.UserNFTBalance, error) {
+	var res []model.UserNFTBalance
+	db := pg.db
+	if q.ProfileID != "" {
+		db = db.Where("profile_id = ?", q.ProfileID)
+	}
+	if q.CollectionID != "" {
+		db = db.Where("nft_collection_id = ?", q.CollectionID)
+	}
+	return res, db.Find(&res).Error
+}
+
+func (pg *pg) TotalBalance(collectionID string) (total int, err error) {
+	return total, pg.db.Table("user_nft_balances").
+		Select("COALESCE(SUM(balance + staking_nekos),0)").
+		Where("nft_collection_id = ?", collectionID).
+		Scan(&total).Error
+}
+
+func (pg *pg) IsExists(collectionID, userAddress string) (bool, error) {
+	var count int64
+	err := pg.db.Table("user_nft_balances").
+		Where("nft_collection_id = ? AND user_address ILIKE ?", collectionID, userAddress).
+		Count(&count).Error
+	return count > 0, err
 }

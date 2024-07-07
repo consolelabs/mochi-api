@@ -168,14 +168,14 @@ func (m *MochiProfile) CreateProfileApiKey(profileAccessToken string) (*ProfileA
 	return &res.Data, nil
 }
 
-func (m *MochiProfile) GetByID(profileID, authorization string) (*GetProfileResponse, error) {
+func (m *MochiProfile) GetByID(profileID string) (*GetProfileResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/profiles/%s", m.config.MochiProfileServerHost, profileID)
 
 	res := GetProfileResponse{}
 	req := util.SendRequestQuery{
 		URL:      url,
 		Response: &res,
-		Headers:  map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + authorization},
+		Headers:  map[string]string{"Content-Type": "application/json", "Authorization": "Bearer " + m.config.MochiBotSecret},
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
@@ -194,7 +194,7 @@ func (m *MochiProfile) GetAllEvmAccount() (res []*EvmAssociatedAccount, err erro
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
-		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
+		return nil, fmt.Errorf("[mochiprofile.GetAllEvmAccount] util.SendRequest() failed: %v", err)
 	}
 	return res, nil
 }
@@ -420,7 +420,7 @@ func (m *MochiProfile) GetAllBinanceAccount() (*GetAllBinanceAssociatedAccountDa
 	}
 	statusCode, err := util.SendRequest(req)
 	if err != nil || statusCode != http.StatusOK {
-		return nil, fmt.Errorf("[mochiprofile.GetByID] util.SendRequest() failed: %v", err)
+		return nil, fmt.Errorf("[mochiprofile.GetAllBinanceAccount] util.SendRequest() failed: %v", err)
 	}
 	return &res, nil
 }
