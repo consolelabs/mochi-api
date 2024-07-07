@@ -71,7 +71,7 @@ func (e *Entity) CreateVault(req *request.CreateVaultRequest) (*model.Vault, err
 	}
 
 	userDiscordID := ""
-	profile, err := e.svc.MochiProfile.GetByID(req.VaultCreator, e.cfg.MochiBotSecret)
+	profile, err := e.svc.MochiProfile.GetByID(req.VaultCreator)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
 		return nil, err
@@ -233,7 +233,7 @@ func (e *Entity) CreateConfigThreshold(req *request.CreateConfigThresholdRequest
 
 func (e *Entity) AddTreasurerToVault(req *request.AddTreasurerToVaultRequest) (*model.VaultTreasurer, error) {
 	userDiscordID := ""
-	profile, err := e.svc.MochiProfile.GetByID(req.UserProfileID, "")
+	profile, err := e.svc.MochiProfile.GetByID(req.UserProfileID)
 	if err != nil {
 		e.log.Fields(logger.Fields{"req": req}).Errorf(err, "[entity.GetVaults] svc.MochiProfile.GetByID() failed")
 		return nil, err

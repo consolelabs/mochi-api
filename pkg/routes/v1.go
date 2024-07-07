@@ -346,6 +346,9 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			collectionsGroup.GET("/:symbol", h.Nft.GetNFTTokens)
 			collectionsGroup.GET("/tickers", h.Nft.GetNFTCollectionTickers)
 			collectionsGroup.GET("/address/:address", h.Nft.GetNFTCollectionByAddressChain)
+
+			// nft balances
+			collectionsGroup.GET("/address/:address/balances", h.Nft.GetProfileNFTBalances)
 		}
 
 		defaultNftTickerGroup := nftsGroup.Group("/default-nft-ticker")
@@ -353,6 +356,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 			defaultNftTickerGroup.GET("", h.Nft.GetGuildDefaultNftTicker)
 			defaultNftTickerGroup.POST("", h.Nft.SetGuildDefaultNftTicker)
 		}
+
 	}
 
 	// TODO

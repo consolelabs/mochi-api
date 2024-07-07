@@ -1,6 +1,7 @@
 package sliceutils
 
 import (
+	"math"
 	"reflect"
 	"sort"
 
@@ -93,4 +94,50 @@ func Find[T any](s []T, callbackFn func(elem T) bool) *T {
 	}
 
 	return nil
+}
+
+func IsEmpty[T any](s []T) bool {
+	return s == nil || len(s) == 0
+}
+
+func Reduce[A, B any](input []A, callbackFn func(accVal B, currentVal A) B, initVal B) B {
+	accumulation := initVal
+	for _, a := range input {
+		current := a
+		accumulation = callbackFn(accumulation, current)
+	}
+
+	return accumulation
+}
+
+// return a new slice of unique elements based on the given slice
+func Uniquify[T comparable](s []T) (result []T) {
+	m := make(map[T]reflect.Value)
+	for _, k := range s {
+		v := reflect.ValueOf(k)
+		m[k] = v
+	}
+
+	for k, v := range m {
+		if v.String() == "" {
+			continue
+		}
+		result = append(result, k)
+	}
+
+	return
+}
+
+// divide the given slice into equal parts whose max length is the given 'maxSize'
+func DivideIntoChunks[T any](s []T, maxSize int64) (result [][]T) {
+	parts := int64(math.Ceil(float64(len(s)) / float64(maxSize)))
+
+	for i := int64(0); i < parts; i++ {
+		start := i * maxSize
+		end := math.Min(float64((i+1)*maxSize), float64(len(s)))
+
+		result = append(result, s[start:int(end)])
+	}
+
+	return
 }
