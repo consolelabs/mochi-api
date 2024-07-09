@@ -644,3 +644,21 @@ func (h *Handler) GetProfileNFTBalances(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
 }
+
+func (h *Handler) GetPodTownNFTBalances(c *gin.Context) {
+	req := &request.GetPodTownNFTBalancesRequest{}
+	if err := req.Bind(c); err != nil {
+		h.log.Info("[handler.GetPodTownNFTBalances] Bind() failed")
+		c.JSON(http.StatusBadRequest, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	data, err := h.entities.GetPodTownNFTBalances(req.CollectionAddresses)
+	if err != nil {
+		h.log.Error(err, "[handler.GetPodTownNFTBalances] entity.GetPodTownNFTBalances() failed")
+		c.JSON(http.StatusInternalServerError, response.CreateResponse[any](nil, nil, err, nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.CreateResponse(data, nil, nil, nil))
+}

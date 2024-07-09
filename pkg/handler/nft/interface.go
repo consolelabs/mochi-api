@@ -31,4 +31,5 @@ type IHandler interface {
 	GetNftTokenTickers(c *gin.Context)
 	GetNftSalesHandler(c *gin.Context)
 	GetProfileNFTBalances(c *gin.Context)
+	GetPodTownNFTBalances(c *gin.Context)
 }

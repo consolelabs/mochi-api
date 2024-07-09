@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/defipod/mochi/pkg/consts"
 	"github.com/defipod/mochi/pkg/model"
 )
 
@@ -118,4 +119,25 @@ func (pg *pg) IsExists(collectionID, userAddress string) (bool, error) {
 		Where("nft_collection_id = ? AND user_address ILIKE ?", collectionID, userAddress).
 		Count(&count).Error
 	return count > 0, err
+}
+
+func (pg *pg) GetPodTownUserNFTBalances(collectionAddresses []string) ([]model.PodTownUserNFTBalance, error) {
+	podTownGuildId := "882287783169896468"
+	var data []model.PodTownUserNFTBalance
+	return data, pg.db.Table("user_nft_balances b").
+		Select(`
+			b.user_address,
+			b.profile_id, 
+			sum(b.balance + staking_nekos) filter (where c.symbol ilike 'NEKO') as neko,
+			sum(b.balance) filter (where c.symbol ilike 'RABBY') as rabby,
+			sum(b.balance) filter (where c.symbol ilike 'FUKURO') as fukuro,
+			max(aa.platform_identifier) discord_id,
+			max(ugs.total_count) as gm
+		`).
+		Joins("LEFT JOIN nft_collections c ON b.nft_collection_id = c.id").
+		Joins("LEFT JOIN associated_accounts aa ON b.profile_id = aa.profile_id and aa.platform = ?", consts.PlatformDiscord).
+		Joins("LEFT JOIN discord_user_gm_streaks ugs ON aa.platform_identifier = ugs.discord_id AND ugs.guild_id = ?", podTownGuildId).
+		Where("c.address IN ?", collectionAddresses).
+		Group("b.user_address, b.profile_id").
+		Find(&data).Error
 }
