@@ -21,7 +21,6 @@ import (
 
 	"github.com/defipod/mochi/pkg/config"
 	"github.com/defipod/mochi/pkg/consts"
-	"github.com/defipod/mochi/pkg/contract/neko"
 	"github.com/defipod/mochi/pkg/contract/nekostaking"
 	"github.com/defipod/mochi/pkg/contracts/erc721"
 	"github.com/defipod/mochi/pkg/logger"
@@ -1349,13 +1348,12 @@ func (e *Entity) GetProfileNftBalance(req request.GetProfileNFTsRequest) (*respo
 
 	}
 
-	go e.fetchNftBalance(req.ProfileID, collection)
+	// go e.fetchNftBalance(req.ProfileID, collection)
 
 	return &data, nil
 }
 
 func (e *Entity) fetchNftBalance(profileID string, collection *model.NFTCollection) {
-	fmt.Println(profileID == "", !strings.EqualFold(collection.ERCFormat, model.ErcFormat721) || !collection.IsVerified)
 	if profileID == "" {
 		return
 	}
@@ -1497,97 +1495,105 @@ func (e *Entity) GetNekoBalanceFunc(config model.NFTCollectionConfig) (func(addr
 }
 
 // TODO: remove after airdrop
-func (e *Entity) GetNekoHolders(col model.NFTCollection) ([]model.UserNFTBalance, error) {
+func (e *Entity) FetchHolders(col model.NFTCollection) ([]model.UserNFTBalance, error) {
 	chainID, err := strconv.Atoi(col.ChainID)
 	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] strconv.Atoi() failed")
+		e.log.Errorf(err, "[FetchHolders] strconv.Atoi() failed")
 		return nil, err
 	}
 
 	chain, err := e.repo.Chain.GetByID(chainID)
 	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] repo.Chain.GetByID() failed")
+		e.log.Errorf(err, "[FetchHolders] repo.Chain.GetByID() failed")
 		return nil, err
 	}
 
 	client, err := ethclient.Dial(chain.RPC)
 	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] ethclient.Dial() failed")
+		e.log.Errorf(err, "[FetchHolders] ethclient.Dial() failed")
 		return nil, err
 	}
 
-	nekoInstance, err := neko.NewNeko(common.HexToAddress(col.Address), client)
+	tokenTracker, err := erc721.NewErc721(common.HexToAddress(col.Address), client)
 	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] neko.NewNeko() failed")
+		e.log.Errorf(err, "[FetchHolders] erc721.NewErc721() failed")
 		return nil, err
 	}
 
-	stakingAddr := consts.NekoStakingContractAddress
-	stakingInstance, err := nekostaking.NewNekostaking(common.HexToAddress(stakingAddr), client)
-	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] nekostaking.NewNekoStaking() failed")
-		return nil, err
-	}
+	// tokenTracker, err := neko.NewNeko(common.HexToAddress(col.Address), client)
+	// if err != nil {
+	// 	e.log.Errorf(err, "[FetchHolders] neko.NewNeko() failed")
+	// 	return nil, err
+	// }
 
-	stakings, err := nekoInstance.TokensOfOwner(nil, common.HexToAddress(stakingAddr))
-	if err != nil {
-		e.log.Errorf(err, "[GetNekoHolders] nekoInstance.TokensOfOwner() failed")
-		return nil, err
-	}
-	stakingIds := sliceutils.Map(stakings, func(t *big.Int) int64 {
-		return t.Int64()
-	})
+	// stakingAddr := consts.NekoStakingContractAddress
+	// stakingInstance, err := nekostaking.NewNekostaking(common.HexToAddress(stakingAddr), client)
+	// if err != nil {
+	// 	e.log.Errorf(err, "[FetchHolders] nekostaking.NewNekoStaking() failed")
+	// 	return nil, err
+	// }
+
+	// stakings, err := nekoInstance.TokensOfOwner(nil, common.HexToAddress(stakingAddr))
+	// if err != nil {
+	// 	e.log.Errorf(err, "[FetchHolders] nekoInstance.TokensOfOwner() failed")
+	// 	return nil, err
+	// }
+	// stakingIds := sliceutils.Map(stakings, func(t *big.Int) int64 {
+	// 	return t.Int64()
+	// })
 
 	var unstakings []*big.Int
 	for tokenId := 0; tokenId < col.TotalSupply; tokenId++ {
-		if sliceutils.Contains(stakingIds, int64(tokenId)) {
-			continue
-		}
+		// if sliceutils.Contains(stakingIds, int64(tokenId)) {
+		// 	continue
+		// }
 		unstakings = append(unstakings, big.NewInt(int64(tokenId)))
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(2)
+	// var wg sync.WaitGroup
+	// wg.Add(2)
 
 	holders := make(map[string]int)
 	tokensByHolder := make(map[string][]int64)
-	go func(tokenIds []*big.Int) {
-		for _, tokenId := range tokenIds {
-			owner, err := nekoInstance.OwnerOf(&bind.CallOpts{}, tokenId)
-			if err != nil {
-				e.log.Errorf(err, "[GetNekoHolders] failed to get balance of %d in chain %s", tokenId.Int64(), col.ChainID)
-				continue
-			}
-
-			k := strings.ToLower(owner.Hex())
-			holders[k]++
-			tokensByHolder[k] = append(tokensByHolder[k], tokenId.Int64())
+	// go func(tokenIds []*big.Int) {
+	tokenIds := unstakings
+	for _, tokenId := range tokenIds {
+		owner, err := tokenTracker.OwnerOf(&bind.CallOpts{}, tokenId)
+		if err != nil {
+			e.log.Errorf(err, "[FetchHolders] failed to get balance of %d in chain %s", tokenId.Int64(), col.ChainID)
+			continue
 		}
-		wg.Done()
-	}(unstakings)
+		e.log.Infof("Token %d owner: %s", tokenId.Int64(), owner.Hex())
+
+		k := strings.ToLower(owner.Hex())
+		holders[k]++
+		tokensByHolder[k] = append(tokensByHolder[k], tokenId.Int64())
+	}
+	// 	wg.Done()
+	// }(unstakings)
 
 	stakers := make(map[string]int)
 	tokensByStaker := make(map[string][]int64)
-	go func(tokenIds []*big.Int) {
-		for _, tokenId := range tokenIds {
-			staker, err := stakingInstance.Owners(&bind.CallOpts{}, tokenId)
-			if err != nil {
-				e.log.Errorf(err, "[GetNekoHolders] stakingInstance.Owners() failed")
-				continue
-			}
+	// go func(tokenIds []*big.Int) {
+	// 	for _, tokenId := range tokenIds {
+	// 		staker, err := stakingInstance.Owners(&bind.CallOpts{}, tokenId)
+	// 		if err != nil {
+	// 			e.log.Errorf(err, "[FetchHolders] stakingInstance.Owners() failed")
+	// 			continue
+	// 		}
 
-			k := strings.ToLower(staker.Hex())
-			stakers[k]++
-			tokensByStaker[k] = append(tokensByStaker[k], tokenId.Int64())
-		}
-		wg.Done()
-	}(stakings)
+	// 		k := strings.ToLower(staker.Hex())
+	// 		stakers[k]++
+	// 		tokensByStaker[k] = append(tokensByStaker[k], tokenId.Int64())
+	// 	}
+	// 	wg.Done()
+	// }(stakings)
 
-	wg.Wait()
+	// wg.Wait()
 
 	evmAccs, err := e.ListAllWalletAddresses()
 	if err != nil {
-		e.log.Error(err, "[GetNekoHolders] ListAllWalletAddresses() failed")
+		e.log.Error(err, "[FetchHolders] ListAllWalletAddresses() failed")
 		return nil, err
 	}
 
@@ -1616,4 +1622,8 @@ func (e *Entity) GetNekoHolders(col model.NFTCollection) ([]model.UserNFTBalance
 func (e *Entity) ExistedNekoHolder(colId, addr string) bool {
 	existed, _ := e.repo.UserNFTBalance.IsExists(colId, addr)
 	return existed
+}
+
+func (e *Entity) GetPodTownNFTBalances(collectionAddresses []string) ([]model.PodTownUserNFTBalance, error) {
+	return e.repo.UserNFTBalance.GetPodTownUserNFTBalances(collectionAddresses)
 }

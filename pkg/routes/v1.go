@@ -349,6 +349,7 @@ func NewRoutes(r *gin.Engine, h *handler.Handler, cfg config.Config) {
 
 			// nft balances
 			collectionsGroup.GET("/address/:address/balances", h.Nft.GetProfileNFTBalances)
+			collectionsGroup.GET("/podtown/balances", h.Nft.GetPodTownNFTBalances) // TODO: remove after airdrop
 		}
 
 		defaultNftTickerGroup := nftsGroup.Group("/default-nft-ticker")

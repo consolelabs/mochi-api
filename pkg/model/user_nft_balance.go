@@ -57,3 +57,13 @@ type UserNFTBalanceIdentify struct {
 	UserDiscordId   string `json:"user_discord_id"`
 	NftCollectionId string `json:"nft_collection_id"`
 }
+
+type PodTownUserNFTBalance struct {
+	ProfileId   string `json:"profile_id"`
+	DiscordId   string `json:"discord_id"`
+	UserAddress string `json:"user_address"`
+	Neko        int    `json:"neko"`
+	Rabby       int    `json:"rabby"`
+	Fukuro      int    `json:"fukuro"`
+	Gm          int    `json:"gm"`
+}

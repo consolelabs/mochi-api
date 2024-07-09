@@ -8,4 +8,5 @@ type Store interface {
 	List(ListQuery) ([]model.UserNFTBalance, error)
 	TotalBalance(collectionID string) (int, error)
 	IsExists(collectionID, userAddress string) (bool, error)
+	GetPodTownUserNFTBalances(collectionAddresses []string) ([]model.PodTownUserNFTBalance, error)
 }
