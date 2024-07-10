@@ -1,5 +1,8 @@
 
 -- +migrate Up
+
+DROP TABLE IF EXISTS temp_associated_accounts;
+
 CREATE TYPE "public"."profile_type" AS ENUM ('user', 'application', 'vault', 'application_vault');
 
 CREATE TABLE "public"."profiles" (
