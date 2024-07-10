@@ -1,3 +1,15 @@
+# [6.36.0](https://github.com/consolelabs/mochi-api/compare/v6.35.3...v6.36.0) (2024-07-07)
+
+
+### Bug Fixes
+
+* revert old migration file name ([f56f1a0](https://github.com/consolelabs/mochi-api/commit/f56f1a02708ce8381fd954e763574ad8606c61f2))
+
+
+### Features
+
+* neko holder fetcher ([978892e](https://github.com/consolelabs/mochi-api/commit/978892ec611dd9afa65de96755a840086bce7ff6))
+
 ## [6.35.3](https://github.com/consolelabs/mochi-api/compare/v6.35.2...v6.35.3) (2024-06-09)
 
 
