@@ -1,11 +1,8 @@
 package job
 
 import (
-	"strings"
-
 	"github.com/defipod/mochi/pkg/entities"
 	"github.com/defipod/mochi/pkg/logger"
-	"github.com/defipod/mochi/pkg/model"
 	sliceutils "github.com/defipod/mochi/pkg/util/slice"
 )
 
@@ -84,27 +81,35 @@ func (c *updateUserNFTBalances) Run() error {
 		return err
 	}
 
-	nekoAddr := "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73"
-	nekoCol := sliceutils.Find(collections, func(c model.NFTCollection) bool {
-		return strings.EqualFold(nekoAddr, c.Address)
-	})
+	// collectionAddresses := ["0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73", "0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73", ]
+	// nekoAddr :=
+	// nekoCol := sliceutils.Find(collections, func(c model.NFTCollection) bool {
+	// 	return strings.EqualFold(nekoAddr, c.Address)
+	// })
 
-	if nekoCol == nil {
-		c.log.Info("Neko Collection not found")
-		return nil
-	}
+	// if nekoCol == nil {
+	// 	c.log.Info("Neko Collection not found")
+	// 	return nil
+	// }
 
-	data, err := c.entity.GetNekoHolders(*nekoCol)
-	if err != nil {
-		c.log.Errorf(err, "entity.GetNekoHolders() failed")
-		return err
-	}
-
-	for _, bal := range data {
-		err = c.entity.NewUserNFTBalance(bal)
-		if err != nil {
-			c.log.Errorf(err, "NewUserNFTBalance() failed")
+	for _, col := range collections {
+		fetched := []string{"0x7aCeE5D0acC520faB33b3Ea25D4FEEF1FfebDE73"}
+		if sliceutils.Contains(fetched, col.Address) {
 			continue
+		}
+
+		data, err := c.entity.FetchHolders(col)
+		if err != nil {
+			c.log.Errorf(err, "entity.FetchHolders() failed")
+			return err
+		}
+
+		for _, bal := range data {
+			err = c.entity.NewUserNFTBalance(bal)
+			if err != nil {
+				c.log.Errorf(err, "NewUserNFTBalance() failed")
+				continue
+			}
 		}
 	}
 
