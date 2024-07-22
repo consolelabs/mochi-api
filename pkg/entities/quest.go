@@ -1,6 +1,8 @@
 package entities
 
 import (
+	"errors"
+	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -19,6 +21,41 @@ import (
 	"github.com/defipod/mochi/pkg/util"
 )
 
+func (e *Entity) validateUser(userID string) error {
+	_, err := e.repo.Users.GetOne(userID)
+	if err != nil {
+		e.log.Fields(logger.Fields{"user_id": userID}).Error(err, "[entity.validateUser] repo.Users.GetOne() failed")
+		return fmt.Errorf("user not found")
+	}
+	return nil
+}
+
+// validate action in quest table
+func (e *Entity) validateQuestAction(action string) error {
+	listQ := quest.ListQuery{
+		Action: action,
+	}
+	list, err := e.repo.Quest.List(listQ)
+	if len(list) == 0 {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.validateQuestAction] repo.Quest.List() failed")
+		return fmt.Errorf("action not found")
+	}
+	return nil
+}
+
+// validate quest_id in quest table
+func (e *Entity) validateQuestID(questID *uuid.UUID) error {
+	listQ := quest.ListQuery{
+		ID: questID,
+	}
+	list, err := e.repo.Quest.List(listQ)
+	if len(list) == 0 {
+		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.validateQuestID] repo.Quest.List() failed")
+		return fmt.Errorf("quest_id not found")
+	}
+	return nil
+}
+
 func (e *Entity) GetUserQuestList(req request.GetUserQuestListRequest) ([]model.QuestUserList, error) {
 	now := time.Now().UTC()
 	startTime := util.StartOfDay(now)
@@ -27,6 +64,11 @@ func (e *Entity) GetUserQuestList(req request.GetUserQuestListRequest) ([]model.
 		StartTime: &startTime,
 		Routine:   &req.Routine,
 	}
+	err := e.validateUser(req.UserID)
+	if err != nil {
+		return nil, err
+	}
+
 	list, err := e.repo.QuestUserList.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.GetUserQuestList] repo.QuestUserList.List() failed")
@@ -176,6 +218,22 @@ func (e *Entity) UpdateUserQuestProgress(log *model.QuestUserLog) error {
 	if log.Action == model.BONUS || log.UserID == "" {
 		return nil
 	}
+
+	//validate quest action
+	err_action := e.validateQuestAction(string(log.Action))
+	// validate user
+	err_user := e.validateUser(log.UserID)
+
+	if err_action != nil && err_user == nil {
+		return err_action
+	}
+	if err_action == nil && err_user != nil {
+		return err_user
+	}
+	if err_action != nil && err_user != nil {
+		return errors.New(err_action.Error() + ", " + err_user.Error())
+	}
+
 	startTime := util.StartOfDay(time.Now().UTC())
 	routines, err := e.repo.Quest.GetAvailableRoutines()
 	if err != nil {
@@ -310,6 +368,22 @@ func (e *Entity) ClaimQuestsRewards(req request.ClaimQuestsRewardsRequest) (*res
 		IsClaimed:   &claimed,
 		QuestID:     req.QuestID,
 	}
+
+	//validate quest id
+	err_id := e.validateQuestID(listQ.QuestID)
+	// validate user
+	err_user := e.validateUser(*listQ.UserID)
+
+	if err_id != nil && err_user == nil {
+		return nil, err_id
+	}
+	if err_id == nil && err_user != nil {
+		return nil, err_user
+	}
+	if err_id != nil && err_user != nil {
+		return nil, errors.New(err_id.Error() + ", " + err_user.Error())
+	}
+
 	list, err := e.repo.QuestUserList.List(listQ)
 	if err != nil {
 		e.log.Fields(logger.Fields{"listQ": listQ}).Error(err, "[entity.ClaimQuestsRewards] repo.QuestUserList.List() failed")
