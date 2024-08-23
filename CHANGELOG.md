@@ -1,3 +1,10 @@
+## [6.37.1](https://github.com/consolelabs/mochi-api/compare/v6.37.0...v6.37.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* vault ICY balance ([f2d009b](https://github.com/consolelabs/mochi-api/commit/f2d009bcc3068cc1de950ec45c23a49eade9e499))
+
 # [6.37.0](https://github.com/consolelabs/mochi-api/compare/v6.36.0...v6.37.0) (2024-07-10)
 
 
