@@ -380,6 +380,9 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 	assets := make([]response.WalletAssetData, 0)
 	for _, item := range res.Data {
 		chain, err := e.repo.Chain.GetByID(item.ChainId)
+		if item.ChainId == 8453 {
+			fmt.Println("base:", chain)
+		}
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				continue
@@ -389,6 +392,9 @@ func (e *Entity) listEvmWalletAssets(req request.ListWalletAssetsRequest) ([]res
 		}
 
 		for _, bal := range item.Balances {
+			if bal.Token.Symbol == "ICY" {
+				fmt.Println("bal:", bal)
+			}
 			assetBal, quote := e.calculateEvmTokenBalance(bal, item.ChainId)
 			// filter out dusty tokens
 			if quote < 0.001 && bal.TokenType != "NATIVE" {
@@ -1400,7 +1406,7 @@ func (e *Entity) calculateEvmTokenBalance(item krystal.Balance, chainID int) (ba
 	}
 	parsedBal, _ := balance.Float64()
 	bal = parsedBal / math.Pow10(item.Token.Decimals)
-	if strings.EqualFold(item.Token.Symbol, "icy") && chainID == 137 {
+	if strings.EqualFold(item.Token.Symbol, "icy") && chainID == 8453 {
 		quote = 1.5 * bal
 	} else {
 		quote = item.Quotes.Usd.Value
