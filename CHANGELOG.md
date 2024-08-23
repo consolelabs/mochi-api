@@ -1,3 +1,16 @@
+# [6.37.0](https://github.com/consolelabs/mochi-api/compare/v6.36.0...v6.37.0) (2024-07-10)
+
+
+### Bug Fixes
+
+* account migration ([eba2181](https://github.com/consolelabs/mochi-api/commit/eba218158fb62874ec48aebe99d8b99f0d9a4316))
+* update job - fetch nft balances ([4245015](https://github.com/consolelabs/mochi-api/commit/42450150d61bd9449602eb4f49d08c752419a2ae))
+
+
+### Features
+
+* temp profile and accounts tables ([282f248](https://github.com/consolelabs/mochi-api/commit/282f2482704c2886faaf6a2d87656bf9a4337de2))
+
 # [6.36.0](https://github.com/consolelabs/mochi-api/compare/v6.35.3...v6.36.0) (2024-07-07)
 
 
